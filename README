@@ -1,23 +1,24 @@
-RT for Incident Response is an open source, industrial-grade incident-handling tool
-designed to provide a simple, effective workflow for members of CERT and
-CSIRT teams. It allows team members to track, respond to and deal with 
-reported incidents and features a number of tools to make common operations
-quick and easy.  RTIR is built on top of "RT," which is also available for free
-from Best Practical Solution at http://www.bestpractical.com/rt/.
+RT for Incident Response is an open source, industrial-grade
+incident-handling tool designed to provide a simple, effective
+workflow for members of CERT and CSIRT teams. It allows team members
+to track, respond to and deal with reported incidents and features a
+number of tools to make common operations quick and easy.  RTIR is
+built on top of "RT," which is also available for free from Best
+Practical Solution at http://www.bestpractical.com/rt/.
 
-To purchase commercials support, training or custom development  for RT or
-RTIR, please contact Best Practical at sales@bestpractical.com.
+To purchase commercials support, training or custom development for RT
+or RTIR, please contact Best Practical at sales@bestpractical.com.
 
 
 WARNING!
 --------
 
-This is a development version of RTIR.  Before using this version of RTIR,
-back up your database and any local modifications.
+This is a development version of RTIR.  Before using this version of
+RTIR, back up your database and any local modifications.
 
-If you intend to deploy RTIR, or any other software,  in a production 
-environment, we recommend that you first install and test it
-in a staging environment to ensure that it meets your needs.
+If you intend to deploy RTIR, or any other software, in a production
+environment, we recommend that you first install and test it in a
+staging environment to ensure that it meets your needs.
 
 Changes since RTIR 1.0.x
 ------------------------
@@ -40,8 +41,19 @@ Configurable Search Results
 
 Standardized Components
 
-	RTIR 1.2 uses fewer customized components, making it easier to
-	customize and maintain.
+	RTIR 1.2 uses more of RT's core components, making it easier
+	to customize and maintain.
+
+Scrips
+
+	Scrip actions and conditions are now in perl modules, so that
+	they're easier to customize.
+
+Business::SLA
+
+	Service Level Agreement (SLA) calculations are now handled by
+	the Business::SLA module, which offers more flexibility.  You
+	can specify SLAs with business minutes, real minutes, or both.
 
 
 REQUIRED PACKAGES:
@@ -51,7 +63,10 @@ o   RT 3.2.2 or later, configured, installed and tested.
 
 o   The Business::Hours module (version 0.05 or later)
 
+o   The Business::SLA module
+
 o   The Net::Whois::RIPE module
+
 
 
 Upgrade instructions:
