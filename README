@@ -59,7 +59,7 @@ Business::SLA
 REQUIRED PACKAGES:
 ------------------
 
-o   RT 3.2.2 or later, configured, installed and tested.
+o   RT 3.4.0 or later, configured, installed and tested.
 
 o   The Business::Hours module (version 0.05 or later)
 
@@ -88,11 +88,11 @@ Installation instructions:
 
 3) Type "make install".
 
-4) Add the following lines to your /opt/rt3/etc/RT_SiteConfig.pm file:
+4) Add the following lines to your RT_SiteConfig.pm file:
 
    # The RTIR config file
 
-   $RTIR_CONFIG_FILE = "/opt/rt3/etc/RTIR_Config.pm";
+   $RTIR_CONFIG_FILE = $RT::LocalEtcPath."/IR/RTIR_Config.pm";
 
    require $RTIR_CONFIG_FILE
      || die ("Couldn't load RTIR config file '$RTIR_CONFIG_FILE'\n$@");
