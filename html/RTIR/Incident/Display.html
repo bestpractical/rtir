@@ -161,9 +161,21 @@ if ($id eq 'new') {
       Abort("No permission to view newly created ticket #".$Ticket->id.".");
     }
     # }}}
-}
 
-else { 
+  if ($ARGS{'child'}) {
+    my $ChildObj = LoadTicket($ARGS{'child'});
+    my @linkresults;
+    $ARGS{'id'}=$Ticket->Id;    
+    $ARGS{$ChildObj->Id.'-MemberOf'} = $Ticket->Id;
+    push @linkresults, ProcessTicketLinks(TicketObj => $ChildObj, ARGSRef => \%ARGS);
+
+    my @tempresults = (@linkresults);
+    @tempresults = map { loc("Ticket [_1]: [_2]",$ChildObj->Id,$_) } @tempresults;
+
+    push @Actions, @tempresults;
+  }
+
+} else { 
     $Ticket = LoadTicket($id);
     unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
 	Abort("No permission to view ticket");
@@ -181,6 +193,18 @@ if (defined $ARGS{'Action'}) {
   my $IncidentObj = LoadTicket($SelectedTicket);
   $ARGS{'Status'} = "open";
   $ARGS{$ChildObj->Id.'-MemberOf'} = $IncidentObj->Id;
+  my $Type = $m->scomp("/RTIR/Elements/Type", Ticket => $ChildObj->Id);
+
+  if ($Type ne 'Block') {
+    while (my $link = $ChildObj->MemberOf->Next) {
+      my $member = $link->TargetObj;
+      if ($member->QueueObj->id eq $IncidentObj->QueueObj->id) {
+        $RT::Logger->debug ("Deleting\n");
+        $ARGS{'DeleteLink--'.$link->Type.'-'.$link->Target} = '';
+      }
+    }
+  }
+
   my @linkresults;
   push @linkresults, ProcessTicketLinks(TicketObj => $ChildObj, ARGSRef => \%ARGS);
 
@@ -197,7 +221,6 @@ if (defined $ARGS{'Action'}) {
     $RT::Logger->debug( "Checking Ticket ".$t->Id ."\n");
     next unless ($ARGS{"UpdateTicket".$t->Id});
     $RT::Logger->debug ("Matched\n");
-    #Update the basics.
     # Blocks can have multiple incidents
     if ($Type ne 'Block') {
       while (my $link = $t->MemberOf->Next) {
@@ -205,8 +228,6 @@ if (defined $ARGS{'Action'}) {
         if ($member->QueueObj->id eq $IncidentObj->QueueObj->id) {
           $RT::Logger->debug ("Deleting\n");
           $ARGS{'DeleteLink--'.$link->Type.'-'.$link->Target} = '';
-          push @extraresults, ProcessTicketLinks(TicketObj => $t, ARGSRef => \%ARGS);
-	  delete($ARGS{'DeleteLink--'.$link->Type.'-'.$link->Target});
         }
       }
     }
@@ -252,4 +273,5 @@ $Create => undef
 $ShowHeaders => undef
 $Collapsed => undef
 $SelectedTicket => undef
+$child => undef
 </%ARGS>

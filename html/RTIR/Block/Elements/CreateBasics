@@ -43,7 +43,7 @@
       <& /Elements/SelectOwner, 
           Name => "Owner", 
 	  QueueObj => $QueueObj, 
-	  Default => $ARGS{Owner}||undef &>
+	  Default => $ARGS{Owner}||$session{'CurrentUser'}->Id||undef &>
     </TD>
   </TR>
   <TR>

@@ -39,7 +39,9 @@
 %     last if $i++ >= $rows;
 <TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >                                
 <TD ALIGN=RIGHT>
+<A HREF="<% $RT::WebPath %>/RTIR/Incident/Display.html?id=<%$Ticket->Id%>">
 <%$Ticket->Id%>
+</a>
 </TD>
 <TD>
 <A HREF="<% $RT::WebPath %>/RTIR/Incident/Display.html?id=<%$Ticket->Id%>">

@@ -31,6 +31,7 @@
     Ticket => $TicketObj &>
 <FORM ACTION="<%$RT::WebPath%>/RTIR/Incident/Create.html" METHOD="POST" ENCTYPE="multipart/form-data">
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
+<INPUT TYPE=HIDDEN Name="child" VALUE=<%$child%>>
 <INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
 <INPUT TYPE=HIDDEN NAME=Status Value="<%$ARGS{Status}||'open'%>">
 <input type=hidden name="new-MemberOf"<% $ARGS{'new-MemberOf'} && " VALUE=\"$ARGS{'new-MemberOf'}\"" %>>
@@ -39,18 +40,15 @@
 	
 <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => $Title &>
 <TABLE border=0 cellpadding=0 cellspacing=2>
-% if (defined $ARGS{'new-MemberOf'}) {
+% if ($link) {
+%   my $Type = $m->scomp("/RTIR/Elements/Type", Ticket => $link->Id);
+%   $Type =~ s/\s*$//;
   <TR>
-    <TD ALIGN=RIGHT><&|/l&>Split from</&>:</TD>
-    <TD><% $ARGS{'new-MemberOf'} %></TD>
+    <TD class="label"><%$label%>:</TD>
+    <TD><% loc("[_1] #[_2]: [_3]", $Type, $link->Id, $link->Subject) %></TD>
   </TR>
 % }
-% if (defined $ARGS{'MemberOf-new'}) {
-  <TR>
-    <TD ALIGN=RIGHT><&|/l&>Link with</&>:</TD>
-    <TD><% $ARGS{'MemberOf-new'} %></TD>
-  </TR>
-% }
+
   <TR>
     <TD class=label>
       <&|/l&>Owner</&>:
@@ -59,7 +57,7 @@
       <& /Elements/SelectOwner, 
           Name => "Owner", 
 	  QueueObj => $QueueObj, 
-	  Default => $ARGS{Owner}||undef &>
+	  Default => $ARGS{Owner}||$session{'CurrentUser'}->Id||undef &>
     </TD>
   </TR>
   <TR>
@@ -67,7 +65,7 @@
       <&|/l&>Subject</&>:
     </TD>
     <TD class=value COLSPAN=5>
-      <INPUT Name="Subject" SIZE=60 MAXSIZE=100 value="<% $ARGS{Subject} || ''%>">
+      <INPUT Name="Subject" SIZE=60 MAXSIZE=100 value="<% $Subject %>">
     </TD>
   </TR>
   <tr>
@@ -130,15 +128,25 @@
 % if (exists $ARGS{Content}) {
 <& /Elements/MessageBox, Default => $ARGS{Content} &>
 % } else {
+% my $Transactions;
 % if ($TicketObj) {
-% my $Transactions = $TicketObj->Transactions;
-% my $i;
+% $Transactions = $TicketObj->Transactions;
+% } elsif ($ChildObj) {
+% $Transactions = $ChildObj->Transactions;
+% }
+
+% if ($Transactions) {
 <TEXTAREA COLS=72 ROWS=15 WRAP=HARD NAME="Content">
 % while (my $Transaction = $Transactions->Next) {
-% $i++;
 % my $transdate = $Transaction->CreatedAsString();
-% $transdate =~ s/\s/&nbsp;/g;
 <%$transdate%> <%$Transaction->CreatorObj->Name%> - <%$Transaction->BriefDescription%>
+% my $attachments = $Transaction->Attachments;
+% $attachments->GotoFirstItem;
+% while (my $message=$attachments->Next) {
+%    #we don't want to show any empty transactions, unless they have kids
+%    next unless ($message->Content || $message->Children->Count);
+<% $message->Content%>
+% }
 % }
 </textarea>
 % } else {
@@ -204,8 +212,27 @@
 </FORM>
 
 <%INIT>
+# if there isn't a subject, but there is a child, use that one
+my $ChildObj;
+if ((!$Subject) and $child) {
+  $ChildObj = LoadTicket($child);
+  $Subject = $ChildObj->Subject;
+}
+
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load("Incidents") || Abort(loc("Queue could not be loaded."));
+
+my ($link, $label);
+if ($ARGS{'new-MemberOf'}) {
+  $link = LoadTicket($ARGS{'new-MemberOf'});
+  $label = loc("Split from");
+} elsif ($ARGS{'MemberOf-new'}) {
+  $link = LoadTicket($ARGS{'MemberOf-new'});
+  $label = loc("Link with");
+} elsif ($child) {
+  $link = LoadTicket($child);
+  $label = loc("Link with");
+}
 
 if (!defined $current_tab) {
   $current_tab = "RTIR/Incident/Create.html?Queue=".$QueueObj->Id; 
@@ -264,4 +291,6 @@ $Title => loc("Create a new Incident")
 $current_tab => undef
 $current_subtab => undef
 $people => undef
+$child => undef
+$Subject => undef
 </%ARGS>

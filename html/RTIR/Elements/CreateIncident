@@ -23,6 +23,5 @@
 %# 
 %# END LICENSE BLOCK
 <FORM ACTION="<% $RT::WebPath%>/RTIR/Incident/Create.html">
-<INPUT type=hidden NAME="Queue" size=25 value="Incidents">
 <input type="submit" value="New Incident">
 </FORM>

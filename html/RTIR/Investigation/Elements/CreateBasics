@@ -29,10 +29,10 @@
     <TD ALIGN=RIGHT><&|/l&>Split from</&>:</TD>
     <TD><% $ARGS{'new-MemberOf'} %></TD>
   </TR>
-% } elsif ($Incident) {
+% } elsif ($IncidentObj) {
   <TR>
     <TD ALIGN=RIGHT><&|/l&>Incident</&>:</TD>
-    <TD><% $Incident %></TD>
+    <TD><% $IncidentObj->Id %></TD>
   </TR>
 % }
   <TR>
@@ -43,7 +43,7 @@
       <& /Elements/SelectOwner, 
           Name => "Owner", 
 	  QueueObj => $QueueObj, 
-	  Default => $ARGS{Owner}||undef &>
+	  Default => $ARGS{Owner}||$session{'CurrentUser'}->Id||undef &>
     </TD>
   </TR>
   <TR>
@@ -51,7 +51,7 @@
       <&|/l&>Subject</&>:
     </TD>
     <TD class=value COLSPAN=5>
-      <INPUT Name="Subject" SIZE=60 MAXSIZE=100 value="<% $ARGS{Subject} || ''%>">
+      <INPUT Name="Subject" SIZE=60 MAXSIZE=100 value="<% $Subject %>">
     </TD>
   </TR>
   <TR>
@@ -134,15 +134,25 @@
 % if (exists $ARGS{Content}) {
 <& /Elements/MessageBox, Default => $ARGS{Content} &>
 % } else {
+% my $Transactions;
 % if ($Ticket) {
-% my $Transactions = $Ticket->Transactions;
-% my $i;
+% $Transactions = $Ticket->Transactions;
+% } elsif ($IncidentObj) {
+% $Transactions = $IncidentObj->Transactions;
+% }
+
+% if ($Transactions) {
 <TEXTAREA COLS=72 ROWS=15 WRAP=HARD NAME="Content">
 % while (my $Transaction = $Transactions->Next) {
-% $i++;
 % my $transdate = $Transaction->CreatedAsString();
-% $transdate =~ s/\s/&nbsp;/g;
 <%$transdate%> <%$Transaction->CreatorObj->Name%> - <%$Transaction->BriefDescription%>
+% my $attachments = $Transaction->Attachments;
+% $attachments->GotoFirstItem;
+% while (my $message=$attachments->Next) {
+%    #we don't want to show any empty transactions, unless they have kids
+%    next unless ($message->Content || $message->Children->Count);
+<% $message->Content%>
+% }
 % }
 </textarea>
 % } else {
@@ -181,6 +191,11 @@
 <& /Elements/TitleBoxEnd &>
 
 <%INIT>
+# if there isn't a subject, but there is an incident, use that one
+if ((!$Subject) and $IncidentObj) {
+  $Subject = loc("Incident #[_1]: [_2]", $IncidentObj->Id, $IncidentObj->Subject);
+}
+
 my $Title;
   if ($Split) {
     $Title = loc("Split Investigation #[_1]: [_2]", $Ticket->id, $Ticket->Subject);
@@ -192,7 +207,8 @@ my $Title;
 <%ARGS>
 $Ticket => undef
 $QueueObj => undef
-$Incident => undef
+$IncidentObj => undef
 $QuoteTransaction => undef
 $Split => 0
+$Subject => undef
 </%ARGS>

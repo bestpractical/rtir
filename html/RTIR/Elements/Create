@@ -50,6 +50,7 @@
 <& '/RTIR/'.$Type.'/Elements/CreateBasics', 
   Ticket => $TicketObj,
   QueueObj => $QueueObj, 
+  IncidentObj => $IncidentObj,
   %ARGS &>
 	
 <& /Elements/Submit, Label => loc("Create")&>

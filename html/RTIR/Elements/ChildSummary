@@ -46,7 +46,11 @@
 % } elsif ($Type eq $t) {
 % if ($ticket ne $Ticket->Id) {
 <td align=right><a href="<%$RT::WebPath%>/RTIR/<%$Type%>/Merge.html?id=<%$ticket%>&SelectedTicket=<%$Ticket->Id%>">[<%loc("Merge")%>]</a></td>
+% } else {
+<td>&nbsp;</td>
 % }
+% } else {
+<td>&nbsp;</td>
 % }
 </TR>
 % }
