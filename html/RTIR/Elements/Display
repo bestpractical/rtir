@@ -126,7 +126,7 @@ if (defined $ARGS{'Action'}) {
   } elsif ($ARGS{'Action'} eq 'Respond') {
     my $date = RT::Date->new($RT::SystemUser);
     $date->SetToNow;
-    $date->AddDays(10);
+    $date->AddDays($RT::overdueafter);
     $ARGS{'Due_Date'} = $date->ISO;
   }
 }

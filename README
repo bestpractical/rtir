@@ -1,0 +1,48 @@
+Installation instructions:
+--------------------------
+
+1) RTIR requires the Business::Hours module.  You should install it
+before proceeding.
+
+2) Install RT 3.0.x
+
+3) Once RT 3.0 appears to be happily installed, cd into the directory you
+   unpacked RTFM into.
+
+4) Edit RTFM's Makefile to point to your RT 3 instance.
+
+5) make sure that mysql or pgsql's commandline tool is in your path.
+
+6) Type "make install".
+
+7) Modify the /opt/rt3/RT.pm file.
+
+   Add the variable "$SITE_CONFIG_RTIR_FILE" to the following list:
+
+    use vars qw($VERSION $System $SystemUser $Nobody $Handle $Logger
+            $CORE_CONFIG_FILE
+            $SITE_CONFIG_FILE
+            <...>
+
+   After these lines:
+
+    $CORE_CONFIG_FILE = "/opt/rt3/etc/RT_Config.pm";
+    $SITE_CONFIG_FILE = "/opt/rt3/etc/RT_SiteConfig.pm";
+
+   Add the following line:
+
+    $SITE_CONFIG_RTIR_FILE = "/opt/rt3/etc/RT_SiteConfig_RTIR.pm";
+
+   After these lines:
+
+    require $CORE_CONFIG_FILE
+      || die ("Couldn't load RT config file '$CORE_CONFIG_FILE'\n$@");
+
+   Add the following:
+
+    require $SITE_CONFIG_RTIR_FILE
+      || die ("Couldn't load RTIR config file  '$SITE_CONFIG_RTIR_FILE'\n$@");
+
+8) Initialize the RTIR database by typing "make initdb".
+
+9) Stop and start your web server.

@@ -119,7 +119,7 @@ if ($ARGS{'UpdateContent'} &&
 
 my $date = RT::Date->new($RT::SystemUser);
 $date->SetToNow;
-$date->AddDays(10);
+$date->AddDays($RT::overdueafter);
 $ARGS{'Due_Date'} = $date->ISO;
 
 #Iterate through each ticket we've been handed

@@ -31,7 +31,7 @@
     current_subtab => $current_subtab, 
     current_toptab => $current_toptab,
     title => $Title,
-    AppName => loc("RTIR for [_1]", $RT::rtname) &>
+    AppName => $RT::rtirname &>
 
 <%INIT>
 my $toptabs = { A => { title => loc('RT'),

@@ -28,6 +28,7 @@
     current_tab => 'RTIR/Tools/Lookup.html?NewSearch=1', 
     current_subtab => $current_subtab, 
     Title => $title &>
+
 % if ($ticket) {
 <& /Elements/TitleBoxStart, title => loc("Current [_1]: #[_2]", $TicketType, $ticket), color=> "#993333" &>
 <TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
@@ -73,7 +74,18 @@
 <form action="Lookup.html" method="get">
   <tr>
     <td class=label>WHOIS:</td>
-    <td class=input><input size=30 name="q" value="<%$q%>"> at <input size="20" name="server" value ="<%$server%>"></td>
+    <td class=input>
+      <input size=30 name="q" value="<%$q%>"> at 
+      <select name="server">
+% foreach my $s (%{$servers}) {
+% my $selected = "";
+% if ($s eq $server) {
+%   $selected = " SELECTED";
+% }
+        <option value="<%$s%>"<%$selected%>><%$s%></option>
+% }
+      </select>
+    </td>
     <td align=left><input type=submit value="Go"></td>
   </tr>
 </form>
@@ -122,6 +134,9 @@ parse this data.
 % }
 
 <%init>
+foreach my $s (%{$servers}) {
+  $server = $s
+}
 use Net::Whois::RIPE;
 my $query = Net::Whois::RIPE->new($server);
 my ($iterator, $error);
@@ -167,7 +182,8 @@ if ($ticket) {
 
 </%init>
 <%args>
-$server => 'whois.fucknsi.com'
+$servers => $RT::whois
+$server => undef
 $handparse => 1
 $q => undef
 $type => undef
