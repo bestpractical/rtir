@@ -28,7 +28,7 @@
 <TH ALIGN=RIGHT><&|/l&>#</&></TH>
 <TH ALIGN=LEFT><&|/l&>Subject</&></TH>
 <TH ALIGN=LEFT><&|/l&>State</&></TH>
-<TH ALIGN=LEFT><&|/l&>Priority</&></TH>
+<TH ALIGN=LEFT><&|/l&>Owner</&></TH>
 <TH ALIGN=LEFT><&|/l&>Due</&></TH>
 <TH ALIGN=LEFT>&nbsp;</TH>
 </TR>
@@ -62,20 +62,20 @@
 % }
 </TD>
 <TD>
-<%$Ticket->Priority%>
+<%$Ticket->Owner%>
 </TD>
 <TD>
-<%$Ticket->DueObj->AsString%>
+<& ShowDate, date => $Ticket->DueObj &>
 </TD>
 <TD ALIGN=RIGHT>
 % if ($Ticket->Owner == $session{CurrentUser}->id) {
 [<A HREF="<% $RT::WebPath %>/RTIR/Incident/LinkToIncident.html?id=<%$Ticket->Id%>"><&|/l&>Link</&></A>]
+[<A HREF="<% $RT::WebPath %>/RTIR/Report/Update.html?id=<%$Ticket->Id%>"><&|/l&>Update</&></A>]
 % } elsif ($Ticket->Owner == $RT::Nobody->Id) {
 [<A HREF="<% $RT::WebPath %>/RTIR/Report/Display.html?Action=Take&id=<%$Ticket->Id%>"><&|/l&>Take</&></A>]
 % } else {
 [<A HREF="<% $RT::WebPath %>/RTIR/Report/Display.html?Action=Steal&id=<%$Ticket->Id%>"><&|/l&>Steal</&></A>]
 % }
-[<A HREF="<% $RT::WebPath %>/RTIR/Report/Update.html?id=<%$Ticket->Id%>"><&|/l&>Update</&></A>]
 </TD>
 </TR>
 % }
@@ -86,10 +86,14 @@
 
 
 <%INIT>
+my $now = new RT::Date($RT::SystemUser);
+$now->SetToNow();
+
 my $rows = 10;
 my $MyTickets;
 $MyTickets = new RT::Tickets ($session{'CurrentUser'});
 $MyTickets->LimitQueue(VALUE => 'Incident Reports');
+$MyTickets->OrderBy(FIELD => 'Created', ORDER => 'ASC');
 
 my $fid;
 my $Queue = new RT::Queue($session{'CurrentUser'});

@@ -121,6 +121,6 @@ Abort(loc("No search to operate on.")) unless ($session{'tickets'});
 <%ARGS>
 $id => undef
 $SubmitCaption => loc("Link Tickets")
-$AssocPath => "LinkReports.html"
+$AssocPath => "/RTIR/Incident/LinkReports.html"
 $Type => undef
 </%ARGS>

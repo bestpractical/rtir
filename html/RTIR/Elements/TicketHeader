@@ -6,7 +6,7 @@
 <& TicketHeaderCell , Attribute => 'Subject', %ARGS &>
 <& TicketHeaderCell , Attribute => 'State', %ARGS &>
 <& TicketHeaderCell , Attribute => 'LastUpdated', Header => 'Last Updated', %ARGS &>
-<& TicketHeaderCell , Attribute => 'Owner', %ARGS &>
+<& TicketHeaderCell , Attribute => 'Created', %ARGS &>
 <& TicketHeaderCell , Attribute => 'Priority', %ARGS &>
 </TR>
 <TR>
@@ -15,7 +15,7 @@
 % }
 <TH class="ticketheader">&nbsp;</TH>
 <& TicketHeaderCell , Attribute => 'Requestor(s)', %ARGS &>
-<& TicketHeaderCell , Attribute => 'Created', %ARGS &>
+<& TicketHeaderCell , Attribute => 'Owner', %ARGS &>
 <& TicketHeaderCell , Attribute => 'Told', Header => 'Last Contact', %ARGS &>
 <& TicketHeaderCell , Attribute => 'Due', Header => 'Due', %ARGS &>
 <& TicketHeaderCell , Attribute => 'TimeLeft', Header => 'Left', %ARGS &>

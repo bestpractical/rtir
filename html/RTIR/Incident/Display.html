@@ -34,7 +34,6 @@
 <tr>
 <td valign=top width=50%>
 <& /Elements/TitleBoxStart, title => loc('Incident [_1]: [_2]', $Ticket->Id, $Ticket->Subject), 
-	title_href =>"$RT::WebPath/Ticket/Modify.html?id=".$Ticket->Id, 
 	title_class=> 'inverse' &>
 
 <& Elements/ShowBasics, Ticket => $Ticket &>
@@ -113,7 +112,6 @@
 <tr>
 <td colspan=2>
 	  <& /Elements/TitleBoxStart, title => loc("Dates"),
-		title_href =>"$RT::WebPath/Ticket/ModifyDates.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		 color => "#663366" &>
 	  <& /RTIR/Incident/Elements/ShowDates, Ticket => $Ticket &>

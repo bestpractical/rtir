@@ -17,7 +17,7 @@ CLASS="evenline"
   <& "/RTIR/Elements/ShowRTIRField", Ticket => $Ticket, Name => 'State' &>
 </TD>
 <TD><SMALL><%$Ticket->LastUpdatedObj->AgeAsString || '-'%></SMALL></TD>
-<TD><%$Ticket->Owner == $RT::Nobody->Id ? loc('Nobody') : $Ticket->OwnerObj->Name%></TD>
+<TD><SMALL><%$Ticket->CreatedObj->AgeAsString || '-'%></SMALL></TD>
 % if ($Type eq "Incident") {
 <TD><%$Ticket->Priority%></TD>
 % } else {
@@ -32,7 +32,7 @@ CLASS="evenline"
 % }
 >
 <TD><small><%$Ticket->Requestors->MemberEmailAddressesAsString%></small></TD>
-<TD><SMALL><%$Ticket->CreatedObj->AgeAsString || '-'%></SMALL></TD>
+<TD><%$Ticket->Owner == $RT::Nobody->Id ? loc('Nobody') : $Ticket->OwnerObj->Name%></TD>
 <TD><SMALL><%$Ticket->ToldObj->AgeAsString || '-'%></SMALL></TD>
 <TD><SMALL><%$Ticket->DueObj->AsString || '-'%></SMALL></TD>
 <TD><SMALL><%$Ticket->TimeLeft%></SMALL></TD>

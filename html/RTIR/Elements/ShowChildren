@@ -25,21 +25,26 @@
 % if ($Delete) {
 <i><%loc("Check box to unlink")%></i><br>
 % }
-% while (my $link = $members->Next) {
-% my $member= $link->BaseObj;
-% if ((!defined $QueueName) or $member->QueueObj->Name eq $QueueName) {
-%   $count++;
+<table width=100% cellspacing=0 cellpadding=0 border=0>
+% foreach my $link (sort { %{$due}->{$a} cmp %{$due}->{$b} or $a cmp $b } 
+%	keys %{$due}) {
+% my $t = $children->{$link}->BaseObj;
 % if (($LimitDepth le 0) or ($depth < $LimitDepth)) {
-  <li>
+<tr>
+  <td>
 % if ($Delete) {
-  <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
+  <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$children->{$link}->Base%>-<%$children->{$link}->Type%>-">
 % }
-% my $State = $m->scomp("/RTIR/Elements/ShowRTIRField", Ticket => $member, Name => 'State');
-  <a href="<%$RT::WebPath%>/RTIR/<%$Type%>/Display.html?id=<%$member->Id%>&Type=<%$Type%>"><%$member->Id%>: <%$member->Subject%></a> <i>(<%$State%>)</i><br>
-% $depth++
+% my $State = $m->scomp("/RTIR/Elements/ShowRTIRField", Ticket => $t, Name => 'State');
+  <a href="<%$RT::WebPath%>/RTIR/<%$Type%>/Display.html?id=<%$t->Id%>&Type=<%$Type%>"><%$t->Id%>: <%$t->Subject%></a> <i>(<%$State%>)</i>
+  </td>
+  <td align=right>
+    <font size="-1"><& ShowDate, date => $t->DueObj &></font>
+  </td>
+</tr>
 % }
 % }
-% }
+</table>
 % if ($depth eq 1 and $count eq 0) {
 % if (defined $QueueName) {
   <i>(<% loc("no [_1]", $QueueName) %>)</i>
@@ -47,7 +52,7 @@
   <i>loc("no children")</i>
 % }
 % } else {
-% if ($count ge $LimitDepth) {
+% if ($LimitDepth > 0 && $count ge $LimitDepth) {
 % if (defined $FullList) {
 <a href="<%$FullList%>"><i><%loc("More... ([_1] total)", $count)%></i></a><br>
 % }
@@ -59,6 +64,8 @@
 my $count = 0;
 my $members = $Ticket->Members;
 my $QueueName;
+my $now = new RT::Date($RT::SystemUser);
+$now->SetToNow();
 
 if ($Type eq "Investigation") {
   $QueueName = "Investigations";
@@ -66,6 +73,16 @@ if ($Type eq "Investigation") {
   $QueueName = "Blocks";
 } else {
   $QueueName = "Incident Reports";
+}
+
+my ($children, $due);
+while (my $link = $members->Next) {
+  my $member= $link->BaseObj;
+  if ((!defined $QueueName) or $member->QueueObj->Name eq $QueueName) {
+    $children->{$member->Id} = $link;
+    $due->{$member->Id} = $member->DueObj->ISO;
+    $count++;
+  }
 }
 
 </%INIT>

@@ -22,11 +22,12 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/TitleBoxStart, title => loc("[_1] highest priority incidents I own...", $rows), bodyclass=> '' &>
+<& /Elements/TitleBoxStart, title => $title, bodyclass=> '' &>
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
 <TR>
 <TH ALIGN=RIGHT><&|/l&>#</&></TH>
 <TH ALIGN=LEFT><&|/l&>Subject</&></TH>
+<TH ALIGN=LEFT><&|/l&>Owner</&></TH>
 <TH ALIGN=LEFT><&|/l&>State</&></TH>
 <TH ALIGN=LEFT><&|/l&>Priority</&></TH>
 <TH ALIGN=LEFT><&|/l&>Due</&></TH>
@@ -34,9 +35,11 @@
 </TR>
   <TR>    
 % my $i;
-% while (my $Ticket = $MyTickets->Next) {
-%     next if $Ticket->HasUnresolvedDependencies( Type => 'approval' );
-%     last if $i++ >= $rows;
+% foreach my $link (keys %{$due}) {
+%   next if (!$incidents->{$link});
+%   my $Ticket = $incidents->{$link}->TargetObj;
+%   next if $Ticket->HasUnresolvedDependencies( Type => 'approval' );
+%   last if $i++ >= $rows;
 <TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >                                
 <TD ALIGN=RIGHT>
 <A HREF="<% $RT::WebPath %>/RTIR/Incident/Display.html?id=<%$Ticket->Id%>">
@@ -47,6 +50,9 @@
 <A HREF="<% $RT::WebPath %>/RTIR/Incident/Display.html?id=<%$Ticket->Id%>">
 <%$Ticket->Subject || loc('(no subject)')%>
 </A>
+</TD>
+<TD>
+<%$Ticket->OwnerObj->Name%>
 </TD>
 <TD>
 % if ($Ticket->HasUnresolvedDependencies ) {
@@ -65,10 +71,16 @@
 <%$Ticket->Priority%>
 </TD>
 <TD>
-<%$Ticket->DueObj->AsString%>
+<& ShowDate, date => $due->{$link} &>
 </TD>
 <TD ALIGN=RIGHT>
+% if ($Ticket->Owner == $session{CurrentUser}->id) {
 [<A HREF="<% $RT::WebPath %>/RTIR/Incident/Update.html?id=<%$Ticket->Id%>"><&|/l&>Update</&></A>]
+% } elsif ($Ticket->Owner == $RT::Nobody->Id) {
+[<A HREF="<% $RT::WebPath %>/RTIR/Incident/Display.html?Action=Take&id=<%$Ticket->Id%>"><&|/l&>Take</&></A>]
+% } else {
+[<A HREF="<% $RT::WebPath %>/RTIR/Incident/Display.html?Action=Steal&id=<%$Ticket->Id%>"><&|/l&>Steal</&></A>]
+% }
 </TD>
 </TR>
 % }
@@ -77,14 +89,55 @@
 
 
 <%INIT>
-my $rows = 10;
 my $MyTickets;
 $MyTickets = new RT::Tickets ($session{'CurrentUser'});
-$MyTickets->LimitQueue(VALUE => 'Incidents');
-$MyTickets->LimitOwner(VALUE => $session{'CurrentUser'}->Id);
+$MyTickets->LimitQueue(VALUE => 'Incident Reports');
+$MyTickets->LimitQueue(VALUE => 'Investigations');
+$MyTickets->LimitQueue(VALUE => 'Blocks');
+if ($owner) {
+  $MyTickets->LimitOwner(VALUE => $owner->id);
+  $MyTickets->LimitOwner(VALUE => $RT::Nobody->id);
+}
+my $date = ParseDateToISO("0");
+$MyTickets->LimitDue(VALUE => $date, OPERATOR => ">");
 $MyTickets->LimitStatus(VALUE => "open");
 $MyTickets->LimitStatus(VALUE => "new");
 $MyTickets->RowsPerPage($rows);
-$MyTickets->OrderBy(FIELD => 'Priority', ORDER => 'DESC');
+$MyTickets->OrderBy(FIELD => 'Due', ORDER => 'ASC');
 
+my ($incidents, $due);
+while (my $Ticket = $MyTickets->Next) {
+  my $members = $Ticket->MemberOf;
+  while (my $link = $members->Next) {
+    my $member= $link->TargetObj;
+    next unless ($member->QueueObj->Name eq 'Incidents' );
+    if ( !exists $incidents->{$member->Id} ||
+         ( $Ticket->DueObj->Unix > 0 &&
+           $Ticket->DueObj->Unix < $due->{$member->Id}->Unix ||
+           $due->{$member->Id} == 0 )) {
+      $incidents->{$member->Id} = $link;
+      $due->{$member->Id} = $Ticket->DueObj;
+    }
+  }
+}
+
+my $num;
+if (scalar keys %{$incidents} < $rows) {
+  $num = scalar keys %{$incidents};
+} else {
+  $num = $rows;
+}
+
+my $title;
+if ($owner) {
+  $title = loc("[_1] of [_2] most due incidents owned by [_3] (and unowned)...", 
+               $num, scalar keys %{$incidents}, $owner->Name);
+} else {
+  $title = loc("[_1] of [_2] most due incidents...", $num, scalar keys %{$incidents});
+}
 </%INIT>
+
+<%ARGS>
+$rows => 10
+$owner => undef
+</%ARGS>

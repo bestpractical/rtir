@@ -22,7 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /RTIR/Elements/Header, Title => "RT for Incident Response" &>
+<& /RTIR/Elements/Header, Title => "RTIR at a glance" &>
 <& /RTIR/Elements/Tabs, 
     Title => "RT for Incident Response", 
     current_toptab => 'RTIR/index.html' &>
@@ -30,19 +30,22 @@
 <TR VALIGN=TOP>
 <TD WIDTH=70%>
 <& /RTIR/Elements/NewReports &>
-<BR>
-<& /RTIR/Elements/OverdueReports &>
-<BR>
-<& /RTIR/Elements/MyIncidents &>
 </TD>
-<TD>
+<TD VALIGN=TOP>
 <& /Elements/TitleBoxStart, title=>loc("Refresh") &>
 <form method=get action="index.html">
 <& /Elements/Refresh, Name => 'HomeRefreshInterval', Default => $session {'home_refresh_interval'} &>
 <div align=right><input type=submit value="<&|/l&>Go!</&>"></div>
 </form>
 <& /Elements/TitleBoxEnd &>
-
+</TD>
+</TR>
+</TR>
+<TR VALIGN=TOP>
+<TD colspan=2 WIDTH=100%>
+<& /RTIR/Elements/DueIncidents, owner => $session{'CurrentUser'} &>
+<BR>
+<& /RTIR/Elements/DueIncidents &>
 </TD>
 </TR>
 </TABLE>
