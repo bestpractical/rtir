@@ -33,7 +33,7 @@ REQUIRED PACKAGES:
 
 o   All packages required by core RT
 
-o   RT 3.2.1 or later
+o   RT 3.2.2 or later
 
 o   The Business::Hours module (version 0.05 or later)
 
