@@ -22,7 +22,10 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/TitleBoxStart, title => loc("[_1] of [_2] new unlinked Incident Reports...", $num, $MyTickets->Count), bodyclass=> '' &>
+<& /Elements/TitleBoxStart, 
+	title_href =>"$RT::WebPath/RTIR/Listing.html?NewSearch=1&Queue=".$QueueObj->Id."&CustomFieldOp$fid=LIKE&CustomField$fid=new&TicketsSortBy=Due&TicketSortOrder=ASC",
+	title_class=> 'inverse',  
+	title => loc("[_1] of [_2] new unlinked Incident Reports...", $num, $MyTickets->Count), bodyclass=> '' &>
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
 <TR>
 <TH ALIGN=RIGHT><&|/l&>#</&></TH>
@@ -79,11 +82,11 @@ $MyTickets->LimitQueue(VALUE => 'Incident Reports');
 $MyTickets->OrderBy(FIELD => 'Due', ORDER => 'ASC');
 
 my $fid;
-my $Queue = new RT::Queue($session{'CurrentUser'});
-if (!$Queue->Load("Incident Reports")) {
+my $QueueObj = new RT::Queue($session{'CurrentUser'});
+if (!$QueueObj->Load("Incident Reports")) {
    $m->print (loc("Error: Incident Reports Queue could not be loaded."));
 } else {
-  my $CustomFields = $Queue->CustomFields();
+  my $CustomFields = $QueueObj->CustomFields();
   $CustomFields->{'find_disabled_rows'} = 1;
   while (my $CustomField = $CustomFields->Next()) {
     if ($CustomField->Name eq '_RTIR_State') {

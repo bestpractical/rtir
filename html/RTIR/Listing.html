@@ -38,7 +38,7 @@
 
 <%INIT>
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
-$QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
+$QueueObj->Load($Queue) || Abort(loc("Queue $Queue could not be loaded."));
 
 my ($Type, @states);
 if ($Queue eq "Incidents") {
