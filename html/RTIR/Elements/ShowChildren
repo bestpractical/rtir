@@ -27,8 +27,9 @@
 % }
 <table width=100% cellspacing=0 cellpadding=0 border=0>
 % foreach my $link (keys %{$due}) {
+% last if ($LimitDepth > 0 && $depth > $LimitDepth);
+% $depth++;
 % my $t = $children->{$link}->BaseObj;
-% if (($LimitDepth le 0) or ($depth < $LimitDepth)) {
 <tr>
   <td>
 % if ($Delete) {
@@ -42,7 +43,6 @@
   </td>
 </tr>
 % }
-% }
 </table>
 % if ($depth eq 1 and $count eq 0) {
 % if (defined $QueueName) {
@@ -51,7 +51,7 @@
   <i>loc("no children")</i>
 % }
 % } else {
-% if ($LimitDepth > 0 && $count ge $LimitDepth) {
+% if (($LimitDepth > 0) && ($count >= $LimitDepth)) {
 % if (defined $FullList) {
 <a href="<%$FullList%>"><i><%loc("More... ([_1] total)", $count)%></i></a><br>
 % }
