@@ -101,11 +101,6 @@ if ($ARGS{'UpdateContent'} &&
             $do_comment_reply=1;
 }
 
-my $date = RT::Date->new($RT::SystemUser);
-$date->SetToNow;
-$date->AddDays($RT::overdueafter);
-$ARGS{'Due_Date'} = $date->ISO;
-
 #Iterate through each ticket we've been handed
 
 while (my $Ticket = $session{'tickets'}->Next) {
@@ -115,7 +110,7 @@ while (my $Ticket = $session{'tickets'}->Next) {
     #Update the basics.
 
     my @basicresults = ProcessTicketBasics(TicketObj => $Ticket, ARGSRef => \%ARGS);
-    my @dateresults = ProcessTicketDates(TicketObj => $Ticket, ARGSRef => \%ARGS);
+
     #Update the watchers
     my @watchresults = ProcessTicketWatchers(TicketObj => $Ticket, ARGSRef => \%ARGS);    
     
@@ -123,7 +118,17 @@ while (my $Ticket = $session{'tickets'}->Next) {
     if ($do_comment_reply) {
     ProcessUpdateMessage(TicketObj => $Ticket, ARGSRef => \%ARGS, Actions => \@updateresults); 
    } 
-   my @tempresults = (@watchresults, @basicresults, @dateresults, @updateresults);
+
+    my $date;
+    if (@updateresults) {
+      $date = RT::Date->new($RT::SystemUser);
+      $date->SetToNow;
+      $date->AddDays($RT::overdueafter);
+      $ARGS{'Due_Date'} = $date->ISO;
+    }
+    my @dateresults = ProcessTicketDates(TicketObj => $Ticket, ARGSRef => \%ARGS);
+
+    my @tempresults = (@basicresults, @watchresults, @updateresults, @dateresults);
     @tempresults = map { loc("Ticket [_1]: [_2]",$Ticket->Id,$_) } @tempresults;
 
     @results = (@results, @tempresults);

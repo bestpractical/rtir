@@ -29,6 +29,41 @@
 
 <& /RTIR/Elements/Listing, Type => 'Incident', %ARGS &>
 
-<%INIT>
+<%init>
 my $title = loc("Find Incidents");
-</%INIT>
+
+if ( $ARGS{'q'} ) {
+    my $query = $ARGS{'q'};
+
+    if ( $query =~ m/^\s*(\d+)\s*$/ ) {
+        $m->redirect("$RT::WebPath/RTIR/Incident/Display.html?id=$1");
+    }
+
+    $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
+
+    if ( $query =~ m/\@/ ) {
+        $session{'tickets'}->LimitRequestor( VALUE    => $query,
+                                             OPERATOR => '=', );
+        $m->redirect("$RT::WebPath/RTIR/Incident/Listing.html");
+    }
+
+    #
+    # Any search on queue name or subject will be for new/open tickets
+    # only.
+    #
+    $session{'tickets'}->LimitStatus( VALUE    => $_,
+                                      OPERATOR => '=', ) for qw(open new);
+
+    my $queue = RT::Queue->new( $session{'CurrentUser'} );
+    if ( $queue->Load($query) && $queue->Id ) {
+        $session{'tickets'}->LimitQueue( VALUE    => $queue->Id,
+                                         OPERATOR => '=', );
+        $m->redirect("$RT::WebPath/RTIR/Incident/Listing.html");
+    }
+    $session{'tickets'}->LimitSubject( VALUE    =>  $query,
+                                       OPERATOR => 'LIKE' );
+
+    $m->redirect("$RT::WebPath/RTIR/Incident/Listing.html");
+}
+
+</%init>

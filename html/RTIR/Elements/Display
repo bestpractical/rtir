@@ -118,22 +118,10 @@ else {
     }
 
 
-if (defined $ARGS{'Action'}) {
-  if ($ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
-    my $action = $1;
-    my ($res, $msg)=$Ticket->$action();
-    push(@Actions, $msg);
-  } elsif ($ARGS{'Action'} eq 'Respond') {
-    my $date = RT::Date->new($RT::SystemUser);
-    $date->SetToNow;
-    $date->AddDays($RT::overdueafter);
-    $ARGS{'Due_Date'} = $date->ISO;
-  }
-}
-
     $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
     chomp ($ARGS{'UpdateContent'}) ;
 
+    my @UpdateActions;
     if ($ARGS{'UpdateContent'} &&
         $ARGS{'UpdateContent'} ne '' &&
         $ARGS{'UpdateContent'} ne  "-- \n" .
@@ -141,17 +129,30 @@ if (defined $ARGS{'Action'}) {
        ) {
             $ARGS{UpdateAttachments} = $session{'Attachments'};
 	    ProcessUpdateMessage(ARGSRef=>\%ARGS, 
-				 Actions=>\@Actions, 
+				 Actions=>\@UpdateActions, 
 				 TicketObj=>$Ticket);
             delete $session{'Attachments'};
 	}
+
+if (defined $ARGS{'Action'}) {
+  if ($ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
+    my $action = $1;
+    my ($res, $msg)=$Ticket->$action();
+    push(@Actions, $msg);
+  } elsif ($ARGS{'Action'} eq 'Respond' && @UpdateActions) {
+    my $date = RT::Date->new($RT::SystemUser);
+    $date->SetToNow;
+    $date->AddDays($RT::overdueafter);
+    $ARGS{'Due_Date'} = $date->ISO;
+  }
+}
 
 #Process basics updates
 my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$Ticket);
 my @LinkActions = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
 my @DateActions = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
 
-push (@Actions, @BasicActions, @LinkActions);
+push (@Actions, @UpdateActions, @BasicActions, @LinkActions, @DateActions);
 }
 
 </%INIT>
