@@ -1,4 +1,5 @@
 <%INIT>
+return if ($ARGSRef{'NoRedirect'});
 my $Queue;
 if ($TicketObj) {
     $Queue = $TicketObj->QueueObj->Name;
