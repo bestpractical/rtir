@@ -30,8 +30,6 @@
 <input type=hidden name="id" value=<%$ARGS{'id'}%>>
 <INPUT TYPE=HIDDEN NAME="CompileRestriction" VALUE=1>
 
-ValueOfQueue: <%$ARGS{'ValueOfQueue'}%><br>
-
 <ul>
 <li><&|/l&>Owner is</&>  <& /Elements/SelectBoolean, Name => "OwnerOp", 
 					  TrueVal=> '=', 

@@ -13,7 +13,9 @@ CLASS="evenline"
 % }
 <TD ROWSPAN="2"><B><A HREF="<%$RT::WebPath%>/RTIR/<%$Type%>/Display.html?id=<%$Ticket->Id%>"><%$Ticket->id%></a></B></TD>
 <TD><B><A HREF="<%$RT::WebPath%>/RTIR/<%$Type%>/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Subject%></a></B></TD>
-<TD><%loc($State)%></TD>
+<TD>
+  <& "/RTIR/Elements/ShowRTIRField", Ticket => $Ticket, Name => 'State' &>
+</TD>
 <TD><SMALL><%$Ticket->LastUpdatedObj->AgeAsString || '-'%></SMALL></TD>
 <TD><%$Ticket->Owner == $RT::Nobody->Id ? loc('Nobody') : $Ticket->OwnerObj->Name%></TD>
 <TD><%$Ticket->Priority%></TD>
@@ -32,9 +34,7 @@ CLASS="evenline"
 <TD><SMALL><%$Ticket->TimeLeft%></SMALL></TD>
 </TR>
 </SPAN>
-<%INIT>
-my $State = $m->scomp("/RTIR/Elements/ShowRTIRField", Ticket => $Ticket, Name => 'State');
-</%INIT>
+
 <%ARGS>
 $Ticket => undef
 $i => undef

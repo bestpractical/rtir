@@ -38,12 +38,10 @@
 %}
 </TR>
 
+% my $i;
+
 <%PERL>
 
-my $i;
-
-
-      
 $session{'tickets'}->RedoSearch();
 while (my $Ticket = $session{'tickets'}->Next) {
  next unless ($ARGS{"UpdateTicket".$Ticket->Id});
@@ -55,6 +53,7 @@ while (my $Ticket = $session{'tickets'}->Next) {
      $bgcolor = "#ffffff";
  }
       </%PERL>
+
 <TR bgcolor="<%$bgcolor%>">
 %# The ticket view is controlled by config.pm, WebOptions
 %foreach my $col (@cols) {
@@ -72,6 +71,10 @@ while (my $Ticket = $session{'tickets'}->Next) {
 
 </TABLE>
 
+% if ($i == 0) {
+<i>(<&|/l&>No tickets selected</&>)</i>
+% } else {
+
 <HR>
 
 <input type=hidden name="UpdateType" value="response">
@@ -88,6 +91,7 @@ while (my $Ticket = $session{'tickets'}->Next) {
 
 <& /Elements/Submit &>
 
+% }
 
 </FORM>
 <%INIT>
