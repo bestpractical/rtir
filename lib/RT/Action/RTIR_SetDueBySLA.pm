@@ -81,7 +81,7 @@ sub Commit {
     if (! $self->TicketObj->FirstCustomFieldValue('_RTIR_SLA')) {
 	my $cf = RT::CustomField->new($self->CurrentUser);
 
-	$cf->LoadByNameAndQueue(Queue => $self->QueueObj->Id, Name => '_RTIR_SLA');
+	$cf->LoadByNameAndQueue(Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_SLA');
 	unless ($cf->Id) { 
 	    return(1);
 	}

@@ -79,8 +79,28 @@ Set the Due date to now.
 sub Commit {
     my $self = shift;
 
+    use RT::IR;
+
+    # create a new SLA object
+    my $SLAObj = RT::IR::SLAInit();
+
+    # set the Business::Hours
+    my $bh = RT::IR::BusinessHours();
+
+    # Set the defaults from the RTIR_Config.pm file
+    print STDERR "Setting in hours: " . $RT::SLA_Response_InHours . "\n";
+    print STDERR "Setting out of hours: " . $RT::SLA_Response_OutOfHours . "\n";
+
+    $SLAObj->SetInHoursDefault($RT::SLA_Response_InHours);
+    $SLAObj->SetOutOfHoursDefault($RT::SLA_Response_OutOfHours);
+
+    $SLAObj->SetBusinessHours($bh);
+
+    # get the due date
+    my $due = $SLAObj->Due(time(), $SLAObj->SLA(time()));
+
     my $date = RT::Date->new($RT::SystemUser);
-    $date->SetToNow;
+    $date->Set(Format => 'unix', Value => $due);
     $self->TicketObj->SetDue($date->ISO);
 
     return 1;

@@ -27,12 +27,18 @@ Set($SLA, {'Full service' => { BusinessMinutes => 60,
 	   'Reduced service' =>  { BusinessMinutes => 120, 
 				   RealMinutes => 0,
 			       },
+	   'Now (in business hours)' =>  { BusinessMinutes => 0, 
+					   RealMinutes => 0,
+			       },
 #	   '60 Real Minutes' =>  { BusinessMinutes => undef, 
 #				   RealMinutes => 60,
 #			       },
        }
     );
 
+# Set the SLA for responses
+Set ($SLA_Response_InHours, 'Now (in business hours)');
+Set ($SLA_Response_OutOfHours, 'Now (in business hours)');
 
 # Set the defaults for RTIR custom fields
 # default values are case-sensitive
