@@ -41,11 +41,6 @@
   <tr>
     <TD>
       <& /Elements/ShadedBox, 
-          title => loc('Status'),
-          content => $Incident->Status &>
-    </TD>
-    <TD>
-      <& /Elements/ShadedBox, 
           title => loc('Priority'),
           content => $Incident->Priority &>
     </TD>
@@ -220,9 +215,10 @@ if ($Incident->TimeLeft > 0 ) {
   $TimeWorked = $Incident->TimeWorked."/".$Incident->TimeLeft;
 }
 
-#Process status updates
+#Process basics updates
 my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$Incident);
 
 push (@Actions, @BasicActions);
 }
+
 </%INIT>

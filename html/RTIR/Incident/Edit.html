@@ -65,9 +65,8 @@
       </td>
     </tr>
   <& /Elements/ShadedRow, 
-        title => loc('Status'),
-	name => "Status",
-        content => $SelectStatus &>
+          title => loc('State'),
+          content => $State &>
   <& /Elements/ShadedInputRow,
 	title => loc('Priority'),
 	name => "Priority",
@@ -163,6 +162,16 @@ unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
 my $SelectStatus = $m->scomp("/Elements/SelectStatus", Name => 'Status', Default=> $Ticket->Status);
 my $SelectQueue = $m->scomp("/Elements/SelectQueue", Name => 'Queue', Default =>$Ticket->QueueObj->Id);
 
+my $State;
+my $CustomFields = $Ticket->QueueObj->CustomFields();
+while (my $CustomField = $CustomFields->Next()) {
+  if ($CustomField->Name eq '_RTIR_State') {
+    my $Values = $Ticket->CustomFieldValues($CustomField->Id);
+    while (my $Value = $Values->Next()) {
+      $State = $Value->Content;
+    }
+  }
+}
 </%INIT>
 
 

@@ -62,13 +62,15 @@
 
 <TABLE BORDER=0>
 
-<tr><td align=right><&|/l&>Status</&>:</td>
-<td>
-<& /Elements/SelectStatus, Name=>"Status", Default => ($ARGS{'Status'} || $ARGS{'DefaultStatus'} || $Ticket->Status) &>
+<tr><td align=right><&|/l&>State</&>:</td>
+<td><%$State%></td></tr>
+<tr><td class="label">
 <&|/l&>Owner</&>:  
+</td><td>
 <& /Elements/SelectOwner, Name=>"Owner", Default => ($ARGS{'Owner'} || $Ticket->OwnerObj->Id()), QueueObj => $Ticket->QueueObj, TicketObj => $Ticket &>
 <&|/l&>Worked</&>: <input size=4 name="UpdateTimeWorked" value="<%
-$ARGS{UpdateTimeWorked}%>"> <&|/l&>minutes</&></td></tr>
+$ARGS{UpdateTimeWorked}%>"> <&|/l&>minutes</&>
+</td></tr>
 <tr><td align=right><&|/l&>Update Type</&>:</td>
 <td><select name="UpdateType">
 % if ($CanComment) {
@@ -192,6 +194,16 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 if ( exists $ARGS{SubmitTicket} ) {
     $m->comp($PostTo, %ARGS);
     $m->abort();
+}
+my $State;
+my $CustomFields = $Ticket->QueueObj->CustomFields();
+while (my $CustomField = $CustomFields->Next()) {
+  if ($CustomField->Name eq '_RTIR_State') {
+    my $Values = $Ticket->CustomFieldValues($CustomField->Id);
+    while (my $Value = $Values->Next()) {
+      $State = $Value->Content;
+    }
+  }
 }
 </%INIT>
 

@@ -25,9 +25,104 @@
 
 @CustomFields = (
     {
+        Name        => '_RTIR_State',
+        Type        => 'SelectSingle',
+        Queue       => 'Incidents',
+        Values      => [
+            {
+                Name      => "open",
+                SortOrder => 1
+            },
+            {
+                Name      => "resolved",
+                SortOrder => 2
+            },
+            {
+                Name      => "abandoned",
+                SortOrder => 3
+            }
+        ],
+    },
+    {
+        Name        => '_RTIR_State',
+        Type        => 'SelectSingle',
+        Queue       => 'Incident Reports',
+        Values      => [
+            {
+                Name      => "new",
+                SortOrder => 1
+            },
+            {
+                Name      => "open",
+                SortOrder => 2
+            },
+            {
+                Name      => "resolved",
+                SortOrder => 3
+            },
+            {
+                Name      => "rejected",
+                SortOrder => 4
+            }
+        ],
+    },
+    {
+        Name        => '_RTIR_State',
+        Type        => 'SelectSingle',
+        Queue       => 'Investigations',
+        Values      => [
+            {
+                Name      => "open",
+                SortOrder => 1
+            },
+            {
+                Name      => "resolved",
+                SortOrder => 2
+            },
+        ],
+    },
+    {
+        Name        => '_RTIR_State',
+        Type        => 'SelectSingle',
+        Queue       => 'Blocks',
+        Values      => [
+            {
+                Name      => "pending",
+                SortOrder => 1
+            },
+            {
+                Name      => "active",
+                SortOrder => 2
+            },
+            {
+                Name      => "removed",
+                SortOrder => 3
+            }
+        ],
+    },
+    {
         Name        => '_RTIR_Description',
         Type        => 'FreeformMultiple',
         Queue       => '0',
+    },
+    {
+        Name        => '_RTIR_SLA',
+        Type        => 'SelectSingle',
+        Queue       => 'Incidents',
+        Values      => [
+            {   Name => 'full service serious (within 1 hour)',
+                SortOrder => 1,
+	    },
+            {   Name => 'full service minor (within 2 hours)',
+                SortOrder => 2,
+	    },
+            {   Name => 'reduced service emergency (call out n/a)',
+                SortOrder => 3,
+	    },
+            {   Name => 'requests for information (within 1 day)',
+                SortOrder => 4,
+	    },
+        ],
     },
     {
         Name        => '_RTIR_Type',
@@ -105,4 +200,166 @@
         Type        => 'FreeformSingle',
         Queue       => 'Blocks',
     },
+);
+
+@Scrips = (
+    {  Description => "SetRTIRState",
+       Queue            => 'Blocks',
+       ScripCondition   => 'User Defined',
+       CustomIsApplicableCode => q[
+# ------------------------------------------------------------------- #
+  if ($self->TransactionObj->Type eq "Status" or
+    $self->TransactionObj->Type eq "Create" or
+    $self->TransactionObj->Type eq "CustomField") {
+    return 1;
+  } else {
+    return 0;
+  }
+# ------------------------------------------------------------------- #
+	],
+
+       ScripAction      => 'User Defined',
+       CustomCommitCode => q[
+# ------------------------------------------------------------------- #
+my $CustomFields = $self->TicketObj->QueueObj->CustomFields();
+while (my $CustomField = $CustomFields->Next()) {
+  if ($CustomField->Name eq '_RTIR_State') {
+    my $State;
+    if ($self->TicketObj->Status eq 'new') {
+      $State = 'pending';
+    } elsif ($self->TicketObj->Status eq 'open') {
+      $State = 'active';
+    } elsif ($self->TicketObj->Status eq 'resolved') {
+      $State = 'removed';
+    } else {
+      return 0;
+    }
+    $self->TicketObj->AddCustomFieldValue(Field => $CustomField->id, Value => $State);
+  }
+}
+  return 1;
+# ------------------------------------------------------------------- #
+	],
+       CustomPrepareCode => '1',
+       Template          => 'Blank', },
+    {  Description => "SetRTIRState",
+       Queue            => 'Incident Reports',
+       ScripCondition   => 'User Defined',
+       CustomIsApplicableCode => q[
+# ------------------------------------------------------------------- #
+  if ($self->TransactionObj->Type eq "Status" or
+    $self->TransactionObj->Type eq "Create" or
+    $self->TransactionObj->Type eq "CustomField") {
+    return 1;
+  } else {
+    return 0;
+  }
+# ------------------------------------------------------------------- #
+	],
+
+       ScripAction      => 'User Defined',
+       CustomCommitCode => q[
+# ------------------------------------------------------------------- #
+my $CustomFields = $self->TicketObj->QueueObj->CustomFields();
+while (my $CustomField = $CustomFields->Next()) {
+  if ($CustomField->Name eq '_RTIR_State') {
+    my $State;
+    if ($self->TicketObj->Status eq 'new') {
+      $State = 'new';
+    } elsif ($self->TicketObj->Status eq 'open') {
+      $State = 'open';
+    } elsif ($self->TicketObj->Status eq 'resolved') {
+      $State = 'resolved';
+    } elsif ($self->TicketObj->Status eq 'rejected') {
+      $State = 'rejected';
+    } else {
+      return 0;
+    }
+    $self->TicketObj->AddCustomFieldValue(Field => $CustomField->id, Value => $State);
+  }
+}
+  return 1;
+# ------------------------------------------------------------------- #
+	],
+       CustomPrepareCode => '1',
+       Template          => 'Blank', },
+
+    {  Description => "SetRTIRState",
+       Queue            => 'Investigations',
+       ScripCondition   => 'User Defined',
+       CustomIsApplicableCode => q[
+# ------------------------------------------------------------------- #
+  if ($self->TransactionObj->Type eq "Status" or
+    $self->TransactionObj->Type eq "Create" or
+    $self->TransactionObj->Type eq "CustomField") {
+    return 1;
+  } else {
+    return 0;
+  }
+# ------------------------------------------------------------------- #
+	],
+
+       ScripAction      => 'User Defined',
+       CustomCommitCode => q[
+# ------------------------------------------------------------------- #
+my $CustomFields = $self->TicketObj->QueueObj->CustomFields();
+while (my $CustomField = $CustomFields->Next()) {
+  if ($CustomField->Name eq '_RTIR_State') {
+    my $State;
+    if ($self->TicketObj->Status eq 'open') {
+      $State = 'open';
+    } elsif ($self->TicketObj->Status eq 'resolved') {
+      $State = 'resolved';
+    } else {
+      return 0;
+    }
+    $self->TicketObj->AddCustomFieldValue(Field => $CustomField->id, Value => $State);
+  }
+}
+  return 1;
+# ------------------------------------------------------------------- #
+	],
+       CustomPrepareCode => '1',
+       Template          => 'Blank', },
+
+    {  Description => "SetRTIRState",
+       Queue            => 'Incidents',
+       ScripCondition   => 'User Defined',
+       CustomIsApplicableCode => q[
+# ------------------------------------------------------------------- #
+  if ($self->TransactionObj->Type eq "Status" or
+    $self->TransactionObj->Type eq "Create" or
+    $self->TransactionObj->Type eq "CustomField") {
+    return 1;
+  } else {
+    return 0;
+  }
+# ------------------------------------------------------------------- #
+	],
+
+       ScripAction      => 'User Defined',
+       CustomCommitCode => q[
+# ------------------------------------------------------------------- #
+my $CustomFields = $self->TicketObj->QueueObj->CustomFields();
+while (my $CustomField = $CustomFields->Next()) {
+  if ($CustomField->Name eq '_RTIR_State') {
+    my $State;
+    if ($self->TicketObj->Status eq 'open') {
+      $State = 'open';
+    } elsif ($self->TicketObj->Status eq 'resolved') {
+      $State = 'resolved';
+    } elsif ($self->TicketObj->Status eq 'rejected') {
+      $State = 'abandoned';
+    } else {
+      return 0;
+    }
+    $self->TicketObj->AddCustomFieldValue(Field => $CustomField->id, Value => $State);
+  }
+}
+  return 1;
+# ------------------------------------------------------------------- #
+	],
+       CustomPrepareCode => '1',
+       Template          => 'Blank', },
+
 );

@@ -25,6 +25,7 @@
 <FORM METHOD="GET">
 <INPUT TYPE=HIDDEN NAME="Bookmark" VALUE="<% $session{'tickets'}->FreezeLimits()|u %>">
 <& /Elements/TitleBoxStart, title => loc('Refine search')&>
+Queue: <%$Queue%><br>
 <input type=hidden name="Incident" value=<%$ARGS{'Incident'}%>>
 <INPUT TYPE=HIDDEN NAME="CompileRestriction" VALUE=1>
 
@@ -63,16 +64,6 @@
 			    FalseVal => 'NOT LIKE' 
 &> 
 <Input Name="ValueOfAttachmentField" Size=20>
-
-<li><&|/l&>Status</&> 
-<& /Elements/SelectBoolean, Name => "StatusOp", 
-			    True => loc("is"), 
-  			    False => loc("isn't"), 
-			    TrueVal=> '=', 
-			    FalseVal => '!=' 
-&>  
-<& /Elements/SelectStatus, Name => "ValueOfStatus" &>
-
 
 % while ( my $CustomField = $CustomFields->Next ) {
 
@@ -128,6 +119,7 @@ my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
  }
 
  $CustomFields->LimitToGlobal();
+ $CustomFields->LimitToQueue($ARGS{'ValueOfQueue'});
 
 </%INIT>
 

@@ -26,7 +26,7 @@
 % my $incident = $link->TargetObj;
 % if ($incident->QueueObj->Name eq 'Incidents') {
 %   $count++;
-<a href="<%$RT::WebPath%>/RTIR/Incident/Display.html?id=<%$incident->Id%>"><%$incident->Id%></a>: <%$incident->Subject%> [<%$incident->Status%>]<br>
+<a href="<%$RT::WebPath%>/RTIR/Incident/Display.html?id=<%$incident->Id%>"><%$incident->Id%></a>: <%$incident->Subject%> [<%$State%>]<br>
 % if ($depth < 8) {
 <& /RTIR/Elements/ShowIncidents, Ticket => $incident, depth => ($depth+1) &> 
 % }
@@ -41,6 +41,16 @@
 my $count = 0;
 my $incidents = $Ticket->MemberOf;
 
+my $State;
+my $CustomFields = $Ticket->QueueObj->CustomFields();
+while (my $CustomField = $CustomFields->Next()) {
+  if ($CustomField->Name eq '_RTIR_State') {
+    my $Values = $Ticket->CustomFieldValues($CustomField->Id);
+    while (my $Value = $Values->Next()) {
+      $State = $Value->Content;
+    }
+  }
+}
 </%INIT>
 
 <%ARGS>

@@ -4,7 +4,7 @@
 % }
 <& /Search/Elements/TicketHeaderCell , Attribute => 'id', Header => '#'&>
 <& /Search/Elements/TicketHeaderCell , Attribute => 'Subject'&>
-<& /Search/Elements/TicketHeaderCell , Attribute => 'Status'&>
+<& /Search/Elements/TicketHeaderCell , Attribute => 'State'&>
 <& /Search/Elements/TicketHeaderCell , Attribute => 'LastUpdated', Header => 'Last Updated'&>
 <& /Search/Elements/TicketHeaderCell , Attribute => 'Owner'&>
 <& /Search/Elements/TicketHeaderCell , Attribute => 'Priority'&>

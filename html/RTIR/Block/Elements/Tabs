@@ -124,13 +124,7 @@ if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
             path =>
               "RTIR/Update.html?Action=Comment&DefaultStatus=resolved&id="
               . $id. "&PostTo=/RTIR/Block/Display.html",
-            title => loc('Resolve') };
-        $actions->{'B'} = {
-
-            path =>
-              "RTIR/Update.html?Action=Comment&DefaultStatus=rejected&id="
-              . $id. "&PostTo=/RTIR/Block/Display.html",
-            title => loc('Reject') };
+            title => loc('Remove') };
     }
 }
 
