@@ -32,6 +32,7 @@
 	METHOD=POST enctype="multipart/form-data">
 <input type="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction} %>">
 <input type="hidden" name="DefaultStatus" value="<% $ARGS{DefaultStatus} %>">
+<input type="hidden" name="Status" value="<% $ARGS{DefaultStatus} %>">
 <input type="hidden" name="Action" value="<% $ARGS{Action} %>">
 <input type="hidden" name="Type" value="<% $ARGS{Type} %>">
 % if ($Type eq 'Report' and $ARGS{'DefaultStatus'} eq 'rejected') {

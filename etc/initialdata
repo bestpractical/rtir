@@ -833,6 +833,81 @@ if ($self->TicketObj->Status eq 'resolved' or
 	],
        CustomPrepareCode => '1',
        Template          => 'Blank', },
+    {  Description => "ReopenIncident",
+       Queue            => 'Incident Reports',
+       ScripCondition   => 'On Status Change',
+       ScripAction      => 'User Defined',
+       CustomCommitCode => q[
+# ------------------------------------------------------------------- #
+# If if the child becomes not-closed, make sure the Incident is re-opened
+if ($self->TransactionObj->NewValue ne 'rejected' &&
+    $self->TransactionObj->NewValue ne 'resolved') {
+  my $parents = $self->TicketObj->MemberOf;
+  while (my $link = $parents->Next) {
+    my $member = $link->TargetObj;
+    if ($member->QueueObj->Name eq 'Incidents') {
+      if ($member->Status eq 'rejected' ||
+          $member->Status eq 'resolved') {
+        $member->Open();
+      }
+    }
+  }
+}
+return 1;
+# ------------------------------------------------------------------- #
+	],
+       CustomPrepareCode => '1',
+       Template          => 'Blank', },
+    {  Description => "ReopenIncident",
+       Queue            => 'Investigations',
+       ScripCondition   => 'On Status Change',
+       ScripAction      => 'User Defined',
+       CustomCommitCode => q[
+# ------------------------------------------------------------------- #
+# If if the child becomes not-closed, make sure the Incident is re-opened
+if ($self->TransactionObj->NewValue ne 'rejected' &&
+    $self->TransactionObj->NewValue ne 'resolved') {
+  my $parents = $self->TicketObj->MemberOf;
+  while (my $link = $parents->Next) {
+    my $member = $link->TargetObj;
+    if ($member->QueueObj->Name eq 'Incidents') {
+      if ($member->Status eq 'rejected' ||
+          $member->Status eq 'resolved') {
+        $member->Open();
+      }
+    }
+  }
+}
+return 1;
+# ------------------------------------------------------------------- #
+	],
+       CustomPrepareCode => '1',
+       Template          => 'Blank', },
+    {  Description => "ReopenIncident",
+       Queue            => 'Blocks',
+       ScripCondition   => 'On Status Change',
+       ScripAction      => 'User Defined',
+       CustomCommitCode => q[
+# ------------------------------------------------------------------- #
+# If if the child becomes not-closed, make sure the Incident is re-opened
+if ($self->TransactionObj->NewValue ne 'rejected' &&
+    $self->TransactionObj->NewValue ne 'resolved') {
+  my $parents = $self->TicketObj->MemberOf;
+  while (my $link = $parents->Next) {
+    my $member = $link->TargetObj;
+    if ($member->QueueObj->Name eq 'Incidents') {
+      if ($member->Status eq 'rejected' ||
+          $member->Status eq 'resolved') {
+        $member->Open();
+      }
+    }
+  }
+}
+return 1;
+# ------------------------------------------------------------------- #
+	],
+       CustomPrepareCode => '1',
+       Template          => 'Blank', },
 );
 
 @Templates = (
