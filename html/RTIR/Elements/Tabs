@@ -73,9 +73,9 @@ my $topactions = {
                     
 </%INIT>
 <%ARGS>
-$current_toptab =>  "/RTIR/index.html"
-$current_tab => "none"
-$current_subtab => "none"
+$current_toptab => undef
+$current_tab => undef
+$current_subtab => undef
 $tabs => undef
 $actions => undef
 $Title => undef

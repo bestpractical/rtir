@@ -34,7 +34,7 @@
 my $q = RT::Queue->new($session{'CurrentUser'});
 $q->Load('Investigations');
 my $tabs = {};
-my $current_toptab = "RTIR/Investigation/Listing.html?QueueOp==&ValueOfQueue=".$q->Id,
+my $current_toptab = "RTIR/Investigation/Listing.html?NewSearch=1&QueueOp==&ValueOfQueue=".$q->Id,
     my $searchtabs = { new => { title => loc('New Search'),
                                 path => 'RTIR/Investigation/Listing.html?QueueOp==&ValueOfQueue='.$q->Id.'&ClearRestrictions=1'}
                         
