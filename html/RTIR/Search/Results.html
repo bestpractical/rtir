@@ -91,7 +91,7 @@ $ARGS{'Query'} = $Query;
 
 my $QueryString = "&".$m->comp('/Elements/QueryString',
                                Query => $Query,
-                               Format => $Format,
+                               Format => $Format . ',__Check__',
                                Rows => $Rows,
                                OrderBy => $OrderBy,
                                Order => $Order,

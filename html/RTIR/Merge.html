@@ -47,6 +47,7 @@
     Queue => $Queue,
     QueryString => $QueryString, 
     BaseURL => $RT::WebPath."/RTIR/Merge.html?id=$id&",
+    Format => $Format,
     %ARGS &>
 
 <HR>
@@ -55,6 +56,8 @@
 </form>
 
 <%INIT>
+$Format = $RT::RTIRMergeSearchResultFormat;
+
 my $Ticket = LoadTicket($id);
 my $Queue = $Ticket->QueueObj->Name;
 

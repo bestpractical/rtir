@@ -1,4 +1,4 @@
-<& /RTIR/Elements/TicketList, 
+<& /Elements/TicketList, 
     Query => $Query,
     AllowSorting => 1,
     OrderBy => $OrderBy,
