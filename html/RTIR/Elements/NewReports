@@ -23,7 +23,7 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/TitleBoxStart, 
-	title_href =>"$RT::WebPath/RTIR/Listing.html?NewSearch=1&Queue=".$QueueObj->Id."&CustomFieldOp$fid=LIKE&CustomField$fid=new&TicketsSortBy=Due&TicketSortOrder=ASC",
+	title_href =>"$RT::WebPath/RTIR/Listing.html?NewSearch=1&Queue=".$QueueObj->Name."&CustomFieldOp$fid=LIKE&CustomField$fid=new&TicketsSortBy=Due&TicketSortOrder=ASC",
 	title_class=> 'inverse',  
 	title => loc("[_1] of [_2] new unlinked Incident Reports...", $num, $MyTickets->Count), bodyclass=> '' &>
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
