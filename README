@@ -7,15 +7,15 @@ before proceeding.
 2) Install RT 3.0.x
 
 3) Once RT 3.0 appears to be happily installed, cd into the directory you
-   unpacked RTFM into.
+   unpacked RTIR into.
 
-4) Edit RTFM's Makefile to point to your RT 3 instance.
+4) Edit RTIR's Makefile to point to your RT 3 instance.
 
 5) make sure that mysql or pgsql's commandline tool is in your path.
 
 6) Type "make install".
 
-7) Modify the /opt/rt3/RT.pm file.
+7) Modify the /opt/rt3/lib/RT.pm file.
 
    Add the variable "$SITE_CONFIG_RTIR_FILE" to the following list:
 
