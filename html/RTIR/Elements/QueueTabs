@@ -33,6 +33,10 @@
     QueryString => $QueryString,
 &> 
 
+current_toptab: <% $current_toptab %><br>
+current_tab: <% $current_tab %><br>
+current_subtab: <% $current_subtab %><br>
+
 <%INIT>
 
 my ($Type, undef) = $m->comp('/RTIR/Elements/Type', Queue => $QueueName);
@@ -217,12 +221,15 @@ $tabs->{"g"} = { path      => 'RTIR/Search/Results.html?Queue=' . $QueueName . $
                  subtabs   => $searchtabs };
 
 if ($Type eq 'Report') {
-$tabs->{"h"} = { path      => 'RTIR/Report/BulkReject.html',
-                 title     => loc('Bulk Reject'),
-                 separator => 1 };
-}
+    $tabs->{"h"} = { path      => 'RTIR/Report/BulkReject.html',
+		     title     => loc('Bulk Reject'),
+		     separator => 1 };
 
-if ($Type eq 'Incident' && $ChildObj) {
+    if ( $tabs->{'h'}->{'path'} eq $current_tab ) {
+	$tabs->{'h'}->{"subtabs"}        = $subtabs;
+    }
+
+} elsif ($Type eq 'Incident' && $ChildObj) {
     my $childq = $ChildObj->QueueObj->Name;
     next if $childq eq 'Incidents';
     my ($childtype, undef) = $m->comp('/RTIR/Elements/Type', Queue => $childq);
