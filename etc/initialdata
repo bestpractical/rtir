@@ -222,7 +222,7 @@
         Queue       => 'Incident Reports',
 	Disabled    => 2,
         Values      => [
-            { Name => "JANET customer",      SortOrder => 1 },
+            { Name => "customer",      SortOrder => 1 },
             { Name => "external individual", SortOrder => 2 },
             {
                 Name      => "other ISP",
