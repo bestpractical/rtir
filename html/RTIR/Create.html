@@ -156,7 +156,7 @@
       <& /RTIR/Elements/EditRTIRField, 
          QueueObj => $QueueObj, 
 	 Name => 'SLA',
-	 Default => 'Full service' &>
+	 Default => $RT::_RTIR_SLA_default &>
     </td>
   </tr>
   <tr>
@@ -169,8 +169,9 @@
           <td>
             <& /RTIR/Elements/EditRTIRField, 
 	      TicketObj => $TicketObj,
-              QueueObj => $QueueObj, Name => 'HowReported',
-	      Default => "Email" &>
+              QueueObj => $QueueObj, 
+	      Name => 'HowReported',
+	      Default => $RT::_RTIR_HowReported_default &>
           </td>
     <td class=labeltop>
       <%loc("Reporter Type")%>:
@@ -178,7 +179,9 @@
     <td class=value colspan=2>
       <& /RTIR/Elements/EditRTIRField, 
 	TicketObj => $TicketObj,
-        QueueObj => $QueueObj, Name => 'ReporterType' &>
+        QueueObj => $QueueObj, 
+	Name => 'ReporterType',
+	Default => $RT::_RTIR_ReporterType_default, &>
     </td>
         </tr>
       </table>
@@ -192,7 +195,9 @@
     <td class=value>
       <& /RTIR/Elements/EditRTIRField, 
 	TicketObj => $TicketObj,
-        QueueObj => $QueueObj, Name => 'IP' &>
+        QueueObj => $QueueObj, 
+	Name => 'IP',
+	Default => $RT::_RTIR_IP_default, &>
     </td>
   </tr>
   <tr>
@@ -202,7 +207,8 @@
     <td class=value colspan=2>
       <& /RTIR/Elements/EditRTIRField, 
 	TicketObj => $TicketObj,
-        QueueObj => $QueueObj, Name => 'Netmask' &>
+        QueueObj => $QueueObj, Name => 'Netmask',
+	Default => $RT::_RTIR_Netmask_default, &>
     </td>
   </tr>
   <tr>
@@ -212,7 +218,8 @@
     <td class=value colspan=2>
       <& /RTIR/Elements/EditRTIRField, 
 	TicketObj => $TicketObj,
-        QueueObj => $QueueObj, Name => 'Port' &>
+        QueueObj => $QueueObj, Name => 'Port',
+	Default => $RT::_RTIR_Port_default, &>
     </td>
   </tr>
   <tr>
@@ -222,7 +229,8 @@
     <td class=value colspan=2>
       <& /RTIR/Elements/EditRTIRField, 
 	TicketObj => $TicketObj,
-        QueueObj => $QueueObj, Name => 'WhereBlocked' &>
+        QueueObj => $QueueObj, Name => 'WhereBlocked',
+	Default => $RT::_RTIR_WhereBlocked_default, &>
     </td>
   </tr>
 % }

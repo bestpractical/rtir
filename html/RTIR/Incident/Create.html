@@ -89,6 +89,7 @@
       <& /RTIR/Elements/EditRTIRField, 
          QueueObj => $QueueObj, 
 	 Name => 'Description',
+	 Default => $RT::_RTIR_Description_default,
 	 Cols => 40 &>
     </td>
   </tr>
@@ -98,7 +99,7 @@
       <& /RTIR/Elements/EditRTIRField, 
          QueueObj => $QueueObj, 
 	 Name => 'Constituency',
-	 Default => 'EDUNET',
+	 Default => $RT::_RTIR_Constituency_default,
 	 Rows => 1 &>
     </td>
   </tr>
@@ -108,6 +109,7 @@
       <& /RTIR/Elements/EditRTIRField, 
          QueueObj => $QueueObj, 
 	 Name => 'Function',
+	 Default => $RT::_RTIR_Function_default,
 	 Rows => 1 &>
     </td>
   </tr>
@@ -117,6 +119,7 @@
       <& /RTIR/Elements/EditRTIRField, 
          QueueObj => $QueueObj, 
 	 Name => 'Classification',
+	 Default => $RT::_RTIR_Classification_default,
 	 Rows => 1 &>
     </td>
   </tr>
