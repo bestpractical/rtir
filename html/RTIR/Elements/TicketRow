@@ -7,7 +7,7 @@ CLASS="evenline"
 % }
 >
 % my $checkval;
-% if (defined $check) {
+% if (defined $check and ($check eq 'check' or $check eq 'uncheck')) {
 %   if ($check eq "check") {
 %     $checkval = "CHECKED";
 %   }
