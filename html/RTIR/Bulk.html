@@ -61,6 +61,8 @@ while (my $Ticket = $session{'tickets'}->Next) {
 <TD>
 % if ($col eq 'id') {
 <A HREF="<% $RT::WebPath%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id()%></A>
+% } elsif ($col eq 'State') {
+<& "/RTIR/Elements/ShowRTIRField", Ticket => $Ticket, Name => 'State' &>
 % }
 %else {
 <% eval "\$Ticket->$col()" %>&nbsp;
@@ -102,6 +104,70 @@ while (my $Ticket = $session{'tickets'}->Next) {
 <table>
 <tr><td class=label> <&|/l&>Make subject</&>: </td>
 <td class=value> <INPUT Name="Subject" SIZE=20> </td></tr>
+% if ($Type eq 'Report') {
+  <tr>
+    <td class="labeltop"><&|/l&>Make SLA</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/EditRTIRField, 
+         QueueObj => $q, 
+	 Name => 'SLA' &>
+    </td>
+  </tr>
+  <tr>
+    <td class=labeltop>
+      <%loc("Make How Reported")%>:
+    </td>
+    <td class=value colspan=2>
+      <& /RTIR/Elements/EditRTIRField, 
+	      QueueObj => $q,
+              Name => 'HowReported' &>
+    </td>
+  </tr>
+  <tr>
+    <td class=labeltop>
+      <%loc("Make Reporter Type")%>:
+    </td>
+    <td class=value colspan=2>
+      <& /RTIR/Elements/EditRTIRField, 
+	QueueObj => $q,
+        Name => 'ReporterType' &>
+    </td>
+  </tr>
+% } elsif ($Type eq 'Block') {
+  <tr>
+    <td class="label"><&|/l&>Make IP Address</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/EditRTIRField, 
+         QueueObj => $q,
+	 Name => 'IP' &>
+    </td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Make Netmask</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/EditRTIRField, 
+         QueueObj => $q, 
+	 Name => 'Netmask' &>
+    </td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Make Port</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/EditRTIRField, 
+         QueueObj => $q, 
+	 Name => 'Port' &>
+    </td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Make Where Blocked</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/EditRTIRField, 
+         QueueObj => $q, 
+	 Name => 'WhereBlocked' &>
+    </td>
+  </tr>
+% }
+
 <tr><td class=label> <&|/l&>Make priority</&>: </td>
 <td class=value> <INPUT Name="Priority" SIZE=4> </td></tr>
 <tr><td class=label> <&|/l&>Make date Starts</&>: </td>
@@ -154,12 +220,14 @@ if ($Type eq "Incident") {
   $TypeString = "Blocks";
   $Title = "Bulk Block Update";
 }
+my $q = new RT::Queue($session{'CurrentUser'});
+$q->Load($TypeString);
 
 # Iterate through the ARGS hash and remove anything with a null value.
 map ($ARGS{$_} =~ /^$/ && (delete $ARGS{$_}), keys %ARGS);
 
 my ($bgcolor, @results);
-my @cols = qw(id Status Priority Subject QueueObj->Name OwnerObj->Name RequestorAddresses DueAsString );
+my @cols = qw(id State Subject OwnerObj->Name DueAsString );
 
 Abort(loc("No search to operate on.")) unless ($session{'tickets'});
 
@@ -183,10 +251,18 @@ while (my $Ticket = $session{'tickets'}->Next) {
     $RT::Logger->debug( "Checking Ticket ".$Ticket->Id ."\n");
     next unless ($ARGS{"UpdateTicket".$Ticket->Id});
     $RT::Logger->debug ("Matched\n");
+    $ARGS{'id'} = $Ticket->Id;
     #Update the basics.
     my ($oldstate, $newstate);
+    foreach my $arg (keys %ARGS) {
+      if ( $arg =~ /^CustomField-(\d+)-Values$/ && defined $ARGS{$arg} ) {
+        $ARGS{'Ticket-'.$Ticket->Id.'-'.$arg} = $ARGS{$arg};
+        $ARGS{'Ticket-'.$Ticket->Id.'-'.$arg.'-Magic'} = $ARGS{$arg.'-Magic'};
+      }
+    }
     $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
     my @basicresults = ProcessTicketBasics(TicketObj => $Ticket, ARGSRef => \%ARGS);
+    my @cfresults = ProcessTicketCustomFieldUpdates(ARGSRef => \%ARGS);
     my @dateresults = ProcessTicketDates(TicketObj => $Ticket, ARGSRef => \%ARGS);
     #Update the watchers
     my @watchresults = ProcessTicketWatchers(TicketObj => $Ticket, ARGSRef => \%ARGS);    
@@ -195,7 +271,7 @@ while (my $Ticket = $session{'tickets'}->Next) {
     if ($do_comment_reply) {
       ProcessUpdateMessage(TicketObj => $Ticket, ARGSRef => \%ARGS, Actions => \@updateresults); 
     } 
-    my @tempresults = (@watchresults, @basicresults, @dateresults, @updateresults, @linkresults);
+    my @tempresults = (@watchresults, @basicresults, @cfresults, @dateresults, @updateresults, @linkresults);
     $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
     if ($newstate ne $oldstate) {
       push (@tempresults, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
@@ -203,6 +279,13 @@ while (my $Ticket = $session{'tickets'}->Next) {
     @tempresults = map { loc("Ticket [_1]: [_2]",$Ticket->Id,$_) } @tempresults;
 
     @results = (@results, @tempresults);
+
+    foreach my $arg (keys %ARGS) {
+	if ( $arg =~ /^Ticket-(\d+)-CustomField-(\d+)-/ ) {
+	    delete $ARGS{$arg};
+	}
+    }
+
 }
 
 </%INIT>
