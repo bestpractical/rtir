@@ -34,14 +34,11 @@
 <TH ALIGN=LEFT>&nbsp;</TH>
 </TR>
   <TR>    
-% my $i = 0;
-% while ($i < (scalar keys %{$incidents})) {
-%   my $id = $incidents->{$i}->{'id'};
-%   next if (!$id);
-%   my $Ticket = $incidents->{$i}->{'Ticket'};
-%   next if $Ticket->HasUnresolvedDependencies( Type => 'approval' );
-%   last if $i >= $rows;
-<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >                                
+% my $i;
+% foreach my $entry (reverse(sort(keys(%most_due)))) {
+% my $Ticket = $most_due{$entry}->{ticket};
+% my $due = $most_due{$entry}->{due};
+<TR class="<% $i++%2 ? 'oddline' : 'evenline'%>" >                                
 <TD ALIGN=RIGHT>
 <A HREF="<% $RT::WebPath %>/RTIR/Display.html?id=<%$Ticket->Id%>">
 <%$Ticket->Id%>
@@ -56,23 +53,13 @@
 <%$Ticket->OwnerObj->Name%>
 </TD>
 <TD>
-% if ( $Ticket->HasUnresolvedDependencies ) {
-%     if ($Ticket->HasUnresolvedDependencies( Type => 'approval' ) or
-%         $Ticket->HasUnresolvedDependencies( Type => 'code' )) {
-<em><&|/l&>(pending approval)</&></em>
-%     } else {
-<em><&|/l&>(pending other tickets)</&></em>
-%     }
-% } else {
-% my $State = $m->scomp("/RTIR/Elements/ShowRTIRField", Ticket => $Ticket, Name => 'State');
-<%$State%>
-% }
+<& /RTIR/Elements/ShowRTIRField, Ticket => $Ticket, Name => 'State'&>
 </TD>
 <TD>
 <%$Ticket->Priority%>
 </TD>
 <TD>
-<& ShowDate, date => $incidents->{$i}->{'Due'} &>
+<& ShowDate, date => $due &>
 </TD>
 <TD ALIGN=RIGHT>
 % if ($Ticket->Owner != $session{CurrentUser}->id) {
@@ -86,7 +73,6 @@
 % }
 </TD>
 </TR>
-%   $i++;
 % }
 </TABLE>
 <& /Elements/TitleBoxEnd &>
@@ -95,52 +81,52 @@
 <%INIT>
 my $MyTickets;
 $MyTickets = new RT::Tickets ($session{'CurrentUser'});
-$MyTickets->LimitQueue(VALUE => 'Incident Reports');
-$MyTickets->LimitQueue(VALUE => 'Investigations');
-$MyTickets->LimitQueue(VALUE => 'Blocks');
+$MyTickets->LimitQueue(VALUE => 'Incidents');
 if ($owner) {
   $MyTickets->LimitOwner(VALUE => $owner->id);
   $MyTickets->LimitOwner(VALUE => $RT::Nobody->id);
 }
-my $date = ParseDateToISO("0");
-$MyTickets->LimitDue(VALUE => $date, OPERATOR => ">");
+#my $date = ParseDateToISO("0");
+#$MyTickets->LimitDue(VALUE => $date, OPERATOR => ">");
 $MyTickets->LimitStatus(VALUE => "new");
 $MyTickets->LimitStatus(VALUE => "open");
 $MyTickets->LimitStatus(VALUE => "stalled");
 $MyTickets->OrderBy(FIELD => 'Due', ORDER => 'ASC');
 
+my %most_due;
 
 my ($incidents, $seen);
 my $c = 0;
 while (my $Ticket = $MyTickets->Next) {
-        my $incident_parents = RT::Tickets->new($session{'CurrentUser'});
-        $incident_parents->LimitHasMember($Ticket->Id);
-        $incident_parents->LimitQueue(VALUE =>'Incidents');
+        my $kids = RT::Tickets->new($session{'CurrentUser'});
+        $kids->LimitMemberOf($Ticket->Id);
+        $kids->LimitQueue(VALUE =>'Incident Reports');
+        $kids->LimitQueue(VALUE =>'Investigations');
+        $kids->LimitQueue(VALUE =>'Blocks');
+        $kids->RowsPerPage(1);   
+        $kids->OrderBy( FIELD => 'Due', ORDER => 'DESC');
+        my $due = $Ticket->DueObj;
 
-  while (my $parent = $incident_parents->Next) {
-    if ( !exists $seen->{$parent->Id}) {
-      $seen->{$parent->Id} = $parent->Id;
-      $incidents->{$c} = { id => $parent->Id, 
-		       Ticket => $parent, 
-		       Due => $Ticket->DueObj };
-      $c++;
-    }
-  }
+
+        while (my $kid = $kids->Next) {
+                if ($kid->DueObj->Unix > $Ticket->DueObj->Unix) {
+                        $due = $kid->DueObj;
+                }
+
+
+        }
+        $most_due{$due->Unix} = { due => $due, ticket => $Ticket };
+
+
 }
 
-my $num;
-if (scalar keys %$seen < $rows) {
-  $num = scalar keys %$seen;
-} else {
-  $num = $rows;
-}
 
 my $title;
 if ($owner) {
-  $title = loc("[_1] of [_2] most due incidents owned by [_3] (and unowned)...", 
-               $num, scalar keys %{$seen}, $owner->Name);
+  $title = loc("Most due incidents owned by [_2] (and unowned)...", 
+              $MyTickets->Count, $owner->Name);
 } else {
-  $title = loc("[_1] of [_2] most due incidents...", $num, scalar keys %{$seen});
+  $title = loc("Most due incidents...", $MyTickets->Count);
 }
 </%INIT>
 
