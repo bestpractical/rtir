@@ -44,9 +44,79 @@
 <tr>
 <td valign=top width=50%>
 <& /Elements/TitleBoxStart, title => loc('Modify incident # [_1]', $Ticket->Id),   color=> "#993333", width => "100%" &>
-   <& /RTIR/Incident/Elements/EditBasics, 
-      Ticket => $Ticket, 
-      Name => 'test' &>
+
+<table>
+  <tr>
+    <td class="label">
+      <&|/l&>State</&>:
+    </td>
+    <td class="value">
+      <& /RTIR/Elements/ShowRTIRField, 
+	Name => 'State', 
+	Ticket => $Ticket &>
+    </td>
+  </tr>
+  <tr>
+    <td class="label">
+      <&|/l&>Owner</&>:
+    </td>
+    <td class="value">
+      <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id &>
+    </td>
+  </tr>
+  <& /Elements/ShadedInputRow, 
+      title => loc('Subject'),
+      name => "Subject",
+      content => $Ticket->Subject,
+      size => 60 &>
+  <tr>
+    <td class="label"><&|/l&>Description</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/EditRTIRField, 
+         TicketObj => $Ticket, 
+	 Name => 'Description',
+	 Cols => 60 &>
+    </td>
+  </tr>
+  <& /Elements/ShadedInputRow,
+	title => loc('Priority'),
+	name => "Priority",
+	content => $Ticket->Priority,
+	size => 5 &>
+  <& /Elements/ShadedInputRow,
+	title => loc('Time Worked'),
+	name => "TimeWorked",
+	content => $Ticket->TimeWorked,
+	size => 5 &>
+  <tr>
+    <td class="label"><&|/l&>Constituency</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/EditRTIRField, 
+         TicketObj => $Ticket, 
+	 Name => 'Constituency',
+	 Rows => 1 &>
+    </td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Function</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/EditRTIRField, 
+         TicketObj => $Ticket, 
+	 Name => 'Function',
+	 Rows => 1 &>
+    </td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Classification</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/EditRTIRField, 
+         TicketObj => $Ticket, 
+	 Name => 'Classification',
+	 Rows => 1 &>
+    </td>
+  </tr>
+</table>
+
 <& /Elements/TitleBoxEnd &>
 
 </td>

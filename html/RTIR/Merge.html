@@ -29,10 +29,76 @@
     current_subtab => "RTIR/Merge.html?id=".$Ticket->Id, 
     Title => $Title &>
 
-<& /RTIR/Elements/Merge, 
-    Type => $Type, 
-    Path => '/RTIR/'.$Type.'/Merge.html',
-    %ARGS &>
+<& /RTIR/Elements/ListActions, actions => \@results &>
+
+% if (!$Ticket->CurrentUserHasRight('ModifyTicket')) {
+<%loc("You are not allowed to merge this [_1].", $Type)%>
+%    $m->abort();
+% }
+
+<form action="Merge.html" method="post">
+<input type="hidden" name="id" value="<%$Ticket->id%>">
+<input type="hidden" name="<%$Ticket->Id%>-MergeInto">
+%if ($ticketcount && !  $ARGS{'HideResults'}) {
+<TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
+<& /RTIR/Elements/TicketHeader, check => "check", %ARGS &>
+% my $i;
+%while (my $Ticket = $session{'tickets'}->Next) {
+% next unless ($Ticket->Id ne $id);
+% $i++;
+<& /RTIR/Elements/TicketRow, Type => $Type, Ticket => $Ticket, i=> $i, check => "radio", %ARGS &>
+% }
+</TABLE>
+<div align=center>
+<font size=2>
+<a href="<%$RT::WebPath%>/RTIR/Merge.html?id=<%$id%>&GotoPage=1"><&|/l&>First page</&></a>
+&nbsp;&nbsp;
+%  if ( $session{'tickets'}->FirstRow >= $session{'tickets_rows_per_page'}-1 ) {
+<a href="<%$RT::WebPath%>/RTIR/Merge.html?id=<%$id%>&GotoPage=Prev">&lt;<&|/l&>Previous page</&></a>
+&nbsp;&nbsp;
+%  }                                                                           
+%  if ( $session{'tickets'}->FirstRow + $session{'tickets_rows_per_page'} < $ticketcount ) {                                                               
+<a href="<%$RT::WebPath%>/RTIR/Merge.html?id=<%$id%>&GotoPage=Next"><&|/l&>Next page</&>&gt;</a>
+%  }
+
+%#&nbsp;&nbsp;<form method=get action="<%$RT::WebPath%>/RTIR/Merge.html"><&|/l&>Goto page</&> <input name=GotoPage size=2></form>
+</font>
+</div>
+<!--<div align=right>-->
+<table width="100%" border=0 cellpadding=3 CELLSPACING=1>
+<tr>
+<td align=left>
+(<&|/l, ($session{'tickets'}->FirstRow+1), ($session{'tickets'}->FirstRow() + $session{'tickets'}->RowsPerPage()  ) &>[_1] - [_2] shown</&>)
+</td>
+<td align=right>
+
+<!--</div>-->
+</td>
+</tr>
+</table>
+
+% }
+
+<& /Elements/Submit, Caption=> loc('Merge into selected Ticket') &>
+</form>
+
+<HR>
+<TABLE WIDTH="100%">
+<TR>
+<TD VALIGN="TOP">
+<& /Elements/TitleBoxStart, title => loc('Current search criteria')&>
+
+<& /RTIR/Elements/SearchCriteria, Path => '/RTIR/Merge.html', %ARGS &>
+
+<& /Elements/TitleBoxEnd &>
+</TD>
+<TD>
+
+<& /RTIR/Elements/PickRestriction, Queue => $ARGS{'ValueOfQueue'}, %ARGS &>
+
+</TD>
+</TR>
+</TABLE>
 
 <%INIT>
 my $Ticket = LoadTicket($id);
@@ -47,9 +113,44 @@ if ($Type eq 'Report') {
   $name = $Type;
 }
 
-if ($Type eq 'Incident') {
-  $m->comp("/RTIR/Incident/Display.html", %ARGS);
-  $m->abort;
+my ($title, $ticketcount);
+$session{'i'}++;
+my ($bgcolor, @results);
+if ($session{'tickets'}) {
+    if ($ARGS{'DeleteRestriction'}) {
+	    $session{'tickets'}->DeleteRestriction($ARGS{'DeleteRestriction'});
+    }
+    if ( ($ARGS{'ClearRestrictions'}) || ($ARGS{'NewSearch'}) ) {
+	    $session{'tickets'}->ClearRestrictions;
+	}	
+}
+   ProcessSearchQuery(ARGS=>\%ARGS);
+   $session{'tickets'}->RedoSearch();
+   if ( $session{'tickets'}->DescribeRestrictions()) {
+       $ticketcount = $session{tickets}->Count();
+        $title = loc('Found [quant,_1,incident]', $ticketcount);
+    } else {
+        $title = loc("Find incidents");
+   }
+
+# Iterate through the ARGS hash and remove anything with a null value.
+map ($ARGS{$_} =~ /^$/ && (delete $ARGS{$_}), keys %ARGS);
+
+my @cols = qw(id Status Priority Subject QueueObj->Name OwnerObj->Name RequestorAddresses DueAsString );
+
+Abort(loc("No search to operate on.")) unless ($session{'tickets'});
+
+my $merge = $ARGS{'SelectedTicket'};
+my $MergeTicket;
+
+if ($merge) {
+  $ARGS{$id.'-MergeInto'} = $merge;
+  $MergeTicket = LoadTicket($merge);
+  if ($MergeTicket->QueueObj->id ne $Ticket->QueueObj->id) {
+    push @results, loc("Merge failed: Ticket #[_1] is not the right type", $MergeTicket->Id);
+  } else {
+    @results = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
+  }
 }
 
 my $Title = loc("Merge [_1] #[_2]: [_3]", $name, $id, $Ticket->Subject);
