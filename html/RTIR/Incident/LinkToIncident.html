@@ -33,7 +33,7 @@
 <input type=hidden name=child value=<%$id%>>
 
 <& /RTIR/Elements/Listing, 
-    Type => 'Incident', Queue => 'Incidents', check => 'radio', %ARGS &>
+    url => "LinkToIncident.html?id=$id", Type => 'Incident', Queue => 'Incidents', check => 'radio', %ARGS &>
 
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => loc("Link") &>
 </form>

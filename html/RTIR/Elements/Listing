@@ -38,16 +38,16 @@
 </TABLE>
 <div align=center>
 <font size=2>
-<a href="Listing.html?Queue=<%$Queue%>&GotoPage=1"><&|/l&>First page</&></a>
+<a href="<%$url%>&GotoPage=1"><&|/l&>First page</&></a>
 &nbsp;&nbsp;
 %  if ( $session{'tickets'}->FirstRow >= $session{'tickets_rows_per_page'}-1 ) {
-<a href="Listing.html?Queue=<%$Queue%>&GotoPage=Prev">&lt;<&|/l&>Previous page</&></a>
+<a href="<%$url%>&GotoPage=Prev">&lt;<&|/l&>Previous page</&></a>
 &nbsp;&nbsp;
 %  }                                                                           
 %  if ( $session{'tickets'}->FirstRow + $session{'tickets_rows_per_page'} < $session{tickets}->Count() ) {                                                               
-<a href="Listing.html?Queue=<%$Queue%>&GotoPage=Next"><&|/l&>Next page</&>&gt;</a>
+<a href="<%$url%>&GotoPage=Next"><&|/l&>Next page</&>&gt;</a>
 %  }
-%#&nbsp;&nbsp;<form method=get action="Listing.html?Queue=<%$Queue%>"><&|/l&>Goto page</&> <input name=GotoPage size=2></form>
+%#&nbsp;&nbsp;<form method=get action="<%$url%>"><&|/l&>Goto page</&> <input name=GotoPage size=2></form>
 </font>
 </div>
 <!--<div align=right>-->
@@ -73,4 +73,5 @@ $session{'tickets'}->PrepForSerialization();
 <%ARGS>
 $Type => undef
 $Queue => undef
+$url => "$RT::WebPath/RTIR/Listing.html?Queue=$Queue"
 </%ARGS>
