@@ -26,8 +26,9 @@
 <& /RTIR/Elements/Tabs, 
     tabs => $tabs, 
     actions => $actions, 
-    current_tab => $current_tab, 
     current_toptab => $current_toptab,
+    current_tab => $mytab,
+    current_subtab => $current_subtab,
     Title => $Title &> 
 <%INIT>
 
@@ -40,11 +41,12 @@ my $current_toptab = "RTIR/Investigation/Listing.html?NewSearch=1",
                         
 
 } ;
-my $actions;
+my ($actions, $mytab);
 
 if ( $Ticket) {
 	
 my $id   = $Ticket->id();
+$mytab = "RTIR/Investigation/Display.html?id=".$id;
 
 if ( defined $session{'tickets'} ) {
     my $items  = $session{'tickets'}->ItemsArrayRef();
@@ -60,11 +62,11 @@ if ( defined $session{'tickets'} ) {
                 $searchtabs->{'_a'} = {
                             class => "nav",
                             path => "Ticket/Display.html?id=" . $items->[0]->id,
-                            title => '&lt;&lt; ' . loc('First') };
+                            title => '<< ' . loc('First') };
                 $searchtabs->{"_b"} = { class => "nav",
                                   path  => "Ticket/Display.html?id="
                                     . $items->[ $indexs[0] - 1 ]->id,
-                                  title => '&lt; ' . loc('Prev') };
+                                  title => '< ' . loc('Prev') };
             }
         }
     }
@@ -76,11 +78,11 @@ if ( defined $session{'tickets'} ) {
             $searchtabs->{'d'} = { class => "nav",
                              path  => "Ticket/Display.html?id="
                                . $items->[ $indexs[0] + 1 ]->id,
-                             title => loc('Next') . ' &gt;' };
+                             title => loc('Next') . ' >' };
             $searchtabs->{'e'} = {
                            class => "nav",
                            path => "Ticket/Display.html?id=" . $items->[-1]->id,
-                           title => loc('Last') . ' &gt;&gt' };
+                           title => loc('Last') . ' >>' };
         }
     }
 }
@@ -158,7 +160,10 @@ if (    $Ticket->CurrentUserHasRight('ModifyTicket')
                         path  => "RTIR/Investigation/Update.html?Action=Comment&id=" . $id,
     };
 }
+} else {
+  $mytab = $current_tab;
 }
+
 
 $tabs->{"g"} = { path      => 'RTIR/Investigation/Listing.html',
                  title     => loc('Search'),

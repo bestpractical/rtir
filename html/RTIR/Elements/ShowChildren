@@ -26,8 +26,7 @@
 <i><%loc("Check box to unlink")%></i><br>
 % }
 <table width=100% cellspacing=0 cellpadding=0 border=0>
-% foreach my $link (sort { %{$due}->{$a} cmp %{$due}->{$b} or $a cmp $b } 
-%	keys %{$due}) {
+% foreach my $link (keys %{$due}) {
 % my $t = $children->{$link}->BaseObj;
 % if (($LimitDepth le 0) or ($depth < $LimitDepth)) {
 <tr>

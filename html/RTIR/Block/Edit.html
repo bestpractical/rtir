@@ -26,6 +26,7 @@
 <& /RTIR/Block/Elements/Tabs, 
     Ticket => $Ticket, 
     current_tab => "RTIR/Block/Edit.html?id=".$Ticket->Id, 
+    current_subtab => "RTIR/Block/Edit.html?id=".$Ticket->Id, 
     Title => $Title &>
 
 <& /Elements/ListActions, actions => \@results &>

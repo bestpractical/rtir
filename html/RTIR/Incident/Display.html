@@ -26,9 +26,15 @@
 <& /RTIR/Incident/Elements/Tabs, 
     Ticket => $Ticket, 
     current_tab => 'RTIR/Incident/Display.html?id='.$Ticket->id,
+    current_subtab => 'RTIR/Incident/Display.html?id='.$Ticket->id,
     Title => loc("Incident #[_1]: [_2]", $Ticket->Id, $Ticket->Subject) &>
 
 <& /Elements/ListActions, actions => \@Actions &>
+
+% if ($id != 'new' && $Ticket->QueueObj->Name ne "Incidents") {
+<&|/l&>This ticket isn't an Incident.</&>
+%  $m->abort();
+%}
 
 <table border=0 cellpadding=0 cellspacing=2 width=100%>
 <tr>
@@ -132,60 +138,82 @@
 
   
 <%INIT>
-my ($Ticket, @Actions, @results);  
-
+my ($Ticket, $ChildObj, @Actions, @results);  
 $Ticket = new RT::Ticket($session{'CurrentUser'});
+if ($ARGS{'child'}) {
+  $ChildObj = LoadTicket($ARGS{'child'});
+}
 
 if ($SelectedTicket) {
   $id = $SelectedTicket;
+  $ARGS{'Status'} = "open";
 }
 
 unless ($id) {
     Abort('No incident specified');
 }
 
-if ($id eq 'new') {
-    # {{{ Create a new ticket
-    
-    my $Queue = new RT::Queue($session{'CurrentUser'});	
-    unless ($Queue->Load($ARGS{'Queue'})) {
-	Abort('Queue not found');
-    }
-    
-    unless ($Queue->CurrentUserHasRight('CreateTicket')) {
-	Abort('You have no permission to create tickets in that queue.');
-    }
-    ($Ticket, @Actions) =
-       CreateTicket(Attachments => $session{'Attachments'}, %ARGS);
-    delete $session{'Attachments'};
-    unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
-      Abort("No permission to view newly created ticket #".$Ticket->id.".");
-    }
-    # }}}
+my $DoLinks = sub {
+  my $Ticket = shift;
+  my $Target = shift;
 
-  if ($ARGS{'child'}) {
-    my $ChildObj = LoadTicket($ARGS{'child'});
-    my @linkresults;
-    $ARGS{'id'}=$Ticket->Id;
-    $ARGS{$ChildObj->Id.'-MemberOf'} = $Ticket->Id;
-    my $Type = $m->scomp("/RTIR/Elements/Type", Ticket => $ChildObj->Id);
-    # Blocks can have multiple incidents
-    if ($Type ne 'Block') {
-      while (my $link = $ChildObj->MemberOf->Next) {
-        my $member = $link->TargetObj;
-        if ($member->QueueObj->id eq $Ticket->QueueObj->id) {
-          $RT::Logger->debug ("Deleting\n");
-          $ARGS{'DeleteLink--'.$link->Type.'-'.$link->Target} = '';
-        }
+  my @linkresults;
+  my $Type = $m->scomp("/RTIR/Elements/Type", Ticket => $Ticket->Id);
+  $ARGS{$Ticket->Id.'-MemberOf'} = $Target->Id;
+
+  # Blocks can have multiple incidents
+  if ($Type ne 'Block') {
+    while (my $link = $Ticket->MemberOf->Next) {
+      my $member = $link->TargetObj;
+      if ($member->QueueObj->Name eq "Incidents") {
+        $RT::Logger->debug ("Deleting: ".$link->Target."\n");
+        $ARGS{'DeleteLink--'.$link->Type.'-'.$link->Target} = '';
       }
     }
+  }
 
-    push @linkresults, ProcessTicketLinks(TicketObj => $ChildObj, ARGSRef => \%ARGS);
+ # If we don't own the thing we're linking to, change the owner
+  if ($Ticket->OwnerObj->id != $session{'CurrentUser'}->id) {
+    if ($Ticket->OwnerObj->id == $RT::Nobody->id) {
+      $ARGS{'Action'} = 'Take';
+    } else {
+      $ARGS{'Action'} = 'Steal';
+    }
+    my $action = $ARGS{'Action'};
+    my ($res, $msg)=$Ticket->$action();
+    push (@results, $msg);
+  }
 
-    my @tempresults = (@linkresults);
-    @tempresults = map { loc("Ticket [_1]: [_2]",$ChildObj->Id,$_) } @tempresults;
+  push @linkresults, ProcessTicketLinks(TicketObj => $Ticket, ARGSRef => \%ARGS);
 
-    push @Actions, @tempresults;
+  @linkresults = map { loc("Ticket [_1]: [_2]",$Ticket->Id,$_) } @linkresults;
+
+  push (@Actions, @results, @linkresults);
+
+};
+
+if ($id eq 'new') {
+  # {{{ Create a new ticket
+    
+  my $Queue = new RT::Queue($session{'CurrentUser'});	
+  unless ($Queue->Load($ARGS{'Queue'})) {
+    Abort('Queue not found');
+  }
+    
+  unless ($Queue->CurrentUserHasRight('CreateTicket')) {
+    Abort('You have no permission to create tickets in that queue.');
+  }
+  ($Ticket, @Actions) =
+     CreateTicket(Attachments => $session{'Attachments'}, %ARGS);
+  delete $session{'Attachments'};
+  unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
+    Abort("No permission to view newly created ticket #".$Ticket->id.".");
+  }
+  # }}}
+
+  if ($ChildObj) {
+    $ARGS{'id'}=$Ticket->Id;
+    &$DoLinks($ChildObj, $Ticket);
   }
 
 } else { 
@@ -194,111 +222,45 @@ if ($id eq 'new') {
 	Abort("No permission to view ticket");
     }
 
-
-if (defined $ARGS{'Action'}) {
-  if ($ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
-    my $action = $1;
-    my ($res, $msg)=$Ticket->$action();
-    push(@Actions, $msg);
+  if ($ChildObj) {
+    $ARGS{'id'}=$Ticket->Id;
+    &$DoLinks($ChildObj, $Ticket);
   }
-} elsif ($SelectedTicket) {
-  my $ChildObj = LoadTicket($ARGS{'child'});
-  my $IncidentObj = LoadTicket($SelectedTicket);
-  $ARGS{'Status'} = "open";
-  $ARGS{$ChildObj->Id.'-MemberOf'} = $IncidentObj->Id;
-  my $Type = $m->scomp("/RTIR/Elements/Type", Ticket => $ChildObj->Id);
 
-  if ($Type ne 'Block') {
-    while (my $link = $ChildObj->MemberOf->Next) {
-      my $member = $link->TargetObj;
-      if ($member->QueueObj->id eq $IncidentObj->QueueObj->id) {
-        $RT::Logger->debug ("Deleting\n");
-        $ARGS{'DeleteLink--'.$link->Type.'-'.$link->Target} = '';
-      }
+  if (defined $ARGS{'Action'}) {
+    if ($ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
+      my $action = $1;
+      my ($res, $msg)=$Ticket->$action();
+      push(@Actions, $msg);
+    }
+  } elsif ($ARGS{'BulkLink'}) {
+    #Iterate through each ticket we've been handed
+    my $IncidentObj = LoadTicket($id);
+    while (my $t = $session{'tickets'}->Next) {
+      next unless ($ARGS{"UpdateTicket".$t->Id});
+      &$DoLinks($t, $IncidentObj);
     }
   }
 
-  # If we don't own the thing we're linking to, change the owner
-  if ($IncidentObj->OwnerObj->id != $session{'CurrentUser'}->id) {
-    if ($IncidentObj->OwnerObj->id == $RT::Nobody->id) {
-      $ARGS{'Action'} = 'Take';
-    } else {
-      $ARGS{'Action'} = 'Steal';
-    }
-    my $action = $ARGS{'Action'};
-    my ($res, $msg)=$IncidentObj->$action();
-    push(@Actions, $msg);
+  $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
+  chomp ($ARGS{'UpdateContent'}) ;
+
+  if ($ARGS{'UpdateContent'} &&
+      $ARGS{'UpdateContent'} ne '' &&
+      $ARGS{'UpdateContent'} ne  "-- \n" .
+                              $session{'CurrentUser'}->UserObj->Signature
+      ) {
+    $ARGS{UpdateAttachments} = $session{'Attachments'};
+    ProcessUpdateMessage(ARGSRef=>\%ARGS, 
+	  	         Actions=>\@Actions, 
+		         TicketObj=>$Ticket);
+    delete $session{'Attachments'};
   }
 
-  my @linkresults;
-  push @linkresults, ProcessTicketLinks(TicketObj => $ChildObj, ARGSRef => \%ARGS);
+  #Process basics updates
+  my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$Ticket);
 
-  my @tempresults = (@linkresults);
-  @tempresults = map { loc("Ticket [_1]: [_2]",$ChildObj->Id,$_) } @tempresults;
-
-  @results = (@results, @tempresults);
-} elsif ($ARGS{'BulkLink'}) {
-  #Iterate through each ticket we've been handed
-  my $IncidentObj = LoadTicket($id);
-  while (my $t = $session{'tickets'}->Next) {
-    my $Type = $m->scomp("/RTIR/Elements/Type", Ticket => $t->Id);
-    my @extraresults;
-    $RT::Logger->debug( "Checking Ticket ".$t->Id ."\n");
-    next unless ($ARGS{"UpdateTicket".$t->Id});
-    $RT::Logger->debug ("Matched\n");
-    # Blocks can have multiple incidents
-    if ($Type ne 'Block') {
-      while (my $link = $t->MemberOf->Next) {
-        my $member = $link->TargetObj;
-        if ($member->QueueObj->id eq $IncidentObj->QueueObj->id) {
-          $RT::Logger->debug ("Deleting\n");
-          $ARGS{'DeleteLink--'.$link->Type.'-'.$link->Target} = '';
-        }
-      }
-    }
-
-    # If we don't own the thing we're linking to, change the owner
-    if ($t->OwnerObj->id != $session{'CurrentUser'}->id) {
-      if ($t->OwnerObj->id == $RT::Nobody->id) {
-        $ARGS{'Action'} = 'Take';
-      } else {
-        $ARGS{'Action'} = 'Steal';
-      }
-      my $action = $ARGS{'Action'};
-      my ($res, $msg)=$t->$action();
-      push(@results, $msg);
-    }
-
-    $ARGS{$t->Id.'-MemberOf'} = $IncidentObj->Id;
-    my @linkresults;
-    push @linkresults, ProcessTicketLinks(TicketObj => $t, ARGSRef => \%ARGS);
-
-    my @tempresults = (@extraresults, @linkresults);
-    @tempresults = map { loc("Ticket [_1]: [_2]",$t->Id,$_) } @tempresults;
-
-    @Actions = (@results, @tempresults);
-  }
-}
-
-    $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
-    chomp ($ARGS{'UpdateContent'}) ;
-
-    if ($ARGS{'UpdateContent'} &&
-        $ARGS{'UpdateContent'} ne '' &&
-        $ARGS{'UpdateContent'} ne  "-- \n" .
-                                $session{'CurrentUser'}->UserObj->Signature
-       ) {
-            $ARGS{UpdateAttachments} = $session{'Attachments'};
-	    ProcessUpdateMessage(ARGSRef=>\%ARGS, 
-				 Actions=>\@Actions, 
-				 TicketObj=>$Ticket);
-            delete $session{'Attachments'};
-	}
-
-#Process basics updates
-my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$Ticket);
-
-push (@Actions, @BasicActions, @results);
+  push (@Actions, @BasicActions);
 
 }
 

@@ -23,21 +23,19 @@
 %# 
 %# END LICENSE BLOCK
 <& /RTIR/Elements/Header, Title => $Title &>
-% if ($Incident) {
 % if ($Split) {
 <& "/RTIR/Investigation/Elements/Tabs",
     Ticket => $TicketObj,
     current_toptab => "RTIR/Incident/Listing.html", 
-    current_tab => "RTIR/Investigation/Display.html?id=".$TicketObj->Id, 
+    current_tab => "RTIR/Investigation/Split.html?Ticket=".$TicketObj->Id, 
     current_subtab => "RTIR/Investigation/Split.html?Ticket=".$TicketObj->Id, 
     Title => $Title &>
-% } else {
+% } elsif ($Incident) {
 <& "/RTIR/Incident/Elements/InvestigationTabs", 
     Ticket => $IncidentObj,
     current_toptab => "RTIR/Investigation/Listing.html", 
     current_tab => "RTIR/Investigation/Create.html?Incident=".$Incident, 
     Title => $Title &>
-% }
 % } else {
 <& "/RTIR/Investigation/Elements/Tabs",
     Ticket => $TicketObj,

@@ -29,10 +29,10 @@
     <TD ALIGN=RIGHT><&|/l&>Split from</&>:</TD>
     <TD><% $ARGS{'new-MemberOf'} %></TD>
   </TR>
-% } elsif ($IncidentObj) {
+% } elsif ($Incident) {
   <TR>
     <TD ALIGN=RIGHT><&|/l&>Incident</&>:</TD>
-    <TD><% $IncidentObj->Id %></TD>
+    <TD><% $Incident %></TD>
   </TR>
 % }
   <TR>
@@ -70,7 +70,7 @@
       <&|/l&>Correspondents</&>:
     </TD>
     <TD COLSPAN=5>
-      <INPUT Name="Requestors" Value="<%($ARGS{Requestors}) || $session{CurrentUser}->EmailAddress%>" SIZE=40>
+      <INPUT Name="Requestors" Value="<%$ARGS{Requestors}%>" SIZE=40>
     </TD>
   </TR>
   <TR>
@@ -78,7 +78,7 @@
       <&|/l&>Cc</&>:
     </TD>
     <TD class=value COLSPAN=5>
-      <INPUT Name="Cc" Value="<%($ARGS{Cc}) || ""%>" SIZE=40>
+      <INPUT Name="Cc" Value="<%($ARGS{Cc}) || $session{CurrentUser}->EmailAddress%>" SIZE=40>
       <i><font size=-2>
       <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)</&></font></i>
     </TD>
@@ -196,6 +196,7 @@ my $Title;
 <%ARGS>
 $Ticket => undef
 $QueueObj => undef
+$Incident => undef
 $IncidentObj => undef
 $QuoteTransaction => undef
 $Split => 0

@@ -55,6 +55,8 @@ else {
 
 <TABLE WIDTH=100% CELLSPACING=0 CELLPADDING=2 BORDER=0>
 % while (my $Transaction = $Transactions->Next) {
+% next if ($Transaction->Type eq 'Status' && $Transaction->Field eq 'Status' ||
+%          $Transaction->Type eq 'Set' && $Transaction->Field eq 'Status');
 % $i++;
 %	if ($Transactions->IsLast) {
 	<a name="lasttrans"></a>

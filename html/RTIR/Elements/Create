@@ -22,11 +22,14 @@
 %# 
 %# 
 %# END LICENSE BLOCK
+<& /Elements/ListActions, actions => \@results &>
+
 <FORM ACTION="<%$RT::WebPath%>/RTIR/<%$Type%>/Create.html" METHOD="POST" ENCTYPE="multipart/form-data">
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
 <INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
 <INPUT TYPE=HIDDEN NAME=Status Value="<%$ARGS{Status}||'open'%>">
 <INPUT TYPE=HIDDEN NAME=Type Value="<%$ARGS{Type}%>">
+<INPUT TYPE=HIDDEN NAME=Incident Value="<%$ARGS{Incident}%>">
 % my $parentvalue;
 % if ($Incident) {
 % $parentvalue = $Incident;
@@ -117,16 +120,20 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
 
 my $foo;
 
+my @results;
 if ((!exists $ARGS{'AddMoreAttach'}) && ($ARGS{'id'} eq 'new')) { # new ticket?
+  if ($ARGS{'Requestors'}) {
     $m->comp('/RTIR/Elements/Display', %ARGS);
     $m->abort();
+  } else {
+    push @results, "Investigation launch failed: You must enter a correspondent.";
+  }
 }
 </%INIT>
 
 <%ARGS>
 $DependsOn => undef
 $DependedOnBy => undef
-$MemberOf => undef
 $QuoteTransaction => undef
 $Incident => undef
 $Type => "Report"

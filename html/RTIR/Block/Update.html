@@ -25,11 +25,11 @@
 <& /RTIR/Elements/Header, Title => $title &>
 <& /RTIR/Block/Elements/Tabs, 
     Ticket => $Ticket, 
-    current_tab => "RTIR/Block/Edit.html?id=".$Ticket->Id, 
+    current_subtab => "RTIR/Block/Edit.html?id=".$Ticket->Id, 
     Title => $title &>
 
 <& /RTIR/Elements/Update,
-    Type => 'Report',
+    Type => 'Block',
     %ARGS &>
 
 <%INIT>

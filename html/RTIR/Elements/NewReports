@@ -62,7 +62,7 @@
 % }
 </TD>
 <TD>
-<%$Ticket->Owner%>
+<%$Ticket->OwnerObj->Name%>
 </TD>
 <TD>
 <& ShowDate, date => $Ticket->DueObj &>

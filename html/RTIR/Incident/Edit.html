@@ -26,6 +26,7 @@
 <& /RTIR/Incident/Elements/Tabs, 
     Ticket => $Ticket, 
     current_tab => "RTIR/Incident/Edit.html?id=".$Ticket->Id, 
+    current_subtab => "RTIR/Incident/Edit.html?id=".$Ticket->Id, 
     Title => loc("Edit Incident #[_1]: [_2]", 
     $Ticket->Id, $Ticket->Subject) &>
 

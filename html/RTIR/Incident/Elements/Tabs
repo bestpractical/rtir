@@ -61,11 +61,11 @@ if ( defined $session{'tickets'} ) {
                 $searchtabs->{'_a'} = {
                             class => "nav",
                             path => "Ticket/Display.html?id=" . $items->[0]->id,
-                            title => '&lt;&lt; ' . loc('First') };
+                            title => '<< ' . loc('First') };
                 $searchtabs->{"_b"} = { class => "nav",
                                   path  => "Ticket/Display.html?id="
                                     . $items->[ $indexs[0] - 1 ]->id,
-                                  title => '&lt; ' . loc('Prev') };
+                                  title => '< ' . loc('Prev') };
             }
         }
     }

@@ -33,14 +33,14 @@
 % }
 % next unless ($found);
 % }
-% my $transdate = $Transaction->CreatedAsString();
-<%$transdate%> <%$Transaction->CreatorObj->Name%> - <%$Transaction->BriefDescription%>
+%# my $transdate = $Transaction->CreatedAsString();
+%# <%$transdate%> <%$Transaction->CreatorObj->Name%> - <%$Transaction->BriefDescription%>
 % my $attachments = $Transaction->Attachments;
 % $attachments->GotoFirstItem;
 % while (my $message=$attachments->Next) {
 %    #we don't want to show any empty transactions, unless they have kids
 %    next unless ($message->Content || $message->Children->Count);
-<% $message->Content%>
+<% $message->Content %>
 % }
 % }
 

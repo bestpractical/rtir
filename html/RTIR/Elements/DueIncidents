@@ -100,8 +100,9 @@ if ($owner) {
 }
 my $date = ParseDateToISO("0");
 $MyTickets->LimitDue(VALUE => $date, OPERATOR => ">");
-$MyTickets->LimitStatus(VALUE => "open");
 $MyTickets->LimitStatus(VALUE => "new");
+$MyTickets->LimitStatus(VALUE => "open");
+$MyTickets->LimitStatus(VALUE => "stalled");
 $MyTickets->RowsPerPage($rows);
 $MyTickets->OrderBy(FIELD => 'Due', ORDER => 'ASC');
 

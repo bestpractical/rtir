@@ -104,17 +104,11 @@ $ARGS{UpdateTimeWorked}%>"> <&|/l&>minutes</&>
 
 my $CanRespond = 0;
 my $CanComment = 0;
-my $title;
 
 my $Ticket = LoadTicket($id);
 
 $DefaultStatus = $ARGS{DefaultStatus} if exists $ARGS{Status};
-
-if ($DefaultStatus eq 'resolved') {
-    $title = loc("Resolve ticket #[_1] ([_2])", $Ticket->id, $Ticket->Subject);
-} else {
-    $title = loc("Update ticket #[_1] ([_2])", $Ticket->id, $Ticket->Subject);
-}
+$DefaultStatus = $Ticket->Status() unless ($DefaultStatus);
 
 # Things needed in the template - we'll do the processing here, just
 # for the convenience:
@@ -139,8 +133,6 @@ if ( $Action eq 'Respond' &&
      lc(substr($Subject, 0, length($replystring))) ne $replystring) {
   $Subject = $RT::ReplyString . " " . $Subject;
 }
-
-$DefaultStatus = $Ticket->Status() unless ($DefaultStatus);
 
 $CanRespond = 1 if ( $Ticket->CurrentUserHasRight('ReplyToTicket') or
                      $Ticket->CurrentUserHasRight('ModifyTicket') ); 

@@ -25,7 +25,8 @@
 <& /RTIR/Elements/Header, Title => $Title &>
 <& /RTIR/Investigation/Elements/Tabs, 
     Ticket => $Ticket, 
-    current_tab => "RTIR/Invesigation/Merge.html?id=".$Ticket->Id, 
+    current_tab => "RTIR/Investigation/Merge.html?id=".$Ticket->Id, 
+    current_subtab => "RTIR/Investigation/Merge.html?id=".$Ticket->Id, 
     Title => $Title &>
 
 <& /RTIR/Elements/Merge, 
