@@ -77,34 +77,29 @@
 % }
   </TR>
 
-<& Elements/Create, Title => $Title, TicketObj => $TicketObj, QueueObj => $QueueObj,%ARGS &>
+<& Elements/Create, Title => $Title, TicketObj => $TicketObj, QueueObj => $QueueObj, %ARGS &>
 
 <TR>
 <TD class=labeltop>
 <&|/l&>Message</&>:
 </TD>
 <TD COLSPAN=5>
-% if (exists $ARGS{Content}) {
+% if (!exists $ARGS{Content}) {
+%   my $Transactions;
+%   if ($TicketObj) {
+%   $Transactions = $TicketObj->Transactions;
+%   } elsif ($ChildObj) {
+%   $Transactions = $ChildObj->Transactions;
+%   }
+%   if ($Transactions) {
+%     $ARGS{Content} = $m->scomp("/RTIR/Elements/TransactionData", 
+%        Transactions => $Transactions,
+%        Type => 'messages',
+%        Include => {'Create', 'Correspond'});
+%     $ARGS{Content} =~ s/\&gt;/>/g;
+%   }
+% }
 <& /Elements/MessageBox, Default => $ARGS{Content} &>
-% } else {
-% my $Transactions;
-% if ($TicketObj) {
-% $Transactions = $TicketObj->Transactions;
-% } elsif ($ChildObj) {
-% $Transactions = $ChildObj->Transactions;
-% }
-
-% if ($Transactions) {
-<TEXTAREA COLS=72 ROWS=15 WRAP=HARD NAME="Content">
-<& /RTIR/Elements/TransactionData, 
-    Transactions => $Transactions,
-    Type => 'messages',
-    Include => {'Create', 'Correspond'} &>
-</textarea>
-% } else {
-  <& /Elements/MessageBox, QuoteTransaction => $QuoteTransaction &>
-% }
-% }
   <BR>
   </TD>
 </TR>
