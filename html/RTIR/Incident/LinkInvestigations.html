@@ -22,7 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
+<& /RTIR/Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
 <& Elements/InvestigationTabs, 
     Ticket => $IncidentObj, 
     current_tab => 'RTIR/Incident/ShowInvestigations.html?id='.$IncidentObj->id,

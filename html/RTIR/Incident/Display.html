@@ -22,7 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, Title => loc("Incident #[_1]: [_2]", $Ticket->Id, $Ticket->Subject) &>
+<& /RTIR/Elements/Header, Title => loc("Incident #[_1]: [_2]", $Ticket->Id, $Ticket->Subject) &>
 <& /RTIR/Incident/Elements/Tabs, 
     Ticket => $Ticket, 
     current_tab => 'RTIR/Incident/Display.html?id='.$Ticket->id,
