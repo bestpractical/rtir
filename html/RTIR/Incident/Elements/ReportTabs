@@ -25,7 +25,6 @@
 % if (defined $Ticket) {
 <& /RTIR/Incident/Elements/Tabs, 
     Ticket => $Ticket, 
-    current_tab => 'RTIR/Display.html?id='.$Ticket->id,
     current_subtab => 'RTIR/Incident/ShowReports.html?id='.$Ticket->id,
     subtabs => $subtabs,
     Title => $Title &>

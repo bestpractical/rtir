@@ -26,67 +26,83 @@
 <input type=hidden name=id value=<%$id%>>
 <input type=hidden name=BulkLink value=1>
 
-<& /RTIR/Elements/Listing, 
-    Type => $Type, Queue => $Queue, check => 'check', %ARGS &>
+<& /RTIR/Search/Elements/ShowResults, 
+    Queue => $Queue,
+    QueryString => $QueryString, 
+    BaseURL => $BaseURL,
+    Format => $Format,
+    %ARGS &>
 
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => loc("Link") &>
 </form>
 
-<HR>
-
-<& /RTIR/Elements/SearchFields, Path => $Path, %ARGS &>
-
 <%INIT>
-my ($Queue, @states);
-if ($Type eq "Report") {
-  $Queue = 'Incident Reports';
-  @states = ('new', 'open');
-} elsif ($Type eq "Investigation") {
-  $Queue = 'Investigations';
-  @states = ('open');
-} if ($Type eq "Block") {
-  $Queue = 'Blocks';
-  @states = ('pending activation', 'active', 'pending removal');
-}
+$Format = $RT::RTIRLinkSearchResultFormat;
+
+my $TicketObj = new RT::Ticket($session{'CurrentUser'});
+$TicketObj->Load($id);
+
+my $Queue = $TicketObj->QueueObj->Name;
+my ($Type, @states) = $m->comp('/RTIR/Elements/Type', Ticket => $id);
+
+my ($LinkType, @linkstates) = $m->comp('/RTIR/Elements/Type', Queue => $LinkQ);
 
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
 
-if (! $session{'tickets'}) {
-    # Init a new search
-    $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
-}
-
 my ($title, $ticketcount);
 $session{'i'}++;
-if ($session{'tickets'}) {
-    if ($ARGS{'DeleteRestriction'}) {
-	$session{'tickets'}->DeleteRestriction($ARGS{'DeleteRestriction'});
-    }
-    if ( ($ARGS{'ClearRestrictions'}) || ($ARGS{'NewSearch'}) ) {
-	$session{'tickets'}->ClearRestrictions;
-	$session{'tickets'}->LimitQueue(VALUE => $QueueObj->Name);
-	my $cf = RT::CustomField->new($session{'CurrentUser'});
-	$cf->LoadByNameAndQueue(Queue => $QueueObj->Id, Name => '_RTIR_State');
-	foreach my $state (@states) {
-	    $session{'tickets'}->LimitCustomField(CUSTOMFIELD => $cf->Id, VALUE => $state);
-	}
-    }
+$session{'tickets'} = RT::Tickets->new($session{'CurrentUser'})  unless ($session{'tickets'});
+$session{'tickets'}->FromSQL($Query) if ($Query);
+$session{'tickets'}->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
+
+if ($OrderBy ne $session{'CurrentSearchHash'}->{'OrderBy'}
+    or $Order ne $session{'CurrentSearchHash'}->{'Order'}) {
+    $session{'CurrentSearchHash'}->{'OrderBy'} = $OrderBy;
+    $session{'CurrentSearchHash'}->{'Order'}   = $Order;
+    # Invalidate the ordering cache
+    undef $session{'tickets'}->{'items_array'};
 }
 
-ProcessSearchQuery(ARGS=>\%ARGS);
-$session{'tickets'}->RedoSearch();
-if ( $session{'tickets'}->DescribeRestrictions()) {
-    $ticketcount = $session{tickets}->Count();
-    $title = loc('Found [quant,_1,_2]', $ticketcount, $Type);
+if ( $session{'tickets'}->Query()) {
+    $ticketcount = $session{tickets}->CountAll();
+    $title = loc('Found [quant,_1,ticket]', $ticketcount);
 } else {
-    $title = loc("Find [_1]", $Type);
+    $title = loc("Find tickets");
 }
+
+if (!$Query) {
+    $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $LinkQ);
+}
+
+my $QueryString = "&".$m->comp('/Elements/QueryString',
+                               Query => $Query,
+                               Format => $Format,
+                               Rows => $Rows,
+                               OrderBy => $OrderBy,
+                               Order => $Order,
+                               Page => $Page);
+
+if (!$BaseQuery) {
+    $BaseQuery = $m->comp('/RTIR/Elements/BaseQuery', Queue => $LinkQ);
+}
+
+$Query = "$BaseQuery AND ( $Query )";
+$ARGS{'Query'} = $Query;
+
 </%INIT>
 
 <%ARGS>
 $id => undef
+$LinkQ => undef
 $SubmitCaption => loc("Link Tickets")
-$Path => "/RTIR/Incident/LinkReports.html"
-$Type => undef
+$BaseURL => "/RTIR/Incident/LinkReports.html"
+$BaseQuery => undef
+$Query => undef
+$Format => undef 
+$HideResults => 0
+$Rows => 50
+$Page => 1
+$OrderBy => 'id'
+$Order => 'ASC'
 </%ARGS>

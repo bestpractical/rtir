@@ -302,9 +302,11 @@ if ($id eq 'new') {
       push(@Actions, $msg);
     }
   } elsif ($ARGS{'BulkLink'}) {
+$m->print("bulk linking!<br>");
     #Iterate through each ticket we've been handed
     my $IncidentObj = LoadTicket($id);
     while (my $t = $session{'tickets'}->Next) {
+$m->print("ticket: " . $t->Id . "<br>");
       next unless ($ARGS{"UpdateTicket".$t->Id});
       &$DoLinks($t, $IncidentObj);
     }

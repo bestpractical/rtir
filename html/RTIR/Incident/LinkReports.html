@@ -25,6 +25,7 @@
 <& /RTIR/Elements/Header, 
     Title => $title, 
     Refresh => $session{'tickets_refresh_interval'} &>
+
 <& Elements/ReportTabs, 
     Ticket => $IncidentObj, 
     current_subtab => 'RTIR/Incident/ShowReports.html',
@@ -32,9 +33,10 @@
 
 <& Elements/BulkLink,
     SubmitCaption => $SubmitCaption, 
+    id => $id,
     Status => 'open',
-    Type => 'Report',
-    Path => "/RTIR/Incident/LinkReports.html",
+    BaseURL => "/RTIR/Incident/LinkReports.html",
+    LinkQ => 'Incident Reports',
     %ARGS &>
 
 <%INIT>

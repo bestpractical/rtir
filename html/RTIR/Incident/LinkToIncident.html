@@ -34,8 +34,12 @@
 <form action='Display.html' method=get>
 <input type=hidden name=child value=<%$id%>>
 
-<& /RTIR/Elements/Listing, 
-    url => "LinkToIncident.html?id=$id", Type => 'Incident', Queue => 'Incidents', check => 'radio', %ARGS &>
+<& /RTIR/Search/Elements/ShowResults, 
+    Queue => $Queue,
+    QueryString => $QueryString, 
+    BaseURL => $BaseURL,
+    Format => $Format,
+    %ARGS &>
 
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => loc("Link") &>
 </form>
@@ -43,22 +47,17 @@
 <HR>
 
 <%INIT>
+$Format = $RT::RTIRLinkIncidentSearchResultFormat;
+
 my ($Type, undef) = $m->comp('/RTIR/Elements/Type', Ticket => $id);
 
 my $ChildObj = LoadTicket($id);
+my $Queue = $ChildObj->QueueObj->Name;
+
 my $SubmitCaption = loc("Link #[_1] with selected Incident", $ChildObj->id);
 
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load('Incidents') || Abort(loc("Queue could not be loaded."));
-
-my $name;
-if ($ChildObj->QueueObj->Name eq "Incident Reports") {
-    $name = "Incident Report";
-} elsif ($ChildObj->QueueObj->Name eq "Investigations") {
-    $name = "Investigation";
-} elsif ($ChildObj->QueueObj->Name eq "Blocks") {
-    $name = "Block";
-}
 
 if (! $session{'tickets'}) {
     # Init a new search
@@ -95,10 +94,51 @@ my @cols = qw(id Status Priority Subject QueueObj->Name OwnerObj->Name Requestor
 
 Abort(loc("No search to operate on.")) unless ($session{'tickets'});
 
-$title = loc("Link [_1] #[_2] to selected Incident", $name, $id);
+$title = loc("Link [_1] #[_2] to selected Incident", $Type, $id);
+
+$session{'i'}++;
+$session{'tickets'} = RT::Tickets->new($session{'CurrentUser'})  unless ($session{'tickets'});
+$session{'tickets'}->FromSQL($Query) if ($Query);
+$session{'tickets'}->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
+
+if ($OrderBy ne $session{'CurrentSearchHash'}->{'OrderBy'}
+    or $Order ne $session{'CurrentSearchHash'}->{'Order'}) {
+    $session{'CurrentSearchHash'}->{'OrderBy'} = $OrderBy;
+    $session{'CurrentSearchHash'}->{'Order'}   = $Order;
+    # Invalidate the ordering cache
+    undef $session{'tickets'}->{'items_array'};
+}
+
+if (!$Query) {
+    $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => 'Incidents');
+}
+
+my $QueryString = "&".$m->comp('/Elements/QueryString',
+                               Query => $Query,
+                               Format => $Format,
+                               Rows => $Rows,
+                               OrderBy => $OrderBy,
+                               Order => $Order,
+                               Page => $Page);
+
+if (!$BaseQuery) {
+    $BaseQuery = $m->comp('/RTIR/Elements/BaseQuery', Queue => 'Incidents');
+}
+
+$Query = "$BaseQuery AND ( $Query )";
+$ARGS{'Query'} = $Query;
 
 </%INIT>
 
 <%ARGS>
 $id => undef
+$BaseURL => "/RTIR/Incident/LinkToIncident.html"
+$BaseQuery => undef
+$Query => undef
+$Format => undef 
+$HideResults => 0
+$Rows => 50
+$Page => 1
+$OrderBy => 'id'
+$Order => 'ASC'
 </%ARGS>

@@ -119,7 +119,7 @@ if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
 }
 
 foreach my $tab ( sort keys %{$ticket_page_tabs} ) {
-    if ( $ticket_page_tabs->{$tab}->{'path'} eq $current_tab ) {
+    if ( $ticket_page_tabs->{$tab}->{'path'} eq $current_subtab ) {
         $ticket_page_tabs->{$tab}->{"subtabs"}        = $subtabs;
         $tabs->{'this'}->{"current_subtab"}        = 
         $ticket_page_tabs->{$tab}->{"path"};
