@@ -38,19 +38,29 @@
 <%substr($field, $j, index ($field, "}") - $j)%>
 <%substr($field, index ($field, "}") + 1)%>
 % } else {
+% if ($field =~ m/(.*)MemberOf by (.*)/) {
+% my $tid = $2;
+% my $type = $m->scomp('/RTIR/Elements/Type', Ticket => $tid);
+% if (($type =~ s/^\s*(.*?)\s*$/$1/) && $type eq 'Incident') {
+Child of Incident <%$tid%>
+% } else {
 <%$field%>
+% }
+% } else {
+<%$field%>
+% }
 % }
 % if ($ARGS{'DefaultStatus'}) {
 %   $status = "&DefaultStatus=".$ARGS{'DefaultStatus'};
 % } else {
 %   $status = "";
 % }
-<A HREF="<%$Path%>?id=<%$id%><%$status%>&DeleteRestriction=<%$row%>&Queue=<%$Queue%>">[<&|/l&>delete</&>]</a><br>
+<A HREF="<%$RT::WebPath%><%$Path%>?id=<%$id%><%$status%>&DeleteRestriction=<%$row%>&Queue=<%$Queue%>">[<&|/l&>delete</&>]</a><br>
 % }
 %}
 <BR>
 <BR>
-<A HREF="<%$Path%>?id=<%$id%><%$status%>&Bookmark=<%$session{'tickets'}->FreezeLimits()|u%>&TicketsSortBy=<%$session{'tickets_sort_by'}%>&TicketsSortOrder=<%$session{'tickets_sort_order'}%>&RowsPerPage=<%$session{'tickets_rows_per_page'}%>&Queue=<%$Queue%>"><&|/l&>Bookmarkable URL for this search</&></a>
+<A HREF="<%$RT::WebPath%><%$Path%>?id=<%$id%><%$status%>&Bookmark=<%$session{'tickets'}->FreezeLimits()|u%>&TicketsSortBy=<%$session{'tickets_sort_by'}%>&TicketsSortOrder=<%$session{'tickets_sort_order'}%>&RowsPerPage=<%$session{'tickets_rows_per_page'}%>&Queue=<%$Queue%>"><&|/l&>Bookmarkable URL for this search</&></a>
 
 <& /Elements/TitleBoxEnd&>
 </TD>
