@@ -41,7 +41,7 @@
 
 
 <%INIT>
-$Format = $RT::RTIRSearchResultFormats->{'DueIncidents'};
+$Format = $RT::RTIRSearchResultFormats->{'NewReports'};
 
 $Query = $m->comp('/RTIR/Elements/NewQuery', 
              Queue => $Queue,	
