@@ -156,11 +156,11 @@ if ($ARGS{'BulkReject'}) {
           push @results, "Msg: ".$msg;
         }
         my ($oldstate, $newstate);
-        $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+        $oldstate = $t->FirstCustomFieldValue('_RTIR_State');
         push @results, ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$t);
-        $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+        $newstate = $t->FirstCustomFieldValue('_RTIR_State');
         if ($newstate ne $oldstate) {
-          push (@Actions, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
+          push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
         }
       } else {
         push @results, loc("Cannot reject Incident Report #[_1].  Only new reports may be rejected.", $t->id);
