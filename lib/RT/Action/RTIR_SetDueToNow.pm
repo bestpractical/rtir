@@ -72,7 +72,7 @@ sub Prepare {
 
 =head2 Commit
 
-Set the Due date to now.
+Set the Due date to a configured value.
 
 =cut
 
@@ -88,9 +88,6 @@ sub Commit {
     my $bh = RT::IR::BusinessHours();
 
     # Set the defaults from the RTIR_Config.pm file
-    print STDERR "Setting in hours: " . $RT::SLA_Response_InHours . "\n";
-    print STDERR "Setting out of hours: " . $RT::SLA_Response_OutOfHours . "\n";
-
     $SLAObj->SetInHoursDefault($RT::SLA_Response_InHours);
     $SLAObj->SetOutOfHoursDefault($RT::SLA_Response_OutOfHours);
 
