@@ -34,24 +34,87 @@
     Title => $title,
  &>
 
-<& Elements/BulkLink,
-    Query => $Query,
-    SubmitCaption => $SubmitCaption, 
-    id => $id,
-    Status => 'open',
-    BaseURL => "/RTIR/Incident/LinkChildren.html",
+<form action="Display.html" method=get>
+<input type=hidden name=id value=<%$id%>>
+<input type=hidden name=BulkLink value=1>
+
+<& /RTIR/Search/Elements/ShowResults, 
     Queue => $Queue,
-    &>
+    Query => $Query,
+    QueryString => $QueryString, 
+    BaseURL => $BaseURL,
+    Format => $Format,
+&>
+
+<& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => loc("Link") &>
+</form>
 
 <%INIT>
 my $IncidentObj = LoadTicket($id);
-my $title = loc("Link selected [_1] to Incident #[_2]", $Queue, $IncidentObj->Id);
 my $SubmitCaption = loc("Link selected with Incident #[_1]", $IncidentObj->id);
+
+$Format = $RT::RTIRLinkSearchResultFormat;
+
+my $TicketObj = new RT::Ticket($session{'CurrentUser'});
+$TicketObj->Load($id);
+
+my ($Type, @states) = $m->comp('/RTIR/Elements/Type', Queue => $Queue);
+
+my ($LinkType, @linkstates) = $m->comp('/RTIR/Elements/Type', Queue => $Queue);
+
+my ($title, $ticketcount);
+$session{'i'}++;
+$session{'tickets'} = RT::Tickets->new($session{'CurrentUser'})  unless ($session{'tickets'});
+$session{'tickets'}->FromSQL($Query) if ($Query);
+$session{'tickets'}->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
+
+if ($OrderBy ne $session{'CurrentSearchHash'}->{'OrderBy'}
+    or $Order ne $session{'CurrentSearchHash'}->{'Order'}) {
+    $session{'CurrentSearchHash'}->{'OrderBy'} = $OrderBy;
+    $session{'CurrentSearchHash'}->{'Order'}   = $Order;
+    # Invalidate the ordering cache
+    undef $session{'tickets'}->{'items_array'};
+}
+
+if ( $session{'tickets'}->Query()) {
+    $ticketcount = $session{tickets}->CountAll();
+    $title = loc("Found [quant,_1,$Type]", $ticketcount);
+} else {
+    $title = loc("Link selected [_1] to Incident #[_2]", $Queue, $IncidentObj->Id);
+}
+
+$m->print("original Query: $Query<br>");
+if (!$Query) {
+    $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
+}
+
+my $QueryString = "&".$m->comp('/Elements/QueryString',
+                               Query => $Query,
+                               Format => $Format,
+                               Rows => $Rows,
+                               OrderBy => $OrderBy,
+                               Order => $Order,
+                               Page => $Page);
+
+if (!$BaseQuery) {
+    $BaseQuery = $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
+}
+
+$Query = "$BaseQuery AND ( $Query )";
 
 </%INIT>
 
 <%ARGS>
 $id => undef
 $Queue => undef
+$BaseURL => "/RTIR/Incident/LinkChildren.html"
+$Status => 'open',
+$BaseQuery => undef
 $Query => undef
+$Format => undef 
+$HideResults => 0
+$Rows => 50
+$Page => 1
+$OrderBy => 'id'
+$Order => 'ASC'
 </%ARGS>

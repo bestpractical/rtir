@@ -22,73 +22,8 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<form action="Display.html" method=get>
-<input type=hidden name=id value=<%$id%>>
-<input type=hidden name=BulkLink value=1>
-
-Query: <%$Query%><br>
-<& /RTIR/Search/Elements/ShowResults, 
-    Queue => $Queue,
-    Query => $Query,
-    QueryString => $QueryString, 
-    BaseURL => $BaseURL,
-    Format => $Format,
-&>
-
-<& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => loc("Link") &>
-</form>
 
 <%INIT>
-$Format = $RT::RTIRLinkSearchResultFormat;
-
-my $TicketObj = new RT::Ticket($session{'CurrentUser'});
-$TicketObj->Load($id);
-
-my ($Type, @states) = $m->comp('/RTIR/Elements/Type', Ticket => $id);
-
-my ($LinkType, @linkstates) = $m->comp('/RTIR/Elements/Type', Queue => $Queue);
-
-my ($title, $ticketcount);
-$session{'i'}++;
-$session{'tickets'} = RT::Tickets->new($session{'CurrentUser'})  unless ($session{'tickets'});
-$session{'tickets'}->FromSQL($Query) if ($Query);
-$session{'tickets'}->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
-
-if ($OrderBy ne $session{'CurrentSearchHash'}->{'OrderBy'}
-    or $Order ne $session{'CurrentSearchHash'}->{'Order'}) {
-    $session{'CurrentSearchHash'}->{'OrderBy'} = $OrderBy;
-    $session{'CurrentSearchHash'}->{'Order'}   = $Order;
-    # Invalidate the ordering cache
-    undef $session{'tickets'}->{'items_array'};
-}
-
-if ( $session{'tickets'}->Query()) {
-    $ticketcount = $session{tickets}->CountAll();
-    $title = loc('Found [quant,_1,ticket]', $ticketcount);
-} else {
-    $title = loc("Find tickets");
-}
-
-$m->print("Original Query: $Query<br>");
-if (!$Query) {
-    $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
-}
-
-my $QueryString = "&".$m->comp('/Elements/QueryString',
-                               Query => $Query,
-                               Format => $Format,
-                               Rows => $Rows,
-                               OrderBy => $OrderBy,
-                               Order => $Order,
-                               Page => $Page);
-
-if (!$BaseQuery) {
-    $BaseQuery = $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
-}
-
-$Query = "$BaseQuery AND ( $Query )";
-$ARGS{'Query'} = $Query;
-
 </%INIT>
 
 <%ARGS>
