@@ -74,12 +74,14 @@
 <& ShowDate, date => $due->{$link} &>
 </TD>
 <TD ALIGN=RIGHT>
-% if ($Ticket->Owner == $session{CurrentUser}->id) {
-[<A HREF="<% $RT::WebPath %>/RTIR/Incident/Update.html?id=<%$Ticket->Id%>"><&|/l&>Update</&></A>]
-% } elsif ($Ticket->Owner == $RT::Nobody->Id) {
+% if ($Ticket->Owner != $session{CurrentUser}->id) {
+%   if ($Ticket->Owner == $RT::Nobody->Id) {
 [<A HREF="<% $RT::WebPath %>/RTIR/Display.html?Action=Take&id=<%$Ticket->Id%>"><&|/l&>Take</&></A>]
-% } else {
+%   } else {
 [<A HREF="<% $RT::WebPath %>/RTIR/Display.html?Action=Steal&id=<%$Ticket->Id%>"><&|/l&>Steal</&></A>]
+%   }
+% } else {
+&nbsp;
 % }
 </TD>
 </TR>

@@ -110,7 +110,7 @@ if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
         $actions->{'B'} = {
 
             path =>
-              "RTIR/Incident/Update.html?Action=Respond&DefaultStatus=rejected&id=" . $id,
+              "RTIR/Update.html?Action=Comment&DefaultStatus=rejected&id=" . $id,
             title => loc('Abandon') };
     }
     if ( $Ticket->Status ne 'open' ) {
@@ -135,7 +135,7 @@ if ( $Ticket->CurrentUserHasRight('OwnTicket') &&
 if (    $Ticket->CurrentUserHasRight('ModifyTicket')
      or $Ticket->CurrentUserHasRight('CommentOnTicket') ) {
     $actions->{'F'} = { title => loc('Comment'),
-                        path  => "RTIR/Incident/Update.html?Action=Comment&id=" . $id,
+                        path  => "RTIR/Update.html?Action=Comment&id=" . $id,
     };
 }
 }
