@@ -23,7 +23,8 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $Title &>
-<& /RTIR/Incident/Elements/Tabs, 
+<& /RTIR/Report/Elements/Tabs, 
+    Ticket => $IncidentObj,
     current_toptab => "RTIR/Incident/Listing.html", 
     current_tab => "RTIR/Incident/ShowReports.html?id=".$Incident, 
     current_subtab => "RTIR/Report/Create.html", 
@@ -211,7 +212,6 @@
 </FORM>
 
 <%INIT>
-my $Title = loc("Create a new Incident Report");
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load("Incident Reports") || Abort(loc("Queue could not be loaded."));
 my $CFs = $QueueObj->CustomFields();
@@ -270,4 +270,5 @@ $DependedOnBy => undef
 $MemberOf => undef
 $QuoteTransaction => undef
 $Incident => undef
+$Title => loc("Create a new Incident Report")
 </%ARGS>

@@ -22,27 +22,20 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& Create.html, MemberOf => $MemberOf,
-    QuoteTransaction => $QuoteTransaction,
-    Queue => $Queue,
-    Subject => $TicketObj->Subject,
-    Requestors => $TicketObj->RequestorAddresses,
-    Cc => $TicketObj->CcAddresses,
-    AdminCc => $TicketObj->AdminCcAddresses,
-    TicketObj => $TicketObj,
-    Status => $TicketObj->Status,
-    Owner => $TicketObj->Owner,
-    InitialPriority => $TicketObj->InitialPriority,
-    FinalPriority => $TicketObj->FinalPriority,
-    Title => loc("Split Investigation #[_1]: [_2]", $TicketObj->id, $TicketObj->Subject) &>
+<& /Elements/Header, Title => loc("Bulk Association") &>
+<& /RTIR/Incident/Elements/ReportTabs, 
+    Ticket => $IncidentObj, 
+    current_tab => 'RTIR/Incident/ShowReports.html?id='.$IncidentObj->id,
+    current_subtab => 'RTIR/Incident/Associate.html',
+    Title => loc("Bulk Association") &>
+
+<& Elements/BulkAssociate, IncidentObj => $IncidentObj, Status => $Status &>
 
 <%INIT>
-my $TicketObj = LoadTicket($Ticket);
+my $IncidentObj = LoadTicket($Incident);
 </%INIT>
 
 <%ARGS>
-$MemberOf => undef
-$QuoteTransaction => undef
-$Queue => undef
-$Ticket => undef
+$Incident => undef
+$Status => undef
 </%ARGS>

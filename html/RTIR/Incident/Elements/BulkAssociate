@@ -1,0 +1,143 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& /Elements/ListActions, actions => \@results &>
+
+<FORM METHOD=POST>
+<input type="hidden" name="id" value="<%$IncidentObj->id%>">
+<TABLE WIDTH=100% border=0 cellpadding=3 CELLSPACING=0>
+<TR>
+<TH><&|/l&>Update</&></TH>
+%foreach my $col (@cols) {
+% my $colalias = $col;
+% $colalias =~ s/(Obj\-\>|)(Name|AsString)//;
+
+<TH><% loc($colalias) %>&nbsp;</TH>
+%}
+</TR>
+
+<%PERL>
+
+my $i;
+
+
+      
+$session{'tickets'}->RedoSearch();
+while (my $Ticket = $session{'tickets'}->Next) {
+ $i++;
+ if ($i % 2) {
+     $bgcolor = "#dddddd";
+ }
+ else {
+     $bgcolor = "#ffffff";
+ }
+      </%PERL>
+<TR bgcolor="<%$bgcolor%>">
+<TD><input type=checkbox name="UpdateTicket<%$Ticket->Id%>" CHECKED></TD>
+%# The ticket view is controlled by config.pm, WebOptions
+%foreach my $col (@cols) {
+<TD>
+% if ($col eq 'id') {
+<A HREF="<% $RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id()%></A>
+% }
+%else {
+<% eval "\$Ticket->$col()" %>&nbsp;
+%}
+</TD>
+%}
+</TR>
+%}
+
+
+
+</TABLE>
+
+<HR>
+
+<& /Elements/Submit &>
+
+
+</FORM>
+<%INIT>
+# Iterate through the ARGS hash and remove anything with a null value.
+map ($ARGS{$_} =~ /^$/ && (delete $ARGS{$_}), keys %ARGS);
+
+my ($bgcolor, @results);
+my @cols = qw(id Status Priority Subject QueueObj->Name OwnerObj->Name RequestorAddresses DueAsString );
+
+Abort(loc("No search to operate on.")) unless ($session{'tickets'});
+
+
+my $do_comment_reply=0;
+# Prepare for ticket updates
+$ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
+chomp ($ARGS{'UpdateContent'}) ;
+
+if ($ARGS{'UpdateContent'} &&
+    $ARGS{'UpdateContent'} ne '' &&
+    $ARGS{'UpdateContent'} ne  "-- \n" .
+    $session{'CurrentUser'}->UserObj->Signature) {
+            $do_comment_reply=1;
+}
+
+#Iterate through each ticket we've been handed
+
+my @extraresults;
+
+$ARGS{'Status'} = $Status;
+while (my $Ticket = $session{'tickets'}->Next) {
+    $RT::Logger->debug( "Checking Ticket ".$Ticket->Id ."\n");
+    next unless ($ARGS{"UpdateTicket".$Ticket->Id});
+    $RT::Logger->debug ("Matched\n");
+    #Update the basics.
+    $ARGS{'MemberOf-'.$IncidentObj->id} = $Ticket->Id;
+    while (my $link = $Ticket->MemberOf->Next) {
+      my $member = $link->TargetObj;
+      if ($member->QueueObj->id eq $IncidentObj->QueueObj->id) {
+        $ARGS{'DeleteLink--'.$link->Type.'-'.$link->Target} = '';
+        push @extraresults, ProcessTicketLinks(TicketObj => $Ticket, ARGSRef => \%ARGS);
+	delete($ARGS{'DeleteLink--'.$link->Type.'-'.$link->Target});
+      }
+    }
+
+    my @basicresults = ProcessTicketBasics(TicketObj => $Ticket, ARGSRef => \%ARGS);
+
+    my @linkresults = ProcessTicketLinks(TicketObj => $IncidentObj, ARGSRef => \%ARGS);
+    
+    my @updateresults; 
+    if ($do_comment_reply) {
+    ProcessUpdateMessage(TicketObj => $Ticket, ARGSRef => \%ARGS, Actions => \@updateresults); 
+   } 
+   my @tempresults = (@extraresults, @basicresults, @linkresults, @updateresults);
+    @tempresults = map { loc("Ticket [_1]: [_2]",$Ticket->Id,$_) } @tempresults;
+
+    @results = (@results, @tempresults);
+}
+
+</%INIT>
+
+<%ARGS>
+$IncidentObj => undef
+$Status => undef
+</%ARGS>

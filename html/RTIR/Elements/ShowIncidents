@@ -22,27 +22,28 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& Create.html, MemberOf => $MemberOf,
-    QuoteTransaction => $QuoteTransaction,
-    Queue => $Queue,
-    Subject => $TicketObj->Subject,
-    Requestors => $TicketObj->RequestorAddresses,
-    Cc => $TicketObj->CcAddresses,
-    AdminCc => $TicketObj->AdminCcAddresses,
-    TicketObj => $TicketObj,
-    Status => $TicketObj->Status,
-    Owner => $TicketObj->Owner,
-    InitialPriority => $TicketObj->InitialPriority,
-    FinalPriority => $TicketObj->FinalPriority,
-    Title => loc("Split Investigation #[_1]: [_2]", $TicketObj->id, $TicketObj->Subject) &>
+% while (my $link = $incidents->Next) {
+% my $incident = $link->TargetObj;
+% if ($incident->QueueObj->Name eq 'Incidents') {
+%   $count++;
+<a href="<%$RT::WebPath%>/RTIR/Incident/Display.html?id=<%$incident->Id%>"><%$incident->Id%></a>: <%$incident->Subject%> [<%$incident->Status%>]<br>
+% if ($depth < 8) {
+<& /RTIR/Elements/ShowIncidents, Ticket => $incident, depth => ($depth+1) &> 
+% }
+% }
+% }
+% if ($depth eq 1 and $count eq 0) {
+<i>(no Incidents)</i>
+% }
 
 <%INIT>
-my $TicketObj = LoadTicket($Ticket);
+
+my $count = 0;
+my $incidents = $Ticket->MemberOf;
+
 </%INIT>
 
 <%ARGS>
-$MemberOf => undef
-$QuoteTransaction => undef
-$Queue => undef
 $Ticket => undef
+$depth => 1
 </%ARGS>

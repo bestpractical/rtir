@@ -32,7 +32,7 @@
 
 <table border=0 cellpadding=0 cellspacing=2 width=100%>
 <tr>
-<td valign=top width=50%>
+<td valign=top colspan=2>
 <& /Elements/TitleBoxStart, title => loc('Investigation [_1]: [_2]', $Investigation->Id, $Investigation->Subject), 
 	title_href =>"$RT::WebPath/Ticket/Modify.html?id=".$Investigation->Id, 
 	title_class=> 'inverse' &>
@@ -55,6 +55,14 @@
           content => loc('[_1] min', $TimeWorked) &>
     </TD>
   </tr>
+  <tr>
+    <td class=label>
+      <%loc("Incident")%>:
+    </td>
+    <td class=value colspan=2>
+      <& /RTIR/Elements/ShowIncidents, Ticket => $Investigation &>
+    </td>
+  </tr>
 </table>
 
 <table width=100%>
@@ -71,20 +79,6 @@
 
 <& /Elements/TitleBoxEnd &>
 
-</td>
-<td valign=top>
-<& /Elements/TitleBoxStart, title => loc('Associated Incidents'), 
-    title_href => "$RT::WebPath/Ticket/ModifyLinks.html?id=".$Investigation->Id, 
-    title_class=> 'inverse',  
-    titleright => '', color=> "#336633" &>
-    <table width=100%>
-    <td align="right">
-    <font size="-1">| <a href=".">New</a> 
-    		| <a href=".">Associate</a> 
-		| <a href=".">Close All</a> |</font>
-    </td></table>
-<& /RTIR/Investigation/Elements/ShowIncidents, Ticket => $Investigation &>
-<& /Elements/TitleBoxEnd &>
 </td>
 </tr>
 <tr>

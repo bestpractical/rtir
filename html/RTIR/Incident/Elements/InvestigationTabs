@@ -22,45 +22,31 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, Title => $Title &>
-<& /RTIR/Incident/Elements/BlockTabs, 
-    Ticket => $Incident, 
-    current_tab => 'RTIR/Incident/ShowBlocks.html?id='.$Incident->id,
+<& /RTIR/Incident/Elements/Tabs, 
+    Ticket => $Ticket, 
+    current_tab => 'RTIR/Incident/ShowInvestigations.html?id='.$Ticket->id,
+    current_subtab => $current_subtab,
+    subtabs => $subtabs,
     Title => $Title &>
 
-<h2><% loc('Total Blocks: [_1]', $count) %></h2>
-<& /RTIR/Elements/ShowChildren, 
-    Ticket => $Incident, 
-    QueueName => 'Blocks',
-    DisplayPath => "/RTIR/Block/Display.html" &>
-
 <%INIT>
-  my ($Incident, $Title, $count);  
+  my $q = RT::Queue->new($session{'CurrentUser'});
+  $q->Load('Investigations');
 
-  $Incident = new RT::Ticket($session{'CurrentUser'});
-  $Incident = LoadTicket($id);
-
-  $Title = loc("Blocks for Incident #[_1]: [_2]", $Incident->Id, $Incident->Subject);
-
-  unless ($id) {
-    Abort('No incident specified');
-  }
-
-  $Incident = LoadTicket($ARGS{'id'});
-  unless ($Incident->CurrentUserHasRight('ShowTicket')) {
-    Abort("No permission to view ticket");
-  }
-
-  $count=0;
-  while (my $link = $Incident->Members->Next) {
-    my $member= $link->BaseObj;
-    if ($member->QueueObj->Name eq 'Blocks') {
-      $count++;
-    }
-  }
+  my $subtabs = {
+    _A => { path => 'RTIR/Investigation/Create.html?Incident='.$Ticket->id,
+            title     => loc('Launch Investigation') },
+    _B => { path => 'RTIR/Incident/AssociateInvestigations.html?QueueOp==&ValueOfQueue='.$q->Id.'&ClearRestrictions=1&Incident='.$Ticket->id,
+            title     => loc('Associate Investigation') },
+    };
 
 </%INIT>
 
 <%ARGS>
-$id => undef
+$Ticket => undef
+$current_tab => undef
+$current_subtab => undef
+$Title => undef
+$queue => undef
 </%ARGS>
+

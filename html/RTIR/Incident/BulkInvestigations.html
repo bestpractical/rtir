@@ -22,28 +22,20 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-% while (my $link = $incidents->Next) {
-% my $incident = $link->TargetObj;
-% if ($incident->QueueObj->Name eq 'Incidents') {
-%   $count++;
-<a href="<%$RT::WebPath%>/RTIR/Incident/Display.html?id=<%$incident->Id%>"><%$incident->Id%></a>: <%$incident->Subject%> [<%$incident->Status%>]<br>
-% if ($depth < 8) {
-<& /RTIR/Report/Elements/ShowIncidents, Report => $incident, depth => ($depth+1) &> 
-% }
-% }
-% }
-% if ($depth eq 1 and $count eq 0) {
-<i>(no Incidents)</i>
-% }
+<& /Elements/Header, Title => loc("Bulk Association") &>
+<& /RTIR/Incident/Elements/InvestigationTabs, 
+    Ticket => $IncidentObj, 
+    current_tab => 'RTIR/Incident/ShowInvestigations.html?id='.$IncidentObj->id,
+    current_subtab => 'RTIR/Incident/Associate.html',
+    Title => loc("Bulk Association") &>
+
+<& Elements/BulkAssociate, IncidentObj => $IncidentObj, Status => $Status &>
 
 <%INIT>
-
-my $count = 0;
-my $incidents = $Report->MemberOf;
-
+my $IncidentObj = LoadTicket($Incident);
 </%INIT>
 
 <%ARGS>
-$Report => undef
-$depth => 1
+$Incident => undef
+$Status => undef
 </%ARGS>

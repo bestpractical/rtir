@@ -107,9 +107,6 @@ my $ticket_page_tabs = {
     _D => { title => loc('Merge'),
             path  => "RTIR/Investigation/Merge.html?id=" . $id,
 	    separator => 1 },
-
-    _E => { title => loc('Incidents'),
-            path  => "RTIR/Investigation/AssociateIncident.html?id=" . $id, },
 };
 
 foreach my $tab ( sort keys %{$ticket_page_tabs} ) {

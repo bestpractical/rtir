@@ -25,8 +25,10 @@
 <& /Elements/Header, Title => $Title &>
 <& /RTIR/Incident/Elements/Tabs, 
     current_toptab => "RTIR/Incident/Listing.html", 
-    current_tab => "RTIR/Incident/Create.html?Queue=".$QueueObj->Id, 
-    Title => $Title &>
+    current_tab => $current_tab, 
+    current_subtab => $current_subtab, 
+    Title => $Title,
+    Ticket => $TicketObj &>
 <FORM ACTION="<%$RT::WebPath%>/RTIR/Incident/Create.html" METHOD="POST" ENCTYPE="multipart/form-data">
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
 <INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
@@ -217,9 +219,13 @@
 </FORM>
 
 <%INIT>
-my $Title = loc("Create a new Incident");
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load("Incidents") || Abort(loc("Queue could not be loaded."));
+
+if (!defined $current_tab) {
+  $current_tab = "RTIR/Incident/Create.html?Queue=".$QueueObj->Id; 
+}
+
 my $CFs = $QueueObj->CustomFields();
 
 my $TicketObj = $ARGS{TicketObj};
@@ -269,4 +275,7 @@ $DependsOn => undef
 $DependedOnBy => undef
 $MemberOf => undef
 $QuoteTransaction => undef
+$Title => loc("Create a new Incident")
+$current_tab => undef
+$current_subtab => undef
 </%ARGS>

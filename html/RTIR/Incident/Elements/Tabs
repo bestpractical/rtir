@@ -27,8 +27,10 @@
     tabs => $tabs, 
     actions => $actions, 
     current_tab => $current_tab, 
+    current_subtab => $current_subtab, 
     current_toptab => $current_toptab,
     Title => $Title &> 
+
 <%INIT>
 
 my $q = RT::Queue->new($session{'CurrentUser'});
@@ -92,6 +94,9 @@ $tabs->{"this"} = { class => "currentnav",
                     path  => "RTIR/Incident/Display.html?id=" . $Ticket->id,
                     title => loc("Incident #[_1]", $id),
                     current_subtab => $current_subtab };
+
+  my $reportq = RT::Queue->new($session{'CurrentUser'});
+  $reportq->Load('Incident Reports');
 
 my $ticket_page_tabs = {
     _A => { title => loc('Display'),

@@ -23,8 +23,10 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
-<& Elements/Tabs, 
-    current_tab => 'RTIR/Incidents/Listing.html', 
+<& Elements/ReportTabs, 
+    Ticket => $IncidentObj, 
+    current_tab => 'RTIR/Incident/ShowReports.html?id='.$IncidentObj->id,
+    current_subtab => 'RTIR/Incident/AssociateReports.html',
     Title => $title &>
 
 %if ($ticketcount && !  $ARGS{'HideResults'}) {
@@ -38,16 +40,16 @@
 </TABLE>
 <div align=center>
 <font size=2>
-<a href="Listing.html?GotoPage=1"><&|/l&>First page</&></a>
+<a href="AssociateReports.html?Incident=<%$Incident%>&GotoPage=1"><&|/l&>First page</&></a>
 &nbsp;&nbsp;
 %  if ( $session{'tickets'}->FirstRow >= $session{'tickets_rows_per_page'}-1 ) {
-<a href="Listing.html?GotoPage=Prev">&lt;<&|/l&>Previous page</&></a>
+<a href="AssociateReports.html?Incident=<%$Incident%>&GotoPage=Prev">&lt;<&|/l&>Previous page</&></a>
 &nbsp;&nbsp;
 %  }                                                                           
 %  if ( $session{'tickets'}->FirstRow + $session{'tickets_rows_per_page'} < $ticketcount ) {                                                               
-<a href="Listing.html?GotoPage=Next"><&|/l&>Next page</&>&gt;</a>
+<a href="AssociateReports.html?Incident=<%$Incident%>&GotoPage=Next"><&|/l&>Next page</&>&gt;</a>
 %  }
-%#&nbsp;&nbsp;<form method=get action="Listing.html"><&|/l&>Goto page</&> <input name=GotoPage size=2></form>
+%#&nbsp;&nbsp;<form method=get action="AssociateReports.html"><&|/l&>Goto page</&> <input name=GotoPage size=2></form>
 </font>
 </div>
 <!--<div align=right>-->
@@ -58,7 +60,7 @@
 </td>
 <td align=right>
 
-<a href="<% $RT::WebPath %>/Search/Bulk.html"><&|/l&>Update all these tickets at once</&></a>
+<a href="BulkReports.html?Incident=<%$Incident%>&Status=open"><&|/l&>Associate all at once</&></a>
 <!--</div>-->
 </td>
 </tr>
@@ -72,22 +74,24 @@
 
 %my %restrictions=$session{'tickets'}->DescribeRestrictions();
 %foreach my $row (keys %restrictions){
-<%$restrictions{"$row"}%> <A HREF="<% $RT::WebPath %>/Search/Listing.html?DeleteRestriction=<%$row%>">[<&|/l&>delete</&>]</a><br>
+<%$restrictions{"$row"}%> <A HREF="AssociateReports.html?Incident=<%$Incident%>&DeleteRestriction=<%$row%>">[<&|/l&>delete</&>]</a><br>
 %}
 <BR>
 <BR>
-<A HREF="<% $RT::WebPath%>/Search/Listing.html?Bookmark=<%$session{'tickets'}->FreezeLimits()|u%>&TicketsSortBy=<%$session{'tickets_sort_by'}%>&TicketsSortOrder=<%$session{'tickets_sort_order'}%>&RowsPerPage=<%$session{'tickets_rows_per_page'}%>"><&|/l&>Bookmarkable URL for this search</&></a>
+<A HREF="AssociateReports.html?Incident=<%$Incident%>&Bookmark=<%$session{'tickets'}->FreezeLimits()|u%>&TicketsSortBy=<%$session{'tickets_sort_by'}%>&TicketsSortOrder=<%$session{'tickets_sort_order'}%>&RowsPerPage=<%$session{'tickets_rows_per_page'}%>"><&|/l&>Bookmarkable URL for this search</&></a>
 <& /Elements/TitleBoxEnd&>
 </TD>
 <TD>
 
-<& /Search/Elements/PickRestriction, %ARGS &>
+<& /RTIR/Elements/PickRestriction, Queue => $ARGS{'ValueOfQueue'}, %ARGS &>
 
 </TD>
 </TR>
 </TABLE>
 
 <%INIT>
+
+my $IncidentObj = LoadTicket($Incident);
 
 my ($title, $ticketcount);
 $session{'i'}++;
@@ -107,7 +111,12 @@ if ($session{'tickets'}) {
     } else {
         $title = loc("Find incidents");
    }
+
 </%INIT>
 <%CLEANUP>
 $session{'tickets'}->PrepForSerialization();
 </%CLEANUP>
+
+<%ARGS>
+$Incident => undef
+</%ARGS>

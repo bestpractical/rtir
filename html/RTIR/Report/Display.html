@@ -32,7 +32,7 @@
 
 <table border=0 cellpadding=0 cellspacing=2 width=100%>
 <tr>
-<td valign=top width=50%>
+<td valign=top colspan=2>
 <& /Elements/TitleBoxStart, title => $Title, 
 	title_href =>"$RT::WebPath/Ticket/Modify.html?id=".$Ticket->Id, 
 	title_class=> 'inverse' &>
@@ -60,7 +60,7 @@
       <%loc("Incident")%>:
     </td>
     <td class=value colspan=2>
-      <& /RTIR/Report/Elements/ShowIncidents, Report => $Ticket &>
+      <& /RTIR/Elements/ShowIncidents, Ticket => $Ticket &>
     </td>
   </tr>
 </table>
@@ -79,20 +79,6 @@
 
 <& /Elements/TitleBoxEnd &>
 
-</td>
-<td valign=top>
-<& /Elements/TitleBoxStart, title => loc('Associated Incidents'), 
-    title_href => "$RT::WebPath/Ticket/ModifyLinks.html?id=".$Ticket->Id, 
-    title_class=> 'inverse',  
-    titleright => '', color=> "#336633" &>
-    <table width=100%>
-    <td align="right">
-    <font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Incident/Create.html">New</a> 
-    		| <a href=".">Associate</a> 
-		| <a href=".">Close All</a> |</font>
-    </td></table>
-<& /RTIR/Report/Elements/ShowIncidents, Report => $Ticket &>
-<& /Elements/TitleBoxEnd &>
 </td>
 </tr>
 <tr>

@@ -23,10 +23,9 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $Title &>
-<& /RTIR/Incident/Elements/Tabs, 
+<& /RTIR/Incident/Elements/InvestigationTabs, 
     Ticket => $Incident, 
     current_tab => 'RTIR/Incident/ShowInvestigations.html?id='.$Incident->id,
-    subtabs => $subtabs,
     Title => $Title &>
 
 <h2><% loc('Total Investigations: [_1]', $count) %></h2>
@@ -36,15 +35,7 @@
     DisplayPath => "/RTIR/Investigation/Display.html" &>
 
 <%INIT>
-  my ($Incident, $Title, $count);  
-
-  my $q = RT::Queue->new($session{'CurrentUser'});
-  $q->Load('Investigations');
-
-  my $subtabs = {
-    _A => { path => 'RTIR/Investigation/Create.html?Queue='.$q->Id.'&Incident='.$id,
-            title     => loc('Launch Investigation') }
-    };
+  my ($Incident, $Title, $count);
 
   $Incident = new RT::Ticket($session{'CurrentUser'});
   $Incident = LoadTicket($id);
@@ -63,7 +54,7 @@
   $count=0;
   while (my $link = $Incident->Members->Next) {
     my $member= $link->BaseObj;
-    if ($member->QueueObj->Name eq 'Investigations') {
+    if ($member->QueueObj->Name eq 'Blocks') {
       $count++;
     }
   }

@@ -23,10 +23,9 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $Title &>
-<& /RTIR/Incident/Elements/Tabs, 
+<& /RTIR/Incident/Elements/ReportTabs, 
     Ticket => $Incident, 
     current_tab => 'RTIR/Incident/ShowReports.html?id='.$Incident->id,
-    subtabs => $subtabs,
     Title => $Title &>
 
 <h2><% loc('Total Incident Reports: [_1]', $count) %></h2>
@@ -36,15 +35,7 @@
     DisplayPath => "/RTIR/Report/Display.html" &>
 
 <%INIT>
-  my ($Incident, $Title, $count);  
-
-  my $q = RT::Queue->new($session{'CurrentUser'});
-  $q->Load('Investigations');
-
-  my $subtabs = {
-    _A => { path => 'RTIR/Report/Create.html?Queue='.$q->Id.'&Incident='.$id,
-            title     => loc('New Incident Report') }
-    };
+  my ($Incident, $Title, $count);
 
   $Incident = new RT::Ticket($session{'CurrentUser'});
   $Incident = LoadTicket($id);

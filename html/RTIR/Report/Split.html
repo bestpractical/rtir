@@ -33,7 +33,8 @@
     Status => $TicketObj->Status,
     Owner => $TicketObj->Owner,
     InitialPriority => $TicketObj->InitialPriority,
-    FinalPriority => $TicketObj->FinalPriority &>
+    FinalPriority => $TicketObj->FinalPriority,
+    Title => loc("Split Incident Report #[_1]: [_2]", $TicketObj->id, $TicketObj->Subject) &>
 
 <%INIT>
 my $TicketObj = LoadTicket($Ticket);
