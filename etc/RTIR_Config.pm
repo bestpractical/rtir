@@ -15,13 +15,16 @@ Set($whois, {1 => "localhost", 2 => "whois.fucknsi.com"});
 
 # Set the number of minutes for the SLA
 
-Set($SLA, {'Full service' => 60, 'Reduced service' => 120});
+Set($SLA, {'Full service' => 60, 
+	   'Full service: out of hours' => 120, 
+	   'Reduced service' => 120});
 
 
 # Set the defaults for RTIR custom fields
 # default values are case-sensitive
 
-Set($_RTIR_SLA_default, "Full service");
+Set($_RTIR_SLA_inhours_default, "Full service");
+Set($_RTIR_SLA_outofhours_default, "Full service: out of hours");
 Set($_RTIR_HowReported_default, "Email");
 #Set($_RTIR_ReporterType_default, "");
 #Set($_RTIR_IP_default, "");

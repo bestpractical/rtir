@@ -140,8 +140,11 @@
             {   Name => 'Full service',
                 SortOrder => 1,
 	    },
-            {   Name => 'Reduced service',
+            {   Name => 'Full service: out of hours',
                 SortOrder => 2,
+	    },
+            {   Name => 'Reduced service',
+                SortOrder => 3,
 	    },
         ],
     },
@@ -343,20 +346,24 @@ if ($self->TicketObj->StartsObj->AsString eq "Not set") {
        CustomCommitCode => q[
 # ------------------------------------------------------------------- #
 my $sla;
+my $date = RT::Date->new($RT::SystemUser);
+$date->SetToNow;
+use Business::Hours;
+my $bizhours = new Business::Hours;
+if ($RT::BusinessHours) {
+  $bizhours->business_hours(%$RT::BusinessHours);
+}
+
 if ($self->TicketObj->FirstCustomFieldValue('_RTIR_SLA')) {
   $sla = $self->TicketObj->FirstCustomFieldValue('_RTIR_SLA');
+} elsif ($bizhours->first_after($date->Unix) != $date->Unix) {
+  $sla = "Full service: out of hours";
 } else {
-  $sla = 'Full service';
+  $sla = "Full service";
 }
+
 my $addminutes = $RT::SLA->{$sla};
 if ($self->TicketObj->StartsObj->AsString eq "Not set") {
-  my $date = RT::Date->new($RT::SystemUser);
-  $date->SetToNow;
-  use Business::Hours;
-  my $bizhours = new Business::Hours;
-  if ($RT::BusinessHours) {
-    $bizhours->business_hours(%$RT::BusinessHours);
-  }
   my $starts = $bizhours->first_after($date->Unix);
   $date->Set(Format => 'unix', Value => $starts);
   $self->TicketObj->SetStarts($date->ISO);
