@@ -30,6 +30,7 @@
 <TR>
 <TH ALIGN=RIGHT><&|/l&>#</&></TH>
 <TH ALIGN=LEFT><&|/l&>Subject</&></TH>
+<TH ALIGN=LEFT><&|/l&>From</&></TH>
 <TH ALIGN=LEFT><&|/l&>Owner</&></TH>
 <TH ALIGN=LEFT><&|/l&>Due</&></TH>
 <TH ALIGN=LEFT>&nbsp;</TH>
@@ -49,6 +50,9 @@
 <A HREF="<% $RT::WebPath %>/RTIR/Display.html?id=<%$Ticket->Id%>">
 <%$Ticket->Subject || loc('(no subject)')%>
 </A>
+</TD>
+<TD>
+<%$Ticket->RequestorAddresses%>
 </TD>
 <TD>
 <%$Ticket->OwnerObj->Name%>

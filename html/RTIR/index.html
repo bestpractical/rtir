@@ -34,8 +34,8 @@
 <TD VALIGN=TOP>
 <& /Elements/TitleBoxStart, title=>loc("Refresh") &>
 <form method=get action="index.html">
-<& /Elements/Refresh, Name => 'HomeRefreshInterval', Default => $session {'home_refresh_interval'} &>
-<div align=right><input type=submit value="<&|/l&>Go!</&>"></div>
+<& /RTIR/Elements/Refresh, Name => 'HomeRefreshInterval', Default => $session {'home_refresh_interval'} &>
+<input type=submit value="<&|/l&>Go!</&>">
 </form>
 <& /Elements/TitleBoxEnd &>
 </TD>
