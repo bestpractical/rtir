@@ -23,6 +23,7 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $Title &>
+/-/-/-/-/-/-/-/-/-/ BEGIN CONFLICT  [O26 A26 B26] /-/-/-/-/-/-/-/-/-/-/
 % if ($Incident) {
 % if ($Split) {
 <& "/RTIR/".$Type."/Elements/Tabs",
@@ -32,17 +33,37 @@
     current_subtab => "RTIR/".$Type."/Split.html?Ticket=".$TicketObj->Id, 
     Title => $Title &>
 % } else {
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+% if ($Incident) {
+% if ($Split) {
+/-/-/-/-/-/-/-/-/-/-/-/-/  END CONFLICT   /-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
 <& "/RTIR/".$Type."/Elements/Tabs",
     Ticket => $TicketObj,
+/-/-/-/-/-/-/-/-/-/ BEGIN CONFLICT  [O29 A37 B30] /-/-/-/-/-/-/-/-/-/-/
     current_toptab => "RTIR/Incident/Listing.html", 
-    current_tab => "RTIR/".$Type."/Split.html", 
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+    current_toptab => "RTIR/Incident/Listing.html", 
+    current_tab => "RTIR/".$Type."/Display.html?id=".$TicketObj->Id, 
+    current_subtab => "RTIR/".$Type."/Split.html?Ticket=".$TicketObj->Id, 
+/-/-/-/-/-/-/-/-/-/-/-/-/  END CONFLICT   /-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
     Title => $Title &>
 % }
 % } else {
 <& "/RTIR/Incident/Elements/".$Type."Tabs", 
     Ticket => $IncidentObj,
+/-/-/-/-/-/-/-/-/-/ BEGIN CONFLICT  [O35 A44 B37] /-/-/-/-/-/-/-/-/-/-/
     current_toptab => "RTIR/".$Type."/Listing.html", 
     current_tab => "RTIR/".$Type."/Create.html", 
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+    current_toptab => "RTIR/".$Type."/Listing.html", 
+    current_tab => "RTIR/".$Type."/Create.html?Incident=".$Incident, 
+    Title => $Title &>
+% }
+% } else {
+<& "/RTIR/".$Type."/Elements/Tabs",
+    Ticket => $TicketObj,
+    current_tab => "RTIR/".$Type."/Create.html", 
+/-/-/-/-/-/-/-/-/-/-/-/-/  END CONFLICT   /-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
     Title => $Title &>
 % }
 <FORM ACTION="<%$RT::WebPath%>/RTIR/Common/Create.html" METHOD="POST" ENCTYPE="multipart/form-data">
@@ -244,7 +265,11 @@ my $QueueObj = new RT::Queue($session{'CurrentUser'});
 my $QueueName;
 my $TicketObj = $ARGS{TicketObj};
 my $IncidentObj;
+/-/-/-/-/-/-/-/-/-/ BEGIN CONFLICT  [O239 A247 B247] /-/-/-/-/-/-/-/-/-/-/
 my $Status = $ARGS{'Status'};
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+my $Status = $ARGS{'Status'};
+/-/-/-/-/-/-/-/-/-/-/-/-/  END CONFLICT   /-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
 
 if ($Incident) {
   $IncidentObj = new RT::Ticket($session{'CurrentUser'});
@@ -252,7 +277,11 @@ if ($Incident) {
 }
 
 if ($Type eq "Investigation") {
+/-/-/-/-/-/-/-/-/-/ BEGIN CONFLICT  [O246 A255 B255] /-/-/-/-/-/-/-/-/-/-/
   $Status = 'open';
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+  $Status = 'open';
+/-/-/-/-/-/-/-/-/-/-/-/-/  END CONFLICT   /-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
   if ($Split) {
     $Title = loc("Split Investigation #[_1]: [_2]", $TicketObj->id, $TicketObj->Subject);
   } else {
@@ -260,7 +289,11 @@ if ($Type eq "Investigation") {
   }
   $QueueName = "Investigations";
 } elsif ($Type eq "Block") {
+/-/-/-/-/-/-/-/-/-/ BEGIN CONFLICT  [O253 A263 B263] /-/-/-/-/-/-/-/-/-/-/
   $Status = 'new';
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+  $Status = 'new';
+/-/-/-/-/-/-/-/-/-/-/-/-/  END CONFLICT   /-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
   if ($Split) {
     $Title = loc("Split Block #[_1]: [_2]", $TicketObj->id, $TicketObj->Subject);
   } else {
@@ -268,7 +301,11 @@ if ($Type eq "Investigation") {
   }
   $QueueName = "Blocks";
 } else {
+/-/-/-/-/-/-/-/-/-/ BEGIN CONFLICT  [O260 A271 B271] /-/-/-/-/-/-/-/-/-/-/
   $Status = 'new';
+/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+  $Status = 'new';
+/-/-/-/-/-/-/-/-/-/-/-/-/  END CONFLICT   /-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
   if ($Split) {
     $Title = loc("Split Incident Report #[_1]: [_2]", $TicketObj->id, $TicketObj->Subject);
   } else {
