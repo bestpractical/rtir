@@ -2,25 +2,26 @@
 % if (defined $check) {
 <TH class="ticketheader">&nbsp;</TH>
 % }
-<& /Search/Elements/TicketHeaderCell , Attribute => 'id', Header => '#'&>
-<& /Search/Elements/TicketHeaderCell , Attribute => 'Subject'&>
-<& /Search/Elements/TicketHeaderCell , Attribute => 'State'&>
-<& /Search/Elements/TicketHeaderCell , Attribute => 'LastUpdated', Header => 'Last Updated'&>
-<& /Search/Elements/TicketHeaderCell , Attribute => 'Owner'&>
-<& /Search/Elements/TicketHeaderCell , Attribute => 'Priority'&>
+<& TicketHeaderCell , Attribute => 'id', Header => '#', %ARGS &>
+<& TicketHeaderCell , Attribute => 'Subject', %ARGS &>
+<& TicketHeaderCell , Attribute => 'State', %ARGS &>
+<& TicketHeaderCell , Attribute => 'LastUpdated', Header => 'Last Updated', %ARGS &>
+<& TicketHeaderCell , Attribute => 'Owner', %ARGS &>
+<& TicketHeaderCell , Attribute => 'Priority', %ARGS &>
 </TR>
 <TR>
 % if (defined $check) {
 <TH class="ticketheader">&nbsp;</TH>
 % }
 <TH class="ticketheader">&nbsp;</TH>
-<& /Search/Elements/TicketHeaderCell , Attribute => 'Requestor(s)'&>
-<& /Search/Elements/TicketHeaderCell , Attribute => 'Created'&>
-<& /Search/Elements/TicketHeaderCell , Attribute => 'Told', Header => 'Last Contact'&>
-<& /Search/Elements/TicketHeaderCell , Attribute => 'Due', Header => 'Due'&>
-<& /Search/Elements/TicketHeaderCell , Attribute => 'TimeLeft', Header => 'Left'&>
+<& TicketHeaderCell , Attribute => 'Requestor(s)', %ARGS &>
+<& TicketHeaderCell , Attribute => 'Created', %ARGS &>
+<& TicketHeaderCell , Attribute => 'Told', Header => 'Last Contact', %ARGS &>
+<& TicketHeaderCell , Attribute => 'Due', Header => 'Due', %ARGS &>
+<& TicketHeaderCell , Attribute => 'TimeLeft', Header => 'Left', %ARGS &>
 </TR>
 
 <%ARGS>
 $check => undef
+$URL => undef
 </%ARGS>

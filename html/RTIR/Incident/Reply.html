@@ -34,7 +34,7 @@
 <input type=hidden name=id value=<%$id%>>
 %if ($ticketcount && !  $ARGS{'HideResults'}) {
 <TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
-<& /RTIR/Elements/TicketHeader, check => "check", %ARGS &>
+<& /RTIR/Elements/TicketHeader, check => "check", Type => 'Report', %ARGS &>
 % my $i;
 % if ($All) {
 <tr>
@@ -55,6 +55,7 @@
 <& /RTIR/Elements/TicketRow, Type => 'Report', Ticket => $Ticket, i=> $i, check => "check", %ARGS &>
 %}
 % if ($All) {
+<& /RTIR/Elements/TicketHeader, check => "check", Type => 'Investigation', %ARGS &>
 <tr>
 <th align=left colspan=6>Investigation Correspondents</th>
 </tr>

@@ -33,7 +33,7 @@
 <input type=hidden name=child value=<%$id%>>
 %if ($ticketcount && !  $ARGS{'HideResults'}) {
 <TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
-<& /RTIR/Elements/TicketHeader, check => "radio", %ARGS &>
+<& /RTIR/Elements/TicketHeader, check => "radio", Type => 'Incident', %ARGS &>
 % my $i;
 %while (my $Ticket = $session{'tickets'}->Next) {
 % $i++;
