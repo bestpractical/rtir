@@ -34,13 +34,13 @@
   <tr>
     <td class=label>Start Date:</td>
     <td class=input>
-      <input size=30 name="mystart" value="<%$monthstart->ISO%>"> 
+      <input size=30 name="mystart" value="<%$start->AsString%>"> 
     </td>
   </tr>
   <tr>
     <td class=label>End Date:</td>
     <td class=input>
-      <input size=30 name="myend" value="<%$monthend->ISO%>"> 
+      <input size=30 name="myend" value="<%$end->AsString%>"> 
     </td>
   </tr>
 </table>
@@ -50,11 +50,11 @@
 <%INIT>
 my $now = new RT::Date($RT::SystemUser);
 $now->SetToNow();
-my $monthend = new RT::Date($RT::SystemUser);
-$monthend->SetToNow();
-my $monthstart = new RT::Date($RT::SystemUser);
-$monthstart->SetToNow();
-$monthstart->AddDays(0-30);
+my $end = new RT::Date($RT::SystemUser);
+$end->SetToNow();
+my $start = new RT::Date($RT::SystemUser);
+$start->SetToNow();
+$start->AddDays(0-30);
 
 my $title = loc("Reporting");
 </%INIT>

@@ -1,86 +1,37 @@
-<%perl>
-# of new reports outstanding at month start
-my $outstanding = RT::Tickets->new($session{'CurrentUser'});
-$outstanding->LimitQueue(VALUE => 'Incident Reports');
-$outstanding->LimitCreated(VALUE => $start, OPERATOR => "<");
-my $date = ParseDateToISO("0");
-$outstanding->LimitResolved(VALUE => $date, OPERATOR => "=");
-
-# of new reports created during the month
-my $tix_created = RT::Tickets->new($session{'CurrentUser'});
-$tix_created->LimitQueue(VALUE => 'Incident Reports');
-$tix_created->LimitCreated(VALUE => $start, OPERATOR => ">");
-$tix_created->LimitCreated(VALUE => $end, OPERATOR => "<");
-
-# of new reports resolved/closed/deleted during the month
-# does this mean "number of reports closed during the month or number of
-# reports created during the month that were also closed during the month?"
-
-my $tix_resolved = RT::Tickets->new($session{'CurrentUser'});
-$tix_resolved->LimitQueue(VALUE => 'Incident Reports');
-$tix_resolved->LimitCreated(VALUE => $start, OPERATOR => ">");
-$tix_resolved->LimitCreated(VALUE => $end, OPERATOR => "<");
-$tix_resolved->LimitResolved(VALUE => $start, OPERATOR => ">");
-$tix_resolved->LimitResolved(VALUE => $end, OPERATOR => "<");
-
-# of new reports oustanding at month end 
-# same question: does this mean "number of reports closed during the month or
-# number of reports created during the month that were also closed during the
-# month?"
-
-my $tix_unresolved = RT::Tickets->new($session{'CurrentUser'});
-#$tix_unresolved->LimitQueue(VALUE => 'Incident Reports');
-#$tix_unresolved->LimitCreated(VALUE => $start, OPERATOR => ">");
-#$tix_unresolved->LimitCreated(VALUE => $end, OPERATOR => "<");
-#$tix_unresolved->LimitResolved(VALUE => $end, OPERATOR => ">");
-#$tix_unresolved->LimitResolved(VALUE => $date, OPERATOR => "=", ENTRYAGGREGATOR => "OR");
-
-#$tix_unresolved->FromSQL("Queue = 'Incident Reports' AND Created > '$start' AND Created < '$end' AND (Resolved<'1970-01-01 00:00:00' OR Resolved>'2003-06-18 21:58')");
-
-$tix_unresolved->FromSQL("Queue = 'Incident Reports' AND Created > '$start' AND Created < '$end' AND (Resolved='1970-01-01 00:00:00' OR Resolved>'$end')");
-
-# of new reports created during the month broken down by classification
-my ($fid, $types, $classifications, $windows, $CustomFields);
-my $Queue = new RT::Queue($session{'CurrentUser'});
-$Queue->Load('Incidents');
-$CustomFields = $Queue->CustomFields();
-$CustomFields->{'find_disabled_rows'} = 1;
-while (my $CustomField = $CustomFields->Next()) {
-  if ($CustomField->Name eq '_RTIR_Function') {
-    $fid = $CustomField->Id;
-    my $values = $CustomField->Values;
-    while (my $value = $values->Next) {
-      $types->{$value->Name} = $value->Description;
-    }
-  }
-}
-
-# of new reports created during the month broken down by classification
-$Queue = new RT::Queue($session{'CurrentUser'});
-$Queue->Load('Incidents');
-$CustomFields = $Queue->CustomFields();
-$CustomFields->{'find_disabled_rows'} = 1;
-while (my $CustomField = $CustomFields->Next()) {
-  if ($CustomField->Name eq '_RTIR_Classification') {
-    $fid = $CustomField->Id;
-    my $values = $CustomField->Values;
-    while (my $value = $values->Next) {
-      $classifications->{$value->Name} = "";
-    }
-  }
-}
-
-</%perl>
-<h1>Monthly Report</h1>
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<h1>RTIR Periodic Report</h1>
 
 <table>
   <tr>
     <td>Start date:</td>
-    <td> <%$start%></td>
+    <td> <%$rtstart->AsString%></td>
   </tr>
   <tr>
     <td>End date:</td>
-    <td><%$end%></td>
+    <td><%$rtend->AsString%></td>
   </tr>
 </table>
 
@@ -91,15 +42,15 @@ while (my $CustomField = $CustomFields->Next()) {
   <td class=value> <%$outstanding->Count%></td>
 </tr>
 <tr>
-  <td>Total new reports for the month</td>
+  <td>Total new reports for this period</td>
   <td><% $tix_created->Count%></td>
 </tr>
 <tr>
-  <td>Incident Reports resolved in the month</td>
+  <td>Incident Reports resolved during this period</td>
   <td><% $tix_resolved->Count%></td>
 </tr>
 <tr>
-  <td>Reports unresolved at the end of the month</td>
+  <td>Reports unresolved at the end of the period</td>
   <td><% $tix_unresolved->Count%></td>
 </tr>
 </table>
@@ -109,35 +60,21 @@ while (my $CustomField = $CustomFields->Next()) {
 
 <%perl>
 
-foreach my $class (keys %$classifications) {
-    my $class_tix = RT::Tickets->new( $session{'CurrentUser'} );
-    $class_tix->LimitQueue(VALUE => 'Incident Reports');
-    $class_tix->LimitCreated(VALUE => $start, OPERATOR => ">");
-    $class_tix->LimitCreated(VALUE => $end, OPERATOR => "<");
-
-my $class_count = 0;
-while ( my $t = $class_tix->Next) {
-  # find the parent incident
-  my $incidents = $t->MemberOf;
-  my $parent;
-  while (my $link = $incidents->Next) {
-    my $incident = $link->TargetObj;
-    if ($incident->QueueObj->Name eq 'Incidents') {
-      $parent = $incident;
-      last;
+foreach my $key (sort keys %$classifications) {
+    my $class = $classifications->{$key};
+    my $class_count = 0;
+    while ( my $t = $tix_created->Next) {
+	my $value = get_incident_field( $t, '_RTIR_Classification');
+	next if ($class ne 'Unclassified' && $value ne $class);
+	next if ($class eq 'Unclassified' && $value ne "");
+	$class_count++;
     }
-  }
-  if ( $parent &&
-       $parent->FirstCustomFieldValue('_RTIR_Classification') eq $class) {
-    $class_count++;
-  }
-}
 
 </%perl>
 
 <tr>
   <td><%$class%></td>
-  <td><%$class_count%></td>
+  <td class=value><%$class_count%></td>
 </tr>
 
 <%perl>
