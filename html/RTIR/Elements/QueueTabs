@@ -43,7 +43,7 @@ my $current_toptab = 'RTIR/Search/Results.html?Queue=' . $QueueName;
 my ($actions, $mytab);
 my $searchtabs = { } ;
 
-if ( $Ticket) {
+if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName) {
 	
     my $id   = $Ticket->id();
     $mytab = "RTIR/Display.html?id=".$id;
@@ -233,6 +233,13 @@ if ($Type eq 'Incident' && $ChildObj) {
 				  separator => 1 };
 }
 
+foreach my $tab ( sort keys %{$tabs} ) {
+    if ( $tabs->{$tab}->{'path'} eq $current_tab ) {
+        $tabs->{$tab}->{"subtabs"}        = $subtabs;
+        $tabs->{'this'}->{"current_subtab"}        = 
+        $tabs->{$tab}->{"path"};
+    }
+}
 </%INIT>
 
   

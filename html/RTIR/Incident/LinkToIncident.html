@@ -30,16 +30,24 @@
     ChildObj => $ChildObj, 
     current_tab => "RTIR/Incident/LinkToIncident.html?child=$child",
     current_subtab => "RTIR/Incident/LinkToIncident.html?child=$child",
-    Title => $title &>
+    subtabs => $refinetabs,
+    Title => $title,
+    Format => $Format,
+    Query => $Query,
+    Rows => $Rows,
+    OrderBy => $OrderBy,
+    Order => $Order,
+    QueryString => $QueryString,
+&>
 
 <form action='Display.html' method=get>
 <input type=hidden name=child value=<%$child%>>
 
 <& /RTIR/Search/Elements/ShowResults, 
     Queue => $Queue,
+    Query => $Query,
     QueryString => $QueryString, 
     BaseURL => $BaseURL,
-    Format => $Format,
     %ARGS &>
 
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => loc("Link") &>
@@ -48,9 +56,11 @@
 <HR>
 
 <%INIT>
+$child = $ARGS{'id'} if !$child;
+
 $Format = $RT::RTIRLinkIncidentSearchResultFormat;
 
-my ($Type, undef) = $m->comp('/RTIR/Elements/Type', Ticket => $child);
+my ($Type, undef) = $m->comp('/RTIR/Elements/Type', Queue => 'Incidents');
 
 my $ChildObj = LoadTicket($child);
 my $Queue = $ChildObj->QueueObj->Name;
@@ -60,55 +70,7 @@ my $SubmitCaption = loc("Link #[_1] with selected Incident", $ChildObj->id);
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load('Incidents') || Abort(loc("Queue could not be loaded."));
 
-if (! $session{'tickets'}) {
-    # Init a new search
-    $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
-}
-
-my ($title, $ticketcount);
-$session{'i'}++;
-if ($session{'tickets'}) {
-    if ($ARGS{'DeleteRestriction'}) {
-	$session{'tickets'}->DeleteRestriction($ARGS{'DeleteRestriction'});
-    }
-    if ( ($ARGS{'ClearRestrictions'}) || ($ARGS{'NewSearch'}) ) {
-	$session{'tickets'}->ClearRestrictions;
-	$session{'tickets'}->LimitQueue(VALUE => $QueueObj->Name);
-	my $cf = RT::CustomField->new($session{'CurrentUser'});
-	$cf->LoadByNameAndQueue(Queue => $QueueObj->Id, Name => '_RTIR_State');
-	$session{'tickets'}->LimitCustomField(CUSTOMFIELD => $cf->Id, VALUE => 'open');
-    }
-}
-
-ProcessSearchQuery(ARGS=>\%ARGS);
-$session{'tickets'}->RedoSearch();
-if ( $session{'tickets'}->DescribeRestrictions()) {
-    $ticketcount = $session{tickets}->Count();
-} else {
-}
-
-# Iterate through the ARGS hash and remove anything with a null value.
-map ($ARGS{$_} =~ /^$/ && (delete $ARGS{$_}), keys %ARGS);
-
-my ($bgcolor);
-my @cols = qw(id Status Priority Subject QueueObj->Name OwnerObj->Name RequestorAddresses DueAsString );
-
-Abort(loc("No search to operate on.")) unless ($session{'tickets'});
-
-$title = loc("Link [_1] #[_2] to selected Incident", $Type, $child);
-
-$session{'i'}++;
-$session{'tickets'} = RT::Tickets->new($session{'CurrentUser'})  unless ($session{'tickets'});
-$session{'tickets'}->FromSQL($Query) if ($Query);
-$session{'tickets'}->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
-
-if ($OrderBy ne $session{'CurrentSearchHash'}->{'OrderBy'}
-    or $Order ne $session{'CurrentSearchHash'}->{'Order'}) {
-    $session{'CurrentSearchHash'}->{'OrderBy'} = $OrderBy;
-    $session{'CurrentSearchHash'}->{'Order'}   = $Order;
-    # Invalidate the ordering cache
-    undef $session{'tickets'}->{'items_array'};
-}
+my $title = loc("Link [_1] #[_2] to selected Incident", $Type, $child);
 
 if (!$Query) {
     $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => 'Incidents');
@@ -129,6 +91,13 @@ if (!$BaseQuery) {
 $Query = "$BaseQuery AND ( $Query )";
 $ARGS{'Query'} = $Query;
 
+my $refinetabs = { };
+
+$refinetabs->{'_a'} = {
+    class => "nav",
+    path => "RTIR/Search/LinkRefine.html?Queue=Incidents&child=$child$QueryString",
+    title => loc('Refine') };
+	
 </%INIT>
 
 <%ARGS>
