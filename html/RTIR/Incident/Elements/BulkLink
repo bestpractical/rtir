@@ -32,7 +32,7 @@
 % my $i;
 %while (my $Ticket = $session{'tickets'}->Next) {
 % $i++;
-<& /RTIR/Common/Elements/TicketRow, Type => $Type, Ticket => $Ticket, i=> $i, check => "check", %ARGS &>
+<& /RTIR/Elements/TicketRow, Type => $Type, Ticket => $Ticket, i=> $i, check => "check", %ARGS &>
 % }
 </TABLE>
 <div align=center>
@@ -132,28 +132,29 @@ if ($ARGS{'UpdateContent'} &&
 
 #Iterate through each ticket we've been handed
 
-my @extraresults;
-
 $ARGS{'Status'} = $Status;
 while (my $Ticket = $session{'tickets'}->Next) {
+    my @extraresults;
     $RT::Logger->debug( "Checking Ticket ".$Ticket->Id ."\n");
     next unless ($ARGS{"UpdateTicket".$Ticket->Id});
     $RT::Logger->debug ("Matched\n");
     #Update the basics.
-    $ARGS{'MemberOf-'.$IncidentObj->id} = $Ticket->Id;
     while (my $link = $Ticket->MemberOf->Next) {
       my $member = $link->TargetObj;
       if ($member->QueueObj->id eq $IncidentObj->QueueObj->id) {
+    $RT::Logger->debug ("Deleting\n");
         $ARGS{'DeleteLink--'.$link->Type.'-'.$link->Target} = '';
         push @extraresults, ProcessTicketLinks(TicketObj => $Ticket, ARGSRef => \%ARGS);
 	delete($ARGS{'DeleteLink--'.$link->Type.'-'.$link->Target});
       }
     }
 
+    $ARGS{$Ticket->Id.'-MemberOf'} = $IncidentObj->Id;
+    my @linkresults;
+    push @linkresults, ProcessTicketLinks(TicketObj => $Ticket, ARGSRef => \%ARGS);
+
     my @basicresults = ProcessTicketBasics(TicketObj => $Ticket, ARGSRef => \%ARGS);
 
-    my @linkresults = ProcessTicketLinks(TicketObj => $IncidentObj, ARGSRef => \%ARGS);
-    
     my @updateresults; 
     if ($do_comment_reply) {
     ProcessUpdateMessage(TicketObj => $Ticket, ARGSRef => \%ARGS, Actions => \@updateresults); 

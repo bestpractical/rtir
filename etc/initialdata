@@ -249,6 +249,8 @@ while (my $CustomField = $CustomFields->Next()) {
 # ------------------------------------------------------------------- #
   if ($self->TransactionObj->Type eq "Status" or
     $self->TransactionObj->Type eq "Create" or
+    ($self->TransactionObj->Type eq "AddLink" and 
+     $self->TransactionObj->Field = "MemberOf") or
     $self->TransactionObj->Type eq "CustomField") {
     return 1;
   } else {

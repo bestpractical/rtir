@@ -34,7 +34,7 @@
 %while (my $Ticket = $session{'tickets'}->Next) {
 % next unless ($Ticket->Id ne $id);
 % $i++;
-<& /RTIR/Common/Elements/TicketRow, Type => $Type, Ticket => $Ticket, i=> $i, check => "radio", %ARGS &>
+<& /RTIR/Elements/TicketRow, Type => $Type, Ticket => $Ticket, i=> $i, check => "radio", %ARGS &>
 % }
 </TABLE>
 <div align=center>

@@ -31,6 +31,7 @@
 % if ($Delete) {
   <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
 % }
+% my $State = $m->scomp("/RTIR/Elements/State", Ticket => $member);
   <a href="<%$RT::WebPath%>/RTIR/<%$Type%>/Display.html?id=<%$member->Id%>&Type=<%$Type%>"><%$member->Id%>: <%$member->Subject%></a> [<%$State%>]<br>
 % $depth++
 % }
@@ -64,16 +65,6 @@ if ($Type eq "Investigation") {
   $QueueName = "Incident Reports";
 }
 
-my $State;
-my $CustomFields = $Ticket->QueueObj->CustomFields();
-while (my $CustomField = $CustomFields->Next()) {
-  if ($CustomField->Name eq '_RTIR_State') {
-    my $Values = $Ticket->CustomFieldValues($CustomField->Id);
-    while (my $Value = $Values->Next()) {
-      $State = $Value->Content;
-    }
-  }
-}
 </%INIT>
 
 <%ARGS>

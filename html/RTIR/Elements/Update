@@ -199,16 +199,7 @@ if ( exists $ARGS{SubmitTicket} ) {
     $m->abort();
 }
 
-my $State;
-my $CustomFields = $Ticket->QueueObj->CustomFields();
-while (my $CustomField = $CustomFields->Next()) {
-  if ($CustomField->Name eq '_RTIR_State') {
-    my $Values = $Ticket->CustomFieldValues($CustomField->Id);
-    while (my $Value = $Values->Next()) {
-      $State = $Value->Content;
-    }
-  }
-}
+my $State = $m->scomp("/RTIR/Elements/State", Ticket => $Ticket);
 </%INIT>
 
 <%ARGS>

@@ -33,7 +33,7 @@
 % my $i;
 %while (my $Ticket = $session{'tickets'}->Next) {
 % $i++;
-<& /RTIR/Common/Elements/TicketRow, 
+<& /RTIR/Elements/TicketRow, 
     Ticket => $Ticket, 
     i=> $i, 
     Type => 'Report',
@@ -74,7 +74,7 @@
 <TD VALIGN="TOP">
 <& /Elements/TitleBoxStart, title => loc('Current search criteria')&>
 
-<& /RTIR/Elements/SearchCriteria, Path => $RT::WebPath."/RTIR/Report/Listing.html", %ARGS &>
+<& /RTIR/Elements/SearchCriteria, Path => "/RTIR/Report/Listing.html", %ARGS &>
 
 <& /Elements/TitleBoxEnd&>
 </TD>
