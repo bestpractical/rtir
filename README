@@ -84,22 +84,11 @@ Installation instructions:
    appear to be working properly, cd to the directory into which you
    unpacked RTIR into.
 
-2) Edit RTIR's Makefile to point to the location of perl on your system:
+2) Run "perl Makefile.PL" to generate a makefile for RTIR. 
 
-PERL                    =       /usr/bin/perl
+3) Type "make install".
 
-2) Edit RTIR's Makefile to point to your RT 3.2 instance:
-
-RT_ROOT			=	/opt/rt3
-
-3) Make any other necessary changes to the Makefile (if you used RT's
-default configuration, you shouldn't need to make any).
-
-4) make sure that mysql or pgsql's commandline tool is in your path.
-
-5) Type "make install".
-
-6) Add the following lines to your /opt/rt3/etc/RT_SiteConfig.pm file:
+4) Add the following lines to your /opt/rt3/etc/RT_SiteConfig.pm file:
 
    # The RTIR config file
 
@@ -108,13 +97,13 @@ default configuration, you shouldn't need to make any).
    require $RTIR_CONFIG_FILE
      || die ("Couldn't load RTIR config file '$RTIR_CONFIG_FILE'\n$@");
 
-7) If you are installing RTIR for the first time, initialize the RTIR
+5) If you are installing RTIR for the first time, initialize the RTIR
    database by typing "make initdb".
 
    WARNING: Do not attempt to re-initialize the database if you are
    upgrading.
 
-8) Stop and start your web server.  
+6) Stop and start your web server.  
 
 
 

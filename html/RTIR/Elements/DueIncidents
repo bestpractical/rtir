@@ -49,10 +49,10 @@ $Query .= " AND " .
 
 my $title;
 if ($owner) {
-  $title = loc("Most due incidents owned by [_1] (and unowned)...", 
+  $title = loc("Most due incidents owned by [_1] (and unowned)", 
               $owner->Name);
 } else {
-  $title = loc("Most due incidents...");
+  $title = loc("Most due incidents");
 }
 </%INIT>
 

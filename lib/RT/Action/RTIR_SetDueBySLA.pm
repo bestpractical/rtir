@@ -89,7 +89,7 @@ sub Commit {
 	my $SLAObj = RT::IR::SLAInit();
 	my $sla = $SLAObj->SLA(time());
 
-	$self->AddCustomFieldValue(Field => $cf->id, 
+	$self->TicketObj->AddCustomFieldValue(Field => $cf->id, 
 				   Value => $sla);
 
     }

@@ -1,37 +1,33 @@
+General upgrade instructions
+============================
+
+1) Follow specialized upgrade instructions in the sections below
+
+2) Install the new version of RTIR. (DO NOT RUN "make initdb")
+
+3) Update RTIR's database.
+    
+   Type:
+
+        ls etc/upgrade
+
+    For each item in that directory whose name is greater than
+    your previously installed RT version, run:
+    
+        /opt/rt3/sbin/rt-setup-database --dba <dba> \
+            --prompt-for-dba-password --action insert \
+            --datadir etc/upgrade/<version>
 
 
 
 
-WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING 
-
-UPGRADE RTIR 1.0.x TO RTIR 1.1.x BETA IS NOT YET SUPPORTED.
-
-We're still working to bullet-proof the RTIR beta process and will release
-a second beta as soon as we're confident that we've got a procedure that
-works well for folks.  We _will_ support upgrade from RTIR 1.0.x to RTIR
-1.2.final. 
-
-WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING 
-
-
-
-
-
-
-
-
-
+Upgrading from RTIR 1.13
+========================
 
 
 NOTE: Follow instructions from previous "upgrading from" sections at
 the end of this document if they apply to your installation, then
 follow the instructions below.
-
-Then, proceed with the installation instructions in the README.  Do
-not re-initialize the database.
-
-After you have followed the installation instructions in the
-README, you must do the following:
 
 1) Delete the following Scrips (go to Configuration / Queues / <Queue
 Name> / Scrips):
@@ -78,13 +74,12 @@ In the Blocks Queue:
 
 2) Run the etc/upgrade/upgrade.pl script.
 
-3) Then, type "make upgrade" and follow the instructions.
 
 Upgrading from RTIR 1.1.2:
 --------------------------
 
-Delete the "SetDueReopen" scrip from the Incident Reports,
-Investigations, and Blocks queues.
+1) Delete the "SetDueReopen" scrip from the Incident Reports,
+   Investigations, and Blocks queues.
 
 Upgrading from RTIR 1.0.0:
 --------------------------
@@ -98,7 +93,4 @@ making local modifications to RTIR easier.
 2) Remove the old RTIR files:
 
    rm -r /opt/rt3/local/html/RTIR
-
-3) Install RTIR by following the instructions below.
-
 

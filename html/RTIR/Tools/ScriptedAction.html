@@ -306,9 +306,10 @@ if ($loop eq 'address') {
 
 if ( exists $ARGS{SubmitAction} ) {
 
-if (!$Incident && (!$ARGS{'Function'} || !$ARGS{$ARGS{'Function'}})) {
-    push @finalresults, "Incident creation failed: Function must be set.";
-} else {
+# Commented out. not forward compatible with 3.4
+#if (!$Incident && (!$ARGS{'Function'} || !$ARGS{$ARGS{'Function'}})) {
+#    push @finalresults, "Incident creation failed: Function must be set.";
+#} else {
 
 foreach my $key (keys %$addrhash) {
   my $addr = $addrhash->{$key}->{'Address'};
@@ -456,7 +457,7 @@ foreach my $key (keys %$addrhash) {
   delete $session{'Attachments'};
   }
 }
-}
+# }
 }
 
 sub parse_csv {
