@@ -125,11 +125,11 @@
       </TR>
       <TR>
         <TD ALIGN=RIGHT><&|/l&>Time Worked</&>:</TD>
-	<TD><input size=3 name="TimeWorked"<% $ARGS{TimeWorked} && " VALUE=\"$ARGS{TimeWorked}\"" || " VALUE=0" %>></TD>
+	<TD><input size=3 name="TimeWorked" value="<% $ARGS{TimeWorked} || "0" %>"></TD>
       </TR>
       <TR>
         <TD ALIGN=RIGHT><&|/l&>Time Left</&>:</TD>
-	<TD><input size=3 name="TimeLeft"<% $ARGS{TimeLeft} && " VALUE=\"$ARGS{TimeLeft}\"" %>></TD>
+	<TD><input size=3 name="TimeLeft" value="<% $ARGS{TimeLeft}||"0" %>"></TD>
       </TR>
     </TABLE>
     <& /Elements/TitleBoxEnd &>
@@ -151,7 +151,7 @@
       </TR>
       <TR>
         <TD ALIGN=RIGHT><&|/l&>Due</&>:</TD>
-	<TD><input size=10 name="Due"<% $ARGS{Due} && " VALUE=\"$ARGS{Due}\"" %>></TD>
+	<TD><input size=10 name="Due" value="<% $ARGS{Due} %>"></TD>
       </TR>
     </TABLE>
     <& /Elements/TitleBoxEnd &>
