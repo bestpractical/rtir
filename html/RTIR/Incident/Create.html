@@ -240,8 +240,9 @@
 <%INIT>
 # if there isn't a subject, but there is a child, use that one
 my $ChildObj;
+
 if ((!$Subject) and $child) {
-#  $ChildObj = LoadTicket($child);
+  $ChildObj = LoadTicket($child);
   $Subject = $ChildObj->Subject;
 }
 
