@@ -5,8 +5,8 @@ with RT3 (Also available from bestpractical.com)
 Installation instructions:
 --------------------------
 
-1) RTIR requires the Business::Hours module.  You should install it
-before proceeding.
+1) RTIR requires the Business::Hours module and the Net::Whois::RIPE
+   module.  You should install them before proceeding.
 
 2) Install RT 3.0.  This version of RTIR requires at least RT
    3.03pre5.
