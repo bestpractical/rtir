@@ -103,4 +103,9 @@ Set ($RTIRRejectSearchResultFormat, qq{___RTIR_Check__,
 '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
 __Requestors__,__OwnerName__,__CreatedRelative__,__DueRelative__});
 
+Set ($RTIRBulkReplyResultFormat, qq{___RTIR_Check__,
+'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
+__Requestors__,__OwnerName__,__CreatedRelative__,__DueRelative__});
+
 1;
