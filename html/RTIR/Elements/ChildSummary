@@ -54,6 +54,9 @@
 [<%loc("Search")%>]</a>
 % if ($Type eq 'Incident') {
 <a href="<%$RT::WebPath%>/RTIR/Incident/LinkReports.html?ClearRestrictions=1&AttachmentField=Content&AttachmentFieldOp=LIKE&ValueOfAttachmentField=<%$q%>&StatusOp==&ValueOfStatus=new&id=<%$ticket%>">[<%loc("Bulk Link")%>]</a>
+%   if ($Queue eq 'Investigations' and $lookuptype eq 'email') {
+<a href="<%$RT::WebPath%>/RTIR/Investigation/Create.html?Incident=<%$ticket%>">[<%loc("Launch new: [_1]", $q)%>]</a>
+%   }
 % }
 </td>
 </tr>
@@ -64,4 +67,5 @@ $Queue => undef
 $Type => undef
 $ticket => undef
 $q => undef
+$lookuptype => undef
 </%ARGS>
