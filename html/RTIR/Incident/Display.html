@@ -165,8 +165,20 @@ if ($id eq 'new') {
   if ($ARGS{'child'}) {
     my $ChildObj = LoadTicket($ARGS{'child'});
     my @linkresults;
-    $ARGS{'id'}=$Ticket->Id;    
+    $ARGS{'id'}=$Ticket->Id;
     $ARGS{$ChildObj->Id.'-MemberOf'} = $Ticket->Id;
+    my $Type = $m->scomp("/RTIR/Elements/Type", Ticket => $ChildObj->Id);
+    # Blocks can have multiple incidents
+    if ($Type ne 'Block') {
+      while (my $link = $ChildObj->MemberOf->Next) {
+        my $member = $link->TargetObj;
+        if ($member->QueueObj->id eq $Ticket->QueueObj->id) {
+          $RT::Logger->debug ("Deleting\n");
+          $ARGS{'DeleteLink--'.$link->Type.'-'.$link->Target} = '';
+        }
+      }
+    }
+
     push @linkresults, ProcessTicketLinks(TicketObj => $ChildObj, ARGSRef => \%ARGS);
 
     my @tempresults = (@linkresults);

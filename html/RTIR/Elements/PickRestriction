@@ -51,6 +51,7 @@
 <INPUT Name="ValueOfPriority" SIZE=5>
 
 <li>
+<&|/l&>Date</&> 
 <& /Elements/SelectDateType, Name => 'DateType' &>
 <& /Elements/SelectDateRelation, Name=>"DateOp" &>
 <& /Elements/SelectDate, Name => "ValueOfDate", ShowTime => 0, Default => '' &>
