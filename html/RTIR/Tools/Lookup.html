@@ -29,92 +29,42 @@
     current_subtab => $current_subtab, 
     Title => $title &>
 
-% my $i;
+% if ($ticket) {
+<& /Elements/TitleBoxStart, title => loc("Current [_1]: #[_2]", $Type, $ticket) &>
+<TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
+<& /RTIR/Elements/TicketHeader, Type => $Type, %ARGS &>
+<& /RTIR/Elements/TicketRow, Type => $Type, Ticket => $TicketObj, %ARGS &>
+</table>
+<& /Elements/TitleBoxEnd &>
+<hr>
+% }
+
 %if ($ticketcount && !  $ARGS{'HideResults'}) {
 <TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
-<tr><td width=50% valign=top>
-<& /Elements/TitleBoxStart, title => loc('Incidents')&>
-<TABLE width=100% border=0 cellpadding=2 CELLSPACING=0>
-% $i=0;
-% my $State;
-%while (my $Ticket = $session{'tickets'}->Next) {
-% next unless ($Ticket->QueueObj->Name eq "Incidents");
-% $i++;
-<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >
-% $State = $m->scomp("/RTIR/Elements/ShowRTIRField", Ticket => $Ticket, Name => 'State');
-<td><%$Ticket->Id%></td>
-<td><b><A HREF="<%$RT::WebPath%>/RTIR/Incident/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Subject%></a></b></td>
-<td><%$State%></td>
-<TD><%$Ticket->Priority%></TD>
-</TR>
-% }
-% if ($i == 0) {
-<tr><td><i>(no incidents)</i></td></tr>
-% }
-</table>
+<tr><td valign=top width=50%>
+
+<& /Elements/TitleBoxStart, title => loc('Incident Reports'), color=> "#336633"&>
+<& /RTIR/Elements/ChildSummary, Queue => 'Incident Reports', Type => $Type, ticket => $ticket, q => $q &>
 <& /Elements/TitleBoxEnd&>
 
-<& /Elements/TitleBoxStart, title => loc('Incident Reports')&>
-<TABLE width=100% border=0 cellpadding=2 CELLSPACING=0>
-% $i=0;
-%while (my $Ticket = $session{'tickets'}->Next) {
-% next unless ($Ticket->QueueObj->Name eq "Incident Reports");
-% $i++;
-<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >
-% $State = $m->scomp("/RTIR/Elements/ShowRTIRField", Ticket => $Ticket, Name => 'State');
-<td><%$Ticket->Id%></td>
-<td><b><%$Ticket->Subject%></b></td>
-<td><%$State%></td>
-<TD><%$Ticket->Priority%></TD>
-</TR>
-% }
-% if ($i == 0) {
-<tr><td><i>(no incident reports)</i></td></tr>
-% }
-</table>
+</td><td width=50% valign=top>
+
+<& /Elements/TitleBoxStart, title => loc('Incidents'), color=> "#336633" &>
+<& /RTIR/Elements/IncidentSummary, ticket => $ticket, q => $q &>
 <& /Elements/TitleBoxEnd&>
 
-</td><td valign=top>
+<br>
 
-<& /Elements/TitleBoxStart, title => loc('Investigations')&>
-<TABLE width=100% border=0 cellpadding=2 CELLSPACING=0>
-% $i=0;
-%while (my $Ticket = $session{'tickets'}->Next) {
-% next unless ($Ticket->QueueObj->Name eq "Investigations");
-% $i++;
-<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >
-% $State = $m->scomp("/RTIR/Elements/ShowRTIRField", Ticket => $Ticket, Name => 'State');
-<td><%$Ticket->Id%></td>
-<td><b><%$Ticket->Subject%></b></td>
-<td><%$State%></td>
-<TD><%$Ticket->Priority%></TD>
-</TR>
-% }
-% if ($i == 0) {
-<tr><td><i>(no investigations)</i></td></tr>
-% }
-</table>
-<& /Elements/TitleBoxEnd&>
+<& /Elements/TitleBoxStart, title => loc('Investigations'), color=> "#336633" &>
+<& /RTIR/Elements/ChildSummary, Queue => 'Investigations', Type => $Type, ticket => $ticket, q => $q &>
+<& /Elements/TitleBoxEnd &>
 
-<& /Elements/TitleBoxStart, title => loc('Blocks')&>
-<TABLE width=100% border=0 cellpadding=2 CELLSPACING=0>
-% $i=0;
-%while (my $Ticket = $session{'tickets'}->Next) {
-% next unless ($Ticket->QueueObj->Name eq "Blocks");
-% $i++;
-<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >
-% $State = $m->scomp("/RTIR/Elements/ShowRTIRField", Ticket => $Ticket, Name => 'State');
-<td><%$Ticket->Id%></td>
-<td><%$Ticket->Subject%></td>
-<td><%$State%></td>
-</TR>
-% }
-% if ($i == 0) {
-<tr><td><i>(no blocks)</i></td></tr>
-</table></td></tr>
-% }
+<br>
+
+<& /Elements/TitleBoxStart, title => loc('Blocks'), color=> "#336633" &>
+<& /RTIR/Elements/ChildSummary, Queue => 'Blocks', Type => $Type, ticket => $ticket, q => $q &>
+<& /Elements/TitleBoxEnd &>
 </TABLE>
-<& /Elements/TitleBoxEnd&>
 % }
 
 <hr>
@@ -181,6 +131,7 @@ if ($query) {
 } else {
     $error = "Unable to connect to whois server '$server'";
 }
+$ARGS{'ClearRestrictions'}="1";
 $ARGS{'AttachmentField'}="Content";
 $ARGS{'AttachmentFieldOp'}="LIKE";
 $ARGS{'ValueOfAttachmentField'}=$q;
@@ -207,9 +158,18 @@ if ($q) {
   $current_subtab = 'RTIR/Tools/Lookup.html?q='.$q."&server=".$server; 
 }
 
+my $Type;
+my $TicketObj;
+if ($ticket) {
+  $Type = $m->scomp("/RTIR/Elements/Type", Ticket => $ticket);
+  $Type =~ s/\s*$//;
+  $TicketObj = LoadTicket($ticket);
+}
+
 </%init>
 <%args>
 $server => 'whois.fucknsi.com'
 $handparse => 1
 $q => undef
+$ticket => undef
 </%args>

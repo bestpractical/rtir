@@ -29,10 +29,8 @@
     current_subtab => 'RTIR/Incident/ShowReports.html',
     Title => $title &>
 
-<& /Elements/ListActions, actions => \@results &>
-
-<form method=get>
-<input type=hidden name=id value=<%$id%>>
+<form action='Display.html' method=get>
+<input type=hidden name=child value=<%$id%>>
 %if ($ticketcount && !  $ARGS{'HideResults'}) {
 <TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
 <& /RTIR/Elements/TicketHeader, check => "radio", %ARGS &>
@@ -82,7 +80,7 @@
 <TD VALIGN="TOP">
 <& /Elements/TitleBoxStart, title => loc('Current search criteria')&>
 
-<& /RTIR/Elements/SearchCriteria, Path => "LinkToIncident.html", %ARGS &>
+<& /RTIR/Elements/SearchCriteria, Path => "/RTIR/Incident/LinkToIncident.html", %ARGS &>
 
 <& /Elements/TitleBoxEnd&>
 </TD>
@@ -97,7 +95,6 @@
 <%INIT>
 my $ChildObj = LoadTicket($id);
 my $SubmitCaption = loc("Link #[_1] with selected Incident", $ChildObj->id);
-my $Status = "open";
 
 my $q = RT::Queue->new($session{'CurrentUser'});
 $q->Load('Incidents');
@@ -125,50 +122,15 @@ if ( $session{'tickets'}->DescribeRestrictions()) {
 # Iterate through the ARGS hash and remove anything with a null value.
 map ($ARGS{$_} =~ /^$/ && (delete $ARGS{$_}), keys %ARGS);
 
-my ($bgcolor, @results);
+my ($bgcolor);
 my @cols = qw(id Status Priority Subject QueueObj->Name OwnerObj->Name RequestorAddresses DueAsString );
 
 Abort(loc("No search to operate on.")) unless ($session{'tickets'});
 
-
-my $do_comment_reply=0;
-# Prepare for ticket updates
-$ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
-chomp ($ARGS{'UpdateContent'}) ;
-
-if ($ARGS{'UpdateContent'} &&
-    $ARGS{'UpdateContent'} ne '' &&
-    $ARGS{'UpdateContent'} ne  "-- \n" .
-    $session{'CurrentUser'}->UserObj->Signature) {
-            $do_comment_reply=1;
-}
-
 #Iterate through each ticket we've been handed
-
-my $IncidentObj;
-if ($SelectedTicket) {
-  $IncidentObj = LoadTicket($SelectedTicket);
-$ARGS{'Status'} = $Status;
-$ARGS{$ChildObj->Id.'-MemberOf'} = $IncidentObj->Id;
-my @linkresults;
-push @linkresults, ProcessTicketLinks(TicketObj => $ChildObj, ARGSRef => \%ARGS);
-my @basicresults = ProcessTicketBasics(TicketObj => $ChildObj, ARGSRef => \%ARGS);
-
-my @updateresults; 
-if ($do_comment_reply) {
-  ProcessUpdateMessage(TicketObj => $ChildObj, ARGSRef => \%ARGS, Actions => \@updateresults); 
-}
-
-my @tempresults = (@basicresults, @linkresults, @updateresults);
-@tempresults = map { loc("Ticket [_1]: [_2]",$ChildObj->Id,$_) } @tempresults;
-
-@results = (@results, @tempresults);
-}
 
 </%INIT>
 
 <%ARGS>
 $id => undef
-$SelectedTicket => undef
 </%ARGS>
-

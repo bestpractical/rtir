@@ -88,6 +88,12 @@
 
 <%INIT>
 
+my $q = RT::Queue->new($session{'CurrentUser'});
+$q->Load("Incident Reports");
+
+$ARGS{'QueueOp'}="=";
+$ARGS{'ValueOfQueue'}=$q->Id;
+
 my ($title, $ticketcount);
 $session{'i'}++;
 if ($session{'tickets'}) {

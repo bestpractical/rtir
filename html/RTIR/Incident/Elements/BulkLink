@@ -24,8 +24,9 @@
 %# END LICENSE BLOCK
 <& /Elements/ListActions, actions => \@results &>
 
-<form method=get>
+<form action="Display.html" method=get>
 <input type=hidden name=id value=<%$id%>>
+<input type=hidden name=BulkLink value=1>
 %if ($ticketcount && !  $ARGS{'HideResults'}) {
 <TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
 <& /RTIR/Elements/TicketHeader, check => "check", %ARGS &>
@@ -88,8 +89,6 @@
 </TABLE>
 
 <%INIT>
-my $IncidentObj = LoadTicket($id);
-
 my ($title, $ticketcount);
 $session{'i'}++;
 if ($session{'tickets'}) {
@@ -117,63 +116,11 @@ my @cols = qw(id Status Priority Subject QueueObj->Name OwnerObj->Name Requestor
 
 Abort(loc("No search to operate on.")) unless ($session{'tickets'});
 
-
-my $do_comment_reply=0;
-# Prepare for ticket updates
-$ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
-chomp ($ARGS{'UpdateContent'}) ;
-
-if ($ARGS{'UpdateContent'} &&
-    $ARGS{'UpdateContent'} ne '' &&
-    $ARGS{'UpdateContent'} ne  "-- \n" .
-    $session{'CurrentUser'}->UserObj->Signature) {
-            $do_comment_reply=1;
-}
-
-#Iterate through each ticket we've been handed
-
-$ARGS{'Status'} = $Status;
-while (my $Ticket = $session{'tickets'}->Next) {
-  my @extraresults;
-  $RT::Logger->debug( "Checking Ticket ".$Ticket->Id ."\n");
-  next unless ($ARGS{"UpdateTicket".$Ticket->Id});
-  $RT::Logger->debug ("Matched\n");
-  #Update the basics.
-  # Blocks can have multiple incidents
-  if ($Type ne 'Block') {
-    while (my $link = $Ticket->MemberOf->Next) {
-      my $member = $link->TargetObj;
-      if ($member->QueueObj->id eq $IncidentObj->QueueObj->id) {
-    $RT::Logger->debug ("Deleting\n");
-        $ARGS{'DeleteLink--'.$link->Type.'-'.$link->Target} = '';
-        push @extraresults, ProcessTicketLinks(TicketObj => $Ticket, ARGSRef => \%ARGS);
-	delete($ARGS{'DeleteLink--'.$link->Type.'-'.$link->Target});
-      }
-    }
-  }
-
-    $ARGS{$Ticket->Id.'-MemberOf'} = $IncidentObj->Id;
-    my @linkresults;
-    push @linkresults, ProcessTicketLinks(TicketObj => $Ticket, ARGSRef => \%ARGS);
-
-    my @basicresults = ProcessTicketBasics(TicketObj => $Ticket, ARGSRef => \%ARGS);
-
-    my @updateresults; 
-    if ($do_comment_reply) {
-    ProcessUpdateMessage(TicketObj => $Ticket, ARGSRef => \%ARGS, Actions => \@updateresults); 
-   } 
-   my @tempresults = (@extraresults, @basicresults, @linkresults, @updateresults);
-    @tempresults = map { loc("Ticket [_1]: [_2]",$Ticket->Id,$_) } @tempresults;
-
-    @results = (@results, @tempresults);
-}
-
 </%INIT>
 
 <%ARGS>
 $id => undef
 $SubmitCaption => loc("Link Tickets")
 $AssocPath => "LinkReports.html"
-$Status => undef
 $Type => undef
 </%ARGS>

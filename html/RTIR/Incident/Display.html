@@ -50,7 +50,7 @@
     <table width=100%>
     <td align="right">
 		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Report/Create.html?Incident=<%$Ticket->Id%>">New</a> 
-		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Incident/LinkReports.html?QueueOp==&ValueOfQueue=Incident Reports&ClearRestrictions=1&id=<%$Ticket->Id%>"><%loc("Link")%></a> |
+		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Incident/LinkReports.html?ClearRestrictions=1&StatusOp==&ValueOfStatus=new&id=<%$Ticket->Id%>"><%loc("Link")%></a> |
     </td></table>
     <& /RTIR/Elements/ShowChildren, 
 	    Ticket => $Ticket, 
@@ -69,7 +69,7 @@
 		titleright => '', color=> "#336633" &>
 		<table width=100%><td align="right">
 		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Investigation/Create.html?Incident=<%$Ticket->Id%>">Launch</a> 
-		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Incident/LinkInvestigations.html?QueueOp==&ValueOfQueue=Investigations&ClearRestrictions=1&id=<%$Ticket->Id%>"><%loc("Link")%></a> |
+		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Incident/LinkInvestigations.html?ClearRestrictions=1&id=<%$Ticket->Id%>"><%loc("Link")%></a> |
 		</td></table>
 	        <& /RTIR/Elements/ShowChildren, 
 		    Ticket => $Ticket, 
@@ -87,7 +87,7 @@
 		titleright => '', color=> "#336633" &>
 		<table width=100%><td align="right">
 		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Block/Create.html?Incident=<%$Ticket->Id%>">New</a> 
-		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Incident/LinkBlocks.html?QueueOp==&ValueOfQueue=Blocks&ClearRestrictions=1&id=<%$Ticket->Id%>"><%loc("Link")%></a> |
+		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Incident/LinkBlocks.html?ClearRestrictions=1&id=<%$Ticket->Id%>"><%loc("Link")%></a> |
 		</td></table>
 	        <& /RTIR/Elements/ShowChildren, 
 		    Ticket => $Ticket, 
@@ -130,23 +130,20 @@
       ShowHeaders => $ARGS{'ShowHeaders'} &> 
 
   
-<%ARGS>
-$id => undef
-$Create => undef
-$ShowHeaders => undef
-$Collapsed => undef
-</%ARGS>
-
 <%INIT>
-my ($Ticket, @Actions);  
+my ($Ticket, @Actions, @results);  
 
 $Ticket = new RT::Ticket($session{'CurrentUser'});
+
+if ($SelectedTicket) {
+  $id = $SelectedTicket;
+}
 
 unless ($id) {
     Abort('No incident specified');
 }
 
-if ($ARGS{'id'} eq 'new') {
+if ($id eq 'new') {
     # {{{ Create a new ticket
     
     my $Queue = new RT::Queue($session{'CurrentUser'});	
@@ -167,7 +164,7 @@ if ($ARGS{'id'} eq 'new') {
 }
 
 else { 
-    $Ticket = LoadTicket($ARGS{'id'});
+    $Ticket = LoadTicket($id);
     unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
 	Abort("No permission to view ticket");
     }
@@ -179,7 +176,52 @@ if (defined $ARGS{'Action'}) {
     my ($res, $msg)=$Ticket->$action();
     push(@Actions, $msg);
   }
+} elsif ($SelectedTicket) {
+  my $ChildObj = LoadTicket($ARGS{'child'});
+  my $IncidentObj = LoadTicket($SelectedTicket);
+  $ARGS{'Status'} = "open";
+  $ARGS{$ChildObj->Id.'-MemberOf'} = $IncidentObj->Id;
+  my @linkresults;
+  push @linkresults, ProcessTicketLinks(TicketObj => $ChildObj, ARGSRef => \%ARGS);
+
+  my @tempresults = (@linkresults);
+  @tempresults = map { loc("Ticket [_1]: [_2]",$ChildObj->Id,$_) } @tempresults;
+
+  @results = (@results, @tempresults);
+} elsif ($ARGS{'BulkLink'}) {
+  #Iterate through each ticket we've been handed
+  my $IncidentObj = LoadTicket($id);
+  while (my $t = $session{'tickets'}->Next) {
+    my $Type = $m->scomp("/RTIR/Elements/Type", Ticket => $t->Id);
+    my @extraresults;
+    $RT::Logger->debug( "Checking Ticket ".$t->Id ."\n");
+    next unless ($ARGS{"UpdateTicket".$t->Id});
+    $RT::Logger->debug ("Matched\n");
+    #Update the basics.
+    # Blocks can have multiple incidents
+    if ($Type ne 'Block') {
+      while (my $link = $t->MemberOf->Next) {
+        my $member = $link->TargetObj;
+        if ($member->QueueObj->id eq $IncidentObj->QueueObj->id) {
+          $RT::Logger->debug ("Deleting\n");
+          $ARGS{'DeleteLink--'.$link->Type.'-'.$link->Target} = '';
+          push @extraresults, ProcessTicketLinks(TicketObj => $t, ARGSRef => \%ARGS);
+	  delete($ARGS{'DeleteLink--'.$link->Type.'-'.$link->Target});
+        }
+      }
+    }
+
+    $ARGS{$t->Id.'-MemberOf'} = $IncidentObj->Id;
+    my @linkresults;
+    push @linkresults, ProcessTicketLinks(TicketObj => $t, ARGSRef => \%ARGS);
+
+    my @tempresults = (@extraresults, @linkresults);
+    @tempresults = map { loc("Ticket [_1]: [_2]",$t->Id,$_) } @tempresults;
+
+    @Actions = (@results, @tempresults);
+  }
 }
+
     $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
     chomp ($ARGS{'UpdateContent'}) ;
 
@@ -198,7 +240,16 @@ if (defined $ARGS{'Action'}) {
 #Process basics updates
 my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$Ticket);
 
-push (@Actions, @BasicActions);
+push (@Actions, @BasicActions, @results);
+
 }
 
 </%INIT>
+
+<%ARGS>
+$id => undef
+$Create => undef
+$ShowHeaders => undef
+$Collapsed => undef
+$SelectedTicket => undef
+</%ARGS>

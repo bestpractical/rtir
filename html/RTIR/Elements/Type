@@ -22,33 +22,25 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, 
-    Title => $title, 
-    Refresh => $session{'tickets_refresh_interval'} &>
-<& Elements/ReportTabs, 
-    Ticket => $IncidentObj, 
-    current_subtab => 'RTIR/Incident/ShowReports.html',
-    Title => $title &>
-
-<& Elements/BulkLink,
-    SubmitCaption => $SubmitCaption, 
-    Status => 'open',
-    Type => 'Report',
-    %ARGS &>
-
+<%$Type%>
 <%INIT>
-my $title = loc("Link Incident Reports");
-my $IncidentObj = LoadTicket($id);
-my $SubmitCaption = loc("Link selected reports with Incident #[_1]", $IncidentObj->id);
+my $TicketObj = new RT::Ticket($session{'CurrentUser'});
+$TicketObj = LoadTicket($Ticket);
+my $name = $TicketObj->QueueObj->Name;
+my $Type;
 
-my $q = RT::Queue->new($session{'CurrentUser'});
-$q->Load("Reports");
+if ($name eq "Incidents") {
+  $Type = "Incident";
+} elsif ($name eq "Incident Reports") {
+  $Type = "Report";
+} elsif ($name eq "Investigations") {
+  $Type = "Investigation";
+} elsif ($name eq "Blocks") {
+  $Type = "Block";
+}
 
-$ARGS{'QueueOp'}="=";
-$ARGS{'ValueOfQueue'}=$q->Id;
 </%INIT>
 
 <%ARGS>
-$id => undef
+$Ticket => undef
 </%ARGS>
-

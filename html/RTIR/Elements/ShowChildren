@@ -44,9 +44,9 @@
   <i>loc("no children")</i>
 % }
 % } else {
-% if ($count le $LimitDepth) {
+% if ($count ge $LimitDepth) {
 % if (defined $FullList) {
-<a href="<%$FullList%>"><i><%loc("More...")%></i></a><br>
+<a href="<%$FullList%>"><i><%loc("More... ([_1] total)", $count)%></i></a><br>
 % }
 % }
 % }

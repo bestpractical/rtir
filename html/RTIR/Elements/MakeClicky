@@ -1,11 +1,12 @@
 <%args>
-$url_params =>
+$url_params => undef
 $content => undef
 </%args>
 <%once>
 use Regexp::Common qw /URI net/;
 use URI::URL;
 
+my $url_params_once;
 my $left = '\b';
 my $right = '\b';
 #my $left = qr[[\w\b\.\,<(\[]];
@@ -16,7 +17,7 @@ my %cb =
    default => sub {
      my ($type,$value) = @_;
 #     $type = substr $type,1;
-     return qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?${url_params}q=${value}">$value</A>];
+     return qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}q=${value}">$value</A>];
    },
    ipdecimal =>
    sub {
@@ -30,14 +31,14 @@ my %cb =
        my $d = hex( substr( $hostnum, 6, 2 ) );
        "$a.$b.$c.$d";
      };
-     return qq[$value <A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?${url_params}type=ip&q=$host">($host)</A>];
+     return qq[$value <A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=ip&q=$host">($host)</A>];
    },
    email =>
    sub {
      my ($type,$value) = @_;
      my ($pre,$post) = split /@/,$value,2;
-     return qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?${url_params}type=email&q=$value">$value</A> ].
-       qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?${url_params}type=host&q=$post">($post)</A>];
+     return qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=email&q=$value">$value</A> ].
+       qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=host&q=$post">($post)</A>];
    },
    url =>
    sub {
@@ -45,17 +46,17 @@ my %cb =
      my $uri  = URI::URL->new($value);
      my $host = $uri->host;
      return qq[<A TARGET=new HREF="$value">$value</A> ].
-       qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?${url_params}type=host&q=$host">($host)</A>];
+       qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=host&q=$host">($host)</A>];
    },
    noc =>
    sub {
      my ($type,$value) = @_;
-     return qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?${url_params}type=handle&q=$value">$value</A>];
+     return qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=handle&q=$value">$value</A>];
    },
    host =>
    sub {
      my ($type,$value) = @_;
-     return qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?${url_params}type=host&q=$value">$value</A>];
+     return qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=host&q=$value">$value</A>];
    },
   );
 
@@ -96,8 +97,9 @@ sub handle {
 
 </%once>
 <%init>
-if ($url_params && $url_params !~ /&$/) {
-        $url_params .= "&";
+$url_params_once=$ARGS{url_params};
+if ($url_params_once && $url_params_once !~ /&$/) {
+        $url_params_once .= "&";
 }
 for ( $$content =~ s/($regexp)/&handle($1||"")/gsieo ) {1}
 return();
@@ -117,3 +119,4 @@ return();
 
 
 </%doc>
+

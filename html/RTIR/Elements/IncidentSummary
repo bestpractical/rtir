@@ -1,0 +1,65 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<TABLE width=100% border=0 cellpadding=2 CELLSPACING=0>
+% my $i=0;
+% my $State;
+%while (my $Ticket = $session{'tickets'}->Next) {
+% next unless ($Ticket->QueueObj->Name eq "Incidents");
+% $i++;
+<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >
+<td><b><A HREF="<%$RT::WebPath%>/RTIR/Incident/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%></a></b></td>
+<td><b><A HREF="<%$RT::WebPath%>/RTIR/Incident/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Subject%></a></b></td>
+<td><& "/RTIR/Elements/ShowRTIRField", Ticket => $Ticket, Name => 'State' &>
+</td>
+<TD><%$Ticket->Priority%></TD>
+% if ($Type eq 'Report' or $Type eq 'Investigation' or $Type eq 'Block') {
+<td align=right><a href="<%$RT::WebPath%>/RTIR/Incident/Display.html?child=<%$ticket%>&SelectedTicket=<%$Ticket->Id%>">[<%loc("Link")%>]</a></td>
+% } elsif ($Type eq 'Incident') {
+% if ($ticket ne $Ticket->Id) {
+<td align=right><a href="<%$RT::WebPath%>/RTIR/Incident/Merge.html?id=<%$ticket%>&SelectedTicket=<%$Ticket->Id%>">[<%loc("Merge")%>]</a></td>
+% } else {
+<td align=right><i>(<%loc("current")%>)</i></td>
+% }
+% }
+</TR>
+% }
+% if ($i == 0) {
+<tr><td><i>(no incidents)</i></td></tr>
+% }
+<tr>
+<td><a href="<%$RT::WebPath%>/RTIR/Incident/Listing.html?ClearRestrictions=1&AttachmentField=Content&AttachmentFieldOp=LIKE&ValueOfAttachmentField=<%$q%>">
+[<%loc("Search")%>]</a></td>
+</tr>
+</table>
+
+<%INIT>
+my $Queue = 'Incidents';
+my $Type = 'Incident';
+</%INIT>
+
+<%ARGS>
+$ticket => undef
+$q => undef
+</%ARGS>

@@ -29,10 +29,11 @@
     Title => $Title &>
 
 <h2><% loc('Total Investigations: [_1]', $count) %></h2>
-<form action="ShowBlocks.html" method="post">
+<form action="ShowInvestigations.html" method="post">
 <input type="hidden" name="id" value="<%$Incident->id%>">
 <i><%loc("Check box to unlink")%></i>
 <& /RTIR/Elements/ShowChildren, 
+    Delete => 1,
     Ticket => $Incident, 
     Type => 'Investigation',
     FullList => $RT::WebPath."/RTIR/Incident/ShowInvestigations.html?id=".$Incident->id
@@ -45,6 +46,7 @@
 
   $Incident = new RT::Ticket($session{'CurrentUser'});
   $Incident = LoadTicket($id);
+  my @results = ProcessTicketLinks( TicketObj => $Incident, ARGSRef => \%ARGS);
 
   $Title = loc("Investigations for Incident #[_1]: [_2]", $Incident->Id, $Incident->Subject);
 

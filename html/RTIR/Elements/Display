@@ -71,18 +71,15 @@
       Collapsed => $ARGS{'Collapsed'}, 
       ShowHeaders => $ARGS{'ShowHeaders'} &> 
 
-  
-<%ARGS>
-$id => undef
-$Create => undef
-$ShowHeaders => undef
-$Collapsed => undef
-</%ARGS>
-
 <%INIT>
 my ($message, $Ticket, @Actions);
 
 $Ticket = new RT::Ticket($session{'CurrentUser'});
+
+if ($id ne 'new') {
+  $Type = $m->scomp("/RTIR/Elements/Type", Ticket => $id);
+  $Type =~ s/\s*$//;
+}
 
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 my ($QueueName, $Title);
@@ -153,6 +150,10 @@ push (@Actions, @BasicActions, @LinkActions);
 </%INIT>
 
 <%ARGS>
-$Type => "Report"
 $Basics => undef
+$Type => undef
+$id => undef
+$Create => undef
+$ShowHeaders => undef
+$Collapsed => undef
 </%ARGS>
