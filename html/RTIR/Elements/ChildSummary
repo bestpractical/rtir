@@ -27,13 +27,13 @@
 %while (my $Ticket = $session{'tickets'}->Next) {
 % next unless ($Ticket->QueueObj->Name eq $Queue);
 % $i++;
-<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >
-<td><b><A HREF="<%$RT::WebPath%>/RTIR/<%$Type%>/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%></a></b></td>
-<td><b><A HREF="<%$RT::WebPath%>/RTIR/<%$Type%>/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Subject%></a></b></td>
-<td><& "/RTIR/Elements/ShowRTIRField", Ticket => $Ticket, Name => 'State' &>
-<TD><%$Ticket->Priority%></TD>
 % my $t = $m->scomp("/RTIR/Elements/Type", Ticket => $Ticket->Id);
 % $t =~ s/\s*$//;
+<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >
+<td><b><A HREF="<%$RT::WebPath%>/RTIR/<%$t%>/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%></a></b></td>
+<td><b><A HREF="<%$RT::WebPath%>/RTIR/<%$t%>/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Subject%></a></b></td>
+<td><& "/RTIR/Elements/ShowRTIRField", Ticket => $Ticket, Name => 'State' &>
+<TD><%$Ticket->Priority%></TD>
 % if ($Type eq 'Incident') {
 <td align=right><a href="<%$RT::WebPath%>/RTIR/Incident/Display.html?child=<%$Ticket->Id%>&SelectedTicket=<%$ticket%>">[<%loc("Link")%>]</a></td>
 % } elsif ($Type eq $t) {
