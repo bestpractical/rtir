@@ -46,8 +46,8 @@
 <& /Elements/Header, Title => $title &>
 <& '/RTIR/'.$Type.'/Elements/Tabs', 
     Ticket => $Ticket, 
-    current_tab => "RTIR/Merge.html?NewSearch=1&id=".$Ticket->Id, 
-    current_subtab => "RTIR/MergeRefine.html?Queue=$Queue&id=".$Ticket->Id, 
+    current_tab => $current_tab, 
+    current_subtab => $current_subtab, 
     subtabs => $mergetabs,
     Title => $title &>
 
@@ -60,7 +60,7 @@
     AvailableColumns => $AvailableColumns,
     CurrentFormat => $CurrentFormat,
     BaseQuery => $BaseQuery,
-    FormAction => 'MergeRefine.html',
+    FormAction => $FormAction,
     %ARGS &>
 
 <%INIT>
@@ -73,7 +73,7 @@ my $mergetabs = { } ;
 
 $mergetabs->{'_a'} = {
     class => "nav",
-    path => "RTIR/MergeRefine.html?Queue=" . $Ticket->QueueObj->Name . "&id=$id",
+    path => $current_subtab,
     title => loc('Refine') };
 	
 my %queues = ();
@@ -123,8 +123,7 @@ if ($NewQuery) {
 	     AvailableColumns => \$AvailableColumns,
 	     CurrentFormat => \$CurrentFormat,
 	     BaseQuery => $BaseQuery,
-	     Query => "foo bar",
-	     ResultPage => '/RTIR/Merge.html',
+	     ResultPage => $ResultPage,
 	     id => $id,
 	     %ARGS);
 
@@ -149,4 +148,8 @@ $NewQuery => 0
 $Queue => undef
 $Query => undef
 $id => undef
+$current_tab => "RTIR/Merge.html?NewSearch=1&id=".$id
+$current_subtab => "RTIR/MergeRefine.html?Queue=$Queue&id=".$id
+$FormAction => 'MergeRefine.html'
+$ResultPage => '/RTIR/Merge.html'
 </%ARGS>

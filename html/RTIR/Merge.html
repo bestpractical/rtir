@@ -22,13 +22,19 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /RTIR/Elements/Header, Title => $Title &>
+<& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
 <& '/RTIR/'.$Type.'/Elements/Tabs', 
     Ticket => $Ticket, 
-    current_tab => "RTIR/Merge.html?NewSearch=1&id=".$Ticket->Id, 
-    current_subtab => "RTIR/Merge.html?NewSearch=1&id=".$Ticket->Id, 
+    current_tab => "RTIR/Merge.html?id=".$Ticket->Id. "$QueryString", 
     subtabs => $mergetabs,
-    Title => $Title &>
+    Title => $title,
+    Format => $Format,
+    Query => $Query,
+    Rows => $Rows,
+    OrderBy => $OrderBy,
+    Order => $Order,
+    QueryString => $QueryString,
+ &>
 
 <& /RTIR/Elements/ListActions, actions => \@results &>
 
@@ -43,9 +49,9 @@
 
 <& /RTIR/Search/Elements/ShowResults, 
     Queue => $Queue,
+    Query => $Query,
     QueryString => $QueryString, 
     BaseURL => $RT::WebPath."/RTIR/Merge.html?id=$id&",
-    Format => $Format,
     %ARGS &>
 
 <HR>
@@ -55,26 +61,12 @@
 
 <%INIT>
 $Format = $RT::RTIRMergeSearchResultFormat;
+$ARGS{'Format'} = $Format;
 
 my $Ticket = LoadTicket($id);
 my $Queue = $Ticket->QueueObj->Name;
 
-my $mergetabs = { } ;
-
-$mergetabs->{'_a'} = {
-    class => "nav",
-    path => "RTIR/Search/MergeRefine.html?Queue=" . $Ticket->QueueObj->Name . "&id=$id",
-    title => loc('Refine') };
-	
 my ($Type, @states) = $m->comp('Elements/Type', Ticket => $Ticket->Id);
-
-if (! $session{'tickets'}) {
-    # Init a new search
-    $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
-}
-
-# Iterate through the ARGS hash and remove anything with a null value.
-map ($ARGS{$_} =~ /^$/ && (delete $ARGS{$_}), keys %ARGS);
 
 my $merge = $ARGS{'SelectedTicket'};
 my ($MergeTicket, @results);
@@ -89,7 +81,7 @@ if ($merge) {
   }
 }
 
-my $Title = loc("Merge [_1] #[_2]: [_3]", $Type, $id, $Ticket->Subject);
+my $title = loc("Merge [_1] #[_2]: [_3]", $Type, $id, $Ticket->Subject);
 
 if (!$Query) {
     $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
@@ -111,12 +103,19 @@ if (!$BaseQuery) {
 $Query = "$BaseQuery AND ( $Query )";
 $ARGS{'Query'} = $Query;
 
+my $mergetabs = { };
+
+$mergetabs->{'_a'} = {
+    class => "nav",
+    path => "RTIR/Search/MergeRefine.html?Queue=" . $Ticket->QueueObj->Name . "&id=$id$QueryString",
+    title => loc('Refine') };
+	
 </%INIT>
       
 <%ARGS>
 $BaseQuery => undef
 $Query => undef
-$Format => undef 
+$Format => $RT::RTIRMergeSearchResultFormat
 $HideResults => 0
 $Rows => 50
 $Page => 1

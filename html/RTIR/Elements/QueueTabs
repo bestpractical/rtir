@@ -109,13 +109,13 @@ if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
             path  => "RTIR/Split.html?Ticket=" . $id, };
 
     $ticket_page_tabs->{'_G'} = { title => loc('Merge'),
-            path  => "RTIR/Merge.html?NewSearch=1&id=$id",
+            path  => "RTIR/Merge.html?id=$id$QueryString",
 	    separator => 1  };
 
 }
 
 foreach my $tab ( sort keys %{$ticket_page_tabs} ) {
-    if ( $ticket_page_tabs->{$tab}->{'path'} eq $current_subtab ) {
+    if ( $ticket_page_tabs->{$tab}->{'path'} eq $current_tab ) {
         $ticket_page_tabs->{$tab}->{"subtabs"}        = $subtabs;
         $tabs->{'this'}->{"current_subtab"}        = 
         $ticket_page_tabs->{$tab}->{"path"};

@@ -56,42 +56,24 @@
 &>
 <hr>
 
-<& Elements/ShowResults, QueryString => $QueryString, %ARGS &>
+<& Elements/ShowResults, 
+   Query => $Query, 
+   QueryString => $QueryString, 
+   %ARGS 
+&>
 
 <%INIT>
 my ($Type, @states) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
 
-my ($title, $ticketcount);
-$session{'i'}++;
-$session{'tickets'} = RT::Tickets->new($session{'CurrentUser'})  unless ($session{'tickets'});
-$session{'tickets'}->FromSQL($Query) if ($Query);
-$session{'tickets'}->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
-
-if ($OrderBy ne $session{'CurrentSearchHash'}->{'OrderBy'}
-    or $Order ne $session{'CurrentSearchHash'}->{'Order'}) {
-    $session{'CurrentSearchHash'}->{'OrderBy'} = $OrderBy;
-    $session{'CurrentSearchHash'}->{'Order'}   = $Order;
-    # Invalidate the ordering cache
-    undef $session{'tickets'}->{'items_array'};
-}
-
-
-if ( $session{'tickets'}->Query()) {
-    $ticketcount = $session{tickets}->CountAll();
-    $title = loc('Found [quant,_1,ticket]', $ticketcount);
-} else {
-    $title = loc("Find tickets");
-}
+my $title = loc("Results");
 
 if (!$Query) {
     $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
 }
 
-$ARGS{'Query'} = $Query;
-
 my $QueryString = "&".$m->comp('/Elements/QueryString',
                                Query => $Query,
-                               Format => $Format . ',__Check__',
+                               Format => $Format,
                                Rows => $Rows,
                                OrderBy => $OrderBy,
                                Order => $Order,
@@ -102,6 +84,7 @@ if (!$BaseQuery) {
 }
 
 $Query = "$BaseQuery AND ( $Query )";
+$ARGS{'Query'} = $Query;
 
 </%INIT>
 
