@@ -122,7 +122,9 @@ if (    $Ticket->CurrentUserHasRight('ModifyTicket')
 $tabs->{"A"} = { path      => 'RTIR/Create.html?Queue=Incident Reports',
                  title     => loc('New Incident Report') };
 $tabs->{"g"} = { path      => 'RTIR/Report/Listing.html',
-                 title     => loc('Search'),
+                 title     => loc('Search'), };
+$tabs->{"h"} = { path      => 'RTIR/Report/BulkReject.html?ClearRestrictions=1',
+                 title     => loc('Bulk Reject'),
                  separator => 1 };
 </%INIT>
 
