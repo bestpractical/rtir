@@ -1,0 +1,6 @@
+<%init>
+$m->comp('/RTIR/Elements/MakeClicky', url_params => "ticket=".$Transaction->TicketObj->Id,  %ARGS);
+</%init>
+<%ARGS>
+$Transaction => undef
+</%ARGS>
