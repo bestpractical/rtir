@@ -58,11 +58,10 @@
 	Ticket => $Ticket &>
     </td>
   </tr>
-  <& /Elements/ShadedRow, 
-      title => loc('Subject'),
-      name => "Subject",
-      content => $Ticket->Subject,
-      size => 60 &>
+  <tr>
+    <td class="label"><&|/l&>Subject</&>:</td>
+    <td class="value"><%$Ticket->Subject %></td>
+  </tr>
   <tr>
     <td class="label"><&|/l&>Description</&>:</td>
     <td class="value">
@@ -72,16 +71,14 @@
 	 Cols => 60 &>
     </td>
   </tr>
-  <& /Elements/ShadedRow,
-	title => loc('Priority'),
-	name => "Priority",
-	content => $Ticket->Priority,
-	size => 5 &>
-  <& /Elements/ShadedRow,
-	title => loc('Time Worked'),
-	name => "TimeWorked",
-	content => $Ticket->TimeWorked,
-	size => 5 &>
+  <tr>
+    <td class="label"><&|/l&>Priority</&>:</td>
+    <td class="value"><%$Ticket->Priority %></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Time Worked</&>:</td>
+    <td class="value"><%loc('[_1] min', $TimeWorked)%></td>
+  </tr>
   <tr>
     <td class="label"><&|/l&>Constituency</&>:</td>
     <td class="value">

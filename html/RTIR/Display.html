@@ -61,10 +61,10 @@
       <& /RTIR/Elements/ShowIncidents, Ticket => $Ticket &>
     </td>
   </tr>
-  <& /Elements/ShadedRow, 
-      title => loc('Time Worked'),
-      content => loc('[_1] min', $TimeWorked) &>
-
+  <tr>
+    <td class="label"><&|/l&>Time Worked</&>:</td>
+    <td class="value"><%loc('[_1] min', $TimeWorked)%></td>
+  </tr>
 % if ($Type eq 'Report') {
   <tr>
     <td class=label>
