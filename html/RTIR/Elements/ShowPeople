@@ -1,13 +1,13 @@
 %# BEGIN LICENSE BLOCK
 %# 
-%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
 %# 
 %# (Except where explictly superceded by other copyright notices)
 %# 
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
-%# from www.gnu.org
+%# from www.gnu.org.
 %# 
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,32 +23,24 @@
 %# 
 %# END LICENSE BLOCK
 <table>
-% my @entry_fields;
-% while (my $CustomField = $CustomFields->Next()) {
-%   if ($CustomField->Type =~ /Entry$/) {
-%     push @entry_fields, $CustomField;
-%     next;
-%   }
-% my $Values = $Ticket->CustomFieldValues($CustomField->Id);
   <tr>
-    <td class="label"><%$CustomField->Name%>:</td>
-    <td class="value">
-% while (my $Value = $Values->Next()) {
-<%$Value->Content%><br>        
-% }
-% unless ($Values->Count()) {
-<i><&|/l&>(no value)</&></i>
-% }
-    </td>
+    <td class="label"><&|/l&>Owner</&>:</td>
+    <td class="value"><%$Ticket->OwnerObj->Name%></td>
   </tr>
-% }
+  <tr>
+    <td class="label"><&|/l&>Correspondents</&>:</td>
+    <td class="value"><%$Ticket->RequestorAddresses%></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Cc</&>:</td>
+    <td class="value"><%$Ticket->CcAddresses%></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>AdminCc</&>:</td>
+    <td class="value"><%$Ticket->AdminCcAddresses%></td>
+  </tr>
 </table>
-% if (@entry_fields) {
-<& /Ticket/Elements/EditCustomFieldEntries, ReadOnly => 1, CustomFields => \@entry_fields, TicketObj => $Ticket &>
-% }
-<%INIT>
-my $CustomFields = $Ticket->QueueObj->CustomFields();
-</%INIT>
 <%ARGS>
 $Ticket => undef
 </%ARGS>
+
