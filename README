@@ -22,10 +22,12 @@ Installation instructions:
 
 7) Add the following lines to your /opt/rt3/etc/RT_SiteConfig.pm file:
 
-   $SITE_CONFIG_RTIR_FILE = "/opt/rt3/etc/RT_SiteConfig_RTIR.pm";
+   # The RTIR config file
 
-   require $SITE_CONFIG_RTIR_FILE
-     || die ("Couldn't load RTIR config file  '$SITE_CONFIG_RTIR_FILE'\n$@");
+   $RTIR_CONFIG_FILE = "/opt/rt3/etc/RTIR_Config.pm";
+
+   require $RTIR_CONFIG_FILE
+     || die ("Couldn't load RTIR config file '$SITE_CONFIG_RTIR_FILE'\n$@");
 
 8) Initialize the RTIR database by typing "make initdb".
 
@@ -35,7 +37,7 @@ Installation instructions:
 Configuring RTIR
 ----------------
 
-1) Using the Configurations option in base RT, add the email address
+1) Using the Configuration option in base RT, add the email address
    of the Network Operations Team (the people who will handle
    activating and removing Blocks) as AdminCC on the Blocks queue.
 
@@ -49,3 +51,7 @@ Configuring RTIR
 
 4) Staff members who handle incidents should be added to the DutyTeam
    group.
+
+5) You can override values in the RTIR_Config.pm in your
+   RT_SiteConfig.pm file, following the "require" line explained
+   above.
