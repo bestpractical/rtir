@@ -26,7 +26,7 @@
 <& Elements/LinkTabs, 
     Queue => 'Incident Reports',
     Ticket => $IncidentObj, 
-    current_tab => 'RTIR/Incident/ShowReports.html?id='.$IncidentObj->id,
+    current_tab => 'RTIR/Incident/ShowChildren.html?Queue=Incident Reports&id='.$IncidentObj->id,
     current_subtab => 'RTIR/Incident/ReplyToReporters.html',
     Tab => 'Bulk Reply',
     Title => $title &>

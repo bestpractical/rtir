@@ -110,7 +110,7 @@
 </td>
 <td valign=top>
 <& /Elements/TitleBoxStart, title => loc('Incident Reports'), 
-    title_href => "$RT::WebPath/RTIR/Incident/ShowReports.html?id=".$Ticket->Id, 
+    title_href => "$RT::WebPath/RTIR/Incident/ShowChildren.html?Queue=Incident Reports&id=".$Ticket->Id, 
     title_class=> 'inverse',  
     titleright => '', color=> "#336633" &>
 
@@ -124,9 +124,9 @@
 
     <& /RTIR/Elements/ShowChildren, 
 	    Ticket => $Ticket, 
-	    Type => 'Report',
+	    Queue => 'Incident Reports',
 	    LimitDepth => 8,
-            FullList => $RT::WebPath."/RTIR/Incident/ShowReports.html?id=".$Ticket->id
+            FullList => $RT::WebPath."/RTIR/Incident/ShowChildren.html?Queue=Incident Reports&id=".$Ticket->id
  &>
 <& /Elements/TitleBoxEnd &>
 </td>
@@ -134,7 +134,7 @@
 <tr>
   <TD VALIGN=TOP width=50%>
 	  <& /Elements/TitleBoxStart, title => loc('Investigations'), 
-		title_href => "$RT::WebPath/RTIR/Incident/ShowInvestigations.html?id=".$Ticket->Id, 
+		title_href => "$RT::WebPath/RTIR/Incident/ShowChildren.html?Queue=Investigations&id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		titleright => '', color=> "#336633" &>
 
@@ -148,16 +148,16 @@
 
 	        <& /RTIR/Elements/ShowChildren, 
 		    Ticket => $Ticket, 
-		    Type => 'Investigation',
+		    Queue => 'Investigations',
 		    LimitDepth => 8,
-		    FullList => $RT::WebPath."/RTIR/Incident/ShowInvestigations.html?id=".$Ticket->id
+		    FullList => $RT::WebPath."/RTIR/Incident/ShowChildren.html?Queue=Investigations&id=".$Ticket->id
  &>
 	<& /Elements/TitleBoxEnd &>
   </td>
   <TD VALIGN=TOP width=50%>
 
 	  <& /Elements/TitleBoxStart, title => loc('Blocks'), 
-		title_href => "$RT::WebPath/RTIR/Incident/ShowBlocks.html?id=".$Ticket->Id, 
+		title_href => "$RT::WebPath/RTIR/Incident/ShowChildren.html?Queue=Blocks&id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		titleright => '', color=> "#336633" &>
 
@@ -170,9 +170,9 @@
 
 	        <& /RTIR/Elements/ShowChildren, 
 		    Ticket => $Ticket, 
-		    Type => 'Block',
+		    Queue => 'Blocks',
 		    LimitDepth => 8,
-		    FullList => $RT::WebPath."/RTIR/Incident/ShowBlocks.html?id=".$Ticket->id &>
+		    FullList => $RT::WebPath."/RTIR/Incident/ShowChildren.html?Queue=Blocks&id=".$Ticket->id &>
 	<& /Elements/TitleBoxEnd &>
   </td>
 </tr>
