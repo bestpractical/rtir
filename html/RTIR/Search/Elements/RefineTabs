@@ -3,8 +3,6 @@
     %ARGS
 &>
 
-path: <%$path%><br>
-
 <%INIT>
 my ($Type, undef) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
 
