@@ -189,7 +189,7 @@ my (@watchresults, @updateresults, @finalresults);
 
 $Title = loc("Scripted Action: Create Investigations for Incident #[_1]", $incidentid);
 
-my $template = new RT::Template;
+my $template = new RT::Template($session{'CurrentUser'});
 $template->LoadGlobalTemplate($TemplateName);
 $ARGS{'Template'} = $template->Id;
 
