@@ -41,7 +41,7 @@
     </td>
   </tr>
   <tr>
-    <td class="label"><&|/l&>Contituency</&>:</td>
+    <td class="label"><&|/l&>Constituency</&>:</td>
     <td class="value">
       <& /RTIR/Elements/EditRTIRField, 
          QueueObj => $QueueObj, 
