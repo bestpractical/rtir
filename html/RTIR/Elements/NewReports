@@ -22,7 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/TitleBoxStart, title => loc("[_1] new unlinked Incident Reports...", $rows), bodyclass=> '' &>
+<& /Elements/TitleBoxStart, title => loc("[_1] of [_2] new unlinked Incident Reports...", $num, $MyTickets->Count), bodyclass=> '' &>
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
 <TR>
 <TH ALIGN=RIGHT><&|/l&>#</&></TH>
@@ -94,5 +94,12 @@ if (!$Queue->Load("Incident Reports")) {
 }
 
 $MyTickets->RowsPerPage($rows);
+
+my $num;
+if ($MyTickets->Count < $rows) {
+  $num = $MyTickets->Count;
+} else {
+  $num = $rows;
+}
 
 </%INIT>
