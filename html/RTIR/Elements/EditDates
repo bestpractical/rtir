@@ -1,13 +1,13 @@
 %# BEGIN LICENSE BLOCK
 %# 
-%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
 %# 
 %# (Except where explictly superceded by other copyright notices)
 %# 
 %# This work is made available to you under the terms of Version 2 of
 %# the GNU General Public License. A copy of that license should have
 %# been provided with this software, but in any event can be snarfed
-%# from www.gnu.org
+%# from www.gnu.org.
 %# 
 %# This work is distributed in the hope that it will be useful, but
 %# WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -36,10 +36,24 @@
       <& /Elements/SelectDate, menu_prefix => 'Told', current => 0 &> (<% $TicketObj->ToldObj->AsString %>)
     </TD>
   </TR>
+% if ($TicketObj->QueueObj->Name eq 'Incident Reports' ||
+%     $TicketObj->QueueObj->Name eq 'Investigations' ||
+%     $TicketObj->QueueObj->Name eq 'Blocks') {
+  <TR>
+    <TD class="label"><&|/l&>Started</&>:</TD>
+    <TD class="entry">
+      <& /Elements/SelectDate, menu_prefix => 'Started', current => 0 &> (<% $TicketObj->DueObj->AsString %>)
+    </TD>
+  </TR>
+% }
+% if ($TicketObj->QueueObj->Name ne 'Incidents') {
   <TR>
     <TD class="label"><&|/l&>Due</&>:</TD>
     <TD class="entry">
       <& /Elements/SelectDate, menu_prefix => 'Due', current => 0 &> (<% $TicketObj->DueObj->AsString %>)
+    </TD>
+  </TR>
+% }
     </TD>
   </TR>
 </TABLE>

@@ -41,8 +41,14 @@
 % }
 % if ($Ticket->QueueObj->Name ne 'Incidents') {
   <TR>
-    <TD class="label"><&|/l&>Due</&>:</TD>
-    <TD class="value"><% $Ticket->DueObj->AsString  %></TD>
+    <TD class="labeltop"><&|/l&>Due</&>:</TD>
+    <TD class="value">
+        <% $Ticket->DueObj->AsString %>
+% if ($RT::overdueafter) {
+        <br>
+        [<a href="Display.html?Due_Date=now%20%2B%20<%$RT::overdueafter%>%20days&id=<%$Ticket->Id%>"><%loc("Set to [_1] days from now", $RT::overdueafter)%></a>]
+% }
+    </TD>
   </TR>
 % }
   <TR>
