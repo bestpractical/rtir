@@ -39,7 +39,7 @@
 <table border=0 cellpadding=0 cellspacing=2 width=100%>
 <tr>
 <td valign=top width=50%>
-<& /Elements/TitleBoxStart, title => loc('Incident [_1]: [_2]', $Ticket->Id, $Ticket->Subject), 
+<& /Elements/TitleBoxStart, title => loc('Incident #[_1]', $Ticket->Id), 
 	title_href =>"$RT::WebPath/RTIR/Edit.html?id=".$Ticket->Id, 
 	title_class=> 'inverse' &>
 
