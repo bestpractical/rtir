@@ -22,44 +22,14 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<table width=100%>
-<tr>
-  <td valign=top width=45%>
-    <table width=100%>
-      <th colspan=2>At the start of the time period</th>
-      <tr>
-        <td>Outstanding Incident Reports</td>
-        <td align=right> <% scalar %$outstanding %></td>
-      </tr>
-    </table>
-  </td>
-  <td></td>
-  <td valign=top width=45%>
-    <table width =100%>
-      <th colspan=2>During the time period</th>
-      <tr>
-       <td>Total <%$service_level%> Incident Reports created</td>
-       <td align=right><% $tix_count %></td>
-      </tr>
-      <tr>
-        <td>
-          Incident Reports for which SLA time was met
-        </td>
-	<td align=right><% $sla_count %></td>
-      </tr>
-      <tr>
-        <td>Resolved Incident Reports</td>
-	<td align=right><% $resolved_count%></td>
-      </tr>
-      <tr>
-        <td>Unresolved Incident Reports </td>
-	<td align=right><% $unresolved_count%></td>
-      </tr>
-    </table>
-  </td>
-</tr>
-</table>
+At the start of the time period
+Outstanding Incident Reports;<% scalar %$outstanding %>
 
+During the time period
+Total <%$service_level%> Incident Reports created;<% $tix_count %>
+Incident Reports for which SLA time was met;<% $sla_count %>
+Resolved Incident Reports;<% $resolved_count%>
+Unresolved Incident Reports;<% $unresolved_count%>
 <%INIT>
 
 my ($tix_count, $sla_count, $resolved_count, $unresolved_count);

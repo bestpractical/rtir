@@ -22,8 +22,20 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<h1>RTIR Periodic Report for <%$Constituency%></h1>
+% if ($tabbed) {
+RTIR Periodic Report for <%$Constituency%>
 
+Start date:;<%$rtstart->AsString%>
+End date:;<%$rtend->AsString%>
+
+Incident Report Summary (including unlinked Incident Reports)
+Outstanding reports at the beginning of this period;<% scalar keys %$outstanding_pruned %>
+Total new reports for this period;<% scalar keys %$tix_created_pruned %>
+Incident Reports resolved during this period;<% scalar keys %$tix_resolved_pruned %>
+Reports unresolved at the end of the period;<% scalar keys %$tix_unresolved_pruned %>
+
+% } else {
+<h1>RTIR Periodic Report for <%$Constituency%></h1>
 <table>
   <tr>
     <td>Start date:</td>
@@ -34,7 +46,6 @@
     <td><%$rtend->AsString%></td>
   </tr>
 </table>
-
 <table>
 <tr><th align=left colspan=2>Incident Report Summary (including unlinked Incident Reports)</th></tr>
 <tr>
@@ -54,17 +65,24 @@
   <td><% scalar keys %$tix_unresolved_pruned %></td>
 </tr>
 </table>
-
+% }
 <%perl>
 foreach my $key (sort keys %$types) {
     my $incident_type = $types->{$key};
 </%perl>
+% if ($tabbed) {
+<%$incident_type%>
 
+% } else {
 <h2><%$incident_type%></h2>
+% }
+% if ($tabbed) {
+Incident reports received
 
+% } else {
 <table>
 <th align=left colspan=2>Incident reports received</th>
-
+% }
 <%perl>
 
 foreach my $key (sort keys %$classifications) {
@@ -83,18 +101,22 @@ foreach my $key (sort keys %$classifications) {
     }
 
 </%perl>
-
+% if ($tabbed) {
+<%$class%>;<%$class_count%>
+% } else {
 <tr>
   <td><%$class%></td>
   <td class=value><%$class_count%></td>
 </tr>
-
+% }
 <%perl>
 }
 </%perl>
+% if ($tabbed) {
 
+% } else {
 </table>
-
+% }
 <%perl>
     foreach my $service_level (keys %$sla_levels) {
 	my $class_tix = RT::Tickets->new( $session{'CurrentUser'} );
@@ -123,20 +145,38 @@ foreach my $key (sort keys %$classifications) {
 	}
     
 </%perl>
-
+% if ($tabbed) {
+<%$service_level%>
+% } else {
 <h3><%$service_level%></h3>
+% }
 
+% if ($tabbed) {
+<& Elements/SLASummaryText, 
+    class_tix => $mytix, outstanding => $myoutstanding, 
+    service_level => $service_level,
+    start => $rtstart, end => $rtend &>
+% } else {
 <& Elements/SLASummary, 
     class_tix => $mytix, outstanding => $myoutstanding, 
     service_level => $service_level,
     start => $rtstart, end => $rtend &>
-
+% }
 <%perl>
     }
 }
+if ($tabbed) {
+  $m->abort();
+}
+
 </%perl>
 
 <%init>
+my $tabbed = 0;
+if ($ARGS{TextReport}) {
+  $tabbed = 1;
+}
+
 my $start = ParseDateToISO($mystart);
 my $end = ParseDateToISO($myend);
 
@@ -265,6 +305,9 @@ sub get_incident_field {
   }
 }
 
+if ($tabbed) {
+    $r->content_type('text/plain');
+}
 </%init>
 
 <%args>

@@ -54,7 +54,11 @@
     </td>
   </tr>
 </table>
-<& /Elements/Submit, Caption => loc("Generate the report"), Label => loc("Go")&>
+<& /Elements/Submit, Caption => loc("Generate a delimited text report"), 
+    Name => "TextReport",
+    Label => loc("Text")&>
+<& /Elements/Submit, Caption => loc("Generate and HTML report"), 
+    Label => loc("HTML")&>
 </FORM>
 
 <%INIT>
