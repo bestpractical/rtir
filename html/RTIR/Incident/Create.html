@@ -200,11 +200,10 @@
     <TABLE BORDER=0>
       <TR>
         <TD ALIGN=RIGHT><&|/l&>Starts</&>:</TD>
-% my $nowstring = gmtime();
 % if ($ARGS{Starts}) {
-	  <TD><input size=10 name="Starts" VALUE="<%$ARGS{Starts}%>"></TD>
+          <TD><input size=10 name="Starts" VALUE="<%$ARGS{Starts}%>"></TD>
 % } else {
-	  <TD><input size=10 name="Starts" VALUE="<%$nowstring%>"></TD>
+          <TD><input size=10 name="Starts"></TD>
 % }
       </TR>
       <TR>

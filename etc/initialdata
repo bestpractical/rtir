@@ -251,7 +251,6 @@
        ScripAction      => 'User Defined',
        CustomCommitCode => q[
 # ------------------------------------------------------------------- #
-# ------------------------------------------------------------------- #
 if ($self->TicketObj->Owner ne $self->TransactionObj->Creator) {
   my $date = RT::Date->new($RT::SystemUser);
   $date->SetToNow;
@@ -260,6 +259,66 @@ if ($self->TicketObj->Owner ne $self->TransactionObj->Creator) {
   return 1;
 # ------------------------------------------------------------------- #
 	],
+       CustomPrepareCode => '1',
+       Template       => 'Blank' },
+    {  Description => "SetStartsDate",
+       Queue            => 'Incidents',
+       ScripCondition => 'On Create',
+       ScripAction      => 'User Defined',
+       CustomCommitCode => q[
+# ------------------------------------------------------------------- #
+if ($self->TicketObj->StartsObj->AsString eq "Not set") {
+  my $date = RT::Date->new($RT::SystemUser);
+  $date->SetToNow;
+  $self->TicketObj->SetStarts($date->ISO);
+}
+  return 1;
+# ------------------------------------------------------------------- #	],
+       CustomPrepareCode => '1',
+       Template       => 'Blank' },
+    {  Description => "SetStartsDate",
+       Queue            => 'Incident Reports',
+       ScripCondition => 'On Create',
+       ScripAction      => 'User Defined',
+       CustomCommitCode => q[
+# ------------------------------------------------------------------- #
+if ($self->TicketObj->StartsObj->AsString eq "Not set") {
+  my $date = RT::Date->new($RT::SystemUser);
+  $date->SetToNow;
+  $self->TicketObj->SetStarts($date->ISO);
+}
+  return 1;
+# ------------------------------------------------------------------- #	],
+       CustomPrepareCode => '1',
+       Template       => 'Blank' },
+    {  Description => "SetStartsDate",
+       Queue            => 'Investigations',
+       ScripCondition => 'On Create',
+       ScripAction      => 'User Defined',
+       CustomCommitCode => q[
+# ------------------------------------------------------------------- #
+if ($self->TicketObj->StartsObj->AsString eq "Not set") {
+  my $date = RT::Date->new($RT::SystemUser);
+  $date->SetToNow;
+  $self->TicketObj->SetStarts($date->ISO);
+}
+  return 1;
+# ------------------------------------------------------------------- #	],
+       CustomPrepareCode => '1',
+       Template       => 'Blank' },
+    {  Description => "SetStartsDate",
+       Queue            => 'Blocks',
+       ScripCondition => 'On Create',
+       ScripAction      => 'User Defined',
+       CustomCommitCode => q[
+# ------------------------------------------------------------------- #
+if ($self->TicketObj->StartsObj->AsString eq "Not set") {
+  my $date = RT::Date->new($RT::SystemUser);
+  $date->SetToNow;
+  $self->TicketObj->SetStarts($date->ISO);
+}
+  return 1;
+# ------------------------------------------------------------------- #	],
        CustomPrepareCode => '1',
        Template       => 'Blank' },
     {  Description => "SetHowReported",
