@@ -30,7 +30,8 @@
     current_tab => $current_tab, 
     current_subtab => $current_subtab, 
     current_toptab => $current_toptab,
-    title => $Title &>
+    title => $Title,
+    AppName =>' RTIR' &>
 
 <%INIT>
 my $toptabs = { A => { title => loc('RT'),
