@@ -49,9 +49,9 @@
 <input type=hidden name=Query value="<%$Query%>">
 <input type=hidden name=Format value="<%$Format%>">
 <input type=hidden name=BaseQuery value="<%$BaseQuery%>">
-<input type=hidden name=Queue value="<%$ARGS{'Queue'}%>">
-<input type=hidden name=id value="<%$ARGS{'id'}%>">
-<input type=hidden name=ResultPage value="<%$ARGS{'ResultPage'}%>">
+<input type=hidden name=Queue value="<%$Queue%>">
+<input type=hidden name=id value="<%$id%>">
+<input type=hidden name=ResultPage value="<%$ResultPage%>">
 <table width=100%>
 <tr>
 <td valign=top class="boxcontainer">
@@ -79,6 +79,7 @@
 </center>
 <& /Elements/TitleBoxEnd &>
 <br>
+
 <& /Search/Elements/EditSearches, CurrentSearch => $search_hash, Dirty => $dirty, SearchId => $SearchId &>
 </td>
 </tr>
@@ -98,7 +99,7 @@
 </FORM>
 
 <%ARGS>
-$NewQuery => 0
+$id => undef
 $SearchId => undef
 $BaseQuery => undef
 $Query => undef
@@ -116,4 +117,5 @@ $dirty => undef
 $AvailableColumns => undef
 $CurrentFormat => undef
 $Queue => undef
+$ResultPage => undef
 </%ARGS>

@@ -62,18 +62,30 @@
 &>
 
 <& /RTIR/Search/Elements/BuildQuery, 
+    id => $id,
     queues => \%queues, 
     actions => $results, 
     optionlist => $optionlist,
     search_hash => $search_hash,
-    dirty => $dirty,
     AvailableColumns => $AvailableColumns,
     CurrentFormat => $CurrentFormat,
     BaseQuery => $BaseQuery,
     ResultPage => $ResultPage,
-    %ARGS &>
+    SearchId => $SearchId,
+    NewQuery => $NewQuery,
+    Query => $Query,
+    BaseURL => $BaseURL,
+    Rows => $Rows,
+    Format => $Format,
+    Queue => $Queue,
+    Page => $Page,
+    Order => $Order,
+    OrderBy => $OrderBy,
+    &>
 
 <%INIT>
+my $SearchId;
+
 if (!$Ticket && $id) {
     $Ticket = new RT::Ticket($session{'CurrentUser'});
     $Ticket->Load($id);
@@ -106,15 +118,14 @@ if ($NewQuery) {
 
     # and replace it with our standard new query...
 
-    $ARGS{'Query'} = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
-    $Query = $ARGS{'Query'};
+    $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
 
     # and claim it isn't a new query any more
 
-    $ARGS{'NewQuery'} = 0;
+    $NewQuery = 0;
 }
 
-( $Query, $Format, $Order, $OrderBy, $Rows ) = 
+( $Query, $Format, $Order, $OrderBy, $Rows, $SearchId ) = 
     $m->comp('/RTIR/Search/Elements/ProcessQuery', 
 	     queues => \%queues, 
 	     results => \$results, 
@@ -139,8 +150,6 @@ my ($Type, @states) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
             OrderBy => $OrderBy,
             Rows => $Rows) if ($Query);
 # }}}
-
-$ARGS{'Query'} = $Query;
 
 my $path = $BaseURL."?Queue=$Queue&id=".$id.$QueryString;
 

@@ -636,13 +636,14 @@ if ( $ARGS{'Save'} ) {
 # }}}
 
 # {{{ If we're modifying an old query, check if it has changed
-$dirty = 1 if defined $search and 
+$$dirty = 1 if defined $search and 
   ($search->SubValue('Format')      ne $Format      or
    $search->SubValue('Query')       ne $Query       or 
    $search->SubValue('Order')       ne $Order       or
    $search->SubValue('OrderBy')     ne $OrderBy     or
    $search->SubValue('RowsPerPage') ne $RowsPerPage);
 # }}}
+
 
 # {{{ Push the updates into the session so we don't loose 'em
 $search_hash->{'SearchId'} = $SearchId;
@@ -666,7 +667,7 @@ if ( $ARGS{"DoSearch"} ) {
 
 $$results = \@actions;
 
-return ( $Query, $Format, $Order, $OrderBy, $RowsPerPage );
+return ( $Query, $Format, $Order, $OrderBy, $RowsPerPage, $SearchId );
 
 </%INIT>
 
