@@ -237,16 +237,50 @@
 );
 
 @Scrips = (
-    {  Queue            => 'Investigations',
+    {  Description    => 'NotifyOnLaunch',
+       Queue          => 'Investigations',
        ScripCondition => 'On Create',
        ScripAction    => 'Notify Requestors',
        Template       => 'LaunchMessage' },
-    {  Queue            => 'Blocks',
+    {  Description    => 'NotifyOnCreate',
+       Queue          => 'Blocks',
        ScripCondition => 'On Create',
        ScripAction    => 'Notify Requestors',
        Template       => 'NewMessage' },
     {  Description => "DetectUserResponse",
-       Queue            => 'Incident Reports',
+       Queue          => 'Incident Reports',
+       ScripCondition => 'On Correspond',
+       ScripAction      => 'User Defined',
+       CustomCommitCode => q[
+# ------------------------------------------------------------------- #
+if ($self->TicketObj->Owner ne $self->TransactionObj->Creator) {
+  my $date = RT::Date->new($RT::SystemUser);
+  $date->SetToNow;
+  $self->TicketObj->SetDue($date->ISO);
+}
+  return 1;
+# ------------------------------------------------------------------- #
+	],
+       CustomPrepareCode => '1',
+       Template       => 'Blank' },
+    {  Description => "DetectUserResponse",
+       Queue            => 'Investigations',
+       ScripCondition => 'On Correspond',
+       ScripAction      => 'User Defined',
+       CustomCommitCode => q[
+# ------------------------------------------------------------------- #
+if ($self->TicketObj->Owner ne $self->TransactionObj->Creator) {
+  my $date = RT::Date->new($RT::SystemUser);
+  $date->SetToNow;
+  $self->TicketObj->SetDue($date->ISO);
+}
+  return 1;
+# ------------------------------------------------------------------- #
+	],
+       CustomPrepareCode => '1',
+       Template       => 'Blank' },
+    {  Description => "DetectUserResponse",
+       Queue            => 'Blocks',
        ScripCondition => 'On Correspond',
        ScripAction      => 'User Defined',
        CustomCommitCode => q[
@@ -291,16 +325,20 @@ if ($self->TicketObj->StartsObj->AsString eq "Not set") {
 # ------------------------------------------------------------------- #	],
        CustomPrepareCode => '1',
        Template       => 'Blank' },
-    {  Description => "SetStartsDate",
+    {  Description => "SetDates",
        Queue            => 'Investigations',
        ScripCondition => 'On Create',
        ScripAction      => 'User Defined',
        CustomCommitCode => q[
 # ------------------------------------------------------------------- #
+my $date = RT::Date->new($RT::SystemUser);
+$date->SetToNow;
 if ($self->TicketObj->StartsObj->AsString eq "Not set") {
-  my $date = RT::Date->new($RT::SystemUser);
-  $date->SetToNow;
   $self->TicketObj->SetStarts($date->ISO);
+}
+if ($self->TicketObj->DueObj->AsString eq "Not set") {
+  $date->AddDays($RT::overdueafter);
+  $self->TicketObj->SetDue($date->ISO);
 }
   return 1;
 # ------------------------------------------------------------------- #	],
