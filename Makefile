@@ -83,3 +83,16 @@ tag-and-release-never-by-hand:
 
 regression: 
 	$(PERL) lib/t/02regression.t
+
+upgrade: config-install install-html upgrade-instruct
+
+upgrade-instruct: 
+	@echo "Congratulations. RTIR has been upgraded."
+	@echo "You should update RTIR's system database objects by running "
+	@echo "   ls etc/upgrade"
+	@echo ""
+	@echo "For each item in that directory whose name is greater than"
+	@echo "your previously installed RT version, run:"
+	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --dba $(DB_DBA) --prompt-for-dba-password --action insert --datadir etc/upgrade/<version>"
+upgrade-instruct: 
+

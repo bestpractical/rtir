@@ -1,0 +1,18 @@
+@ACL = (
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Incidents',
+      Right  => 'ShowTemplate', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Incident Reports',
+      Right  => 'ShowTemplate', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Investigations',
+      Right  => 'ShowTemplate', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Blocks',
+      Right  => 'ShowTemplate', },
+);

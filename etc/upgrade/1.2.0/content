@@ -1,0 +1,255 @@
+@ScripActions = (
+
+    {  Name        => 'RTIR Set Due to Now',    # loc
+       Description => 'Set the due date to the current time' ,                                            # loc
+       ExecModule => 'RTIR_SetDueToNow',
+    },
+    {  Name        => 'RTIR Set Starts to Now',    # loc
+       Description => 'Set the starts date to the current time' ,                                            # loc
+       ExecModule => 'RTIR_SetStartsToNow',
+    },
+    {  Name        => 'RTIR Set Due by SLA',    # loc
+       Description => 'Set the due date according to SLA' ,                                            # loc
+       ExecModule => 'RTIR_SetDueBySLA',
+    },
+    {  Name        => 'RTIR Set Due Correspond',    # loc
+       Description => 'Set the due date for correspondence' ,                                            # loc
+       ExecModule => 'RTIR_SetDueCorrespond',
+    },
+    {  Name        => 'RTIR Unset Due',    # loc
+       Description => 'Unset the due date' ,                                            # loc
+       ExecModule => 'RTIR_UnsetDue',
+    },
+    {  Name        => 'RTIR Set Starts by Business Hours',    # loc
+       Description => 'Set the starts date according to Business Hours' ,                                            # loc
+       ExecModule => 'RTIR_SetStartsByBizHours',
+    },
+    {  Name        => 'RTIR Set How Reported',    # loc
+       Description => 'Set how the Incident Report was reported' ,                                            # loc
+       ExecModule => 'RTIR_SetHowReported',
+    },
+    {  Name        => 'RTIR Resolve Children',    # loc
+       Description => "Resolve an Incident's children",                                            # loc
+       ExecModule => 'RTIR_ResolveChildren',
+    },
+    {  Name        => 'RTIR Change Child Ownership',    # loc
+       Description => "Change the ownership of Incident's children",                                            # loc
+       ExecModule => 'RTIR_ChangeChildOwnership',
+    },
+    {  Name        => 'RTIR Change Parent Ownership',    # loc
+       Description => 'Change the ownership of the parent Incident' ,                                            # loc
+       ExecModule => 'RTIR_ChangeParentOwnership',
+    },
+    {  Name        => 'RTIR Open Parent',    # loc
+       Description => 'Open the parent Incident when a child reopens' ,                                            # loc
+       ExecModule => 'RTIR_OpenParent',
+    },
+    {  Name        => 'RTIR Set Incident Report State',    # loc
+       Description => 'Set the state of an Incident Report' ,                                            # loc
+       ExecModule => 'RTIR_SetIncidentReportState',
+    },
+    {  Name        => 'RTIR Set Investigation State',    # loc
+       Description => 'Set the state of an Investigation' ,                                            # loc
+       ExecModule => 'RTIR_SetInvestigationState',
+    },
+    {  Name        => 'RTIR Set Block State',    # loc
+       Description => 'Set the state of a Block' ,                                            # loc
+       ExecModule => 'RTIR_SetBlockState',
+    },
+    {  Name        => 'RTIR Set Incident State',    # loc
+       Description => 'Set the state of an Incident' ,                                            # loc
+       ExecModule => 'RTIR_SetIncidentState',
+    },
+);
+
+@ScripConditions = (
+
+    {  Name        => 'RTIR Customer Response',    # loc
+       Description => 'Detect an external response' ,                                            # loc
+       ApplicableTransTypes => 'Correspond',
+       ExecModule => 'RTIR_CustomerResponse',
+    },
+    {  Name        => 'RTIR Close Ticket',    # loc
+       Description => 'A ticket is rejected or resolved' ,                                            # loc
+       ApplicableTransTypes => 'Any',
+       ExecModule => 'RTIR_CloseTicket',
+    },
+    {  Name        => 'RTIR Reopen Ticket',    # loc
+       Description => 'A closed ticket is reopened' ,                                            # loc
+       ApplicableTransTypes => 'Any',
+       ExecModule => 'RTIR_ReopenTicket',
+    },
+    {  Name        => 'RTIR Require State Change',    # loc
+       Description => 'A ticket requires a state change' ,                                            # loc
+       ApplicableTransTypes => 'Any',
+       ExecModule => 'RTIR_RequireStateChange',
+    },
+
+);
+
+@Scrips = (
+    {  Description    => 'NotifyOnLaunch',
+       Queue          => 'Investigations',
+       ScripCondition => 'On Create',
+       ScripAction    => 'Notify Requestors',
+       Template       => 'LaunchMessage' },
+    {  Description    => 'NotifyOnCreate',
+       Queue          => 'Blocks',
+       ScripCondition => 'On Create',
+       ScripAction    => 'Notify Requestors',
+       Template       => 'NewMessage' },
+    {  Description => "DetectUserResponse",
+       Queue          => 'Incident Reports',
+       ScripCondition => 'RTIR Customer Response',
+       ScripAction      => 'RTIR Set Due to Now',
+       Template       => 'Blank' },
+    {  Description => "DetectUserResponse",
+       Queue            => 'Investigations',
+       ScripCondition => 'RTIR Customer Response',
+       ScripAction      => 'RTIR Set Due to Now',
+       Template       => 'Blank' },
+    {  Description => "DetectUserResponse",
+       Queue            => 'Blocks',
+       ScripCondition => 'RTIR Customer Response',
+       ScripAction      => 'RTIR Set Due to Now',
+       Template       => 'Blank' },
+    {  Description => "SetStartsDate",
+       Queue            => 'Incidents',
+       ScripCondition => 'On Create',
+       ScripAction      => 'RTIR Set Starts to Now',
+       CustomPrepareCode => '1',
+       Template       => 'Blank' },
+    {  Description => "SetDue",
+       Queue            => 'Incident Reports',
+       ScripCondition => 'On Create',
+       ScripAction      => 'RTIR Set Due by SLA',
+       Template       => 'Blank' },
+    {  Description => "SetStarts",
+       Queue            => 'Incident Reports',
+       ScripCondition => 'On Create',
+       ScripAction      => 'RTIR Set Starts by Business Hours',
+       Template       => 'Blank' },
+    {  Description => "SetStarts",
+       Queue            => 'Investigations',
+       ScripCondition => 'On Create',
+       ScripAction      => 'RTIR Set Starts by Business Hours',
+       Template       => 'Blank' },
+    {  Description => "SetStarts",
+       Queue            => 'Blocks',
+       ScripCondition => 'On Create',
+       ScripAction      => 'RTIR Set Starts by Business Hours',
+       Template       => 'Blank' },
+    {  Description => "SetDue",
+       Queue            => 'Investigations',
+       ScripCondition => 'On Create',
+       ScripAction      => 'RTIR Set Due Correspond',
+       Template       => 'Blank' },
+    {  Description => "SetDue",
+       Queue            => 'Blocks',
+       ScripCondition => 'On Create',
+       ScripAction      => 'RTIR Set Due Correspond',
+       Template       => 'Blank' },
+    {  Description => "UnsetDue",
+       Queue            => 'Incident Reports',
+       ScripCondition => 'RTIR Close Ticket',
+       ScripAction      => 'RTIR Unset Due',
+       Template       => 'Blank' },
+    {  Description => "UnsetDue",
+       Queue            => 'Investigations',
+       ScripCondition => 'RTIR Close Ticket',
+       ScripAction      => 'RTIR Unset Due',
+       Template       => 'Blank' },
+    {  Description => "UnsetDue",
+       Queue            => 'Blocks',
+       ScripCondition => 'RTIR Close Ticket',
+       ScripAction      => 'RTIR Unset Due',
+       Template       => 'Blank' },
+    {  Description => "UnsetDue",
+       Queue            => 'Blocks',
+       ScripCondition => 'RTIR Close Ticket',
+       ScripAction      => 'RTIR Unset Due',
+       Template       => 'Blank' },
+    {  Description => "SetDueReopen",
+       Queue            => 'Incident Reports',
+       ScripCondition => 'RTIR Reopen Ticket',
+       ScripAction      => 'RTIR Set Due by SLA',
+       Template       => 'Blank' },
+    {  Description => "SetDueReopen",
+       Queue            => 'Investigations',
+       ScripCondition => 'RTIR Reopen Ticket',
+       ScripAction      => 'RTIR Set Due by SLA',
+       Template       => 'Blank' },
+    {  Description => "SetDueReopen",
+       Queue            => 'Blocks',
+       ScripCondition => 'RTIR Reopen Ticket',
+       ScripAction      => 'RTIR Set Due by SLA',
+       Template       => 'Blank' },
+    {  Description => "SetHowReported",
+       Queue            => 'Incident Reports',
+       ScripCondition => 'On Create',
+       ScripAction      => 'RTIR Set How Reported',
+       Template       => 'Blank' },
+    {  Description => "SetRTIRState",
+       Queue            => 'Blocks',
+       ScripCondition   => 'RTIR Require State Change',
+       ScripAction      => 'RTIR Set Block State',
+       Template          => 'Blank', },
+    {  Description => "SetRTIRState",
+       Queue            => 'Incident Reports',
+       ScripCondition   => 'RTIR Require State Change',
+       ScripAction      => 'RTIR Set Incident Report State',
+       Template          => 'Blank', },
+
+    {  Description => "SetRTIRState",
+       Queue            => 'Investigations',
+       ScripCondition   => 'RTIR Require State Change',
+       ScripAction      => 'RTIR Set Investigation State',
+       Template          => 'Blank', },
+
+    {  Description => "SetRTIRState",
+       Queue            => 'Incidents',
+       ScripCondition   => 'RTIR Require State Change',
+       ScripAction      => 'RTIR Set Incident State',
+       Template          => 'Blank', },
+    {  Description => "ResolveAllChildren",
+       Queue            => 'Incidents',
+       ScripCondition   => 'On Status Change',
+       ScripAction      => 'RTIR Resolve Children',
+       Template          => 'Blank', },
+    {  Description => "FixOwnership",
+       Queue            => 'Incidents',
+       ScripCondition   => 'On Owner Change',
+       ScripAction      => 'RTIR Change Child Ownership',
+       Template          => 'Blank', },
+    {  Description => "FixOwnership",
+       Queue            => 'Incident Reports',
+       ScripCondition   => 'On Owner Change',
+       ScripAction      => 'RTIR Change Parent Ownership',
+       Template          => 'Blank', },
+    {  Description => "FixOwnership",
+       Queue            => 'Investigations',
+       ScripCondition   => 'On Owner Change',
+       ScripAction      => 'RTIR Change Parent Ownership',
+       Template          => 'Blank', },
+    {  Description => "FixOwnership",
+       Queue            => 'Blocks',
+       ScripCondition   => 'On Owner Change',
+       ScripAction      => 'RTIR Change Parent Ownership',
+       Template          => 'Blank', },
+    {  Description => "ReopenIncident",
+       Queue            => 'Incident Reports',
+       ScripCondition   => 'On Status Change',
+       ScripAction      => 'RTIR Open Parent',
+       Template          => 'Blank', },
+    {  Description => "ReopenIncident",
+       Queue            => 'Investigations',
+       ScripCondition   => 'On Status Change',
+       ScripAction      => 'RTIR Open Parent',
+       Template          => 'Blank', },
+    {  Description => "ReopenIncident",
+       Queue            => 'Blocks',
+       ScripCondition   => 'On Status Change',
+       ScripAction      => 'RTIR Open Parent',
+       Template          => 'Blank', },
+);
+
