@@ -5,6 +5,7 @@
         Name              => 'Incidents',
         CorrespondAddress => "",
         CommentAddress    => "",
+	InitialPriority   => 50,
     },
     {
         Name              => 'Incident Reports',
@@ -107,7 +108,7 @@
 	Disabled    => 2,
         Values      => [
             {
-                Name      => "pending",
+                Name      => "pending activation",
                 SortOrder => 1
             },
             {
@@ -115,8 +116,12 @@
                 SortOrder => 2
             },
             {
-                Name      => "removed",
+                Name      => "pending removal",
                 SortOrder => 3
+            },
+            {
+                Name      => "removed",
+                SortOrder => 4
             }
         ],
     },
@@ -264,9 +269,11 @@ while (my $CustomField = $CustomFields->Next()) {
   if ($CustomField->Name eq '_RTIR_State') {
     my $State;
     if ($self->TicketObj->Status eq 'new') {
-      $State = 'pending';
+      $State = 'pending activation';
     } elsif ($self->TicketObj->Status eq 'open') {
       $State = 'active';
+    } elsif ($self->TicketObj->Status eq 'stalled') {
+      $State = 'pending removal';
     } elsif ($self->TicketObj->Status eq 'resolved') {
       $State = 'removed';
     } else {

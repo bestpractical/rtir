@@ -118,7 +118,18 @@ if (    $Ticket->CurrentUserHasRight('ModifyTicket')
 }
 
 if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
-    if ( $Ticket->Status ne 'resolved' ) {
+    if ( $Ticket->Status eq 'open' ) {
+        $actions->{'Ac'} = {
+
+            path =>
+              "RTIR/Block/Update.html?Action=Comment&DefaultStatus=stalled&id="
+              . $id,
+            title => loc('Request Removal') };
+    }
+}
+
+if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
+    if ( $Ticket->Status eq 'stalled') {
         $actions->{'Ac'} = {
 
             path =>
@@ -129,7 +140,7 @@ if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
 }
 
 if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
-    if ( $Ticket->Status ne 'open' ) {
+    if ( $Ticket->Status eq 'new' or $Ticket->Status eq 'resolved') {
         $actions->{'Ac'} = {
 
             path =>
