@@ -86,6 +86,7 @@ while (my $Ticket = $session{'tickets'}->Next) {
 <table>
 <tr><td class=label> <&|/l&>Make Owner</&>: </td>
 <td class=value> <& /Elements/SelectOwner, Name => "Owner" &> (<input type=checkbox name="ForceOwnerChange"> <&|/l&>Force change</&>) </td></tr>
+% if ($Type ne 'Incident') {
 <tr><td class=label> <&|/l&>Add Correspondent</&>: </td>
 <td class=value> <INPUT Name="AddRequestor" SIZE=20> </td></tr>
 <tr><td class=label> <&|/l&>Remove Correspondent</&>: </td>
@@ -98,6 +99,44 @@ while (my $Ticket = $session{'tickets'}->Next) {
 <td class=value> <INPUT Name="AddAdminCc" SIZE=20> </td></tr>
 <tr><td class=label> <&|/l&>Remove AdminCc</&>: </td>
 <td class=value> <INPUT Name="DeleteAdminCc" SIZE=20> </td></tr>
+% } else {
+  <tr>
+    <td class=labeltop><&|/l&>Make Description</&>:</td>
+    <td class=value colspan=2>
+      <& /RTIR/Elements/EditRTIRField, 
+	QueueObj => $q,
+        Name => 'Description' &>
+    </td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Make Constituency</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/EditRTIRField, 
+         QueueObj => $q, 
+	 Name => 'Constituency' &>
+    </td>
+  </tr>
+  <tr>
+    <td class=label>
+      <%loc("Make Function")%>:
+    </td>
+    <td class=value colspan=2>
+      <& /RTIR/Elements/EditRTIRField, 
+	QueueObj => $q,
+        Name => 'Function' &>
+    </td>
+  </tr>
+  <tr>
+    <td class=label>
+      <%loc("Make Classification")%>:
+    </td>
+    <td class=value colspan=2>
+      <& /RTIR/Elements/EditRTIRField, 
+	QueueObj => $q,
+        Name => 'Classification' &>
+    </td>
+  </tr>
+% }
 </table>
 </TD>
 <TD VALIGN=TOP>
@@ -106,7 +145,7 @@ while (my $Ticket = $session{'tickets'}->Next) {
 <td class=value> <INPUT Name="Subject" SIZE=20> </td></tr>
 % if ($Type eq 'Report') {
   <tr>
-    <td class="labeltop"><&|/l&>Make SLA</&>:</td>
+    <td class="label"><&|/l&>Make SLA</&>:</td>
     <td class="value">
       <& /RTIR/Elements/EditRTIRField, 
          QueueObj => $q, 
@@ -114,7 +153,7 @@ while (my $Ticket = $session{'tickets'}->Next) {
     </td>
   </tr>
   <tr>
-    <td class=labeltop>
+    <td class=label>
       <%loc("Make How Reported")%>:
     </td>
     <td class=value colspan=2>
@@ -124,7 +163,7 @@ while (my $Ticket = $session{'tickets'}->Next) {
     </td>
   </tr>
   <tr>
-    <td class=labeltop>
+    <td class=label>
       <%loc("Make Reporter Type")%>:
     </td>
     <td class=value colspan=2>
