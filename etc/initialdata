@@ -904,7 +904,8 @@ return 1;
     { Queue       => 'Blocks',
       Name        => 'NewMessage',
       Description => 'Sent when a block is created',
-      Content     => 'Subject: {$Ticket->Subject}
+      Content     => 'RT-Attach-Message: yes
+Subject: {$Ticket->Subject}
 
 {$Transaction->Content()}
 
@@ -941,7 +942,8 @@ you may reply to this message.
     { Queue       => 'Investigations',
       Name        => 'LaunchMessage',
       Description => 'Sent when an investigation is launched',
-      Content     => 'Subject: {$Ticket->Subject}
+      Content     => 'RT-Attach-Message: yes
+Subject: {$Ticket->Subject}
 
 {$Transaction->Content()}
 

@@ -133,15 +133,15 @@
 </td>
 </tr>
 <tr>
-        <TD VALIGN=TOP width=50%>
-        <BR>
-	  <& /Elements/TitleBoxStart, title => loc('People'), 
+  <TD VALIGN=TOP width=50%>
+    <BR>
+    <& /Elements/TitleBoxStart, title => loc('People'), 
 		title_class=> 'inverse' &>
-	  <& /RTIR/Incident/Elements/ShowPeople, Ticket => $Ticket &>
-	  <& /Elements/TitleBoxEnd &>
-	<BR>
-	</TD>
-<td>
+    <& /RTIR/Incident/Elements/ShowPeople, Ticket => $Ticket &>
+    <& /Elements/TitleBoxEnd &>
+    <BR>
+  </TD>
+  <td>
         <BR>
 	  <& /Elements/TitleBoxStart, title => loc("Dates"),
 		title_class=> 'inverse',  
@@ -149,13 +149,16 @@
 	  <& /RTIR/Elements/ShowDates, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
 	<BR>  
-	  <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket &>
-
-	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket, DisplayPath => '/RTIR/Display.html' &>
-
-
-	</TD>
-      </TR>
+  </td>
+</tr>
+<tr>
+  <TD VALIGN=TOP width=50%>
+    <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket &>
+  </td>
+  <TD VALIGN=TOP width=50%>
+    <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket, DisplayPath => '/RTIR/Display.html' &>
+  </TD>
+</TR>
 </table>
 <& /Ticket/Elements/ShowHistory , 
       Ticket => $Ticket, 

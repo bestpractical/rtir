@@ -39,6 +39,7 @@
 % }
 
 <FORM action="Create.html" METHOD="GET" ENCTYPE="multipart/form-data">
+
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
 <INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
 <INPUT TYPE=HIDDEN NAME=Status Value="<%$ARGS{Status}||'open'%>">
@@ -75,82 +76,9 @@
     </TD>
 % }
   </TR>
-  <TR>
-    <TD class=label>
-      <&|/l&>Subject</&>:
-    </TD>
-    <TD class=value COLSPAN=5>
-      <INPUT Name="Subject" SIZE=60 MAXSIZE=100 value="<% $Subject %>">
-    </TD>
-  </TR>
-  <tr>
-    <td class="labeltop"><&|/l&>Description</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/EditRTIRField, 
-         QueueObj => $QueueObj, 
-	 Name => 'Description',
-	 Default => $RT::_RTIR_Description_default,
-	 Cols => 40 &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Contituency</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/EditRTIRField, 
-         QueueObj => $QueueObj, 
-	 Name => 'Constituency',
-	 Default => $RT::_RTIR_Constituency_default,
-	 Rows => 1 &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Function</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/EditRTIRField, 
-         QueueObj => $QueueObj, 
-	 Name => 'Function',
-	 Default => $RT::_RTIR_Function_default,
-	 Rows => 1 &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Classification</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/EditRTIRField, 
-         QueueObj => $QueueObj, 
-	 Name => 'Classification',
-	 Default => $RT::_RTIR_Classification_default,
-	 Rows => 1 &>
-    </td>
-  </tr>
-  <TR>
-    <TD colspan=2>
-      <& /Ticket/Elements/EditCustomFields, 
-        TicketObj => $TicketObj, QueueObj => $QueueObj &>
-    </TD>
-  </TR>
-<TR>
-% if (exists $session{'Attachments'}) {
-<TD>
-<&|/l&>Attached file</&>:
-</TD>
-<TD COLSPAN=5>
-<&|/l&>Check box to delete</&><BR>
-% foreach my $attach_name (keys %{$session{'Attachments'}}) {
-<input type="checkbox" name="DeleteAttach-<%$attach_name%>"><%$attach_name%><BR>
-% } # end of foreach
-</TD>
-</TR>
-<TR>
-% } # end of if
-<TD class=label>
-<&|/l&>Attach file</&>:
-</TD>
-<TD class=value COLSPAN=5>
-<INPUT TYPE=FILE NAME="Attach">
-<INPUT TYPE=SUBMIT NAME="AddMoreAttach" VALUE="<&|/l&>Add More Files</&>">
-</TD>
-</TR>
+
+<& Elements/Create, Title => $Title, TicketObj => $TicketObj, QueueObj => $QueueObj,%ARGS &>
+
 <TR>
 <TD class=labeltop>
 <&|/l&>Message</&>:
@@ -236,6 +164,7 @@
 </TR>
 </TABLE>
 <& /Elements/TitleBoxEnd &>
+
 <& /Elements/Submit, Label => loc("Create")&>
 </FORM>
 
@@ -244,9 +173,9 @@
 # if there isn't a subject, but there is a child, use that one
 my $ChildObj;
 
-if ((!$Subject) and $child) {
+if ((!$ARGS{'Subject'}) and $child) {
   $ChildObj = LoadTicket($child);
-  $Subject = $ChildObj->Subject;
+  $ARGS{'Subject'} = $ChildObj->Subject;
 }
 
 my ($link, $label);
@@ -318,5 +247,4 @@ $Title => loc("Create a new Incident")
 $current_tab => "RTIR/Create.html?Queue=Incidents"
 $current_subtab => "RTIR/Create.html?Queue=Incidents"
 $child => undef
-$Subject => undef
 </%ARGS>

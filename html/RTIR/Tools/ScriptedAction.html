@@ -32,12 +32,13 @@
 <& /RTIR/Elements/ListActions, actions => \@finalresults &>
 
 <FORM METHOD="GET" NAME="TicketUpdate" ENCTYPE="multipart/form-data">
-<INPUT TYPE=HIDDEN NAME=id Value="new">
-<INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
-<INPUT TYPE=HIDDEN NAME=Status Value="<%$ARGS{Status}||'open'%>">
 <input type=hidden Name="WatcherTypeEmail1" value="Requestor">
 <input type=hidden name="UpdateType" value="response">
 <input type=hidden name="Action" value="Respond">
+<input type=hidden name="Owner" value=<%$session{'CurrentUser'}->Id%>>
+
+<INPUT TYPE=HIDDEN NAME=id Value="new">
+<INPUT TYPE=HIDDEN NAME=Status Value="<%$ARGS{Status}||'open'%>">
 <A NAME="top">
 	
 <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => $Title &>
@@ -47,15 +48,12 @@
       <&|/l&>Owner</&>:
     </TD>
     <TD>
-      <& /Elements/SelectOwner, 
-          Name => "Owner", 
-	  QueueObj => $QueueObj, 
-	  Default => $ARGS{Owner}||$session{'CurrentUser'}->Id||undef &>
+      <%$session{'CurrentUser'}->Name%>
     </TD>
   </TR>
   <TR>
     <TD class=labeltop>
-      <&|/l&>Addresses</&>:
+      <&|/l&>Addresses</&>:<br><small>arg: <i>_ADDR_</i></small>
     </TD>
     <TD COLSPAN=5>
 % if (exists $ARGS{Addresses}) {
@@ -65,18 +63,30 @@
 % }
     </TD>
   </TR>
+<TR>
+  <TD class=label>
+    <&|/l&>Template</&>:
+  </TD>
+  <TD>
+    <& /Admin/Elements/SelectTemplate, Name => "Template", Default => $ARGS{'Template'}, Queue => $investigationq->Id &>
+  </TD>
+</TR>
+<TR>
+  <TD class=label>
+    <&|/l&>Argument</&>:
+  </TD>
+  <TD>
+    <INPUT Name="TemplateArg" SIZE=60 value="<% $ARGS{'TemplateArg'} %>">
+  </TD>
+</TR>
   <TR>
     <TD ALIGN=RIGHT COLSPAN=2>
     </TD>
   </TR>
-  <TR>
-    <TD class=label>
-      <&|/l&>Subject</&>:
-    </TD>
-    <TD class=value COLSPAN=5>
-      <INPUT Name="Subject" SIZE=60 MAXSIZE=100 value="<% $ARGS{'Subject'} %>">
-    </TD>
-  </TR>
+  <TR><TD colspan=2><hr></TD></TR>
+
+<& /RTIR/Incident/Elements/Create, Title => $Title, QueueObj => $incidentq, %ARGS &>
+
 <TR>
   <TD class=labeltop>
     <&|/l&>Message</&>:
@@ -89,32 +99,6 @@
 % }
   </TD>
 </TR>
-<TR>
-  <TD>
-  </TD>
-  <TD VALIGN=TOP>
-    <& /Elements/TitleBoxStart, title => loc("Dates"),
-		title_class=> 'inverse',  
-		 color => "#663366" &>
-
-    <TABLE BORDER=0>
-      <TR>
-        <TD ALIGN=RIGHT><&|/l&>Starts</&>:</TD>
-% my $nowstring = gmtime();
-% if ($ARGS{Starts}) {
-	  <TD><input size=30 name="Starts" VALUE="<%$ARGS{Starts}%>"></TD>
-% } else {
-	  <TD><input size=30 name="Starts" VALUE="<%$nowstring%>"></TD>
-% }
-      </TR>
-      <TR>
-        <TD ALIGN=RIGHT><&|/l&>Due</&>:</TD>
-	<TD><input size=30 name="Due"<% $ARGS{Due} && " VALUE=\"$ARGS{Due}\"" %>></TD>
-      </TR>
-    </TABLE>
-    <& /Elements/TitleBoxEnd &>
-  </TD>
-</TR>
 </TABLE>
 <& /Elements/TitleBoxEnd &>
 <& /Elements/Submit, Label => loc("Create")&>
@@ -122,15 +106,20 @@
 
 <%INIT>
 my @addrs;
-my ($Ticket, @Actions, @results, @finalresults);  
-my $QueueObj = new RT::Queue($session{'CurrentUser'});
-$QueueObj->Load("Incident Reports") || Abort(loc("Queue could not be loaded."));
+my ($Incident, $Ticket);
+my (@IncidentActions, @InvestigationActions, @finalresults);  
 
-if (!defined $current_tab) {
-  $current_tab = "RTIR/Tools/ScriptedAction.html"; 
+# Load the Incidents Queue
+my $incidentq = new RT::Queue($session{'CurrentUser'});	
+unless ($incidentq->Load('Incidents')) {
+  Abort('Queue not found');
 }
 
-my $CFs = $QueueObj->CustomFields();
+# Load the Investigationss Queue
+my $investigationq = new RT::Queue($session{'CurrentUser'});	
+unless ($investigationq->Load('Investigations')) {
+  Abort('Queue not found');
+}
 
 my $addresses = $ARGS{'Addresses'};
 # replace \r\n with \n
@@ -143,52 +132,120 @@ $addresses =~ s/\n/,/g;
 @addrs = parse_csv($addresses);
     
 foreach my $addr (@addrs) {
-if ($ARGS{'id'} eq 'new') { # new ticket?
+  if ((!exists $ARGS{'AddMoreAttach'}) && 
+      ($ARGS{'id'} eq 'new')) { # new ticket?
     # {{{ Create a new ticket
     
-    my $Queue = new RT::Queue($session{'CurrentUser'});	
-    unless ($Queue->Load($ARGS{'Queue'})) {
-	Abort('Queue not found');
+# {{{ deal with deleting uploaded attachments
+foreach my $key (keys %ARGS) {
+    if ($key =~ m/^DeleteAttach-(.+)$/) {
+	delete $session{'Attachments'}{$1};
     }
-    
-    unless ($Queue->CurrentUserHasRight('CreateTicket')) {
+    $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
+}
+
+# {{{ store the uploaded attachment in session
+if ($ARGS{'Attach'}) {			# attachment?
+    $session{'Attachments'} = {} unless defined $session{'Attachments'};
+
+    # strip leading directories
+    $ARGS{'Attach'} =~ s#^.*[\\/]##;
+
+
+    my $attachment = MakeMIMEEntity(
+        Subject             => "$ARGS{'Attach'}",
+        Body                => "",
+        AttachmentFieldName => 'Attach'
+    );
+    $session{'Attachments'} = { %{$session{'Attachments'} || {}},
+				$ARGS{'Attach'} => $attachment };
+}
+# }}}
+
+# delete temporary storage entry to make WebUI clean
+unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
+    delete $session{'Attachments'};
+}
+
+
+# }}}
+
+    # create the Incident
+    unless ($incidentq->CurrentUserHasRight('CreateTicket')) {
 	Abort('You have no permission to create tickets in that queue.');
     }
-    ($Ticket, @Actions) =
+    $ARGS{'Queue'} = $incidentq->Id;
+    $ARGS{'Content'} = $ARGS{'UpdateContent'};
+
+    ($Incident, @IncidentActions) =
        CreateTicket(Attachments => $session{'Attachments'}, %ARGS);
-    delete $session{'Attachments'};
+    unless ($Incident->CurrentUserHasRight('ShowTicket')) {
+      Abort("No permission to view newly created ticket #".$Incident->id.".");
+    }
+    # }}}
+
+    # create the linked investigation
+    unless ($investigationq->CurrentUserHasRight('CreateTicket')) {
+	Abort('You have no permission to create tickets in that queue.');
+    }
+    $ARGS{'new-MemberOf'} = $Incident->Id;
+    $ARGS{'Queue'} = $investigationq->Id;
+    $ARGS{'Content'} = "";
+    # Create the investigation without attachments, and send them later
+    ($Ticket, @InvestigationActions) =
+       CreateTicket(%ARGS);
     unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
       Abort("No permission to view newly created ticket #".$Ticket->id.".");
     }
-    # }}}
-}
 
+    # add the address as a Requestor and update the watchers
+    $ARGS{"WatcherAddressEmail1"} = $addr;
     my @watchresults;
+    push @watchresults, ProcessTicketWatchers(TicketObj => $Ticket, ARGSRef => \%ARGS);    
 
-      $ARGS{"WatcherAddressEmail1"} = $addr;
+    # find the Create transaction, so we can pass it to the template
+    my $transaction;
+    while ($transaction = $Ticket->Transactions->Next) {
+	last if ($transaction->Type eq 'Create');
+    }
 
-      #Update the watchers
-      push @watchresults, ProcessTicketWatchers(TicketObj => $Ticket, ARGSRef => \%ARGS);    
+    # if the template's argument contains _ADDR_, substitute the address
+    my $arg = $ARGS{'TemplateArg'};
+    $arg =~ s/_ADDR_/$addr/g;
 
+    # load the selected template
+    my $TemplateObj = new RT::Template($session{'CurrentUser'});
+    $TemplateObj->Load($ARGS{'Template'});
+    my ( $result, $message ) = $TemplateObj->Parse(
+                                         Argument       => $arg,
+                                         TicketObj      => $Ticket,
+					 TransactionObj => $transaction,
+    );
+
+
+    # add the template's MIMEObj to the Attachments list
+    $session{'Attachments'} = { _Body => $TemplateObj->MIMEObj,
+				%{$session{'Attachments'} || {}} };
+
+    # the content will be part of the template, if desired
+    $ARGS{'UpdateContent'} = " ";
+    $ARGS{UpdateAttachments} = $session{'Attachments'};
     my @updateresults; 
-    $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
-    chomp ($ARGS{'UpdateContent'}) ;
+    ProcessUpdateMessage(ARGSRef=>\%ARGS, 
+			 Actions=>\@updateresults, 
+			 TicketObj=>$Ticket);
 
-    if ($ARGS{'UpdateContent'} &&
-        $ARGS{'UpdateContent'} ne '' &&
-        $ARGS{'UpdateContent'} ne  "-- \n" .
-                                $session{'CurrentUser'}->UserObj->Signature
-       ) {
-	    ProcessUpdateMessage(ARGSRef=>\%ARGS, 
-				 Actions=>\@Actions, 
-				 TicketObj=>$Ticket);
-	}
-
+    # say what ticket these refer to
     my @tempresults = (@watchresults, @updateresults);
     @tempresults = map { loc("Ticket [_1]: [_2]",$Ticket->Id,$_) } @tempresults;
 
-    @Actions = (@Actions, @results, @tempresults);
-    push @finalresults, @Actions;
+    # put all the results together
+    push (@finalresults, @IncidentActions, @InvestigationActions, @tempresults);
+
+    # delete attachments only after they've been sent to everyone
+    delete $session{'Attachments'};
+
+  }
 }
 
 sub parse_csv {
@@ -209,7 +266,7 @@ sub parse_csv {
 </%INIT>
 
 <%ARGS>
-$Title => loc("Scripted Action: Create Incident Reports")
-$current_tab => undef
+$Title => loc("Scripted Action: Create Incidents and Investigations")
+$current_tab => "RTIR/Tools/ScriptedAction.html"; 
 $current_subtab => undef
 </%ARGS>
