@@ -48,13 +48,6 @@
 % next if ($Ticket->FirstCustomFieldValue('_RTIR_State') eq 'resolved' ||
 %	   $Ticket->FirstCustomFieldValue('_RTIR_State') eq 'rejected');
 % next unless ($Ticket->QueueObj->Name eq 'Incident Reports');
-% my $incidents = $Ticket->MemberOf;
-% my $incident;
-% while (my $link = $incidents->Next) {
-% $incident = $link->TargetObj;
-% last if ($incident->Id == $id);
-% }
-% next unless ($incident and ($incident->Id == $id));
 % $i++;
 <& /RTIR/Elements/TicketRow, Type => 'Report', Ticket => $Ticket, i=> $i, check => "check", %ARGS &>
 % }
@@ -159,6 +152,7 @@ if ($session{'tickets'}) {
       if ($All) {
         $session{'tickets'}->LimitQueue(VALUE => "Investigations");
       }
+    $session{'tickets'}->LimitMemberOf($id);
     }	
 }
    ProcessSearchQuery(ARGS=>\%ARGS);

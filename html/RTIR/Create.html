@@ -174,8 +174,8 @@ if ((!exists $ARGS{'AddMoreAttach'}) && ($ARGS{'id'} eq 'new')) { # new ticket?
       ($Type eq 'Investigation' &&  $ARGS{'Requestors'})) {
     $m->comp('Display.html', %ARGS);
     $m->abort();
-#  } else {
-#    push @results, "Investigation launch failed: You must enter a correspondent.";
+  } else {
+    push @results, "Investigation launch failed: You must enter a correspondent.";
   }
 }
 
