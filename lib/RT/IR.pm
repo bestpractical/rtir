@@ -45,6 +45,8 @@
 # }}} END BPS TAGGED BLOCK
 #
 package RT::IR;
+use warnings;
+use strict;
 
 use Business::Hours;
 use Business::SLA;

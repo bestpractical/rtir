@@ -49,7 +49,7 @@ sub NewIncidentFromChild {
     $agent->field("Subject", $subject) if $subject;
     $agent->field("Content", $content) if $content;
 
-    # TODO: this shouldn't be hardcoded
+    # TODO: this should not be hardcoded
     SetFunction("IncidentCoord");
 
     $agent->submit();
@@ -150,7 +150,7 @@ sub CreateIncident {
     # set the content
     $agent->field("Content", $args{'Content'});
 
-    # TODO: this shouldn't be hardcoded
+    # TODO: this should not be hardcoded
     SetFunction("IncidentCoord");
 
     # Create it!

@@ -47,11 +47,11 @@
 
 
 package RT::Condition::RTIR_StaffResponse;
-require RT::Condition::Generic;
+
 
 use strict;
-use vars qw/@ISA/;
-@ISA = qw(RT::Condition::Generic);
+
+use base 'RT::Condition::RTIR';
 
 
 =head2 IsApplicable

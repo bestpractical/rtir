@@ -45,11 +45,8 @@
 # }}} END BPS TAGGED BLOCK
 #
 package RT::Action::RTIR_ChangeChildOwnership;
-require RT::Action::Generic;
-
 use strict;
-use vars qw/@ISA/;
-@ISA = qw(RT::Action::Generic);
+use base 'RT::Action::RTIR';
 
 =head2 Prepare
 

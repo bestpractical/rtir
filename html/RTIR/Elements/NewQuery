@@ -7,13 +7,15 @@ my $Query;
 if ($states[0]) {
     foreach my $state (@states) {
         $Query .= " OR " if $Query;
-        $Query .= "'CF.$Queue.{_RTIR_State}' = '$state'";
+        $Query .= "'CF.{_RTIR_State}' = '$state'";
     }
 }
 
 $Query = "( $Query )" if $Query && (scalar @states) > 1;
 
 return $Query;
+
+$RT::Logger->crit($Query);
 
 </%INIT>
 
