@@ -146,7 +146,7 @@
         ],
     },
     {
-        Name        => '_RTIR_Type',
+        Name        => '_RTIR_Function',
         Type        => 'SelectSingle',
         Queue       => 'Incidents',
 	Disabled    => 2,
@@ -158,6 +158,38 @@
             {
                 Name      => "IncidentCoord",
                 SortOrder => 2
+            }
+        ],
+    },
+    {
+        Name        => '_RTIR_Classification',
+        Type        => 'SelectSingle',
+        Queue       => 'Incidents',
+	Disabled    => 2,
+        Values      => [
+            {
+                Name      => "Spam",
+                SortOrder => 1
+            },
+            {
+                Name      => "System Compromise",
+                SortOrder => 2
+            },
+            {
+                Name      => "Query",
+                SortOrder => 3
+            },
+            {
+                Name      => "Scan",
+                SortOrder => 4
+            },
+            {
+                Name      => "Denial of Service",
+                SortOrder => 5
+            },
+            {
+                Name      => "Piracy",
+                SortOrder => 6
             }
         ],
     },
@@ -865,6 +897,14 @@ you may reply to this message.
       GroupDomain => 'UserDefined',
       Queue => 'Incident Reports',
       Right  => 'Watch', },
+    { GroupType => 'Everyone', 
+      GroupDomain => 'SystemInternal',
+      Queue => 'Incident Reports',
+      Right  => 'CreateTicket', },
+    { GroupType => 'Everyone', 
+      GroupDomain => 'SystemInternal',
+      Queue => 'Incident Reports',
+      Right  => 'ReplyToTicket', },
     { GroupDomain => 'RT::Queue-Role',
       GroupType => Owner,
       Queue => 'Investigations',
@@ -901,6 +941,10 @@ you may reply to this message.
       GroupDomain => 'UserDefined',
       Queue => 'Investigations',
       Right  => 'Watch', },
+    { GroupType => 'Everyone', 
+      GroupDomain => 'SystemInternal',
+      Queue => 'Investigations',
+      Right  => 'ReplyToTicket', },
     { GroupDomain => 'RT::Queue-Role',
       GroupType => Owner,
       Queue => 'Blocks',
@@ -937,4 +981,8 @@ you may reply to this message.
       GroupDomain => 'UserDefined',
       Queue => 'Blocks',
       Right  => 'Watch', },
+    { GroupType => 'Everyone', 
+      GroupDomain => 'SystemInternal',
+      Queue => 'Blocks',
+      Right  => 'ReplyToTicket', },
 );

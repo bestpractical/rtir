@@ -78,7 +78,11 @@
 	Name => 'Description' &>
 
 <li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
-	Name => 'Type' &>
+	Name => 'Function' &>
+
+<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+	Name => 'Classification' &>
+
 % } elsif ($QueueObj->Name eq 'Incident Reports') {
 <li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
 	Name => 'State' &>

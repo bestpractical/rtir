@@ -58,7 +58,7 @@ $Queue->Load('Incidents');
 $CustomFields = $Queue->CustomFields();
 $CustomFields->{'find_disabled_rows'} = 1;
 while (my $CustomField = $CustomFields->Next()) {
-  if ($CustomField->Name eq '_RTIR_Type') {
+  if ($CustomField->Name eq '_RTIR_Function') {
     my $values = $CustomField->Values;
     while (my $value = $values->Next) {
       $types->{$value->Name} = $value->Description;

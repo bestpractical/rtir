@@ -70,11 +70,19 @@
     </td>
   </tr>
   <tr>
-    <td class="label"><&|/l&>Type</&>:</td>
+    <td class="label"><&|/l&>Function</&>:</td>
     <td class="value">
       <& /RTIR/Elements/ShowRTIRField, 
          Ticket => $Ticket, 
-	 Name => 'Type' &>
+	 Name => 'Function' &>
+    </td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Classification</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/ShowRTIRField, 
+         Ticket => $Ticket, 
+	 Name => 'Classification' &>
     </td>
   </tr>
 </table>
