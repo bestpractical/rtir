@@ -22,7 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Callback, Ticket => $Ticket, actions=> $actions, tabs => $tabs, %ARGS &>
+<& /Elements/Callback, Page => '/Ticket/Elements/Tabs', Ticket => $Ticket, actions=> $actions, tabs => $tabs, %ARGS &>
 <& /RTIR/Elements/Tabs, 
     tabs => $tabs, 
     actions => $actions, 
