@@ -48,11 +48,6 @@
     </TD>
   </TR>
   <& /Elements/ShadedInputRow,
-	title => loc('Priority'),
-	name => "Priority",
-	content => $Ticket->Priority,
-	size => 5 &>
-  <& /Elements/ShadedInputRow,
 	title => loc('Time Worked'),
 	name => "TimeWorked",
 	content => $Ticket->TimeWorked,

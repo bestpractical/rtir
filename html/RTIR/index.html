@@ -58,7 +58,7 @@ if ($ARGS{'q'}) {
                     VALUE    =>  $query,
                     OPERATOR => '=',
                 );
-                $m->redirect("$RT::WebPath/Search/Listing.html");
+                $m->redirect("$RT::WebPath/RTIR/Incident/Listing.html");
         }
 
         #
@@ -77,7 +77,7 @@ if ($ARGS{'q'}) {
 			VALUE    => $queue->Id,
 			OPERATOR => '=',
 		);
-		$m->redirect("$RT::WebPath/Search/Listing.html");
+		$m->redirect("$RT::WebPath/RTIR/Incident/Listing.html");
         }
         
         $session{'tickets'}->LimitSubject(
@@ -85,7 +85,7 @@ if ($ARGS{'q'}) {
                 OPERATOR => 'LIKE',
         );
         
-        $m->redirect("$RT::WebPath/Search/Listing.html");      
+        $m->redirect("$RT::WebPath/RTIR/Incident/Listing.html");      
 }
 
 if ($ARGS{'HomeRefreshInterval'}) {

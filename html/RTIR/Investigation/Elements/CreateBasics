@@ -55,14 +55,10 @@
     </TD>
   </TR>
   <TR>
-      <TD ALIGN=RIGHT><&|/l&>Priority</&>:</TD>
+      <TD ALIGN=RIGHT><&|/l&>Time Worked</&>:</TD>
     <td colspan=2>
       <table>
       <tr>
-	<TD><input size=3 name="InitialPriority" value="<% $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->InitialPriority %>"></TD>
-        <TD ALIGN=RIGHT><&|/l&>Final Priority</&>:</TD>
-	<TD><input size=3 name="FinalPriority" value="<% $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->FinalPriority %>"></TD>
-        <TD ALIGN=RIGHT><&|/l&>Time Worked</&>:</TD>
 	<TD><input size=3 name="TimeWorked"<% $ARGS{TimeWorked} && " VALUE=\"$ARGS{TimeWorked}\""  %>></TD>
         <TD ALIGN=RIGHT><&|/l&>Time Left</&>:</TD>
 	<TD><input size=3 name="TimeLeft"<% $ARGS{TimeLeft} && " VALUE=\"$ARGS{TimeLeft}\"" %>></TD>
@@ -144,6 +140,7 @@
 % if ($Transactions) {
 <TEXTAREA COLS=72 ROWS=15 WRAP=HARD NAME="Content">
 % while (my $Transaction = $Transactions->Next) {
+% next if ($Transaction->Type eq 'CustomField' and substr($Transaction->BriefDescription, 0, 6) eq '_RTIR_');
 % my $transdate = $Transaction->CreatedAsString();
 <%$transdate%> <%$Transaction->CreatorObj->Name%> - <%$Transaction->BriefDescription%>
 % my $attachments = $Transaction->Attachments;

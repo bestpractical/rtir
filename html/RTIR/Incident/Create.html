@@ -138,6 +138,7 @@
 % if ($Transactions) {
 <TEXTAREA COLS=72 ROWS=15 WRAP=HARD NAME="Content">
 % while (my $Transaction = $Transactions->Next) {
+% next if ($Transaction->Type eq 'CustomField' and substr($Transaction->BriefDescription, 0, 6) eq '_RTIR_');
 % my $transdate = $Transaction->CreatedAsString();
 <%$transdate%> <%$Transaction->CreatorObj->Name%> - <%$Transaction->BriefDescription%>
 % my $attachments = $Transaction->Attachments;

@@ -62,7 +62,7 @@ my $topactions = {
 		},
 	B => { html => $m->scomp('/RTIR/Elements/CreateReport')	
 		},
-	C => { html => $m->scomp('/Elements/SimpleSearch') 
+	C => { html => $m->scomp('/RTIR/Elements/SimpleSearch') 
 		}
 	};
                     

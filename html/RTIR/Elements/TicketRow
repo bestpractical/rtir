@@ -18,7 +18,11 @@ CLASS="evenline"
 </TD>
 <TD><SMALL><%$Ticket->LastUpdatedObj->AgeAsString || '-'%></SMALL></TD>
 <TD><%$Ticket->Owner == $RT::Nobody->Id ? loc('Nobody') : $Ticket->OwnerObj->Name%></TD>
+% if ($Type eq "Incident") {
 <TD><%$Ticket->Priority%></TD>
+% } else {
+<TD>N/A</TD>
+% }
 </TR>
 <TR
 % if ($i%2) {
@@ -41,3 +45,4 @@ $i => undef
 $Type => undef
 $check => undef
 </%ARGS>
+

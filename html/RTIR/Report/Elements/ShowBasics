@@ -43,9 +43,6 @@
     </td>
   </tr>
   <& /Elements/ShadedRow, 
-      title => loc('Priority'),
-      content => $Ticket->Priority &>
-  <& /Elements/ShadedRow, 
       title => loc('Time Worked'),
       content => loc('[_1] min', $TimeWorked) &>
   <tr>
