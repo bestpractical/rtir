@@ -31,6 +31,7 @@
 <& /RTIR/Elements/ListActions, actions => \@finalresults &>
 
 <FORM METHOD="GET" action="ScriptedAction.html" NAME="ScriptedAction" ENCTYPE="multipart/form-data">
+<input type=hidden Name="incidentid" value=<%$incidentid%>>
 <input type=hidden Name="loop" value="<%$ARGS{'loop'}%>">
 <input type=hidden Name="WatcherTypeEmail1" value="Requestor">
 <input type=hidden name="UpdateType" value="response">
@@ -149,8 +150,19 @@
       <%$session{'CurrentUser'}->Name%>
     </TD>
   </TR>
-`
+
+% if (!$incidentid) {
 <& /RTIR/Incident/Elements/Create, Title => $Title, QueueObj => $incidentq, %ARGS &>
+% } else {
+  <TR>
+    <TD class=label>
+      <&|/l&>Subject</&>:
+    </TD>
+    <TD>
+      <input size=60 name="Subject" value="<%$ARGS{'Subject'} || $Incident->Subject%>">
+    </TD>
+  </TR>
+% }
 
 <TR>
   <TD class=labeltop>
@@ -174,6 +186,36 @@
 my ($Incident, $Ticket);
 my (@IncidentActions, @ChildActions);
 my (@watchresults, @updateresults, @finalresults);  
+
+$Title = loc("Scripted Action: Create Investigations for Incident #[_1]", $incidentid);
+
+my $template = new RT::Template;
+$template->LoadGlobalTemplate($TemplateName);
+$ARGS{'Template'} = $template->Id;
+
+foreach my $arg (keys %ARGS) {
+  if ($arg =~ /^Requestorbox-(.+)/) {
+    $ARGS{'Addresses'} .= $1 . "\r";
+  }
+}
+
+if ($incidentid) {
+    $Incident = new RT::Ticket($session{'CurrentUser'});
+    $Incident->Load($incidentid);
+
+    if (!exists $ARGS{Content}) {
+        my $Transactions = $Incident->Transactions;
+
+        if ($Transactions) {
+            $ARGS{Content} = $m->scomp("/RTIR/Elements/TransactionData", 
+               Transactions => $Transactions,
+               Type => 'messages',
+               Include => {'Create', 'Correspond'},
+               QuoteText => 1);
+            $ARGS{Content} =~ s/\&gt;/>/g;
+        }
+    }
+}
 
 $ARGS{'loop'} = $loop if !defined $ARGS{'loop'};
 
@@ -255,7 +297,7 @@ if ($loop eq 'address') {
 
 if ( exists $ARGS{SubmitAction} ) {
 
-if (!$ARGS{'Function'} || !$ARGS{$ARGS{'Function'}}) {
+if (!$Incident && (!$ARGS{'Function'} || !$ARGS{$ARGS{'Function'}})) {
     push @finalresults, "Incident creation failed: Function must be set.";
 } else {
 
@@ -313,10 +355,12 @@ foreach my $key (keys %$addrhash) {
     }
     $ARGS{'Queue'} = $incidentq->Id;
 
-    ($Incident, @IncidentActions) =
-       CreateTicket(Attachments => $session{'Attachments'}, %ARGS);
-    unless ($Incident->CurrentUserHasRight('ShowTicket')) {
-      Abort("No permission to view newly created ticket #".$Incident->id.".");
+    if (!$Incident) {
+        ($Incident, @IncidentActions) =
+	   CreateTicket(Attachments => $session{'Attachments'}, %ARGS);
+        unless ($Incident->CurrentUserHasRight('ShowTicket')) {
+            Abort("No permission to view newly created ticket #".$Incident->id.".");
+        }
     }
     # }}}
 
@@ -424,6 +468,9 @@ sub parse_csv {
 </%INIT>
 
 <%ARGS>
+$incidentid => undef
+$TemplateName => 'Correspondence'
+$Requestors => undef
 $servers => $RT::whois
 $server => undef
 $Title => loc("Scripted Action: Create Incidents and Investigations")
