@@ -54,7 +54,7 @@
 <FORM ACTION="<%$RT::WebPath%>/RTIR/Create.html" METHOD="POST" ENCTYPE="multipart/form-data">
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
 <INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
-<INPUT TYPE=HIDDEN NAME=Status Value="<%$ARGS{Status}||'open'%>">
+<INPUT TYPE=HIDDEN NAME=Status Value="<%$Status||'open'%>">
 <INPUT TYPE=HIDDEN NAME=Type Value="<%$Type%>">
 <INPUT TYPE=HIDDEN NAME=Incident Value="<%$ARGS{Incident}%>">
 % my $parentvalue;

@@ -111,6 +111,7 @@ if ($ARGS{'id'} eq 'new') {
     delete $session{'Attachments'};
     unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
       Abort("No permission to view newly created ticket #".$Ticket->id.".");
+    $ARGS{'id'} = $Ticket->Id;
     }
     # }}}
 } else { 
@@ -143,6 +144,10 @@ if ($ARGS{'id'} eq 'new') {
     } elsif ($ARGS{'Action'} eq 'Respond' && @UpdateActions) {
       my $date = RT::Date->new($RT::SystemUser);
       $date->SetToNow;
+      # if this is our first response, set Started
+      if ($Ticket->StartedObj->Unix <= 0) {
+        $ARGS{'Started_Date'} = $date->ISO;
+      }
       $date->AddDays($RT::overdueafter);
       $ARGS{'Due_Date'} = $date->ISO;
     }

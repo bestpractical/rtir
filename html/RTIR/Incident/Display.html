@@ -209,6 +209,7 @@ if ($id eq 'new') {
   unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
     Abort("No permission to view newly created ticket #".$Ticket->id.".");
   }
+  $ARGS{'id'} = $Ticket->Id;
   # }}}
 
   if ($ChildObj) {
