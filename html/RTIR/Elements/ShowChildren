@@ -64,8 +64,6 @@
 my $count = 0;
 my $members = $Ticket->Members;
 my $QueueName;
-my $now = new RT::Date($RT::SystemUser);
-$now->SetToNow();
 
 if ($Type eq "Investigation") {
   $QueueName = "Investigations";

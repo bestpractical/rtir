@@ -86,9 +86,6 @@
 
 
 <%INIT>
-my $now = new RT::Date($RT::SystemUser);
-$now->SetToNow();
-
 my $rows = 10;
 my $MyTickets;
 $MyTickets = new RT::Tickets ($session{'CurrentUser'});
