@@ -17,7 +17,6 @@ if ($Queue eq 'Incidents' ||
     $Queue eq 'Investigations' ||
     $Queue eq 'Blocks') {
     
-    $m->print("Queue: $Queue<br>");
     $m->comp('/RTIR/Display.html', %ARGSRef);
     $m->abort();
 }
