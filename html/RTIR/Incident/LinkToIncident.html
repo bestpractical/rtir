@@ -98,7 +98,7 @@ my $path = "RTIR/Search/Refine.html?ResultPage=$BaseURL&Queue=Incidents&id=$id&c
 
 <%ARGS>
 $id => undef
-$BaseURL => "/RTIR/Incident/LinkToIncident.html"
+$BaseURL => $RT::WebPath . "/RTIR/Incident/LinkToIncident.html"
 $BaseQuery => undef
 $Query => undef
 $Format => undef 

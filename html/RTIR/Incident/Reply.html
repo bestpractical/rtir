@@ -179,7 +179,7 @@ $session{'tickets'}->PrepForSerialization();
 <%ARGS>
 $id => undef
 $All => 0
-$BaseURL => "/RTIR/Incident/Reply.html?DefaultStatus=stalled&id=$id"
+$BaseURL => $RT::WebPath . "/RTIR/Incident/Reply.html?DefaultStatus=stalled&id=$id"
 $BaseQuery => undef
 $Query => undef
 $Format => undef 
