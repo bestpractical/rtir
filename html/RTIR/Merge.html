@@ -26,7 +26,7 @@
 <& '/RTIR/'.$Type.'/Elements/Tabs', 
     Ticket => $Ticket, 
     current_tab => "RTIR/Merge.html?id=".$Ticket->Id. "$QueryString", 
-    subtabs => $mergetabs,
+    subtabs => $refinetabs,
     Title => $title,
     Format => $Format,
     Query => $Query,
@@ -103,9 +103,9 @@ if (!$BaseQuery) {
 $Query = "$BaseQuery AND ( $Query )";
 $ARGS{'Query'} = $Query;
 
-my $mergetabs = { };
+my $refinetabs = { };
 
-$mergetabs->{'_a'} = {
+$refinetabs->{'_a'} = {
     class => "nav",
     path => "RTIR/Search/MergeRefine.html?Queue=" . $Ticket->QueueObj->Name . "&id=$id$QueryString",
     title => loc('Refine') };
