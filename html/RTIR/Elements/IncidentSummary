@@ -44,7 +44,7 @@
 <TD><%$Ticket->Priority%></TD>
 <td align=right>
 % if ($Type eq 'Report' or $Type eq 'Investigation' or $Type eq 'Block') {
-<a href="<%$RT::WebPath%>/RTIR/Display.html?child=<%$ticket%>&SelectedTicket=<%$Ticket->Id%>">[<%loc("Link")%>]</a>
+<a href="<%$RT::WebPath%>/RTIR/Display.html?child=<%$ticket%>&id=<%$Ticket->Id%>">[<%loc("Link")%>]</a>
 % } elsif ($ticket and $Type eq $t) {
 %   if ($ticket ne $Ticket->Id) {
 <a href="<%$RT::WebPath%>/RTIR/Merge.html?id=<%$ticket%>&SelectedTicket=<%$Ticket->Id%>">[<%loc("Merge")%>]</a>

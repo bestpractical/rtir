@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-Queue: <%$Queue%><br>
 <TABLE width=100% border=0 cellpadding=2 CELLSPACING=0>
 <TR>
 <td><b><&|/l&>id<b></&></td>
@@ -43,7 +42,7 @@ Queue: <%$Queue%><br>
 <td><& "/RTIR/Elements/ShowRTIRField", Ticket => $Ticket, Name => 'State' &>
 <TD><%$Ticket->Priority%></TD>
 % if ($Type eq 'Incident') {
-<td align=right><a href="<%$RT::WebPath%>/RTIR/Display.html?child=<%$Ticket->Id%>&SelectedTicket=<%$ticket%>">[<%loc("Link")%>]</a></td>
+<td align=right><a href="<%$RT::WebPath%>/RTIR/Display.html?child=<%$Ticket->Id%>&id=<%$ticket%>">[<%loc("Link")%>]</a></td>
 % } elsif ($Type eq $t) {
 % if ($ticket ne $Ticket->Id) {
 <td align=right><a href="<%$RT::WebPath%>/RTIR/Merge.html?id=<%$ticket%>&SelectedTicket=<%$Ticket->Id%>">[<%loc("Merge")%>]</a></td>
