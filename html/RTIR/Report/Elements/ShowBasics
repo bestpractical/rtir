@@ -63,6 +63,13 @@
 	Ticket => $Ticket, Name => 'ReporterType' &>
     </td>
   </tr>
+  <tr>
+    <td class="label"><&|/l&>SLA</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/ShowRTIRField, 
+         Ticket => $Ticket, Name => 'SLA' &>
+    </td>
+  </tr>
 </table>
 </td>
 </tr>

@@ -94,7 +94,16 @@
     </TD>
   </TR>
   <tr>
-    <td class=label>
+    <td class="labeltop"><&|/l&>SLA</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/EditRTIRField, 
+         QueueObj => $QueueObj, 
+	 Name => 'SLA',
+	 Default => 'Full service' &>
+    </td>
+  </tr>
+  <tr>
+    <td class=labeltop>
       <%loc("How Reported")%>:
     </td>
     <td class=value colspan=2>

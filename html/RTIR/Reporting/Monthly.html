@@ -1,20 +1,42 @@
+<h1>Monthly Report</h1>
+
+<table>
+  <tr>
+    <td>Start date:</td>
+    <td> <%$monthstart->AsString%></td>
+  </tr>
+  <tr>
+    <td>End date:</td>
+    <td><%$monthend->AsString%></td>
+  </tr>
+</table>
+
 <%perl>
 # of new reports outstanding at month start
 my $outstanding = RT::Tickets->new($session{'CurrentUser'});
-$outstanding->FromSQL("Queue = 'Incident Reports' AND Created <= '$monthstart' AND ( Resolved >= '$monthstart' OR Resolved IS NULL)");
-
+$outstanding->LimitQueue(VALUE => 'Incident Reports');
+$outstanding->LimitCreated(VALUE => $monthstart, OPERATOR => "<");
+my $date = ParseDateToISO("0");
+$outstanding->LimitResolved(VALUE => $date, OPERATOR => "=");
 
 # of new reports created during the month
 my $tix_created = RT::Tickets->new($session{'CurrentUser'});
-$tix_created->FromSQL("Queue = 'Incident Report' AND Created >= '$monthstart' AND Created <= '$monthend'");
+#$tix_created->LimitQueue(VALUE => 'Incident Reports');
+#$tix_created->LimitCreated(VALUE => $monthstart, OPERATOR => ">");
+#$tix_created->LimitCreated(VALUE => $monthstart, OPERATOR => "=");
+#$tix_created->LimitCreated(VALUE => $monthend, OPERATOR => "<");
+#$tix_created->LimitCreated(VALUE => $monthend, OPERATOR => "=");
 
 # of new reports resolved/closed/deleted during the month
 # does this mean "number of reports closed during the month or number of
 # reports created during the month that were also closed during the month?"
 
 my $tix_resolved = RT::Tickets->new($session{'CurrentUser'});
-$tix_resolved->FromSQL("Queue = 'Incident Report' AND Created >= '$monthstart' AND Created <= '$monthend' AND Resolved >= '$monthstart' AND Resolved <= '$monthend'");
-
+$tix_resolved->LimitQueue(VALUE => 'Incident Reports');
+$tix_resolved->LimitCreated(VALUE => $monthstart, OPERATOR => ">");
+$tix_resolved->LimitCreated(VALUE => $monthend, OPERATOR => "<");
+$tix_resolved->LimitResolved(VALUE => $monthstart, OPERATOR => ">");
+$tix_resolved->LimitResolved(VALUE => $monthend, OPERATOR => "<");
 
 # of new reports oustanding at month end 
 # same question: does this mean "number of reports closed during the month or
@@ -22,29 +44,91 @@ $tix_resolved->FromSQL("Queue = 'Incident Report' AND Created >= '$monthstart' A
 # month?"
 
 my $tix_unresolved = RT::Tickets->new($session{'CurrentUser'});
-$tix_unresolved->FromSQL("Queue = 'Incident Report' AND Created >= '$monthstart' AND Created <= '$monthend' AND (Resolved >= '$monthend' OR Resolved IS NULL");
+$tix_unresolved->LimitQueue(VALUE => 'Incident Reports');
+$tix_unresolved->LimitCreated(VALUE => $monthstart->ISO, OPERATOR => ">");
+$tix_unresolved->LimitCreated(VALUE => $monthend->ISO, OPERATOR => "<");
+$tix_unresolved->LimitResolved(VALUE => $monthend, OPERATOR => ">");
+
+#$tix_unresolved->FromSQL("Queue = 'Incident Report' AND Created >= '$monthstart' AND Created <= '$monthend' AND (Resolved >= '$monthend' OR Resolved IS NULL");
 
 # of new reports created during the month broken down by classification
-my $windows = { 'full service serious'      => '(within 1 hour)',
-                'full service minor'        => '(within 2 hours)',
-                'reduced service emergency' => '(call out n/a)',
-                'requests for information'  => '(1 day)' };
+my ($fid, $types, $windows, $CustomFields);
+my $Queue = new RT::Queue($session{'CurrentUser'});
+$Queue->Load('Incidents');
+$CustomFields = $Queue->CustomFields();
+$CustomFields->{'find_disabled_rows'} = 1;
+while (my $CustomField = $CustomFields->Next()) {
+  if ($CustomField->Name eq '_RTIR_Type') {
+    my $values = $CustomField->Values;
+    while (my $value = $values->Next) {
+      $types->{$value->Name} = $value->Description;
+    }
+  }
+}
 
-foreach my $service_level (keys %$windows) {
-    my $class_tix = RT::Tickets->new( $session{'CurrentUser'} );
-    $class_tix->FromSQL( "Queue = 'Incident Reports' AND Created >= '$monthstart' AND Created <= '$monthend' AND 'Incident Reports.{SLA}' = '$service_level'");
+# of new reports created during the month broken down by classification
+$Queue->Load('Incident Reports');
+$CustomFields = $Queue->CustomFields();
+$CustomFields->{'find_disabled_rows'} = 1;
+while (my $CustomField = $CustomFields->Next()) {
+  if ($CustomField->Name eq '_RTIR_SLA') {
+    $fid = $CustomField->Id;
+    my $values = $CustomField->Values;
+    while (my $value = $values->Next) {
+      $windows->{$value->Name} = $value->Description;
+    }
+  }
+}
+
+foreach my $incident_type (keys %$types) {
 
 </%perl>
 
-At the start of the month (<%scalar localtime($monthstart)%>):<br>
-Outstanding incident reports: <%$outstanding->Count%><br>
-Reports closed between <%scalar localtime($monthstart)%> and <% scalar localtime($monthend)%>: <% $tix_resolved->Count%><br>
-Reports created between <%scalar localtime($monthstart)%> and <% scalar localtime($monthend)%> which were unresolved as of <% scalar localtime($monthend)%>: <% $tix_unresolved->Count%><br>
-<br>
+<h2><%$incident_type%></h2>
 
-    <%$service_level%> Incident Reports created between 
-      <% scalar localtime($monthstart) %> and <% scalar localtime($monthend)%>:<br>
-         <% $class_tix->Count %><br>
+<%perl>
+foreach my $service_level (keys %$windows) {
+    my $class_tix = RT::Tickets->new( $session{'CurrentUser'} );
+    $class_tix->LimitQueue(VALUE => 'Incident Reports');
+    $class_tix->LimitCreated(VALUE => $monthstart->ISO, OPERATOR => ">");
+    $class_tix->LimitCreated(VALUE => $monthend->ISO, OPERATOR => "<");
+    $class_tix->LimitCustomField(CUSTOMFIELD => $fid, VALUE => $service_level);
+
+</%perl>
+
+<h3><%$service_level%></h3>
+
+<table width=100%>
+<tr>
+  <td valign=top width=50%>
+    <table>
+      <th colspan=2>At the start of the time period:</th>
+      <tr>
+        <td class=label>Outstanding Incident Reports:</td>
+        <td class=value> <%$outstanding->Count%></td>
+      </tr>
+    </table>
+  </td>
+  <td valign=top width=50%>
+    <table>
+      <th colspan=2>During the time period:</th>
+      <tr>
+        <td>Resolved Incident Reports:</td>
+	<td><% $tix_resolved->Count%></td>
+      </tr>
+      <tr>
+        <td>Unresolved Incident Reports: </td>
+	<td><% $tix_unresolved->Count%></td>
+      </tr>
+      <tr>
+        <td><%$service_level%> Incident Reports created:</td>
+	<td><% $class_tix->Count %></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+% }
 % }
 <%perl>
 
@@ -65,14 +149,14 @@ Reports created between <%scalar localtime($monthstart)%> and <% scalar localtim
 #
 my $sla_check = RT::Tickets->new( $session{'CurrentUser'} );
 
-$sla_check->FromSQL( "Created >= $monthstart AND Created <= $monthend AND Queue='Incident Reports'");
+#$sla_check->FromSQL( "Created >= $monthstart AND Created <= $monthend AND Queue='Incident Reports'");
 
 # Get a Business::Hours object for the period in question
 use Business::Hours;
 
 my $business_hours = Business::Hours->new();
 #$business_hours->set_business_hours(%working_hours);
-$business_hours->for_timespan( Start => $monthstart, End => $monthend );
+#$business_hours->for_timespan( Start => $monthstart->AsString, End => $monthend->AsString );
 my %created;
 
 while ( my $t = $sla_check->Next ) {
@@ -97,7 +181,7 @@ while ( my $t = $sla_check->Next ) {
     # 	This doesn't currently take into account "business hours"
 
     my $avgtime = RT::Tickets->new( $session{'CurrentUser'} );
-    $avgtime->FromSQL( "Queue = 'Incident Reports' AND Resolved >= '$monthstart' AND Resolved <= '$monthend'");
+#    $avgtime->FromSQL( "Queue = 'Incident Reports' AND Resolved >= '$monthstart' AND Resolved <= '$monthend'");
 
     my $i;
     my $total_diff;
@@ -117,11 +201,13 @@ while ( my $t = $sla_check->Next ) {
     }
 }
 </%perl>
-<%args>
-$monthstart=> undef
-$monthend => undef
-</%args>
+
 <%init>
-$monthend = time();
-$monthstart = (time() - (86400 * 30));
+my $now = new RT::Date($RT::SystemUser);
+$now->SetToNow();
+my $monthend = new RT::Date($RT::SystemUser);
+$monthend->SetToNow();
+my $monthstart = new RT::Date($RT::SystemUser);
+$monthstart->SetToNow();
+$monthstart->AddDays(0-30);
 </%init>
