@@ -35,9 +35,11 @@
 </TR>
   <TR>    
 % my $i;
-% foreach my $entry (reverse(sort(keys(%most_due)))) {
-% my $Ticket = $most_due{$entry}->{ticket};
-% my $due = $most_due{$entry}->{due};
+% foreach my $entry (sort(keys(%most_due))) {
+% my $tickethash = $most_due{$entry};
+% foreach my $item (sort(keys(%$tickethash))) {
+% my $Ticket = $tickethash->{$item}->{ticket};
+% my $due = $tickethash->{$item}->{due};
 <TR class="<% $i++%2 ? 'oddline' : 'evenline'%>" >                                
 <TD ALIGN=RIGHT>
 <A HREF="<% $RT::WebPath %>/RTIR/Display.html?id=<%$Ticket->Id%>">
@@ -74,6 +76,7 @@
 </TD>
 </TR>
 % }
+% }
 </TABLE>
 <& /Elements/TitleBoxEnd &>
 
@@ -107,17 +110,17 @@ while (my $Ticket = $MyTickets->Next) {
         $kids->OrderBy( FIELD => 'Due', ORDER => 'DESC');
         my $due = $Ticket->DueObj;
 
-
         while (my $kid = $kids->Next) {
                 if ($kid->DueObj->Unix > $Ticket->DueObj->Unix) {
                         $due = $kid->DueObj;
                 }
-
-
         }
-        $most_due{$due->Unix} = { due => $due, ticket => $Ticket };
-
-
+	my $tickethash = {};
+	if ($most_due{$due->Unix}) {
+	    $tickethash = $most_due{$due->Unix};
+        }
+        $tickethash->{$Ticket->Id} = { due => $due, ticket => $Ticket };
+        $most_due{$due->Unix} = $tickethash;
 }
 
 
