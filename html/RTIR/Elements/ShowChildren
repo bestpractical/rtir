@@ -26,14 +26,13 @@
 <i><%loc("Check box to unlink")%></i><br>
 % }
 <table width=100% cellspacing=0 cellpadding=0 border=0>
-% foreach my $link (keys %{$due}) {
+% while (my $t = $MyTickets->Next) {
 % last if ($LimitDepth > 0 && $depth > $LimitDepth);
 % $depth++;
-% my $t = $children->{$link}->BaseObj;
 <tr>
   <td>
 % if ($Delete) {
-  <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$children->{$link}->Base%>-<%$children->{$link}->Type%>-">
+  <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$Ticket->Id%>-MemberOf-">
 % }
 % my $State = $m->scomp("/RTIR/Elements/ShowRTIRField", Ticket => $t, Name => 'State');
   <a href="<%$RT::WebPath%>/RTIR/Display.html?id=<%$t->Id%>&Type=<%$Type%>"><%$t->Id%>: <%$t->Subject%></a> <i>(<%$State%>)</i>
@@ -44,24 +43,21 @@
 </tr>
 % }
 </table>
-% if ($depth eq 1 and $count eq 0) {
+% if ($depth eq 1 and $MyTickets->Count eq 0) {
 % if (defined $QueueName) {
   <i>(<% loc("no [_1]", $QueueName) %>)</i>
 % } else {
   <i>loc("no children")</i>
 % }
 % } else {
-% if (($LimitDepth > 0) && ($count >= $LimitDepth)) {
+% if (($LimitDepth > 0) && ($MyTickets->Count >= $LimitDepth)) {
 % if (defined $FullList) {
-<a href="<%$FullList%>"><i><%loc("More... ([_1] total)", $count)%></i></a><br>
+<a href="<%$FullList%>"><i><%loc("More... ([_1] total)", $MyTickets->Count)%></i></a><br>
 % }
 % }
 % }
 
 <%INIT>
-
-my $count = 0;
-my $members = $Ticket->Members;
 my $QueueName;
 
 if ($Type eq "Investigation") {
@@ -72,15 +68,14 @@ if ($Type eq "Investigation") {
   $QueueName = "Incident Reports";
 }
 
-my ($children, $due);
-while (my $link = $members->Next) {
-  my $member= $link->BaseObj;
-  if ((!defined $QueueName) or $member->QueueObj->Name eq $QueueName) {
-    $children->{$member->Id} = $link;
-    $due->{$member->Id} = $member->DueObj->ISO;
-    $count++;
-  }
-}
+my $MyTickets;
+$MyTickets = new RT::Tickets ($session{'CurrentUser'});
+$MyTickets->LimitQueue(VALUE => $QueueName);
+$MyTickets->LimitMemberOf($Ticket->Id);
+$MyTickets->LimitStatus(VALUE => "new");
+$MyTickets->LimitStatus(VALUE => "open");
+$MyTickets->LimitStatus(VALUE => "stalled");
+$MyTickets->OrderBy(FIELD => 'Due', ORDER => 'ASC');
 
 </%INIT>
 
