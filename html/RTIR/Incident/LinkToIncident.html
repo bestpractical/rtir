@@ -48,7 +48,8 @@
     Query => $Query,
     QueryString => $QueryString, 
     BaseURL => $BaseURL,
-    %ARGS &>
+    Format => $Format,
+    &>
 
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => loc("Link") &>
 </form>
@@ -57,7 +58,6 @@
 
 <%INIT>
 $Format = $RT::RTIRLinkIncidentSearchResultFormat;
-$ARGS{'Format'} = $Format;
 
 my ($Type, undef) = $m->comp('/RTIR/Elements/Type', Queue => 'Incidents');
 
@@ -88,9 +88,11 @@ if (!$BaseQuery) {
 }
 
 $Query = "$BaseQuery AND ( $Query )";
-$ARGS{'Query'} = $Query;
 
-my $path = "RTIR/Search/Refine.html?ResultPage=$BaseURL&Queue=Incidents&id=$id$QueryString",
+my $current_tab = "RTIR/Incident/LinkToIncident.html?id=9";
+my $tab = $m->interp->apply_escapes($current_tab,'u');
+
+my $path = "RTIR/Search/Refine.html?ResultPage=$BaseURL&Queue=Incidents&id=$id&current_tab=$tab$QueryString",
 
 </%INIT>
 

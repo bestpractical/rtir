@@ -195,19 +195,21 @@ if (    $Ticket->CurrentUserHasRight('ModifyTicket')
   $mytab = $current_tab;
 }
 
+my $refinetabs = { };
+
+$refinetabs->{'_a'} = {
+    class => "nav",
+    path => 'RTIR/Search/Refine.html?ResultPage=/RTIR/Search/Results.html&Queue=' . $QueueName . $QueryString,
+    title => loc('Refine') 
+};
+
 $tabs->{"A"} = { path      => 'RTIR/Create.html?Queue=' . $QueueName,
                  title     => loc("New $Type") };
-$tabs->{"e"} = { path      => 'RTIR/Search/Build.html?Queue=' . $QueueName . '&NewQuery=1',
-                 title     => loc('New Query'),
-                 subtabs   => $searchtabs };
-$tabs->{"f"} = { path      => 'RTIR/Search/Build.html?Queue=' . $QueueName . $QueryString,
-                 title     => loc('Query Builder'),
-                 separator => 1,
-                 subtabs   => $searchtabs };
+
 $tabs->{"g"} = { path      => 'RTIR/Search/Results.html?Queue=' . $QueueName . $QueryString,
                  title     => loc('Results'),
                  separator => 1,
-                 subtabs   => $searchtabs };
+                 subtabs   => $refinetabs };
 
 if ($Type eq 'Report') {
     $tabs->{"h"} = { path      => 'RTIR/Report/BulkReject.html',

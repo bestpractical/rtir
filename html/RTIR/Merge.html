@@ -24,9 +24,11 @@
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
 
+Merge Ticket: <%$id%><br>
 <& '/RTIR/Search/Elements/RefineTabs',
    path => $path,
-   Ticket => $Ticket, 
+   Ticket => $Ticket,
+   id => $id, 
    current_subtab => "RTIR/Merge.html?id=".$Ticket->Id. "$QueryString", 
    Queue => $Queue,
    Title => $title,
@@ -104,7 +106,7 @@ if (!$BaseQuery) {
 
 $Query = "$BaseQuery AND ( $Query )";
 
-my $path = "RTIR/Search/Refine.html?ResultPage=$BaseURL&Queue=" . $Ticket->QueueObj->Name . "&id=$id&$QueryString";
+my $path = "RTIR/Search/Refine.html?ResultPage=$BaseURL&current_tab=$current_tab&Queue=" . $Ticket->QueueObj->Name . "&id=$id&$QueryString";
 
 </%INIT>
       
@@ -119,4 +121,5 @@ $OrderBy => 'id'
 $Order => 'ASC'
 $id => undef
 $BaseURL => '/RTIR/Merge.html'
+$current_tab => 'RTIR/Merge.html'
 </%ARGS>

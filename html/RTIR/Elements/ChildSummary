@@ -58,7 +58,7 @@
 % }
 <tr>
 <td colspan=5>
-[<a href="<%$RT::WebPath%>/RTIR/Search/Build.html?Queue=<%$Queue%><%$QueryString%>"><%loc("Refine Search")%></a>]
+[<a href="<%$RT::WebPath%>/RTIR/Search/Refine.html?Queue=<%$Queue%><%$QueryString%>"><%loc("Refine Search")%></a>]
 % if ($Type eq 'Incident') {
 % if ($Queue) {
 [<a href="<%$RT::WebPath%>/RTIR/Incident/LinkChildren.html?ClearRestrictions=1&Queue=<%$Queue%>&Query=Content LIKE '<%$q%>'&id=<%$ticket%>"><%loc("Bulk Link")%></a>]

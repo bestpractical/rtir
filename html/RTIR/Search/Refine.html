@@ -45,13 +45,13 @@
 %# }}} END BPS TAGGED BLOCK
 <& /Elements/Header, Title => $title &>
 
-ResultPage: <%$ResultPage%><br>
+Passing Ticket: <%$Ticket%><br>
 <& '/RTIR/Search/Elements/RefineTabs',
    path => $path,
    current_tab => $current_tab,
-   current_subtab => $ResultPage."?Queue=$Queue&id=".$id.$QueryString,
+   current_subtab => $current_subtab,
    Ticket => $Ticket, 
-   Queue => 'Incident Reports',
+   Queue => $Queue,
    Title => $title,
    Format => $Format,
    Query => $Query,
@@ -59,9 +59,8 @@ ResultPage: <%$ResultPage%><br>
    OrderBy => $OrderBy,
    Order => $Order,
    QueryString => $QueryString,
+   id => $id,
 &>
-
-Refine.html<br>
 
 <& /RTIR/Search/Elements/BuildQuery, 
     queues => \%queues, 
@@ -78,7 +77,7 @@ Refine.html<br>
 
 <%INIT>
 if (!$Ticket && $id) {
-    my $Ticket = new RT::Ticket($session{'CurrentUser'});
+    $Ticket = new RT::Ticket($session{'CurrentUser'});
     $Ticket->Load($id);
 }
 
@@ -146,11 +145,12 @@ my ($Type, @states) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
 $ARGS{'Query'} = $Query;
 
 my $path = $BaseURL."?Queue=$Queue&id=".$id.$QueryString;
+
 </%INIT>
 
 <%ARGS>
 $Ticket => undef
-$title => loc("Query Builder")
+$title => loc("Refine Search")
 $ResultPage => undef
 $BaseURL => 'RTIR/Search/Refine.html'
 $NewQuery => 0
@@ -166,4 +166,5 @@ $Page => 1
 $OrderBy => 'id'
 $Order => 'ASC'
 $current_tab => undef
+$current_subtab => undef
 </%ARGS>
