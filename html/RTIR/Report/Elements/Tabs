@@ -96,17 +96,19 @@ $tabs->{"this"} = { class => "currentnav",
 my $ticket_page_tabs = {
     _A => { title => loc('Display'),
             path  => "RTIR/Report/Display.html?id=" . $id, },
-
-    _B => { title => loc('Edit'),
-            path  => "RTIR/Report/Edit.html?id=" . $id, },
-
-    _C => { title => loc('Split'),
-            path  => "RTIR/Report/Split.html?Ticket=" . $id, },
-
-    _D => { title => loc('Merge'),
-            path  => "RTIR/Report/Merge.html?id=" . $id,
-	    separator => 1 },
 };
+
+# only show edit option if they can do it
+if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
+    $ticket_page_tabs->{'_B'} = { title => loc('Edit'),
+            path  => "RTIR/Report/Edit.html?id=" . $id, };
+    $ticket_page_tabs->{'_C'} = { title => loc('Split'),
+            path  => "RTIR/Report/Split.html?Ticket=" . $id, };
+
+    $ticket_page_tabs->{'_D'} = { title => loc('Merge'),
+            path  => "RTIR/Report/Merge.html?id=" . $id,
+	    separator => 1 };
+}
 
 foreach my $tab ( sort keys %{$ticket_page_tabs} ) {
     if ( $ticket_page_tabs->{$tab}->{'path'} eq $current_tab ) {

@@ -31,9 +31,12 @@
 <h2><% loc('Total Blocks: [_1]', $count) %></h2>
 <form action="ShowBlocks.html" method="post">
 <input type="hidden" name="id" value="<%$Incident->id%>">
-<i><%loc("Check box to unlink")%></i>
+% my $delete = 0;
+% if ($Incident->CurrentUserHasRight('ModifyTicket')) {
+% $delete = 1;
+% }
 <& /RTIR/Elements/ShowChildren, 
-    Delete => 1,
+    Delete => $delete,
     Ticket => $Incident, 
     Type => 'Block',
     FullList => $RT::WebPath."/RTIR/Incident/ShowBlocks.html?id=".$Incident->id

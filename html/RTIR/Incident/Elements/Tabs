@@ -110,18 +110,21 @@ my $ticket_page_tabs = {
     _D => { title => loc('Blocks'),
             path  => "RTIR/Incident/ShowBlocks.html?id=" . $id, 
 	    separator => 1},
-
-    _E => { title => loc('Edit'),
-            path  => "RTIR/Incident/Edit.html?id=" . $id, },
-
-
-    _F => { title => loc('Split'),
-            path  => "RTIR/Incident/Split.html?Queue=".$q->Id."&Ticket=" . $id, },
-
-    _G => { title => loc('Merge'),
-            path  => "RTIR/Incident/Merge.html?id=" . $id,
-	    separator => 1 },
 };
+
+# only show edit option if they can do it
+if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
+    $ticket_page_tabs->{'_E'} = { title => loc('Edit'),
+            path  => "RTIR/Incident/Edit.html?id=" . $id, };
+
+    $ticket_page_tabs->{'_F'} = { title => loc('Split'),
+            path  => "RTIR/Incident/Split.html?Queue=".$q->Id."&Ticket=" . $id, };
+
+    $ticket_page_tabs->{'_G'} = { title => loc('Merge'),
+            path  => "RTIR/Incident/Merge.html?id=" . $id,
+	    separator => 1 };
+}
+
 
 foreach my $tab ( sort keys %{$ticket_page_tabs} ) {
     if ( $ticket_page_tabs->{$tab}->{'path'} eq $current_subtab ) {

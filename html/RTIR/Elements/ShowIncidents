@@ -38,10 +38,12 @@
 % }
 
 % if ($depth == 1) {
+%   if ($Ticket->Owner == $session{'CurrentUser'}->id) {
 <a href="<%$RT::WebPath%>/RTIR/Incident/LinkToIncident.html?id=<%$Ticket->Id%>&ClearRestrictons=1">
 <b>[Link]</b></a>
 <a href="<%$RT::WebPath%>/RTIR/Incident/Create.html?child=<%$Ticket->Id%>">
-<b>[New]</b></a>
+<b>[New]</b></a> 
+%   }
 % }
 
 <%INIT>

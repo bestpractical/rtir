@@ -22,6 +22,9 @@
 %# 
 %# 
 %# END LICENSE BLOCK
+% if ($Delete) {
+<i><%loc("Check box to unlink")%></i><br>
+% }
 % while (my $link = $members->Next) {
 % my $member= $link->BaseObj;
 % if ((!defined $QueueName) or $member->QueueObj->Name eq $QueueName) {

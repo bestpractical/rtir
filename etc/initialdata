@@ -545,6 +545,136 @@ if ($self->TicketObj->Status eq 'resolved' or
 	],
        CustomPrepareCode => '1',
        Template          => 'Blank', },
+    {  Description => "FixOwnership",
+       Queue            => 'Incidents',
+       ScripCondition   => 'On Owner Change',
+       ScripAction      => 'User Defined',
+       CustomCommitCode => q[
+# ------------------------------------------------------------------- #
+{
+  # change owner of child Incident Reports, Investigations, Blocks
+  while (my $link = $self->TicketObj->Members->Next) {
+    my $member= $link->BaseObj;
+    if ( ($member->QueueObj->Name eq 'Incident Reports' ||
+          $member->QueueObj->Name eq 'Investigations' ||
+          $member->QueueObj->Name eq 'Blocks' ) &&
+          $member->OwnerObj->id != $self->TransactionObj->NewValue) {
+      my ($res, $msg); 
+      my $user = new RT::CurrentUser($self->TransactionObj->CurrentUser);
+      $user->Load("root");
+      my $t = new RT::Ticket($user);
+      $t->Load($member->id);
+      if ($self->TransactionObj->NewValue == $self->TransactionObj->Creator) {
+        if ($self->TransactionObj->CurrentUser->id == $RT::Nobody->id) {
+          ($res, $msg) = $t->Take();
+        } else {
+          ($res, $msg) = $t->Steal();
+	}
+      } else {
+          ($res, $msg) = $t->SetOwner($self->TransactionObj->NewValue);
+      }
+      $RT::Logger->debug("FixOwnership Scrip: ".$msg)
+    }
+  }
+  return 1;
+}
+# ------------------------------------------------------------------- #
+	],
+       CustomPrepareCode => '1',
+       Template          => 'Blank', },
+    {  Description => "FixOwnership",
+       Queue            => 'Incident Reports',
+       ScripCondition   => 'On Owner Change',
+       ScripAction      => 'User Defined',
+       CustomCommitCode => q[
+# ------------------------------------------------------------------- #
+{
+  # change owner of parent Incident(s)
+  while (my $link = $self->TicketObj->MemberOf->Next) {
+    my $incident= $link->TargetObj;
+    if ( $incident->QueueObj->Name eq 'Incidents' &&
+         $incident->OwnerObj->id != $self->TransactionObj->NewValue) {
+      my ($res, $msg); 
+      my $user = new RT::CurrentUser($self->TransactionObj->CurrentUser);
+      $user->Load("root");
+      my $t = new RT::Ticket($user);
+      $t->Load($incident->id);
+      if ($self->TransactionObj->NewValue == $self->TransactionObj->Creator) {
+          ($res, $msg) = $t->Steal();
+      } else {
+          ($res, $msg) = $t->SetOwner($self->TransactionObj->NewValue);
+      }
+      $RT::Logger->debug("FixOwnership Scrip: ".$msg)
+    }
+  }
+  return 1;
+}
+# ------------------------------------------------------------------- #
+	],
+       CustomPrepareCode => '1',
+       Template          => 'Blank', },
+    {  Description => "FixOwnership",
+       Queue            => 'Investigations',
+       ScripCondition   => 'On Owner Change',
+       ScripAction      => 'User Defined',
+       CustomCommitCode => q[
+# ------------------------------------------------------------------- #
+{
+  # change owner of parent Incident(s)
+  while (my $link = $self->TicketObj->MemberOf->Next) {
+    my $incident= $link->TargetObj;
+    if ( $incident->QueueObj->Name eq 'Incidents' &&
+         $incident->OwnerObj->id != $self->TransactionObj->NewValue) {
+      my ($res, $msg); 
+      my $user = new RT::CurrentUser($self->TransactionObj->CurrentUser);
+      $user->Load("root");
+      my $t = new RT::Ticket($user);
+      $t->Load($incident->id);
+      if ($self->TransactionObj->NewValue == $self->TransactionObj->Creator) {
+          ($res, $msg) = $t->Steal();
+      } else {
+          ($res, $msg) = $t->SetOwner($self->TransactionObj->NewValue);
+      }
+      $RT::Logger->debug("FixOwnership Scrip: ".$msg)
+    }
+  }
+  return 1;
+}
+# ------------------------------------------------------------------- #
+	],
+       CustomPrepareCode => '1',
+       Template          => 'Blank', },
+    {  Description => "FixOwnership",
+       Queue            => 'Blocks',
+       ScripCondition   => 'On Owner Change',
+       ScripAction      => 'User Defined',
+       CustomCommitCode => q[
+# ------------------------------------------------------------------- #
+{
+  # change owner of parent Incident(s)
+  while (my $link = $self->TicketObj->MemberOf->Next) {
+    my $incident= $link->TargetObj;
+    if ( $incident->QueueObj->Name eq 'Incidents' &&
+         $incident->OwnerObj->id != $self->TransactionObj->NewValue) {
+      my ($res, $msg); 
+      my $user = new RT::CurrentUser($self->TransactionObj->CurrentUser);
+      $user->Load("root");
+      my $t = new RT::Ticket($user);
+      $t->Load($incident->id);
+      if ($self->TransactionObj->NewValue == $self->TransactionObj->Creator) {
+          ($res, $msg) = $t->Steal();
+      } else {
+          ($res, $msg) = $t->SetOwner($self->TransactionObj->NewValue);
+      }
+      $RT::Logger->debug("FixOwnership Scrip: ".$msg)
+    }
+  }
+  return 1;
+}
+# ------------------------------------------------------------------- #
+	],
+       CustomPrepareCode => '1',
+       Template          => 'Blank', },
 );
 
 @Templates = (
@@ -602,4 +732,160 @@ you may reply to this message.
 
                         Thank you,
                         {$Ticket->QueueObj->CorrespondAddress()}', },
+);
+
+@Groups = (
+    { Name        => 'DutyTeam',
+      Type        => 'Privileged',
+      Domain      => 'UserDefined',
+      Instance    => '',
+      Description => 'Duty Team Members',    # loc
+    },
+);
+
+@ACL = (
+    { GroupDomain => 'RT::Queue-Role',
+      GroupType => Owner,
+      Queue => 'Incidents',
+      Right  => 'ModifyTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Incidents',
+      Right  => 'CreateTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Incidents',
+      Right  => 'OwnTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Incidents',
+      Right  => 'SeeQueue', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Incidents',
+      Right  => 'ShowTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Incidents',
+      Right  => 'ShowTicketComments', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Incidents',
+      Right  => 'StealTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Incidents',
+      Right  => 'TakeTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Incidents',
+      Right  => 'Watch', },
+    { GroupDomain => 'RT::Queue-Role',
+      GroupType => Owner,
+      Queue => 'Incident Reports',
+      Right  => 'ModifyTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Incident Reports',
+      Right  => 'CreateTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Incident Reports',
+      Right  => 'OwnTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Incident Reports',
+      Right  => 'SeeQueue', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Incident Reports',
+      Right  => 'ShowTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Incident Reports',
+      Right  => 'ShowTicketComments', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Incident Reports',
+      Right  => 'StealTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Incident Reports',
+      Right  => 'TakeTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Incident Reports',
+      Right  => 'Watch', },
+    { GroupDomain => 'RT::Queue-Role',
+      GroupType => Owner,
+      Queue => 'Investigations',
+      Right  => 'ModifyTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Investigations',
+      Right  => 'CreateTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Investigations',
+      Right  => 'OwnTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Investigations',
+      Right  => 'SeeQueue', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Investigations',
+      Right  => 'ShowTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Investigations',
+      Right  => 'ShowTicketComments', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Investigations',
+      Right  => 'StealTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Investigations',
+      Right  => 'TakeTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Investigations',
+      Right  => 'Watch', },
+    { GroupDomain => 'RT::Queue-Role',
+      GroupType => Owner,
+      Queue => 'Blocks',
+      Right  => 'ModifyTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Blocks',
+      Right  => 'CreateTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Blocks',
+      Right  => 'OwnTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Blocks',
+      Right  => 'SeeQueue', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Blocks',
+      Right  => 'ShowTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Blocks',
+      Right  => 'ShowTicketComments', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Blocks',
+      Right  => 'StealTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Blocks',
+      Right  => 'TakeTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Blocks',
+      Right  => 'Watch', },
 );

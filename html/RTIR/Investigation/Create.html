@@ -46,6 +46,11 @@
     Title => $Title &>
 % }
 
+% if ($Split && !$TicketObj->CurrentUserHasRight('ModifyTicket')) {
+<&|/l&>You are not allowed to split this Investigation.</&>
+%    $m->abort();
+% }
+
 <& /RTIR/Elements/Create, 
     Type => 'Investigation',
     Queue => $q->Id,

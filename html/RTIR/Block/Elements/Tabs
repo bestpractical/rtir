@@ -97,9 +97,13 @@ my $ticket_page_tabs = {
     _A => { title => loc('Display'),
             path  => "RTIR/Block/Display.html?id=" . $id, },
 
-    _B => { title => loc('Edit'),
-            path  => "RTIR/Block/Edit.html?id=" . $id, },
 };
+
+# only show edit option if they can do it
+if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
+   $ticket_page_tabs->{'_B'} = { title => loc('Edit'),
+            path  => "RTIR/Block/Edit.html?id=" . $id, };
+}
 
 foreach my $tab ( sort keys %{$ticket_page_tabs} ) {
     if ( $ticket_page_tabs->{$tab}->{'path'} eq $current_tab ) {

@@ -33,9 +33,12 @@
 <h2><% loc('Total Incident Reports: [_1]', $count) %></h2>
 <form action="ShowReports.html" method="post">
 <input type="hidden" name="id" value="<%$Incident->id%>">
-<i><%loc("Check box to unlink")%></i>
+% my $delete = 0;
+% if ($Incident->CurrentUserHasRight('ModifyTicket')) {
+% $delete = 1;
+% }
 <& /RTIR/Elements/ShowChildren, 
-    Delete => 1,
+    Delete => $delete,
     Ticket => $Incident, 
     Type => 'Report',
     FullList => $RT::WebPath."/RTIR/Incident/ShowReports.html?id=".$Incident->id

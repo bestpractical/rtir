@@ -32,6 +32,12 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
+% if (($ChildObj || $ARGS{'new-MemberOf'} || $ARGS{'MemberOf-new'}) &&
+%      !$link->CurrentUserHasRight('ModifyTicket')) {
+<&|/l&>You are not allowed to edit this Incident.</&>
+%    $m->abort();
+% }
+
 <FORM METHOD="GET" ENCTYPE="multipart/form-data">
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
 <INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
@@ -52,6 +58,11 @@
 % }
 
   <TR>
+% if ($ChildObj) {
+    <td class="label"><&|/l&>Owner</&>:</td>
+    <td class="value"><%$ChildObj->OwnerObj->Name%></td>
+    <input type=hidden name="Owner" value=<%$ChildObj->OwnerObj->id%>>
+% } else {
     <TD class=label>
       <&|/l&>Owner</&>:
     </TD>
@@ -61,6 +72,7 @@
 	  QueueObj => $QueueObj, 
 	  Default => $ARGS{Owner}||$session{'CurrentUser'}->Id||undef &>
     </TD>
+% }
   </TR>
   <TR>
     <TD class=label>

@@ -47,11 +47,15 @@
     title_href => "$RT::WebPath/RTIR/Incident/ShowReports.html?id=".$Ticket->Id, 
     title_class=> 'inverse',  
     titleright => '', color=> "#336633" &>
+
+% if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
     <table width=100%>
     <td align="right">
 		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Report/Create.html?Incident=<%$Ticket->Id%>">New</a> 
 		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Incident/LinkReports.html?ClearRestrictions=1&StatusOp==&ValueOfStatus=new&id=<%$Ticket->Id%>"><%loc("Link")%></a> |
     </td></table>
+% }
+
     <& /RTIR/Elements/ShowChildren, 
 	    Ticket => $Ticket, 
 	    Type => 'Report',
@@ -67,10 +71,15 @@
 		title_href => "$RT::WebPath/RTIR/Incident/ShowInvestigations.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		titleright => '', color=> "#336633" &>
+
+% if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
+
 		<table width=100%><td align="right">
 		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Investigation/Create.html?Incident=<%$Ticket->Id%>">Launch</a> 
 		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Incident/LinkInvestigations.html?ClearRestrictions=1&id=<%$Ticket->Id%>"><%loc("Link")%></a> |
 		</td></table>
+% }
+
 	        <& /RTIR/Elements/ShowChildren, 
 		    Ticket => $Ticket, 
 		    Type => 'Investigation',
@@ -85,10 +94,14 @@
 		title_href => "$RT::WebPath/RTIR/Incident/ShowBlocks.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		titleright => '', color=> "#336633" &>
+
+% if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
 		<table width=100%><td align="right">
 		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Block/Create.html?Incident=<%$Ticket->Id%>">New</a> 
 		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Incident/LinkBlocks.html?ClearRestrictions=1&id=<%$Ticket->Id%>"><%loc("Link")%></a> |
 		</td></table>
+% }
+
 	        <& /RTIR/Elements/ShowChildren, 
 		    Ticket => $Ticket, 
 		    Type => 'Block',
@@ -217,6 +230,18 @@ if (defined $ARGS{'Action'}) {
     }
   }
 
+  # If we don't own the thing we're linking to, change the owner
+  if ($IncidentObj->OwnerObj->id != $session{'CurrentUser'}->id) {
+    if ($IncidentObj->OwnerObj->id == $RT::Nobody->id) {
+      $ARGS{'Action'} = 'Take';
+    } else {
+      $ARGS{'Action'} = 'Steal';
+    }
+    my $action = $ARGS{'Action'};
+    my ($res, $msg)=$IncidentObj->$action();
+    push(@Actions, $msg);
+  }
+
   my @linkresults;
   push @linkresults, ProcessTicketLinks(TicketObj => $ChildObj, ARGSRef => \%ARGS);
 
@@ -242,6 +267,18 @@ if (defined $ARGS{'Action'}) {
           $ARGS{'DeleteLink--'.$link->Type.'-'.$link->Target} = '';
         }
       }
+    }
+
+    # If we don't own the thing we're linking to, change the owner
+    if ($t->OwnerObj->id != $session{'CurrentUser'}->id) {
+      if ($t->OwnerObj->id == $RT::Nobody->id) {
+        $ARGS{'Action'} = 'Take';
+      } else {
+        $ARGS{'Action'} = 'Steal';
+      }
+      my $action = $ARGS{'Action'};
+      my ($res, $msg)=$t->$action();
+      push(@results, $msg);
     }
 
     $ARGS{$t->Id.'-MemberOf'} = $IncidentObj->Id;

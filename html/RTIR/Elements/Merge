@@ -24,6 +24,11 @@
 %# END LICENSE BLOCK
 <& /Elements/ListActions, actions => \@results &>
 
+% if (!$Ticket->CurrentUserHasRight('ModifyTicket')) {
+<%loc("You are not allowed to merge this [_1].", $Type)%>
+%    $m->abort();
+% }
+
 <form action="Merge.html" method="post">
 <input type="hidden" name="id" value="<%$Ticket->id%>">
 <input type="hidden" name="<%$Ticket->Id%>-MergeInto">
