@@ -42,8 +42,12 @@
 <input type=hidden name=Status value=<%$Status%>>
 <input type=hidden name=BulkReject value=1>
 
-<& /RTIR/Elements/Listing, 
-    url => "BulkReject.html?", Type => 'Incident Reports', check => $check, %ARGS &>
+<& /RTIR/Search/Elements/ShowResults, 
+    Queue => $Queue,
+    Query => $Query,
+    QueryString => $QueryString, 
+    BaseURL => $BaseURL,
+    %ARGS &>
 
 <a href="BulkReject.html?check=check">[Select All]</a>
 <a href="BulkReject.html?check=uncheck">[Unselect All]</a>
@@ -52,6 +56,9 @@
 </form>
 
 <%INIT>
+$Format = $RT::RTIRRejectSearchResultFormat;
+$ARGS{'Format'} = $Format;
+
 my $title = loc("Reject Incident Reports");
 my $SubmitCaption = loc("Reject selected incident reports");
 
@@ -94,11 +101,10 @@ if ($ARGS{'BulkReject'}) {
     }
 }
 
+my @states = ['new'];
 if (!$Query) {
-    $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
+    $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue, states => @states);
 }
-
-$ARGS{'Query'} = $Query;
 
 my $QueryString = "&".$m->comp('/Elements/QueryString',
                                Query => $Query,
@@ -112,10 +118,16 @@ if (!$BaseQuery) {
     $BaseQuery = $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
 }
 
-$Query = "'CF.Incident Reports.{_RTIR_State}' = 'new' AND $BaseQuery AND ( $Query )";
+$Query = "$BaseQuery AND ( $Query )";
+$ARGS{'Query'} = $Query;
 
-$session{'tickets'}->FromSQL($Query);
+my $refinetabs = { };
 
+$refinetabs->{'_a'} = {
+    class => "nav",
+    path => "RTIR/Search/RejectRefine.html?Queue=$Queue$QueryString",
+    title => loc('Refine') };
+	
 </%INIT>
 
 <%ARGS>
@@ -129,5 +141,5 @@ $Rows => 50
 $Page => 1
 $OrderBy => 'id'
 $Order => 'ASC'
+$BaseURL => "/RTIR/Report/BulkReject.html"
 </%ARGS>
-
