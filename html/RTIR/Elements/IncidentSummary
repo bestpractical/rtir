@@ -60,8 +60,10 @@
 
 <tr>
 <td colspan=5>
-<a href="<%$RT::WebPath%>/RTIR/Listing.html?ClearRestrictions=1&Queue=Incidents&AttachmentField=Content&AttachmentFieldOp=LIKE&ValueOfAttachmentField=<%$q%>">
-[<%loc("Refine Search")%>]</a></td>
+% if ($Type eq 'Report' or $Type eq 'Investigation' or $Type eq 'Block') {
+[<a href="<%$RT::WebPath%>/RTIR/Create.html?child=<%$ticket%>&Queue=Incidents"><b>New</b></a>]
+% }
+[<a href="<%$RT::WebPath%>/RTIR/Listing.html?ClearRestrictions=1&Queue=Incidents&AttachmentField=Content&AttachmentFieldOp=LIKE&ValueOfAttachmentField=<%$q%>"><%loc("Refine Search")%></a>]</td>
 </tr>
 </table>
 
