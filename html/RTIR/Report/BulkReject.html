@@ -22,31 +22,39 @@
 %# 
 %# 
 %# END LICENSE BLOCK
+<& /Elements/Header, 
+    Title => $title, 
+    Refresh => $session{'tickets_refresh_interval'} &>
+<& Elements/Tabs, 
+    Title => $title &>
+
+<& /Elements/ListActions, actions => \@results &>
+
+<form method=get>
+<input type=hidden name=Status value='rejected'>
+<input type=hidden name=BulkReject value=1>
 %if ($ticketcount && !  $ARGS{'HideResults'}) {
 <TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
-<& /RTIR/Elements/TicketHeader, %ARGS &>
+<& /RTIR/Elements/TicketHeader, check => "check", %ARGS &>
 % my $i;
 %while (my $Ticket = $session{'tickets'}->Next) {
 % $i++;
-<& /RTIR/Elements/TicketRow, 
-    Ticket => $Ticket, 
-    i=> $i, 
-    Type => $Type,
-    %ARGS &>
-%}
+<& /RTIR/Elements/TicketRow, Type => 'Report', Ticket => $Ticket, i=> $i, check => "check", %ARGS &>
+% }
 </TABLE>
 <div align=center>
 <font size=2>
-<a href="Listing.html?GotoPage=1"><&|/l&>First page</&></a>
+<a href="<%$AssocPath%>?id=<%$id%>&GotoPage=1"><&|/l&>First page</&></a>
 &nbsp;&nbsp;
 %  if ( $session{'tickets'}->FirstRow >= $session{'tickets_rows_per_page'}-1 ) {
-<a href="Listing.html?GotoPage=Prev">&lt;<&|/l&>Previous page</&></a>
+<a href="<%$AssocPath%>?id=<%$id%>&GotoPage=Prev">&lt;<&|/l&>Previous page</&></a>
 &nbsp;&nbsp;
 %  }                                                                           
 %  if ( $session{'tickets'}->FirstRow + $session{'tickets_rows_per_page'} < $ticketcount ) {                                                               
-<a href="Listing.html?GotoPage=Next"><&|/l&>Next page</&>&gt;</a>
+<a href="<%$AssocPath%>?id=<%$id%>&GotoPage=Next"><&|/l&>Next page</&>&gt;</a>
 %  }
-%#&nbsp;&nbsp;<form method=get action="Listing.html"><&|/l&>Goto page</&> <input name=GotoPage size=2></form>
+
+%#&nbsp;&nbsp;<form method=get action="<%$AssocPath%>"><&|/l&>Goto page</&> <input name=GotoPage size=2></form>
 </font>
 </div>
 <!--<div align=right>-->
@@ -57,48 +65,46 @@
 </td>
 <td align=right>
 
-<a href="<% $RT::WebPath %>/RTIR/Bulk.html?Type=<%$Type%>"><&|/l&>Update all these tickets at once</&></a>
 <!--</div>-->
 </td>
 </tr>
 </table>
 
 % }
+<HR>
+
+<& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => loc("Reject") &>
+</form>
+
+<HR>
 <TABLE WIDTH="100%">
 <TR>
 <TD VALIGN="TOP">
 <& /Elements/TitleBoxStart, title => loc('Current search criteria')&>
 
-<& /RTIR/Elements/SearchCriteria, Path => "/RTIR/".$Type."/Listing.html", %ARGS &>
+<& /RTIR/Elements/SearchCriteria, Path => $AssocPath, %ARGS &>
 
 <& /Elements/TitleBoxEnd&>
 </TD>
 <TD>
 
-<& /RTIR/Elements/PickRestriction, Queue => $q->id, %ARGS &>
+<& /RTIR/Elements/PickRestriction, Queue => $ARGS{'ValueOfQueue'}, %ARGS &>
 
 </TD>
 </TR>
 </TABLE>
 
 <%INIT>
+my $title = loc("Reject Incident Reports");
+my $SubmitCaption = loc("Reject selected incident reports");
 
 my $q = RT::Queue->new($session{'CurrentUser'});
-
-if ($Type eq 'Incident') {
-  $q->Load("Incidents");
-} elsif ($Type eq 'Report') {
-  $q->Load("Incident Reports");
-} elsif ($Type eq 'Investigation') {
-  $q->Load("Investigations");
-} elsif ($Type eq 'Block') {
-  $q->Load("Blocks");
-}
+$q->Load("Incident Reports");
 
 $ARGS{'QueueOp'}="=";
 $ARGS{'ValueOfQueue'}=$q->Id;
 
-my ($title, $ticketcount);
+my ($subtitle, $ticketcount);
 $session{'i'}++;
 if ($session{'tickets'}) {
     if ($ARGS{'DeleteRestriction'}) {
@@ -112,15 +118,36 @@ if ($session{'tickets'}) {
    $session{'tickets'}->RedoSearch();
    if ( $session{'tickets'}->DescribeRestrictions()) {
        $ticketcount = $session{tickets}->Count();
-        $title = loc('Found [quant,_1,$Type]', $ticketcount);
+        $subtitle = loc('Found [quant,_1,incident]', $ticketcount);
     } else {
-        $title = loc("Find [_1]", $Type);
+        $subtitle = loc("Find incidents");
    }
+
+# Iterate through the ARGS hash and remove anything with a null value.
+map ($ARGS{$_} =~ /^$/ && (delete $ARGS{$_}), keys %ARGS);
+
+my @cols = qw(id Status Priority Subject QueueObj->Name OwnerObj->Name RequestorAddresses DueAsString );
+
+Abort(loc("No search to operate on.")) unless ($session{'tickets'});
+
+my @results;
+if ($ARGS{'BulkReject'}) {
+  #Iterate through each ticket we've been handed
+  while (my $t = $session{'tickets'}->Next) {
+    $RT::Logger->debug( "Checking Ticket ".$t->Id ."\n");
+    next unless ($ARGS{"UpdateTicket".$t->Id});
+    if ($t->Status eq "new") {
+      push @results, ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$t);
+    } else {
+      push @results, loc("Cannot reject Incident Report #[_1].  Only new reports may be rejected.", $t->id);
+    }
+  }
+}
+
 </%INIT>
-<%CLEANUP>
-$session{'tickets'}->PrepForSerialization();
-</%CLEANUP>
 
 <%ARGS>
-$Type => undef
+$id => undef
+$AssocPath => 'RTIR/Report/BulkReject.html'
 </%ARGS>
+

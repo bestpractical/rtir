@@ -33,7 +33,7 @@
 % } else {
 <%$field%>
 % }
-<A HREF="<%$RT::WebPath.$Path%>?id=<%$id%>&DeleteRestriction=<%$row%>">[<&|/l&>delete</&>]</a><br>
+<A HREF="<%$RT::WebPath.'/'.$Path%>?id=<%$id%>&DeleteRestriction=<%$row%>">[<&|/l&>delete</&>]</a><br>
 % }
 %}
 <BR>
