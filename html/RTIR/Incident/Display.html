@@ -225,12 +225,14 @@ my $DoLinks = sub {
   $ARGS{$Ticket->Id.'-MemberOf'} = $Target->Id;
 
   # Blocks can have multiple incidents
+  my $unlinked;
   if ($Type ne 'Block') {
     while (my $link = $Ticket->MemberOf->Next) {
       my $member = $link->TargetObj;
       if ($member->QueueObj->Name eq "Incidents") {
         $RT::Logger->debug ("Deleting: ".$link->Target."\n");
         $ARGS{'DeleteLink--'.$link->Type.'-'.$link->Target} = '';
+        $unlinked->{$link->Target} = $link->TargetObj;
       }
     }
   }
@@ -341,6 +343,37 @@ if (defined $Ticket) {
     $TimeWorked = $Ticket->TimeWorked."/".$Ticket->TimeLeft;
   }
 }
+
+# If we deleted any links, check if what we deleted from still has children
+foreach my $arg (%ARGS) {
+  if (substr($arg, 0, length('DeleteLink--MemberOf-')) eq
+      'DeleteLink--MemberOf-') {
+    my $t = substr($arg, length('DeleteLink--MemberOf-'));
+    $m->print("Arg: ".$t."<br>");
+    my $children = new RT::Tickets ($session{'CurrentUser'});
+    $children->LimitQueue(VALUE => 'Incident Reports');
+    $children->LimitQueue(VALUE => 'Investigations');
+    $children->LimitQueue(VALUE => 'Blocks');
+    $children->LimitMemberOf($t);
+    if ($children->Count == 0) {
+      push (@Actions, 
+            loc("WARNING: Incident [_1] has no children.", $t));
+    }
+  }
+}
+
+# Check if the current incident still has children
+my $children;
+$children = new RT::Tickets ($session{'CurrentUser'});
+$children->LimitQueue(VALUE => 'Incident Reports');
+$children->LimitQueue(VALUE => 'Investigations');
+$children->LimitQueue(VALUE => 'Blocks');
+$children->LimitMemberOf($Ticket->Id);
+if ($children->Count == 0) {
+  push (@Actions, 
+        loc("WARNING: Incident [_1] has no children.", $Ticket->Id));
+}
+
 
 </%INIT>
 
