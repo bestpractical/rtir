@@ -75,13 +75,12 @@
     Abort("No permission to view ticket");
   }
 
-  $count=0;
-  while (my $link = $Incident->Members->Next) {
-    my $member= $link->BaseObj;
-    if ($member->QueueObj->Name eq $Queue) {
-      $count++;
-    }
-  }
+  my $query = "Queue = '$Queue' AND MemberOf = " . $Incident->Id;
+
+  my $members = new RT::Tickets($session{'CurrentUser'});
+  $members->FromSQL($query);
+
+  $count = $members->Count;
 
 </%INIT>
 

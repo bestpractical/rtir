@@ -80,14 +80,14 @@ Resolve all children.
 sub Commit {
     my $self = shift;
 
+    my $query = "(Queue = 'Incident Reports' OR Queue = 'Investigations' OR Queue = 'Blocks') AND MemberOf = " . $self->TicketObj->Id;
+
+    my $members = new RT::Tickets($self->TransactionObj->CurrentUser);
+    $members->FromSQL($query);
+
     my $members = $self->TicketObj->Members;
-    while (my $link = $members->Next) {
-	my $member= $link->BaseObj;
-	if ($member->QueueObj->Name eq 'Blocks' or
-	    $member->QueueObj->Name eq 'Investigations' or
-	    $member->QueueObj->Name eq 'Incident Reports') {
-	    $member->Resolve();
-	}
+    while (my $member = $members->Next) {
+	$member->Resolve();
     }
     return 1;
 }

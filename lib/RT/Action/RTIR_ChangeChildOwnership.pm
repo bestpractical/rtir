@@ -75,13 +75,14 @@ Change the ownership of children.
 sub Commit {
     my $self = shift;
 
+    my $query = "(Queue = 'Incident Reports' OR Queue = 'Investigations' OR Queue = 'Blocks') AND MemberOf = " . $self->TicketObj->Id;
+
+    my $members = new RT::Tickets($self->TransactionObj->CurrentUser);
+    $members->FromSQL($query);
+
     # change owner of child Incident Reports, Investigations, Blocks
-    while (my $link = $self->TicketObj->Members->Next) {
-	my $member= $link->BaseObj;
-	if ( ($member->QueueObj->Name eq 'Incident Reports' ||
-	      $member->QueueObj->Name eq 'Investigations' ||
-	      $member->QueueObj->Name eq 'Blocks' ) &&
-	     $member->OwnerObj->id != $self->TransactionObj->NewValue) {
+    while (my $member = $members->Next) {
+	if ($member->OwnerObj->id != $self->TransactionObj->NewValue) {
 	    my ($res, $msg); 
 	    my $user = new RT::CurrentUser($self->TransactionObj->CurrentUser);
 	    $user->Load($self->TransactionObj->Creator);
