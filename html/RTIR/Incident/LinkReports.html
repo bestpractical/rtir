@@ -42,7 +42,7 @@ my $IncidentObj = LoadTicket($id);
 my $SubmitCaption = loc("Link selected reports with Incident #[_1]", $IncidentObj->id);
 
 my $q = RT::Queue->new($session{'CurrentUser'});
-$q->Load("Reports");
+$q->Load("Incident Reports");
 
 $ARGS{'QueueOp'}="=";
 $ARGS{'ValueOfQueue'}=$q->Id;

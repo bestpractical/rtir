@@ -24,6 +24,14 @@
 %# END LICENSE BLOCK
 <table>
   <tr>
+  <tr>
+    <td class=label>
+      <%loc("State")%>:
+    </td>
+    <td class=value colspan=2>
+      <& /RTIR/Elements/ShowRTIRField, Ticket => $Ticket, Name => 'State' &>
+    </td>
+  </tr>
     <TD>
       <& /Elements/ShadedBox, 
           title => loc('Priority'),

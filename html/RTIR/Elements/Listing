@@ -24,7 +24,7 @@
 %# END LICENSE BLOCK
 %if ($ticketcount && !  $ARGS{'HideResults'}) {
 <TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
-<& /Search/Elements/TicketHeader, %ARGS &>
+<& /RTIR/Elements/TicketHeader, %ARGS &>
 % my $i;
 %while (my $Ticket = $session{'tickets'}->Next) {
 % $i++;
