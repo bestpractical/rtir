@@ -46,8 +46,8 @@
 <& /Elements/Header, Title => $title &>
 
 <& '/RTIR/Search/Elements/RefineTabs',
-   path => "RTIR/Search/MergeRefine.html?Queue=$Queue&id=".$id.$QueryString,
-   current_subtab => "RTIR/Merge.html?id=".$id.$QueryString,
+   path => $path,
+   current_subtab => $ResultPage."?Queue=$Queue&id=".$id.$QueryString,
    Ticket => $Ticket, 
    Queue => 'Incidents',
    Title => $title,
@@ -72,8 +72,6 @@
     %ARGS &>
 
 <%INIT>
-my $title = loc("Query Builder");
-
 my $Ticket = new RT::Ticket($session{'CurrentUser'});
 $Ticket->Load($id);
 
@@ -141,15 +139,18 @@ my ($Type, @states) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
 
 $ARGS{'Query'} = $Query;
 
+my $path = $BaseURL."?Queue=$Queue&id=".$id.$QueryString;
 </%INIT>
 
 <%ARGS>
+$title => loc("Query Builder")
+$ResultPage => '/RTIR/Merge.html'
+$BaseURL => 'RTIR/Search/MergeRefine.html'
 $NewQuery => 0
 $Queue => undef
 $Query => undef
 $id => undef
 $FormAction => 'MergeRefine.html'
-$ResultPage => '/RTIR/Merge.html'
 $Format => undef 
 $HideResults => 0
 $Rows => 50
