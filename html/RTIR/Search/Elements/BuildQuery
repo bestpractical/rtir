@@ -44,12 +44,13 @@
 %# 
 %# }}} END BPS TAGGED BLOCK
 
-<FORM METHOD="POST" ACTION="Build.html" NAME="BuildQuery">
+<FORM METHOD="POST" ACTION=<%$FormAction%> NAME="BuildQuery">
 <input type=hidden name=SearchId value="<%$SearchId%>">
 <input type=hidden name=Query value="<%$Query%>">
 <input type=hidden name=Format value="<%$Format%>">
 <input type=hidden name=BaseQuery value="<%$BaseQuery%>">
 <input type=hidden name=Queue value="<%$ARGS{'Queue'}%>">
+<input type=hidden name=id value="<%$ARGS{'id'}%>">
 <table width=100%>
 <tr>
 <td valign=top class="boxcontainer">
@@ -113,4 +114,5 @@ $search_hash => undef
 $dirty => undef
 $AvailableColumns => undef
 $CurrentFormat => undef
+$FormAction => "Build.html"
 </%ARGS>

@@ -23,7 +23,7 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/TitleBoxStart, 
-	title_href =>"$RT::WebPath/RTIR/Listing.html?NewSearch=1&Queue=".$QueueObj->Name."&CustomFieldOp$fid==&CustomField$fid=new&TicketsSortBy=Due&TicketSortOrder=ASC&setstate=1",
+	title_href =>"$RT::WebPath/RTIR/Search/Results.html?Queue=$Queue$QueryString",
 	title_class=> 'inverse',  
 	title => loc("[_1] of [_2] new unlinked Incident Reports...", $num, $MyTickets->Count), bodyclass=> '' &>
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
@@ -79,24 +79,23 @@
 
 
 <%INIT>
-my $rows = 10;
-my $MyTickets;
-$MyTickets = new RT::Tickets ($session{'CurrentUser'});
-$MyTickets->CleanSlate();
-$MyTickets->LimitQueue(VALUE => 'Incident Reports');
-$MyTickets->OrderBy(FIELD => 'Due', ORDER => 'ASC');
-$MyTickets->LimitStatus(OPERATOR => '!=', VALUE => 'deleted');
-
-my $fid;
-my $QueueObj = new RT::Queue($session{'CurrentUser'});
-if (!$QueueObj->Load("Incident Reports")) {
-   $m->print (loc("Error: Incident Reports Queue could not be loaded."));
-} else {
-    my $cf = RT::CustomField->new($session{'CurrentUser'});
-    $cf->LoadByNameAndQueue(Queue => $QueueObj->Id, Name => '_RTIR_State');
-    $MyTickets->LimitCustomField(CUSTOMFIELD => $cf->Id, VALUE => 'new');
+my $Query;
+if (!$Query) {
+    $Query .= "'CF.$Queue.{_RTIR_State}' = 'new'";
 }
 
+my $QueryString = "&".$m->comp('/Elements/QueryString',
+                               Query => $Query,
+                               Format => $Format,
+                               Rows => $Rows,
+                               OrderBy => $OrderBy,
+                               Order => $Order,
+                               Page => $Page);
+
+my $MyTickets;
+my $rows = 10;
+$MyTickets = new RT::Tickets ($session{'CurrentUser'});
+$MyTickets->FromSQL("Queue = '$Queue' AND ($Query)");
 $MyTickets->RowsPerPage($rows);
 
 my $num;
@@ -107,3 +106,13 @@ if ($MyTickets->Count < $rows) {
 }
 
 </%INIT>
+
+<%ARGS>
+$Queue => 'Incident Reports'
+$Format => undef 
+$HideResults => 0
+$Rows => 50
+$Page => 1
+$OrderBy => 'Due'
+$Order => 'ASC'
+</%ARGS>

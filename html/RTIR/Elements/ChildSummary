@@ -58,7 +58,7 @@
 % }
 <tr>
 <td colspan=5>
-[<a href="<%$RT::WebPath%>/RTIR/Listing.html?ClearRestrictions=1&Queue=<%$Queue%>&AttachmentField=Content&AttachmentFieldOp=LIKE&ValueOfAttachmentField=<%$q%>"><%loc("Refine Search")%></a>]
+[<a href="<%$RT::WebPath%>/RTIR/Search/Results.html?Queue=<%$Queue%><%$QueryString%>"><%loc("Refine Search")%></a>]
 % if ($Type eq 'Incident') {
 % my $linkfile;
 %   if ($Queue eq 'Incident Reports') {
@@ -81,10 +81,34 @@
 </tr>
 </table>
 
+<%INIT>
+my $Query;
+if (!$Query) {
+    $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
+    $Query .= " AND Content LIKE '$q'" if $q;
+}
+
+my $QueryString = "&".$m->comp('/Elements/QueryString',
+                               Query => $Query,
+                               Format => $Format,
+                               Rows => $Rows,
+                               OrderBy => $OrderBy,
+                               Order => $Order,
+                               Page => $Page);
+
+</%INIT>
+
 <%ARGS>
 $Queue => undef
 $Type => undef
 $ticket => undef
 $q => undef
 $lookuptype => undef
+$Format => undef 
+$HideResults => 0
+$Rows => 50
+$Page => 1
+$OrderBy => 'id'
+$Order => 'ASC'
 </%ARGS>
+

@@ -62,7 +62,8 @@
 % if ($Type eq 'Report' or $Type eq 'Investigation' or $Type eq 'Block') {
 [<a href="<%$RT::WebPath%>/RTIR/Create.html?child=<%$ticket%>&Queue=Incidents"><b>New</b></a>]
 % }
-[<a href="<%$RT::WebPath%>/RTIR/Listing.html?ClearRestrictions=1&Queue=Incidents&AttachmentField=Content&AttachmentFieldOp=LIKE&ValueOfAttachmentField=<%$q%>"><%loc("Refine Search")%></a>]</td>
+[<a href="<%$RT::WebPath%>/RTIR/Search/Results.html?Queue=Incidents<%$QueryString%>"><%loc("Refine Search")%></a>]
+</td>
 </tr>
 </table>
 
@@ -84,10 +85,30 @@ while (my $Ticket = $session{'tickets'}->Next) {
   }
 }
 
+my $Query;
+if (!$Query) {
+    $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
+    $Query .= " AND Content LIKE '$q'" if $q;
+}
+
+my $QueryString = "&".$m->comp('/Elements/QueryString',
+                               Query => $Query,
+                               Format => $Format,
+                               Rows => $Rows,
+                               OrderBy => $OrderBy,
+                               Order => $Order,
+                               Page => $Page);
+
 </%INIT>
 
 <%ARGS>
 $Type => undef
 $ticket => undef
 $q => undef
+$Format => undef 
+$HideResults => 0
+$Rows => 50
+$Page => 1
+$OrderBy => 'id'
+$Order => 'ASC'
 </%ARGS>

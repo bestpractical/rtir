@@ -98,11 +98,6 @@
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => $SubmitLabel &>
 </form>
 
-<HR>
-
-<& /RTIR/Elements/SearchFields, Path => "/RTIR/Incident/Reply.html", 
-    Queue => $QueueObj->Name, %ARGS &>
-
 <%INIT>
 
 my $IncidentObj = LoadTicket($id);

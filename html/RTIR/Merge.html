@@ -27,6 +27,7 @@
     Ticket => $Ticket, 
     current_tab => "RTIR/Merge.html?NewSearch=1&id=".$Ticket->Id, 
     current_subtab => "RTIR/Merge.html?NewSearch=1&id=".$Ticket->Id, 
+    subtabs => $mergetabs,
     Title => $Title &>
 
 <& /RTIR/Elements/ListActions, actions => \@results &>
@@ -40,65 +41,35 @@
 <input type="hidden" name="id" value="<%$Ticket->id%>">
 <input type="hidden" name="<%$Ticket->Id%>-MergeInto">
 
-<& /RTIR/Elements/Listing, 
-    Type => $Type, Queue => $Ticket->QueueObj->Name, check => 'radio', %ARGS &>
+<& /RTIR/Search/Elements/ShowResults, 
+    check => 'radio',
+    CheckName => 'SelectedTicket',
+    Queue => $Queue,
+    QueryString => $QueryString, 
+    BaseURL => $RT::WebPath."/RTIR/Merge.html?id=$id&",
+    %ARGS &>
 
 <HR>
 
 <& /Elements/Submit, Caption=> loc('Merge into selected Ticket'), Label => loc("Merge") &>
 </form>
 
-<& /RTIR/Elements/SearchFields, Path => '/RTIR/Merge.html', 
-    Queue => $Ticket->QueueObj->Name, %ARGS &>
-
 <%INIT>
 my $Ticket = LoadTicket($id);
+my $Queue = $Ticket->QueueObj->Name;
 
-my ($Type, undef) = $m->comp('Elements/Type', Ticket => $Ticket->Id);
+my $mergetabs = { } ;
 
-my @states;
-my $name = $Type;
-if ($Type eq "Incident") {
-  @states = ('open');
-} elsif ($Type eq "Report") {
-  @states = ('new', 'open');
-  $name = 'Incident Report';
-} elsif ($Type eq "Investigation") {
-  @states = ('open');
-} elsif ($Type eq "Block") {
-  @states = ('pending activation', 'active', 'pending removal');
-}
+$mergetabs->{'_a'} = {
+    class => "nav",
+    path => "RTIR/Search/MergeRefine.html?Queue=" . $Ticket->QueueObj->Name . "&id=$id",
+    title => loc('Refine') };
+	
+my ($Type, @states) = $m->comp('Elements/Type', Ticket => $Ticket->Id);
 
 if (! $session{'tickets'}) {
     # Init a new search
     $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
-}
-
-my $ticketcount;
-$session{'i'}++;
-if ($session{'tickets'}) {
-    if ($ARGS{'DeleteRestriction'}) {
-	$session{'tickets'}->DeleteRestriction($ARGS{'DeleteRestriction'});
-    }
-    if ( ($ARGS{'ClearRestrictions'}) || ($ARGS{'NewSearch'}) ) {
-	$session{'tickets'}->ClearRestrictions;
-	$session{'tickets'}->LimitQueue(VALUE => $Ticket->QueueObj->Name);
-
-	# we can't merge with ourself
-	$session{'tickets'}->LimitId(VALUE => $Ticket->Id, OPERATOR => '!=');
-
-	my $cf = RT::CustomField->new($session{'CurrentUser'});
-	$cf->LoadByNameAndQueue(Queue => 'Incidents', Name => '_RTIR_State');
-	foreach my $state (@states) {
-	    $session{'tickets'}->LimitCustomField(CUSTOMFIELD => $cf->Id, VALUE => $state);
-	}
-    }	
-}
-
-ProcessSearchQuery(ARGS=>\%ARGS);
-$session{'tickets'}->RedoSearch();
-if ( $session{'tickets'}->DescribeRestrictions()) {
-    $ticketcount = $session{tickets}->Count();
 }
 
 # Iterate through the ARGS hash and remove anything with a null value.
@@ -117,9 +88,38 @@ if ($merge) {
   }
 }
 
-my $Title = loc("Merge [_1] #[_2]: [_3]", $name, $id, $Ticket->Subject);
+my $Title = loc("Merge [_1] #[_2]: [_3]", $Type, $id, $Ticket->Subject);
+
+if (!$Query) {
+    $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
+}
+
+my $QueryString = "&".$m->comp('/Elements/QueryString',
+                               Query => $Query,
+                               Format => $Format,
+                               Rows => $Rows,
+                               OrderBy => $OrderBy,
+                               Order => $Order,
+                               Page => $Page);
+
+if (!$BaseQuery) {
+    $BaseQuery = $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
+    $BaseQuery .= " AND id != $id"
+}
+
+$Query = "$BaseQuery AND ( $Query )";
+$ARGS{'Query'} = $Query;
+
 </%INIT>
       
 <%ARGS>
+$BaseQuery => undef
+$Query => undef
+$Format => undef 
+$HideResults => 0
+$Rows => 50
+$Page => 1
+$OrderBy => 'id'
+$Order => 'ASC'
 $id => undef
 </%ARGS>

@@ -32,14 +32,12 @@
 % } elsif ($Incident) {
 <& "/RTIR/Incident/Elements/".$Type."Tabs", 
     Ticket => $IncidentObj,
-    current_toptab => "RTIR/Listing.html", 
     current_tab => "RTIR/Create.html?Incident=".$Incident."&Queue=".$Queue, 
     current_subtab => "RTIR/Create.html?Incident=".$Incident."&Queue=".$Queue, 
     Title => $Title &>
 % } else {
 <& "/RTIR/".$Type."/Elements/Tabs",
     Ticket => $TicketObj,
-    current_toptab => "RTIR/Listing.html", 
     current_tab => "RTIR/Create.html?Queue=".$Queue, 
     current_subtab => "RTIR/Create.html?Queue=".$Queue, 
     Title => $Title &>

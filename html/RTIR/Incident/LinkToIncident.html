@@ -25,8 +25,10 @@
 <& /RTIR/Elements/Header, 
     Title => $title, 
     Refresh => $session{'tickets_refresh_interval'} &>
-<& Elements/Tabs, 
-    current_subtab => 'RTIR/Incident/ShowReports.html',
+<& '/RTIR/'.$Type.'/Elements/Tabs', 
+    Ticket => $ChildObj, 
+    current_tab => "RTIR/Incident/LinkToIncident.html?id=$id",
+    current_subtab => "RTIR/Incident/LinkToIncident.html?id=$id",
     Title => $title &>
 
 <form action='Display.html' method=get>
@@ -40,10 +42,9 @@
 
 <HR>
 
-<& /RTIR/Elements/SearchFields, Path => '/RTIR/Incident/LinkToIncident.html', 
-    Queue => $QueueObj->Name, %ARGS &>
-
 <%INIT>
+my ($Type, undef) = $m->comp('/RTIR/Elements/Type', Ticket => $id);
+
 my $ChildObj = LoadTicket($id);
 my $SubmitCaption = loc("Link #[_1] with selected Incident", $ChildObj->id);
 
