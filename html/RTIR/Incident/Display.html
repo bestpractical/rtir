@@ -22,56 +22,41 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, Title => loc("Incident #[_1]: [_2]", $Incident->Id, $Incident->Subject) &>
+<& /Elements/Header, Title => loc("Incident #[_1]: [_2]", $Ticket->Id, $Ticket->Subject) &>
 <& /RTIR/Incident/Elements/Tabs, 
-    Ticket => $Incident, 
-    current_tab => 'RTIR/Incident/Display.html?id='.$Incident->id,
-    Title => loc("Incident #[_1]: [_2]", $Incident->Id, $Incident->Subject) &>
+    Ticket => $Ticket, 
+    current_tab => 'RTIR/Incident/Display.html?id='.$Ticket->id,
+    Title => loc("Incident #[_1]: [_2]", $Ticket->Id, $Ticket->Subject) &>
 
 <& /Elements/ListActions, actions => \@Actions &>
 
 <table border=0 cellpadding=0 cellspacing=2 width=100%>
 <tr>
 <td valign=top width=50%>
-<& /Elements/TitleBoxStart, title => loc('Incident [_1]: [_2]', $Incident->Id, $Incident->Subject), 
-	title_href =>"$RT::WebPath/Ticket/Modify.html?id=".$Incident->Id, 
+<& /Elements/TitleBoxStart, title => loc('Incident [_1]: [_2]', $Ticket->Id, $Ticket->Subject), 
+	title_href =>"$RT::WebPath/Ticket/Modify.html?id=".$Ticket->Id, 
 	title_class=> 'inverse' &>
 
-<table>
-  <tr>
-    <TD>
-      <& /Elements/ShadedBox, 
-          title => loc('Priority'),
-          content => $Incident->Priority &>
-    </TD>
-    <TD>
-      <& /Elements/ShadedBox, 
-          title => loc('Time Worked'),
-          content => loc('[_1] min', $TimeWorked) &>
-    </TD>
-  </tr>
-</table>
-
-<& /RTIR/Elements/ShowRTIRFields, Ticket => $Incident &>
+<& Elements/ShowBasics, Ticket => $Ticket &>
 
 <& /Elements/TitleBoxEnd &>
 
 </td>
 <td valign=top>
 <& /Elements/TitleBoxStart, title => loc('Incident Reports'), 
-    title_href => "$RT::WebPath/RTIR/Incident/ShowReports.html?id=".$Incident->Id, 
+    title_href => "$RT::WebPath/RTIR/Incident/ShowReports.html?id=".$Ticket->Id, 
     title_class=> 'inverse',  
     titleright => '', color=> "#336633" &>
     <table width=100%>
     <td align="right">
-		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Report/Create.html?Incident=<%$Incident->Id%>">New</a> 
-		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Incident/LinkReports.html?QueueOp==&ValueOfQueue=Incident Reports&ClearRestrictions=1&id=<%$Incident->Id%>"><%loc("Link")%></a> |
+		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Report/Create.html?Incident=<%$Ticket->Id%>">New</a> 
+		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Incident/LinkReports.html?QueueOp==&ValueOfQueue=Incident Reports&ClearRestrictions=1&id=<%$Ticket->Id%>"><%loc("Link")%></a> |
     </td></table>
     <& /RTIR/Elements/ShowChildren, 
-	    Ticket => $Incident, 
+	    Ticket => $Ticket, 
 	    Type => 'Report',
 	    LimitDepth => 8,
-            FullList => $RT::WebPath."/RTIR/Incident/ShowReports.html?id=".$Incident->id
+            FullList => $RT::WebPath."/RTIR/Incident/ShowReports.html?id=".$Ticket->id
  &>
 <& /Elements/TitleBoxEnd &>
 </td>
@@ -79,36 +64,36 @@
 <tr>
   <TD VALIGN=TOP width=50%>
 	  <& /Elements/TitleBoxStart, title => loc('Investigations'), 
-		title_href => "$RT::WebPath/RTIR/Incident/ShowInvestigations.html?id=".$Incident->Id, 
+		title_href => "$RT::WebPath/RTIR/Incident/ShowInvestigations.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		titleright => '', color=> "#336633" &>
 		<table width=100%><td align="right">
-		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Investigation/Create.html?Incident=<%$Incident->Id%>">Launch</a> 
-		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Incident/LinkInvestigations.html?QueueOp==&ValueOfQueue=Investigations&ClearRestrictions=1&id=<%$Incident->Id%>"><%loc("Link")%></a> |
+		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Investigation/Create.html?Incident=<%$Ticket->Id%>">Launch</a> 
+		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Incident/LinkInvestigations.html?QueueOp==&ValueOfQueue=Investigations&ClearRestrictions=1&id=<%$Ticket->Id%>"><%loc("Link")%></a> |
 		</td></table>
 	        <& /RTIR/Elements/ShowChildren, 
-		    Ticket => $Incident, 
+		    Ticket => $Ticket, 
 		    Type => 'Investigation',
 		    LimitDepth => 8,
-		    FullList => $RT::WebPath."/RTIR/Incident/ShowInvestigations.html?id=".$Incident->id
+		    FullList => $RT::WebPath."/RTIR/Incident/ShowInvestigations.html?id=".$Ticket->id
  &>
 	<& /Elements/TitleBoxEnd &>
   </td>
   <TD VALIGN=TOP width=50%>
 
 	  <& /Elements/TitleBoxStart, title => loc('Blocks'), 
-		title_href => "$RT::WebPath/RTIR/Incident/ShowBlocks.html?id=".$Incident->Id, 
+		title_href => "$RT::WebPath/RTIR/Incident/ShowBlocks.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		titleright => '', color=> "#336633" &>
 		<table width=100%><td align="right">
-		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Block/Create.html?Incident=<%$Incident->Id%>">New</a> 
-		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Incident/LinkBlocks.html?QueueOp==&ValueOfQueue=Blocks&ClearRestrictions=1&id=<%$Incident->Id%>"><%loc("Link")%></a> |
+		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Block/Create.html?Incident=<%$Ticket->Id%>">New</a> 
+		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Incident/LinkBlocks.html?QueueOp==&ValueOfQueue=Blocks&ClearRestrictions=1&id=<%$Ticket->Id%>"><%loc("Link")%></a> |
 		</td></table>
 	        <& /RTIR/Elements/ShowChildren, 
-		    Ticket => $Incident, 
+		    Ticket => $Ticket, 
 		    Type => 'Block',
 		    LimitDepth => 8,
-		    FullList => $RT::WebPath."/RTIR/Incident/ShowBlocks.html?id=".$Incident->id &>
+		    FullList => $RT::WebPath."/RTIR/Incident/ShowBlocks.html?id=".$Ticket->id &>
 	<& /Elements/TitleBoxEnd &>
   </td>
 </tr>
@@ -116,31 +101,31 @@
         <TD VALIGN=TOP width=50%>
         <BR>
 	  <& /Elements/TitleBoxStart, title => loc('People'), 
-		title_href =>"$RT::WebPath/Ticket/ModifyPeople.html?id=".$Incident->Id, 
+		title_href =>"$RT::WebPath/Ticket/ModifyPeople.html?id=".$Ticket->Id, 
 		title_class=> 'inverse' &>
-	  <& /RTIR/Incident/Elements/ShowPeople, Ticket => $Incident &>
+	  <& /RTIR/Incident/Elements/ShowPeople, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
 	<BR>
 	</TD>
 <td>
         <BR>
 	  <& /Elements/TitleBoxStart, title => loc("Dates"),
-		title_href =>"$RT::WebPath/Ticket/ModifyDates.html?id=".$Incident->Id, 
+		title_href =>"$RT::WebPath/Ticket/ModifyDates.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		 color => "#663366" &>
-	  <& /RTIR/Incident/Elements/ShowDates, Ticket => $Incident &>
+	  <& /RTIR/Incident/Elements/ShowDates, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
 	<BR>  
-	  <& /Ticket/Elements/ShowAttachments, Ticket => $Incident &>
+	  <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket &>
 
-	  <& /Ticket/Elements/ShowRequestor, Ticket => $Incident &>
+	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
 
 
 	</TD>
       </TR>
 </table>
 <& /Ticket/Elements/ShowHistory , 
-      Ticket => $Incident, 
+      Ticket => $Ticket, 
       Collapsed => $ARGS{'Collapsed'}, 
       ShowHeaders => $ARGS{'ShowHeaders'} &> 
 
@@ -153,9 +138,9 @@ $Collapsed => undef
 </%ARGS>
 
 <%INIT>
-  my ($linkid, $message, $tid, $Incident, @Actions, $TimeWorked);  
+my ($Ticket, @Actions);  
 
-$Incident = new RT::Ticket($session{'CurrentUser'});
+$Ticket = new RT::Ticket($session{'CurrentUser'});
 
 unless ($id) {
     Abort('No incident specified');
@@ -172,18 +157,18 @@ if ($ARGS{'id'} eq 'new') {
     unless ($Queue->CurrentUserHasRight('CreateTicket')) {
 	Abort('You have no permission to create tickets in that queue.');
     }
-    ($Incident, @Actions) =
+    ($Ticket, @Actions) =
        CreateTicket(Attachments => $session{'Attachments'}, %ARGS);
     delete $session{'Attachments'};
-    unless ($Incident->CurrentUserHasRight('ShowTicket')) {
-      Abort("No permission to view newly created ticket #".$Incident->id.".");
+    unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
+      Abort("No permission to view newly created ticket #".$Ticket->id.".");
     }
     # }}}
 }
 
 else { 
-    $Incident = LoadTicket($ARGS{'id'});
-    unless ($Incident->CurrentUserHasRight('ShowTicket')) {
+    $Ticket = LoadTicket($ARGS{'id'});
+    unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
 	Abort("No permission to view ticket");
     }
 
@@ -191,7 +176,7 @@ else {
 if (defined $ARGS{'Action'}) {
   if ($ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
     my $action = $1;
-    my ($res, $msg)=$Incident->$action();
+    my ($res, $msg)=$Ticket->$action();
     push(@Actions, $msg);
   }
 }
@@ -206,17 +191,12 @@ if (defined $ARGS{'Action'}) {
             $ARGS{UpdateAttachments} = $session{'Attachments'};
 	    ProcessUpdateMessage(ARGSRef=>\%ARGS, 
 				 Actions=>\@Actions, 
-				 TicketObj=>$Incident);
+				 TicketObj=>$Ticket);
             delete $session{'Attachments'};
 	}
 
-$TimeWorked = $Incident->TimeWorked;
-if ($Incident->TimeLeft > 0 ) {
-  $TimeWorked = $Incident->TimeWorked."/".$Incident->TimeLeft;
-}
-
 #Process basics updates
-my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$Incident);
+my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$Ticket);
 
 push (@Actions, @BasicActions);
 }

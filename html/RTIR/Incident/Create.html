@@ -70,35 +70,31 @@
       <INPUT Name="Subject" SIZE=60 MAXSIZE=100 value="<% $ARGS{Subject} || ''%>">
     </TD>
   </TR>
-  <TR>
-    <TD class=label>
-      <&|/l&>Correspondents</&>:
-    </TD>
-    <TD COLSPAN=5>
-      <INPUT Name="Requestors" Value="<%($ARGS{Requestors}) || $session{CurrentUser}->EmailAddress%>" SIZE=40>
-    </TD>
-  </TR>
-  <TR>
-    <TD class=label>
-      <&|/l&>Cc</&>:
-    </TD>
-    <TD class=value COLSPAN=5>
-      <INPUT Name="Cc" Value="<%($ARGS{Cc}) || ""%>" SIZE=40>
-      <i><font size=-2>
-      <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)</&></font></i>
-    </TD>
-  </TR>
-  <TR>
-    <TD class=label>
-      <&|/l&>Admin Cc</&>:
-    </TD>
-    <TD class=value COLSPAN=5>
-      <INPUT Name="AdminCc" Value="<%($ARGS{AdminCc}) || ""%>" SIZE=40>
-      <i><font size=-2>
-      <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)</&></font></i>
-    </TD>
-  </TR>
-  <TR>
+  <tr>
+    <td class="label"><&|/l&>Description</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/EditRTIRField, 
+         QueueObj => $QueueObj, 
+	 Name => 'Description',
+	 Cols => 40 &>
+    </td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>SLA</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/EditRTIRField, 
+         QueueObj => $QueueObj, 
+	 Name => 'SLA' &>
+    </td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Type</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/EditRTIRField, 
+         QueueObj => $QueueObj, 
+	 Name => 'Type' &>
+    </td>
+  </tr>
     <TD colspan=2>
       <& /Ticket/Elements/EditCustomFields, 
         TicketObj => $TicketObj, QueueObj => $QueueObj &>

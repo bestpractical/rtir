@@ -22,36 +22,30 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<table>
-% my @entry_fields;
-% while (my $CustomField = $CustomFields->Next()) {
-% if ((index($CustomField->Name, "_RTIR_") eq 0)) {
-%   if ($CustomField->Type =~ /Entry$/) {
-%     push @entry_fields, $CustomField;
-%     next;
-%   }
-% my $Values = $Ticket->CustomFieldValues($CustomField->Id);
-  <tr>
-    <td class="label"><%substr($CustomField->Name, length("_RTIR_"))%>:</td>
-    <td class="value">
-% while (my $Value = $Values->Next()) {
-<%$Value->Content%><br>        
-% }
-% unless ($Values->Count()) {
+% if ($novalue) {
 <i><&|/l&>(no value)</&></i>
-% }
-    </td>
-  </tr>
-% }
-% }
-</table>
-% if (@entry_fields) {
-<& /Ticket/Elements/EditCustomFieldEntries, ReadOnly => 1, CustomFields => \@entry_fields, TicketObj => $Ticket &>
+% } else {
+<%$fieldvalue%>
 % }
 <%INIT>
 my $CustomFields = $Ticket->QueueObj->CustomFields();
 $CustomFields->{'find_disabled_rows'} = 1;
+my ($fieldvalue, $novalue);
+
+while (my $CustomField = $CustomFields->Next()) {
+  if ((index($CustomField->Name, "_RTIR_".$Name) eq 0)) {
+    my $Values = $Ticket->CustomFieldValues($CustomField->Id);
+    while (my $Value = $Values->Next()) {
+      $fieldvalue = $Value->Content;
+    }
+    unless ($Values->Count()) {
+      $novalue=1;
+    }
+  }
+}
 </%INIT>
+
 <%ARGS>
 $Ticket => undef
+$Name => undef
 </%ARGS>

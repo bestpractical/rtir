@@ -1,0 +1,222 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& /Elements/TitleBoxStart, contentbg => "#cccccc", title => $Title &>
+<TABLE border=0 cellpadding=0 cellspacing=2>
+% if (defined $ARGS{'new-MemberOf'}) {
+  <TR>
+    <TD ALIGN=RIGHT><&|/l&>Split from</&>:</TD>
+    <TD><% $ARGS{'new-MemberOf'} %></TD>
+  </TR>
+% } elsif ($Incident) {
+  <TR>
+    <TD ALIGN=RIGHT><&|/l&>Incident</&>:</TD>
+    <TD><% $Incident %></TD>
+  </TR>
+% }
+  <TR>
+    <TD class=label>
+      <&|/l&>Owner</&>:
+    </TD>
+    <TD>
+      <& /Elements/SelectOwner, 
+          Name => "Owner", 
+	  QueueObj => $QueueObj, 
+	  Default => $ARGS{Owner}||undef &>
+    </TD>
+  </TR>
+  <TR>
+    <TD class=label>
+      <&|/l&>Subject</&>:
+    </TD>
+    <TD class=value COLSPAN=5>
+      <INPUT Name="Subject" SIZE=60 MAXSIZE=100 value="<% $ARGS{Subject} || ''%>">
+    </TD>
+  </TR>
+  <TR>
+      <TD ALIGN=RIGHT><&|/l&>Priority</&>:</TD>
+    <td colspan=2>
+      <table>
+      <tr>
+	<TD><input size=3 name="InitialPriority" value="<% $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->InitialPriority %>"></TD>
+        <TD ALIGN=RIGHT><&|/l&>Final Priority</&>:</TD>
+	<TD><input size=3 name="FinalPriority" value="<% $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->FinalPriority %>"></TD>
+        <TD ALIGN=RIGHT><&|/l&>Time Worked</&>:</TD>
+	<TD><input size=3 name="TimeWorked"<% $ARGS{TimeWorked} && " VALUE=\"$ARGS{TimeWorked}\""  %>></TD>
+        <TD ALIGN=RIGHT><&|/l&>Time Left</&>:</TD>
+	<TD><input size=3 name="TimeLeft"<% $ARGS{TimeLeft} && " VALUE=\"$ARGS{TimeLeft}\"" %>></TD>
+      </TR>
+      </table>
+    </td>     
+  <TR>
+    <TD class=label>
+      <&|/l&>Correspondents</&>:
+    </TD>
+    <TD COLSPAN=5>
+      <INPUT Name="Requestors" Value="<%($ARGS{Requestors}) || $session{CurrentUser}->EmailAddress%>" SIZE=40>
+    </TD>
+  </TR>
+  <TR>
+    <TD class=label>
+      <&|/l&>Cc</&>:
+    </TD>
+    <TD class=value COLSPAN=5>
+      <INPUT Name="Cc" Value="<%($ARGS{Cc}) || ""%>" SIZE=40>
+      <i><font size=-2>
+      <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)</&></font></i>
+    </TD>
+  </TR>
+  <TR>
+    <TD class=label>
+      <&|/l&>Admin Cc</&>:
+    </TD>
+    <TD class=value COLSPAN=5>
+      <INPUT Name="AdminCc" Value="<%($ARGS{AdminCc}) || ""%>" SIZE=40>
+      <i><font size=-2>
+      <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)</&></font></i>
+    </TD>
+  </TR>
+  <tr>
+    <td class=label>
+      <%loc("How Reported")%>:
+    </td>
+    <td class=value colspan=2>
+      <table>
+        <tr>
+          <td>
+            <& /RTIR/Elements/EditRTIRField, 
+	      TicketObj => $Ticket,
+              QueueObj => $QueueObj, Name => 'HowReported' &>
+          </td>
+    <td class=label>
+      <%loc("Reporter Type")%>:
+    </td>
+    <td class=value colspan=2>
+      <& /RTIR/Elements/EditRTIRField, 
+	TicketObj => $Ticket,
+        QueueObj => $QueueObj, Name => 'ReporterType' &>
+    </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <TR>
+    <TD colspan=2>
+      <& /Ticket/Elements/EditCustomFields, 
+        TicketObj => $Ticket, 
+	QueueObj => $QueueObj &>
+    </TD>
+  </TR>
+<TR>
+% if (exists $session{'Attachments'}) {
+<TD>
+<&|/l&>Attached file</&>:
+</TD>
+<TD COLSPAN=5>
+<&|/l&>Check box to delete</&><BR>
+% foreach my $attach_name (keys %{$session{'Attachments'}}) {
+<input type="checkbox" name="DeleteAttach-<%$attach_name%>"><%$attach_name%><BR>
+% } # end of foreach
+</TD>
+</TR>
+<TR>
+% } # end of if
+<TD class=label>
+<&|/l&>Attach file</&>:
+</TD>
+<TD class=value COLSPAN=5>
+<INPUT TYPE=FILE NAME="Attach">
+<INPUT TYPE=SUBMIT NAME="AddMoreAttach" VALUE="<&|/l&>Add More Files</&>">
+</TD>
+</TR>
+<TR>
+<TD class=labeltop>
+<&|/l&>Additional information</&>:
+</TD>
+<TD COLSPAN=5>
+% if (exists $ARGS{Content}) {
+<& /Elements/MessageBox, Default => $ARGS{Content} &>
+% } else {
+% if ($Ticket) {
+% my $Transactions = $Ticket->Transactions;
+% my $i;
+<TEXTAREA COLS=72 ROWS=15 WRAP=HARD NAME="Content">
+% while (my $Transaction = $Transactions->Next) {
+% $i++;
+% my $transdate = $Transaction->CreatedAsString();
+% $transdate =~ s/\s/&nbsp;/g;
+<%$transdate%> <%$Transaction->CreatorObj->Name%> - <%$Transaction->BriefDescription%>
+% }
+</textarea>
+% } else {
+  <& /Elements/MessageBox, QuoteTransaction => $QuoteTransaction &>
+% }
+% }
+  <BR>
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN=RIGHT COLSPAN=2>
+  </TD>
+</TR>
+<TR>
+  <TD>
+  </TD>
+  <TD VALIGN=TOP>
+    <& /Elements/TitleBoxStart, title => loc("Dates"),
+		title_class=> 'inverse',  
+		 color => "#663366" &>
+
+    <TABLE BORDER=0>
+      <TR>
+        <TD ALIGN=RIGHT><&|/l&>Starts</&>:</TD>
+	  <TD><input size=10 name="Starts"<% $ARGS{Starts} && " VALUE=\"$ARGS{Starts}\"" %>></TD>
+      </TR>
+      <TR>
+        <TD ALIGN=RIGHT><&|/l&>Due</&>:</TD>
+	<TD><input size=10 name="Due"<% $ARGS{Due} && " VALUE=\"$ARGS{Due}\"" %>></TD>
+      </TR>
+    </TABLE>
+    <& /Elements/TitleBoxEnd &>
+  </TD>
+</TR>
+</TABLE>
+<& /Elements/TitleBoxEnd &>
+
+<%INIT>
+my $Title;
+  if ($Split) {
+    $Title = loc("Split Incident Report #[_1]: [_2]", $Ticket->id, $Ticket->Subject);
+  } else {
+    $Title = loc("Create a new Incident Report");
+  }
+</%INIT>
+
+<%ARGS>
+$Ticket => undef
+$QueueObj => undef
+$Incident => undef
+$QuoteTransaction => undef
+$Split => 0
+</%ARGS>

@@ -22,20 +22,40 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<%$State%>
+% if (defined $CustomField) {
+<& /Ticket/Elements/EditCustomField, TicketObj => $TicketObj, 
+    CustomField => $CustomField, 
+    NamePrefix => $NamePrefix,
+    Cols => $Cols &>
+% }
+
 <%INIT>
-my $State;
-my $CustomFields = $Ticket->QueueObj->CustomFields();
-while (my $CustomField = $CustomFields->Next()) {
-  if ($CustomField->Name eq '_RTIR_State') {
-    my $Values = $Ticket->CustomFieldValues($CustomField->Id);
-    while (my $Value = $Values->Next()) {
-      $State = $Value->Content;
+my $CustomFields;
+my $CustomField;
+my $Values;
+my $NamePrefix;
+
+if (defined $TicketObj) {
+  $CustomFields = $TicketObj->QueueObj->CustomFields();
+  $NamePrefix = "Ticket-".$TicketObj->Id."-CustomField-";
+} else {
+  $CustomFields = $QueueObj->CustomFields();
+  $NamePrefix = "CustomField-";
+}
+$CustomFields->{'find_disabled_rows'} = 1;
+
+while (my $cf = $CustomFields->Next()) {
+  if ((index($cf->Name, "_RTIR_".$Name) eq 0)) {
+    $CustomField = $cf;
+    if ($TicketObj) {
+      $Values = $TicketObj->CustomFieldValues($CustomField->id);
     }
   }
 }
 </%INIT>
-
 <%ARGS>
-$Ticket => undef
+$TicketObj => undef
+$QueueObj => undef
+$Name => undef
+$Cols => undef
 </%ARGS>

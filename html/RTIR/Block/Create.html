@@ -66,7 +66,7 @@ if ($Incident) {
 if ($Split) {
   $Title = loc("Split Block #[_1]: [_2]", $TicketObj->id, $TicketObj->Subject);
 } else {
-  $Title = loc("Create a new Block");
+  $Title = loc("Incident #[_1]: Create a new Block", $Incident);
 }
 </%INIT>
 

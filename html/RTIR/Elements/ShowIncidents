@@ -26,7 +26,7 @@
 % my $incident = $link->TargetObj;
 % if ($incident->QueueObj->Name eq 'Incidents') {
 %   $count++;
-% my $State = $m->scomp("/RTIR/Elements/State", Ticket => $incident);
+% my $State = $m->scomp("/RTIR/Elements/ShowRTIRField", Ticket => $incident, Name => 'State');
 <a href="<%$RT::WebPath%>/RTIR/Incident/Display.html?id=<%$incident->Id%>"><%$incident->Id%></a>: <%$incident->Subject%> [<%$State%>]<br>
 % if ($depth < 8) {
 <& /RTIR/Elements/ShowIncidents, Ticket => $incident, depth => ($depth+1) &> 

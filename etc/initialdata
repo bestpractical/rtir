@@ -28,6 +28,7 @@
         Name        => '_RTIR_State',
         Type        => 'SelectSingle',
         Queue       => 'Incidents',
+	Disabled    => 2,
         Values      => [
             {
                 Name      => "open",
@@ -44,9 +45,26 @@
         ],
     },
     {
+        Name        => '_RTIR_Constituency',
+        Type        => 'SelectSingle',
+        Queue       => 'Incidents',
+	Disabled    => 2,
+        Values      => [
+            {
+                Name      => "JANET-CERT",
+                SortOrder => 1
+            },
+            {
+                Name      => "HEANET-CERT",
+                SortOrder => 2
+            }
+        ],
+    },
+    {
         Name        => '_RTIR_State',
         Type        => 'SelectSingle',
         Queue       => 'Incident Reports',
+	Disabled    => 2,
         Values      => [
             {
                 Name      => "new",
@@ -70,6 +88,7 @@
         Name        => '_RTIR_State',
         Type        => 'SelectSingle',
         Queue       => 'Investigations',
+	Disabled    => 2,
         Values      => [
             {
                 Name      => "open",
@@ -85,6 +104,7 @@
         Name        => '_RTIR_State',
         Type        => 'SelectSingle',
         Queue       => 'Blocks',
+	Disabled    => 2,
         Values      => [
             {
                 Name      => "pending",
@@ -103,12 +123,14 @@
     {
         Name        => '_RTIR_Description',
         Type        => 'FreeformMultiple',
+	Disabled    => 2,
         Queue       => 'Incidents',
     },
     {
         Name        => '_RTIR_SLA',
         Type        => 'SelectSingle',
         Queue       => 'Incidents',
+	Disabled    => 2,
         Values      => [
             {   Name => 'full service serious (within 1 hour)',
                 SortOrder => 1,
@@ -128,6 +150,7 @@
         Name        => '_RTIR_Type',
         Type        => 'SelectSingle',
         Queue       => 'Incidents',
+	Disabled    => 2,
         Values      => [
             {
                 Name      => "AbuseDesk",
@@ -143,6 +166,7 @@
         Name        => '_RTIR_HowReported',
         Type        => 'SelectSingle',
         Queue       => 'Incident Reports',
+	Disabled    => 2,
         Values => [
             {
                 Name      => "Email",
@@ -162,6 +186,7 @@
         Name        => '_RTIR_ReporterType',
         Type        => 'SelectSingle',
         Queue       => 'Incident Reports',
+	Disabled    => 2,
         Values      => [
             { Name => "JANET customer",      SortOrder => 1 },
             { Name => "external individual", SortOrder => 2 },
@@ -184,21 +209,25 @@
         Name        => '_RTIR_IP',
         Type        => 'FreeformSingle',
         Queue       => 'Blocks',
+	Disabled    => 2,
     },
     {
         Name        => '_RTIR_Netmask',
         Type        => 'FreeformSingle',
         Queue       => 'Blocks',
+	Disabled    => 2,
     },
     {
         Name        => '_RTIR_Port',
         Type        => 'FreeformSingle',
         Queue       => 'Blocks',
+	Disabled    => 2,
     },
     {
         Name        => '_RTIR_WhereBlocked',
         Type        => 'FreeformSingle',
         Queue       => 'Blocks',
+	Disabled    => 2,
     },
 );
 
@@ -230,6 +259,7 @@
        CustomCommitCode => q[
 # ------------------------------------------------------------------- #
 my $CustomFields = $self->TicketObj->QueueObj->CustomFields();
+$CustomFields->{'find_disabled_rows'} = 1;
 while (my $CustomField = $CustomFields->Next()) {
   if ($CustomField->Name eq '_RTIR_State') {
     my $State;
@@ -271,6 +301,7 @@ while (my $CustomField = $CustomFields->Next()) {
        CustomCommitCode => q[
 # ------------------------------------------------------------------- #
 my $CustomFields = $self->TicketObj->QueueObj->CustomFields();
+$CustomFields->{'find_disabled_rows'} = 1;
 while (my $CustomField = $CustomFields->Next()) {
   if ($CustomField->Name eq '_RTIR_State') {
     my $State;
@@ -317,6 +348,7 @@ while (my $CustomField = $CustomFields->Next()) {
        CustomCommitCode => q[
 # ------------------------------------------------------------------- #
 my $CustomFields = $self->TicketObj->QueueObj->CustomFields();
+$CustomFields->{'find_disabled_rows'} = 1;
 while (my $CustomField = $CustomFields->Next()) {
   if ($CustomField->Name eq '_RTIR_State') {
     my $State;
@@ -355,6 +387,7 @@ while (my $CustomField = $CustomFields->Next()) {
        CustomCommitCode => q[
 # ------------------------------------------------------------------- #
 my $CustomFields = $self->TicketObj->QueueObj->CustomFields();
+$CustomFields->{'find_disabled_rows'} = 1;
 while (my $CustomField = $CustomFields->Next()) {
   if ($CustomField->Name eq '_RTIR_State') {
     my $State;
@@ -421,6 +454,7 @@ if ($self->TicketObj->Status eq 'resolved' or
 {
   my $output = "";
   my $CustomFields = $Ticket->QueueObj->CustomFields();
+  $CustomFields->{"find_disabled_rows"} = 1;
   while (my $CustomField = $CustomFields->Next()) {
     my @mailfields = ("_RTIR_IP", 
         "_RTIR_Netmask", 

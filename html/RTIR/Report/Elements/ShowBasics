@@ -1,0 +1,83 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<table>
+<tr>
+<td>
+<table>
+  <tr>
+    <td class=label>
+      <%loc("State")%>:
+    </td>
+    <td class=value colspan=2>
+      <& /RTIR/Elements/ShowRTIRField, Ticket => $Ticket, Name => 'State' &>
+    </td>
+  </tr>
+  <tr>
+    <td class=label>
+      <%loc("Incident")%>:
+    </td>
+    <td class=value colspan=2>
+      <& /RTIR/Elements/ShowIncidents, Ticket => $Ticket &>
+    </td>
+  </tr>
+  <& /Elements/ShadedRow, 
+      title => loc('Priority'),
+      content => $Ticket->Priority &>
+  <& /Elements/ShadedRow, 
+      title => loc('Time Worked'),
+      content => loc('[_1] min', $TimeWorked) &>
+  <tr>
+    <td class=label>
+      <%loc("How Reported")%>:
+    </td>
+    <td class=value colspan=2>
+      <& /RTIR/Elements/ShowRTIRField, 
+         Ticket => $Ticket, Name => 'HowReported' &>
+    </td>
+  </tr>
+  <tr>
+    <td class=label>
+      <%loc("Reporter Type")%>:
+    </td>
+    <td class=value colspan=2>
+      <& /RTIR/Elements/ShowRTIRField, 
+	Ticket => $Ticket, Name => 'ReporterType' &>
+    </td>
+  </tr>
+</table>
+</td>
+</tr>
+</table>
+
+<%INIT>
+my $TimeWorked = $Ticket->TimeWorked;
+if ($Ticket->TimeLeft > 0 ) {
+  $TimeWorked = $Ticket->TimeWorked."/".$Ticket->TimeLeft;
+}
+</%INIT>
+
+<%ARGS>
+$Ticket => undef
+</%ARGS>

@@ -23,35 +23,37 @@
 %# 
 %# END LICENSE BLOCK
 <table>
-% my @entry_fields;
-% while (my $CustomField = $CustomFields->Next()) {
-% if ((index($CustomField->Name, "_RTIR_") eq 0)) {
-%   if ($CustomField->Type =~ /Entry$/) {
-%     push @entry_fields, $CustomField;
-%     next;
-%   }
-% my $Values = $Ticket->CustomFieldValues($CustomField->Id);
   <tr>
-    <td class="label"><%substr($CustomField->Name, length("_RTIR_"))%>:</td>
-    <td class="value">
-% while (my $Value = $Values->Next()) {
-<%$Value->Content%><br>        
-% }
-% unless ($Values->Count()) {
-<i><&|/l&>(no value)</&></i>
-% }
+    <td class=label>
+      <%loc("State")%>:
+    </td>
+    <td class=value colspan=2>
+      <& /RTIR/Elements/ShowRTIRField, Ticket => $Ticket, Name => 'State' &>
     </td>
   </tr>
-% }
-% }
+  <tr>
+    <td class=label>
+      <%loc("Incident")%>:
+    </td>
+    <td class=value colspan=2>
+      <& /RTIR/Elements/ShowIncidents, Ticket => $Ticket &>
+    </td>
+  </tr>
+  <& /Elements/ShadedRow, 
+      title => loc('Priority'),
+      content => $Ticket->Priority &>
+  <& /Elements/ShadedRow, 
+      title => loc('Time Worked'),
+      content => loc('[_1] min', $TimeWorked) &>
 </table>
-% if (@entry_fields) {
-<& /Ticket/Elements/EditCustomFieldEntries, ReadOnly => 1, CustomFields => \@entry_fields, TicketObj => $Ticket &>
-% }
+
 <%INIT>
-my $CustomFields = $Ticket->QueueObj->CustomFields();
-$CustomFields->{'find_disabled_rows'} = 1;
+my $TimeWorked = $Ticket->TimeWorked;
+if ($Ticket->TimeLeft > 0 ) {
+  $TimeWorked = $Ticket->TimeWorked."/".$Ticket->TimeLeft;
+}
 </%INIT>
+
 <%ARGS>
 $Ticket => undef
 </%ARGS>

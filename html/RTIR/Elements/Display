@@ -27,42 +27,11 @@
 <table border=0 cellpadding=0 cellspacing=2 width=100%>
 <tr>
 <td valign=top colspan=2>
-<& /Elements/TitleBoxStart, title => $Title, 
+<& /Elements/TitleBoxStart, title => loc("The Basics"), 
 	title_href =>"$RT::WebPath/Ticket/Modify.html?id=".$Ticket->Id, 
 	title_class=> 'inverse' &>
 
-<table>
-  <tr>
-    <TD>
-      <& /Elements/ShadedBox, 
-          title => loc('Priority'),
-          content => $Ticket->Priority &>
-    </TD>
-    <TD>
-      <& /Elements/ShadedBox, 
-          title => loc('Time Worked'),
-          content => loc('[_1] min', $TimeWorked) &>
-    </TD>
-  </tr>
-  <tr>
-    <td class=label>
-      <%loc("Incident")%>:
-    </td>
-    <td class=value colspan=2>
-      <& /RTIR/Elements/ShowIncidents, Ticket => $Ticket &>
-    </td>
-  </tr>
-</table>
-
-<table width=100%>
-  <tr>
-    <TD>
-      <& /Elements/ShadedBox, 
-          title => loc('Description'),
-          content => "description goes here" &>
-    </TD>
-  </tr>
-</table>
+<& '/RTIR/'.$Type.'/Elements/ShowBasics', Ticket => $Ticket &>
 
 <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket &>
 
@@ -111,7 +80,7 @@ $Collapsed => undef
 </%ARGS>
 
 <%INIT>
-  my ($linkid, $message, $tid, $Ticket, @Actions, $TimeWorked);  
+my ($message, $Ticket, @Actions);
 
 $Ticket = new RT::Ticket($session{'CurrentUser'});
 
@@ -174,11 +143,6 @@ if (defined $ARGS{'Action'}) {
             delete $session{'Attachments'};
 	}
 
-$TimeWorked = $Ticket->TimeWorked;
-if ($Ticket->TimeLeft > 0 ) {
-  $TimeWorked = $Ticket->TimeWorked."/".$Ticket->TimeLeft;
-}
-
 #Process basics updates
 my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$Ticket);
 my @LinkActions = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
@@ -190,4 +154,5 @@ push (@Actions, @BasicActions, @LinkActions);
 
 <%ARGS>
 $Type => "Report"
+$Basics => undef
 </%ARGS>

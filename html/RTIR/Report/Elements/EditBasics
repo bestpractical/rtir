@@ -23,35 +23,47 @@
 %# 
 %# END LICENSE BLOCK
 <table>
-% my @entry_fields;
-% while (my $CustomField = $CustomFields->Next()) {
-% if ((index($CustomField->Name, "_RTIR_") eq 0)) {
-%   if ($CustomField->Type =~ /Entry$/) {
-%     push @entry_fields, $CustomField;
-%     next;
-%   }
-% my $Values = $Ticket->CustomFieldValues($CustomField->Id);
   <tr>
-    <td class="label"><%substr($CustomField->Name, length("_RTIR_"))%>:</td>
-    <td class="value">
-% while (my $Value = $Values->Next()) {
-<%$Value->Content%><br>        
-% }
-% unless ($Values->Count()) {
-<i><&|/l&>(no value)</&></i>
-% }
+    <td class=label>
+      <%loc("State")%>:
+    </td>
+    <td class=value colspan=2>
+      <& /RTIR/Elements/ShowRTIRField, Ticket => $Ticket, Name => 'State' &>
     </td>
   </tr>
-% }
-% }
+  <TR>
+    <TD class=label>
+      <&|/l&>Subject</&>:
+    </TD>
+    <TD class=value COLSPAN=5>
+      <INPUT Name="Subject" SIZE=40 MAXSIZE=100 value="<% $Ticket->Subject %>">
+    </TD>
+  </TR>
+  <TR>
+    <TD class=label>
+      <&|/l&>Owner</&>:
+    </TD>
+    <TD>
+      <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id &>
+    </TD>
+  </TR>
+  <& /Elements/ShadedInputRow,
+	title => loc('Priority'),
+	name => "Priority",
+	content => $Ticket->Priority,
+	size => 5 &>
+  <& /Elements/ShadedInputRow,
+	title => loc('Time Worked'),
+	name => "TimeWorked",
+	content => $Ticket->TimeWorked,
+	size => 5 &>
+  <tr>
+    <td colspan=2>
+      <& /Ticket/Elements/EditCustomFields, TicketObj => $Ticket &>
+   </td>
+  </tr>
 </table>
-% if (@entry_fields) {
-<& /Ticket/Elements/EditCustomFieldEntries, ReadOnly => 1, CustomFields => \@entry_fields, TicketObj => $Ticket &>
-% }
-<%INIT>
-my $CustomFields = $Ticket->QueueObj->CustomFields();
-$CustomFields->{'find_disabled_rows'} = 1;
-</%INIT>
+
 <%ARGS>
 $Ticket => undef
 </%ARGS>

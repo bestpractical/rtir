@@ -22,7 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-Queue: <%$ARGS{'ValueOfQueue'}%><br>
 <FORM METHOD="GET">
 <INPUT TYPE=HIDDEN NAME="Bookmark" VALUE="<% $session{'tickets'}->FreezeLimits()|u %>">
 <& /Elements/TitleBoxStart, title => loc('Refine search')&>
@@ -114,6 +113,7 @@ Queue: <%$ARGS{'ValueOfQueue'}%><br>
 
  <%INIT>
 my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
+$CustomFields->{'find_disabled_rows'} = 1;
  foreach ( $session{'tickets'}->RestrictionValues('Queue') ) {
         $CustomFields->LimitToQueue($_);
  }

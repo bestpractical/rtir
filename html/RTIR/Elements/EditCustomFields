@@ -78,6 +78,7 @@ if (defined $TicketObj) {
 } else {
   $CustomFields = $QueueObj->CustomFields();
 }
+
 </%INIT>
 <%ARGS>
 $TicketObj => undef

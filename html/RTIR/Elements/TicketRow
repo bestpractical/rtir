@@ -33,7 +33,7 @@ CLASS="evenline"
 </TR>
 </SPAN>
 <%INIT>
-my $State = $m->scomp("/RTIR/Elements/State", Ticket => $Ticket);
+my $State = $m->scomp("/RTIR/Elements/ShowRTIRField", Ticket => $Ticket, Name => 'State');
 </%INIT>
 <%ARGS>
 $Ticket => undef

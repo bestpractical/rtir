@@ -37,59 +37,15 @@
 <tr>
 <td valign=top width=50%>
 <& /Elements/TitleBoxStart, 
-    title => $Title, 
+    title => loc("The Basics"), 
     color=> "#993333", 
     width => "100%" &>
-<table border=0 cellspacing=2 cellpadding=0 width=100%>
-<tr>
-  <td valign=top width=50%>
-  <TABLE>
-    <& /Elements/ShadedInputRow, 
-	title => loc('Subject'),
-	name => "Subject",
-	content => $Ticket->Subject,
-	size => 30 &>
-    <tr>
-      <td colspan=2>
-        <& /Ticket/Elements/EditCustomFields, TicketObj => $Ticket &>
-      </td>
-    </tr>
-  </TABLE>
-  </td>
-<td valign=top width=50%>
-  <table>
-    <tr>
-      <td class="label">
-        <&|/l&>Owner</&>:
-      </td>
-      <td class="value">
-        <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id &>
-      </td>
-    </tr>
-  <& /Elements/ShadedRow, 
-          title => loc('State'),
-          content => $State &>
-  <& /Elements/ShadedInputRow,
-	title => loc('Priority'),
-	name => "Priority",
-	content => $Ticket->Priority,
-	size => 5 &>
-  <& /Elements/ShadedInputRow,
-	title => loc('Time Worked'),
-	name => "TimeWorked",
-	content => $Ticket->TimeWorked,
-	size => 5 &>
-  </table>
-</td>
-  <td width=50% bgcolor=blue>
-  </td>
-</tr>
-</table>
+
+<& Elements/EditBasics, Ticket => $Ticket &>
+
 <& /Elements/TitleBoxEnd &>
 
 </td>
-</tr>
-<tr>
 <td valign=top width=50%>
 
 <& /Elements/TitleBoxStart, title => loc('Dates'),  width => "100%", color => "#663366"  &>
@@ -165,7 +121,6 @@ my $SelectStatus = $m->scomp("/Elements/SelectStatus", Name => 'Status', Default
 my $SelectQueue = $m->scomp("/Elements/SelectQueue", Name => 'Queue', Default =>$Ticket->QueueObj->Id);
 
 my $Title = loc("Edit Block #[_1]: [_2]", $Ticket->Id, $Ticket->Subject);
-my $State = $m->scomp("/RTIR/Elements/State", Ticket => $Ticket);
 </%INIT>
 
 

@@ -31,7 +31,7 @@
 % if ($Delete) {
   <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
 % }
-% my $State = $m->scomp("/RTIR/Elements/State", Ticket => $member);
+% my $State = $m->scomp("/RTIR/Elements/ShowRTIRField", Ticket => $member, Name => 'State');
   <a href="<%$RT::WebPath%>/RTIR/<%$Type%>/Display.html?id=<%$member->Id%>&Type=<%$Type%>"><%$member->Id%>: <%$member->Subject%></a> [<%$State%>]<br>
 % $depth++
 % }
