@@ -1,14 +1,2 @@
-<& /Elements/Header &>
-<& /RTIR/Elements/Tabs &>
-<h1>Create an article...</h1>
-<ul>
-% my $Classes = RT::FM::ClassCollection->new($session{'CurrentUser'});
-% $Classes->UnLimit;
-% while (my $Class = $Classes->Next) { 
-<li><a href="Article/Create.html?Class=<%$Class->Id%>">in class <%$Class->Name%></a></li>
-% } 
-
-</ul>
-
-<h1><a href="Article/index.html">Existing articles</a></h1>
-
+<& /Elements/Header, Title => "RT for Incdient Response" &>
+<& /RTIR/Elements/Tabs, Title => "RT for Incident Response" &>
