@@ -14,7 +14,11 @@
 <TH class="ticketheader">&nbsp;</TH>
 % }
 <TH class="ticketheader">&nbsp;</TH>
+% if ($Type ne "Incident") {
 <& TicketHeaderCell , Attribute => 'Requestor(s)', %ARGS &>
+% } else {
+<& TicketHeaderCell, %ARGS &>
+% }
 <& TicketHeaderCell , Attribute => 'Owner', %ARGS &>
 <& TicketHeaderCell , Attribute => 'Told', Header => 'Last Contact', %ARGS &>
 <& TicketHeaderCell , Attribute => 'Due', Header => 'Due', %ARGS &>
@@ -23,5 +27,5 @@
 
 <%ARGS>
 $check => undef
-$URL => undef
+$Type => undef
 </%ARGS>

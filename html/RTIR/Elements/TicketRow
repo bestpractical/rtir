@@ -34,7 +34,11 @@ CLASS="oddline"
 CLASS="evenline"
 % }
 >
+% if ($Type ne "Incident") {
 <TD><small><%$Ticket->Requestors->MemberEmailAddressesAsString%></small></TD>
+% } else {
+<TD></TD>
+% }
 <TD><%$Ticket->Owner == $RT::Nobody->Id ? loc('Nobody') : $Ticket->OwnerObj->Name%></TD>
 <TD><SMALL><%$Ticket->ToldObj->AgeAsString || '-'%></SMALL></TD>
 <TD><SMALL><& /RTIR/Elements/ShowDate, date => $Ticket->DueObj &></SMALL></TD>
