@@ -659,7 +659,7 @@ $session{'CurrentSearchHash'} = $search_hash;
 
 # {{{ Show the results, if we were asked.
 if ( $ARGS{"DoSearch"} ) {
-    $m->comp($ResultPage , Query => $Query, Format => $Format, Order => $Order, OrderBy => $OrderBy, Rows => $RowsPerPage, BaseQuery => $BaseQuery);
+    $m->comp($ResultPage , Query => $Query, Format => $Format, Order => $Order, OrderBy => $OrderBy, Rows => $RowsPerPage, BaseQuery => $BaseQuery, Queue => $ARGS{'Queue'});
     $m->abort();
 }
 # }}}
