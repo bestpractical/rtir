@@ -302,6 +302,7 @@ foreach my $key (keys %$addrhash) {
 
   # if the subject contains _ADDR_ or _IP_
   # substitute appropriately
+  my $orig_subject = $ARGS{'Subject'};
   $ARGS{'Subject'} =~ s/_ADDR_/$addr/g;
   $ARGS{'Subject'} =~ s/_IP_/$ip/g;
 
@@ -371,6 +372,10 @@ foreach my $key (keys %$addrhash) {
     ProcessUpdateMessage(ARGSRef=>\%ARGS, 
 			 Actions=>\@updateresults, 
 			 TicketObj=>$Ticket);
+
+    # restore original subject
+    $ARGS{'Subject'} = $orig_subject;
+
   } else {
 
     # create an unlinked incident report
