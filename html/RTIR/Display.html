@@ -41,6 +41,7 @@
 <tr>
 <td valign=top colspan=2>
 <& /Elements/TitleBoxStart, title => loc("The Basics"), 
+	title_href =>"$RT::WebPath/RTIR/Edit.html?id=".$Ticket->Id, 
 	title_class=> 'inverse' &>
 
 <table>
@@ -136,7 +137,8 @@
   <TD VALIGN=TOP width=50%>
     <BR>
     <& /Elements/TitleBoxStart, title => loc('People'), 
-		title_class=> 'inverse' &>
+	title_href =>"$RT::WebPath/RTIR/Edit.html?id=".$Ticket->Id, 
+	title_class=> 'inverse' &>
     <& /RTIR/Incident/Elements/ShowPeople, Ticket => $Ticket &>
     <& /Elements/TitleBoxEnd &>
     <BR>
@@ -144,8 +146,9 @@
   <td>
         <BR>
 	  <& /Elements/TitleBoxStart, title => loc("Dates"),
+	  	title_href =>"$RT::WebPath/RTIR/Edit.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
-		 color => "#663366" &>
+		color => "#663366" &>
 	  <& /RTIR/Elements/ShowDates, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
 	<BR>  
