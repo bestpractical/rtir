@@ -24,29 +24,32 @@
 %# END LICENSE BLOCK
 % if (defined $Ticket) {
 <& /RTIR/Incident/Elements/Tabs, 
-    Ticket => $Ticket, 
-    current_tab => $current_tab,
-    current_subtab => $current_subtab,
-    appendtabs => $subtabs,
-    Title => $Title &>
+    appendtabs => $appendtabs,
+    subtabs => $refinetabs,
+    %ARGS &>
 % } else {
 <& '/RTIR/' . $Type . '/Elements/Tabs', 
-    current_tab => $current_tab,
-    current_subtab => $current_subtab,
-    appendtabs => $subtabs,
-    Title => $Title &>
+    subtabs => $refinetabs,
+    appendtabs => $appendtabs,
+    %ARGS &>
 % }
 
 <%INIT>
-my $subtabs;
+my $appendtabs;
+my $refinetabs = { };
 my $Type;
 if ($Ticket && $Tab) {
     ($Type, undef) = $m->comp('/RTIR/Elements/Type', Queue => $Queue);
 
-    $subtabs = {
+    $appendtabs = {
 	_I => { path => $current_subtab,
 		title     => $Tab },
     };
+
+    $refinetabs->{'_a'} = {
+	class => "nav",
+	path => $current_subtab,
+	title => loc('Refine') };
 }
 
 </%INIT>
