@@ -2,6 +2,20 @@ RTIR (RT for Incident Reponse) is a tool for tracking, responding to,
 and investigating reported incidents.  Out of the box, it integrates
 with RT3 (Also available from bestpractical.com).
 
+Changes in RTIR 1.1 (beta)
+--------------------------
+RTIR 1.1 (beta) features full integration with RT 3.2.
+
+This includes a 3.2-style search UI, and menu changes to accomodate
+this.  Instead of search results and criteria being displayed on a
+single page, you can now choose to refine your search and re-run it
+after you've added all of your criteria.
+
+Search result formats are configurable in RTIR_Config.pm, so you can
+easily choose which fields you would like to have displayed
+for RTIR searches.
+
+
 WARNING!
 --------
 
