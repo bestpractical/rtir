@@ -54,7 +54,7 @@ my $toptabs = { A => { title => loc('RT'),
                         path => 'RTIR/Tools/Lookup.html',
                       },
                     ZZ => { title => loc('Preferences'),
-                        path => 'RTIR/User/Prefs.html'
+                        path => 'User/Prefs.html'
                       },
                  };
 my $topactions = {
