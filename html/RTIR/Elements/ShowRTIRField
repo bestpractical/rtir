@@ -22,29 +22,14 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-% if ($novalue) {
-<i><&|/l&>(no value)</&></i>
-% } else {
+% if ($fieldvalue) {
 <%$fieldvalue%>
+% } else {
+<i><&|/l&>(no value)</&></i>
 % }
 <%INIT>
-my $CustomFields = $Ticket->QueueObj->CustomFields();
-$CustomFields->{'find_disabled_rows'} = 1;
-my ($fieldvalue, $novalue);
-
-while (my $CustomField = $CustomFields->Next()) {
-  if ((index($CustomField->Name, "_RTIR_".$Name) eq 0)) {
-    my $Values = $Ticket->CustomFieldValues($CustomField->Id);
-    while (my $Value = $Values->Next()) {
-      $fieldvalue = $Value->Content;
-    }
-    unless ($Values->Count()) {
-      $novalue=1;
-    }
-  }
-}
+my $fieldvalue = $Ticket->FirstCustomFieldValue("_RTIR_".$Name);
 </%INIT>
-
 <%ARGS>
 $Ticket => undef
 $Name => undef
