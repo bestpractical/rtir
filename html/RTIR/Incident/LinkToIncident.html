@@ -59,6 +59,7 @@
 $child = $ARGS{'id'} if !$child;
 
 $Format = $RT::RTIRLinkIncidentSearchResultFormat;
+$ARGS{'Format'} = $Format;
 
 my ($Type, undef) = $m->comp('/RTIR/Elements/Type', Queue => 'Incidents');
 
