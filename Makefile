@@ -1,3 +1,6 @@
+# Location of perl on your system
+PERL                    =       /usr/bin/perl
+
 # This is the group that all of the installed files will be chgrp'ed to.
 RTGROUP			=	rt
 
@@ -71,3 +74,5 @@ tag-and-release-never-by-hand:
 	cd /tmp; tar czvf /home/ftp/pub/rt/devel/$(TAG).tar.gz $(TAG)/
 	chmod 644 /home/ftp/pub/rt/devel/$(TAG).tar.gz
 
+regression: 
+	$(PERL) lib/t/02regression.t

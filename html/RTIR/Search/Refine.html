@@ -45,7 +45,6 @@
 %# }}} END BPS TAGGED BLOCK
 <& /Elements/Header, Title => $title &>
 
-Passing Ticket: <%$Ticket%><br>
 <& '/RTIR/Search/Elements/RefineTabs',
    path => $path,
    current_tab => $current_tab,
@@ -71,7 +70,6 @@ Passing Ticket: <%$Ticket%><br>
     AvailableColumns => $AvailableColumns,
     CurrentFormat => $CurrentFormat,
     BaseQuery => $BaseQuery,
-    FormAction => $FormAction,
     ResultPage => $ResultPage,
     %ARGS &>
 
@@ -158,7 +156,6 @@ $Queue => undef
 $Query => undef
 $QueryString => undef
 $id => undef
-$FormAction => 'Refine.html'
 $Format => undef 
 $HideResults => 0
 $Rows => 50
