@@ -187,7 +187,9 @@ Set($RTIRSearchResultFormats, {
     LinkIncident => qq{___RTIR_Radio__,
 		       '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
 		       '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
-		       __Requestors__,__OwnerName__,__CreatedRelative__},
+		       __OwnerName__,
+		       __CreatedRelative__
+		       },
     
     RejectReports, qq{___RTIR_Check__,
 		      '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
