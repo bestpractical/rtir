@@ -22,7 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /RTIR/Elements/Header, Title => "RTIR at a glance" &>
+<& /RTIR/Elements/Header, Title => "RTIR at a glance", Refresh => $session{'home_refresh_interval'} &>
 <& /RTIR/Elements/Tabs, 
     Title => "RT for Incident Response", 
     current_toptab => 'RTIR/index.html' &>
@@ -49,3 +49,10 @@
 </TD>
 </TR>
 </TABLE>
+
+<%init>
+if ($ARGS{'HomeRefreshInterval'}) {
+	$session{'home_refresh_interval'} = $ARGS{'HomeRefreshInterval'};
+}
+
+</%init>
