@@ -33,6 +33,7 @@
 <input type=hidden name=id value=<%$id%>>
 <input type=hidden name=IncidentObj value=<%$IncidentObj%>>
 <input type=hidden name=Status value=<%$ARGS{'DefaultStatus'}%>>
+<input type=hidden name=All value=<%$ARGS{'All'}%>>
 %if ($ticketcount && !  $ARGS{'HideResults'}) {
 <TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
 <& /RTIR/Elements/TicketHeader, check => "check", Type => 'Report', %ARGS &>
@@ -44,6 +45,8 @@
 % }
 % $i = 0;
 % while (my $Ticket = $session{'tickets'}->Next) {
+% next if ($Ticket->FirstCustomFieldValue('_RTIR_State') eq 'resolved' ||
+%	   $Ticket->FirstCustomFieldValue('_RTIR_State') eq 'rejected');
 % next unless ($Ticket->QueueObj->Name eq 'Incident Reports');
 % my $incidents = $Ticket->MemberOf;
 % my $incident;
@@ -54,13 +57,15 @@
 % next unless ($incident and ($incident->Id == $id));
 % $i++;
 <& /RTIR/Elements/TicketRow, Type => 'Report', Ticket => $Ticket, i=> $i, check => "check", %ARGS &>
-%}
+% }
 % if ($All) {
 <& /RTIR/Elements/TicketHeader, check => "check", Type => 'Investigation', %ARGS &>
 <tr>
 <th align=left colspan=6>Investigation Correspondents</th>
 </tr>
 %while (my $Ticket = $session{'tickets'}->Next) {
+% next if ($Ticket->FirstCustomFieldValue('_RTIR_State') eq 'resolved' ||
+%	   $Ticket->FirstCustomFieldValue('_RTIR_State') eq 'rejected');
 % next unless ($Ticket->QueueObj->Name eq 'Investigations');
 % $i++;
 <& /RTIR/Elements/TicketRow, Type => 'Report', Ticket => $Ticket, i=> $i, check => "check", %ARGS &>
@@ -127,6 +132,20 @@ my $IncidentObj = LoadTicket($id);
 my ($title, $ticketcount, $found);
 my $Queue = new RT::Queue($session{'CurrentUser'});
 $Queue->Load("Incident Reports") || Abort(loc("Queue could not be loaded."));
+
+my $MyReports;
+$MyReports = new RT::Tickets ($session{'CurrentUser'});
+$MyReports->LimitQueue(VALUE => 'Incident Reports');
+my $fid;
+my $CustomFields = $Queue->CustomFields();
+$CustomFields->{'find_disabled_rows'} = 1;
+while (my $CustomField = $CustomFields->Next()) {
+  if ($CustomField->Name eq '_RTIR_State') {
+    $fid = $CustomField->Id;
+    $MyReports->LimitCustomField(CUSTOMFIELD => $fid, VALUE => 'open');
+  }
+}
+
 $session{'i'}++;
 if ($session{'tickets'}) {
     if ($ARGS{'DeleteRestriction'}) {
@@ -134,16 +153,6 @@ if ($session{'tickets'}) {
     }
     if ( ($ARGS{'ClearRestrictions'}) || ($ARGS{'NewSearch'}) ) {
       $session{'tickets'}->ClearRestrictions;
-
-      my $fid;
-      my $CustomFields = $Queue->CustomFields();
-      $CustomFields->{'find_disabled_rows'} = 1;
-      while (my $CustomField = $CustomFields->Next()) {
-        if ($CustomField->Name eq '_RTIR_State') {
-          $fid = $CustomField->Id;
-          $session{'tickets'}->LimitCustomField(CUSTOMFIELD => $fid, VALUE => 'open');
-        }
-      }
 
       $session{'tickets'}->LimitQueue(VALUE => "Incident Reports");
 
