@@ -31,11 +31,14 @@
     Tab => 'Bulk Reply',
     Title => $title &>
 
-<form action="BulkReply.html" method=get>
+<& /RTIR/Elements/ListActions, actions => \@results &>
+
+<form action="Reply.html" method=get>
 <input type=hidden name=id value=<%$id%>>
-<input type=hidden name=IncidentObj value=<%$IncidentObj%>>
 <input type=hidden name=Status value=<%$ARGS{'DefaultStatus'}%>>
 <input type=hidden name=All value=<%$ARGS{'All'}%>>
+<input type=hidden name=Query value="<%$Query%>">
+<input type=hidden name=BaseQuery value="<%$BaseQuery%>">
 
 <h2>Reporters</h2>
 <& /RTIR/Search/Elements/ShowResults, 
@@ -55,83 +58,46 @@
     Format => $Format,
     &>
 
-
-%if ($ticketcount && !  $ARGS{'HideResults'}) {
-<TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
-<& /RTIR/Elements/TicketHeader, check => "check", Type => 'Report', %ARGS &>
-% my $i;
-% if ($All) {
-<tr>
-<th align=left colspan=6>Reporters</th>
-</tr>
-% }
-% $i = 0;
-% while (my $Ticket = $session{'tickets'}->Next) {
-% next if ($Ticket->FirstCustomFieldValue('_RTIR_State') eq 'resolved' ||
-%	   $Ticket->FirstCustomFieldValue('_RTIR_State') eq 'rejected');
-% next unless ($Ticket->QueueObj->Name eq 'Incident Reports');
-% $i++;
-<& /RTIR/Elements/TicketRow, Type => 'Report', Ticket => $Ticket, i=> $i, check => "check", %ARGS &>
-% }
-% if ($All) {
-<& /RTIR/Elements/TicketHeader, check => "check", Type => 'Investigation', %ARGS &>
-<tr>
-<th align=left colspan=6>Investigation Correspondents</th>
-</tr>
-%while (my $Ticket = $session{'tickets'}->Next) {
-% next if ($Ticket->FirstCustomFieldValue('_RTIR_State') eq 'resolved' ||
-%	   $Ticket->FirstCustomFieldValue('_RTIR_State') eq 'rejected');
-% next unless ($Ticket->QueueObj->Name eq 'Investigation');
-% $i++;
-<& /RTIR/Elements/TicketRow, Type => 'Report', Ticket => $Ticket, i=> $i, check => "check", %ARGS &>
-% }
-% }
-</TABLE>
-<div align=center>
-<font size=2>
-<a href="Reply.html?id=<%$id%>&GotoPage=1"><&|/l&>First page</&></a>
-&nbsp;&nbsp;
-%  if ( $session{'tickets'}->FirstRow >= $session{'tickets_rows_per_page'}-1 ) {
-<a href="Reply.html?id=<%$id%>&GotoPage=Prev">&lt;<&|/l&>Previous page</&></a>
-&nbsp;&nbsp;
-%  }                                                                           
-%  if ( $session{'tickets'}->FirstRow + $session{'tickets_rows_per_page'} < $ticketcount ) {                                                               
-<a href="Reply.html?id=<%$id%>&GotoPage=Next"><&|/l&>Next page</&>&gt;</a>
-%  }
-%#&nbsp;&nbsp;<form method=get action="ReplyToReporters.html"><&|/l&>Goto page</&> <input name=GotoPage size=2></form>
-</font>
-</div>
-<!--<div align=right>-->
-<table width="100%" border=0 cellpadding=3 CELLSPACING=1>
-<tr>
-<td align=left>
-(<&|/l, ($session{'tickets'}->FirstRow+1), ($session{'tickets'}->FirstRow() + $session{'tickets'}->RowsPerPage()  ) &>[_1] - [_2] shown</&>)
-</td>
-<td align=right>
-
-<!--</div>-->
-</td>
-</tr>
-</table>
-
-% }
 <HR>
+
+% my $i;
+<& /Elements/TitleBoxStart, title => loc('Reply to selected tickets') &>
+<table>
+<tr><td class="label">
+<&|/l&>Owner</&>:  
+</td><td>
+<& /Elements/SelectOwner, 
+    Name=>"Owner", 
+    Default => ($ARGS{Owner}||$session{'CurrentUser'}->Id||undef), 
+ &>
+<&|/l&>Worked</&>: <input size=4 name="UpdateTimeWorked" value="<%
+$ARGS{UpdateTimeWorked}%>"> <&|/l&>minutes</&>
+</td></tr>
+<tr><td align=right><&|/l&>Update Type</&>:</td>
+<td><select name="UpdateType">
+  <option value="private" <%$CommentDefault%>><&|/l&>Comments (Not sent to requestors)</&></option>
+% if ($ARGS{Status} ne 'resolved' && $ARGS{Status} ne 'rejected') {
+   <option value="response" <%$ResponseDefault%>><&|/l&>Response to requestors</&></option>
+% }
+</select> 
+</td></tr>
+<tr><td align=right><&|/l&>Subject</&>:</td>
+<td><i>(<&|/l&>uses subjects from tickets</&>)</i></td></tr>
+
+<& /RTIR/Elements/UpdateData, %ARGS &>
+
+</table>
+<& /Elements/TitleBoxEnd &>
 
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => $SubmitLabel &>
 </form>
 
 <%INIT>
 $Format = $RT::RTIRSearchResultFormats->{'BulkReply'};
+
 my $IncidentObj = LoadTicket($id);
 
-my ($title, $ticketcount, $found);
-my $QueueObj = new RT::Queue($session{'CurrentUser'});
-$QueueObj->Load("Incident Reports") || Abort(loc("Queue could not be loaded."));
-
-if (! $session{'tickets'}) {
-    # Init a new search
-    $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
-}
+my $title;
 
 if (!$Query) {
     $Query = "('CF.Incident Reports.{_RTIR_State}' = 'open' OR 'CF.Investigations.{_RTIR_State}' = 'open') AND MemberOf = $id";
@@ -171,10 +137,89 @@ if ($ARGS{'DefaultStatus'} eq 'resolved') {
   }
 }
 
+my (@results, @statusresults);
+
+my ($CommentDefault, $ResponseDefault);
+if (($ARGS{'Action'} eq 'Comment') or ($ARGS{'UpdateType'} eq 'private')) {
+   $CommentDefault = "SELECTED"; 
+} else {
+    $ResponseDefault = "SELECTED";
+}
+
+my $Incident = LoadTicket($ARGS{'id'});
+
+# Iterate through the ARGS hash and remove anything with a null value.
+map ($ARGS{$_} =~ /^$/ && (delete $ARGS{$_}), keys %ARGS);
+
+Abort(loc("No search to operate on.")) unless ($session{'tickets'});
+
+my $do_comment_reply=0;
+# Prepare for ticket updates
+$ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
+chomp ($ARGS{'UpdateContent'}) ;
+
+if (($ARGS{ProcessReply} && 
+    $ARGS{Status} eq 'resolved' || $ARGS{Status} eq 'rejected') ||
+    $ARGS{'UpdateContent'} &&
+    $ARGS{'UpdateContent'} ne '' &&
+    $ARGS{'UpdateContent'} ne  "-- \n" .
+    $session{'CurrentUser'}->UserObj->Signature) {
+            $do_comment_reply=1;
+}
+
+my (@updateresults, @basicresults, @watchresults); 
+if ($do_comment_reply) {
+  @statusresults = ProcessTicketBasics(TicketObj => $Incident, ARGSRef => \%ARGS);
+}
+
+my $MyTickets = new RT::Tickets($session{'CurrentUser'});
+$MyTickets->FromSQL("$Query");
+
+#Iterate through each ticket we've been handed
+while (my $Ticket = $MyTickets->Next) {
+    my ($oldstate, $newstate);
+    $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+
+    if ($do_comment_reply) {
+    next unless ($ARGS{"UpdateTicket".$Ticket->Id});
+
+    ProcessUpdateMessage(TicketObj => $Ticket, ARGSRef => \%ARGS, Actions => \@updateresults); 
+
+    @basicresults = ProcessTicketBasics(TicketObj => $Ticket, ARGSRef => \%ARGS);
+
+    @watchresults = ProcessTicketWatchers(TicketObj => $Ticket, ARGSRef => \%ARGS);    
+   } 
+
+    my $date;
+    if (@updateresults) {
+      $date = RT::Date->new($RT::SystemUser);
+      $date->SetToNow;
+      $date->AddDays($RT::OverdueAfter);
+      use Business::Hours;
+      my $bizhours = new Business::Hours;
+      if ($RT::BusinessHours) {
+	  $bizhours->business_hours(%$RT::BusinessHours);
+      }
+      my $due = $bizhours->first_after($date->Unix);
+      $date->Set(Format => 'unix', Value => $due);
+      $ARGS{'Due_Date'} = $date->AsString;
+    }
+
+    my @dateresults = ProcessTicketDates(TicketObj => $Ticket, ARGSRef => \%ARGS);
+
+    my @tempresults = (@basicresults, @watchresults, @updateresults, @dateresults);
+    $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+    if ($newstate ne $oldstate) {
+      push (@tempresults, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
+    }
+    @tempresults = map { loc("Ticket [_1]: [_2]",$Ticket->Id,$_) } @tempresults;
+
+    @results = (@results, @tempresults);
+}
+
+@results = (@statusresults, @results);
+
 </%INIT>
-<%CLEANUP>
-$session{'tickets'}->PrepForSerialization();
-</%CLEANUP>
 
 <%ARGS>
 $id => undef
@@ -188,4 +233,5 @@ $Rows => 50
 $Page => 1
 $OrderBy => 'id'
 $Order => 'ASC'
+$Action => 'Correspond'
 </%ARGS>
