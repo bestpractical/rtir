@@ -46,9 +46,9 @@
 <& /Elements/Header, Title => $title &>
 
 <& '/RTIR/Search/Elements/RefineTabs',
-   path => "RTIR/Search/LinkRefine.html?Queue=$Queue&child=".$child,
-   current_tab => "RTIR/Incident/LinkToIncident.html?child=".$child,
-   current_subtab => "RTIR/Search/LinkRefine.html?Queue=$Queue&child=".$child,
+   path => "RTIR/Search/LinkRefine.html?Queue=$Queue&id=".$id,
+   current_tab => "RTIR/Incident/LinkToIncident.html?id=".$id,
+   current_subtab => "RTIR/Search/LinkRefine.html?Queue=$Queue&id=".$id,
    ChildObj => $Ticket, 
    Queue => 'Incidents',
    Title => $title,
@@ -58,7 +58,7 @@
    OrderBy => $OrderBy,
    Order => $Order,
    QueryString => $QueryString,
-   child => $child,
+   id => $id,
 &>
 
 <& /RTIR/Search/Elements/BuildQuery, 
@@ -74,11 +74,10 @@
     %ARGS &>
 
 <%INIT>
-$child = $ARGS{'id'} if !$child;
 my $title = loc("Query Builder");
 
 my $Ticket = new RT::Ticket($session{'CurrentUser'});
-$Ticket->Load($child);
+$Ticket->Load($id);
 
 my %queues = ();
 my $results;
@@ -142,8 +141,6 @@ my ($Type, @states) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
 # }}}
 
 $ARGS{'Query'} = $Query;
-
-$ARGS{'id'} = $child;
 </%INIT>
 
 <%ARGS>
@@ -151,7 +148,7 @@ $ResultPage => '/RTIR/Incident/LinkToIncident.html'
 $NewQuery => 0
 $Queue => undef
 $Query => undef
-$child => undef
+$id => undef
 $FormAction => 'LinkRefine.html'
 $Format => undef 
 $HideResults => 0

@@ -27,8 +27,8 @@
     Refresh => $session{'tickets_refresh_interval'} &>
 
 <& '/RTIR/Search/Elements/RefineTabs',
-   path => "RTIR/Search/LinkRefine.html?Queue=Incidents&child=$child$QueryString",
-   current_tab => "RTIR/Incident/LinkToIncident.html?child=$child",
+   path => "RTIR/Search/LinkRefine.html?Queue=Incidents&id=$id$QueryString",
+   current_tab => "RTIR/Incident/LinkToIncident.html?id=$id",
    ChildObj => $ChildObj, 
    Queue => 'Incidents',
    Title => $title,
@@ -41,7 +41,7 @@
 &>
 
 <form action='Display.html' method=get>
-<input type=hidden name=child value=<%$child%>>
+<input type=hidden name=child value=<%$id%>>
 
 <& /RTIR/Search/Elements/ShowResults, 
     Queue => $Queue,
@@ -56,14 +56,12 @@
 <HR>
 
 <%INIT>
-$child = $ARGS{'id'} if !$child;
-
 $Format = $RT::RTIRLinkIncidentSearchResultFormat;
 $ARGS{'Format'} = $Format;
 
 my ($Type, undef) = $m->comp('/RTIR/Elements/Type', Queue => 'Incidents');
 
-my $ChildObj = LoadTicket($child);
+my $ChildObj = LoadTicket($id);
 my $Queue = $ChildObj->QueueObj->Name;
 
 my $SubmitCaption = loc("Link #[_1] with selected Incident", $ChildObj->id);
@@ -71,7 +69,7 @@ my $SubmitCaption = loc("Link #[_1] with selected Incident", $ChildObj->id);
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load('Incidents') || Abort(loc("Queue could not be loaded."));
 
-my $title = loc("Link [_1] #[_2] to selected Incident", $Type, $child);
+my $title = loc("Link [_1] #[_2] to selected Incident", $Type, $id);
 
 if (!$Query) {
     $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => 'Incidents');
@@ -95,7 +93,7 @@ $ARGS{'Query'} = $Query;
 </%INIT>
 
 <%ARGS>
-$child => undef
+$id => undef
 $BaseURL => "/RTIR/Incident/LinkToIncident.html"
 $BaseQuery => undef
 $Query => undef

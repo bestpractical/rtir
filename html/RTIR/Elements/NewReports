@@ -62,7 +62,7 @@
 </TD>
 <TD ALIGN=RIGHT>
 % if ($Ticket->Owner == $session{CurrentUser}->id) {
-[<A HREF="<% $RT::WebPath %>/RTIR/Incident/LinkToIncident.html?ClearRestrictions=1&child=<%$Ticket->Id%>"><&|/l&>Link</&></A>]
+[<A HREF="<% $RT::WebPath %>/RTIR/Incident/LinkToIncident.html?ClearRestrictions=1&id=<%$Ticket->Id%>"><&|/l&>Link</&></A>]
 [<A HREF="<% $RT::WebPath %>/RTIR/Update.html?id=<%$Ticket->Id%>"><&|/l&>Update</&></A>]
 % } elsif ($Ticket->Owner == $RT::Nobody->Id) {
 [<A HREF="<% $RT::WebPath %>/RTIR/Display.html?Action=Take&id=<%$Ticket->Id%>"><&|/l&>Take</&></A>]

@@ -33,10 +33,6 @@
     QueryString => $QueryString,
 &> 
 
-current_toptab: <% $current_toptab %><br>
-current_tab: <% $current_tab %><br>
-current_subtab: <% $current_subtab %><br>
-
 <%INIT>
 
 my ($Type, undef) = $m->comp('/RTIR/Elements/Type', Queue => $QueueName);
@@ -235,7 +231,7 @@ if ($Type eq 'Report') {
     my ($childtype, undef) = $m->comp('/RTIR/Elements/Type', Queue => $childq);
     
     $tabs->{'h'} = { title => loc('Link [_1] #[_2]', $childtype, $ChildObj->Id),
-				  path  => "RTIR/Incident/LinkToIncident.html?child=" . $ChildObj->Id,
+				  path  => "RTIR/Incident/LinkToIncident.html?id=" . $ChildObj->Id,
 				  separator => 1 };
 
     if ( $tabs->{'h'}->{'path'} eq $current_tab ) {
