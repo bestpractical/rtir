@@ -54,7 +54,7 @@
 <table width=100%>
 <tr>
 <td valign=top class="boxcontainer">
-<& /Search/Elements/PickCriteria, query => $Query, cfqueues => \%queues &>
+<& PickCriteria, query => $Query, Queue => $Queue &>
 <& /Elements/Submit, Caption => loc('Add additional criteria'), Label => loc('Add'), Name => 'AddClause'&>
 
 </td>
@@ -115,4 +115,5 @@ $dirty => undef
 $AvailableColumns => undef
 $CurrentFormat => undef
 $FormAction => "Build.html"
+$Queue => undef
 </%ARGS>

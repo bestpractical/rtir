@@ -43,40 +43,43 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
-<& /Elements/TitleBoxStart, title => loc('Add Criteria')&>
-<table width=100% cellspacing=0 cellpadding=0 border=0>
-  <tr>
-    <td>
-      <table cellspacing=0 border=0>
-        <tr><td class=label>
-        Aggregator:
-        </td>
-        <td><& /Search/Elements/SelectAndOr, Name => "AndOr" &>
-        </td></tr>
-      </table>
-    </td></tr>
-  <tr>
-    <td colspan=3>
-      <hr>
-    </td>
-  </tr>
-  <& PickBasics &>
-  <& PickCFs, Queue => $Queue &>
-  <& /Search/Elements/PickCFs, cfqueues => $cfqueues &>
-  <tr><td>&nbsp;</td></tr>
-</table>
+% while ( my $CustomField = $CustomFields->Next ) {
+% my $label = $CustomField->Name;
+% next unless ($label =~ s/^_RTIR_//g);
+<tr><td class=label>
 
-<& /Elements/TitleBoxEnd &>
+% my $name;
+% if ($CustomField->QueueObj->id) {
+%   $name = "'CF." . $CustomField->QueueObj->Name . 
+%	".{" . $CustomField->Name . "}'";
+% } else {
+%   $name = "'CF." . $CustomField->Name . "'";
+% }
+<% $label %> 
+</td>
+<td>
+<& /Elements/SelectCustomFieldOperator, Name => $name . "Op", 
+                            True => loc("is"), 
+                            False => loc("isn't"), 
+                            TrueVal=> '=', FalseVal => '!=' &>
+</td>
+<td>
+<& /Elements/SelectCustomFieldValue, Name => "ValueOf" . $name,
+                            CustomField => $CustomField,
+                            &>
+</td></tr>
+% }
 
 <%INIT>
-my $cfqueues = ();
-my $QueueObj = new RT::Queue($session{'CurrentUser'});
+my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
+my $QueueObj = RT::Queue->new($session{'CurrentUser'});
 $QueueObj->Load($Queue);
-$cfqueues->{$QueueObj->Id} = 1;
+
+$CustomFields->{"find_disabled_rows"} = 1;
+$CustomFields->LimitToQueue($QueueObj->Id);
+$CustomFields->LimitToGlobal();
 </%INIT>
 
 <%ARGS>
-$addquery => 0
-$query => undef
 $Queue => undef
 </%ARGS>

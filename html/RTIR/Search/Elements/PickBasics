@@ -64,7 +64,7 @@
 </td><td>
 <& /Elements/SelectDate, Name => "ValueOfDate", ShowTime => 0, Default => '' &>
 % } elsif ($field eq "Links") {
-<& SelectLinks, Name=>"LinksField" &>
+<& /Search/Elements/SelectLinks, Name=>"LinksField" &>
 </td><td>
 <& /Elements/SelectBoolean, Name => "LinksOp", 
 			    True => loc("is"), 
@@ -123,7 +123,7 @@
 </td><td>
 <& /Elements/SelectOwner, Name => "ValueOfActor" &>
 % } elsif ($field eq 'Watcher') {
-<& SelectPersonType, Name => 'WatcherField', Default => 'Requestor' &>
+<& /Search/Elements/SelectPersonType, Name => 'WatcherField', Default => 'Requestor' &>
 </td><td>
 <& /Elements/SelectMatch, Name => "WatcherOp" &>
 </td><td>
