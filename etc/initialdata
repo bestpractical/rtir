@@ -3,25 +3,21 @@
 @Queues = (
     {
         Name              => 'Incidents',
-        Description       => 'The Incidents Queue',
         CorrespondAddress => "",
         CommentAddress    => "",
     },
     {
         Name              => 'Incident Reports',
-        Description       => 'The Incident Reports Queue',
         CorrespondAddress => "",
         CommentAddress    => "",
     },
     {
         Name              => 'Investigations',
-        Description       => 'The Investigations Queue',
         CorrespondAddress => "",
         CommentAddress    => "",
     },
     {
         Name              => 'Blocks',
-        Description       => 'The Blocks Queue',
         CorrespondAddress => "",
         CommentAddress    => "",
     },
@@ -29,16 +25,14 @@
 
 @CustomFields = (
     {
-        Name        => 'Description',
+        Name        => '_RTIR_Description',
         Type        => 'FreeformMultiple',
         Queue       => '0',
-        Description => "Description field",
     },
     {
-        Name        => 'Type',
+        Name        => '_RTIR_Type',
         Type        => 'SelectSingle',
         Queue       => 'Incidents',
-        Description => "Type field",
         Values      => [
             {
                 Name      => "AbuseDesk",
@@ -51,10 +45,9 @@
         ],
     },
     {
-        Name        => 'HowReported',
+        Name        => '_RTIR_HowReported',
         Type        => 'SelectSingle',
         Queue       => 'Incident Reports',
-        Description => "How the report was received",
         Values => [
             {
                 Name      => "Email",
@@ -71,10 +64,9 @@
         ]
     },
     {
-        Name        => 'ReporterType',
+        Name        => '_RTIR_ReporterType',
         Type        => 'SelectSingle',
         Queue       => 'Incident Reports',
-        Description => "Type of Reporter",
         Values      => [
             { Name => "JANET customer",      SortOrder => 1 },
             { Name => "external individual", SortOrder => 2 },
@@ -94,27 +86,23 @@
         ]
     },
     {
-        Name        => 'IP',
+        Name        => '_RTIR_IP',
         Type        => 'FreeformSingle',
         Queue       => 'Blocks',
-        Description => "IP address",
     },
     {
-        Name        => 'Netmask',
+        Name        => '_RTIR_Netmask',
         Type        => 'FreeformSingle',
         Queue       => 'Blocks',
-        Description => "Netmask",
     },
     {
-        Name        => 'Port',
+        Name        => '_RTIR_Port',
         Type        => 'FreeformSingle',
         Queue       => 'Blocks',
-        Description => "Port",
     },
     {
-        Name        => 'WhereBlocked',
+        Name        => '_RTIR_WhereBlocked',
         Type        => 'FreeformSingle',
         Queue       => 'Blocks',
-        Description => "Where blocked",
     },
 );
