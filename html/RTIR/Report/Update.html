@@ -22,20 +22,32 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, Title => loc("Bulk Link Investigations") &>
-<& /RTIR/Incident/Elements/InvestigationTabs, 
-    Ticket => $IncidentObj, 
-    current_tab => 'RTIR/Incident/ShowInvestigations.html?id='.$IncidentObj->id,
-    current_subtab => 'RTIR/Incident/LinkInvestigations.html',
-    Title => loc("Bulk Link") &>
+<& /Elements/Header, Title => $title &>
+<& /RTIR/Report/Elements/Tabs, 
+    Ticket => $Ticket, 
+    current_tab => "RTIR/Report/Edit.html?id=".$Ticket->Id, 
+    Title => $title &>
 
-<& Elements/BulkLink, IncidentObj => $IncidentObj, Status => $Status, %ARGS &>
+<& /RTIR/Elements/Update,
+    Type => 'Report',
+    %ARGS &>
 
 <%INIT>
-my $IncidentObj = LoadTicket($Incident);
+
+my $title;
+my $Ticket = LoadTicket($id);
+my $Status = $ARGS{DefaultStatus} if exists $ARGS{DefaultStatus};
+
+if ($Status eq 'resolved') {
+    $title = loc("Resolve Incident Report #[_1] ([_2])", $Ticket->id, $Ticket->Subject);
+} elsif ($Status eq 'rejected') {
+    $title = loc("Reject Incident Report #[_1] ([_2])", $Ticket->id, $Ticket->Subject);
+} else {
+    $title = loc("Update Incident Report #[_1] ([_2])", $Ticket->id, $Ticket->Subject);
+}
+
 </%INIT>
 
 <%ARGS>
-$Incident => undef
-$Status => undef
+$id => undef
 </%ARGS>

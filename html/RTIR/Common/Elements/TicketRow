@@ -6,10 +6,13 @@ CLASS="oddline"
 CLASS="evenline"
 % }
 >
-<TD ROWSPAN="2"><B><A HREF="<%$RT::WebPath%>/RTIR/<%$Type%>/Display.html?id=<%$Ticket->Id%>&Type=<%$Type%>"><%$Ticket->id%></a></B></TD>
-<TD><B><A HREF="<%$RT::WebPath%>/RTIR/<%$Type%>/Display.html?id=<%$Ticket->Id%>&Type=<%$Type%>"><%$Ticket->Subject%></a></B></TD>
+% if ($check eq "check") {
+<TD rowspan=2><input type=checkbox name="UpdateTicket<%$Ticket->Id%>" CHECKED></TD>
+% }
+<TD ROWSPAN="2"><B><A HREF="<%$RT::WebPath%>/RTIR/<%$Type%>/Display.html?id=<%$Ticket->Id%>"><%$Ticket->id%></a></B></TD>
+<TD><B><A HREF="<%$RT::WebPath%>/RTIR/<%$Type%>/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Subject%></a></B></TD>
 <TD><%loc($State)%></TD>
-<TD><%$Ticket->QueueObj->Name%></TD>
+<TD><SMALL><%$Ticket->LastUpdatedObj->AgeAsString || '-'%></SMALL></TD>
 <TD><%$Ticket->Owner == $RT::Nobody->Id ? loc('Nobody') : $Ticket->OwnerObj->Name%></TD>
 <TD><%$Ticket->Priority%></TD>
 </TR>
@@ -22,7 +25,7 @@ CLASS="evenline"
 ><TD><small><%$Ticket->Requestors->MemberEmailAddressesAsString%></small></TD>
 <TD><SMALL><%$Ticket->CreatedObj->AgeAsString || '-'%></SMALL></TD>
 <TD><SMALL><%$Ticket->ToldObj->AgeAsString || '-'%></SMALL></TD>
-<TD><SMALL><%$Ticket->LastUpdatedObj->AgeAsString || '-'%></SMALL></TD>
+<TD>&nbsp;</TD>
 <TD><SMALL><%$Ticket->TimeLeft%></SMALL></TD>
 </TR>
 </SPAN>
@@ -42,4 +45,5 @@ while (my $CustomField = $CustomFields->Next()) {
 $Ticket => undef
 $i => undef
 $Type => 'Report'
+$check => undef
 </%ARGS>

@@ -26,10 +26,10 @@
 <& /RTIR/Incident/Elements/ReportTabs, 
     Ticket => $IncidentObj, 
     current_tab => 'RTIR/Incident/ShowReports.html?id='.$IncidentObj->id,
-    current_subtab => 'RTIR/Incident/Associate.html',
-    Title => loc("Bulk Association") &>
+    current_subtab => 'RTIR/Incident/LinkReports.html',
+    Title => loc("Bulk Link") &>
 
-<& Elements/BulkAssociate, IncidentObj => $IncidentObj, Status => $Status, %ARGS &>
+<& Elements/BulkLink, IncidentObj => $IncidentObj, Status => $Status, %ARGS &>
 
 <%INIT>
 my $IncidentObj = LoadTicket($Incident);

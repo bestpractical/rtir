@@ -22,17 +22,20 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, Title => $title &>
-<& /RTIR/Elements/Tabs, 
-    Ticket => $Ticket , 
-    Title=> $title &>
 <FORM ACTION="Update.html" NAME="TicketUpdate" 
 	METHOD=POST enctype="multipart/form-data">
 <input type="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction} %>">
-<input type="hidden" name="DefaultStatus" value="<% $ARGS{DefaultStatus} %>">
+<input type="hidden" name="Status" value="<% $ARGS{DefaultStatus} %>">
 <input type="hidden" name="Action" value="<% $ARGS{Action} %>">
-<input type="hidden" name="PostTo" value="<% $ARGS{PostTo} %>">
 <input type="hidden" name="Type" value="<% $ARGS{Type} %>">
+% if ($Type eq 'Report' and $ARGS{'DefaultStatus'} eq 'rejected') {
+%   while (my $link = $Ticket->MemberOf->Next) {
+%     my $member = $link->TargetObj;
+%     if ($member->QueueObj->Name eq 'Incidents') {
+<input type="hidden" name="DeleteLink--<%$link->Type%>-<%$link->Target%>">
+%     }
+%   }
+% }     
 <font size=-1>
 
 <TABLE>
@@ -133,7 +136,7 @@ my $title;
 
 my $Ticket = LoadTicket($id);
 
-$DefaultStatus = $ARGS{Status} if exists $ARGS{Status};
+$DefaultStatus = $ARGS{DefaultStatus} if exists $ARGS{Status};
 
 if ($DefaultStatus eq 'resolved') {
     $title = loc("Resolve ticket #[_1] ([_2])", $Ticket->id, $Ticket->Subject);
@@ -192,9 +195,10 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 # }}}
 
 if ( exists $ARGS{SubmitTicket} ) {
-    $m->comp($PostTo, %ARGS);
+    $m->comp('/RTIR/Elements/Display', %ARGS);
     $m->abort();
 }
+
 my $State;
 my $CustomFields = $Ticket->QueueObj->CustomFields();
 while (my $CustomField = $CustomFields->Next()) {
@@ -211,7 +215,6 @@ while (my $CustomField = $CustomFields->Next()) {
 $id => undef
 $Action => undef
 $DefaultStatus => undef
-$PostTo => '/Ticket/Display.html'
 $Type => 'Report'
 $ResponseType => undef
 </%ARGS>

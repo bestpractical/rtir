@@ -22,21 +22,24 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
-<& Elements/BlockTabs, 
+<& /Elements/Header, 
+    Title => $title, 
+    Refresh => $session{'tickets_refresh_interval'} &>
+<& Elements/ReportTabs, 
     Ticket => $IncidentObj, 
-    current_tab => 'RTIR/Incident/ShowBlocks.html?id='.$IncidentObj->id,
-    current_subtab => 'RTIR/Incident/Associate.html',
+    current_subtab => 'RTIR/Incident/ShowReports.html',
     Title => $title &>
 
-<& Elements/BulkAssociate,
+<& Elements/BulkLink,
     SubmitCaption => $SubmitCaption, 
+    Status => 'open',
+    Type => 'Report',
     %ARGS &>
 
 <%INIT>
-my $title = loc("Link Blocks");
+my $title = loc("Link Incident Reports");
 my $IncidentObj = LoadTicket($Incident);
-my $SubmitCaption = loc("Link selected blocks with Incident #[_1]", $IncidentObj->id);
+my $SubmitCaption = loc("Link selected reports with Incident #[_1]", $IncidentObj->id);
 
 </%INIT>
 

@@ -151,14 +151,12 @@ if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
         $actions->{'Ac'} = {
 
             path =>
-              "RTIR/Update.html?Action=Comment&DefaultStatus=resolved&id="
-              . $id. "&PostTo=/RTIR/Incident/Display.html",
+              "RTIR/Incident/Update.html?Action=Comment&DefaultStatus=resolved&id=" . $id,
             title => loc('Resolve') };
         $actions->{'B'} = {
 
             path =>
-              "RTIR/Update.html?Action=Comment&DefaultStatus=rejected&id="
-              . $id. "&PostTo=/RTIR/Incident/Display.html",
+              "RTIR/Incident/Update.html?Action=Comment&DefaultStatus=rejected&id=" . $id,
             title => loc('Reject') };
     }
     if ( $Ticket->Status ne 'open' ) {
@@ -182,7 +180,7 @@ if ( $Ticket->CurrentUserHasRight('OwnTicket') &&
 if (    $Ticket->CurrentUserHasRight('ModifyTicket')
      or $Ticket->CurrentUserHasRight('CommentOnTicket') ) {
     $actions->{'F'} = { title => loc('Comment'),
-                        path  => "RTIR/Update.html?Action=Comment&id=" . $id. "&PostTo=/RTIR/Incident/Display.html",
+                        path  => "RTIR/Incident/Update.html?Action=Comment&id=" . $id,
     };
 }
 }

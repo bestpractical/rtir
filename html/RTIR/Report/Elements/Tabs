@@ -120,23 +120,21 @@ $tabs->{'this'}->{"subtabs"} = $ticket_page_tabs;
 if (    $Ticket->CurrentUserHasRight('ModifyTicket')
      or $Ticket->CurrentUserHasRight('ReplyToTicket') ) {
     $actions->{'A'} = { title => loc('Reply'),
-                        path  => "RTIR/Update.html?Action=Respond&id=" . $id. "&PostTo=/RTIR/Report/Display.html",
+                        path  => "RTIR/Report/Update.html?Action=Respond&id=" . $id,
     };
 }
 
 if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
-    if ( $Ticket->Status ne 'resolved' ) {
+    if ( $Ticket->Status ne 'resolved' and $Ticket->Status ne 'rejected' ) {
         $actions->{'Ac'} = {
 
             path =>
-              "RTIR/Update.html?Action=Comment&DefaultStatus=resolved&id="
-              . $id. "&PostTo=/RTIR/Report/Display.html",
+              "RTIR/Report/Update.html?Action=Comment&DefaultStatus=resolved&id=" . $id,
             title => loc('Resolve') };
         $actions->{'B'} = {
 
             path =>
-              "RTIR/Update.html?Action=Comment&DefaultStatus=rejected&id="
-              . $id. "&PostTo=/RTIR/Report/Display.html",
+              "RTIR/Report/Update.html?Action=Comment&DefaultStatus=rejected&id=" . $id,
             title => loc('Reject') };
     }
     if ( $Ticket->Status ne 'open' ) {
@@ -159,7 +157,7 @@ if ( $Ticket->CurrentUserHasRight('OwnTicket') ) {
 if (    $Ticket->CurrentUserHasRight('ModifyTicket')
      or $Ticket->CurrentUserHasRight('CommentOnTicket') ) {
     $actions->{'F'} = { title => loc('Comment'),
-                        path  => "RTIR/Update.html?Action=Comment&id=" . $id. "&PostTo=/RTIR/Report/Display.html",
+                        path  => "RTIR/Report/Update.html?Action=Comment&id=" . $id,
     };
 }
 }

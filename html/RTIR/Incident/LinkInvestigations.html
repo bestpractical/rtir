@@ -22,20 +22,25 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, Title => loc("Bulk Link Investigations") &>
-<& /RTIR/Incident/Elements/InvestigationTabs, 
+<& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
+<& Elements/InvestigationTabs, 
     Ticket => $IncidentObj, 
     current_tab => 'RTIR/Incident/ShowInvestigations.html?id='.$IncidentObj->id,
     current_subtab => 'RTIR/Incident/LinkInvestigations.html',
-    Title => loc("Bulk Link") &>
+    Title => $title &>
 
-<& Elements/BulkLink, IncidentObj => $IncidentObj, Status => $Status, %ARGS &>
+<& Elements/BulkLink,
+    SubmitCaption => $SubmitCaption, 
+    %ARGS &>
 
 <%INIT>
+my $title = loc("Link Investigations");
 my $IncidentObj = LoadTicket($Incident);
+my $SubmitCaption = loc("Link selected investigations with Incident #[_1]", $IncidentObj->id);
+
 </%INIT>
 
 <%ARGS>
 $Incident => undef
-$Status => undef
 </%ARGS>
+

@@ -113,7 +113,7 @@ $tabs->{'this'}->{"subtabs"} = $ticket_page_tabs;
 if (    $Ticket->CurrentUserHasRight('ModifyTicket')
      or $Ticket->CurrentUserHasRight('ReplyToTicket') ) {
     $actions->{'A'} = { title => loc('Reply'),
-                        path  => "RTIR/Update.html?Action=Respond&id=" . $id. "&PostTo=/RTIR/Block/Display.html",
+                        path  => "RTIR/Block/Update.html?Action=Respond&id=" . $id,
     };
 }
 
@@ -122,9 +122,19 @@ if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
         $actions->{'Ac'} = {
 
             path =>
-              "RTIR/Update.html?Action=Comment&DefaultStatus=resolved&id="
-              . $id. "&PostTo=/RTIR/Block/Display.html",
+              "RTIR/Block/Update.html?Action=Comment&DefaultStatus=resolved&id="
+              . $id,
             title => loc('Remove') };
+    }
+}
+
+if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
+    if ( $Ticket->Status ne 'open' ) {
+        $actions->{'Ac'} = {
+
+            path =>
+              "RTIR/Block/Update.html?Action=Comment&DefaultStatus=open&id=" . $id,
+            title => loc('Activate') };
     }
 }
 
@@ -142,7 +152,7 @@ if ( $Ticket->CurrentUserHasRight('OwnTicket') ) {
 if (    $Ticket->CurrentUserHasRight('ModifyTicket')
      or $Ticket->CurrentUserHasRight('CommentOnTicket') ) {
     $actions->{'F'} = { title => loc('Comment'),
-                        path  => "RTIR/Update.html?Action=Comment&id=" . $id. "&PostTo=/RTIR/Block/Display.html",
+                        path  => "RTIR/Block/Update.html?Action=Comment&id=" . $id,
     };
 }
 }

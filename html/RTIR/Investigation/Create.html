@@ -22,12 +22,55 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /RTIR/Common/Create.html, 
+<& /Elements/Header, Title => $Title &>
+% if ($Incident) {
+% if ($Split) {
+<& "/RTIR/Investigation/Elements/Tabs",
+    Ticket => $TicketObj,
+    current_toptab => "RTIR/Incident/Listing.html", 
+    current_tab => "RTIR/Investigation/Display.html?id=".$TicketObj->Id, 
+    current_subtab => "RTIR/Investigation/Split.html?Ticket=".$TicketObj->Id, 
+    Title => $Title &>
+% } else {
+<& "/RTIR/Incident/Elements/InvestigationTabs", 
+    Ticket => $IncidentObj,
+    current_toptab => "RTIR/Investigation/Listing.html", 
+    current_tab => "RTIR/Investigation/Create.html?Incident=".$Incident, 
+    Title => $Title &>
+% }
+% } else {
+<& "/RTIR/Investigation/Elements/Tabs",
+    Ticket => $TicketObj,
+    current_toptab => "RTIR/Incident/Listing.html", 
+    current_tab => "RTIR/Investigation/Create.html", 
+    Title => $Title &>
+% }
+
+<& /RTIR/Elements/Create, 
     Type => 'Investigation',
     Queue => $q->Id,
+    Status => 'new',
     %ARGS &>
 
 <%INIT>
 my $q = RT::Queue->new($session{'CurrentUser'});
 $q->Load('Investigations');
+my ($Title, $IncidentObj);
+my $TicketObj = $ARGS{TicketObj};
+
+if ($Incident) {
+  $IncidentObj = new RT::Ticket($session{'CurrentUser'});
+  $IncidentObj = LoadTicket($Incident);
+}
+
+if ($Split) {
+  $Title = loc("Split Investigation #[_1]: [_2]", $TicketObj->id, $TicketObj->Subject);
+} else {
+  $Title = loc("Launch a new Investigation");
+}
 </%INIT>
+
+<%ARGS>
+$Incident => undef
+$Split => 0
+</%ARGS>

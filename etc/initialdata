@@ -264,10 +264,14 @@ my $CustomFields = $self->TicketObj->QueueObj->CustomFields();
 while (my $CustomField = $CustomFields->Next()) {
   if ($CustomField->Name eq '_RTIR_State') {
     my $State;
-    if ($self->TicketObj->Status eq 'new') {
+    if ($self->TicketObj->Status eq 'new' or $self->TicketObj->Status eq 'open') {
       $State = 'new';
-    } elsif ($self->TicketObj->Status eq 'open') {
-      $State = 'open';
+      while (my $link = $self->TicketObj->MemberOf->Next) {
+        my $member = $link->TargetObj;
+        if ($member->QueueObj->Name eq 'Incidents') {
+	  $State = 'open';
+        }
+      }
     } elsif ($self->TicketObj->Status eq 'resolved') {
       $State = 'resolved';
     } elsif ($self->TicketObj->Status eq 'rejected') {
@@ -306,7 +310,7 @@ my $CustomFields = $self->TicketObj->QueueObj->CustomFields();
 while (my $CustomField = $CustomFields->Next()) {
   if ($CustomField->Name eq '_RTIR_State') {
     my $State;
-    if ($self->TicketObj->Status eq 'open') {
+    if ($self->TicketObj->Status eq 'open' or $self->TicketObj->Status eq 'new') {
       $State = 'open';
     } elsif ($self->TicketObj->Status eq 'resolved') {
       $State = 'resolved';
@@ -362,4 +366,36 @@ while (my $CustomField = $CustomFields->Next()) {
        CustomPrepareCode => '1',
        Template          => 'Blank', },
 
+    {  Description => "ResolveAllChildren",
+       Queue            => 'Incidents',
+       ScripCondition   => 'User Defined',
+       CustomIsApplicableCode => q[
+# ------------------------------------------------------------------- #
+  if ($self->TransactionObj->Type eq "Status") {
+    return 1;
+  } else {
+    return 0;
+  }
+# ------------------------------------------------------------------- #
+	],
+
+       ScripAction      => 'User Defined',
+       CustomCommitCode => q[
+# ------------------------------------------------------------------- #
+if ($self->TicketObj->Status eq 'resolved' or 
+    $self->TicketObj->Status eq 'rejected') {
+  my $members = $self->TicketObj->Members;
+  while (my $link = $members->Next) {
+    my $member= $link->BaseObj;
+    if ($member->QueueObj->Name eq 'Blocks' or
+        $member->QueueObj->Name eq 'Investigations' or
+        $member->QueueObj->Name eq 'Incident Reports') {
+      $member->Resolve();
+    }
+  }
+}
+# ------------------------------------------------------------------- #
+	],
+       CustomPrepareCode => '1',
+       Template          => 'Blank', },
 );

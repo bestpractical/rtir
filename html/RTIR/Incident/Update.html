@@ -22,26 +22,32 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, 
-    Title => $title, 
-    Refresh => $session{'tickets_refresh_interval'} &>
-<& Elements/ReportTabs, 
-    Ticket => $IncidentObj, 
-    current_subtab => 'RTIR/Incident/ShowReports.html',
+<& /Elements/Header, Title => $title &>
+<& /RTIR/Incident/Elements/Tabs, 
+    Ticket => $Ticket, 
+    current_tab => "RTIR/Incident/Edit.html?id=".$Ticket->Id, 
     Title => $title &>
 
-<& Elements/BulkAssociate,
-    SubmitCaption => $SubmitCaption, 
+<& /RTIR/Elements/Update,
+    Type => 'Report',
     %ARGS &>
 
 <%INIT>
-my $title = loc("Link Reports");
-my $IncidentObj = LoadTicket($Incident);
-my $SubmitCaption = loc("Link selected reports with Incident #[_1]", $IncidentObj->id);
+
+my $title;
+my $Ticket = LoadTicket($id);
+my $Status = $ARGS{DefaultStatus} if exists $ARGS{DefaultStatus};
+
+if ($Status eq 'resolved') {
+    $title = loc("Resolve Incident #[_1] ([_2])", $Ticket->id, $Ticket->Subject);
+} elsif ($Status eq 'rejected') {
+    $title = loc("Reject Incident #[_1] ([_2])", $Ticket->id, $Ticket->Subject);
+} else {
+    $title = loc("Update Incident #[_1] ([_2])", $Ticket->id, $Ticket->Subject);
+}
 
 </%INIT>
 
 <%ARGS>
-$Incident => undef
+$id => undef
 </%ARGS>
-

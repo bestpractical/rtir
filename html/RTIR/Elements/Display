@@ -22,12 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, Title => $Title &>
-<& "/RTIR/".$Type."/Elements/Tabs", 
-    Ticket => $Ticket, 
-    current_tab => 'RTIR/'.$Type.'/Display.html?id='.$Ticket->id,
-    Title => $Title &>
-
 <& /Elements/ListActions, actions => \@Actions &>
 
 <table border=0 cellpadding=0 cellspacing=2 width=100%>
@@ -187,16 +181,9 @@ if ($Ticket->TimeLeft > 0 ) {
 
 #Process basics updates
 my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$Ticket);
+my @LinkActions = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
 
-push (@Actions, @BasicActions);
-}
-
-if ($Type eq "Investigation") {
-  $Title = loc("Investigation #[_1]: [_2]", $Ticket->Id, $Ticket->Subject);
-} elsif ($Type eq "Block") {
-  $Title = loc("Block #[_1]: [_2]", $Ticket->Id, $Ticket->Subject);
-} else {
-  $Title = loc("Incident Report #[_1]: [_2]", $Ticket->Id, $Ticket->Subject);
+push (@Actions, @BasicActions, @LinkActions);
 }
 
 </%INIT>

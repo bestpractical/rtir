@@ -30,7 +30,7 @@
     current_tab => $current_tab, 
     current_subtab => $current_subtab, 
     current_toptab => $current_toptab,
-    Title => $Title &>
+    title => $Title &>
 
 <%INIT>
 my $incidentq = RT::Queue->new($session{'CurrentUser'});

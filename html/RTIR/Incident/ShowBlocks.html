@@ -35,7 +35,7 @@
 <& /RTIR/Elements/ShowChildren, 
     Delete => 1,
     Ticket => $Incident, 
-    Type => 'Block'
+    Type => 'Block',
     FullList => $RT::WebPath."/RTIR/Incident/ShowBlocks.html?id=".$Incident->id
     &>
 <& /Elements/Submit, Caption=> loc('Unlink block') &>

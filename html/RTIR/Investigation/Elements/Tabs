@@ -121,7 +121,7 @@ $tabs->{'this'}->{"subtabs"} = $ticket_page_tabs;
 if (    $Ticket->CurrentUserHasRight('ModifyTicket')
      or $Ticket->CurrentUserHasRight('ReplyToTicket') ) {
     $actions->{'A'} = { title => loc('Reply'),
-                        path  => "RTIR/Update.html?Action=Respond&id=" . $id. "&PostTo=/RTIR/Investigation/Display.html",
+                        path  => "RTIR/InvestigationUpdate.html?Action=Respond&id=" . $id,
     };
 }
 
@@ -130,8 +130,7 @@ if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
         $actions->{'B'} = {
 
             path =>
-              "RTIR/Update.html?Action=Comment&DefaultStatus=resolved&id="
-              . $id. "&PostTo=/RTIR/Investigation/Display.html",
+              "RTIR/Investigation/Update.html?Action=Comment&DefaultStatus=resolved&id=" . $id,
             title => loc('Resolve') };
     }
     if ( $Ticket->Status ne 'open' ) {
@@ -154,7 +153,7 @@ if ( $Ticket->CurrentUserHasRight('OwnTicket') ) {
 if (    $Ticket->CurrentUserHasRight('ModifyTicket')
      or $Ticket->CurrentUserHasRight('CommentOnTicket') ) {
     $actions->{'F'} = { title => loc('Comment'),
-                        path  => "RTIR/Update.html?Action=Comment&id=" . $id. "&PostTo=/RTIR/Investigation/Display.html",
+                        path  => "RTIR/Investigation/Update.html?Action=Comment&id=" . $id,
     };
 }
 }

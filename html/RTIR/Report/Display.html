@@ -22,41 +22,28 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-% if (defined $Ticket) {
-<& /RTIR/Incident/Elements/Tabs, 
+<& /Elements/Header, Title => $Title &>
+<& "/RTIR/Report/Elements/Tabs", 
     Ticket => $Ticket, 
-    current_tab => 'RTIR/Incident/Display.html?id='.$Ticket->id,
-    current_subtab => 'RTIR/Incident/ShowReports.html?id='.$Ticket->id,
-    subtabs => $subtabs,
+    current_tab => 'RTIR/Report/Display.html?id='.$id,
     Title => $Title &>
-% } else {
-<& /RTIR/Report/Elements/Tabs, 
-    current_tab => $current_tab,
-    current_subtab => $current_subtab,
-    subtabs => $subtabs,
-    Title => $Title &>
-% }
+
+<& /RTIR/Elements/Display, 
+    Type => 'Report',
+    %ARGS &>
 
 <%INIT>
-  my $q = RT::Queue->new($session{'CurrentUser'});
-  $q->Load("Incident Reports");
-
-my $subtabs;
-if ($Ticket) {
-  $subtabs = {
-    _A => { path => 'RTIR/Report/Create.html?Incident='.$Ticket->id,
-            title     => loc('New Incident Report') },
-    _B => { path => 'RTIR/Incident/LinkReports.html?QueueOp==&ValueOfQueue='.$q->Id.'&ClearRestrictions=1&Incident='.$Ticket->id.'&StatusOp==&ValueOfStatus=new',
-            title     => loc('Link Incident Reports') },
-    };
+my $Ticket = new RT::Ticket($session{'CurrentUser'});
+if ($id ne 'new') {
+  $Ticket = LoadTicket($id);
+  unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
+    Abort("No permission to view ticket");
+  }
 }
 
+my $Title = loc("Incident Report #[_1]: [_2]", $Ticket->Id, $Ticket->Subject);
 </%INIT>
 
 <%ARGS>
-$Ticket => undef
-$current_tab => undef
-$current_subtab => undef
-$Title => undef
+$id => undef
 </%ARGS>
-
