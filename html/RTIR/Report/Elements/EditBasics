@@ -58,6 +58,30 @@
 	content => $Ticket->TimeWorked,
 	size => 5 &>
   <tr>
+    <td class=label>
+      <%loc("How Reported")%>:
+    </td>
+    <td class=value colspan=2>
+      <table>
+        <tr>
+          <td>
+            <& /RTIR/Elements/EditRTIRField, 
+	      TicketObj => $Ticket,
+              Name => 'HowReported' &>
+          </td>
+    <td class=label>
+      <%loc("Reporter Type")%>:
+    </td>
+    <td class=value colspan=2>
+      <& /RTIR/Elements/EditRTIRField, 
+	TicketObj => $Ticket,
+        Name => 'ReporterType' &>
+    </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
     <td colspan=2>
       <& /Ticket/Elements/EditCustomFields, TicketObj => $Ticket &>
    </td>
