@@ -162,7 +162,7 @@ if ($session{'tickets'}) {
         $found = loc("Find incidents");
    }
 
-my $SubmitCaption;
+my ($SubmitCaption, $SubmitLabel);
 if ($ARGS{'DefaultStatus'} eq 'resolved') {
   $title = loc("Resolve Incident #[_1] (including children)", $id);
   $SubmitCaption = loc("Resolve Incident");

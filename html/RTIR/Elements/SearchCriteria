@@ -39,7 +39,7 @@
 % } else {
 %   $status = "";
 % }
-<A HREF="<%$RT::WebPath.'/'.$Path%>?id=<%$id%><%$status%>&DeleteRestriction=<%$row%>">[<&|/l&>delete</&>]</a><br>
+<A HREF="<%$RT::WebPath.$Path%>?id=<%$id%><%$status%>&DeleteRestriction=<%$row%>">[<&|/l&>delete</&>]</a><br>
 % }
 %}
 <BR>

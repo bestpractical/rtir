@@ -182,7 +182,7 @@
 <%INIT>
 # if there isn't a subject, but there is an incident, use that one
 if ((!$Subject) and $IncidentObj) {
-  $Subject = loc("Incident #[_1]: [_2]", $IncidentObj->Id, $IncidentObj->Subject);
+  $Subject = loc("[_1]", $IncidentObj->Subject);
 }
 
 my $Title;

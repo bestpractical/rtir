@@ -54,9 +54,6 @@ my $toptabs = { A => { title => loc('RT'),
                     G => { title => loc('Tools'),
                         path => 'RTIR/Tools/Lookup.html',
                       },
-                    ZZ => { title => loc('Preferences'),
-                        path => 'User/Prefs.html'
-                      },
                  };
 my $topactions = {
 	A => { html => $m->scomp('/RTIR/Elements/SimpleSearch') 
