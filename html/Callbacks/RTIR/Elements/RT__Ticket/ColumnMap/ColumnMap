@@ -5,7 +5,7 @@ my $check;
 $check = $args{'RTIRCheck'} if $args{'RTIRCheck'};
 
     $COLUMN_MAP->{'_RTIR_Check'} = {
-        title     => \'&nbsp;',
+        title     => '&nbsp;',
 	value => sub {
 	    my $selected = '';
 	    if ($check eq 'All') {
@@ -21,17 +21,17 @@ $check = $args{'RTIRCheck'} if $args{'RTIRCheck'};
 		    }
 		}
 	    }
-	    return \'<input type="checkbox" name="UpdateTicket' . $_[0]->id . '" ' . $selected . \'>' },
+	    return (\'<input type="checkbox" name="UpdateTicket' , $_[0]->id , '" ' , $selected ,\'>') },
     };
 
     $COLUMN_MAP->{'_RTIR_Radio'} = {
-        title     => '&nbsp;',
+        title     => (\'&nbsp;'),
 	value => sub { 
 	    my $selected = '';
 	    if ($_[0]->id == $check) {
 		$selected = 'CHECKED';
 	    }
-	    return \'<input type="radio" name="SelectedTicket" value="' . $_[0]->id . '" ' . $selected . \'>' },
+	    return \'<input type="radio" name="SelectedTicket" value="' . $_[0]->id . '" ' . $selected . '>' },
     };
 </%INIT>
 
