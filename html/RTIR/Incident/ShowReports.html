@@ -37,7 +37,9 @@
 <& /RTIR/Elements/ShowChildren, 
     Delete => 1,
     Ticket => $Incident, 
-    Type => 'Report' &>
+    Type => 'Report',
+    FullList => $RT::WebPath."/RTIR/Incident/ShowReports.html?id=".$Incident->id
+    &>
 <& /Elements/Submit, Caption=> loc('Unlink Report') &>
 </form>
 

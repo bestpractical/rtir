@@ -26,7 +26,7 @@
 % my $member= $link->BaseObj;
 % if ((!defined $QueueName) or $member->QueueObj->Name eq $QueueName) {
 %   $count++;
-% if ($LimitDepth > 0 and $depth < $LimitDepth) {
+% if (($LimitDepth le 0) or ($depth < $LimitDepth)) {
   <li>
 % if ($Delete) {
   <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
@@ -43,6 +43,11 @@
   <i>loc("no children")</i>
 % }
 % } else {
+% if ($count le $LimitDepth) {
+% if (defined $FullList) {
+<a href="<%$FullList%>"><i><%loc("More...")%></i></a><br>
+% }
+% }
 % }
 
 <%INIT>
@@ -68,4 +73,5 @@ $LimitDepth => 0
 $DisplayPath => "/Ticket/Display.html"
 $Delete => 0
 $Type => 'Report'
+$FullList => undef
 </%ARGS>
