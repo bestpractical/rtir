@@ -37,7 +37,7 @@ if (@Include) {
 my $attachments = $Transaction->Attachments;
 my ($headers, $content);
 $attachments->GotoFirstItem;
-while (my $message=$attachments->Next) {
+while (my $message = $attachments->Next) {
    #we don't want to show any empty transactions, unless they have kids
    next unless ($message->Content || $message->Children->Count);
 
@@ -62,16 +62,31 @@ while (my $message=$attachments->Next) {
 	 $content = "";
      }
 }
+
+# quote the included text
+if ($QuoteText) {
+  if ($headers) {
+    $headers =~ s/^/> /g;
+    $headers =~ s/\n/\n> /g;
+  }
+  if ($content) {
+    $content =~ s/^/> /g;
+    $content =~ s/\n/\n> /g;
+  }
+}
 </%PERL>
 % if ($headers) {
 <% $headers %>
+
 % }
+% if ($content) {
 <% $content %>
 % }
-
+% }
 <%ARGS>
 $Transactions => undef
 $Show => 'all'
 $ShowHeaders => 0
 @Include => undef
+$QuoteText => undef
 </%ARGS>

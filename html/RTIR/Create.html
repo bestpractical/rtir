@@ -279,11 +279,17 @@
 % }
 
 % if ($Transactions) {
+% # Investigations should quote their included text
+% my $quote = 0;
+% if ($Type eq 'Investigation') {
+%   $quote = 1;
+% }
 <TEXTAREA COLS=72 ROWS=15 WRAP=HARD NAME="Content">
 <& /RTIR/Elements/TransactionData, 
     Transactions => $Transactions,
     Type => 'messages',
-    Include => {'Create', 'Correspond'} &>
+    Include => {'Create', 'Correspond'},
+    QuoteText => $quote &>
 </textarea>
 % } else {
   <& /Elements/MessageBox, QuoteTransaction => $QuoteTransaction &>
