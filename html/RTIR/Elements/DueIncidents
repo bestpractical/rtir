@@ -34,13 +34,13 @@
 <TH ALIGN=LEFT>&nbsp;</TH>
 </TR>
   <TR>    
-% my $i;
-% foreach my $link (sort keys %{$incidents}) {
-%   my $id = $incidents->{$link}->{'id'};
+% my $i = 0;
+% while ($i < (scalar keys %{$incidents})) {
+%   my $id = $incidents->{$i}->{'id'};
 %   next if (!$id);
-%   my $Ticket = $incidents->{$link}->{'Ticket'}->TargetObj;
+%   my $Ticket = $incidents->{$i}->{'Ticket'}->TargetObj;
 %   next if $Ticket->HasUnresolvedDependencies( Type => 'approval' );
-%   last if $i++ >= $rows;
+%   last if $i >= $rows;
 <TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >                                
 <TD ALIGN=RIGHT>
 <A HREF="<% $RT::WebPath %>/RTIR/Display.html?id=<%$Ticket->Id%>">
@@ -72,7 +72,7 @@
 <%$Ticket->Priority%>
 </TD>
 <TD>
-<& ShowDate, date => $incidents->{$link}->{'Due'} &>
+<& ShowDate, date => $incidents->{$i}->{'Due'} &>
 </TD>
 <TD ALIGN=RIGHT>
 % if ($Ticket->Owner != $session{CurrentUser}->id) {
@@ -86,6 +86,7 @@
 % }
 </TD>
 </TR>
+%   $i++;
 % }
 </TABLE>
 <& /Elements/TitleBoxEnd &>

@@ -22,9 +22,9 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-% if ($date->Unix > 0 && $date->Unix < $now->Unix) {
+% if ($date && $date->Unix > 0 && $date->Unix < $now->Unix) {
 <font color=red><% $date->AgeAsString %> <&|/l&>ago</&></font>
-% } elsif ($date->AgeAsString) {
+% } elsif ($date && $date->AgeAsString) {
 <&|/l&>in</&> <% $date->AgeAsString %>
 % }
 
