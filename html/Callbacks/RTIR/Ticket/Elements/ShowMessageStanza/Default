@@ -97,14 +97,7 @@ sub handle {
 </%once>
 <%init>
 
-#open(my $in,"<$file") or die $!;
-#local $/; 
-#my $content = <$in>;
-#close $in;
-
-my $newcontent = $content; # is this necessary?
-for ( $newcontent =~ s/($regexp)/&handle($1||"")/gsieo ) {1}
-$m->out($newcontent);
+for ( $$content =~ s/($regexp)/&handle($1||"")/gsieo ) {1}
 return();
 </%init>
 <%doc>
