@@ -51,6 +51,7 @@
 <input type=hidden name=BaseQuery value="<%$BaseQuery%>">
 <input type=hidden name=Queue value="<%$ARGS{'Queue'}%>">
 <input type=hidden name=id value="<%$ARGS{'id'}%>">
+<input type=hidden name=ResultPage value="<%$ARGS{'ResultPage'}%>">
 <table width=100%>
 <tr>
 <td valign=top class="boxcontainer">

@@ -27,7 +27,7 @@
     Refresh => $session{'tickets_refresh_interval'} &>
 
 <& '/RTIR/Search/Elements/RefineTabs',
-   path => "RTIR/Search/LinkRefine.html?Queue=Incidents&id=$id$QueryString",
+   path => $path,
    current_tab => "RTIR/Incident/LinkToIncident.html?id=$id",
    Ticket => $ChildObj, 
    Queue => 'Incidents',
@@ -89,6 +89,8 @@ if (!$BaseQuery) {
 
 $Query = "$BaseQuery AND ( $Query )";
 $ARGS{'Query'} = $Query;
+
+my $path = "RTIR/Search/Refine.html?ResultPage=$BaseURL&Queue=Incidents&id=$id$QueryString",
 
 </%INIT>
 

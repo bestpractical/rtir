@@ -25,7 +25,7 @@
 <& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
 
 <& '/RTIR/Search/Elements/RefineTabs',
-   path => "RTIR/Search/MergeRefine.html?Queue=" . $Ticket->QueueObj->Name . "&id=$id$QueryString",
+   path => $path,
    Ticket => $Ticket, 
    current_subtab => "RTIR/Merge.html?id=".$Ticket->Id. "$QueryString", 
    Queue => $Queue,
@@ -45,7 +45,7 @@
 %    $m->abort();
 % }
 
-<form action="Merge.html" method="post">
+<form action="<%$RT::WebPath%>/RTIR/Merge.html" method="post">
 <input type="hidden" name="id" value="<%$Ticket->id%>">
 <input type="hidden" name="<%$Ticket->Id%>-MergeInto">
 
@@ -54,7 +54,8 @@
     Query => $Query,
     QueryString => $QueryString, 
     BaseURL => $RT::WebPath."/RTIR/Merge.html?id=$id&",
-    %ARGS &>
+    Format => $Format,
+    &>
 
 <HR>
 
@@ -63,7 +64,6 @@
 
 <%INIT>
 $Format = $RT::RTIRMergeSearchResultFormat;
-$ARGS{'Format'} = $Format;
 
 my $Ticket = LoadTicket($id);
 my $Queue = $Ticket->QueueObj->Name;
@@ -103,7 +103,8 @@ if (!$BaseQuery) {
 }
 
 $Query = "$BaseQuery AND ( $Query )";
-$ARGS{'Query'} = $Query;
+
+my $path = "RTIR/Search/Refine.html?ResultPage=$BaseURL&Queue=" . $Ticket->QueueObj->Name . "&id=$id&$QueryString";
 
 </%INIT>
       
@@ -117,4 +118,5 @@ $Page => 1
 $OrderBy => 'id'
 $Order => 'ASC'
 $id => undef
+$BaseURL => '/RTIR/Merge.html'
 </%ARGS>
