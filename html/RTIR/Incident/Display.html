@@ -69,12 +69,13 @@
     titleright => '', color=> "#336633" &>
     <table width=100%>
     <td align="right">
-    <font size="-1">| <a href=".">New</a> 
-		| <a href=".">Close All</a> |</font>
+		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Report/Create.html?Incident=<%$Incident->Id%>">New</a> 
+		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Incident/AssociateReports.html?QueueOp==&ValueOfQueue=Investigations&ClearRestrictions=1&Incident=<%$Incident->Id%>">Associate</a> 
     </td></table>
     <& /RTIR/Elements/ShowChildren, 
 	    Ticket => $Incident, 
 	    QueueName => 'Incident Reports',
+	    DisplayPath => '/RTIR/Report/Display.html',
 	    LimitDepth => 8 &>
 <& /Elements/TitleBoxEnd &>
 </td>
@@ -86,12 +87,13 @@
 		title_class=> 'inverse',  
 		titleright => '', color=> "#336633" &>
 		<table width=100%><td align="right">
-		<font size="-1">| <a href=".">Launch new</a> 
-				| <a href=".">Close All</a> |</font>
+		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Investigation/Create.html?Incident=<%$Incident->Id%>">Launch</a> 
+		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Incident/AssociateInvestigations.html?QueueOp==&ValueOfQueue=Investigations&ClearRestrictions=1&Incident=<%$Incident->Id%>">Associate</a> 
 		</td></table>
 	        <& /RTIR/Elements/ShowChildren, 
 		    Ticket => $Incident, 
 		    QueueName => 'Investigations',
+		    DisplayPath => '/RTIR/Investigation/Display.html',
 		    LimitDepth => 8 &>
 	<& /Elements/TitleBoxEnd &>
   </td>
@@ -102,12 +104,13 @@
 		title_class=> 'inverse',  
 		titleright => '', color=> "#336633" &>
 		<table width=100%><td align="right">
-		<font size="-1">| <a href=".">New</a> 
-				| <a href=".">Close All</a> |</font>
+		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Block/Create.html?Incident=<%$Incident->Id%>">New</a> 
+		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Incident/AssociateBlocks.html?QueueOp==&ValueOfQueue=Investigations&ClearRestrictions=1&Incident=<%$Incident->Id%>">Associate</a> 
 		</td></table>
 	        <& /RTIR/Elements/ShowChildren, 
 		    Ticket => $Incident, 
 		    QueueName => 'Blocks',
+		    DisplayPath => '/RTIR/Block/Display.html',
 		    LimitDepth => 8 &>
 	<& /Elements/TitleBoxEnd &>
   </td>

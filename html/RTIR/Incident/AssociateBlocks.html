@@ -23,9 +23,9 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
-<& Elements/InvestigationTabs, 
+<& Elements/BlockTabs, 
     Ticket => $IncidentObj, 
-    current_tab => 'RTIR/Incident/ShowInvestigations.html?id='.$IncidentObj->id,
+    current_tab => 'RTIR/Incident/ShowBlocks.html?id='.$IncidentObj->id,
     current_subtab => 'RTIR/Incident/Associate.html',
     Title => $title &>
 
@@ -60,7 +60,7 @@
 </td>
 <td align=right>
 
-<a href="BulkInvestigations.html?Incident=<%$Incident%>"><&|/l&>Associate Investigations</&></a>
+<a href="BulkBlocks.html?Incident=<%$Incident%>&Status=open"><&|/l&>Associate Blocks</&></a>
 <!--</div>-->
 </td>
 </tr>

@@ -25,6 +25,7 @@
 <FORM METHOD="GET">
 <INPUT TYPE=HIDDEN NAME="Bookmark" VALUE="<% $session{'tickets'}->FreezeLimits()|u %>">
 <& /Elements/TitleBoxStart, title => loc('Refine search')&>
+<input type=hidden name="Incident" value=<%$ARGS{'Incident'}%>>
 <INPUT TYPE=HIDDEN NAME="CompileRestriction" VALUE=1>
 
 <ul>

@@ -23,13 +23,13 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $Title &>
-<& /RTIR/Incident/Elements/InvestigationTabs, 
+<& /RTIR/Incident/Elements/BlockTabs, 
     Ticket => $IncidentObj,
     current_toptab => "RTIR/Incident/Listing.html", 
-    current_tab => "RTIR/Incident/ShowReports.html?id=".$Incident, 
-    current_subtab => "RTIR/Report/Create.html", 
+    current_tab => "RTIR/Incident/ShowBlocks.html?id=".$Incident, 
+    current_subtab => "RTIR/Block/Create.html", 
     Title => $Title &>
-<FORM ACTION="<%$RT::WebPath%>/RTIR/Report/Create.html" METHOD="GET" ENCTYPE="multipart/form-data">
+<FORM ACTION="<%$RT::WebPath%>/RTIR/Block/Create.html" METHOD="GET" ENCTYPE="multipart/form-data">
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
 <INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
 <INPUT TYPE=HIDDEN NAME=Status Value="<%$ARGS{Status}||'new'%>">
@@ -216,7 +216,7 @@
 
 <%INIT>
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
-$QueueObj->Load("Incident Reports") || Abort(loc("Queue could not be loaded."));
+$QueueObj->Load("Blocks") || Abort(loc("Queue could not be loaded."));
 my $CFs = $QueueObj->CustomFields();
 
 my $TicketObj = $ARGS{TicketObj};
@@ -273,5 +273,5 @@ $DependedOnBy => undef
 $MemberOf => undef
 $QuoteTransaction => undef
 $Incident => undef
-$Title => loc("Create a new Incident Report")
+$Title => loc("Create a new Block")
 </%ARGS>

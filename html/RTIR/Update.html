@@ -36,10 +36,14 @@
 
 <TABLE>
 <TR><TD>
-<a href="ModifyPeople.html?id=<%$Ticket->Id%>"><&|/l&>Ticket watchers</&></A></TD><TD align=right>
+<a href="ModifyPeople.html?id=<%$Ticket->Id%>"><&|/l&>Correspondents</&></A></TD><TD align=right>
 <&|/l&>Requestor</&>:
 </TD><TD>
+% if ($ResponseType eq "Reporters") {
+<b>all reporters go here</b>
+% } else {
 <b><% $Ticket->RequestorAddresses %></b>
+% }
 </TD></TR>
 <TR><TD>&nbsp;</TD><TD align=right>
 <&|/l&>Cc</&>:
@@ -126,7 +130,6 @@ my $title;
 
 my $Ticket = LoadTicket($id);
 
-
 $DefaultStatus = $ARGS{Status} if exists $ARGS{Status};
 
 if ($DefaultStatus eq 'resolved') {
@@ -196,4 +199,5 @@ $id => undef
 $Action => undef
 $DefaultStatus => undef
 $PostTo => '/Ticket/Display.html'
+$ResponseType => undef
 </%ARGS>

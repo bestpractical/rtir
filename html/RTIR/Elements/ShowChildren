@@ -26,7 +26,7 @@
 % my $member= $link->BaseObj;
 % if ((!defined $QueueName) or $member->QueueObj->Name eq $QueueName) {
 %   $count++;
-  <LI><a href="<%$RT::WebPath%><%$DisplayPath%>?id=<%$member->Id%>"><%$member->Id%></a>: <%$member->Subject%> [<%$member->Status%>]<br>
+  <LI><a href="<%$RT::WebPath%><%$DisplayPath%>?id=<%$member->Id%>"><%$member->Id%>: <%$member->Subject%></a> [<%$member->Status%>]<br>
 % if ($LimitDepth > 0 and $depth < $LimitDepth) {
 <& ShowChildren, Ticket => $member, depth => ($depth+1) &> 
 % }

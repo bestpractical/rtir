@@ -41,6 +41,9 @@ $investigationq->Load('Investigations');
 my $reportsq = RT::Queue->new($session{'CurrentUser'});
 $reportsq->Load('Incident Reports');
 
+my $blocksq = RT::Queue->new($session{'CurrentUser'});
+$blocksq->Load('Blocks');
+
 my $toptabs = { A => { title => loc('RT'),
                        path  => '', },
 		    B => { title => loc('RTIR Home'),
@@ -55,9 +58,9 @@ my $toptabs = { A => { title => loc('RT'),
                     E => { title => loc('Investigations'),
                         path => 'RTIR/Investigation/Listing.html?NewSearch=1&QueueOp==&ValueOfQueue='.$investigationq->Id,
                       },
-                    F => { title => loc('Configuration'),
-                           path => 'RTIR/Admin/index.html'
-                         },
+                    F => { title => loc('Blocks'),
+                        path => 'RTIR/Block/Listing.html?NewSearch=1&QueueOp==&ValueOfQueue='.$blocksq->Id,
+                      },
                     ZZ => { title => loc('Preferences'),
                         path => 'RTIR/User/Prefs.html'
                       },

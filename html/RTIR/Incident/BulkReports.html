@@ -29,7 +29,7 @@
     current_subtab => 'RTIR/Incident/Associate.html',
     Title => loc("Bulk Association") &>
 
-<& Elements/BulkAssociate, IncidentObj => $IncidentObj, Status => $Status &>
+<& Elements/BulkAssociate, IncidentObj => $IncidentObj, Status => $Status, %ARGS &>
 
 <%INIT>
 my $IncidentObj = LoadTicket($Incident);

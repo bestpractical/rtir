@@ -27,18 +27,16 @@
     tabs => $tabs, 
     actions => $actions, 
     current_tab => $current_tab, 
-    current_subtab => $current_subtab, 
     current_toptab => $current_toptab,
     Title => $Title &> 
-
 <%INIT>
 
 my $q = RT::Queue->new($session{'CurrentUser'});
-$q->Load('Incidents');
+$q->Load('Blocks');
 my $tabs = {};
-my $current_toptab = "RTIR/Incident/Listing.html?NewSearch=1&QueueOp==&ValueOfQueue=".$q->Id,
+my $current_toptab = "RTIR/Block/Listing.html?NewSearch=1&QueueOp==&ValueOfQueue=".$q->Id,
     my $searchtabs = { new => { title => loc('New Search'),
-                                path => 'RTIR/Incident/Listing.html?QueueOp==&ValueOfQueue='.$q->Id.'&ClearRestrictions=1'}
+                                path => 'RTIR/Block/Listing.html?QueueOp==&ValueOfQueue='.$q->Id.'&ClearRestrictions=1'}
                         
 
 } ;
@@ -91,36 +89,23 @@ if ( defined $session{'tickets'} ) {
 
 
 $tabs->{"this"} = { class => "currentnav",
-                    path  => "RTIR/Incident/Display.html?id=" . $Ticket->id,
-                    title => loc("Incident #[_1]", $id),
+                    path  => "RTIR/Block/Display.html?id=" . $Ticket->id,
+                    title => loc("Block #[_1]", $id),
                     current_subtab => $current_subtab };
-
-  my $reportq = RT::Queue->new($session{'CurrentUser'});
-  $reportq->Load('Incident Reports');
 
 my $ticket_page_tabs = {
     _A => { title => loc('Display'),
-            path  => "RTIR/Incident/Display.html?id=" . $id, },
+            path  => "RTIR/Block/Display.html?id=" . $id, },
 
-    _B => { title => loc('Incident Reports'),
-            path  => "RTIR/Incident/ShowReports.html?id=" . $id, },
-
-    _C => { title => loc('Investigations'),
-            path  => "RTIR/Incident/ShowInvestigations.html?id=" . $id, },
-
-    _D => { title => loc('Blocks'),
-            path  => "RTIR/Incident/ShowBlocks.html?id=" . $id, 
-	    separator => 1},
-
-    _E => { title => loc('Edit'),
-            path  => "RTIR/Incident/Edit.html?id=" . $id, },
+    _B => { title => loc('Edit'),
+            path  => "RTIR/Block/Edit.html?id=" . $id, },
 
 
-    _F => { title => loc('Split'),
-            path  => "RTIR/Incident/Split.html?Queue=".$q->Id."&Ticket=" . $id, },
+    _C => { title => loc('Split'),
+            path  => "RTIR/Block/Split.html?Ticket=" . $id, },
 
-    _G => { title => loc('Merge'),
-            path  => "RTIR/Incident/Merge.html?id=" . $id,
+    _D => { title => loc('Merge'),
+            path  => "RTIR/Block/Merge.html?id=" . $id,
 	    separator => 1 },
 };
 
@@ -135,15 +120,8 @@ $tabs->{'this'}->{"subtabs"} = $ticket_page_tabs;
 
 if (    $Ticket->CurrentUserHasRight('ModifyTicket')
      or $Ticket->CurrentUserHasRight('ReplyToTicket') ) {
-    $actions->{'A'} = { title => loc('Reply to Reporters'),
-                        path  => "RTIR/Update.html?Action=Respond&ResponseType=Reporters&id=" . $id . "&PostTo=/RTIR/Incident/Display.html",
-    };
-}
-
-if (    $Ticket->CurrentUserHasRight('ModifyTicket')
-     or $Ticket->CurrentUserHasRight('ReplyToTicket') ) {
-    $actions->{'Ab'} = { title => loc('Reply to All'),
-                        path  => "RTIR/Update.html?Action=Respond&id=" . $id. "&PostTo=/RTIR/Incident/Display.html",
+    $actions->{'A'} = { title => loc('Reply'),
+                        path  => "RTIR/Update.html?Action=Respond&id=" . $id. "&PostTo=/RTIR/Block/Display.html",
     };
 }
 
@@ -153,29 +131,24 @@ if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
 
             path =>
               "RTIR/Update.html?Action=Comment&DefaultStatus=resolved&id="
-              . $id. "&PostTo=/RTIR/Incident/Display.html",
+              . $id. "&PostTo=/RTIR/Block/Display.html",
             title => loc('Resolve') };
         $actions->{'B'} = {
 
             path =>
               "RTIR/Update.html?Action=Comment&DefaultStatus=rejected&id="
-              . $id. "&PostTo=/RTIR/Incident/Display.html",
+              . $id. "&PostTo=/RTIR/Block/Display.html",
             title => loc('Reject') };
-    }
-    if ( $Ticket->Status ne 'open' ) {
-        $actions->{'C'} = { path => "RTIR/Incident/Display.html?Status=open&id=" . $id,
-                            title => loc('Open it') };
     }
 }
 
-if ( $Ticket->CurrentUserHasRight('OwnTicket') &&
-     $Ticket->Status eq 'open') {
+if ( $Ticket->CurrentUserHasRight('OwnTicket') ) {
     if ( $Ticket->OwnerObj->id == $RT::Nobody->id ) {
-        $actions->{'D'} = { path => "RTIR/Incident/Display.html?Action=Take&id=" . $id,
+        $actions->{'D'} = { path => "RTIR/Block/Display.html?Action=Take&id=" . $id,
                             title => loc('Take') };
     }
     elsif ( $Ticket->OwnerObj->id != $session{CurrentUser}->id ) {
-        $actions->{'E'} = {path => "RTIR/Incident/Display.html?Action=Steal&id=" . $id,
+        $actions->{'E'} = {path => "RTIR/Block/Display.html?Action=Steal&id=" . $id,
                            title => loc('Steal') };
     }
 }
@@ -183,14 +156,12 @@ if ( $Ticket->CurrentUserHasRight('OwnTicket') &&
 if (    $Ticket->CurrentUserHasRight('ModifyTicket')
      or $Ticket->CurrentUserHasRight('CommentOnTicket') ) {
     $actions->{'F'} = { title => loc('Comment'),
-                        path  => "RTIR/Update.html?Action=Comment&id=" . $id. "&PostTo=/RTIR/Incident/Display.html",
+                        path  => "RTIR/Update.html?Action=Comment&id=" . $id. "&PostTo=/RTIR/Block/Display.html",
     };
 }
 }
 
-$tabs->{"A"} = { path      => 'RTIR/Incident/Create.html?Queue='.$q->Id,
-                 title     => loc('New Incident') };
-$tabs->{"g"} = { path      => 'RTIR/Incident/Listing.html?QueueOp==&ValueOfQueue='.$q->Id,
+$tabs->{"g"} = { path      => 'RTIR/Block/Listing.html?QueueOp==&ValueOfQueue='.$q->Id,
                  title     => loc('Search'),
                  separator => 1,
                  subtabs   => $searchtabs };
