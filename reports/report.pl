@@ -1,27 +1,33 @@
 # of new reports outstanding at month start
 my $outstanding = RT::Tickets->new($session{'CurrentUser'});
-$outstanding->Query("Queue = 'Incident Reports' AND Created <= '$monthstart' AND ( Resolved >= '$monthstart' OR Resolved IS NULL)");
+$outstanding->FromSQL("Queue = 'Incident Reports' AND Created <= '$monthstart' AND ( Resolved >= '$monthstart' OR Resolved IS NULL)");
 
 
 # of new reports created during the month
 my $tix_created = RT::Tickets->new($session{'CurrentUser'});
-$tix_created->Query("Queue = 'Incident Report' AND Created >= '$monthstart' AND Created <= '$monthend');
+$tix_created->FromSQL("Queue = 'Incident Report' AND Created >= '$monthstart' AND Created <= '$monthend');
 
 
 # of new reports resolved/closed/deleted during the month
 # does this mean "number of reports closed during the month or number of reports created during the month that were also closed during the month?
 
 my $tix_resolved = RT::Tickets->new($session{'CurrentUser'});
-$tix_resolved->Query("Queue = 'Incident Report' AND Created >= '$monthstart' AND Created <= '$monthend' AND Resolved >= '$monthstart' AND Resolved <= '$monthend'");
+$tix_resolved->FromSQL("Queue = 'Incident Report' AND Created >= '$monthstart' AND Created <= '$monthend' AND Resolved >= '$monthstart' AND Resolved <= '$monthend'");
 
 
 # of new reports oustanding at month end 
 # same question: does this mean "number of reports closed during the month or number of reports created during the month that were also closed during the month?
 
 my $tix_unresolved = RT::Tickets->new($session{'CurrentUser'});
-$tix_unresolved->Query("Queue = 'Incident Report' AND Created >= '$monthstart' AND Created <= '$monthend' AND (Resolved >= '$monthend' OR Resolved IS NULL");
+$tix_unresolved->FromSQL("Queue = 'Incident Report' AND Created >= '$monthstart' AND Created <= '$monthend' AND (Resolved >= '$monthend' OR Resolved IS NULL");
 
 
+
+print "At the start of the month (".localtime($monthstart)."):\n";
+print "\n\n";
+print "Outstanding incident reports: ".$outstanding->Count."\n";
+print "Reports closed between ".localtime($monthstart). " and ". localtime($monthend).": " $tix_resolved->Count;
+print "Reports created between ".localtime($monthstart). " and ". localtime($monthend)." which were unresolved as of ". localtime($monthend).": " $tix_unresolved->Count;
 
 
 
@@ -32,13 +38,13 @@ $tix_unresolved->Query("Queue = 'Incident Report' AND Created >= '$monthstart' A
                          'reduced service emergency'=> (call out n/a)
                          'requests for information' =>  (1 day)
                          };
-   
+
 	 
  
           foreach my $service_level (@$Classifications) {
 		my $class_tix = RT::Tickets->new($session{'CurrentUser'});
-		$class_tix->Query("Queue = 'Incident Reports' AND Created >= '$monthstart' AND Created <= $monthend AND Created <= $monthend AND SLA = '$service_level'");
-
+		    $class_tix->FromSQL("Queue = 'Incident Reports' AND Created >= '$monthstart' AND Created <= $monthend AND 'Incident Reports.{SLA}' = '$service_level'");
+            print "$service_level Incident Reports created between ".localtime($monthstart). " and ".localtime($monthend).": ".$class_tix->Count."\n";
          }
 
                  All tickets created in queue IncidentReport created after
@@ -57,12 +63,22 @@ eg
  $windows{$Classification};
 
 my $sla_check = RT::Tickets->new($session{'CurrentUser'});
-        $sla_check->Limit(FIELD => 'Created', OPERATOR => '>=', VALUE => $monthstart);
-        $sla_check->Limit(FIELD => 'Created', OPERATOR => '<=', VALUE => $monthstart);
+
+$sla_check->FromSQL("Created >= $monthstart AND Created <= $monthend AND Queue='Incident Reports'");
+
+
+# Get a Business::Hours object for the period in question
+
+my $business_hours = Business::Hours->new();
+$business_hours->set_business_hours(%working_hours);
+$business_hours->for_timespan(Start => $monthstart, End => $monthend);
 
 while (my $t = $sla_check->Next) {
        
-}
+    my $sla = $t->FirstCustomFieldValue('SLA');
+   
+    my $time_on_clock = $business_hours->between($t->CreatedObj->Unix, $t->ResolvedObj->Unix);
+ 
 
 
          # of email messages created by CERT staff, broken down by Queue (incident, incident report, investigation)
@@ -85,7 +101,7 @@ while (my $t = $sla_check->Next) {
 
 
         my $avgtime = RT::Tickets->new($session{'CurrentUser'});
-	$avgtime->Query(Queue = 'Incident Reports' AND Resolved >= '$monthstart' AND Resolved <= '$monthend');
+	$avgtime->FromSQL(Queue = 'Incident Reports' AND Resolved >= '$monthstart' AND Resolved <= '$monthend');
 
         
         my $i;
@@ -101,97 +117,6 @@ while (my $t = $sla_check->Next) {
         }
         my $average_secs = $total_diff/$i;
 
-
-
-use Time::Local qw/timelocal_nocheck/;
-
-=head2 BusinessHours
-
-Takes a paramhash with the following parameters
-	
-	Start => The start of the period in question in seconds since the epoch
-	End => The end of the period in question in seconds since the epoch
-
-Returns a Set::IntSpan of business hours for this period of time.
-
-=cut
-
-
-sub BusinessHours {
-	my %args = ( Start => undef,
-		     End => undef,
-	             @_);
-
-
-    my $bizdays = {
-        0 => { Name  => 'Sunday',
-               Start => undef,
-               End   => undef, },
-        1 => { Name  => 'Monday',
-               Start => '9:00',
-               End   => '18:00', },
-        2 => { Name  => 'Tuesday',
-               Start => '9:00',
-               End   => '18:00', },
-        3 => { Name  => 'Wednesday',
-               Start => '9:00',
-               End   => '18:00', },
-        4 => { Name  => 'Thursday',
-               Start => '9:00',
-               End   => '18:00', },
-        5 => { Name  => 'Friday',
-               Start => '9:00',
-               End   => '18:00', },
-        6 => { Name  => 'Saturday',
-               Start => undef,
-               End   => undef, };
-      };
-
-    # Split the Start and End times into hour/minute specifications
-    foreach my $day ( keys %$bizdays ) {
-        my $day_href = $bizdays{$day};
-        foreach my $which qw(Start End) {
-            if (    $day_href->{$which}
-                 && $day_href->{$which} =~ /^(\d+)\D(\d+)$/ ) {
-                $day_href->{ $which . 'Hour' }   = $1;
-                $day_href->{ $which . 'Minute' } = $2;
-            }
-        }
-    }
-
-    # now that we know what the business hours are for each day in a week,
-    # we need to find all the business hours in the period in question.
-
-    # Create an intspan of the period in total.
-    my $business_period = Set::IntSpan->new($args{'Start'}."-".$args{'End'});
-
-    my @start = localtime($args{'Start'});
-    my $start[3] = $start[3] - $start[6];
-    my $week_start = timelocal_nocheck(@start);
-
-
-    # jump back to the first day (Sunday) of the last week before the period 
-    # began. 
-
-    # create an empty intspan of "business hours"
-
-    # for each week until the end of the week in seconds since the epoch
-    # is outside the business period in question
-        # add the business seconds in that week to the business hours intspan.
-        # (Be careful to use timelocal to convert times in the week into actual
-        # seconds, so we don't lose at DST transition)
-
-    # find the intersection of the business period intspan and the  business
-    # hours intspan. (Because we want to trim any business hours that fall 
-    # outside the business period)
-
-    # TODO: Remove any holidays from the business hours
-
-    # TODO: Add any special times to the business hours
-
-    # Return the intspan of business hours.
-
-    
 
 
 }
