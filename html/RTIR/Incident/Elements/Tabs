@@ -27,7 +27,6 @@
     tabs => $tabs, 
     actions => $actions, 
     current_tab => $current_tab, 
-    current_subtab => $current_subtab, 
     current_toptab => $current_toptab,
     Title => $Title &> 
 
@@ -125,7 +124,7 @@ my $ticket_page_tabs = {
 };
 
 foreach my $tab ( sort keys %{$ticket_page_tabs} ) {
-    if ( $ticket_page_tabs->{$tab}->{'path'} eq $current_tab ) {
+    if ( $ticket_page_tabs->{$tab}->{'path'} eq $current_subtab ) {
         $ticket_page_tabs->{$tab}->{"subtabs"}        = $subtabs;
         $tabs->{'this'}->{"current_subtab"}        = 
         $ticket_page_tabs->{$tab}->{"path"};

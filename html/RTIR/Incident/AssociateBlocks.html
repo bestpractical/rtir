@@ -29,94 +29,18 @@
     current_subtab => 'RTIR/Incident/Associate.html',
     Title => $title &>
 
-%if ($ticketcount && !  $ARGS{'HideResults'}) {
-<TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
-<& /Search/Elements/TicketHeader, %ARGS &>
-% my $i;
-%while (my $Ticket = $session{'tickets'}->Next) {
-% $i++;
-<& Elements/TicketRow, Ticket => $Ticket, i=> $i, %ARGS &>
-%}
-</TABLE>
-<div align=center>
-<font size=2>
-<a href="Associate.html?GotoPage=1"><&|/l&>First page</&></a>
-&nbsp;&nbsp;
-%  if ( $session{'tickets'}->FirstRow >= $session{'tickets_rows_per_page'}-1 ) {
-<a href="Associate.html?GotoPage=Prev">&lt;<&|/l&>Previous page</&></a>
-&nbsp;&nbsp;
-%  }                                                                           
-%  if ( $session{'tickets'}->FirstRow + $session{'tickets_rows_per_page'} < $ticketcount ) {                                                               
-<a href="Associate.html?GotoPage=Next"><&|/l&>Next page</&>&gt;</a>
-%  }
-%#&nbsp;&nbsp;<form method=get action="Associate.html"><&|/l&>Goto page</&> <input name=GotoPage size=2></form>
-</font>
-</div>
-<!--<div align=right>-->
-<table width="100%" border=0 cellpadding=3 CELLSPACING=1>
-<tr>
-<td align=left>
-(<&|/l, ($session{'tickets'}->FirstRow+1), ($session{'tickets'}->FirstRow() + $session{'tickets'}->RowsPerPage()  ) &>[_1] - [_2] shown</&>)
-</td>
-<td align=right>
-
-<a href="BulkBlocks.html?Incident=<%$Incident%>&Status=open"><&|/l&>Link Blocks</&></a>
-<!--</div>-->
-</td>
-</tr>
-</table>
-
-% }
-<TABLE WIDTH="100%">
-<TR>
-<TD VALIGN="TOP">
-<& /Elements/TitleBoxStart, title => loc('Current search criteria')&>
-
-%my %restrictions=$session{'tickets'}->DescribeRestrictions();
-%foreach my $row (keys %restrictions){
-<%$restrictions{"$row"}%> <A HREF="Associate.html?DeleteRestriction=<%$row%>">[<&|/l&>delete</&>]</a><br>
-%}
-<BR>
-<BR>
-<A HREF="Associate.html?Bookmark=<%$session{'tickets'}->FreezeLimits()|u%>&TicketsSortBy=<%$session{'tickets_sort_by'}%>&TicketsSortOrder=<%$session{'tickets_sort_order'}%>&RowsPerPage=<%$session{'tickets_rows_per_page'}%>"><&|/l&>Bookmarkable URL for this search</&></a>
-<& /Elements/TitleBoxEnd&>
-</TD>
-<TD>
-
-<& /RTIR/Elements/PickRestriction, Queue => $ARGS{'ValueOfQueue'}, %ARGS &>
-
-</TD>
-</TR>
-</TABLE>
+<& Elements/BulkAssociate,
+    SubmitCaption => $SubmitCaption, 
+    %ARGS &>
 
 <%INIT>
-
+my $title = loc("Link Blocks");
 my $IncidentObj = LoadTicket($Incident);
-
-my ($title, $ticketcount);
-$session{'i'}++;
-if ($session{'tickets'}) {
-    if ($ARGS{'DeleteRestriction'}) {
-	    $session{'tickets'}->DeleteRestriction($ARGS{'DeleteRestriction'});
-    }
-    if ( ($ARGS{'ClearRestrictions'}) || ($ARGS{'NewSearch'}) ) {
-	    $session{'tickets'}->ClearRestrictions;
-	}	
-}
-   ProcessSearchQuery(ARGS=>\%ARGS);
-   $session{'tickets'}->RedoSearch();
-   if ( $session{'tickets'}->DescribeRestrictions()) {
-       $ticketcount = $session{tickets}->Count();
-        $title = loc('Found [quant,_1,incident]', $ticketcount);
-    } else {
-        $title = loc("Find incidents");
-   }
+my $SubmitCaption = loc("Link selected blocks with Incident #[_1]", $IncidentObj->id);
 
 </%INIT>
-<%CLEANUP>
-$session{'tickets'}->PrepForSerialization();
-</%CLEANUP>
 
 <%ARGS>
 $Incident => undef
 </%ARGS>
+

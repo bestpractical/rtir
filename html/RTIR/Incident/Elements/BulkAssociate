@@ -24,62 +24,96 @@
 %# END LICENSE BLOCK
 <& /Elements/ListActions, actions => \@results &>
 
-<FORM METHOD=POST>
-<input type="hidden" name="id" value="<%$IncidentObj->id%>">
-<TABLE WIDTH=100% border=0 cellpadding=3 CELLSPACING=0>
-<TR>
-<TH><&|/l&>Update</&></TH>
-%foreach my $col (@cols) {
-% my $colalias = $col;
-% $colalias =~ s/(Obj\-\>|)(Name|AsString)//;
-
-<TH><% loc($colalias) %>&nbsp;</TH>
-%}
-</TR>
-
-<%PERL>
-
-my $i;
-
-
-      
-$session{'tickets'}->RedoSearch();
-while (my $Ticket = $session{'tickets'}->Next) {
- $i++;
- if ($i % 2) {
-     $bgcolor = "#dddddd";
- }
- else {
-     $bgcolor = "#ffffff";
- }
-      </%PERL>
-<TR bgcolor="<%$bgcolor%>">
-<TD><input type=checkbox name="UpdateTicket<%$Ticket->Id%>" CHECKED></TD>
-%# The ticket view is controlled by config.pm, WebOptions
-%foreach my $col (@cols) {
-<TD>
-% if ($col eq 'id') {
-<A HREF="<% $RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id()%></A>
+<form method=get>
+<input action="BulkAssociate" type=hidden name=Incident value=<%$Incident%>>
+%if ($ticketcount && !  $ARGS{'HideResults'}) {
+<TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
+<& /RTIR/Elements/TicketHeader, check => "check", %ARGS &>
+% my $i;
+%while (my $Ticket = $session{'tickets'}->Next) {
+% $i++;
+<& TicketRow, Ticket => $Ticket, i=> $i, check => "check", %ARGS &>
 % }
-%else {
-<% eval "\$Ticket->$col()" %>&nbsp;
-%}
-</TD>
-%}
-</TR>
-%}
-
-
-
 </TABLE>
+<div align=center>
+<font size=2>
+<a href="<%$AssocPath%>?Incident=<%$Incident%>&GotoPage=1"><&|/l&>First page</&></a>
+&nbsp;&nbsp;
+%  if ( $session{'tickets'}->FirstRow >= $session{'tickets_rows_per_page'}-1 ) {
+<a href="<%$AssocPath%>?Incident=<%$Incident%>&GotoPage=Prev">&lt;<&|/l&>Previous page</&></a>
+&nbsp;&nbsp;
+%  }                                                                           
+%  if ( $session{'tickets'}->FirstRow + $session{'tickets_rows_per_page'} < $ticketcount ) {                                                               
+<a href="<%$AssocPath%>?Incident=<%$Incident%>&GotoPage=Next"><&|/l&>Next page</&>&gt;</a>
+%  }
 
+%#&nbsp;&nbsp;<form method=get action="<%$AssocPath%>"><&|/l&>Goto page</&> <input name=GotoPage size=2></form>
+</font>
+</div>
+<!--<div align=right>-->
+<table width="100%" border=0 cellpadding=3 CELLSPACING=1>
+<tr>
+<td align=left>
+(<&|/l, ($session{'tickets'}->FirstRow+1), ($session{'tickets'}->FirstRow() + $session{'tickets'}->RowsPerPage()  ) &>[_1] - [_2] shown</&>)
+</td>
+<td align=right>
+
+<!--</div>-->
+</td>
+</tr>
+</table>
+
+% }
 <HR>
 
-<& /Elements/Submit &>
+<& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => loc("Link") &>
+</form>
 
+<HR>
+<TABLE WIDTH="100%">
+<TR>
+<TD VALIGN="TOP">
+<& /Elements/TitleBoxStart, title => loc('Current search criteria')&>
 
-</FORM>
+%my %restrictions=$session{'tickets'}->DescribeRestrictions();
+%foreach my $row (keys %restrictions){
+<%$restrictions{"$row"}%> <A HREF="<%$AssocPath%>?Incident=<%$Incident%>&DeleteRestriction=<%$row%>">[<&|/l&>delete</&>]</a><br>
+%}
+<BR>
+<BR>
+<A HREF="<%$AssocPath%>?Incident=<%$Incident%>&Bookmark=<%$session{'tickets'}->FreezeLimits()|u%>&TicketsSortBy=<%$session{'tickets_sort_by'}%>&TicketsSortOrder=<%$session{'tickets_sort_order'}%>&RowsPerPage=<%$session{'tickets_rows_per_page'}%>"><&|/l&>Bookmarkable URL for this search</&></a>
+<& /Elements/TitleBoxEnd&>
+</TD>
+<TD>
+
+<& /RTIR/Elements/PickRestriction, Queue => $ARGS{'ValueOfQueue'}, %ARGS &>
+
+</TD>
+</TR>
+</TABLE>
+
 <%INIT>
+my $IncidentObj = LoadTicket($Incident);
+
+my ($title, $ticketcount);
+$session{'i'}++;
+if ($session{'tickets'}) {
+    if ($ARGS{'DeleteRestriction'}) {
+	    $session{'tickets'}->DeleteRestriction($ARGS{'DeleteRestriction'});
+    }
+    if ( ($ARGS{'ClearRestrictions'}) || ($ARGS{'NewSearch'}) ) {
+	    $session{'tickets'}->ClearRestrictions;
+	}	
+}
+   ProcessSearchQuery(ARGS=>\%ARGS);
+   $session{'tickets'}->RedoSearch();
+   if ( $session{'tickets'}->DescribeRestrictions()) {
+       $ticketcount = $session{tickets}->Count();
+        $title = loc('Found [quant,_1,incident]', $ticketcount);
+    } else {
+        $title = loc("Find incidents");
+   }
+
 # Iterate through the ARGS hash and remove anything with a null value.
 map ($ARGS{$_} =~ /^$/ && (delete $ARGS{$_}), keys %ARGS);
 
@@ -138,6 +172,8 @@ while (my $Ticket = $session{'tickets'}->Next) {
 </%INIT>
 
 <%ARGS>
-$IncidentObj => undef
+$Incident => undef
+$SubmitCaption => loc("Link Tickets");
+$AssocPath => "AssociateReports.html"
 $Status => undef
 </%ARGS>

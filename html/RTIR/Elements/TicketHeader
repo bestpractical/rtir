@@ -1,0 +1,26 @@
+<TR>
+% if (defined $check) {
+<TH class="ticketheader">&nbsp;</TH>
+% }
+<& /Search/Elements/TicketHeaderCell , Attribute => 'id', Header => '#'&>
+<& /Search/Elements/TicketHeaderCell , Attribute => 'Subject'&>
+<& /Search/Elements/TicketHeaderCell , Attribute => 'Status'&>
+<& /Search/Elements/TicketHeaderCell , Attribute => 'LastUpdated', Header => 'Last Updated'&>
+<& /Search/Elements/TicketHeaderCell , Attribute => 'Owner'&>
+<& /Search/Elements/TicketHeaderCell , Attribute => 'Priority'&>
+</TR>
+<TR>
+% if (defined $check) {
+<TH class="ticketheader">&nbsp;</TH>
+% }
+<TH class="ticketheader">&nbsp;</TH>
+<& /Search/Elements/TicketHeaderCell , Attribute => 'Requestor(s)'&>
+<& /Search/Elements/TicketHeaderCell , Attribute => 'Created'&>
+<& /Search/Elements/TicketHeaderCell , Attribute => 'Told', Header => 'Last Contact'&>
+<TH class="ticketheader">&nbsp;</TH>
+<& /Search/Elements/TicketHeaderCell , Attribute => 'TimeLeft', Header => 'Left'&>
+</TR>
+
+<%ARGS>
+$check => undef
+</%ARGS>

@@ -24,8 +24,8 @@
 %# END LICENSE BLOCK
 <& /RTIR/Incident/Elements/Tabs, 
     Ticket => $Ticket, 
-    current_tab => 'RTIR/Incident/ShowBlocks.html?id='.$Ticket->id,
-    current_subtab => $current_subtab,
+    current_tab => 'RTIR/Incident/Display.html?id='.$Ticket->id,
+    current_subtab => 'RTIR/Incident/ShowBlocks.html?id='.$Ticket->id,
     subtabs => $subtabs,
     Title => $Title &>
 
