@@ -304,7 +304,7 @@ if ($self->TicketObj->StartsObj->AsString eq "Not set") {
 # ------------------------------------------------------------------- #	],
        CustomPrepareCode => '1',
        Template       => 'Blank' },
-    {  Description => "SetStartsDate",
+    {  Description => "SetDates",
        Queue            => 'Incident Reports',
        ScripCondition => 'On Create',
        ScripAction      => 'User Defined',
@@ -314,6 +314,14 @@ if ($self->TicketObj->StartsObj->AsString eq "Not set") {
   my $date = RT::Date->new($RT::SystemUser);
   $date->SetToNow;
   $self->TicketObj->SetStarts($date->ISO);
+}
+my $CustomFields = $self->TicketObj->QueueObj->CustomFields();
+$CustomFields->{'find_disabled_rows'} = 1;
+while (my $CustomField = $CustomFields->Next()) {
+  if ($CustomField->Name eq '_RTIR_SLA') {
+    $self->TicketObj->AddCustomFieldValue(Field => $CustomField->id, Value => 'Full service');
+    last;
+  }
 }
   return 1;
 # ------------------------------------------------------------------- #	],
