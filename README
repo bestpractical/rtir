@@ -5,9 +5,9 @@ with RT3 (Also available from bestpractical.com)
 Installation instructions:
 --------------------------
 
-1) RTIR requires the Business::Hours module (version 0.04 or later)
-   and the Net::Whois::RIPE
-   module.  You should install them before proceeding.
+1) RTIR requires the Business::Hours module (version 0.05 or later)
+   and the Net::Whois::RIPE module.  You should install them before 
+   proceeding.
 
 2) Install RT 3.0.  This version of RTIR requires at least RT
    3.0.4.
@@ -56,3 +56,23 @@ Configuring RTIR
 5) You can override values in the RTIR_Config.pm in your
    RT_SiteConfig.pm file, following the "require" line explained
    above.
+
+
+SETTING UP THE MAIL GATEWAY 
+---------------------------
+
+An alias for the Incident Reports  queue will need to be made in either 
+your global mail aliases file (if you are using NIS) or locally on your
+machine.
+ 
+Add the following lines to /etc/aliases (or your local equivalent) :
+
+rtir:         "|/opt/rt3/bin/rt-mailgate --queue 'Incident Reports' --action correspond --url http://localhost/"
+
+You should substitute te URL for RT's web interface for "http://localhost/".
+
+
+BUGS
+----
+
+To report a bug, send email to rtir-bugs@fsck.com.
