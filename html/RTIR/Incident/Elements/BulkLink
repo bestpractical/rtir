@@ -26,12 +26,14 @@
 <input type=hidden name=id value=<%$id%>>
 <input type=hidden name=BulkLink value=1>
 
+Query: <%$Query%><br>
 <& /RTIR/Search/Elements/ShowResults, 
     Queue => $Queue,
     Query => $Query,
     QueryString => $QueryString, 
     BaseURL => $BaseURL,
-    %ARGS &>
+    Format => $Format,
+&>
 
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => loc("Link") &>
 </form>
@@ -67,6 +69,7 @@ if ( $session{'tickets'}->Query()) {
     $title = loc("Find tickets");
 }
 
+$m->print("Original Query: $Query<br>");
 if (!$Query) {
     $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
 }

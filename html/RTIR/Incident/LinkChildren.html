@@ -30,17 +30,18 @@
     Queue => $Queue,
     Ticket => $IncidentObj, 
     current_subtab => 'RTIR/Incident/LinkChildren.html?ClearRestrictions=1&id='.$IncidentObj->id.'&Queue='.$Queue,
-    Tab => loc('Link [_1]', $Queue);
+    Tab => loc('Link [_1]', $Queue),
     Title => $title,
  &>
 
 <& Elements/BulkLink,
+    Query => $Query,
     SubmitCaption => $SubmitCaption, 
     id => $id,
     Status => 'open',
     BaseURL => "/RTIR/Incident/LinkChildren.html",
     Queue => $Queue,
-    %ARGS &>
+    &>
 
 <%INIT>
 my $IncidentObj = LoadTicket($id);
@@ -52,4 +53,5 @@ my $SubmitCaption = loc("Link selected with Incident #[_1]", $IncidentObj->id);
 <%ARGS>
 $id => undef
 $Queue => undef
+$Query => undef
 </%ARGS>
