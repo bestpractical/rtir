@@ -22,30 +22,56 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-% while (my $Transaction = $Transactions->Next) {
-% my $type = $Transaction->Type;
-% next if ( $type eq 'CustomField' &&
-%           substr($Transaction->BriefDescription, 0, 6) eq '_RTIR_');
-% if (@Include) {
-% my $found = 0;
-% foreach my $inc (@Include) {
-%   $found = 1 if ($inc eq $type);
+<%PERL>
+while (my $Transaction = $Transactions->Next) {
+my $type = $Transaction->Type;
+next if ( $type eq 'CustomField' &&
+          substr($Transaction->BriefDescription, 0, 6) eq '_RTIR_');
+if (@Include) {
+  my $found = 0;
+  foreach my $inc (@Include) {
+    $found = 1 if ($inc eq $type);
+  }
+  next unless ($found);
+}
+my $attachments = $Transaction->Attachments;
+my ($headers, $content);
+$attachments->GotoFirstItem;
+while (my $message=$attachments->Next) {
+   #we don't want to show any empty transactions, unless they have kids
+   next unless ($message->Content || $message->Children->Count);
+
+  if ($ShowHeaders && $message->Parent == 0) {
+      $headers = $message->NiceHeaders;
+      chomp $headers;
+      if ($headers) {
+	   # localize the common headers (like 'Subject:'), too.
+	   eval {$headers =~ s/^([^:]+)(?=:)/loc($1)/em; } # we eval here to catch errors when 5.6 panics
+           
+      }
+  }
+     # 13456 is a random # of about the biggest size we want to see inline text
+     my $MAX_INLINE_BODY = 13456;
+     if ($message->ContentType =~ m{^(text/plain|message|text$)}i && 
+				    length($message->Content)< $MAX_INLINE_BODY ) {
+
+	 $content = $message->Content;
+
+     }
+     else {
+	 $content = "";
+     }
+}
+</%PERL>
+% if ($headers) {
+<% $headers %>
 % }
-% next unless ($found);
-% }
-%# my $transdate = $Transaction->CreatedAsString();
-%# <%$transdate%> <%$Transaction->CreatorObj->Name%> - <%$Transaction->BriefDescription%>
-% my $attachments = $Transaction->Attachments;
-% $attachments->GotoFirstItem;
-% while (my $message=$attachments->Next) {
-%    #we don't want to show any empty transactions, unless they have kids
-%    next unless ($message->Content || $message->Children->Count);
-<% $message->Content %>
-% }
+<% $content %>
 % }
 
 <%ARGS>
 $Transactions => undef
 $Show => 'all'
+$ShowHeaders => 0
 @Include => undef
 </%ARGS>

@@ -168,12 +168,10 @@
 % my $Transactions = $Ticket->Transactions;
 % my $i;
 <TEXTAREA COLS=72 ROWS=15 WRAP=HARD NAME="Content">
-% while (my $Transaction = $Transactions->Next) {
-% $i++;
-% my $transdate = $Transaction->CreatedAsString();
-% $transdate =~ s/\s/&nbsp;/g;
-<%$transdate%> <%$Transaction->CreatorObj->Name%> - <%$Transaction->BriefDescription%>
-% }
+<& /RTIR/Elements/TransactionData, 
+    Transactions => $Transactions,
+    Type => 'messages',
+    Include => {'Create', 'Correspond'} &>
 </textarea>
 % } else {
   <& /Elements/MessageBox, QuoteTransaction => $QuoteTransaction &>
