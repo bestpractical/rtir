@@ -728,8 +728,8 @@ while (my $CustomField = $CustomFields->Next()) {
        ScripAction      => 'User Defined',
        CustomCommitCode => q[
 # ------------------------------------------------------------------- #
-if ($self->TicketObj->NewValue eq 'resolved' or 
-    $self->TicketObj->NewValue eq 'rejected') {
+if ($self->TransactionObj->NewValue eq 'resolved' or 
+    $self->TransactionObj->NewValue eq 'rejected') {
   my $members = $self->TicketObj->Members;
   while (my $link = $members->Next) {
     my $member= $link->BaseObj;
