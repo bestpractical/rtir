@@ -61,7 +61,7 @@ Determine if the Starts date is already set.
 sub Prepare {
     my $self = shift;
 
-    if ($self->TicketObj->StartsObj->AsString eq "Not set") {
+    if ($self->TicketObj->StartsObj->Unix < 0) {
 	return 1;
     } else {
 	return 0;
