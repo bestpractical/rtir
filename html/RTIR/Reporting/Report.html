@@ -97,6 +97,9 @@ foreach my $key (sort keys %$classifications) {
 	next if ($class ne 'Unclassified' && $value ne $class);
 	next if ($class eq 'Unclassified' && $value ne "");
 
+	$value = get_incident_field( $t, '_RTIR_Function');
+	next if	($value ne $incident_type);
+
 	$class_count++;
     }
 
