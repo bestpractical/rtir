@@ -60,16 +60,8 @@
 <td colspan=5>
 [<a href="<%$RT::WebPath%>/RTIR/Search/Results.html?Queue=<%$Queue%><%$QueryString%>"><%loc("Refine Search")%></a>]
 % if ($Type eq 'Incident') {
-% my $linkfile;
-%   if ($Queue eq 'Incident Reports') {
-%     $linkfile="LinkReports.html";
-%   } elsif ($Queue eq 'Investigations') {
-%     $linkfile="LinkInvestigations.html";
-%   } elsif ($Queue eq 'Blocks') {
-%     $linkfile="LinkBlocks.html";
-%   }
-% if ($linkfile) {
-[<a href="<%$RT::WebPath%>/RTIR/Incident/<%$linkfile%>?ClearRestrictions=1&AttachmentField=Content&AttachmentFieldOp=LIKE&ValueOfAttachmentField=<%$q%>&id=<%$ticket%>"><%loc("Bulk Link")%></a>]
+% if ($Queue) {
+[<a href="<%$RT::WebPath%>/RTIR/Incident/LinkChildren.html?ClearRestrictions=1&Queue=<%$Queue%>&AttachmentField=Content&AttachmentFieldOp=LIKE&ValueOfAttachmentField=<%$q%>&id=<%$ticket%>"><%loc("Bulk Link")%></a>]
 % }
 %   if ($Queue eq 'Investigations' and $lookuptype eq 'email') {
 <br>[<a href="<%$RT::WebPath%>/RTIR/Create.html?Incident=<%$ticket%>&Requestors=<%$q%>&Queue=Investigations"><%loc("Launch new: [_1]", $q)%></a>]

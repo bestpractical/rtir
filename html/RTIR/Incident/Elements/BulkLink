@@ -28,9 +28,9 @@
 
 <& /RTIR/Search/Elements/ShowResults, 
     Queue => $Queue,
+    Query => $Query,
     QueryString => $QueryString, 
     BaseURL => $BaseURL,
-    Format => $Format,
     %ARGS &>
 
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => loc("Link") &>
@@ -42,13 +42,9 @@ $Format = $RT::RTIRLinkSearchResultFormat;
 my $TicketObj = new RT::Ticket($session{'CurrentUser'});
 $TicketObj->Load($id);
 
-my $Queue = $TicketObj->QueueObj->Name;
 my ($Type, @states) = $m->comp('/RTIR/Elements/Type', Ticket => $id);
 
-my ($LinkType, @linkstates) = $m->comp('/RTIR/Elements/Type', Queue => $LinkQ);
-
-my $QueueObj = new RT::Queue($session{'CurrentUser'});
-$QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
+my ($LinkType, @linkstates) = $m->comp('/RTIR/Elements/Type', Queue => $Queue);
 
 my ($title, $ticketcount);
 $session{'i'}++;
@@ -72,7 +68,7 @@ if ( $session{'tickets'}->Query()) {
 }
 
 if (!$Query) {
-    $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $LinkQ);
+    $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
 }
 
 my $QueryString = "&".$m->comp('/Elements/QueryString',
@@ -84,7 +80,7 @@ my $QueryString = "&".$m->comp('/Elements/QueryString',
                                Page => $Page);
 
 if (!$BaseQuery) {
-    $BaseQuery = $m->comp('/RTIR/Elements/BaseQuery', Queue => $LinkQ);
+    $BaseQuery = $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
 }
 
 $Query = "$BaseQuery AND ( $Query )";
@@ -94,9 +90,9 @@ $ARGS{'Query'} = $Query;
 
 <%ARGS>
 $id => undef
-$LinkQ => undef
 $SubmitCaption => loc("Link Tickets")
-$BaseURL => "/RTIR/Incident/LinkReports.html"
+$Queue => undef
+$BaseURL => "/RTIR/Incident/LinkChildren.html?id=$id&Queue=$Queue"
 $BaseQuery => undef
 $Query => undef
 $Format => undef 

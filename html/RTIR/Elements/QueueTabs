@@ -87,18 +87,6 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName) {
 		path  => "RTIR/Display.html?id=" . $id, }
     };
 
-    if ($Type eq 'Incident') {
-	$ticket_page_tabs->{'_B'} = { title => loc('Incident Reports'),
-		path  => "RTIR/Incident/ShowReports.html?id=" . $id, };
-	
-    	$ticket_page_tabs->{'_C'} = { title => loc('Investigations'),
-		path  => "RTIR/Incident/ShowInvestigations.html?id=" . $id, };
-	
-    	$ticket_page_tabs->{'_D'} = { title => loc('Blocks'),
-		path  => "RTIR/Incident/ShowBlocks.html?id=" . $id, 
-		separator => 1};
-    };
-
 # only show edit option if they can do it
 if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
     $ticket_page_tabs->{'_E'} = { title => loc('Edit'),
@@ -110,6 +98,11 @@ if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
     $ticket_page_tabs->{'_G'} = { title => loc('Merge'),
             path  => "RTIR/Merge.html?id=$id$QueryString",
 	    separator => 1  };
+
+    foreach my $key (keys %$appendtabs) {
+	$ticket_page_tabs->{$key}->{'title'} = $appendtabs->{$key}->{'title'};
+	$ticket_page_tabs->{$key}->{'path'} = $appendtabs->{$key}->{'path'};
+    }
 
 }
 
@@ -225,13 +218,14 @@ if ($Type eq 'Report') {
 	$tabs->{'h'}->{"subtabs"}        = $subtabs;
     }
 
-} elsif ($Type eq 'Incident' && $ChildObj) {
-    my $childq = $ChildObj->QueueObj->Name;
+} elsif ($Type eq 'Incident' && $Ticket &&
+	$Ticket->QueueObj->Name ne 'Incidents') {
+    my $childq = $Ticket->QueueObj->Name;
     next if $childq eq 'Incidents';
     my ($childtype, undef) = $m->comp('/RTIR/Elements/Type', Queue => $childq);
     
-    $tabs->{'h'} = { title => loc('Link [_1] #[_2]', $childtype, $ChildObj->Id),
-				  path  => "RTIR/Incident/LinkToIncident.html?id=" . $ChildObj->Id,
+    $tabs->{'h'} = { title => loc('Link [_1] #[_2]', $childtype, $Ticket->Id),
+				  path  => "RTIR/Incident/LinkToIncident.html?id=" . $Ticket->Id,
 				  separator => 1 };
 
     if ( $tabs->{'h'}->{'path'} eq $current_tab ) {
@@ -243,9 +237,9 @@ if ($Type eq 'Report') {
 
   
 <%ARGS>
-$ChildObj => undef
 $Ticket => undef
 $subtabs => undef
+$appendtabs => undef
 $current_tab => undef
 $current_subtab => undef
 $Title => undef

@@ -23,10 +23,12 @@
 %# 
 %# END LICENSE BLOCK
 <& /RTIR/Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
-<& Elements/ReportTabs, 
+<& Elements/LinkTabs, 
+    Queue => 'Incident Reports',
     Ticket => $IncidentObj, 
     current_tab => 'RTIR/Incident/ShowReports.html?id='.$IncidentObj->id,
     current_subtab => 'RTIR/Incident/ReplyToReporters.html',
+    Tab => 'Bulk Reply',
     Title => $title &>
 
 <form action="BulkReply.html" method=get>
@@ -34,6 +36,26 @@
 <input type=hidden name=IncidentObj value=<%$IncidentObj%>>
 <input type=hidden name=Status value=<%$ARGS{'DefaultStatus'}%>>
 <input type=hidden name=All value=<%$ARGS{'All'}%>>
+
+<h2>Reporters</h2>
+<& /RTIR/Search/Elements/ShowResults, 
+    BaseQuery => $BaseQuery,
+    Query => "($Query) AND Queue = 'Incident Reports'",
+    QueryString => $QueryString, 
+    BaseURL => $BaseURL,
+    Format => $Format,
+    &>
+
+<h2>Investigation Correspondents</h2>
+<& /RTIR/Search/Elements/ShowResults, 
+    BaseQuery => $BaseQuery,
+    Query => "($Query) AND Queue = 'Investigations'",
+    QueryString => $QueryString, 
+    BaseURL => $BaseURL,
+    Format => $Format,
+    &>
+
+
 %if ($ticketcount && !  $ARGS{'HideResults'}) {
 <TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
 <& /RTIR/Elements/TicketHeader, check => "check", Type => 'Report', %ARGS &>
@@ -59,7 +81,7 @@
 %while (my $Ticket = $session{'tickets'}->Next) {
 % next if ($Ticket->FirstCustomFieldValue('_RTIR_State') eq 'resolved' ||
 %	   $Ticket->FirstCustomFieldValue('_RTIR_State') eq 'rejected');
-% next unless ($Ticket->QueueObj->Name eq 'Investigations');
+% next unless ($Ticket->QueueObj->Name eq 'Investigation');
 % $i++;
 <& /RTIR/Elements/TicketRow, Type => 'Report', Ticket => $Ticket, i=> $i, check => "check", %ARGS &>
 % }
@@ -99,50 +121,36 @@
 </form>
 
 <%INIT>
-
+$Format = $RT::RTIRBulkReplyResultFormat;
 my $IncidentObj = LoadTicket($id);
 
 my ($title, $ticketcount, $found);
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load("Incident Reports") || Abort(loc("Queue could not be loaded."));
 
-my $MyReports;
-$MyReports = new RT::Tickets ($session{'CurrentUser'});
-$MyReports->LimitQueue(VALUE => 'Incident Reports');
-my $cf = RT::CustomField->new($session{'CurrentUser'});
-$cf->LoadByNameAndQueue(Queue => $QueueObj->Id, Name => '_RTIR_State');
-$MyReports->LimitCustomField(CUSTOMFIELD => $cf->Id, VALUE => 'open');
-
 if (! $session{'tickets'}) {
     # Init a new search
     $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
 }
 
-$session{'i'}++;
-if ($session{'tickets'}) {
-    if ($ARGS{'DeleteRestriction'}) {
-	    $session{'tickets'}->DeleteRestriction($ARGS{'DeleteRestriction'});
-    }
-    if ( ($ARGS{'ClearRestrictions'}) || ($ARGS{'NewSearch'}) ) {
-      $session{'tickets'}->ClearRestrictions;
-
-      $session{'tickets'}->LimitQueue(VALUE => "Incident Reports");
-
-      if ($All) {
-        $session{'tickets'}->LimitQueue(VALUE => "Investigations");
-      }
-    $session{'tickets'}->LimitMemberOf($id);
-    }	
+if (!$Query) {
+    $Query = "('CF.Incident Reports.{_RTIR_State}' = 'open' OR 'CF.Investigations.{_RTIR_State}' = 'open') AND MemberOf = $id";
 }
-   ProcessSearchQuery(ARGS=>\%ARGS);
-   $session{'tickets'}->RedoSearch();
 
-   if ( $session{'tickets'}->DescribeRestrictions()) {
-       $ticketcount = $session{tickets}->Count();
-        $found = loc('Found [quant,_1,incident]', $ticketcount);
-    } else {
-        $found = loc("Find incidents");
-   }
+my $QueryString = "&".$m->comp('/Elements/QueryString',
+                               Query => $Query,
+                               Format => $Format,
+                               Rows => $Rows,
+                               OrderBy => $OrderBy,
+                               Order => $Order,
+                               Page => $Page);
+
+if (!$BaseQuery) {
+    $BaseQuery = "Queue = 'Incident Reports'";
+    $BaseQuery = "($BaseQuery OR Queue = 'Investigations')" if $All;
+}
+
+$Query = "$BaseQuery AND ( $Query )";
 
 my ($SubmitCaption, $SubmitLabel);
 if ($ARGS{'DefaultStatus'} eq 'resolved') {
@@ -171,4 +179,13 @@ $session{'tickets'}->PrepForSerialization();
 <%ARGS>
 $id => undef
 $All => 0
+$BaseURL => "/RTIR/Incident/Reply.html?DefaultStatus=stalled&id=$id"
+$BaseQuery => undef
+$Query => undef
+$Format => undef 
+$HideResults => 0
+$Rows => 50
+$Page => 1
+$OrderBy => 'id'
+$Order => 'ASC'
 </%ARGS>

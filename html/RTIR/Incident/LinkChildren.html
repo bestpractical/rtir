@@ -22,27 +22,34 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /RTIR/Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
-<& Elements/BlockTabs, 
+<& /RTIR/Elements/Header, 
+    Title => $title, 
+    Refresh => $session{'tickets_refresh_interval'} &>
+
+<& Elements/LinkTabs, 
+    Queue => $Queue,
     Ticket => $IncidentObj, 
-    current_tab => 'RTIR/Incident/ShowBlocks.html?id='.$IncidentObj->id,
-    current_subtab => 'RTIR/Incident/LinkBlocks.html',
-    Title => $title &>
+    current_subtab => 'RTIR/Incident/LinkChildren.html?ClearRestrictions=1&id='.$IncidentObj->id.'&Queue='.$Queue,
+    Tab => loc('Link [_1]', $Queue);
+    Title => $title,
+ &>
 
 <& Elements/BulkLink,
     SubmitCaption => $SubmitCaption, 
     id => $id,
-    Path => "/RTIR/Incident/LinkBlocks.html",
+    Status => 'open',
+    BaseURL => "/RTIR/Incident/LinkChildren.html",
+    Queue => $Queue,
     %ARGS &>
 
 <%INIT>
 my $IncidentObj = LoadTicket($id);
-my $title = loc("Link selected Blocks to Incident #[_1]", $IncidentObj->Id);
-my $SubmitCaption = loc("Link selected blocks with Incident #[_1]", $IncidentObj->id);
+my $title = loc("Link selected [_1] to Incident #[_2]", $Queue, $IncidentObj->Id);
+my $SubmitCaption = loc("Link selected with Incident #[_1]", $IncidentObj->id);
 
 </%INIT>
 
 <%ARGS>
 $id => undef
+$Queue => undef
 </%ARGS>
-

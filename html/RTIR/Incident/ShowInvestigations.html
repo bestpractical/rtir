@@ -23,7 +23,8 @@
 %# 
 %# END LICENSE BLOCK
 <& /RTIR/Elements/Header, Title => $Title &>
-<& /RTIR/Incident/Elements/InvestigationTabs, 
+<& /RTIR/Incident/Elements/LinkTabs, 
+    Queue => 'Investigations',
     Ticket => $Incident, 
     current_tab => 'RTIR/Incident/ShowInvestigations.html?id='.$Incident->id,
     Title => $Title &>

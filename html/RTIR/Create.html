@@ -30,7 +30,8 @@
     current_subtab => "RTIR/Split.html?Ticket=".$TicketObj->Id, 
     Title => $Title &>
 % } elsif ($Incident) {
-<& "/RTIR/Incident/Elements/".$Type."Tabs", 
+<& "/RTIR/Incident/Elements/LinkTabs", 
+    Queue => $Queue,
     Ticket => $IncidentObj,
     current_tab => "RTIR/Create.html?Incident=".$Incident."&Queue=".$Queue, 
     current_subtab => "RTIR/Create.html?Incident=".$Incident."&Queue=".$Queue, 
