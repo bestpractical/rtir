@@ -29,7 +29,12 @@
     current_subtab => $current_subtab, 
     Title => $Title,
     Ticket => $TicketObj &>
-<FORM ACTION="<%$RT::WebPath%>/RTIR/Incident/Create.html" METHOD="POST" ENCTYPE="multipart/form-data">
+
+<& /Elements/ListActions, actions => \@results &>
+
+Starts: <% $ARGS{'Starts'} %><br>
+
+<FORM METHOD="GET" ENCTYPE="multipart/form-data">
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
 <INPUT TYPE=HIDDEN Name="child" VALUE=<%$child%>>
 <INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
@@ -82,7 +87,8 @@
     <td class="value">
       <& /RTIR/Elements/EditRTIRField, 
          QueueObj => $QueueObj, 
-	 Name => 'SLA' &>
+	 Name => 'SLA',
+	 Default => 'full service minor (within 2 hours)' &>
     </td>
   </tr>
   <tr>
@@ -122,7 +128,7 @@
 </TR>
 <TR>
 <TD class=labeltop>
-<&|/l&>Additional information</&>:
+<&|/l&>Message</&>:
 </TD>
 <TD COLSPAN=5>
 % if (exists $ARGS{Content}) {
@@ -179,7 +185,7 @@
       </TR>
       <TR>
         <TD ALIGN=RIGHT><&|/l&>Time Worked</&>:</TD>
-	<TD><input size=3 name="TimeWorked"<% $ARGS{TimeWorked} && " VALUE=\"$ARGS{TimeWorked}\""  %>></TD>
+	<TD><input size=3 name="TimeWorked"<% $ARGS{TimeWorked} && " VALUE=\"$ARGS{TimeWorked}\"" || " VALUE=0" %>></TD>
       </TR>
       <TR>
         <TD ALIGN=RIGHT><&|/l&>Time Left</&>:</TD>
@@ -197,7 +203,12 @@
     <TABLE BORDER=0>
       <TR>
         <TD ALIGN=RIGHT><&|/l&>Starts</&>:</TD>
-	  <TD><input size=10 name="Starts"<% $ARGS{Starts} && " VALUE=\"$ARGS{Starts}\"" %>></TD>
+% my $nowstring = gmtime();
+% if ($ARGS{Starts}) {
+	  <TD><input size=10 name="Starts" VALUE="<%$ARGS{Starts}%>"></TD>
+% } else {
+	  <TD><input size=10 name="Starts" VALUE="<%$nowstring%>"></TD>
+% }
       </TR>
       <TR>
         <TD ALIGN=RIGHT><&|/l&>Due</&>:</TD>
@@ -236,7 +247,7 @@ if ($ARGS{'new-MemberOf'}) {
 }
 
 if (!defined $current_tab) {
-  $current_tab = "RTIR/Incident/Create.html?Queue=".$QueueObj->Id; 
+  $current_tab = "RTIR/Incident/Create.html"; 
 }
 
 my $CFs = $QueueObj->CustomFields();
@@ -277,9 +288,14 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
 
 # }}}
 
+my @results;
 if ((!exists $ARGS{'AddMoreAttach'}) && ($ARGS{'id'} eq 'new')) { # new ticket?
+  if ($ARGS{'Type'} and $ARGS{$ARGS{'Type'}}) {
     $m->comp('Display.html', %ARGS);
     $m->abort();
+  } else {
+    push @results, "Incident creation failed: Type must be set.";
+  }
 }
 </%INIT>
 

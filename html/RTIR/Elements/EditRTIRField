@@ -23,9 +23,11 @@
 %# 
 %# END LICENSE BLOCK
 % if (defined $CustomField) {
+<input type=hidden name=<%$Name%> value=<%$NamePrefix%><%$CustomField->id%>-Values>
 <& /Ticket/Elements/EditCustomField, TicketObj => $TicketObj, 
     CustomField => $CustomField, 
     NamePrefix => $NamePrefix,
+    Default => $Default,
     Cols => $Cols &>
 % }
 
@@ -58,4 +60,5 @@ $TicketObj => undef
 $QueueObj => undef
 $Name => undef
 $Cols => undef
+$Default => undef
 </%ARGS>

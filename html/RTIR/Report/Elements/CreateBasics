@@ -103,7 +103,8 @@
           <td>
             <& /RTIR/Elements/EditRTIRField, 
 	      TicketObj => $Ticket,
-              QueueObj => $QueueObj, Name => 'HowReported' &>
+              QueueObj => $QueueObj, Name => 'HowReported',
+	      Default => "Email" &>
           </td>
     <td class=label>
       <%loc("Reporter Type")%>:

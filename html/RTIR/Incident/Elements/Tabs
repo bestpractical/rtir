@@ -185,7 +185,7 @@ if (    $Ticket->CurrentUserHasRight('ModifyTicket')
 }
 }
 
-$tabs->{"A"} = { path      => 'RTIR/Incident/Create.html?Queue='.$q->Id,
+$tabs->{"A"} = { path      => 'RTIR/Incident/Create.html',
                  title     => loc('New Incident') };
 $tabs->{"g"} = { path      => 'RTIR/Incident/Listing.html',
                  title     => loc('Search'),

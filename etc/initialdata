@@ -245,6 +245,26 @@
        ScripCondition => 'On Create',
        ScripAction    => 'Notify Requestors',
        Template       => 'NewMessage' },
+    {  Queue            => 'Incident Reports',
+       ScripCondition => 'On Create',
+       ScripAction      => 'User Defined',
+       CustomCommitCode => q[
+# ------------------------------------------------------------------- #
+my $CustomFields = $self->TicketObj->QueueObj->CustomFields();
+$CustomFields->{'find_disabled_rows'} = 1;
+while (my $CustomField = $CustomFields->Next()) {
+  if ($CustomField->Name eq '_RTIR_HowReported') {
+    my $Values = $self->TicketObj->CustomFieldValues($CustomField->id);
+    if (!$Values->Next) {
+      $self->TicketObj->AddCustomFieldValue(Field => $CustomField->id, Value => "Email");
+    }
+  }
+}
+  return 1;
+# ------------------------------------------------------------------- #
+	],
+       CustomPrepareCode => '1',
+       Template       => 'Blank' },
     {  Description => "SetRTIRState",
        Queue            => 'Blocks',
        ScripCondition   => 'User Defined',
