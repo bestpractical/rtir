@@ -15,6 +15,10 @@ if (substr($$row, 0, length($prefix)) eq $prefix) {
   $$row = substr($$row, length($prefix));
 }
 
+if ($$row =~ /Status: Status changed from/) {
+  $$skip = 1;
+}
+
 </%INIT>
 
 <%ARGS>
