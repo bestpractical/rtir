@@ -197,7 +197,9 @@
 <& /Ticket/Elements/ShowHistory , 
       Ticket => $Ticket, 
       Collapsed => $ARGS{'Collapsed'}, 
-      ShowHeaders => $ARGS{'ShowHeaders'} &> 
+      ShowHeaders => $ARGS{'ShowHeaders'},
+      UpdatePath => "$RT::WebPath/RTIR/Update.html",
+&> 
 
   
 <%INIT>
