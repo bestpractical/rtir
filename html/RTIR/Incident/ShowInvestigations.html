@@ -54,7 +54,7 @@
   $count=0;
   while (my $link = $Incident->Members->Next) {
     my $member= $link->BaseObj;
-    if ($member->QueueObj->Name eq 'Blocks') {
+    if ($member->QueueObj->Name eq 'Investigations') {
       $count++;
     }
   }

@@ -130,12 +130,12 @@ $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
                      $Ticket->CurrentUserHasRight('ModifyTicket') );
 
 
-my (@wresults, @results, @okresults, @dresults, @lresults);
+my (@wresults, @cfresults, @results, @okresults, @dresults, @lresults);
 
 unless ($OnlySearchForPeople) {
     @wresults = ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
     @results = ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
-
+    @cfresults = ProcessTicketCustomFieldUpdates(ARGSRef => \%ARGS);
     @dresults = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
     @lresults = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
 
@@ -152,6 +152,7 @@ unless ($OnlySearchForPeople) {
 	}
 }
 push @results, @wresults;
+push @results, @cfresults;
 push @results, @dresults;
 push @results, @lresults;
 push @results, @okresults;
