@@ -49,6 +49,7 @@
 <input type=hidden name=Query value="<%$Query%>">
 <input type=hidden name=Format value="<%$Format%>">
 <input type=hidden name=BaseQuery value="<%$BaseQuery%>">
+<input type=hidden name=Queue value="<%$ARGS{'Queue'}%>">
 <table width=100%>
 <tr>
 <td valign=top class="boxcontainer">
