@@ -56,10 +56,13 @@ my %cb =
      my ($pre,$post) = split /@/,$value,2;
      my $result = qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=email&q=$value">$value</A> ];
 if ($incident) {
-      $result .= qq[[<A HREF="$RT::WebPath/RTIR/Create.html?Incident=$incident&Queue=Investigations&Requestors=$value">Investigate to</A>] ];
+    if ($r->uri =~ /Lookup.html$/) {
+	$result .= qq[<INPUT TYPE=CHECKBOX NAME="Requestorbox-$value" UNCHECKED>];
+    }
+    $result .= qq[[<A HREF="$RT::WebPath/RTIR/Create.html?Incident=$incident&Queue=Investigations&Requestors=$value">Investigate to</A>] ];
 }
-      $result .= qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=host&q=$post">($post)</A>];
-   },
+     $result .= qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=host&q=$post">($post)</A>];
+ },
    url =>
    sub {
      my ($type,$value) = @_;

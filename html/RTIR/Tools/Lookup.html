@@ -142,6 +142,12 @@
 
 % if ($q) {
 <h2>WHOIS Results</h2>
+% if ($TicketObj && $TicketObj->QueueObj->Name eq 'Incidents') {
+<FORM METHOD=POST ACTION="/RTIR/Tools/ScriptedAction.html">
+<input type=hidden NAME="incidentid" VALUE=<%$TicketObj->Id%>>
+<input type=hidden NAME="Subject" VALUE="<%$TicketObj->Subject%>">
+
+% }
 % }
 % if ($error){
 <b><%$error%></b>
@@ -152,6 +158,9 @@
 %     if ($handparse || $#lines_starting_with_space >= 4) { #we couldn't parse that. suck
 %       my $content = join("", $obj->content());
 %       $m->comp( '/RTIR/Elements/MakeClicky', ticket => $TicketObj, url_params => "ticket=".$ticket."&server=$server", content => \$content);
+% if ($content =~ /Requestorbox/ig) {
+%    $DoInvestigate = 1;
+% }
 <pre><%$content|n%></pre>
 <br>
 %     } else {
@@ -168,14 +177,25 @@ parse this data.
 <%$value|n%><br>
 %                       }
 % }
+
 % }
 % }
 % }
+
+%# Don't offer the option of Investigating to unless there are addresses
+% if ($DoInvestigate) {
+<& /Elements/Submit, Name => "InvestigateTo", Caption => loc("Investigate to selected addresses"), Label => loc("Investigate")&>
+% }
+
+</FORM>
 
 <%init>
 my $current_subtab;
 my $TicketType;
 my $TicketObj;
+
+my $DoInvestigate;
+
 #  {{{ Set up the whois query
 if (!$server) {
   foreach my $s (sort keys %$servers) {
@@ -188,10 +208,6 @@ if (!$server) {
     last;
   }
 }
-
-$beauty = ( exists($beauties->{ ({ reverse %$servers }->{$server}) })
-      ? $beauties->{ ({ reverse %$servers }->{$server}) } ." (". $server .")"
-      : $server );
 
 my $title = loc("Lookup '[_1]' using server [_2]", $q, $server);
 
@@ -248,7 +264,6 @@ my $Format = $RT::RTIRSearchResultFormats->{$TicketType . 'Default'};
 $servers => $RT::whois
 $server => undef
 $beauties => $RT::WhoisNames
-$beauty => undef
 $handparse => 1
 $q => undef
 $type => undef
