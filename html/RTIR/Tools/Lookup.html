@@ -107,12 +107,21 @@
       <input size=30 name="q" value="<%$q%>"> at 
       <select name="server">
 % foreach my $s (sort keys %{$servers}) {
-% next unless $servers->{$s};
+% my ($host, $name);
+% my $srv = $servers->{$s};
+% next unless $srv;
+% if (ref($srv) eq 'HASH') {
+% $host = $srv->{'Host'};
+% $name = $srv->{'FriendlyName'};
+% } else {
+% $host = $srv;
+% }
+% next unless $srv;
 % my $selected = "";
 % if ($servers->{$s} eq $server) {
 %   $selected = " SELECTED";
 % }
-        <option value="<%$servers->{$s}%>"<%$selected%>><%$servers->{$s}%></option>
+        <option value="<%$host%>"<%$selected%>><%$name || $host%></option>
 % }
       </select>
     </td>
@@ -164,9 +173,6 @@ parse this data.
 % }
 
 <%init>
-
-my $title = loc("Lookup '[_1]' using server [_2]", $q, $server);
-
 my $current_subtab;
 my $TicketType;
 my $TicketObj;
@@ -177,8 +183,16 @@ foreach my $s (sort keys %$servers) {
   last;
 }
 
+$beauty = ( exists($beauties->{ ({ reverse %$servers }->{$server}) })
+      ? $beauties->{ ({ reverse %$servers }->{$server}) } ." (". $server .")"
+      : $server );
+
+my $title = loc("Lookup '[_1]' using server [_2]", $q, $server);
+
 use Net::Whois::RIPE;
-my $query = Net::Whois::RIPE->new($server);
+my ($whois, $port) = split(/\s*:\s*/, $server, 2);
+$port = 43 unless($port =~ /^\d+$/);
+my $query = Net::Whois::RIPE->new($whois, Port => $port);
 my ($iterator, $error);
 if ($query) {
     $iterator = $query->query_iterator($q);
@@ -227,6 +241,8 @@ my $Format = $RT::RTIRSearchResultFormats->{$TicketType . 'Default'};
 <%args>
 $servers => $RT::whois
 $server => undef
+$beauties => $RT::WhoisNames
+$beauty => undef
 $handparse => 1
 $q => undef
 $type => undef

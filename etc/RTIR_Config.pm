@@ -10,7 +10,17 @@ Set($OverdueAfter, 7);
 
 
 # Set the hash of whois servers
-Set($whois, {1 => "localhost", 2 => "whois-demo.bestpractical.com"});
+# Host is of the form "hostname:port"
+Set($whois, { 1 => { Host => "localhost", },
+	      2 => { Host => "whois-demo.bestpractical.com",
+		     FriendlyName => "BPS Demo Server", },
+	  },
+    );
+
+# Beautified hostnames
+Set($WhoisNames, {1 => "Internal Lookup",
+		  2 => "BPS Whois",
+	      } );
 
 # Set the name of the Business::SLA class
 # Use this if you have a custom SLA module
