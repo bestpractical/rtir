@@ -1,3 +1,28 @@
+
+
+
+
+WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING 
+
+UPGRADE RTIR 1.0.x TO RTIR 1.1.x BETA IS NOT YET SUPPORTED.
+
+We're still working to bullet-proof the RTIR beta process and will release
+a second beta as soon as we're confident that we've got a procedure that
+works well for folks.  We _will_ support upgrade from RTIR 1.0.x to RTIR
+1.2.final. 
+
+WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING 
+
+
+
+
+
+
+
+
+
+
+
 NOTE: Follow instructions from previous "upgrading from" sections if
 they apply to your installation.
 
