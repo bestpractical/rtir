@@ -29,16 +29,23 @@
     Title => $Title &>
 
 <h2><% loc('Total Blocks: [_1]', $count) %></h2>
+<form action="ShowBlocks.html" method="post">
+<input type="hidden" name="id" value="<%$Incident->id%>">
+<i><%loc("Check box to unlink")%></i>
 <& /RTIR/Elements/ShowChildren, 
+    Delete => 1,
     Ticket => $Incident, 
     QueueName => 'Blocks',
     DisplayPath => "/RTIR/Block/Display.html" &>
+<& /Elements/Submit, Caption=> loc('Unlink block') &>
+</form>
 
 <%INIT>
   my ($Incident, $Title, $count);  
 
   $Incident = new RT::Ticket($session{'CurrentUser'});
   $Incident = LoadTicket($id);
+  my @results = ProcessTicketLinks( TicketObj => $Incident, ARGSRef => \%ARGS);
 
   $Title = loc("Blocks for Incident #[_1]: [_2]", $Incident->Id, $Incident->Subject);
 

@@ -22,7 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& Create.html, 'new-MemberOf' => $TicketObj->Id,
+<& Create.html, MemberOf => $MemberOf,
     QuoteTransaction => $QuoteTransaction,
     Queue => $Queue,
     Subject => $TicketObj->Subject,
@@ -34,18 +34,17 @@
     Owner => $TicketObj->Owner,
     InitialPriority => $TicketObj->InitialPriority,
     FinalPriority => $TicketObj->FinalPriority,
-    Title => loc("Split Incident #[_1]: [_2]", $TicketObj->id, $TicketObj->Subject),
-    current_tab => "RTIR/Incident/Display.html?id=".$Ticket,
-    current_subtab => "RTIR/Incident/Split.html?Queue=".$Queue."&Ticket=".$Ticket,
- &>
+    Title => loc("Split Block #[_1]: [_2]", $TicketObj->id, $TicketObj->Subject) &>
 
 <%INIT>
-my $TicketObj = LoadTicket($Ticket);
+my $TicketObj = new RT::Ticket($session{'CurrentUser'});
+$TicketObj = LoadTicket($Ticket);
+my $Queue = new RT::Queue($session{'CurrentUser'});
+$Queue->Load("Blocks") || Abort(loc("Queue could not be loaded."));
 </%INIT>
 
 <%ARGS>
 $MemberOf => undef
 $QuoteTransaction => undef
-$Queue => undef
 $Ticket => undef
 </%ARGS>

@@ -26,7 +26,11 @@
 % my $member= $link->BaseObj;
 % if ((!defined $QueueName) or $member->QueueObj->Name eq $QueueName) {
 %   $count++;
-  <LI><a href="<%$RT::WebPath%><%$DisplayPath%>?id=<%$member->Id%>"><%$member->Id%>: <%$member->Subject%></a> [<%$member->Status%>]<br>
+  <li>
+% if ($Delete) {
+  <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
+% }
+  <a href="<%$RT::WebPath%><%$DisplayPath%>?id=<%$member->Id%>"><%$member->Id%>: <%$member->Subject%></a> [<%$member->Status%>]<br>
 % if ($LimitDepth > 0 and $depth < $LimitDepth) {
 <& ShowChildren, Ticket => $member, depth => ($depth+1) &> 
 % }
@@ -53,4 +57,5 @@ $QueueName => undef
 $depth => 1
 $LimitDepth => 0
 $DisplayPath => "/Ticket/Display.html"
+$Delete => 0
 </%ARGS>

@@ -38,11 +38,12 @@
 
 <%INIT>
 my $TicketObj = LoadTicket($Ticket);
+my $Queue = new RT::Queue($session{'CurrentUser'});
+$Queue->Load("Investigations") || Abort(loc("Queue could not be loaded."));
 </%INIT>
 
 <%ARGS>
 $MemberOf => undef
 $QuoteTransaction => undef
-$Queue => undef
 $Ticket => undef
 </%ARGS>

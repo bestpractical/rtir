@@ -22,12 +22,11 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, Title => loc("Edit Investigation #[_1]: [_2]", $Ticket->Id, $Ticket->Subject) &>
-<& /RTIR/Investigation/Elements/Tabs, 
+<& /Elements/Header, Title => $Title &>
+<& /RTIR/Block/Elements/Tabs, 
     Ticket => $Ticket, 
-    current_tab => "RTIR/Investigation/Edit.html?id=".$Ticket->Id, 
-    Title => loc("Edit Investigation #[_1]: [_2]", 
-    $Ticket->Id, $Ticket->Subject) &>
+    current_tab => "RTIR/Block/Edit.html?id=".$Ticket->Id, 
+    Title => $Title &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -37,7 +36,10 @@
 <table border=0 cellspacing=2 cellpadding=0 width=100%>
 <tr>
 <td valign=top width=50%>
-<& /Elements/TitleBoxStart, title => loc('Modify investigation # [_1]', $Ticket->Id),   color=> "#993333", width => "100%" &>
+<& /Elements/TitleBoxStart, 
+    title => $Title, 
+    color=> "#993333", 
+    width => "100%" &>
 <table border=0 cellspacing=2 cellpadding=0 width=100%>
 <tr>
   <td valign=top width=50%>
@@ -49,7 +51,7 @@
 	size => 30 &>
     <tr>
       <td colspan=2>
-        <& /Ticket/Elements/EditCustomFields, TicketObj => $Ticket, QueueObj => $Ticket->QueueObj &>
+        <& /Ticket/Elements/EditCustomFields, TicketObj => $Ticket &>
       </td>
     </tr>
   </TABLE>
@@ -163,6 +165,7 @@ unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
 my $SelectStatus = $m->scomp("/Elements/SelectStatus", Name => 'Status', Default=> $Ticket->Status);
 my $SelectQueue = $m->scomp("/Elements/SelectQueue", Name => 'Queue', Default =>$Ticket->QueueObj->Id);
 
+my $Title = loc("Edit Block #[_1]: [_2]", $Ticket->Id, $Ticket->Subject);
 </%INIT>
 
 

@@ -38,7 +38,8 @@
 
 <%INIT>
 my $TicketObj = LoadTicket($Ticket);
-my $Queue = $TicketObj->QueueObj->Id;
+my $Queue = new RT::Queue($session{'CurrentUser'});
+$Queue->Load("Incident Reports") || Abort(loc("Queue could not be loaded."));
 </%INIT>
 
 <%ARGS>

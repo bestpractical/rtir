@@ -23,12 +23,20 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $Title &>
+% if ($TicketObj) {
+<& /RTIR/Block/Elements/Tabs,
+    Ticket => $TicketObj,
+    current_toptab => "RTIR/Block/Listing.html", 
+    current_tab => "RTIR/Block/Split.html", 
+    Title => $Title &>
+% } else {
 <& /RTIR/Incident/Elements/BlockTabs, 
     Ticket => $IncidentObj,
     current_toptab => "RTIR/Incident/Listing.html", 
     current_tab => "RTIR/Incident/ShowBlocks.html?id=".$Incident, 
     current_subtab => "RTIR/Block/Create.html", 
     Title => $Title &>
+% }
 <FORM ACTION="<%$RT::WebPath%>/RTIR/Block/Create.html" METHOD="GET" ENCTYPE="multipart/form-data">
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
 <INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
@@ -94,23 +102,12 @@
       <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)</&></font></i>
     </TD>
   </TR>
-% while( my $cf = $CFs->Next() ) {
   <TR>
-    <TD class=labeltop>
-% if (index($cf->Name, "_RTIR_") eq 0) {
-      <%substr($cf->Name, length("_RTIR_"))%>:<br>
-% } else {
-      <%$cf->Name%>:<br>
-% }
+    <TD colspan=2>
+      <& /Ticket/Elements/EditCustomFields, 
+        TicketObj => $TicketObj, QueueObj => $QueueObj&>
     </TD>
-<TD>
-  <& /Ticket/Elements/EditCustomFieldValues, 
-    Name => 'CustomField-'.$cf->Id, 
-    CustomField => $cf,
-    TicketObj => $TicketObj &>
-</TD>
-</TR>
-% }
+  </TR>
 <TR>
 % if (exists $session{'Attachments'}) {
 <TD>

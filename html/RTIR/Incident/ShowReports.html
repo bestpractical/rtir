@@ -28,17 +28,26 @@
     current_tab => 'RTIR/Incident/ShowReports.html?id='.$Incident->id,
     Title => $Title &>
 
+<& /Elements/ListActions, actions => \@results &>
+
 <h2><% loc('Total Incident Reports: [_1]', $count) %></h2>
+<form action="ShowReports.html" method="post">
+<input type="hidden" name="id" value="<%$Incident->id%>">
+<i><%loc("Check box to unlink")%></i>
 <& /RTIR/Elements/ShowChildren, 
+    Delete => 1,
     Ticket => $Incident, 
     QueueName => 'Incident Reports',
     DisplayPath => "/RTIR/Report/Display.html" &>
+<& /Elements/Submit, Caption=> loc('Unlink Report') &>
+</form>
 
 <%INIT>
   my ($Incident, $Title, $count);
 
   $Incident = new RT::Ticket($session{'CurrentUser'});
   $Incident = LoadTicket($id);
+  my @results = ProcessTicketLinks( TicketObj => $Incident, ARGSRef => \%ARGS);
 
   $Title = loc("Incident Reports for Incident #[_1]: [_2]", $Incident->Id, $Incident->Subject);
 
@@ -58,6 +67,7 @@
       $count++;
     }
   }
+
 </%INIT>
 
 <%ARGS>

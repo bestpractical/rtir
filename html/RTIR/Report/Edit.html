@@ -50,8 +50,8 @@
 	content => $Ticket->Subject,
 	size => 30 &>
     <tr>
-      <td>
-        <& /RTIR/Elements/EditRTIRFields, TicketObj => $Ticket &>
+      <td colspan=2>
+        <& /Ticket/Elements/EditCustomFields, TicketObj => $Ticket &>
       </td>
     </tr>
   </TABLE>
@@ -83,11 +83,6 @@
   </table>
 </td>
   <td width=50% bgcolor=blue>
-  </td>
-</tr>
-<tr>
-  <td valign=top width=50%>
-    <& /RTIR/Elements/EditCustomFields, TicketObj => $Ticket &>
   </td>
 </tr>
 </table>

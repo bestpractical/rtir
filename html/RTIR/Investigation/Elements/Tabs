@@ -102,7 +102,7 @@ my $ticket_page_tabs = {
 
 
     _C => { title => loc('Split'),
-            path  => "RTIR/Investigation/Split.html?Queue=".$q->Id."&Ticket=" . $id, },
+            path  => "RTIR/Investigation/Split.html?Ticket=" . $id, },
 
     _D => { title => loc('Merge'),
             path  => "RTIR/Investigation/Merge.html?id=" . $id,

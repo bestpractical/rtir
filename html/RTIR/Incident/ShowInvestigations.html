@@ -29,10 +29,15 @@
     Title => $Title &>
 
 <h2><% loc('Total Investigations: [_1]', $count) %></h2>
+<form action="ShowBlocks.html" method="post">
+<input type="hidden" name="id" value="<%$Incident->id%>">
+<i><%loc("Check box to unlink")%></i>
 <& /RTIR/Elements/ShowChildren, 
     Ticket => $Incident, 
     QueueName => 'Investigations',
     DisplayPath => "/RTIR/Investigation/Display.html" &>
+<& /Elements/Submit, Caption=> loc('Unlink investigation') &>
+</form>
 
 <%INIT>
   my ($Incident, $Title, $count);

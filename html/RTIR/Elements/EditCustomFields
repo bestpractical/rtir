@@ -25,12 +25,14 @@
 <table>
 % my @entry_fields;
 % while (my $CustomField = $CustomFields->Next()) {
-% if (!(index($CustomField->Name, "_RTIR_") eq 0)) {
 %   if ($CustomField->Type =~ /Entry$/) {
 %     push @entry_fields, $CustomField;
 %     next;
 %   }
-% my $Values = $TicketObj->CustomFieldValues($CustomField->id);
+% my $Values;
+% if ($TicketObj) {
+% $Values = $TicketObj->CustomFieldValues($CustomField->id);
+% }
   <tr>
     <td class="labeltop">
       <%$CustomField->Name%>:<br>
@@ -63,7 +65,6 @@
     </td>
   </tr>
 % }
-% }
 </table>
 
 % if (@entry_fields) {
@@ -71,8 +72,14 @@
 % }
 
 <%INIT>
-my $CustomFields = $TicketObj->QueueObj->CustomFields();
+my $CustomFields;
+if (defined $TicketObj) {
+  $CustomFields = $TicketObj->QueueObj->CustomFields();
+} else {
+  $CustomFields = $QueueObj->CustomFields();
+}
 </%INIT>
 <%ARGS>
 $TicketObj => undef
+$QueueObj => undef
 </%ARGS>
