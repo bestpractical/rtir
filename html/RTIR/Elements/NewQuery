@@ -9,6 +9,8 @@ if ($states[0]) {
     }
 }
 
+$Query = "( $Query )" if $Query;
+
 return $Query;
 
 </%INIT>
