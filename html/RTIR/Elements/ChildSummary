@@ -24,11 +24,11 @@
 %# END LICENSE BLOCK
 <TABLE width=100% border=0 cellpadding=2 CELLSPACING=0>
 <TR>
-<td><b><&|/l&>id<b></&></td>
-<td><b><&|/l&>Subject<b></&></td>
-<td><b><&|/l&>State<b></&></td>
-<td><b><&|/l&>Priority<b></&></td>
-<td align=right><b><&|/l&>Actions<b></&></td>
+<th><b><&|/l&>id<b></&></th>
+<th><b><&|/l&>Subject<b></&></th>
+<th><b><&|/l&>State<b></&></th>
+<th><b><&|/l&>Priority<b></&></th>
+<th align=right><b><&|/l&>Actions<b></&></th>
 </TR>
 % my $i=0;
 %while (my $Ticket = $session{'tickets'}->Next) {

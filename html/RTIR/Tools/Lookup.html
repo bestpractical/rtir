@@ -39,30 +39,55 @@
 <hr>
 % }
 
-%if (!  $ARGS{'HideResults'}) {
+% unless ( $ARGS{'HideResults'}) {
 <TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
 <tr><td valign=top width=50%>
 
-<& /Elements/TitleBoxStart, title => loc('Incidents: [_1]', $q) &>
-<& /RTIR/Elements/IncidentSummary, Type => $TicketType, ticket => $ticket, q => $q &>
-<& /Elements/TitleBoxEnd&>
-
-<br>
-
-<& /Elements/TitleBoxStart, title => loc('Incident Reports: [_1]', $q), color=> "#336633"&>
-<& /RTIR/Elements/ChildSummary, Queue => 'Incident Reports', Type => $TicketType, ticket => $ticket, lookuptype => $type, q => $q &>
-<& /Elements/TitleBoxEnd&>
-
-</td><td width=50% valign=top>
-
-<& /Elements/TitleBoxStart, title => loc('Investigations: [_1]', $q), color=> "#336633" &>
-<& /RTIR/Elements/ChildSummary, Queue => 'Investigations', Type => $TicketType, ticket => $ticket, lookuptype => $type, q => $q &>
+<& /Elements/TitleBoxStart, 
+    title => loc('Incidents: [_1]', $q) &>
+<& /RTIR/Elements/IncidentSummary, 
+    Type => $TicketType, 
+    ticket => $ticket, 
+    q => $q &>
 <& /Elements/TitleBoxEnd &>
 
 <br>
 
-<& /Elements/TitleBoxStart, title => loc('Blocks: [_1]', $q), color=> "#336633" &>
-<& /RTIR/Elements/ChildSummary, Queue => 'Blocks', Type => $TicketType, ticket => $ticket, lookuptype => $type, q => $q &>
+<& /Elements/TitleBoxStart, 
+    title => loc('Incident Reports: [_1]', $q), 
+    color=> "#336633"&>
+<& /RTIR/Elements/ChildSummary, 
+    Queue => 'Incident Reports', 
+    Type => $TicketType, 
+    ticket => $ticket, 
+    lookuptype => $type, 
+    q => $q &>
+<& /Elements/TitleBoxEnd&>
+
+</td><td width=50% valign=top>
+
+<& /Elements/TitleBoxStart, 
+    title => loc('Investigations: [_1]', $q), 
+    color=> "#336633" &>
+<& /RTIR/Elements/ChildSummary, 
+    Queue => 'Investigations', 
+    Type => $TicketType, 
+    ticket => $ticket, 
+    lookuptype => $type, 
+    q => $q &>
+<& /Elements/TitleBoxEnd &>
+
+<br>
+
+<& /Elements/TitleBoxStart, 
+    title => loc('Blocks: [_1]', $q), 
+    color=> "#336633" &>
+<& /RTIR/Elements/ChildSummary, 
+    Queue => 'Blocks', 
+    Type => $TicketType, 
+    ticket => $ticket, 
+    lookuptype => $type, 
+    q => $q &>
 <& /Elements/TitleBoxEnd &>
 </TABLE>
 % }
@@ -136,6 +161,13 @@ parse this data.
 % }
 
 <%init>
+
+my $title = loc("Lookup '[_1]' using server [_2]", $q, $server);
+
+my $current_subtab;
+my $TicketType;
+my $TicketObj;
+#  {{{ Set up the whois query
 foreach my $s (sort keys %$servers) {
   # just pick the first one
   $server = $servers->{$s} unless ($server);
@@ -148,42 +180,39 @@ my ($iterator, $error);
 if ($query) {
     $iterator = $query->query_iterator($q);
 } else {
-    $error = "Unable to connect to whois server '$server'";
+    $error = loc( "Unable to connect to WHOIS server '[_1]'", $server);
 }
-$ARGS{'ClearRestrictions'}="1";
-$ARGS{'AttachmentField'}="Content";
-$ARGS{'AttachmentFieldOp'}="LIKE";
-$ARGS{'ValueOfAttachmentField'}=$q;
 
-if (! $session{'tickets'}) {
+# }}}
+
+    my $max_age; 
+    if ($RT::RTIR_OldestRelatedTickets) {
+        $max_age = 0 - $RT::RTIR_OldestRelatedTickets;
+    } else {
+        $max_age = -60;
+    }
+
+    my $now = RT::Date->new($session{'CurrentUser'});
+    $now->SetToNow();
+    $now->AddDays($max_age);
+
     # Init a new search
     $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
-}
 
-my $title = "Lookup $q using server $server";
-my $ticketcount;
-$session{'i'}++;
-if ($session{'tickets'}) {
-    if ($ARGS{'DeleteRestriction'}) {
-	    $session{'tickets'}->DeleteRestriction($ARGS{'DeleteRestriction'});
-    }
-    if ( ($ARGS{'ClearRestrictions'}) || ($ARGS{'NewSearch'}) ) {
-	    $session{'tickets'}->ClearRestrictions;
-	}	
-}
-   ProcessSearchQuery(ARGS=>\%ARGS);
-   $session{'tickets'}->RedoSearch();
-   if ( $session{'tickets'}->DescribeRestrictions()) {
-       $ticketcount = $session{tickets}->Count();
-   }
-
-my $current_subtab;
 if ($q) {
   $current_subtab = 'RTIR/Tools/Lookup.html?q='.$q."&server=".$server; 
+    my ( $val, $msg ) =
+      $session{'tickets'}->FromSQL(
+            "(     ContentType = 'text/plain' "
+          . "OR ContentType = 'text' "
+          . "OR ContentType = 'text/html' )"
+          . " AND Content LIKE '$q' "
+          . " AND TransactionDate > '"
+          . $now->ISO
+          . "'" );
+
 }
 				   
-my $TicketType;
-my $TicketObj;
 if ($ticket) {
   $TicketType = $m->scomp("/RTIR/Elements/Type", Ticket => $ticket);
   $TicketType =~ s/\s*$//;

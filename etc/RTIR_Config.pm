@@ -75,4 +75,11 @@ Set($_RTIR_Constituency_default, "EDUNET");
 
 # Set($ReplyString , "Re:");
 
+# RTIR_OldestRelatedTickets controls how far back, in days, RTIR
+# should look for tickets which might contain a specific string,
+# such as an IP address.
+
+Set($RTIR_OldestRelatedTickets, 60);
+
+
 1;
