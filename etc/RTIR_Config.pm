@@ -6,7 +6,7 @@ Set($rtirname , "RTIR for " . $Organization);
 # Set the number of days a message awaiting an external response
 # may be inactive before the ticket becomes overdue
 
-Set($overdueafter, 7);
+Set($OverdueAfter, 7);
 
 
 # Set the hash of whois servers

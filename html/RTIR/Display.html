@@ -229,7 +229,7 @@ if ($ARGS{'id'} eq 'new') {
     } elsif ($ARGS{'Action'} eq 'Respond' && @UpdateActions) {
       my $date = RT::Date->new($RT::SystemUser);
       $date->SetToNow;
-      $date->AddDays($RT::overdueafter);
+      $date->AddDays($RT::OverdueAfter);
       $ARGS{'Due_Date'} = $date->AsString;
     }
   }

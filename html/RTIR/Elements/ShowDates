@@ -44,9 +44,9 @@
     <TD class="labeltop"><&|/l&>Due</&>:</TD>
     <TD class="value">
         <% $Ticket->DueObj->AsString %>
-% if ($RT::overdueafter) {
+% if ($RT::OverdueAfter) {
         <br>
-        [<a href="Display.html?Due_Date=now%20%2B%20<%$RT::overdueafter%>%20days&id=<%$Ticket->Id%>"><%loc("Set to [_1] days from now", $RT::overdueafter)%></a>]
+        [<a href="Display.html?Due_Date=now%20%2B%20<%$RT::OverdueAfter%>%20days&id=<%$Ticket->Id%>"><%loc("Set to [_1] days from now", $RT::OverdueAfter)%></a>]
 % }
     </TD>
   </TR>

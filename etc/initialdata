@@ -380,7 +380,7 @@ if ($self->TicketObj->StartsObj->AsString eq "Not set") {
   $self->TicketObj->SetStarts($date->ISO);
 }
 if ($self->TicketObj->DueObj->AsString eq "Not set") {
-  $date->AddDays($RT::overdueafter);
+  $date->AddDays($RT::OverdueAfter);
   $self->TicketObj->SetDue($date->ISO);
 }
   return 1;
@@ -399,7 +399,7 @@ if ($self->TicketObj->StartsObj->AsString eq "Not set") {
   $self->TicketObj->SetStarts($date->ISO);
 }
 if ($self->TicketObj->DueObj->AsString eq "Not set") {
-  $date->AddDays($RT::overdueafter);
+  $date->AddDays($RT::OverdueAfter);
   $self->TicketObj->SetDue($date->ISO);
 }
   return 1;
@@ -463,7 +463,7 @@ if ($self->TransactionObj->NewValue eq 'open' ||
   $self->TicketObj->SetDue($date->ISO);
 } elsif ($self->TransactionObj->NewValue eq 'stalled') {
   $date->SetToNow;
-  $date->AddDays($RT::overdueafter);
+  $date->AddDays($RT::OverdueAfter);
   $self->TicketObj->SetDue($date->ISO);
 }
   return 1;
