@@ -203,6 +203,24 @@ Set($RTIRSearchResultFormats, {
 		       '__DueRelative__',
 		   },
 
+    ChildReport => qq{'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+			'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
+	'<I>__CustomField.Incident Reports.{_RTIR_State}__</I>/Title:State',
+	__DueRelative__,
+		  },
+
+    ChildInvestigation => qq{'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+			     '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
+			     '<I>__CustomField.Investigations.{_RTIR_State}__</I>/Title:State',
+			     __DueRelative__,
+			 },
+
+    ChildBlock => qq{'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+		     '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
+		     '<I>__CustomField.Blocks.{_RTIR_State}__</I>/Title:State',
+		     __DueRelative__,
+		 },
+
 },
     );
 

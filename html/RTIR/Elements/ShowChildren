@@ -57,11 +57,8 @@
 % }
 
 <%INIT>
-$Format = $RT::RTIRSearchResultFormats->{'DueIncidents'};
-$Format = qq{'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-			'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
-	'<I>__CustomField.$Queue.{_RTIR_State}__</I>/Title:State',
-	__DueRelative__};
+my ($Type, undef) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
+$Format = $RT::RTIRSearchResultFormats->{'Child' . $Type};
 
 if ($Delete) {
     $Format = "___RTIR_Check__, " . $Format;
