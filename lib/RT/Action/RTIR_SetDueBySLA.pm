@@ -74,7 +74,6 @@ Look up the SLA and set the Due date accordingly.
 
 sub Commit {
     my $self = shift;
-    use RT::IR;
 
     # TODO: return if it isn't an Incident Report
 

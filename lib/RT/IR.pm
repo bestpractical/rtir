@@ -46,9 +46,10 @@
 #
 package RT::IR;
 
-sub BusinessHours {
+use Business::Hours;
+use Business::SLA;
 
-    use Business::Hours;
+sub BusinessHours {
 
     my $bizhours = new Business::Hours;
     if ($RT::BusinessHours) {
@@ -70,8 +71,9 @@ sub DefaultSLA {
 
 sub SLAInit {
 
-    use Business::SLA;
-    my $SLAObj = new Business::SLA;
+    my $class = $RT::SLAModule || 'Business::SLA';
+
+    my $SLAObj = $class->new();
 
     my $bh = RT::IR::BusinessHours();
     $SLAObj->SetInHoursDefault($RT::_RTIR_SLA_inhours_default);

@@ -12,6 +12,9 @@ Set($OverdueAfter, 7);
 # Set the hash of whois servers
 Set($whois, {1 => "localhost", 2 => "whois-demo.bestpractical.com"});
 
+# Set the name of the Business::SLA class
+# Use this if you have a custom SLA module
+# Set($SLAModule, "Business::MySLA");
 
 # Set the number of minutes for the SLA
 

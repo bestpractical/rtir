@@ -82,7 +82,6 @@ sub Commit {
     my $date = RT::Date->new($RT::SystemUser);
     $date->SetToNow;
 
-    use RT::IR;
     my $bizhours = RT::IR::BusinessHours();
 
     my $starts = $bizhours->first_after($date->Unix);

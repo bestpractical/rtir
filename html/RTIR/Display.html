@@ -238,7 +238,6 @@ if ($ARGS{'id'} eq 'new') {
       $date->AddDays($RT::OverdueAfter);
 
       # get business hours
-      use RT::IR;
       my $bizhours = RT::IR::BusinessHours();
 
       my $due = $bizhours->first_after($date->Unix);

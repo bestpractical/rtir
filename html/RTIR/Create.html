@@ -434,7 +434,6 @@ if ((!exists $ARGS{'AddMoreAttach'}) && ($ARGS{'id'} eq 'new')) { # new ticket?
 
 my $sla;
 if ($Queue eq 'Incident Reports') {
-    use RT::IR;
     $sla = RT::IR::DefaultSLA();
 }
 

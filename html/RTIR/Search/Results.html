@@ -67,6 +67,18 @@ my ($Type, @states) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
 $Format = $RT::RTIRSearchResultFormats->{$Type . 'Default'};
 
 my $title = loc("Results");
+$session{'i'}++;
+$session{'tickets'} = RT::Tickets->new($session{'CurrentUser'})  unless ($session{'tickets'});
+$session{'tickets'}->FromSQL($Query) if ($Query);
+$session{'tickets'}->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
+
+if ($OrderBy ne $session{'CurrentSearchHash'}->{'OrderBy'}
+    or $Order ne $session{'CurrentSearchHash'}->{'Order'}) {
+    $session{'CurrentSearchHash'}->{'OrderBy'} = $OrderBy;
+    $session{'CurrentSearchHash'}->{'Order'}   = $Order;
+    # Invalidate the ordering cache
+    undef $session{'tickets'}->{'items_array'};
+}
 
 if (!$Query) {
     $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);

@@ -52,7 +52,6 @@ foreach my $key ( keys %$class_tix ) {
     #
     if ($t->StartsObj->Unix > 0 && $t->StartedObj->Unix > 0) {
 	# Get a Business::Hours object for the period in question
-	use RT::IR;
 	my $bizhours = RT::IR::BusinessHours();
 
 	my $started_time;

@@ -1,0 +1,4 @@
+<%init>
+use RT::IR;
+return(1);
+</%init>

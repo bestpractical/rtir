@@ -75,7 +75,6 @@ Look up the SLA and set the Due date accordingly.
 sub Commit {
     my $self = shift;
 
-    use RT::IR;
     my $bizhours = RT::IR::BusinessHours();
 
     my $date = RT::Date->new($RT::SystemUser);
