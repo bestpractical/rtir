@@ -109,13 +109,9 @@ if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
             path  => "RTIR/Split.html?Ticket=" . $id, };
 
     $ticket_page_tabs->{'_G'} = { title => loc('Merge'),
-            path  => "RTIR/Merge.html?NewSearch=1&id=$id" };
+            path  => "RTIR/Merge.html?NewSearch=1&id=$id",
+	    separator => 1  };
 
-    if ($Type ne 'Incident') {
-	$ticket_page_tabs->{'_H'} = { title => loc('Link to Incident'),
-				      path  => "RTIR/Incident/LinkToIncident.html?id=$id",
-				      separator => 1 };
-    }
 }
 
 foreach my $tab ( sort keys %{$ticket_page_tabs} ) {
@@ -226,10 +222,22 @@ $tabs->{"h"} = { path      => 'RTIR/Report/BulkReject.html',
                  title     => loc('Bulk Reject'),
                  separator => 1 };
 }
+
+if ($Type eq 'Incident' && $ChildObj) {
+    my $childq = $ChildObj->QueueObj->Name;
+    next if $childq eq 'Incidents';
+    my ($childtype, undef) = $m->comp('/RTIR/Elements/Type', Queue => $childq);
+    
+    $tabs->{'h'} = { title => loc('Link [_1] #[_2]', $childtype, $ChildObj->Id),
+				  path  => "RTIR/Incident/LinkToIncident.html?child=" . $ChildObj->Id,
+				  separator => 1 };
+}
+
 </%INIT>
 
   
 <%ARGS>
+$ChildObj => undef
 $Ticket => undef
 $subtabs => undef
 $current_tab => undef

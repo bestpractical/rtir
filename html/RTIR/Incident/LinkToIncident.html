@@ -25,14 +25,15 @@
 <& /RTIR/Elements/Header, 
     Title => $title, 
     Refresh => $session{'tickets_refresh_interval'} &>
-<& '/RTIR/'.$Type.'/Elements/Tabs', 
-    Ticket => $ChildObj, 
-    current_tab => "RTIR/Incident/LinkToIncident.html?id=$id",
-    current_subtab => "RTIR/Incident/LinkToIncident.html?id=$id",
+
+<& '/RTIR/Incident/Elements/Tabs', 
+    ChildObj => $ChildObj, 
+    current_tab => "RTIR/Incident/LinkToIncident.html?child=$child",
+    current_subtab => "RTIR/Incident/LinkToIncident.html?child=$child",
     Title => $title &>
 
 <form action='Display.html' method=get>
-<input type=hidden name=child value=<%$id%>>
+<input type=hidden name=child value=<%$child%>>
 
 <& /RTIR/Search/Elements/ShowResults, 
     Queue => $Queue,
@@ -49,9 +50,9 @@
 <%INIT>
 $Format = $RT::RTIRLinkIncidentSearchResultFormat;
 
-my ($Type, undef) = $m->comp('/RTIR/Elements/Type', Ticket => $id);
+my ($Type, undef) = $m->comp('/RTIR/Elements/Type', Ticket => $child);
 
-my $ChildObj = LoadTicket($id);
+my $ChildObj = LoadTicket($child);
 my $Queue = $ChildObj->QueueObj->Name;
 
 my $SubmitCaption = loc("Link #[_1] with selected Incident", $ChildObj->id);
@@ -94,7 +95,7 @@ my @cols = qw(id Status Priority Subject QueueObj->Name OwnerObj->Name Requestor
 
 Abort(loc("No search to operate on.")) unless ($session{'tickets'});
 
-$title = loc("Link [_1] #[_2] to selected Incident", $Type, $id);
+$title = loc("Link [_1] #[_2] to selected Incident", $Type, $child);
 
 $session{'i'}++;
 $session{'tickets'} = RT::Tickets->new($session{'CurrentUser'})  unless ($session{'tickets'});
@@ -131,7 +132,7 @@ $ARGS{'Query'} = $Query;
 </%INIT>
 
 <%ARGS>
-$id => undef
+$child => undef
 $BaseURL => "/RTIR/Incident/LinkToIncident.html"
 $BaseQuery => undef
 $Query => undef
