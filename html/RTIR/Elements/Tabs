@@ -41,16 +41,15 @@ my $toptabs = {
 	   path => 'RTIR/index.html',
        },
     C => { title => loc('Incidents'),
-	   path => 'RTIR/Listing.html?NewSearch=1&Queue=Incidents',
+	   path => 'RTIR/Search/Results.html?Queue=Incidents',
        },
     D => { title => loc('Incident Reports'),
-	   path => 'RTIR/Listing.html?NewSearch=1&Queue=Incident Reports',
-       },
+	   path => 'RTIR/Search/Results.html?Queue=Incident Reports' . $QueryString },
     E => { title => loc('Investigations'),
-	   path => 'RTIR/Listing.html?NewSearch=1&Queue=Investigations',
+	   path => 'RTIR/Search/Results.html?Queue=Investigations',
        },
     F => { title => loc('Blocks'),
-	   path => 'RTIR/Listing.html?NewSearch=1&Queue=Blocks',
+	   path => 'RTIR/Search/Results.html?Queue=Blocks',
        },
     G => { title => loc('Tools'),
 	   path => 'RTIR/Tools/Lookup.html',
@@ -69,4 +68,11 @@ $current_subtab => undef
 $tabs => undef
 $actions => undef
 $Title => undef
+$QueryString => undef
+$Query => undef
+$Format => undef
+$Rows => undef
+$OrderBy => undef
+$Order => undef
+$Page => undef
 </%ARGS>

@@ -34,16 +34,16 @@ if ($Ticket) {
 }
 
 my ($Type, @states);
-if ($Queue eq "Incidents") {
+if ($name eq "Incidents") {
   $Type = 'Incident';
   @states = ('new', 'open');
-} elsif ($Queue eq "Incident Reports") {
+} elsif ($name eq "Incident Reports") {
   $Type = 'Report';
   @states = ('new', 'open');
-} elsif ($Queue eq "Investigations") {
+} elsif ($name eq "Investigations") {
   $Type = 'Investigation';
   @states = ('open');
-} if ($Queue eq "Blocks") {
+} if ($name eq "Blocks") {
   $Type = 'Block';
   @states = ('pending activation', 'active', 'pending removal');
 }

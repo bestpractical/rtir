@@ -40,8 +40,7 @@
 <%INIT>
 my $TicketObj = LoadTicket($Ticket);
 
-my $Type = $m->scomp('Elements/Type', Ticket => $TicketObj->Id);
-$Type =~ s/\s+$//;
+my ($Type, undef) = $m->comp('Elements/Type', Ticket => $TicketObj->Id);
 
 my $Incident;
 if ($Type ne 'Incident') {

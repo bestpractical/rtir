@@ -29,11 +29,18 @@
     current_toptab => $current_toptab,
     current_tab => $mytab,
     current_subtab => $current_subtab,
-    Title => $Title &> 
+    Title => $Title,
+    QueryString => $QueryString,
+&> 
+
+current_toptab: <%$current_toptab%><br>
+current_subtab: <%$current_subtab%><br>
+my tab: <%$mytab%><br>
 
 <%INIT>
+
 my $tabs = {};
-my $current_toptab = 'RTIR/Listing.html?NewSearch=1&Queue=Incident Reports',
+my $current_toptab = 'RTIR/Search/Results.html?Queue=Incident Reports' . $QueryString,
 my ($actions, $mytab);
 my $searchtabs = { } ;
 
@@ -159,8 +166,15 @@ if (    $Ticket->CurrentUserHasRight('ModifyTicket')
 
 $tabs->{"A"} = { path      => 'RTIR/Create.html?Queue=Incident Reports',
                  title     => loc('New Incident Report') };
-$tabs->{"g"} = { path      => 'RTIR/Listing.html?NewSearch=1&Queue=Incident Reports',
-                 title     => loc('Search'),
+$tabs->{"e"} = { path      => 'RTIR/Search/Build.html?Queue=Incident Reports&NewQuery=1',
+                 title     => loc('New Query'),
+                 subtabs   => $searchtabs };
+$tabs->{"f"} = { path      => 'RTIR/Search/Build.html?Queue=Incident Reports' . $QueryString . '&NewQuery=1',
+                 title     => loc('Query Builder'),
+                 separator => 1,
+                 subtabs   => $searchtabs };
+$tabs->{"g"} = { path      => 'RTIR/Search/Results.html?Queue=Incident Reports' . $QueryString,
+                 title     => loc('Results'),
                  separator => 1,
                  subtabs   => $searchtabs };
 $tabs->{"h"} = { path      => 'RTIR/Report/BulkReject.html?ClearRestrictions=1',
@@ -175,4 +189,5 @@ $subtabs => undef
 $current_tab => undef
 $current_subtab => undef
 $Title => undef
+$QueryString =>undef
 </%ARGS>

@@ -51,7 +51,7 @@
 <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => $Title &>
 <TABLE border=0 cellpadding=0 cellspacing=2>
 % if ($link) {
-%   my $Type = $m->scomp("/RTIR/Elements/Type", Ticket => $link->Id);
+%   my ($Type, undef) = $m->comp("/RTIR/Elements/Type", Ticket => $link->Id);
 %   $Type =~ s/\s*$//;
   <TR>
     <TD class="label"><%$label%>:</TD>

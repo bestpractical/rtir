@@ -1,0 +1,18 @@
+<%INIT>
+my ($Type, @states) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
+
+my $Query;
+if ($states[0]) {
+    foreach my $state (@states) {
+        $Query .= " OR " if $Query;
+        $Query .= "'CF.$Queue.{_RTIR_State}' = '$state'";
+    }
+}
+
+return $Query;
+
+</%INIT>
+
+<%ARGS>
+$Queue => undef
+</%ARGS>

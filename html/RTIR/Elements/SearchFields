@@ -40,7 +40,7 @@
 % } else {
 % if ($field =~ m/(.*)MemberOf by (.*)/) {
 % my $tid = $2;
-% my $type = $m->scomp('/RTIR/Elements/Type', Ticket => $tid);
+% my ($type, undef) = $m->comp('/RTIR/Elements/Type', Ticket => $tid);
 % if (($type =~ s/^\s*(.*?)\s*$/$1/) && $type eq 'Incident') {
 Child of Incident <%$tid%>
 % } else {

@@ -265,8 +265,7 @@ unless ($id) {
     Abort('No incident specified');
 }
 
-$Type = $m->scomp('Elements/Type', Ticket => $Ticket->Id);
-$Type =~ s/\s+$//;
+($Type, undef) = $m->comp('Elements/Type', Ticket => $Ticket->Id);
 
 if ($Type eq 'Report') {
   $name = "Incident Report";

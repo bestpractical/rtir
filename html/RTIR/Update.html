@@ -106,8 +106,7 @@ $ARGS{UpdateTimeWorked}%>"> <&|/l&>minutes</&>
 my $title;
 my $Ticket = LoadTicket($id);
 
-my $Type = $m->scomp('Elements/Type', Ticket => $Ticket->Id);
-$Type =~ s/\s+$//;
+my ($Type, undef) = $m->comp('Elements/Type', Ticket => $Ticket->Id);
 
 my $name;
 if ($Type eq 'Report') {

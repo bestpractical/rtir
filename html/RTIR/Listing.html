@@ -79,6 +79,20 @@ if ($session{'tickets'}) {
     }
 }
 
+my $Query= "Queue = '$Queue'";
+
+my $statequery;
+if (!$setstate) {
+    foreach my $state (@states) {
+	$statequery .= " OR " if $statequery;
+	$statequery .= " CF.{$Queue}.State = '$state'";
+    }
+}
+
+$Query .= " AND ( $statequery )" if $statequery;
+
+$m->print("Query: $Query");
+
 ProcessSearchQuery(ARGS=>\%ARGS);
 $session{'tickets'}->RedoSearch();
 if ( $session{'tickets'}->DescribeRestrictions()) {

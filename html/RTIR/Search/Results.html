@@ -1,0 +1,121 @@
+%# {{{ BEGIN BPS TAGGED BLOCK
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# }}} END BPS TAGGED BLOCK
+<& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
+<& '/RTIR/'.$Type.'/Elements/Tabs', 
+    current_tab => "RTIR/Search/Results.html?Queue=$Queue$QueryString", 
+    current_subtab => "RTIR/Search/Results.html?Queue=$Queue$QueryString", 
+    Title => $title,
+    Format => $Format,
+    Query => $Query,
+    Rows => $Rows,
+    OrderBy => $OrderBy,
+    Order => $Order,
+    QueryString => $QueryString,
+&>
+<hr>
+
+<& Elements/ShowResults, QueryString => $QueryString, %ARGS &>
+
+<%INIT>
+my ($Type, @states) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
+
+my ($title, $ticketcount);
+$session{'i'}++;
+$session{'tickets'} = RT::Tickets->new($session{'CurrentUser'})  unless ($session{'tickets'});
+$session{'tickets'}->FromSQL($Query) if ($Query);
+$session{'tickets'}->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
+
+if ($OrderBy ne $session{'CurrentSearchHash'}->{'OrderBy'}
+    or $Order ne $session{'CurrentSearchHash'}->{'Order'}) {
+    $session{'CurrentSearchHash'}->{'OrderBy'} = $OrderBy;
+    $session{'CurrentSearchHash'}->{'Order'}   = $Order;
+    # Invalidate the ordering cache
+    undef $session{'tickets'}->{'items_array'};
+}
+
+
+if ( $session{'tickets'}->Query()) {
+    $ticketcount = $session{tickets}->CountAll();
+    $title = loc('Found [quant,_1,ticket]', $ticketcount);
+} else {
+    $title = loc("Find tickets");
+}
+
+if (!$Query) {
+    $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
+}
+
+$ARGS{'Query'} = $Query;
+
+my $QueryString = "&".$m->comp('/Elements/QueryString',
+                               Query => $Query,
+                               Format => $Format,
+                               Rows => $Rows,
+                               OrderBy => $OrderBy,
+                               Order => $Order,
+                               Page => $Page);
+
+if (!$BaseQuery) {
+    $BaseQuery = $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
+}
+
+</%INIT>
+
+<%CLEANUP>
+$session{'tickets'}->PrepForSerialization();
+</%CLEANUP>
+
+<%ARGS>
+$BaseQuery => undef
+$Query => undef
+$Format => undef 
+$HideResults => 0
+$Rows => 50
+$Page => 1
+$OrderBy => 'id'
+$Order => 'ASC'
+$Queue => undef
+</%ARGS>

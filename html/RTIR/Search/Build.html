@@ -1,0 +1,138 @@
+%# {{{ BEGIN BPS TAGGED BLOCK
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2004 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# }}} END BPS TAGGED BLOCK
+<& /Elements/Header, Title => $title &>
+<& '/RTIR/'.$Type.'/Elements/Tabs', 
+    current_tab => "RTIR/Search/Build.html?Queue=$Queue$QueryString", 
+    current_subtab => "RTIR/Search/Build.html?Queue=$Queue$QueryString", 
+    QueryString => $QueryString,
+&>
+
+<& Elements/BuildQuery, 
+    queues => \%queues, 
+    actions => $results, 
+    optionlist => $optionlist,
+    search_hash => $search_hash,
+    dirty => $dirty,
+    AvailableColumns => $AvailableColumns,
+    CurrentFormat => $CurrentFormat,
+    BaseQuery => $BaseQuery,
+    %ARGS &>
+
+<%INIT>
+$m->print("Build query: |$Query|<br>");
+my $title = loc("Query Builder");
+
+my %queues = ();
+my $results;
+my $optionlist;
+my $search_hash;
+my $dirty;
+my $AvailableColumns;
+my $CurrentFormat;
+my ( $Format, $Order, $OrderBy, $RowsPerPage );
+
+my $BaseQuery = $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
+
+my $QueryString;
+if ($NewQuery) {
+    # If it's a new query, wipe it ourselves...
+
+    # Wipe all data-carrying variables clear if we want a new
+    # search, or we're deleting an old one..
+
+    $Query = '';
+    $Format = '';
+    $Order = '';
+    $OrderBy = '';
+    $RowsPerPage = '';
+    # ($search hasn't been set yet; no need to clear)
+
+    $m->comp('Elements/ClearQuery', %ARGS);
+
+    # and replace it with our standard new query...
+
+    $ARGS{'Query'} = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
+    $Query = $ARGS{'Query'};
+
+    # and claim it isn't a new query any more
+
+    $ARGS{'NewQuery'} = 0;
+}
+
+( $Query, $Format, $Order, $OrderBy, $RowsPerPage ) = 
+    $m->comp('Elements/ProcessQuery', 
+	     queues => \%queues, 
+	     results => \$results, 
+	     optionlist => \$optionlist,
+	     search_hash => \$search_hash,
+	     dirty => \$dirty,
+	     AvailableColumns => \$AvailableColumns,
+	     CurrentFormat => \$CurrentFormat,
+	     BaseQuery => $BaseQuery,
+	     Query => "foo bar",
+	     %ARGS);
+
+my ($Type, @states) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
+
+# {{{ Build a querystring for the tabs
+
+    $QueryString = '&' . $m->comp('/Elements/QueryString', 
+	    Query => $Query,
+	    Format => $Format,
+            Order => $Order,
+            OrderBy => $OrderBy,
+            Rows => $RowsPerPage) if ($Query);
+# }}}
+
+$ARGS{'Query'} = $Query;
+
+</%INIT>
+
+<%ARGS>
+$NewQuery => 0
+$Queue => undef
+$Query=> undef
+</%ARGS>

@@ -214,8 +214,7 @@ if ($q) {
 }
 				   
 if ($ticket) {
-  $TicketType = $m->scomp("/RTIR/Elements/Type", Ticket => $ticket);
-  $TicketType =~ s/\s*$//;
+  ($TicketType, undef) = $m->comp("/RTIR/Elements/Type", Ticket => $ticket);
   $TicketObj = LoadTicket($ticket);
 }
 

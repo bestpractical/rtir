@@ -34,8 +34,7 @@
 %while (my $Ticket = $session{'tickets'}->Next) {
 % next unless ($Ticket->QueueObj->Name eq $Queue);
 % $i++;
-% my $t = $m->scomp("/RTIR/Elements/Type", Ticket => $Ticket->Id);
-% $t =~ s/\s*$//;
+% my ($t, undef) = $m->comp("/RTIR/Elements/Type", Ticket => $Ticket->Id);
 <TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >
 <td><b><A HREF="<%$RT::WebPath%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%></a></b></td>
 <td><b><A HREF="<%$RT::WebPath%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Subject%></a></b></td>

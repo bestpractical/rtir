@@ -1,0 +1,29 @@
+<& /Elements/TicketList, 
+    Query => $Query,
+    AllowSorting => 1,
+    OrderBy => $OrderBy,
+    Order => $Order,
+    Rows => $Rows,
+    Page => $Page,
+    Format => $Format,
+    BaseURL => $RT::WebPath."/Search/Results.html?"
+
+   &>
+<div align=right>
+<a href="<%$RT::WebPath%>/Search/Bulk.html<%$QueryString%>"><&|/l&>Update multiple tickets</&></a><br>
+<a href="<%$RT::WebPath%>/Search/Results.html<%$QueryString%>"><&|/l&>Bookmarkable link</&></a><br>
+<a href="<%$RT::WebPath%>/Search/Results.tsv<%$QueryString%>"><&|/l&>spreadsheet</&></a> |
+<a href="<%$RT::WebPath%>/Search/Results.rdf<%$QueryString%>"><&|/l&>RSS</&></a> |
+<a href="<%$RT::WebPath%>/Tools/Offline.html<%$QueryString%>"><&|/l&>Work offline</&></a><br>
+</div>
+
+<%ARGS>
+$Query => undef
+$Format => undef 
+$HideResults => 0
+$Rows => 50
+$Page => 1
+$OrderBy => 'id'
+$Order => 'ASC'
+$QueryString => undef
+</%ARGS>

@@ -187,8 +187,7 @@
 <%INIT>
 
 my $Ticket = LoadTicket($id);
-my $Type = $m->scomp('Elements/Type', Ticket => $Ticket->Id);
-$Type =~ s/\s+$//;
+($Type, undef) = $m->comp('Elements/Type', Ticket => $Ticket->Id);
 
 my $name;
 if ($Type eq 'Report') {
