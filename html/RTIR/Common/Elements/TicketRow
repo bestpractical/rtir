@@ -8,6 +8,8 @@ CLASS="evenline"
 >
 % if ($check eq "check") {
 <TD rowspan=2><input type=checkbox name="UpdateTicket<%$Ticket->Id%>" CHECKED></TD>
+% } elsif ($check eq "radio") {
+<TD rowspan=2><input type=radio name="SelectedTicket" value="<%$Ticket->Id%>"></TD>
 % }
 <TD ROWSPAN="2"><B><A HREF="<%$RT::WebPath%>/RTIR/<%$Type%>/Display.html?id=<%$Ticket->Id%>"><%$Ticket->id%></a></B></TD>
 <TD><B><A HREF="<%$RT::WebPath%>/RTIR/<%$Type%>/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Subject%></a></B></TD>
@@ -22,7 +24,8 @@ CLASS="oddline"
 % } else {
 CLASS="evenline"
 % }
-><TD><small><%$Ticket->Requestors->MemberEmailAddressesAsString%></small></TD>
+>
+<TD><small><%$Ticket->Requestors->MemberEmailAddressesAsString%></small></TD>
 <TD><SMALL><%$Ticket->CreatedObj->AgeAsString || '-'%></SMALL></TD>
 <TD><SMALL><%$Ticket->ToldObj->AgeAsString || '-'%></SMALL></TD>
 <TD>&nbsp;</TD>
@@ -44,6 +47,6 @@ while (my $CustomField = $CustomFields->Next()) {
 <%ARGS>
 $Ticket => undef
 $i => undef
-$Type => 'Report'
+$Type => undef
 $check => undef
 </%ARGS>

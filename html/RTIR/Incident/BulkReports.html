@@ -29,13 +29,17 @@
     current_subtab => 'RTIR/Incident/LinkReports.html',
     Title => loc("Bulk Link") &>
 
-<& Elements/BulkLink, IncidentObj => $IncidentObj, Status => $Status, %ARGS &>
+<& Elements/BulkLink,
+    id => $id, 
+    Status => $Status, 
+    Type => 'Report', 
+    %ARGS &>
 
 <%INIT>
-my $IncidentObj = LoadTicket($Incident);
+my $IncidentObj = LoadTicket($id);
 </%INIT>
 
 <%ARGS>
-$Incident => undef
+$id => undef
 $Status => undef
 </%ARGS>

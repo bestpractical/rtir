@@ -28,37 +28,15 @@
     current_tab => "RTIR/Incident/Merge.html?id=".$Ticket->Id, 
     Title => $Title &>
 
-<& /Elements/ListActions, actions => \@results &>
-<form action="Merge.html" method="post">
-<input type="hidden" name="id" value="<%$Ticket->id%>">
-
-<TABLE bgcolor="#dddddd" width=100%>
-  <TR>
-    <TD class="label"><&|/l&>Merge into</&>:</TD>
-    <TD class="entry"><input name="<%$Ticket->Id%>-MergeInto"></TD>
-  </TR>
-<& /Elements/Submit, Caption=> loc('Merge Ticket') &>
-</form>
+<& /RTIR/Elements/Merge, 
+    Type => 'Incident', 
+    Path => '/RTIR/Incident/Merge.html',
+    %ARGS &>
 
 <%INIT>
 my $Ticket = LoadTicket($id);
 my $Title = loc("Merge ticket #[_1]: [_2]", $id, $Ticket->Subject);
-my @results;
-
-my $merge = $ARGS{$Ticket->Id.'-MergeInto'};
-my $MergeTicket;
-
-if ($merge) {
-  $MergeTicket = LoadTicket($merge);
-  if ($MergeTicket->QueueObj->id ne $Ticket->QueueObj->id) {
-    push @results, loc("Merge failed: Ticket #[_1] is not an Incident", $MergeTicket->Id);
-  } else {
-    @results = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
-  }
-}
-    
 </%INIT>
-      
       
 <%ARGS>
 $id => undef

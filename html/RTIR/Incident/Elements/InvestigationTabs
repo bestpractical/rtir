@@ -36,7 +36,7 @@
   my $subtabs = {
     _A => { path => 'RTIR/Investigation/Create.html?Incident='.$Ticket->id,
             title     => loc('Launch Investigation') },
-    _B => { path => 'RTIR/Incident/LinkInvestigations.html?QueueOp==&ValueOfQueue='.$q->Id.'&ClearRestrictions=1&Incident='.$Ticket->id,
+    _B => { path => 'RTIR/Incident/LinkInvestigations.html?QueueOp==&ValueOfQueue='.$q->Id.'&ClearRestrictions=1&id='.$Ticket->id,
             title     => loc('Link Investigation') },
     };
 

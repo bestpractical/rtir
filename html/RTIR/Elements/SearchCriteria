@@ -22,24 +22,17 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, Title => loc("Bulk Link Investigations") &>
-<& /RTIR/Incident/Elements/InvestigationTabs, 
-    Ticket => $IncidentObj, 
-    current_tab => 'RTIR/Incident/ShowInvestigations.html?id='.$IncidentObj->id,
-    current_subtab => 'RTIR/Incident/LinkInvestigations.html',
-    Title => loc("Bulk Link") &>
-
-<& Elements/BulkLink,
-    id => $id, 
-    Status => $Status, 
-    Type => 'Investigation', 
-    %ARGS &>
-
-<%INIT>
-my $IncidentObj = LoadTicket($id);
-</%INIT>
+%my %restrictions=$session{'tickets'}->DescribeRestrictions();
+%foreach my $row (keys %restrictions){
+% if ($restrictions{"$row"} !~ m/^Queue =/o) {
+<%$restrictions{"$row"}%> <A HREF="<%$RT::WebPath.$Path%>?id=<%$id%>&DeleteRestriction=<%$row%>">[<&|/l&>delete</&>]</a><br>
+% }
+%}
+<BR>
+<BR>
+<A HREF="<%$RT::WebPath.$Path%>?id=<%$id%>&Bookmark=<%$session{'tickets'}->FreezeLimits()|u%>&TicketsSortBy=<%$session{'tickets_sort_by'}%>&TicketsSortOrder=<%$session{'tickets_sort_order'}%>&RowsPerPage=<%$session{'tickets_rows_per_page'}%>"><&|/l&>Bookmarkable URL for this search</&></a>
 
 <%ARGS>
+$Path => '.'
 $id => undef
-$Status => undef
 </%ARGS>

@@ -34,10 +34,11 @@
 
 <%INIT>
 my $Ticket = new RT::Ticket($session{'CurrentUser'});
-if ($id ne 'new')
+if ($id ne 'new') {
   $Ticket = LoadTicket($id);
   unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
-  Abort("No permission to view ticket");
+    Abort("No permission to view ticket");
+  }
 }
 
 my $Title = loc("Investigation #[_1]: [_2]", $Ticket->Id, $Ticket->Subject);

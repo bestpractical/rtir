@@ -38,12 +38,12 @@
 
 <%INIT>
 my $title = loc("Link Incident Reports");
-my $IncidentObj = LoadTicket($Incident);
+my $IncidentObj = LoadTicket($id);
 my $SubmitCaption = loc("Link selected reports with Incident #[_1]", $IncidentObj->id);
 
 </%INIT>
 
 <%ARGS>
-$Incident => undef
+$id => undef
 </%ARGS>
 

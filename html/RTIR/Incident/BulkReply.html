@@ -30,7 +30,6 @@
 <FORM METHOD=POST>
 <TABLE WIDTH=100% border=0 cellpadding=3 CELLSPACING=0>
 <TR>
-<TH><&|/l&>Update</&></TH>
 %foreach my $col (@cols) {
 % my $colalias = $col;
 % $colalias =~ s/(Obj\-\>|)(Name|AsString)//;
@@ -47,6 +46,7 @@ my $i;
       
 $session{'tickets'}->RedoSearch();
 while (my $Ticket = $session{'tickets'}->Next) {
+ next unless ($ARGS{"UpdateTicket".$Ticket->Id});
  $i++;
  if ($i % 2) {
      $bgcolor = "#dddddd";
@@ -56,7 +56,6 @@ while (my $Ticket = $session{'tickets'}->Next) {
  }
       </%PERL>
 <TR bgcolor="<%$bgcolor%>">
-<TD><input type=checkbox name="UpdateTicket<%$Ticket->Id%>" CHECKED></TD>
 %# The ticket view is controlled by config.pm, WebOptions
 %foreach my $col (@cols) {
 <TD>

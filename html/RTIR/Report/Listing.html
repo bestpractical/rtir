@@ -74,13 +74,8 @@
 <TD VALIGN="TOP">
 <& /Elements/TitleBoxStart, title => loc('Current search criteria')&>
 
-%my %restrictions=$session{'tickets'}->DescribeRestrictions();
-%foreach my $row (keys %restrictions){
-<%$restrictions{"$row"}%> <A HREF="<% $RT::WebPath %>/Search/Listing.html?DeleteRestriction=<%$row%>">[<&|/l&>delete</&>]</a><br>
-%}
-<BR>
-<BR>
-<A HREF="<% $RT::WebPath%>/Search/Listing.html?Bookmark=<%$session{'tickets'}->FreezeLimits()|u%>&TicketsSortBy=<%$session{'tickets_sort_by'}%>&TicketsSortOrder=<%$session{'tickets_sort_order'}%>&RowsPerPage=<%$session{'tickets_rows_per_page'}%>"><&|/l&>Bookmarkable URL for this search</&></a>
+<& /RTIR/Elements/SearchCriteria, Path => $RT::WebPath."/RTIR/Report/Listing.html", %ARGS &>
+
 <& /Elements/TitleBoxEnd&>
 </TD>
 <TD>

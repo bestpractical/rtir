@@ -31,16 +31,18 @@
 
 <& Elements/BulkLink,
     SubmitCaption => $SubmitCaption, 
+    Type => 'Block',
+    id => $id,
     %ARGS &>
 
 <%INIT>
 my $title = loc("Link Blocks");
-my $IncidentObj = LoadTicket($Incident);
+my $IncidentObj = LoadTicket($id);
 my $SubmitCaption = loc("Link selected blocks with Incident #[_1]", $IncidentObj->id);
 
 </%INIT>
 
 <%ARGS>
-$Incident => undef
+$id => undef
 </%ARGS>
 

@@ -46,7 +46,7 @@ if ($Ticket) {
   $subtabs = {
     _A => { path => 'RTIR/Report/Create.html?Incident='.$Ticket->id,
             title     => loc('New Incident Report') },
-    _B => { path => 'RTIR/Incident/LinkReports.html?QueueOp==&ValueOfQueue='.$q->Id.'&ClearRestrictions=1&Incident='.$Ticket->id.'&StatusOp==&ValueOfStatus=new',
+    _B => { path => 'RTIR/Incident/LinkReports.html?QueueOp==&ValueOfQueue='.$q->Id.'&ClearRestrictions=1&id='.$Ticket->id.'&StatusOp==&ValueOfStatus=new',
             title     => loc('Link Incident Reports') },
     };
 }

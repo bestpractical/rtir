@@ -29,13 +29,15 @@
     current_subtab => 'RTIR/Incident/ReplyToReporters.html',
     Title => $title &>
 
+<form action="BulkReply.html" method=get>
+<input type=hidden name=Incident value=<%$Incident%>>
 %if ($ticketcount && !  $ARGS{'HideResults'}) {
 <TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
-<& /Search/Elements/TicketHeader, %ARGS &>
+<& /RTIR/Elements/TicketHeader, check => "check", %ARGS &>
 % my $i;
 %while (my $Ticket = $session{'tickets'}->Next) {
 % $i++;
-<& Elements/TicketRow, Ticket => $Ticket, i=> $i, %ARGS &>
+<& /RTIR/Common/Elements/TicketRow, Type => 'Report', Ticket => $Ticket, i=> $i, check => "check", %ARGS &>
 %}
 </TABLE>
 <div align=center>
@@ -60,25 +62,24 @@
 </td>
 <td align=right>
 
-<a href="BulkReply.html?Incident=<%$Incident%>&Status=open"><&|/l&>Reply to Reporters</&></a>
 <!--</div>-->
 </td>
 </tr>
 </table>
 
 % }
+<HR>
+
+<& /Elements/Submit, Name => "SubmitTicket", Caption => loc("Reply to selected Reporters"), Label => loc("Reply") &>
+</form>
+
 <TABLE WIDTH="100%">
 <TR>
 <TD VALIGN="TOP">
 <& /Elements/TitleBoxStart, title => loc('Current search criteria')&>
 
-%my %restrictions=$session{'tickets'}->DescribeRestrictions();
-%foreach my $row (keys %restrictions){
-<%$restrictions{"$row"}%> <A HREF="ReplyToReporters.html?Incident=<%$Incident%>&DeleteRestriction=<%$row%>">[<&|/l&>delete</&>]</a><br>
-%}
-<BR>
-<BR>
-<A HREF="ReplyToReporters.html?Incident=<%$Incident%>&Bookmark=<%$session{'tickets'}->FreezeLimits()|u%>&TicketsSortBy=<%$session{'tickets_sort_by'}%>&TicketsSortOrder=<%$session{'tickets_sort_order'}%>&RowsPerPage=<%$session{'tickets_rows_per_page'}%>"><&|/l&>Bookmarkable URL for this search</&></a>
+<& /RTIR/Elements/SearchCriteria, Path => $RT::WebPath."/RTIR/Incident/Reply.html", %ARGS &>
+
 <& /Elements/TitleBoxEnd&>
 </TD>
 <TD>
@@ -93,7 +94,7 @@
 
 my $IncidentObj = LoadTicket($Incident);
 
-my ($title, $ticketcount);
+my ($title, $ticketcount, $found);
 $session{'i'}++;
 if ($session{'tickets'}) {
     if ($ARGS{'DeleteRestriction'}) {
@@ -113,10 +114,16 @@ if ($session{'tickets'}) {
 
    if ( $session{'tickets'}->DescribeRestrictions()) {
        $ticketcount = $session{tickets}->Count();
-        $title = loc('Found [quant,_1,incident]', $ticketcount);
+        $found = loc('Found [quant,_1,incident]', $ticketcount);
     } else {
-        $title = loc("Find incidents");
+        $found = loc("Find incidents");
    }
+
+if ($All) {
+  $title = loc("Incident #[_1]: Reply to All", $Incident);
+} else {
+  $title = loc("Incident #[_1]: Reply to Reporters", $Incident);
+}
 
 </%INIT>
 <%CLEANUP>

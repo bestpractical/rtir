@@ -25,26 +25,26 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form method=get>
-<input action="BulkLink" type=hidden name=Incident value=<%$Incident%>>
+<input type=hidden name=id value=<%$id%>>
 %if ($ticketcount && !  $ARGS{'HideResults'}) {
 <TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
 <& /RTIR/Elements/TicketHeader, check => "check", %ARGS &>
 % my $i;
 %while (my $Ticket = $session{'tickets'}->Next) {
 % $i++;
-<& /RTIR/Common/Elements/TicketRow, Type => 'Report', Ticket => $Ticket, i=> $i, check => "check", %ARGS &>
+<& /RTIR/Common/Elements/TicketRow, Type => $Type, Ticket => $Ticket, i=> $i, check => "check", %ARGS &>
 % }
 </TABLE>
 <div align=center>
 <font size=2>
-<a href="<%$AssocPath%>?Incident=<%$Incident%>&GotoPage=1"><&|/l&>First page</&></a>
+<a href="<%$AssocPath%>?id=<%$id%>&GotoPage=1"><&|/l&>First page</&></a>
 &nbsp;&nbsp;
 %  if ( $session{'tickets'}->FirstRow >= $session{'tickets_rows_per_page'}-1 ) {
-<a href="<%$AssocPath%>?Incident=<%$Incident%>&GotoPage=Prev">&lt;<&|/l&>Previous page</&></a>
+<a href="<%$AssocPath%>?id=<%$id%>&GotoPage=Prev">&lt;<&|/l&>Previous page</&></a>
 &nbsp;&nbsp;
 %  }                                                                           
 %  if ( $session{'tickets'}->FirstRow + $session{'tickets_rows_per_page'} < $ticketcount ) {                                                               
-<a href="<%$AssocPath%>?Incident=<%$Incident%>&GotoPage=Next"><&|/l&>Next page</&>&gt;</a>
+<a href="<%$AssocPath%>?id=<%$id%>&GotoPage=Next"><&|/l&>Next page</&>&gt;</a>
 %  }
 
 %#&nbsp;&nbsp;<form method=get action="<%$AssocPath%>"><&|/l&>Goto page</&> <input name=GotoPage size=2></form>
@@ -75,13 +75,8 @@
 <TD VALIGN="TOP">
 <& /Elements/TitleBoxStart, title => loc('Current search criteria')&>
 
-%my %restrictions=$session{'tickets'}->DescribeRestrictions();
-%foreach my $row (keys %restrictions){
-<%$restrictions{"$row"}%> <A HREF="<%$AssocPath%>?Incident=<%$Incident%>&DeleteRestriction=<%$row%>">[<&|/l&>delete</&>]</a><br>
-%}
-<BR>
-<BR>
-<A HREF="<%$AssocPath%>?Incident=<%$Incident%>&Bookmark=<%$session{'tickets'}->FreezeLimits()|u%>&TicketsSortBy=<%$session{'tickets_sort_by'}%>&TicketsSortOrder=<%$session{'tickets_sort_order'}%>&RowsPerPage=<%$session{'tickets_rows_per_page'}%>"><&|/l&>Bookmarkable URL for this search</&></a>
+<& /RTIR/Elements/SearchCriteria, Path => $AssocPath, %ARGS &>
+
 <& /Elements/TitleBoxEnd&>
 </TD>
 <TD>
@@ -93,7 +88,7 @@
 </TABLE>
 
 <%INIT>
-my $IncidentObj = LoadTicket($Incident);
+my $IncidentObj = LoadTicket($id);
 
 my ($title, $ticketcount);
 $session{'i'}++;
@@ -172,8 +167,9 @@ while (my $Ticket = $session{'tickets'}->Next) {
 </%INIT>
 
 <%ARGS>
-$Incident => undef
-$SubmitCaption => loc("Link Tickets");
+$id => undef
+$SubmitCaption => loc("Link Tickets")
 $AssocPath => "LinkReports.html"
 $Status => undef
+$Type => undef
 </%ARGS>
