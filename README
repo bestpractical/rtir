@@ -1,63 +1,66 @@
-RTIR (RT for Incident Reponse) is a tool for tracking, responding to,
-and investigating reported incidents.  Out of the box, it integrates
-with RT3 (Also available from bestpractical.com).
+RT for Incident Response is an open source, industrial-grade incident-handling tool
+designed to provide a simple, effective workflow for members of CERT and
+CSIRT teams. It allows team members to track, respond to and deal with 
+reported incidents and features a number of tools to make common operations
+quick and easy.  RTIR is built on top of "RT," which is also available for free
+from Best Practical Solution at http://www.bestpractical.com/rt/.
 
-Changes in RTIR 1.1 (beta)
---------------------------
-RTIR 1.1 (beta) features full integration with RT 3.2.
-
-New Search UI
-
-This includes a 3.2-style search UI, and menu changes to accomodate
-this.  Instead of search results and criteria being displayed on a
-single page, you can now choose the 'Refine' menu option to refine
-your search and re-run it after you've added all of your criteria.
-
-Configurable Search Results
-
-Search result formats are configurable in RTIR_Config.pm, so you can
-easily choose which fields you would like to have displayed
-for RTIR searches.
-
-Standardized Components
-
-RTIR 1.2 uses more customized components, making it easier to customize
-and maintain.
+To purchase commercials support, training or custom development  for RT or
+RTIR, please contact Best Practical at sales@bestpractical.com.
 
 
 WARNING!
 --------
 
-This is a beta version of RTIR.  Be certain to make a full dump of
-your database, and make backups of any local modifications that you've
-made.
+This is a development version of RTIR.  Before using this version of RTIR,
+back up your database and any local modifications.
 
-As always, if you are using RTIR in a production environment, we
-recommend that you first install and use this version in a test
-environment, in order to be certain that it meets your needs.
+If you intend to deploy RTIR, or any other software,  in a production 
+environment, we recommend that you first install and test it
+in a staging environment to ensure that it meets your needs.
+
+Changes since RTIR 1.0.x
+------------------------
+
+Full integration with RT 3.2.
+
+New Search UI
+
+	This includes a 3.2-style search UI, and menu changes to
+	accomodate this.  Instead of search results and criteria being
+	displayed on a single page, you can now choose the 'Refine'
+	menu option to refine your search and re-run it after you've
+	added all of your criteria.
+
+Configurable Search Results
+
+	Search result formats are configurable in RTIR_Config.pm, so you
+	can easily choose which fields you would like to have displayed
+	for RTIR searches.
+
+Standardized Components
+
+	RTIR 1.2 uses fewer customized components, making it easier to
+	customize and maintain.
 
 
 REQUIRED PACKAGES:
 ------------------
 
-o   All packages required by core RT
-
-o   RT 3.2.2 or later
+o   RT 3.2.2 or later, configured, installed and tested.
 
 o   The Business::Hours module (version 0.05 or later)
 
 o   The Net::Whois::RIPE module
 
 
-Upgrading instructions:
+Upgrade instructions:
 -----------------------
 
 If you've installed a prior version of RTIR, you may need to follow
 special steps to upgrade.  See the UPGRADING file for detailed
 information.
 
-If you are upgrading from a version prior to 1.0.3, you should follow
-each set of upgrade instructions separately.
 
 Installation instructions:
 --------------------------
@@ -96,13 +99,15 @@ default configuration, you shouldn't need to make any).
    WARNING: Do not attempt to re-initialize the database if you are
    upgrading.
 
-8) Stop and start your web server.
+8) Stop and start your web server.  
+
+
 
 
 Configuring RTIR
 ----------------
 
-1) Using the Configuration option in base RT, add the email address
+1) Using RT's configuration interface, add the email address
    of the Network Operations Team (the people who will handle
    activating and removing Blocks) as AdminCC on the Blocks queue.
 
@@ -111,15 +116,15 @@ Configuring RTIR
    are "LaunchMessage" in the Investigations queue and "NewMessage" in
    the Blocks queue.
 
-3) By default, RT3 has certain global Scrips.  You should look through
-   them, and disable any that don't want.
+3) By default, RT ships with a number of global Scrips.  You should use 
+   RT's configuration interface to look through them, and disable any 
+   that aren't apropriate in your environment.
 
-4) Staff members who handle incidents should be added to the DutyTeam
-   group.
+4) Add staff members who handle incidents to the DutyTeam group.
 
 5) You can override values in the RTIR_Config.pm in your
-   RT_SiteConfig.pm file, following the "require" line explained
-   above.
+   RT_SiteConfig.pm file. Just add your customizations after the "require" 
+   line mentioned above.
 
 
 SETTING UP THE MAIL GATEWAY 
