@@ -35,26 +35,57 @@
 my $tabs = {};
 my $current_toptab = 'RTIR/Listing.html?NewSearch=1&Queue=Incident Reports',
 my ($actions, $mytab);
+my $searchtabs = { } ;
 
 if ( $Ticket) {
 	
-my $id   = $Ticket->id();
-$mytab = "RTIR/Display.html?id=".$id;
+    my $id   = $Ticket->id();
+    $mytab = "RTIR/Display.html?id=".$id;
 
-$tabs->{"this"} = { class => "currentnav",
-                    path  => "RTIR/Display.html?id=" . $Ticket->id,
-                    title => loc("Incident Report #[_1]", $id),
-                    current_subtab => $current_subtab };
-
-my $ticket_page_tabs = {
-    _A => { title => loc('Display'),
-            path  => "RTIR/Display.html?id=" . $id, },
-};
+    if ( defined $session{'tickets'} ) {
+	
+	my $item_map = $session{'tickets'}->ItemMap;
+	
+	# Don't display prev links if we're on the first ticket
+	
+        if ($item_map->{$Ticket->Id}->{prev}) {
+	    $searchtabs->{'_a'} = {
+		class => "nav",
+		path => "RTIR/Display.html?id=" . $item_map->{first},
+		title => '<< ' . loc('First') };
+	    $searchtabs->{"_b"} = { class => "nav",
+				    path => "RTIR/Display.html?id=" . $item_map->{$Ticket->Id}->{prev},
+				    title => '< ' . loc('Prev') };
+	} 
+	
+	
+        # Don't display next links if we're on the last ticket
+        if ($item_map->{$Ticket->Id}->{next}) {
+            $searchtabs->{'d'} = { class => "nav",
+				   path => "RTIR/Display.html?id=" . $item_map->{$Ticket->Id}->{next},
+				   title => loc('Next') . ' >' };
+            $searchtabs->{'e'} = {
+		class => "nav",
+		path => "RTIR/Display.html?id=" . $item_map->{last},
+		title => loc('Last') . ' >>' };
+        }
+    }
+    
+    $tabs->{"this"} = { class => "currentnav",
+			path  => "RTIR/Display.html?id=" . $Ticket->id,
+			title => loc("Incident Report #[_1]", $id),
+			current_subtab => $current_subtab };
+    
+    my $ticket_page_tabs = {
+	_A => { title => loc('Display'),
+		path  => "RTIR/Display.html?id=" . $id, },
+    };
 
 # only show edit option if they can do it
 if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
     $ticket_page_tabs->{'_B'} = { title => loc('Edit'),
             path  => "RTIR/Edit.html?id=" . $id, };
+
     $ticket_page_tabs->{'_C'} = { title => loc('Split'),
             path  => "RTIR/Split.html?Ticket=" . $id, };
 
@@ -127,7 +158,9 @@ if (    $Ticket->CurrentUserHasRight('ModifyTicket')
 $tabs->{"A"} = { path      => 'RTIR/Create.html?Queue=Incident Reports',
                  title     => loc('New Incident Report') };
 $tabs->{"g"} = { path      => 'RTIR/Listing.html?NewSearch=1&Queue=Incident Reports',
-                 title     => loc('Search'), };
+                 title     => loc('Search'),
+                 separator => 1,
+                 subtabs   => $searchtabs };
 $tabs->{"h"} = { path      => 'RTIR/Report/BulkReject.html?ClearRestrictions=1',
                  title     => loc('Bulk Reject'),
                  separator => 1 };

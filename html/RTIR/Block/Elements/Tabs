@@ -34,10 +34,40 @@
 my $tabs = {};
 my $current_toptab = 'RTIR/Listing.html?NewSearch=1&Queue=Blocks',
 my $actions;
+my $searchtabs = { } ;
 
 if ( $Ticket) {
 	
-my $id   = $Ticket->id();
+    my $id  = $Ticket->id();
+
+    if ( defined $session{'tickets'} ) {
+
+	my $item_map = $session{'tickets'}->ItemMap;
+    
+	# Don't display prev links if we're on the first ticket
+
+	if ($item_map->{$Ticket->Id}->{prev}) {
+	    $searchtabs->{'_a'} = {
+		class => "nav",
+		path => "RTIR/Display.html?id=" . $item_map->{first},
+		title => '<< ' . loc('First') };
+	    $searchtabs->{"_b"} = { class => "nav",
+				    path => "RTIR/Display.html?id=" . $item_map->{$Ticket->Id}->{prev},
+				    title => '< ' . loc('Prev') };
+	} 
+	
+	
+	# Don't display next links if we're on the last ticket
+	if ($item_map->{$Ticket->Id}->{next}) {
+	    $searchtabs->{'d'} = { class => "nav",
+				   path => "RTIR/Display.html?id=" . $item_map->{$Ticket->Id}->{next},
+				   title => loc('Next') . ' >' };
+	    $searchtabs->{'e'} = {
+		class => "nav",
+		path => "RTIR/Display.html?id=" . $item_map->{last},
+		title => loc('Last') . ' >>' };
+	}
+    }
 
 $tabs->{"this"} = { class => "currentnav",
                     path  => "RTIR/Display.html?id=" . $Ticket->id,
@@ -125,7 +155,8 @@ if (    $Ticket->CurrentUserHasRight('ModifyTicket')
 
 $tabs->{"g"} = { path      => 'RTIR/Listing.html?NewSearch=1&Queue=Blocks',
                  title     => loc('Search'),
-                 separator => 1 };
+                 separator => 1,
+                 subtabs   => $searchtabs };
 </%INIT>
 
   
