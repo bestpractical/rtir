@@ -608,19 +608,20 @@ while (my $CustomField = $CustomFields->Next()) {
        ScripAction      => 'User Defined',
        CustomCommitCode => q[
 # ------------------------------------------------------------------- #
-my $CustomFields = $self->TicketObj->QueueObj->CustomFields();
-$CustomFields->{'find_disabled_rows'} = 1;
-while (my $CustomField = $CustomFields->Next()) {
-  if ($CustomField->Name eq '_RTIR_State') {
     my $State;
+    my $cf = RT::CustomField->new($self->CurrentUser);
+    $cf->LoadByNameAndQueue(Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_State');
+    unless ($cf->Id) { 
+        return(1);
+    }
     if ($self->TicketObj->Status eq 'new' or $self->TicketObj->Status eq 'open' or $self->TicketObj->Status eq 'stalled') {
       $State = 'new';
-      while (my $link = $self->TicketObj->MemberOf->Next) {
-        my $member = $link->TargetObj;
-        if ($member->QueueObj->Name eq 'Incidents') {
-	  $State = 'open';
+        my $parents = RT::Tickets->new($self->CurrentUser);
+        $parents->LimitHasMember($self->TicketObj->id);
+        $parents->LimitQueue(VALUE => 'Incidents');
+      if ($parents->First) {
+        $State = 'open';
         }
-      }
     } elsif ($self->TicketObj->Status eq 'resolved') {
       $State = 'resolved';
     } elsif ($self->TicketObj->Status eq 'rejected') {
@@ -629,8 +630,6 @@ while (my $CustomField = $CustomFields->Next()) {
       return 0;
     }
     $self->TicketObj->AddCustomFieldValue(Field => $CustomField->id, Value => $State);
-  }
-}
   return 1;
 # ------------------------------------------------------------------- #
 	],

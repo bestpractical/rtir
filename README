@@ -2,6 +2,48 @@ RTIR (RT for Incident Reponse) is a tool for tracking, responding to,
 and investigating reported incidents.  Out of the box, it integrates
 with RT3 (Also available from bestpractical.com)
 
+
+Upgrading from RTIR 1.0.2:
+-----
+
+Follow instructions from previous "upgrading from" sections if they apply.
+
+1) RTIR 1.0.3 changes the "SetRTIRState" custom scripaction from previous
+versions.  AFTER Installing RTIR 1.0.3, alter the "SetRTIRState"'s custom 
+Action content to read
+
+#####################################
+
+    my $State;
+    my $cf = RT::CustomField->new($self->CurrentUser);
+    $cf->LoadByNameAndQueue(Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_State');
+    unless ($cf->Id) { 
+        return(1);
+    } 
+    if ($self->TicketObj->Status eq 'new' or $self->TicketObj->Status eq 'open'
+        or $self->TicketObj->Status eq 'stalled') {
+      $State = 'new';
+        my $parents = RT::Tickets->new($self->CurrentUser);
+        $parents->LimitHasMember($self->TicketObj->id);
+        $parents->LimitQueue(VALUE => 'Incidents');
+      if ($parents->First) {
+        $State = 'open';
+        }
+    } elsif ($self->TicketObj->Status eq 'resolved') {
+      $State = 'resolved';
+    } elsif ($self->TicketObj->Status eq 'rejected') {
+      $State = 'rejected';
+    } else {
+      return 0;
+    }  
+    $self->TicketObj->AddCustomFieldValue(Field => $CustomField->id, Value => $State);
+  return 1;
+
+##########################################
+
+
+
+
 Upgrading from RTIR 1.0.0:
 --------------------------
 

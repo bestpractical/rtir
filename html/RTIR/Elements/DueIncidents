@@ -38,7 +38,7 @@
 % while ($i < (scalar keys %{$incidents})) {
 %   my $id = $incidents->{$i}->{'id'};
 %   next if (!$id);
-%   my $Ticket = $incidents->{$i}->{'Ticket'}->TargetObj;
+%   my $Ticket = $incidents->{$i}->{'Ticket'};
 %   next if $Ticket->HasUnresolvedDependencies( Type => 'approval' );
 %   last if $i >= $rows;
 <TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >                                
@@ -56,7 +56,7 @@
 <%$Ticket->OwnerObj->Name%>
 </TD>
 <TD>
-% if ($Ticket->HasUnresolvedDependencies ) {
+% if ( $Ticket->HasUnresolvedDependencies ) {
 %     if ($Ticket->HasUnresolvedDependencies( Type => 'approval' ) or
 %         $Ticket->HasUnresolvedDependencies( Type => 'code' )) {
 <em><&|/l&>(pending approval)</&></em>
@@ -109,17 +109,19 @@ $MyTickets->LimitStatus(VALUE => "open");
 $MyTickets->LimitStatus(VALUE => "stalled");
 $MyTickets->OrderBy(FIELD => 'Due', ORDER => 'ASC');
 
+
 my ($incidents, $seen);
 my $c = 0;
 while (my $Ticket = $MyTickets->Next) {
-  my $members = $Ticket->MemberOf;
-  while (my $link = $members->Next) {
-    my $member= $link->TargetObj;
-    next unless ($member->QueueObj->Name eq 'Incidents' );
-    if ( !exists $seen->{$member->Id}) {
-      $seen->{$member->Id} = $member->Id;
-      $incidents->{$c} = { id => $member->Id, 
-		       Ticket => $link, 
+        my $incident_parents = RT::Tickets->new($session{'CurrentUser'});
+        $incident_parents->LimitHasMember($Ticket->Id);
+        $incident_parents->LimitQueue(VALUE =>'Incidents');
+
+  while (my $parent = $incident_parents->Next) {
+    if ( !exists $seen->{$parent->Id}) {
+      $seen->{$parent->Id} = $parent->Id;
+      $incidents->{$c} = { id => $parent->Id, 
+		       Ticket => $parent, 
 		       Due => $Ticket->DueObj };
       $c++;
     }
