@@ -76,6 +76,7 @@ if ( $ARGS{'BulkReject'} ) {
     while ( my $t = $session{'tickets'}->Next ) {
         my @tempresults;
         $m->out('<!--  Processing <%$t->id%> -->');
+        $m->flush_buffer;
         next unless ( $ARGS{ "UpdateTicket" . $t->Id } );
         my $State = $m->scomp(
             "/RTIR/Elements/ShowRTIRField",
