@@ -33,10 +33,6 @@
     QueryString => $QueryString,
 &> 
 
-current_toptab: <%$current_toptab%><br>
-current_subtab: <%$current_subtab%><br>
-my tab: <%$mytab%><br>
-
 <%INIT>
 
 my $tabs = {};
@@ -169,7 +165,7 @@ $tabs->{"A"} = { path      => 'RTIR/Create.html?Queue=Incident Reports',
 $tabs->{"e"} = { path      => 'RTIR/Search/Build.html?Queue=Incident Reports&NewQuery=1',
                  title     => loc('New Query'),
                  subtabs   => $searchtabs };
-$tabs->{"f"} = { path      => 'RTIR/Search/Build.html?Queue=Incident Reports' . $QueryString . '&NewQuery=1',
+$tabs->{"f"} = { path      => 'RTIR/Search/Build.html?Queue=Incident Reports' . $QueryString,
                  title     => loc('Query Builder'),
                  separator => 1,
                  subtabs   => $searchtabs };
