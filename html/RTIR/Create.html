@@ -328,7 +328,11 @@
 </TABLE>
 <& /Elements/TitleBoxEnd &>
 
-<& /Elements/Submit, Label => loc("Create")&>
+% if ($Type eq 'Investigation') {
+<& /Elements/Submit, Name => "Create", Label => loc("Launch")&>
+% } else {
+<& /Elements/Submit, Name => "Create", Label => loc("Create")&>
+% }
 </FORM>
 
 <%INIT>
@@ -379,7 +383,11 @@ if ($Type eq 'Report') {
 if ($Split) {
   $Title = loc("Split [_1] #[_2]: [_3]", $name, $TicketObj->id, $TicketObj->Subject);
 } else {
-  $Title = loc("Create a new [_1]", $name);
+  if ($Type eq 'Investigation') {
+    $Title = loc("Launch a new [_1]", $name);
+  } else {
+    $Title = loc("Create a new [_1]", $name);
+  }
 }
 
 my $CFs = $QueueObj->CustomFields();
