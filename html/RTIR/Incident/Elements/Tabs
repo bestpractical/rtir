@@ -109,8 +109,8 @@ if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
             title => loc('Resolve') };
         $actions->{'B'} = {
 
-            path =>
-              "RTIR/Update.html?Action=Comment&DefaultStatus=rejected&id=" . $id,
+              path  => "RTIR/Incident/Reply.html?Action=Comment&DefaultStatus=rejected&ClearRestrictions=1&id=".$id."&All=1",
+
             title => loc('Abandon') };
     }
     if ( $Ticket->Status ne 'open' && $Ticket->Status ne 'new' ) {

@@ -50,7 +50,7 @@ while (my $Ticket = $session{'tickets'}->Next) {
 
 </TABLE>
 
-% if ($ARGS{Status} ne 'resolved' && $i == 0) {
+% if ($ARGS{Status} ne 'resolved' && $ARGS{Status} ne 'rejected' && $i == 0) {
 <i>(<&|/l&>No tickets selected</&>)</i>
 % } else {
 <HR>
@@ -70,7 +70,7 @@ $ARGS{UpdateTimeWorked}%>"> <&|/l&>minutes</&>
 <tr><td align=right><&|/l&>Update Type</&>:</td>
 <td><select name="UpdateType">
   <option value="private" <%$CommentDefault%>><&|/l&>Comments (Not sent to requestors)</&></option>
-% if (!($ARGS{Status} eq 'resolved' && $i == 0)) {
+% if ($ARGS{Status} ne 'resolved' && $ARGS{Status} ne 'rejected' && $i == 0) {
    <option value="response" <%$ResponseDefault%>><&|/l&>Response to requestors</&></option>
 % }
 </select> 

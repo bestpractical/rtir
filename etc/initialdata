@@ -673,22 +673,12 @@ while (my $CustomField = $CustomFields->Next()) {
        Template          => 'Blank', },
     {  Description => "ResolveAllChildren",
        Queue            => 'Incidents',
-       ScripCondition   => 'User Defined',
-       CustomIsApplicableCode => q[
-# ------------------------------------------------------------------- #
-  if ($self->TransactionObj->Type eq "Status") {
-    return 1;
-  } else {
-    return 0;
-  }
-# ------------------------------------------------------------------- #
-	],
-
+       ScripCondition   => 'On Status Change',
        ScripAction      => 'User Defined',
        CustomCommitCode => q[
 # ------------------------------------------------------------------- #
-if ($self->TicketObj->Status eq 'resolved' or 
-    $self->TicketObj->Status eq 'rejected') {
+if ($self->TicketObj->NewValue eq 'resolved' or 
+    $self->TicketObj->NewValue eq 'rejected') {
   my $members = $self->TicketObj->Members;
   while (my $link = $members->Next) {
     my $member= $link->BaseObj;

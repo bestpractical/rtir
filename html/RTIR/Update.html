@@ -128,7 +128,11 @@ if ($DefaultStatus =~ '^new$'){
 if ($DefaultStatus eq 'resolved') {
     $title = loc("Resolve [_1] #[_2] ([_3])", $name, $Ticket->id, $Ticket->Subject);
 } elsif ($DefaultStatus eq 'rejected') {
+  if ($Type eq 'Incident') {
+    $title = loc("Abandon [_1] #[_2] ([_3])", $name, $Ticket->id, $Ticket->Subject);
+  } else {
     $title = loc("Reject [_1] #[_2] ([_3])", $name, $Ticket->id, $Ticket->Subject);
+  }
 } else {
     $title = loc("Update [_1] #[_2] ([_3])", $name, $Ticket->id, $Ticket->Subject);
 }
