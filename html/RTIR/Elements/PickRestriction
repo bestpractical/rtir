@@ -66,54 +66,54 @@
 &> 
 <Input Name="ValueOfAttachmentField" Size=20>
 
-%#% if ($QueueObj->Name eq 'Incidents') {
-%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
-%#	Name => 'State' &>
-%#
-%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
-%#	Name => 'Constituency' &>
-%#
-%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
-%#	Name => 'Description' &>
-%#
-%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
-%#	Name => 'SLA' &>
-%#
-%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
-%#	Name => 'Type' &>
-%#% } elsif ($QueueObj->Name eq 'Incident Reports') {
-%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
-%#	Name => 'State' &>
-%#
-%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
-%#	Name => 'HowReported' &>
-%#
-%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
-%#	Name => 'ReporterType' &>
-%#
-%#% } elsif ($QueueObj->Name eq 'Investigations') {
-%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
-%#	Name => 'State' &>
-%#
-%#% } elsif ($QueueObj->Name eq 'Blocks') {
-%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
-%#	Name => 'State' &>
-%#
-%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
-%#	Name => 'IP',
-%#	Label => 'IP Address' &>
-%#
-%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
-%#	Name => 'Netmask' &>
-%#
-%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
-%#	Name => 'Port' &>
-%#
-%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
-%#	Name => 'WhereBlocked',
-%#	Label => 'Where Blocked' &>
-%#
-%#% }
+% if ($QueueObj->Name eq 'Incidents') {
+<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+	Name => 'State' &>
+
+<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+	Name => 'Constituency' &>
+
+<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+	Name => 'Description' &>
+
+<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+	Name => 'SLA' &>
+
+<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+	Name => 'Type' &>
+% } elsif ($QueueObj->Name eq 'Incident Reports') {
+<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+	Name => 'State' &>
+
+<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+	Name => 'HowReported' &>
+
+<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+	Name => 'ReporterType' &>
+
+% } elsif ($QueueObj->Name eq 'Investigations') {
+<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+	Name => 'State' &>
+
+% } elsif ($QueueObj->Name eq 'Blocks') {
+<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+	Name => 'State' &>
+
+<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+	Name => 'IP',
+	Label => 'IP Address' &>
+
+<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+	Name => 'Netmask' &>
+
+<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+	Name => 'Port' &>
+
+<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+	Name => 'WhereBlocked',
+	Label => 'Where Blocked' &>
+
+% }
 
 % while ( my $CustomField = $CustomFields->Next ) {
 <li><% $CustomField->Name %> 
