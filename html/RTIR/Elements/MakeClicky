@@ -88,7 +88,7 @@ my %types =
    Bip		=> [ q[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}], $cb{ip} ],
    Cipdecimal	=> [ q[\d{8,13}(?!=)], $cb{ipdecimal} ],
    Demail	=> [ q[(?:mailto:)?[\w\.\+-]+\@[\w\.-]+\.\w{2,3}], $cb{email}],
-   Fdomain	=> [ q[(?:[\w-]+\.)+[a-z]{2,3}], $cb{host}  ],
+   Fdomain	=> [ q[(?:[\w-]+\.)+[A-Za-z]{2,3}], $cb{host} ],
    GRIPE	=> [ q[(?-i:[A-Z][A-Z0-9-]+)], $cb{noc} ],
   );
 my @types = sort keys %types;
