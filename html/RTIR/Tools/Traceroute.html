@@ -1,0 +1,20 @@
+% while (<TR>) {
+% my $content = $_;
+% $m->comp('/RTIR/Elements/MakeClicky', content =>\$content);
+<%$content |n%><BR>
+% $m->flush_buffer();
+% }
+% close(TR);
+<%init>
+my $host;
+if ($q =~ /^[A-Z0-9.]+$/i) {
+ $host = $q;
+open(TR, "/usr/sbin/traceroute $host|");
+}
+else {
+    Abort("Invalid search query");
+}
+</%init>
+<%args>
+$q => undef
+</%args>

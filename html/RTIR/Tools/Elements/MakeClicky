@@ -1,0 +1,17 @@
+<%$Value|n%> 
+<%init>
+use Regexp::Common 'RE_ALL';
+my $domain_pat = $RE{net}{domain}{-keep};
+
+$Value =~ s/(\s|^)([A-Z]([A-Z0-9]+)(?:-[A-Z]+)?-([A-Z]+))($|\s)/$1$2 [Handle: <a href="Lookup.html?server=$server&q=$2">$2<\/a>]\n/gxi;;
+
+$Value =~ s/(\s|^)((?:[\w|-])+\.){1,}((?:[\w|-])*?\.)([A-Z]{2,5})(\W|$)/$1$2$3$4 [Domain: <a href="Lookup.html?server=$server&q=$2$3$4&query_type=domain">$2$3$4<\/a> <a href="Lookup.html?server=$server&q=$3$4&query_type=domain">$3$4<\/a> ]\n/gxi;
+my $pat = $RE{net}{IPv4}{-keep};
+$Value =~ s/$pat(\W|$)/<a href="Lookup.html?server=$server&q=$1&query_type=ip">$1<\/a>$6/gxi; # the $6 is to capture any trailing data like the / in CIDR
+
+</%init>
+<%args>
+$server => undef
+$Hint => undef
+$Value => undef
+</%args>

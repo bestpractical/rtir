@@ -1,0 +1,46 @@
+<& /Elements/Header, Title => "Lookup $q using server $server" &>
+% if ($iterator) {
+%while (my $obj = $iterator->next) {
+% my @lines_starting_with_space = grep ( /^(\s+)(\w+)/, $obj->content());
+% if ($handparse || $#lines_starting_with_space >= 4) { #we couldn't parse that. suck
+% my $content = join("", $obj->content());
+% $m->comp( '/RTIR/Elements/MakeClicky', content => \$content);
+<pre><%$content|n%></pre>
+<br>
+% } else {
+Structured RIPE whois data returned. Click <a
+href="Lookup.html?q=<%$q%>&server=<%$server%>&handparse=1">here</a> to manually
+parse this data.
+<BR>Warnings <%$obj->warnings%>
+<BR>errors <%$obj->errors%>
+<hr>
+%               foreach my $attribute ($obj->attributes()) {
+%                       foreach  my $value ($obj->$attribute()) {
+                               <b><%$attribute%></b>: 
+% $m->comp( '/RTIR/Elements/MakeClicky', content => \$value);
+<%$value|n%><br>
+%                       }
+% }
+% } 
+% }
+% }
+<form action="Lookup.html" method="get">
+Look up <input size=30 name="q" value="<%$q%>"> at <input size="20" name="server" value ="<%$server%>"><input type=submit value="Go">
+</form>
+
+<form action="Traceroute.html" method="get">
+Traceroute to <input size=30 name="q" value="<%$q%>">
+<input type=submit value="Go">
+</form>
+
+<%init>
+use Net::Whois::RIPE;
+my $query = Net::Whois::RIPE->new($server);
+#$query->no_recursive;
+my $iterator = $query->query_iterator($q);
+</%init>
+<%args>
+$server => 'whois.fucknsi.com'
+$handparse => 1
+$q => undef
+</%args>
