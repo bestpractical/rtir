@@ -40,8 +40,8 @@
    QueryString => $QueryString,
 &>
 
-<form action='/RTIR/Incident/Display.html' method=get>
-<input type=hidden name=child value=<%$id%>>
+<form action="<%$RT::WebPath%>/RTIR/Incident/Display.html" method="post">
+<input type="hidden" name="child" value=<%$id%>>
 
 <& /RTIR/Search/Elements/ShowResults, 
     Queue => $Queue,
