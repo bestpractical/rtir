@@ -41,7 +41,7 @@
 <input type="hidden" name="<%$Ticket->Id%>-MergeInto">
 
 <& /RTIR/Elements/Listing, 
-    Type => 'Incident', Queue => 'Incidents', check => 'radio', %ARGS &>
+    Type => $Type, Queue => $Ticket->QueueObj->Name, check => 'radio', %ARGS &>
 
 <HR>
 
