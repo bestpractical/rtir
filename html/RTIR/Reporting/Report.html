@@ -90,7 +90,110 @@ foreach my $incident_type (keys %$types) {
 <h2><%$incident_type%></h2>
 
 <%perl>
-# of new reports created during the month broken down by classification
+    foreach my $service_level (keys %$sla_levels) {
+	my $class_tix = RT::Tickets->new( $session{'CurrentUser'} );
+	$class_tix->LimitQueue(VALUE => 'Incident Reports');
+	$class_tix->LimitCreated(VALUE => $start, OPERATOR => ">");
+	$class_tix->LimitCreated(VALUE => $end, OPERATOR => "<");
+	$class_tix->LimitCustomField(CUSTOMFIELD => $fid, VALUE => $service_level);
+	my $mytix = {};
+	while ( my $t = $class_tix->Next) {
+	    my $value = get_incident_field( $t, '_RTIR_Function');
+	    next unless ($value eq $incident_type);
+	    $mytix->{$t->Id} = $t;
+	}
+
+	my $myoutstanding = {};
+	while ( my $t = $outstanding->Next) {
+	    my $value;
+	    $m->comp("Elements/GetIncidentField", 
+		     Ticket => $t, 
+		     Field => '_RTIR_Function',
+		     Value => \$value);
+	    next unless ($value eq $incident_type);
+	    $myoutstanding->{$t->Id} = $t;
+	}
+    
+</%perl>
+
+<h3><%$service_level%></h3>
+
+<& Elements/SLASummary, 
+    class_tix => $mytix, outstanding => $myoutstanding, 
+    service_level => $service_level,
+    start => $rtstart, end => $rtend &>
+
+<%perl>
+    }
+}
+</%perl>
+
+<%init>
+my $start = ParseDateToISO($mystart);
+my $end = ParseDateToISO($myend);
+
+my $rtstart = new RT::Date($RT::SystemUser);
+$rtstart->Set( Format => 'ISO', Value => $start );
+my $rtend = new RT::Date($RT::SystemUser);
+$rtend->Set( Format => 'ISO', Value => $end );
+
+# of new reports outstanding at start of the period
+my $outstanding = RT::Tickets->new($session{'CurrentUser'});
+$outstanding->FromSQL("Queue = 'Incident Reports' AND Created < '$start' AND (Resolved='1970-01-01 00:00:00' OR Resolved > '$start')");
+
+# of new reports created during the period
+my $tix_created = RT::Tickets->new($session{'CurrentUser'});
+$tix_created->FromSQL("Queue = 'Incident Reports' AND Created > '$start' AND Created < '$end'");
+
+# of new reports resolved/closed/deleted during the period
+# this means "number of reports created during the period that were 
+# also closed during the period"
+
+my $tix_resolved = RT::Tickets->new($session{'CurrentUser'});
+$tix_resolved->FromSQL("Queue = 'Incident Reports' AND Created > '$start' AND Created < '$end' AND (Resolved > '1970-01-01 00:00:00' AND Resolved <'$end')");
+
+# of new reports oustanding at end of the period
+# this is "number of reports created during the period that were also 
+# closed during the period"
+
+my $tix_unresolved = RT::Tickets->new($session{'CurrentUser'});
+$tix_unresolved->FromSQL("Queue = 'Incident Reports' AND Created > '$start' AND Created < '$end' AND (Resolved='1970-01-01 00:00:00' OR Resolved>'$end')");
+
+# of new reports created during the period broken down by function
+my ($fid, $types, $classifications, $sla_levels, $CustomFields);
+my $Queue = new RT::Queue($session{'CurrentUser'});
+$Queue->Load('Incidents');
+$CustomFields = $Queue->CustomFields();
+$CustomFields->{'find_disabled_rows'} = 1;
+while (my $CustomField = $CustomFields->Next()) {
+  if ($CustomField->Name eq '_RTIR_Function') {
+    $fid = $CustomField->Id;
+    my $values = $CustomField->Values;
+    while (my $value = $values->Next) {
+      $types->{$value->Name} = $value->Description;
+    }
+  }
+}
+
+# of new reports created during the period broken down by classification
+$Queue = new RT::Queue($session{'CurrentUser'});
+$Queue->Load('Incidents');
+$CustomFields = $Queue->CustomFields();
+$CustomFields->{'find_disabled_rows'} = 1;
+my $i = 0;
+while (my $CustomField = $CustomFields->Next()) {
+  if ($CustomField->Name eq '_RTIR_Classification') {
+    $fid = $CustomField->Id;
+    my $values = $CustomField->Values;
+    while (my $value = $values->Next) {
+      $classifications->{$i} = $value->Name;
+      $i++;
+    }
+  }
+}
+$classifications->{$i} = 'Unclassified';
+
+# of new reports created during the period broken down by SLA level
 $Queue->Load('Incident Reports');
 $CustomFields = $Queue->CustomFields();
 $CustomFields->{'find_disabled_rows'} = 1;
@@ -99,189 +202,31 @@ while (my $CustomField = $CustomFields->Next()) {
     $fid = $CustomField->Id;
     my $values = $CustomField->Values;
     while (my $value = $values->Next) {
-      $windows->{$value->Name} = $value->Description;
+      $sla_levels->{$value->Name} = $value->Description;
     }
   }
 }
 
-foreach my $service_level (keys %$windows) {
-    my $class_tix = RT::Tickets->new( $session{'CurrentUser'} );
-    $class_tix->LimitQueue(VALUE => 'Incident Reports');
-    $class_tix->LimitCreated(VALUE => $start, OPERATOR => ">");
-    $class_tix->LimitCreated(VALUE => $end, OPERATOR => "<");
-    $class_tix->LimitCustomField(CUSTOMFIELD => $fid, VALUE => $service_level);
+sub get_incident_field {
+  my $t = shift;
+  my $field = shift;
 
-    my $class_sla_tix = RT::Tickets->new( $session{'CurrentUser'} );
-    $class_sla_tix->DEBUG(1);
-    $class_sla_tix->Limit( QUOTEVALUE => 1, ENTRYAGGREGATOR => 'AND', FIELD => 'Started', OPERATOR => '<', VALUE => '(Created + 7200)' );
-
-    my ($tix_count, $sla_count, $resolved_count, $unresolved_count);
-    $tix_count = 0;
-    $sla_count = 0;
-    $resolved_count = 0;
-    $unresolved_count = 0;
-
-    # get the number of seconds for the service level
-    my $sla = $RT::SLA->{$service_level} * 60;
-
-    while ( my $t = $class_tix->Next) {
-      # find the parent incident
-      my $incidents = $t->MemberOf;
-      my $parent;
-      while (my $link = $incidents->Next) {
-        my $incident = $link->TargetObj;
-        if ($incident->QueueObj->Name eq 'Incidents') {
-          $parent = $incident;
-	  last;
-        }
-      }
-      if ( $parent &&
-	   $parent->FirstCustomFieldValue('_RTIR_Function') eq $incident_type) {
-        if ( $t->ResolvedObj->Unix <= 0 ||
-             $t->ResolvedObj->Unix > $monthend->Unix) {
-          $tix_count++;
-        }
-        if ( $t->StartedObj->Unix > 0 &&
-             $t->StartedObj->Unix < ($t->CreatedObj->Unix + $sla)) {
-          $sla_count++;
-        }
-        if ( $t->ResolvedObj->Unix >= $monthstart->Unix &&
-             $t->ResolvedObj->Unix <= $monthend->Unix) {
-          $resolved_count++;
-        }
-        if ( $t->ResolvedObj->Unix <= 0 ||
-             $t->ResolvedObj->Unix > $monthend->Unix) {
-          $unresolved_count++;
-        }
-      }
+  # find the parent incident
+  my $incidents = $t->MemberOf;
+  my $parent;
+  while (my $link = $incidents->Next) {
+    my $incident = $link->TargetObj;
+    if ($incident->QueueObj->Name eq 'Incidents') {
+      $parent = $incident;
+      last;
     }
-
-</%perl>
-
-<h3><%$service_level%></h3>
-
-<table width=100%>
-<tr>
-  <td valign=top width=50%>
-    <table>
-      <th colspan=2>At the start of the time period:</th>
-      <tr>
-        <td class=label>Outstanding Incident Reports:</td>
-        <td class=value> <%$outstanding->Count%></td>
-      </tr>
-    </table>
-  </td>
-  <td valign=top width=50%>
-    <table>
-      <th colspan=2>During the time period:</th>
-      <tr>
-       <td>Total <%$service_level%> Incident Reports created:</td>
-	<td><% $tix_count %></td>
-      </tr>
-      <tr>
-        <td>
-          Incident Reports for which response time was met:
-        </td>
-	<td><% $sla_count %></td>
-      </tr>
-      <tr>
-        <td>Resolved Incident Reports:</td>
-	<td><% $resolved_count%></td>
-      </tr>
-      <tr>
-        <td>Unresolved Incident Reports: </td>
-	<td><% $unresolved_count%></td>
-      </tr>
-    </table>
-  </td>
-</tr>
-</table>
-% }
-% }
-<%perl>
-
-#                  All tickets created in queue IncidentReport created after
-#                  monthstart and before monthend where
-#                  there was outbound correspondence within $windows{$Classification};
-#
-# No need to break down incident type against response time.
-# classification (eg response time) needs to be calculated somehow, and to
-# take account of nwh. (eg the clock stops tickets at 1800 and starts
-# again at 0800 and reports received at 8am on a Saturday are not measured
-# until 0800 Monday ownwards...etc)
-#
-# eg
-#  All tickets created in queue IncidentReport created after monthstart and
-#  before monthend where there was outbound correspondence within
-#  $windows{$Classification};
-#
-my $sla_check = RT::Tickets->new( $session{'CurrentUser'} );
-
-#$sla_check->FromSQL( "Created >= $monthstart AND Created <= $monthend AND Queue='Incident Reports'");
-
-# Get a Business::Hours object for the period in question
-use Business::Hours;
-
-my $business_hours = Business::Hours->new();
-#$business_hours->set_business_hours(%working_hours);
-#$business_hours->for_timespan( Start => $monthstart->AsString, End => $monthend->AsString );
-my %created;
-
-while ( my $t = $sla_check->Next) {
-
-    my $sla = $t->FirstCustomFieldValue('SLA');
-
-    #my $time_on_clock = $business_hours->between( $t->CreatedObj->Unix, $t->ResolvedObj->Unix );
-
-    # of email messages created by CERT staff, broken down by Queue (incident, incident report, investigation)
-    # of email messages received by CERT, broken down by Queue (incident, incident report, investigation)
-    my $txns = RT::Transactions->new( $session{'CurrentUser'} );
-    $txns->Limit( FIELD => 'Created', OPERATOR => '>=', VALUE => $monthstart );
-    $txns->Limit( FIELD => 'Created', OPERATOR => '<=', VALUE => $monthstart );
-    while ( my $txn = $txns->Next ) {
-        my $q = $txn->TicketObj->QueueObj->Name;
-        my $inbound = ( $txn->IsInbound || 0 );
-        $created{$q}{$inbound}++;
-    }
-
-    #         Average time from creation to close for incidents for all incidents
-    #         closed within this time period
-    # 	This doesn't currently take into account "business hours"
-
-    my $avgtime = RT::Tickets->new( $session{'CurrentUser'} );
-#    $avgtime->FromSQL( "Queue = 'Incident Reports' AND Resolved >= '$monthstart' AND Resolved <= '$monthend'");
-
-    my $i;
-    my $total_diff;
-    while ( my $t = $avgtime->Next ) {
-        $i++;
-        my $ctime = $t->CreatedObj->Unix;
-        my $rtime = $t->ResolvedObj->Unix;
-
-        my $diff = $rtime - $ctime;
-        $total_diff += $diff;
-
-    }
-
-    my $average_secs;
-    if ($i) {
-     $average_secs = $total_diff / $i;
-    }
+  }
+  if ( $parent ) {
+      return $parent->FirstCustomFieldValue($field);
+  } else {
+      return undef;
+  }
 }
-</%perl>
-
-<%init>
-my $now = new RT::Date($RT::SystemUser);
-$now->SetToNow();
-
-my $monthstart = new RT::Date($RT::SystemUser);
-$monthstart->Set(Format => 'ISO', Value => ParseDateToISO($mystart));
-
-my $monthend = new RT::Date($RT::SystemUser);
-$monthend->Set(Format => 'ISO', Value => ParseDateToISO($myend));
-
-my $start = $monthstart->ISO;
-my $end = $monthend->ISO;
 
 </%init>
 

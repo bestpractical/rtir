@@ -34,6 +34,7 @@
     Ticket => $IncidentObj,
     current_toptab => "RTIR/".$Type."/Listing.html", 
     current_tab => "RTIR/Create.html?Incident=".$Incident."&Queue=".$Queue, 
+    current_subtab => "RTIR/Create.html?Incident=".$Incident."&Queue=".$Queue, 
     Title => $Title &>
 % } else {
 <& "/RTIR/".$Type."/Elements/Tabs",
@@ -78,15 +79,15 @@
 
 <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => $Title &>
 <TABLE border=0 cellpadding=0 cellspacing=2>
-% if (defined $parentvalue) {
-  <TR>
-    <TD ALIGN=RIGHT><&|/l&>Split from</&>:</TD>
-    <TD><% $parentvalue %></TD>
-  </TR>
-% } elsif ($Incident) {
+% if ($Incident) {
   <TR>
     <TD ALIGN=RIGHT><&|/l&>Incident</&>:</TD>
     <TD><% $Incident %></TD>
+  </TR>
+% } elsif (defined $parentvalue) {
+  <TR>
+    <TD ALIGN=RIGHT><&|/l&>Split from</&>:</TD>
+    <TD><% $parentvalue %></TD>
   </TR>
 % }
   <TR>
