@@ -5,7 +5,7 @@ my $check;
 $check = $args{'RTIRCheck'} if $args{'RTIRCheck'};
 
     $COLUMN_MAP->{'_RTIR_Check'} = {
-        title     => ' ',
+        title     => '&nbsp;',
 	value => sub {
 	    my $selected = '';
 	    if ($check eq 'All') {
@@ -25,7 +25,7 @@ $check = $args{'RTIRCheck'} if $args{'RTIRCheck'};
     };
 
     $COLUMN_MAP->{'_RTIR_Radio'} = {
-        title     => ' ',
+        title     => '&nbsp;',
 	value => sub { 
 	    my $selected = '';
 	    if ($_[0]->id == $check) {
