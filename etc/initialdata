@@ -267,50 +267,91 @@
 
 @ScripActions = (
 
-    {  Name        => 'Set Due to Now',    # loc
+    {  Name        => 'RTIR Set Due to Now',    # loc
        Description => 'Set the due date to the current time' ,                                            # loc
        ExecModule => 'RTIR_SetDueToNow',
     },
-    {  Name        => 'Set Starts to Now',    # loc
+    {  Name        => 'RTIR Set Starts to Now',    # loc
        Description => 'Set the starts date to the current time' ,                                            # loc
        ExecModule => 'RTIR_SetStartsToNow',
     },
-    {  Name        => 'Set Due by SLA',    # loc
+    {  Name        => 'RTIR Set Due by SLA',    # loc
        Description => 'Set the due date according to SLA' ,                                            # loc
        ExecModule => 'RTIR_SetDueBySLA',
     },
-    {  Name        => 'Set Due Correspond',    # loc
+    {  Name        => 'RTIR Set Due Correspond',    # loc
        Description => 'Set the due date for correspondence' ,                                            # loc
        ExecModule => 'RTIR_SetDueCorrespond',
     },
-    {  Name        => 'Unset Due',    # loc
+    {  Name        => 'RTIR Unset Due',    # loc
        Description => 'Unset the due date' ,                                            # loc
        ExecModule => 'RTIR_UnsetDue',
     },
-    {  Name        => 'Set Starts by Business Hours',    # loc
+    {  Name        => 'RTIR Set Starts by Business Hours',    # loc
        Description => 'Set the starts date according to Business Hours' ,                                            # loc
        ExecModule => 'RTIR_SetStartsByBizHours',
     },
-    {  Name        => 'Set How Reported',    # loc
+    {  Name        => 'RTIR Set How Reported',    # loc
        Description => 'Set how the Incident Report was reported' ,                                            # loc
        ExecModule => 'RTIR_SetHowReported',
     },
-    {  Name        => 'Resolve Children',    # loc
+    {  Name        => 'RTIR Resolve Children',    # loc
        Description => "Resolve an Incident's children",                                            # loc
        ExecModule => 'RTIR_ResolveChildren',
     },
-    {  Name        => 'Change Child Ownership',    # loc
+    {  Name        => 'RTIR Change Child Ownership',    # loc
        Description => "Change the ownership of Incident's children",                                            # loc
        ExecModule => 'RTIR_ChangeChildOwnership',
     },
-    {  Name        => 'Change Parent Ownership',    # loc
+    {  Name        => 'RTIR Change Parent Ownership',    # loc
        Description => 'Change the ownership of the parent Incident' ,                                            # loc
        ExecModule => 'RTIR_ChangeParentOwnership',
     },
-    {  Name        => 'Open Parent',    # loc
+    {  Name        => 'RTIR Open Parent',    # loc
        Description => 'Open the parent Incident when a child reopens' ,                                            # loc
        ExecModule => 'RTIR_OpenParent',
     },
+    {  Name        => 'RTIR Set Incident Report State',    # loc
+       Description => 'Set the state of an Incident Report' ,                                            # loc
+       ExecModule => 'RTIR_SetIncidentReportState',
+    },
+    {  Name        => 'RTIR Set Investigation State',    # loc
+       Description => 'Set the state of an Investigation' ,                                            # loc
+       ExecModule => 'RTIR_SetInvestigationState',
+    },
+    {  Name        => 'RTIR Set Block State',    # loc
+       Description => 'Set the state of a Block' ,                                            # loc
+       ExecModule => 'RTIR_SetBlockState',
+    },
+    {  Name        => 'RTIR Set Incident State',    # loc
+       Description => 'Set the state of an Incident' ,                                            # loc
+       ExecModule => 'RTIR_SetIncidentState',
+    },
+);
+
+@ScripConditions = (
+
+    {  Name        => 'RTIR Customer Response',    # loc
+       Description => 'Detect an external response' ,                                            # loc
+       ApplicableTransTypes => 'Correspond',
+       ExecModule => 'RTIR_CustomerResponse',
+    },
+    {  Name        => 'RTIR Close Ticket',    # loc
+       Description => 'A ticket is rejected or resolved' ,                                            # loc
+       ApplicableTransTypes => 'Any',
+       ExecModule => 'RTIR_CloseTicket',
+    },
+    {  Name        => 'RTIR Reopen Ticket',    # loc
+       Description => 'A closed ticket is reopened' ,                                            # loc
+       ApplicableTransTypes => 'Any',
+       ExecModule => 'RTIR_ReopenTicket',
+    },
+    {  Name        => 'RTIR Require State Change',    # loc
+       Description => 'A ticket requires a state change' ,                                            # loc
+       ApplicableTransTypes => 'Any',
+       ExecModule => 'RTIR_RequireStateChange',
+    },
+
 );
 
 @Scrips = (
@@ -326,433 +367,156 @@
        Template       => 'NewMessage' },
     {  Description => "DetectUserResponse",
        Queue          => 'Incident Reports',
-       ScripCondition => 'User Defined',
-       CustomIsApplicableCode => q[
-# ------------------------------------------------------------------- #
-if ($self->TransactionObj->Type eq 'Correspond' && 
-    $self->TicketObj->Owner ne $self->TransactionObj->Creator) {
-    return 1;
-} else {
-    return 0;
-}
-# ------------------------------------------------------------------- #	],
-       ScripAction      => 'Set Due to Now',
+       ScripCondition => 'RTIR Customer Response',
+       ScripAction      => 'RTIR Set Due to Now',
        Template       => 'Blank' },
     {  Description => "DetectUserResponse",
        Queue            => 'Investigations',
-       ScripCondition => 'User Defined',
-       CustomIsApplicableCode => q[
-# ------------------------------------------------------------------- #
-if ($self->TransactionObj->Type eq 'Correspond' && 
-    $self->TicketObj->Owner ne $self->TransactionObj->Creator) {
-    return 1;
-} else {
-    return 0;
-}
-# ------------------------------------------------------------------- #	],
-       ScripAction      => 'Set Due to Now',
+       ScripCondition => 'RTIR Customer Response',
+       ScripAction      => 'RTIR Set Due to Now',
        Template       => 'Blank' },
     {  Description => "DetectUserResponse",
        Queue            => 'Blocks',
-       ScripCondition => 'User Defined',
-       CustomIsApplicableCode => q[
-# ------------------------------------------------------------------- #
-if ($self->TransactionObj->Type eq 'Correspond' && 
-    $self->TicketObj->Owner ne $self->TransactionObj->Creator) {
-    return 1;
-} else {
-    return 0;
-}
-# ------------------------------------------------------------------- #	],
-       ScripAction      => 'Set Due to Now',
+       ScripCondition => 'RTIR Customer Response',
+       ScripAction      => 'RTIR Set Due to Now',
        Template       => 'Blank' },
     {  Description => "SetStartsDate",
        Queue            => 'Incidents',
        ScripCondition => 'On Create',
-       ScripAction      => 'Set Starts to Now',
+       ScripAction      => 'RTIR Set Starts to Now',
        CustomPrepareCode => '1',
        Template       => 'Blank' },
     {  Description => "SetDue",
        Queue            => 'Incident Reports',
        ScripCondition => 'On Create',
-       ScripAction      => 'Set Due by SLA',
+       ScripAction      => 'RTIR Set Due by SLA',
        Template       => 'Blank' },
     {  Description => "SetStarts",
        Queue            => 'Incident Reports',
        ScripCondition => 'On Create',
-       ScripAction      => 'Set Starts by Business Hours',
+       ScripAction      => 'RTIR Set Starts by Business Hours',
        Template       => 'Blank' },
     {  Description => "SetStarts",
        Queue            => 'Investigations',
        ScripCondition => 'On Create',
-       ScripAction      => 'Set Starts by Business Hours',
+       ScripAction      => 'RTIR Set Starts by Business Hours',
        Template       => 'Blank' },
     {  Description => "SetStarts",
        Queue            => 'Blocks',
        ScripCondition => 'On Create',
-       ScripAction      => 'Set Starts by Business Hours',
+       ScripAction      => 'RTIR Set Starts by Business Hours',
        Template       => 'Blank' },
     {  Description => "SetDue",
        Queue            => 'Investigations',
        ScripCondition => 'On Create',
-       ScripAction      => 'Set Due Correspond',
+       ScripAction      => 'RTIR Set Due Correspond',
        Template       => 'Blank' },
     {  Description => "SetDue",
        Queue            => 'Blocks',
        ScripCondition => 'On Create',
-       ScripAction      => 'Set Due Correspond',
+       ScripAction      => 'RTIR Set Due Correspond',
        Template       => 'Blank' },
     {  Description => "UnsetDue",
        Queue            => 'Incident Reports',
-       ScripCondition => 'User Defined',
-       CustomIsApplicableCode => q[
-# ------------------------------------------------------------------- #
-if (($self->TransactionObj->Type eq "Status" or
-    ($self->TransactionObj->Type eq "Set" and 
-     $self->TransactionObj->Field eq "Status")) and
-     ($self->TransactionObj->NewValue eq 'rejected' ||
-      $self->TransactionObj->NewValue eq 'resolved')) {
-  return 1;
-} else {
-  return 0;
-}
-# ------------------------------------------------------------------- # ],
-       ScripAction      => 'Unset Due',
+       ScripCondition => 'RTIR Close Ticket',
+       ScripAction      => 'RTIR Unset Due',
        Template       => 'Blank' },
     {  Description => "UnsetDue",
        Queue            => 'Investigations',
-       ScripCondition => 'User Defined',
-       CustomIsApplicableCode => q[
-# ------------------------------------------------------------------- #
-if (($self->TransactionObj->Type eq "Status" or
-    ($self->TransactionObj->Type eq "Set" and 
-     $self->TransactionObj->Field eq "Status")) and
-     ($self->TransactionObj->NewValue eq 'rejected' ||
-      $self->TransactionObj->NewValue eq 'resolved')) {
-  return 1;
-} else {
-  return 0;
-}
-# ------------------------------------------------------------------- # ],
-       ScripAction      => 'Unset Due',
+       ScripCondition => 'RTIR Close Ticket',
+       ScripAction      => 'RTIR Unset Due',
        Template       => 'Blank' },
     {  Description => "UnsetDue",
        Queue            => 'Blocks',
-       ScripCondition => 'User Defined',
-       CustomIsApplicableCode => q[
-# ------------------------------------------------------------------- #
-if ($self->TransactionObj->Type eq "Status" or
-   ($self->TransactionObj->Type eq "Set" and 
-    $self->TransactionObj->Field eq "Status")) and
-    ($self->TransactionObj->NewValue eq 'open' ||
-     $self->TransactionObj->NewValue eq 'rejected' ||
-     $self->TransactionObj->NewValue eq 'resolved') {
-  return 1;
-} else {
-  return 0;
-}
-# ------------------------------------------------------------------- # ],
-       ScripAction      => 'Unset Due',
+       ScripCondition => 'RTIR Close Ticket',
+       ScripAction      => 'RTIR Unset Due',
        Template       => 'Blank' },
     {  Description => "UnsetDue",
        Queue            => 'Blocks',
-       ScripCondition => 'User Defined',
-       CustomIsApplicableCode => q[
-# ------------------------------------------------------------------- #
-if ($self->TransactionObj->Type eq "Status" or
-   ($self->TransactionObj->Type eq "Set" and 
-    $self->TransactionObj->Field eq "Status")) and
-    ($self->TransactionObj->NewValue eq 'stalled') {
-  return 1;
-} else {
-  return 0;
-}
-# ------------------------------------------------------------------- # ],
-       ScripAction      => 'Set Due Correspond',
+       ScripCondition => 'RTIR Close Ticket',
+       ScripAction      => 'RTIR Unset Due',
        Template       => 'Blank' },
     {  Description => "SetDueReopen",
        Queue            => 'Incident Reports',
-       ScripCondition => 'User Defined',
-       CustomIsApplicableCode => q[
-# ------------------------------------------------------------------- #
-if (($self->TransactionObj->Type eq "Status" or
-    ($self->TransactionObj->Type eq "Set" and 
-     $self->TransactionObj->Field eq "Status")) and
-     (( $self->TransactionObj->OldValue eq 'rejected' ||
-        $self->TransactionObj->OldValue eq 'resolved') &&
-      $self->TransactionObj->NewValue eq 'open')) {
-  return 1;
-} else {
-  return 0;
-}
-# ------------------------------------------------------------------- # ],
-       ScripAction      => 'Set Due by SLA',
+       ScripCondition => 'RTIR Reopen Ticket',
+       ScripAction      => 'RTIR Set Due by SLA',
        Template       => 'Blank' },
     {  Description => "SetDueReopen",
        Queue            => 'Investigations',
-       ScripCondition => 'User Defined',
-       CustomIsApplicableCode => q[
-# ------------------------------------------------------------------- #
-if (($self->TransactionObj->Type eq "Status" or
-    ($self->TransactionObj->Type eq "Set" and 
-     $self->TransactionObj->Field eq "Status")) and
-     (( $self->TransactionObj->OldValue eq 'rejected' ||
-        $self->TransactionObj->OldValue eq 'resolved') &&
-      $self->TransactionObj->NewValue eq 'open')) {
-  return 1;
-} else {
-  return 0;
-}
-# ------------------------------------------------------------------- # ],
-       ScripAction      => 'Set Due by SLA',
+       ScripCondition => 'RTIR Reopen Ticket',
+       ScripAction      => 'RTIR Set Due by SLA',
        Template       => 'Blank' },
     {  Description => "SetDueReopen",
        Queue            => 'Blocks',
-       ScripCondition => 'User Defined',
-       CustomIsApplicableCode => q[
-# ------------------------------------------------------------------- #
-if (($self->TransactionObj->Type eq "Status" or
-    ($self->TransactionObj->Type eq "Set" and 
-     $self->TransactionObj->Field eq "Status")) and
-     (( $self->TransactionObj->OldValue eq 'rejected' ||
-        $self->TransactionObj->OldValue eq 'resolved') &&
-      $self->TransactionObj->NewValue eq 'open')) {
-  return 1;
-} else {
-  return 0;
-}
-# ------------------------------------------------------------------- # ],
-       ScripAction      => 'Set Due by SLA',
+       ScripCondition => 'RTIR Reopen Ticket',
+       ScripAction      => 'RTIR Set Due by SLA',
        Template       => 'Blank' },
     {  Description => "SetHowReported",
        Queue            => 'Incident Reports',
        ScripCondition => 'On Create',
-       ScripAction      => 'Set How Reported',
+       ScripAction      => 'RTIR Set How Reported',
        Template       => 'Blank' },
     {  Description => "SetRTIRState",
        Queue            => 'Blocks',
-       ScripCondition   => 'User Defined',
-       CustomIsApplicableCode => q[
-# ------------------------------------------------------------------- #
-  if ($self->TransactionObj->Type eq "Status" or
-      ($self->TransactionObj->Type eq "Set" and 
-       $self->TransactionObj->Field eq "Status") or
-      $self->TransactionObj->Type eq "Create" or
-      $self->TransactionObj->Type eq "CustomField" or
-      ($self->TransactionObj->Type eq "Set" and
-       $self->TransactionObj->Field eq "Queue")) {
-    return 1;
-  } else {
-    return 0;
-  }
-# ------------------------------------------------------------------- #
-	],
-
-       ScripAction      => 'User Defined',
-       CustomCommitCode => q[
-# ------------------------------------------------------------------- #
-my $State;
-my $cf = RT::CustomField->new($self->TransactionObj->CurrentUser);
-$cf->LoadByNameAndQueue(Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_State');
-unless ($cf->Id) { 
-    return(1);
-}
-
-if ($self->TicketObj->Status eq 'new') {
-  $State = 'pending activation';
-} elsif ($self->TicketObj->Status eq 'open') {
-  $State = 'active';
-} elsif ($self->TicketObj->Status eq 'stalled') {
-  $State = 'pending removal';
-} elsif ($self->TicketObj->Status eq 'resolved') {
-  $State = 'removed';
-} else {
-  return 0;
-}
-$self->TicketObj->AddCustomFieldValue(Field => $cf->id, Value => $State);
-return 1;
-# ------------------------------------------------------------------- #
-	],
-       CustomPrepareCode => '1',
+       ScripCondition   => 'RTIR Require State Change',
+       ScripAction      => 'RTIR Set Block State',
        Template          => 'Blank', },
     {  Description => "SetRTIRState",
        Queue            => 'Incident Reports',
-       ScripCondition   => 'User Defined',
-       CustomIsApplicableCode => q[
-# ------------------------------------------------------------------- #
-  if ($self->TransactionObj->Type eq "Status" or
-      $self->TransactionObj->Type eq "Create" or
-      ($self->TransactionObj->Type eq "AddLink" and 
-       $self->TransactionObj->Field eq "MemberOf") or
-      ($self->TransactionObj->Type eq "Set" and 
-       $self->TransactionObj->Field eq "Status") or
-      $self->TransactionObj->Type eq "CustomField" or
-      ($self->TransactionObj->Type eq "Set" and
-       $self->TransactionObj->Field eq "Queue")) {
-    return 1;
-  } else {
-    return 0;
-  }
-# ------------------------------------------------------------------- #
-	],
-
-       ScripAction      => 'User Defined',
-       CustomCommitCode => q[
-# ------------------------------------------------------------------- #
-    my $State;
-    my $cf = RT::CustomField->new($self->TransactionObj->CurrentUser);
-    $cf->LoadByNameAndQueue(Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_State');
-    unless ($cf->Id) { 
-        return(1);
-    }
-    if ($self->TicketObj->Status eq 'new' or $self->TicketObj->Status eq 'open' or $self->TicketObj->Status eq 'stalled') {
-      $State = 'new';
-        my $parents = RT::Tickets->new($self->TransactionObj->CurrentUser);
-        $parents->LimitHasMember($self->TicketObj->id);
-        $parents->LimitQueue(VALUE => 'Incidents');
-      if ($parents->First) {
-        $State = 'open';
-        }
-    } elsif ($self->TicketObj->Status eq 'resolved') {
-      $State = 'resolved';
-    } elsif ($self->TicketObj->Status eq 'rejected') {
-      $State = 'rejected';
-    } else {
-      return 0;
-    }
-    $self->TicketObj->AddCustomFieldValue(Field => $cf->id, Value => $State);
-  return 1;
-# ------------------------------------------------------------------- #
-	],
-       CustomPrepareCode => '1',
+       ScripCondition   => 'RTIR Require State Change',
+       ScripAction      => 'RTIR Set Incident Report State',
        Template          => 'Blank', },
 
     {  Description => "SetRTIRState",
        Queue            => 'Investigations',
-       ScripCondition   => 'User Defined',
-       CustomIsApplicableCode => q[
-# ------------------------------------------------------------------- #
-  if ($self->TransactionObj->Type eq "Status" or
-      ($self->TransactionObj->Type eq "Set" and 
-       $self->TransactionObj->Field eq "Status") or
-      $self->TransactionObj->Type eq "Create" or
-      $self->TransactionObj->Type eq "CustomField" or
-      ($self->TransactionObj->Type eq "Set" and
-       $self->TransactionObj->Field eq "Queue")) {
-    return 1;
-  } else {
-    return 0;
-  }
-# ------------------------------------------------------------------- #
-	],
-
-       ScripAction      => 'User Defined',
-       CustomCommitCode => q[
-# ------------------------------------------------------------------- #
-  my $State;
-  my $cf = RT::CustomField->new($self->TransactionObj->CurrentUser);
-  $cf->LoadByNameAndQueue(Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_State');
-  unless ($cf->Id) { 
-      return(1);
-  }
-  if ($self->TicketObj->Status eq 'open' or $self->TicketObj->Status eq 'new') {
-      $State = 'open';
-  } elsif ($self->TicketObj->Status eq 'resolved') {
-      $State = 'resolved';
-  } else {
-      return 0;
-  }
-  $self->TicketObj->AddCustomFieldValue(Field => $cf->id, Value => $State);
-  return 1;
-# ------------------------------------------------------------------- #
-	],
-       CustomPrepareCode => '1',
+       ScripCondition   => 'RTIR Require State Change',
+       ScripAction      => 'RTIR Set Investigation State',
        Template          => 'Blank', },
 
     {  Description => "SetRTIRState",
        Queue            => 'Incidents',
-       ScripCondition   => 'User Defined',
-       CustomIsApplicableCode => q[
-# ------------------------------------------------------------------- #
-  if ($self->TransactionObj->Type eq "Status" or
-      ($self->TransactionObj->Type eq "Set" and 
-       $self->TransactionObj->Field eq "Status") or
-      $self->TransactionObj->Type eq "Create" or
-      $self->TransactionObj->Type eq "CustomField" or
-      ($self->TransactionObj->Type eq "Set" and
-       $self->TransactionObj->Field eq "Queue")) {
-    return 1;
-  } else {
-    return 0;
-  }
-# ------------------------------------------------------------------- #
-	],
-
-       ScripAction      => 'User Defined',
-       CustomCommitCode => q[
-# ------------------------------------------------------------------- #
-    my $State;
-    my $cf = RT::CustomField->new($self->TransactionObj->CurrentUser);
-    $cf->LoadByNameAndQueue(Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_State');
-    unless ($cf->Id) { 
-        return(1);
-    }
-    if ($self->TicketObj->Status eq 'new' ||
-      $self->TicketObj->Status eq 'open' ||
-      $self->TicketObj->Status eq 'stalled') {
-      $State = 'open';
-    } elsif ($self->TicketObj->Status eq 'resolved') {
-      $State = 'resolved';
-    } elsif ($self->TicketObj->Status eq 'rejected') {
-      $State = 'abandoned';
-    } else {
-      return 0;
-    }
-    $self->TicketObj->AddCustomFieldValue(Field => $cf->id, Value => $State);
-  return 1;
-# ------------------------------------------------------------------- #
-	],
-       CustomPrepareCode => '1',
+       ScripCondition   => 'RTIR Require State Change',
+       ScripAction      => 'RTIR Set Incident State',
        Template          => 'Blank', },
     {  Description => "ResolveAllChildren",
        Queue            => 'Incidents',
        ScripCondition   => 'On Status Change',
-       ScripAction      => 'Resolve Children',
+       ScripAction      => 'RTIR Resolve Children',
        Template          => 'Blank', },
     {  Description => "FixOwnership",
        Queue            => 'Incidents',
        ScripCondition   => 'On Owner Change',
-       ScripAction      => 'Change Child Ownership',
+       ScripAction      => 'RTIR Change Child Ownership',
        Template          => 'Blank', },
     {  Description => "FixOwnership",
        Queue            => 'Incident Reports',
        ScripCondition   => 'On Owner Change',
-       ScripAction      => 'Change Parent Ownership',
+       ScripAction      => 'RTIR Change Parent Ownership',
        Template          => 'Blank', },
     {  Description => "FixOwnership",
        Queue            => 'Investigations',
        ScripCondition   => 'On Owner Change',
-       ScripAction      => 'Change Parent Ownership',
+       ScripAction      => 'RTIR Change Parent Ownership',
        Template          => 'Blank', },
     {  Description => "FixOwnership",
        Queue            => 'Blocks',
        ScripCondition   => 'On Owner Change',
-       ScripAction      => 'Change Parent Ownership',
+       ScripAction      => 'RTIR Change Parent Ownership',
        Template          => 'Blank', },
     {  Description => "ReopenIncident",
        Queue            => 'Incident Reports',
        ScripCondition   => 'On Status Change',
-       ScripAction      => 'Open Parent',
+       ScripAction      => 'RTIR Open Parent',
        Template          => 'Blank', },
     {  Description => "ReopenIncident",
        Queue            => 'Investigations',
        ScripCondition   => 'On Status Change',
-       ScripAction      => 'Open Parent',
+       ScripAction      => 'RTIR Open Parent',
        Template          => 'Blank', },
     {  Description => "ReopenIncident",
        Queue            => 'Blocks',
        ScripCondition   => 'On Status Change',
-       ScripAction      => 'Open Parent',
+       ScripAction      => 'RTIR Open Parent',
        Template          => 'Blank', },
 );
 

@@ -33,6 +33,9 @@ install-html:
 	find $(RT_HTML_PATH)/RTIR -type f |xargs chmod 644
 	find $(RT_HTML_PATH)/Callbacks/RTIR -type d |xargs chmod 755
 	find $(RT_HTML_PATH)/Callbacks/RTIR -type f |xargs chmod 644
+	cp -R lib/RT/Condition/* $(RT_ROOT)/lib/RT/Condition/
+	find $(RT_ROOT)/lib/RT/Condition -type d |xargs chmod 755
+	find $(RT_ROOT)/lib/RT/Condition -type f |xargs chmod 644
 	cp -R lib/RT/Action/* $(RT_ROOT)/lib/RT/Action/
 	find $(RT_ROOT)/lib/RT/Action -type d |xargs chmod 755
 	find $(RT_ROOT)/lib/RT/Action -type f |xargs chmod 644
