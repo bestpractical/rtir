@@ -18,6 +18,11 @@
        ApplicableTransTypes => 'Any',
        ExecModule => 'RTIR_RequireDueChange',
     },
+    {  Name        => 'RTIR Staff Response',    # loc
+       Description => 'Detect an internal response' ,                                            # loc
+       ApplicableTransTypes => 'Correspond',
+       ExecModule => 'RTIR_StaffResponse',
+    },
 
 );
 
@@ -51,5 +56,20 @@
        Queue            => 'Blocks',
        ScripCondition => 'RTIR Reopen Ticket',
        ScripAction      => 'RTIR Set Due Reopen',
+       Template       => 'Blank' },
+    {  Description => "DetectStaffResponse",
+       Queue          => 'Investigations',
+       ScripCondition => 'RTIR Staff Response',
+       ScripAction      => 'RTIR Set Due Correspond',
+       Template       => 'Blank' },
+    {  Description => "DetectStaffResponse",
+       Queue          => 'Incident Reports',
+       ScripCondition => 'RTIR Staff Response',
+       ScripAction      => 'RTIR Set Due Correspond',
+       Template       => 'Blank' },
+    {  Description => "DetectStaffResponse",
+       Queue          => 'Blocks',
+       ScripCondition => 'RTIR Staff Response',
+       ScripAction      => 'RTIR Set Due Correspond',
        Template       => 'Blank' },
 );

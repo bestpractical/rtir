@@ -232,17 +232,6 @@ if ($ARGS{'id'} eq 'new') {
       my $action = $1;
       my ($res, $msg)=$Ticket->$action();
       push(@Actions, $msg);
-    } elsif ($ARGS{'Action'} eq 'Respond' && @UpdateActions) {
-      my $date = RT::Date->new($RT::SystemUser);
-      $date->SetToNow;
-      $date->AddDays($RT::OverdueAfter);
-
-      # get business hours
-      my $bizhours = RT::IR::BusinessHours();
-
-      my $due = $bizhours->first_after($date->Unix);
-      $date->Set(Format => 'unix', Value => $due);
-      $ARGS{'Due_Date'} = $date->AsString;
     }
   }
 

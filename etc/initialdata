@@ -344,6 +344,11 @@
        ApplicableTransTypes => 'Correspond',
        ExecModule => 'RTIR_CustomerResponse',
     },
+    {  Name        => 'RTIR Staff Response',    # loc
+       Description => 'Detect an internal response' ,                                            # loc
+       ApplicableTransTypes => 'Correspond',
+       ExecModule => 'RTIR_StaffResponse',
+    },
     {  Name        => 'RTIR Close Ticket',    # loc
        Description => 'A ticket is rejected or resolved' ,                                            # loc
        ApplicableTransTypes => 'Any',
@@ -392,6 +397,21 @@
        Queue            => 'Blocks',
        ScripCondition => 'RTIR Customer Response',
        ScripAction      => 'RTIR Set Due to Now',
+       Template       => 'Blank' },
+    {  Description => "DetectStaffResponse",
+       Queue          => 'Incident Reports',
+       ScripCondition => 'RTIR Staff Response',
+       ScripAction      => 'RTIR Set Due Correspond',
+       Template       => 'Blank' },
+    {  Description => "DetectStaffResponse",
+       Queue          => 'Investigations',
+       ScripCondition => 'RTIR Staff Response',
+       ScripAction      => 'RTIR Set Due Correspond',
+       Template       => 'Blank' },
+    {  Description => "DetectStaffResponse",
+       Queue          => 'Blocks',
+       ScripCondition => 'RTIR Staff Response',
+       ScripAction      => 'RTIR Set Due Correspond',
        Template       => 'Blank' },
     {  Description => "SetStartsDate",
        Queue            => 'Incidents',
