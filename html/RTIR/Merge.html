@@ -24,8 +24,6 @@
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
 
-id: <%$id%><br>
-QueryString: <%$QueryString%><br>
 <& '/RTIR/Search/Elements/RefineTabs',
    path => "RTIR/Search/MergeRefine.html?Queue=" . $Ticket->QueueObj->Name . "&id=$id$QueryString",
    Ticket => $Ticket, 
