@@ -1,1 +1,3 @@
+% if ($ARGS{URL} eq "/RTIR/index.html") {
 | <a href="http://www.bestpractical.com/rtir/about.html?version=1.0.0"><&|/l&>About RTIR</&></a>
+% }
