@@ -535,10 +535,12 @@ if (($self->TransactionObj->Type eq "Status" or
        CustomIsApplicableCode => q[
 # ------------------------------------------------------------------- #
   if ($self->TransactionObj->Type eq "Status" or
-     ($self->TransactionObj->Type eq "Set" and 
-      $self->TransactionObj->Field eq "Status") or
-    $self->TransactionObj->Type eq "Create" or
-    $self->TransactionObj->Type eq "CustomField") {
+      ($self->TransactionObj->Type eq "Set" and 
+       $self->TransactionObj->Field eq "Status") or
+      $self->TransactionObj->Type eq "Create" or
+      $self->TransactionObj->Type eq "CustomField" or
+      ($self->TransactionObj->Type eq "Set" and
+       $self->TransactionObj->Field eq "Queue")) {
     return 1;
   } else {
     return 0;
@@ -579,12 +581,14 @@ return 1;
        CustomIsApplicableCode => q[
 # ------------------------------------------------------------------- #
   if ($self->TransactionObj->Type eq "Status" or
-    $self->TransactionObj->Type eq "Create" or
-    ($self->TransactionObj->Type eq "AddLink" and 
-     $self->TransactionObj->Field eq "MemberOf") or
-    ($self->TransactionObj->Type eq "Set" and 
-     $self->TransactionObj->Field eq "Status") or
-    $self->TransactionObj->Type eq "CustomField") {
+      $self->TransactionObj->Type eq "Create" or
+      ($self->TransactionObj->Type eq "AddLink" and 
+       $self->TransactionObj->Field eq "MemberOf") or
+      ($self->TransactionObj->Type eq "Set" and 
+       $self->TransactionObj->Field eq "Status") or
+      $self->TransactionObj->Type eq "CustomField" or
+      ($self->TransactionObj->Type eq "Set" and
+       $self->TransactionObj->Field eq "Queue")) {
     return 1;
   } else {
     return 0;
@@ -629,10 +633,12 @@ return 1;
        CustomIsApplicableCode => q[
 # ------------------------------------------------------------------- #
   if ($self->TransactionObj->Type eq "Status" or
-     ($self->TransactionObj->Type eq "Set" and 
-      $self->TransactionObj->Field eq "Status") or
-    $self->TransactionObj->Type eq "Create" or
-    $self->TransactionObj->Type eq "CustomField") {
+      ($self->TransactionObj->Type eq "Set" and 
+       $self->TransactionObj->Field eq "Status") or
+      $self->TransactionObj->Type eq "Create" or
+      $self->TransactionObj->Type eq "CustomField" or
+      ($self->TransactionObj->Type eq "Set" and
+       $self->TransactionObj->Field eq "Queue")) {
     return 1;
   } else {
     return 0;
@@ -672,7 +678,9 @@ return 1;
       ($self->TransactionObj->Type eq "Set" and 
        $self->TransactionObj->Field eq "Status") or
       $self->TransactionObj->Type eq "Create" or
-      $self->TransactionObj->Type eq "CustomField") {
+      $self->TransactionObj->Type eq "CustomField" or
+      ($self->TransactionObj->Type eq "Set" and
+       $self->TransactionObj->Field eq "Queue")) {
     return 1;
   } else {
     return 0;
