@@ -1,6 +1,6 @@
 %# BEGIN LICENSE BLOCK
 %# 
-%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
 %# 
 %# (Except where explictly superceded by other copyright notices)
 %# 
@@ -67,6 +67,16 @@
 
 <tr><td align=right><&|/l&>State</&>:</td>
 <td><%$State%></td></tr>
+<tr><td align=right><&|/l&>Update Type</&>:</td>
+<td><select name="UpdateType">
+% if ($CanComment) {
+  <option value="private" <%$CommentDefault%>><&|/l&>Comments (Not sent to requestors)</&></option>
+% }
+% if ($CanRespond) {
+   <option value="response" <%$ResponseDefault%>><&|/l&>Response to requestors</&></option>
+% }
+</select> 
+</td></tr>
 <tr><td class="label">
 <&|/l&>Owner</&>:  
 </td><td>
@@ -78,54 +88,12 @@
 <&|/l&>Worked</&>: <input size=4 name="UpdateTimeWorked" value="<%
 $ARGS{UpdateTimeWorked}%>"> <&|/l&>minutes</&>
 </td></tr>
-<tr><td align=right><&|/l&>Update Type</&>:</td>
-<td><select name="UpdateType">
-% if ($CanComment) {
-  <option value="private" <%$CommentDefault%>><&|/l&>Comments (Not sent to requestors)</&></option>
-% }
-% if ($CanRespond) {
-   <option value="response" <%$ResponseDefault%>><&|/l&>Response to requestors</&></option>
-% }
-</select> 
-</td></tr>
-<tr><td align=right><&|/l&>Subject</&>:</td><td> <input name="UpdateSubject" size=60 value="<% ($ARGS{UpdateSubject}) ? $ARGS{UpdateSubject} : $Ticket->Subject()%>"></td></tr>
-<tr><td align=right><&|/l&>Cc</&>:</td><td> <input name="UpdateCc" size=60
-value=<% $ARGS{UpdateCc} %>><BR>
-<i><font size=-2>
-<&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)</&></font></i>
-</td></tr>
-<tr><td align=right><&|/l&>Bcc</&>:</td><td> <input name="UpdateBcc" size=60 VALUE="<%$ARGS{UpdateBcc}%>"><BR>
-<i><font size=-2>
-<&|/l&>(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)</&></font></i>
-</td></tr>
-% if (exists $session{'Attachments'}) {
-<TD>
-<&|/l&>Attached file</&>:
-</TD>
-<TD COLSPAN=5>
-<&|/l&>Check box to delete</&><BR>
-% foreach my $attach_name (keys %{$session{'Attachments'}}) {
-<input type="checkbox" name="DeleteAttach-<%$attach_name%>"><%$attach_name%><BR>
-% } # end of foreach
-</TD>
-</TR>
-<TR>
-% } # end of if
-<tr><td align=right><&|/l&>Attach</&>:</td><td><input name="Attach" type="file"><INPUT TYPE=SUBMIT NAME="AddMoreAttach" VALUE="<&|/l&>Add More Files</&>"><input type="hidden" name="UpdateAttach" value="1">
-</td></tr>
-<tr><td align="right" valign="top"><&|/l&>Message</&>:</td><td>
-<& /Elements/Callback, _CallbackName => 'BeforeTextarea', %ARGS &>
-% if (exists $ARGS{UpdateContent}) {
-<& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, %ARGS&>
-% } else {
-<& /Elements/MessageBox, Name=>"UpdateContent", %ARGS &>
-% }
-</td></tr>
-		<INPUT TYPE=HIDDEN NAME=id VALUE="<%$Ticket->Id%>"><br>
+<tr><td align=right><&|/l&>Subject</&>:</td><td> <input name="UpdateSubject" size=60 value="<% $Subject %>"></td></tr>
+
+<& /RTIR/Elements/UpdateData, Ticket => $Ticket, %ARGS &>
+
+<INPUT TYPE=HIDDEN NAME=id VALUE="<%$Ticket->Id%>"><br>
 </table>
-
-
-
 
 <& /Elements/Submit, Name => 'SubmitTicket' &>
   </FORM>
@@ -156,6 +124,20 @@ if (($Action eq 'Comment') or ($ARGS{'UpdateType'} eq 'private')) {
    $CommentDefault = "SELECTED"; 
 } else {
     $ResponseDefault = "SELECTED";
+}
+
+my $Subject;
+if ($ARGS{'UpdateSubject'}) {
+  $Subject = $ARGS{'UpdateSubject'};
+} elsif ($Ticket) {
+  $Subject = $Ticket->Subject;
+}
+
+my $replystring = lc($RT::ReplyString);
+if ( $Action eq 'Respond' &&
+     $replystring &&
+     lc(substr($Subject, 0, length($replystring))) ne $replystring) {
+  $Subject = $RT::ReplyString . " " . $Subject;
 }
 
 $DefaultStatus = $Ticket->Status() unless ($DefaultStatus);

@@ -31,6 +31,14 @@
       <& /RTIR/Elements/ShowIncidents, Ticket => $Ticket &>
     </td>
   </tr>
+  <TR>
+    <TD class=label>
+      <&|/l&>Subject</&>:
+    </TD>
+    <TD class=value COLSPAN=5>
+      <INPUT Name="Subject" SIZE=40 MAXSIZE=100 value="<% $Ticket->Subject %>">
+    </TD>
+  </TR>
   <tr>
     <td class=label>
       <%loc("State")%>:
