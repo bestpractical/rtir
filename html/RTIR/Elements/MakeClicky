@@ -1,12 +1,14 @@
 <%args>
 $url_params => undef
 $content => undef
+$ticket => undef
 </%args>
 <%once>
 use Regexp::Common qw /URI net/;
 use URI::URL;
 
 my $url_params_once;
+my $incident;
 my $left = '\b';
 my $right = '\b';
 #my $left = qr[[\w\b\.\,<(\[]];
@@ -37,8 +39,11 @@ my %cb =
    sub {
      my ($type,$value) = @_;
      my ($pre,$post) = split /@/,$value,2;
-     return qq[$value<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=email&q=$value">[Investigate to]</A> ].
-       qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=host&q=$post">($post)</A>];
+     my $result .= qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=email&q=$value">$value</A> ];
+if ($incident) {
+      $result .= qq[<A HREF="$RT::WebPath/RTIR/Create.html?Incident=$incident&Queue=Investigations&Requestors=$value">[Investigate to]</A> ];
+}
+      $result .= qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=host&q=$post">($post)</A>];
    },
    url =>
    sub {
@@ -98,6 +103,12 @@ sub handle {
 </%once>
 <%init>
 $url_params_once=$ARGS{url_params};
+
+$incident = undef;
+if ($ticket && $ticket->QueueObj->Name eq 'Incidents') {
+  $incident = $ticket->Id;
+}
+
 if ($url_params_once && $url_params_once !~ /&$/) {
         $url_params_once .= "&";
 }
