@@ -2,7 +2,7 @@
 my $Queue;
 if ($TicketObj) {
     $Queue = $TicketObj->QueueObj->Name;
-} elsif (!$TicketObj && $ARGSRef{'id'}) {
+} elsif (!$TicketObj && $ARGSRef{'id'} && $ARGSRef{'id'} ne 'new') {
     $TicketObj = RT::Ticket->new($session{'CurrentUser'});
     $TicketObj = LoadTicket($ARGSRef{'id'});
     $Queue = $TicketObj->QueueObj->Name;
