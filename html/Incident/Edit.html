@@ -1,0 +1,181 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& /Elements/Header, Title => loc("Edit Incident #[_1]: [_2]", $Ticket->Id, $Ticket->Subject) &>
+<& /RTIR/Incident/Elements/Tabs, 
+    Ticket => $Ticket, 
+    current_tab => "RTIR/Incident/Edit.html?id=".$Ticket->Id, 
+    Title => loc("Edit Incident #[_1]: [_2]", 
+    $Ticket->Id, $Ticket->Subject) &>
+
+<& /Elements/ListActions, actions => \@results &>
+
+<FORM METHOD=POST ACTION="Edit.html" ENCTYPE="multipart/form-data">
+<INPUT TYPE=HIDDEN NAME=id VALUE="<%$Ticket->Id%>">
+
+<table border=0 cellspacing=2 cellpadding=0 width=100%>
+<tr>
+<td valign=top width=50%>
+<& /Elements/TitleBoxStart, title => loc('Modify incident # [_1]', $Ticket->Id),   color=> "#993333", width => "100%" &>
+<table border=0 cellspacing=2 cellpadding=0 width=100%>
+<tr>
+  <td valign=top width=50%>
+  <TABLE>
+    <& /Elements/ShadedInputRow, 
+	title => loc('Subject'),
+	name => "Subject",
+	content => $Ticket->Subject,
+	size => 30 &>
+    <tr>
+      <td>
+        <& /RTIR/Elements/EditRTIRFields, TicketObj => $Ticket &>
+      </td>
+    </tr>
+  </TABLE>
+  </td>
+<td valign=top width=50%>
+  <table>
+    <tr>
+      <td class="label">
+        <&|/l&>Owner</&>:
+      </td>
+      <td class="value">
+        <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id &>
+      </td>
+    </tr>
+  <& /Elements/ShadedRow, 
+        title => loc('Status'),
+	name => "Status",
+        content => $SelectStatus &>
+  <& /Elements/ShadedInputRow,
+	title => loc('Priority'),
+	name => "Priority",
+	content => $Ticket->Priority,
+	size => 5 &>
+  <& /Elements/ShadedInputRow,
+	title => loc('Time Worked'),
+	name => "TimeWorked",
+	content => $Ticket->TimeWorked,
+	size => 5 &>
+  </table>
+</td>
+  <td width=50% bgcolor=blue>
+  </td>
+</tr>
+<tr>
+  <td valign=top width=50%>
+    <& /RTIR/Elements/EditCustomFields, TicketObj => $Ticket &>
+  </td>
+</tr>
+</table>
+<& /Elements/TitleBoxEnd &>
+
+</td>
+</tr>
+<tr>
+<td valign=top width=50%>
+
+<& /Elements/TitleBoxStart, title => loc('Dates'),  width => "100%", color => "#663366"  &>
+<& /RTIR/Elements/EditDates, TicketObj => $Ticket &>
+<& /Elements/TitleBoxEnd &>
+
+</td>
+</tr>
+</table>
+<BR>
+
+
+<& /Elements/TitleBoxStart, title => loc('People'),width => "100%", color=> "#333399" &>
+<& /RTIR/Elements/EditPeople, Ticket => $Ticket, UserField => $UserField, UserString => $UserString, UserOp => $UserOp &>
+<& /Elements/TitleBoxEnd &>
+
+<BR>
+
+<& /Elements/Submit, Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#333399" &>
+</form>
+
+<%INIT>
+
+my $Ticket = LoadTicket($id);
+
+my $CanRespond = 0;
+my $CanComment = 0;
+
+
+$CanRespond = 1 if ( $Ticket->CurrentUserHasRight('ReplyToTicket') or
+                     $Ticket->CurrentUserHasRight('ModifyTicket') ); 
+
+$CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
+                     $Ticket->CurrentUserHasRight('ModifyTicket') );
+
+
+my (@wresults, @results, @okresults, @dresults, @lresults);
+
+unless ($OnlySearchForPeople) {
+    @wresults = ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
+    @results = ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
+
+    @dresults = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
+    @lresults = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
+
+    $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
+
+    if ($ARGS{'UpdateContent'} && 
+	$ARGS{'UpdateContent'} ne '' && 
+	$ARGS{'UpdateContent'} ne  "-- \n" . 
+				$session{'CurrentUser'}->UserObj->Signature
+       ) {
+   	 ProcessUpdateMessage(TicketObj => $Ticket, 
+			      ARGSRef=>\%ARGS, 
+                              Actions=>\@results);
+	}
+}
+push @results, @wresults;
+push @results, @dresults;
+push @results, @lresults;
+push @results, @okresults;
+
+# If they've gone and moved the ticket to somewhere they can't see, etc...
+# TODO: display the results, even if we can't display the ticket.
+
+unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
+   Abort("No permission to view ticket");
+}
+
+#It's hard to do this inline, so we'll preload the html of the selectstatus in here.
+my $SelectStatus = $m->scomp("/Elements/SelectStatus", Name => 'Status', Default=> $Ticket->Status);
+my $SelectQueue = $m->scomp("/Elements/SelectQueue", Name => 'Queue', Default =>$Ticket->QueueObj->Id);
+
+</%INIT>
+
+
+
+<%ARGS>
+$OnlySearchForPeople => undef
+$UserField => undef
+$UserOp => undef
+$UserString => undef
+$id => undef
+</%ARGS>
+

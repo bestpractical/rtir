@@ -1,0 +1,82 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& /Elements/PageLayout, 
+    toptabs => $toptabs, 
+    topactions => $topactions,
+    tabs => $tabs, 
+    actions => $actions, 
+    current_tab => $current_tab, 
+    current_toptab => $current_toptab,
+    Title => $Title &>
+
+<%INIT>
+my $incidentq = RT::Queue->new($session{'CurrentUser'});
+$incidentq->Load('Incidents');
+
+my $investigationq = RT::Queue->new($session{'CurrentUser'});
+$investigationq->Load('Investigations');
+
+my $reportsq = RT::Queue->new($session{'CurrentUser'});
+$reportsq->Load('Incident Reports');
+
+my $toptabs = { A => { title => loc('RT'),
+                       path  => '', },
+		    B => { title => loc('RTIR Home'),
+                           path => 'RTIR/',
+                         },
+                    C => { title => loc('Incidents'),
+                        path => 'RTIR/Incident/Listing.html?QueueOp==&ValueOfQueue='.$incidentq->Id
+                      },
+                    D => { title => loc('Incident Reports'),
+                        path => 'RTIR/Report/Listing.html?QueueOp==&ValueOfQueue='.$reportsq->Id,
+                      },
+                    E => { title => loc('Investigations'),
+                        path => 'RTIR/Investigation/Listing.html?QueueOp==&ValueOfQueue='.$investigationq->Id,
+                      },
+                    F => { title => loc('Configuration'),
+                           path => 'RTIR/Admin/'
+                         },
+                    ZZ => { title => loc('Preferences'),
+                        path => 'RTIR/User/Prefs.html'
+                      },
+                 };
+my $topactions = {
+	A => { html => $m->scomp('/RTIR/Elements/CreateIncident')	
+		},
+	B => { html => $m->scomp('/RTIR/Elements/CreateReport')	
+		},
+	C => { html => $m->scomp('/Elements/GotoTicket') 
+		}
+	};
+                    
+</%INIT>
+<%ARGS>
+$current_toptab =>  "none"
+$current_tab => "none"
+$current_subtab => "none"
+$tabs => undef
+$actions => undef
+$Title => undef
+</%ARGS>

@@ -1,0 +1,198 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& /Elements/Header, Title => loc("Investigation #[_1]: [_2]", $Investigation->Id, $Investigation->Subject) &>
+<& /RTIR/Investigation/Elements/Tabs, 
+    Ticket => $Investigation, 
+    current_tab => 'RTIR/Investigation/Display.html?id='.$Investigation->id,
+    Title => loc("Investigation #[_1]: [_2]", $Investigation->Id, $Investigation->Subject) &>
+
+<& /Elements/ListActions, actions => \@Actions &>
+
+<table border=0 cellpadding=0 cellspacing=2 width=100%>
+<tr>
+<td valign=top width=50%>
+<& /Elements/TitleBoxStart, title => loc('Investigation [_1]: [_2]', $Investigation->Id, $Investigation->Subject), 
+	title_href =>"$RT::WebPath/Ticket/Modify.html?id=".$Investigation->Id, 
+	title_class=> 'inverse' &>
+
+<table>
+  <tr>
+    <TD>
+      <& /Elements/ShadedBox, 
+          title => loc('Status'),
+          content => $Investigation->Status &>
+    </TD>
+    <TD>
+      <& /Elements/ShadedBox, 
+          title => loc('Priority'),
+          content => $Investigation->Priority &>
+    </TD>
+    <TD>
+      <& /Elements/ShadedBox, 
+          title => loc('Time Worked'),
+          content => loc('[_1] min', $TimeWorked) &>
+    </TD>
+  </tr>
+</table>
+
+<table width=100%>
+  <tr>
+    <TD>
+      <& /Elements/ShadedBox, 
+          title => loc('Description'),
+          content => "description goes here" &>
+    </TD>
+  </tr>
+</table>
+
+<& /Ticket/Elements/ShowCustomFields, Ticket => $Investigation &>
+
+<& /Elements/TitleBoxEnd &>
+
+</td>
+<td valign=top>
+<& /Elements/TitleBoxStart, title => loc('Associated Incidents'), 
+    title_href => "$RT::WebPath/Ticket/ModifyLinks.html?id=".$Investigation->Id, 
+    title_class=> 'inverse',  
+    titleright => '', color=> "#336633" &>
+    <table width=100%>
+    <td align="right">
+    <font size="-1">| <a href=".">New</a> 
+    		| <a href=".">Associate</a> 
+		| <a href=".">Close All</a> |</font>
+    </td></table>
+<& /RTIR/Investigation/Elements/ShowIncidents, Ticket => $Investigation &>
+<& /Elements/TitleBoxEnd &>
+</td>
+</tr>
+<tr>
+        <TD VALIGN=TOP width=50%>
+        <BR>
+	  <& /Elements/TitleBoxStart, title => loc('People'), 
+		title_href =>"$RT::WebPath/Ticket/ModifyPeople.html?id=".$Investigation->Id, 
+		title_class=> 'inverse' &>
+	  <& /RTIR/Incident/Elements/ShowPeople, Ticket => $Investigation &>
+	  <& /Elements/TitleBoxEnd &>
+	<BR>
+	</TD>
+<td>
+        <BR>
+	  <& /Elements/TitleBoxStart, title => loc("Dates"),
+		title_href =>"$RT::WebPath/Ticket/ModifyDates.html?id=".$Investigation->Id, 
+		title_class=> 'inverse',  
+		 color => "#663366" &>
+	  <& /RTIR/Incident/Elements/ShowDates, Ticket => $Investigation &>
+	  <& /Elements/TitleBoxEnd &>
+	<BR>  
+	  <& /Ticket/Elements/ShowAttachments, Ticket => $Investigation &>
+
+	  <& /Ticket/Elements/ShowRequestor, Ticket => $Investigation &>
+
+
+	</TD>
+      </TR>
+</table>
+<& /Ticket/Elements/ShowHistory , 
+      Ticket => $Investigation, 
+      Collapsed => $ARGS{'Collapsed'}, 
+      ShowHeaders => $ARGS{'ShowHeaders'} &> 
+
+  
+<%ARGS>
+$id => undef
+$Create => undef
+$ShowHeaders => undef
+$Collapsed => undef
+</%ARGS>
+
+<%INIT>
+  my ($linkid, $message, $tid, $Investigation, @Actions, $TimeWorked);  
+
+$Investigation = new RT::Ticket($session{'CurrentUser'});
+
+unless ($id) {
+    Abort('No incident specified');
+}
+
+if ($ARGS{'id'} eq 'new') {
+    # {{{ Create a new ticket
+    
+    my $Queue = new RT::Queue($session{'CurrentUser'});	
+    unless ($Queue->Load($ARGS{'Queue'})) {
+	Abort('Queue not found');
+    }
+    
+    unless ($Queue->CurrentUserHasRight('CreateTicket')) {
+	Abort('You have no permission to create tickets in that queue.');
+    }
+    ($Investigation, @Actions) =
+       CreateTicket(Attachments => $session{'Attachments'}, %ARGS);
+    delete $session{'Attachments'};
+    unless ($Investigation->CurrentUserHasRight('ShowTicket')) {
+      Abort("No permission to view newly created ticket #".$Investigation->id.".");
+    }
+    # }}}
+}
+
+else { 
+    $Investigation = LoadTicket($ARGS{'id'});
+    unless ($Investigation->CurrentUserHasRight('ShowTicket')) {
+	Abort("No permission to view ticket");
+    }
+
+
+if (defined $ARGS{'Action'}) {
+  if ($ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
+    my $action = $1;
+    my ($res, $msg)=$Investigation->$action();
+    push(@Actions, $msg);
+  }
+}
+    $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
+    chomp ($ARGS{'UpdateContent'}) ;
+
+    if ($ARGS{'UpdateContent'} &&
+        $ARGS{'UpdateContent'} ne '' &&
+        $ARGS{'UpdateContent'} ne  "-- \n" .
+                                $session{'CurrentUser'}->UserObj->Signature
+       ) {
+            $ARGS{UpdateAttachments} = $session{'Attachments'};
+	    ProcessUpdateMessage(ARGSRef=>\%ARGS, 
+				 Actions=>\@Actions, 
+				 TicketObj=>$Investigation);
+            delete $session{'Attachments'};
+	}
+
+$TimeWorked = $Investigation->TimeWorked;
+if ($Investigation->TimeLeft > 0 ) {
+  $TimeWorked = $Investigation->TimeWorked."/".$Investigation->TimeLeft;
+}
+
+#Process status updates
+my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$Investigation);
+
+push (@Actions, @BasicActions);
+}
+</%INIT>

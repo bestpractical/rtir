@@ -1,0 +1,178 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& /Elements/Callback, Ticket => $Ticket, actions=> $actions, tabs => $tabs, %ARGS &>
+<& /RTIR/Elements/Tabs, 
+    tabs => $tabs, 
+    actions => $actions, 
+    current_tab => $current_tab, 
+    current_toptab => $current_toptab,
+    Title => $Title &> 
+<%INIT>
+
+my $q = RT::Queue->new($session{'CurrentUser'});
+$q->Load('Investigations');
+my $tabs = {};
+my $current_toptab = "RTIR/Investigation/Listing.html?QueueOp==&ValueOfQueue=".$q->Id,
+    my $searchtabs = { new => { title => loc('New Search'),
+                                path => 'RTIR/Investigation/Listing.html?QueueOp==&ValueOfQueue='.$q->Id.'&ClearRestrictions=1'}
+                        
+
+} ;
+my $actions;
+
+if ( $Ticket) {
+	
+my $id   = $Ticket->id();
+
+if ( defined $session{'tickets'} ) {
+    my $items  = $session{'tickets'}->ItemsArrayRef();
+    my @indexs = grep( ( $items->[$_]->id == $Ticket->Id ), 0 .. $#{$items} );
+
+    if ( $items->[0] && @indexs ) {
+
+        if ( $items->[ $indexs[0] ]->id == $Ticket->Id ) {
+
+            # Don't $current_toptab = display prev links if we're on the first ticket
+            if ( $items->[0]->id != $Ticket->id ) {
+
+                $searchtabs->{'_a'} = {
+                            class => "nav",
+                            path => "Ticket/Display.html?id=" . $items->[0]->id,
+                            title => '&lt;&lt; ' . loc('First') };
+                $searchtabs->{"_b"} = { class => "nav",
+                                  path  => "Ticket/Display.html?id="
+                                    . $items->[ $indexs[0] - 1 ]->id,
+                                  title => '&lt; ' . loc('Prev') };
+            }
+        }
+    }
+
+    if ( $items->[0] && @indexs ) {
+
+        # Don't display next links if we're on the last ticket
+        if ( $Ticket->id != $items->[-1]->id ) {
+            $searchtabs->{'d'} = { class => "nav",
+                             path  => "Ticket/Display.html?id="
+                               . $items->[ $indexs[0] + 1 ]->id,
+                             title => loc('Next') . ' &gt;' };
+            $searchtabs->{'e'} = {
+                           class => "nav",
+                           path => "Ticket/Display.html?id=" . $items->[-1]->id,
+                           title => loc('Last') . ' &gt;&gt' };
+        }
+    }
+}
+
+
+
+
+$tabs->{"this"} = { class => "currentnav",
+                    path  => "RTIR/Investigation/Display.html?id=" . $Ticket->id,
+                    title => loc("Investigation #[_1]", $id),
+                    current_subtab => $current_subtab };
+
+my $ticket_page_tabs = {
+    _A => { title => loc('Display'),
+            path  => "RTIR/Investigation/Display.html?id=" . $id, },
+
+    _B => { title => loc('Edit'),
+            path  => "RTIR/Investigation/Edit.html?id=" . $id, },
+
+
+    _C => { title => loc('Split'),
+            path  => "RTIR/Investigation/Split.html?Queue=".$q->Id."&Ticket=" . $id, },
+
+    _D => { title => loc('Merge'),
+            path  => "RTIR/Investigation/Merge.html?id=" . $id,
+	    separator => 1 },
+
+    _E => { title => loc('Incidents'),
+            path  => "RTIR/Investigation/AssociateIncident.html?id=" . $id, },
+};
+
+foreach my $tab ( sort keys %{$ticket_page_tabs} ) {
+    if ( $ticket_page_tabs->{$tab}->{'path'} eq $current_tab ) {
+        $ticket_page_tabs->{$tab}->{"subtabs"}        = $subtabs;
+        $tabs->{'this'}->{"current_subtab"}        = 
+        $ticket_page_tabs->{$tab}->{"path"};
+    }
+}
+$tabs->{'this'}->{"subtabs"} = $ticket_page_tabs;
+
+if (    $Ticket->CurrentUserHasRight('ModifyTicket')
+     or $Ticket->CurrentUserHasRight('ReplyToTicket') ) {
+    $actions->{'A'} = { title => loc('Reply'),
+                        path  => "RTIR/Update.html?Action=Respond&id=" . $id. "&PostTo=/RTIR/Investigation/Display.html",
+    };
+}
+
+if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
+    if ( $Ticket->Status ne 'resolved' ) {
+        $actions->{'B'} = {
+
+            path =>
+              "RTIR/Update.html?Action=Comment&DefaultStatus=resolved&id="
+              . $id. "&PostTo=/RTIR/Investigation/Display.html",
+            title => loc('Resolve') };
+    }
+    if ( $Ticket->Status ne 'open' ) {
+        $actions->{'C'} = { path => "RTIR/Investigation/Display.html?Status=open&id=" . $id,
+                            title => loc('Open it') };
+    }
+}
+
+if ( $Ticket->CurrentUserHasRight('OwnTicket') ) {
+    if ( $Ticket->OwnerObj->id == $RT::Nobody->id ) {
+        $actions->{'D'} = { path => "RTIR/Investigation/Display.html?Action=Take&id=" . $id,
+                            title => loc('Take') };
+    }
+    elsif ( $Ticket->OwnerObj->id != $session{CurrentUser}->id ) {
+        $actions->{'E'} = {path => "RTIR/Investigation/Display.html?Action=Steal&id=" . $id,
+                           title => loc('Steal') };
+    }
+}
+
+if (    $Ticket->CurrentUserHasRight('ModifyTicket')
+     or $Ticket->CurrentUserHasRight('CommentOnTicket') ) {
+    $actions->{'F'} = { title => loc('Comment'),
+                        path  => "RTIR/Update.html?Action=Comment&id=" . $id. "&PostTo=/RTIR/Investigation/Display.html",
+    };
+}
+}
+
+$tabs->{"g"} = { path      => 'RTIR/Investigation/Listing.html?QueueOp==&ValueOfQueue='.$q->Id,
+                 title     => loc('Search'),
+                 separator => 1,
+                 subtabs   => $searchtabs };
+</%INIT>
+
+  
+<%ARGS>
+$Ticket => undef
+$subtabs => undef
+$current_tab => undef
+$current_subtab => undef
+$Title => undef
+</%ARGS>

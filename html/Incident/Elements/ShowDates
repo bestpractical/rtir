@@ -1,0 +1,49 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<TABLE>
+  <TR>
+    <TD class="label"><&|/l&>Created</&>:</TD>
+    <TD class="value"><% $Ticket->CreatedObj->AsString %></TD>
+  </TR>
+  <TR>
+    <TD class="label"><&|/l&>Starts</&>:</TD>
+    <TD class="value"><% $Ticket->StartsObj->AsString %></TD>
+  </TR>
+  <TR>
+    <TD class="label"><&|/l&>Started</&>:</TD>
+    <TD class="value"><% $Ticket->StartedObj->AsString %></TD>
+  </TR>
+  <TR>
+    <TD class="label"><&|/l&>Due</&>:</TD>
+    <TD class="value"><% $Ticket->DueObj->AsString  %></TD>
+  </TR>
+  <TR>
+    <TD class="label"><&|/l&>Updated</&>:</TD>
+    <TD class="value"><A HREF="#lasttrans"><% $Ticket->LastUpdated ? (loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)) : loc("Never") | h %></a></TD>
+  </TR>
+</TABLE>
+<%ARGS>
+$Ticket => undef
+</%ARGS>

@@ -1,0 +1,120 @@
+# Initial data for a fresh RTIR Installation.
+
+@Queues =3D (
+    {
+        Name              =3D> 'Incidents',
+        Description       =3D> 'The Incidents Queue',
+        CorrespondAddress =3D> "",
+        CommentAddress    =3D> "",
+    },
+    {
+        Name              =3D> 'Incident Reports',
+        Description       =3D> 'The Incident Reports Queue',
+        CorrespondAddress =3D> "",
+        CommentAddress    =3D> "",
+    },
+    {
+        Name              =3D> 'Investigations',
+        Description       =3D> 'The Investigations Queue',
+        CorrespondAddress =3D> "",
+        CommentAddress    =3D> "",
+    },
+    {
+        Name              =3D> 'Blocks',
+        Description       =3D> 'The Blocks Queue',
+        CorrespondAddress =3D> "",
+        CommentAddress    =3D> "",
+    },
+);
+
+@CustomFields =3D (
+    {
+        Name        =3D> 'Description',
+        Type        =3D> 'FreeFormMultiple',
+        Queue       =3D> 0,
+        Description =3D> "Description field",
+    },
+    {
+        Name        =3D> 'Type',
+        Type        =3D> 'SelectSingle',
+        Queue       =3D> 'Incidents',
+        Description =3D> "Type field",
+        Values      =3D> [
+            {
+                Name      =3D> "AbuseDesk",
+                SortOrder =3D> 1
+            },
+            {
+                Name      =3D> "Incoming",
+                SortOrder =3D> 2
+            }
+        ],
+    },
+    {
+        Name        =3D> 'HowReported',
+        Type        =3D> 'SelectSingle',
+        Queue       =3D> 'Incident Reports',
+        Description =3D> "How the report was received",
+        Values =3D> [
+            {
+                Name      =3D> "Email",
+                SortOrder =3D> 1
+            },
+            {
+                Name      =3D> "Telephone",
+                SortOrder =3D> 2
+            },
+            {
+                Name      =3D> "Other",
+                SortOrder =3D> 3
+            },
+        ]
+    },
+    {
+        Name        =3D> 'ReporterType',
+        Type        =3D> 'SelectSingle',
+        Queue       =3D> 'Incident Reports',
+        Description =3D> "Type of Reporter",
+        Values      =3D> [
+            { Name =3D> "JANET customer",      SortOrder =3D> 1 },
+            { Name =3D> "external individual", SortOrder =3D> 2 },
+            {
+                Name      =3D> "other ISP",
+                SortOrder =3D> 3
+            },
+            {
+                Name      =3D> "police",
+                SortOrder =3D> 4
+            },
+            {
+                Name      =3D> "other IRT",
+                SortOrder =3D> 5
+            },
+            { Name =3D> "other" =3D> SortOrder =3D> 6 },
+          }
+    },
+    {
+        Name        =3D> 'IP',
+        Type        =3D> 'FreeFormSingle',
+        Queue       =3D> 'Blocks',
+        Description =3D> "IP address",
+    },
+    {
+        Name        =3D> 'Netmask',
+        Type        =3D> 'FreeFormSingle',
+        Queue       =3D> 'Blocks',
+        Description =3D> "Netmask",
+    },
+    {
+        Name        =3D> 'Port',
+        Type        =3D> 'FreeFormSingle',
+        Queue       =3D> 'Blocks',
+        Description =3D> "Port",
+    },
+    {
+        Name        =3D> 'WhereBlocked',
+        Type        =3D> 'FreeFormSingle',
+        Queue       =3D> 'Blocks',
+        Description =3D> "Where blocked",
+    },
+);
