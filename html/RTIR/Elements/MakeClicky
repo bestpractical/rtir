@@ -34,6 +34,7 @@ my %cb =
    sub {
      my ($type,$value) = @_;
      my $i = unpack "L",$value;
+     return $value unless $value > 33554432;
      my $host = do {
        my $hostnum = sprintf "%lx", $i;
        my $a = hex( substr( $hostnum, 0, 2 ) );
