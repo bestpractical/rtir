@@ -4,6 +4,10 @@
        Description => 'Set the due date of parent Incident' ,                                            # loc
        ExecModule => 'RTIR_SetDueIncident',
     },
+    {  Name        => 'RTIR Set Due Reopen',    # loc
+       Description => 'Set the due date for a reopened ticket' ,                                            # loc
+       ExecModule => 'RTIR_SetDueReopen',
+    },
 
 );
 
@@ -33,4 +37,19 @@
       ScripCondition   => 'RTIR Require Due Change',
       ScripAction      => 'RTIR Set Incident Due',
       Template          => 'Blank', },
+    {  Description => "SetDueReopen",
+       Queue            => 'Incident Reports',
+       ScripCondition => 'RTIR Reopen Ticket',
+       ScripAction      => 'RTIR Set Due Reopen',
+       Template       => 'Blank' },
+    {  Description => "SetDueReopen",
+       Queue            => 'Investigations',
+       ScripCondition => 'RTIR Reopen Ticket',
+       ScripAction      => 'RTIR Set Due Reopen',
+       Template       => 'Blank' },
+    {  Description => "SetDueReopen",
+       Queue            => 'Blocks',
+       ScripCondition => 'RTIR Reopen Ticket',
+       ScripAction      => 'RTIR Set Due Reopen',
+       Template       => 'Blank' },
 );

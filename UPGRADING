@@ -76,6 +76,12 @@ In the Blocks Queue:
 
 Then, type "make upgrade" and follow the instructions.
 
+Upgrading from RTIR 1.1.2:
+--------------------------
+
+Delete the "SetDueReopen" scrip from the Incident Reports,
+Investigations, and Blocks queues.
+
 Upgrading from RTIR 1.0.0:
 --------------------------
 

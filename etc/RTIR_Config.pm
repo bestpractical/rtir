@@ -40,6 +40,10 @@ Set($SLA, {'Full service' => { BusinessMinutes => 60,
 Set ($SLA_Response_InHours, 'Now (in business hours)');
 Set ($SLA_Response_OutOfHours, 'Now (in business hours)');
 
+# Set the SLA for re-opened tickets
+Set ($SLA_Reopen_InHours, 'Full service');
+Set ($SLA_Reopen_OutOfHours, 'Full service: out of hours');
+
 # Set the defaults for RTIR custom fields
 # default values are case-sensitive
 
