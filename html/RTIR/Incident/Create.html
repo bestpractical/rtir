@@ -38,7 +38,7 @@
 %    $m->abort();
 % }
 
-<FORM METHOD="GET" ENCTYPE="multipart/form-data">
+<FORM action="Create.html" METHOD="GET" ENCTYPE="multipart/form-data">
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
 <INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
 <INPUT TYPE=HIDDEN NAME=Status Value="<%$ARGS{Status}||'open'%>">
@@ -98,7 +98,7 @@
       <& /RTIR/Elements/EditRTIRField, 
          QueueObj => $QueueObj, 
 	 Name => 'Constituency',
-	 Default => 'JANET-CERT',
+	 Default => 'EDUNET',
 	 Rows => 1 &>
     </td>
   </tr>
