@@ -1035,6 +1035,10 @@ you may reply to this message.
     { GroupId => 'DutyTeam',      # - principalId
       GroupDomain => 'UserDefined',
       Queue => 'Incidents',
+      Right  => 'CommentOnTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Incidents',
       Right  => 'SeeQueue', },
     { GroupId => 'DutyTeam',      # - principalId
       GroupDomain => 'UserDefined',
@@ -1068,6 +1072,10 @@ you may reply to this message.
       GroupDomain => 'UserDefined',
       Queue => 'Incident Reports',
       Right  => 'OwnTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Incident Reports',
+      Right  => 'CommentOnTicket', },
     { GroupId => 'DutyTeam',      # - principalId
       GroupDomain => 'UserDefined',
       Queue => 'Incident Reports',
@@ -1115,6 +1123,10 @@ you may reply to this message.
     { GroupId => 'DutyTeam',      # - principalId
       GroupDomain => 'UserDefined',
       Queue => 'Investigations',
+      Right  => 'CommentOnTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Investigations',
       Right  => 'SeeQueue', },
     { GroupId => 'DutyTeam',      # - principalId
       GroupDomain => 'UserDefined',
@@ -1152,6 +1164,10 @@ you may reply to this message.
       GroupDomain => 'UserDefined',
       Queue => 'Blocks',
       Right  => 'OwnTicket', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 'Blocks',
+      Right  => 'CommentOnTicket', },
     { GroupId => 'DutyTeam',      # - principalId
       GroupDomain => 'UserDefined',
       Queue => 'Blocks',
