@@ -27,7 +27,9 @@
 <TR>
 <TH ALIGN=RIGHT><&|/l&>#</&></TH>
 <TH ALIGN=LEFT><&|/l&>Subject</&></TH>
-<TH ALIGN=LEFT><&|/l&>Status</&></TH>
+<TH ALIGN=LEFT><&|/l&>State</&></TH>
+<TH ALIGN=LEFT><&|/l&>Priority</&></TH>
+<TH ALIGN=LEFT><&|/l&>Due</&></TH>
 <TH ALIGN=LEFT>&nbsp;</TH>
 </TR>
   <TR>    
@@ -53,10 +55,18 @@
 <em><&|/l&>(pending other tickets)</&></em>
 %     }
 % } else {
-<%loc($Ticket->Status)%>
+% my $State = $m->scomp("/RTIR/Elements/ShowRTIRField", Ticket => $Ticket, Name => 'State');
+<%$State%>
 % }
 </TD>
+<TD>
+<%$Ticket->Priority%>
+</TD>
+<TD>
+<%$Ticket->DueObj->AsString%>
+</TD>
 <TD ALIGN=RIGHT>
+[<A HREF="<% $RT::WebPath %>/RTIR/Incident/LinkToIncident.html?id=<%$Ticket->Id%>"><&|/l&>Link to Incident</&></A>]
 [<A HREF="<% $RT::WebPath %>/RTIR/Report/Update.html?id=<%$Ticket->Id%>"><&|/l&>Update</&></A>]
 </TD>
 </TR>

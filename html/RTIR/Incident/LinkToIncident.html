@@ -1,0 +1,174 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& /Elements/Header, 
+    Title => $title, 
+    Refresh => $session{'tickets_refresh_interval'} &>
+<& Elements/Tabs, 
+    current_subtab => 'RTIR/Incident/ShowReports.html',
+    Title => $title &>
+
+<& /Elements/ListActions, actions => \@results &>
+
+<form method=get>
+<input type=hidden name=id value=<%$id%>>
+%if ($ticketcount && !  $ARGS{'HideResults'}) {
+<TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
+<& /RTIR/Elements/TicketHeader, check => "radio", %ARGS &>
+% my $i;
+%while (my $Ticket = $session{'tickets'}->Next) {
+% $i++;
+<& /RTIR/Elements/TicketRow, Type => 'Incident', Ticket => $Ticket, i=> $i, check => "radio", %ARGS &>
+% }
+</TABLE>
+<div align=center>
+<font size=2>
+<a href="LinkToIncident.html?id=<%$id%>&GotoPage=1"><&|/l&>First page</&></a>
+&nbsp;&nbsp;
+%  if ( $session{'tickets'}->FirstRow >= $session{'tickets_rows_per_page'}-1 ) {
+<a href="LinkToIncident.html?id=<%$id%>&GotoPage=Prev">&lt;<&|/l&>Previous page</&></a>
+&nbsp;&nbsp;
+%  }                                                                           
+%  if ( $session{'tickets'}->FirstRow + $session{'tickets_rows_per_page'} < $ticketcount ) {                                                               
+<a href="LinkToIncident.html?id=<%$id%>&GotoPage=Next"><&|/l&>Next page</&>&gt;</a>
+%  }
+
+%#&nbsp;&nbsp;<form method=get action="LinkToIncident.html"><&|/l&>Goto page</&> <input name=GotoPage size=2></form>
+</font>
+</div>
+<!--<div align=right>-->
+<table width="100%" border=0 cellpadding=3 CELLSPACING=1>
+<tr>
+<td align=left>
+(<&|/l, ($session{'tickets'}->FirstRow+1), ($session{'tickets'}->FirstRow() + $session{'tickets'}->RowsPerPage()  ) &>[_1] - [_2] shown</&>)
+</td>
+<td align=right>
+
+<!--</div>-->
+</td>
+</tr>
+</table>
+
+% }
+<HR>
+
+<& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => loc("Link") &>
+</form>
+
+<HR>
+<TABLE WIDTH="100%">
+<TR>
+<TD VALIGN="TOP">
+<& /Elements/TitleBoxStart, title => loc('Current search criteria')&>
+
+<& /RTIR/Elements/SearchCriteria, Path => "LinkToIncident.html", %ARGS &>
+
+<& /Elements/TitleBoxEnd&>
+</TD>
+<TD>
+
+<& /RTIR/Elements/PickRestriction, Queue => $q->id, %ARGS &>
+
+</TD>
+</TR>
+</TABLE>
+
+<%INIT>
+my $ChildObj = LoadTicket($id);
+my $SubmitCaption = loc("Link #[_1] with selected Incident", $ChildObj->id);
+my $Status = "open";
+
+my $q = RT::Queue->new($session{'CurrentUser'});
+$q->Load('Incidents');
+
+my ($title, $ticketcount);
+$session{'i'}++;
+if ($session{'tickets'}) {
+    if ($ARGS{'DeleteRestriction'}) {
+	    $session{'tickets'}->DeleteRestriction($ARGS{'DeleteRestriction'});
+    }
+    if ( ($ARGS{'ClearRestrictions'}) || ($ARGS{'NewSearch'}) ) {
+	    $session{'tickets'}->ClearRestrictions;
+	}	
+}
+
+ProcessSearchQuery(ARGS=>\%ARGS);
+$session{'tickets'}->RedoSearch();
+if ( $session{'tickets'}->DescribeRestrictions()) {
+  $ticketcount = $session{tickets}->Count();
+  $title = loc('Found [quant,_1,incident]', $ticketcount);
+} else {
+  $title = loc("Find incidents");
+}
+
+# Iterate through the ARGS hash and remove anything with a null value.
+map ($ARGS{$_} =~ /^$/ && (delete $ARGS{$_}), keys %ARGS);
+
+my ($bgcolor, @results);
+my @cols = qw(id Status Priority Subject QueueObj->Name OwnerObj->Name RequestorAddresses DueAsString );
+
+Abort(loc("No search to operate on.")) unless ($session{'tickets'});
+
+
+my $do_comment_reply=0;
+# Prepare for ticket updates
+$ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
+chomp ($ARGS{'UpdateContent'}) ;
+
+if ($ARGS{'UpdateContent'} &&
+    $ARGS{'UpdateContent'} ne '' &&
+    $ARGS{'UpdateContent'} ne  "-- \n" .
+    $session{'CurrentUser'}->UserObj->Signature) {
+            $do_comment_reply=1;
+}
+
+#Iterate through each ticket we've been handed
+
+my $IncidentObj;
+if ($SelectedTicket) {
+  $IncidentObj = LoadTicket($SelectedTicket);
+$ARGS{'Status'} = $Status;
+$ARGS{$ChildObj->Id.'-MemberOf'} = $IncidentObj->Id;
+my @linkresults;
+push @linkresults, ProcessTicketLinks(TicketObj => $ChildObj, ARGSRef => \%ARGS);
+my @basicresults = ProcessTicketBasics(TicketObj => $ChildObj, ARGSRef => \%ARGS);
+
+my @updateresults; 
+if ($do_comment_reply) {
+  ProcessUpdateMessage(TicketObj => $ChildObj, ARGSRef => \%ARGS, Actions => \@updateresults); 
+}
+
+my @tempresults = (@basicresults, @linkresults, @updateresults);
+@tempresults = map { loc("Ticket [_1]: [_2]",$ChildObj->Id,$_) } @tempresults;
+
+@results = (@results, @tempresults);
+}
+
+</%INIT>
+
+<%ARGS>
+$id => undef
+$SelectedTicket => undef
+</%ARGS>
+

@@ -35,6 +35,8 @@
 % }
 % if ($depth eq 1 and $count eq 0) {
 <i>(no Incidents)</i>
+<a href="<%$RT::WebPath%>/RTIR/Incident/LinkToIncident.html?id=<%$Ticket->Id%>"
+<b>[Link...]</b>
 % }
 
 <%INIT>

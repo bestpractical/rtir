@@ -119,7 +119,7 @@ $CustomFields->{'find_disabled_rows'} = 1;
  }
 
  $CustomFields->LimitToGlobal();
- $CustomFields->LimitToQueue($ARGS{'ValueOfQueue'});
+ $CustomFields->LimitToQueue($Queue);
 
 </%INIT>
 
