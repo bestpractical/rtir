@@ -114,7 +114,7 @@
 %     my @lines_starting_with_space = grep ( /^(\s+)(\w+)/, $obj->content());
 %     if ($handparse || $#lines_starting_with_space >= 4) { #we couldn't parse that. suck
 %       my $content = join("", $obj->content());
-%       $m->comp( '/RTIR/Elements/MakeClicky', ticket => $TicketObj, url_params => "ticket=".$ticket, content => \$content);
+%       $m->comp( '/RTIR/Elements/MakeClicky', ticket => $TicketObj, url_params => "ticket=".$ticket."&server=$server", content => \$content);
 <pre><%$content|n%></pre>
 <br>
 %     } else {
