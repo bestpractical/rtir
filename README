@@ -8,22 +8,20 @@ Upgrading from RTIR 1.0.2:
 
 Follow instructions from previous "upgrading from" sections if they apply.
 
-1) RTIR 1.0.3 changes the "SetRTIRState" custom scripaction from previous
-versions.  AFTER Installing RTIR 1.0.3, alter the "SetRTIRState"'s custom 
-Action content to read
+1) RTIR 1.0.3 changes the "SetRTIRState" custom scrip action in the
+Incident Reports queue from previous versions.  AFTER Installing RTIR
+1.0.3, alter the "SetRTIRState"'s custom action cleanup content to read
 
-#####################################
-
+# ------------------------------------------------------------------- #
     my $State;
-    my $cf = RT::CustomField->new($self->CurrentUser);
+    my $cf = RT::CustomField->new($self->TransactionObj->CurrentUser);
     $cf->LoadByNameAndQueue(Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_State');
     unless ($cf->Id) { 
         return(1);
-    } 
-    if ($self->TicketObj->Status eq 'new' or $self->TicketObj->Status eq 'open'
-        or $self->TicketObj->Status eq 'stalled') {
+    }
+    if ($self->TicketObj->Status eq 'new' or $self->TicketObj->Status eq 'open' or $self->TicketObj->Status eq 'stalled') {
       $State = 'new';
-        my $parents = RT::Tickets->new($self->CurrentUser);
+        my $parents = RT::Tickets->new($self->TransactionObj->CurrentUser);
         $parents->LimitHasMember($self->TicketObj->id);
         $parents->LimitQueue(VALUE => 'Incidents');
       if ($parents->First) {
@@ -35,14 +33,205 @@ Action content to read
       $State = 'rejected';
     } else {
       return 0;
-    }  
-    $self->TicketObj->AddCustomFieldValue(Field => $CustomField->id, Value => $State);
+    }
+    $self->TicketObj->AddCustomFieldValue(Field => $cf->id, Value => $State);
   return 1;
+# ------------------------------------------------------------------- #
 
-##########################################
+2) RTIR 1.0.3 changes the "SetRTIRState" custom scrip action in the
+Investigations queue from previous versions.  AFTER Installing RTIR
+1.0.3, alter the "SetRTIRState"'s custom action cleanup content to read
 
+# ------------------------------------------------------------------- #
+  my $State;
+  my $cf = RT::CustomField->new($self->TransactionObj->CurrentUser);
+  $cf->LoadByNameAndQueue(Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_State');
+  unless ($cf->Id) { 
+      return(1);
+  }
+  if ($self->TicketObj->Status eq 'open' or $self->TicketObj->Status eq 'new') {
+      $State = 'open';
+  } elsif ($self->TicketObj->Status eq 'resolved') {
+      $State = 'resolved';
+  } else {
+      return 0;
+  }
+  $self->TicketObj->AddCustomFieldValue(Field => $cf->id, Value => $State);
+  return 1;
+# ------------------------------------------------------------------- #
 
+3) RTIR 1.0.3 changes the "SetRTIRState" custom scrip action in the
+Blocks queue from previous versions.  AFTER Installing RTIR
+1.0.3, alter the "SetRTIRState"'s custom action cleanup content to read
 
+# ------------------------------------------------------------------- #
+my $State;
+my $cf = RT::CustomField->new($self->TransactionObj->CurrentUser);
+$cf->LoadByNameAndQueue(Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_State');
+unless ($cf->Id) { 
+    return(1);
+}
+
+if ($self->TicketObj->Status eq 'new') {
+  $State = 'pending activation';
+} elsif ($self->TicketObj->Status eq 'open') {
+  $State = 'active';
+} elsif ($self->TicketObj->Status eq 'stalled') {
+  $State = 'pending removal';
+} elsif ($self->TicketObj->Status eq 'resolved') {
+  $State = 'removed';
+} else {
+  return 0;
+}
+$self->TicketObj->AddCustomFieldValue(Field => $cf->id, Value => $State);
+return 1;
+# ------------------------------------------------------------------- #
+
+4) RTIR 1.0.3 changes the "SetRTIRState" custom scrip action in the
+Incidents queue from previous versions.  AFTER Installing RTIR
+1.0.3, alter the "SetRTIRState"'s custom action cleanup content to read
+
+# ------------------------------------------------------------------- #
+    my $State;
+    my $cf = RT::CustomField->new($self->TransactionObj->CurrentUser);
+    $cf->LoadByNameAndQueue(Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_State');
+    unless ($cf->Id) { 
+        return(1);
+    }
+    if ($self->TicketObj->Status eq 'new' ||
+      $self->TicketObj->Status eq 'open' ||
+      $self->TicketObj->Status eq 'stalled') {
+      $State = 'open';
+    } elsif ($self->TicketObj->Status eq 'resolved') {
+      $State = 'resolved';
+    } elsif ($self->TicketObj->Status eq 'rejected') {
+      $State = 'abandoned';
+    } else {
+      return 0;
+    }
+    $self->TicketObj->AddCustomFieldValue(Field => $cf->id, Value => $State);
+  return 1;
+# ------------------------------------------------------------------- #
+
+5) RTIR 1.0.3 changes the "SetDates" custom scrip action in the
+Incident Reports queue from previous versions.  AFTER Installing RTIR
+1.0.3, alter the "SetDates"'s custom action cleanup content to read
+
+# ------------------------------------------------------------------- #
+my $sla;
+my $date = RT::Date->new($RT::SystemUser);
+$date->SetToNow;
+use Business::Hours;
+my $bizhours = new Business::Hours;
+if ($RT::BusinessHours) {
+  $bizhours->business_hours(%$RT::BusinessHours);
+}
+
+if ($self->TicketObj->FirstCustomFieldValue('_RTIR_SLA')) {
+  $sla = $self->TicketObj->FirstCustomFieldValue('_RTIR_SLA');
+} elsif ($bizhours->first_after($date->Unix) != $date->Unix) {
+  $sla = "Full service: out of hours";
+} else {
+  $sla = "Full service";
+}
+
+my $addminutes = $RT::SLA->{$sla};
+if ($self->TicketObj->StartsObj->AsString eq "Not set") {
+  my $starts = $bizhours->first_after($date->Unix);
+  $date->Set(Format => 'unix', Value => $starts);
+  $self->TicketObj->SetStarts($date->ISO);
+  my $due = $bizhours->add_seconds($date->Unix, $addminutes * 60);
+  $date->Set(Format => 'unix', Value => $due);
+  $self->TicketObj->SetDue($date->ISO);
+}
+my $cf = RT::CustomField->new($self->TransactionObj->CurrentUser);
+$cf->LoadByNameAndQueue(Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_SLA');
+unless ($cf->Id) { 
+    return(1);
+}
+$self->TicketObj->AddCustomFieldValue(Field => $cf->id, Value => $sla);
+return 1;
+# ------------------------------------------------------------------- #
+
+6) RTIR 1.0.3 changes the "SetHowReported" custom scrip action in the
+Incident Reports queue from previous versions.  AFTER Installing RTIR
+1.0.3, alter the "SetHowReported"'s custom action cleanup content to read
+
+# ------------------------------------------------------------------- #
+my $cf = RT::CustomField->new($self->TransactionObj->CurrentUser);
+$cf->LoadByNameAndQueue(Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_HowReported');
+unless ($cf->Id) { 
+    return(1);
+}
+my $Values = $self->TicketObj->CustomFieldValues($cf->id);
+if (!$Values->Next) {
+  $self->TicketObj->AddCustomFieldValue(Field => $cf->id, Value => "Email");
+}
+  return 1;
+# ------------------------------------------------------------------- #
+
+7) RTIR 1.0.3 changes the "FixOwnership" custom scrip action in the
+Incidents queue from previous versions.  AFTER Installing RTIR
+1.0.3, alter the "FixOwnership"'s custom action cleanup content to read
+
+# ------------------------------------------------------------------- #
+{
+  # change owner of child Incident Reports, Investigations, Blocks
+  while (my $link = $self->TicketObj->Members->Next) {
+    my $member= $link->BaseObj;
+    if ( ($member->QueueObj->Name eq 'Incident Reports' ||
+          $member->QueueObj->Name eq 'Investigations' ||
+          $member->QueueObj->Name eq 'Blocks' ) &&
+          $member->OwnerObj->id != $self->TransactionObj->NewValue) {
+      my ($res, $msg); 
+      my $user = new RT::CurrentUser($self->TransactionObj->CurrentUser);
+      $user->Load($self->TransactionObj->Creator);
+      my $t = new RT::Ticket($user);
+      $t->Load($member->id);
+      if ($self->TransactionObj->NewValue == $self->TransactionObj->Creator) {
+        if ($self->TransactionObj->CurrentUser->id == $RT::Nobody->id) {
+          ($res, $msg) = $t->Take();
+        } else {
+          ($res, $msg) = $t->Steal();
+	}
+      } else {
+          ($res, $msg) = $t->SetOwner($self->TransactionObj->NewValue);
+      }
+      $RT::Logger->debug("FixOwnership Scrip: ".$msg)
+    }
+  }
+  return 1;
+}
+# ------------------------------------------------------------------- #
+
+8) RTIR 1.0.3 changes the "FixOwnership" custom scrip action in the
+Incident Reports, Investigations, and Blocks queues from previous
+versions.  AFTER Installing RTIR 1.0.3, alter the "FixOwnership"'s
+custom action cleanup content in each of these queues to read
+
+# ------------------------------------------------------------------- #
+{
+  # change owner of parent Incident(s)
+  while (my $link = $self->TicketObj->MemberOf->Next) {
+    my $incident= $link->TargetObj;
+    if ( $incident->QueueObj->Name eq 'Incidents' &&
+         $incident->OwnerObj->id != $self->TransactionObj->NewValue) {
+      my ($res, $msg); 
+      my $user = new RT::CurrentUser($self->TransactionObj->CurrentUser);
+      $user->Load($self->TransactionObj->Creator);
+      my $t = new RT::Ticket($user);
+      $t->Load($incident->id);
+      if ($self->TransactionObj->NewValue == $self->TransactionObj->Creator) {
+          ($res, $msg) = $t->Steal();
+      } else {
+          ($res, $msg) = $t->SetOwner($self->TransactionObj->NewValue);
+      }
+      $RT::Logger->debug("FixOwnership Scrip: ".$msg)
+    }
+  }
+  return 1;
+}
+# ------------------------------------------------------------------- #
 
 Upgrading from RTIR 1.0.0:
 --------------------------
