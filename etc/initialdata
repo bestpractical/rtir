@@ -754,7 +754,7 @@ if ($self->TransactionObj->NewValue eq 'resolved' or
           $member->OwnerObj->id != $self->TransactionObj->NewValue) {
       my ($res, $msg); 
       my $user = new RT::CurrentUser($self->TransactionObj->CurrentUser);
-      $user->Load("root");
+      $user->Load($self->TransactionObj->Creator);
       my $t = new RT::Ticket($user);
       $t->Load($member->id);
       if ($self->TransactionObj->NewValue == $self->TransactionObj->Creator) {
@@ -789,7 +789,7 @@ if ($self->TransactionObj->NewValue eq 'resolved' or
          $incident->OwnerObj->id != $self->TransactionObj->NewValue) {
       my ($res, $msg); 
       my $user = new RT::CurrentUser($self->TransactionObj->CurrentUser);
-      $user->Load("root");
+      $user->Load($self->TransactionObj->Creator);
       my $t = new RT::Ticket($user);
       $t->Load($incident->id);
       if ($self->TransactionObj->NewValue == $self->TransactionObj->Creator) {
@@ -820,7 +820,7 @@ if ($self->TransactionObj->NewValue eq 'resolved' or
          $incident->OwnerObj->id != $self->TransactionObj->NewValue) {
       my ($res, $msg); 
       my $user = new RT::CurrentUser($self->TransactionObj->CurrentUser);
-      $user->Load("root");
+      $user->Load($self->TransactionObj->Creator);
       my $t = new RT::Ticket($user);
       $t->Load($incident->id);
       if ($self->TransactionObj->NewValue == $self->TransactionObj->Creator) {
@@ -851,7 +851,7 @@ if ($self->TransactionObj->NewValue eq 'resolved' or
          $incident->OwnerObj->id != $self->TransactionObj->NewValue) {
       my ($res, $msg); 
       my $user = new RT::CurrentUser($self->TransactionObj->CurrentUser);
-      $user->Load("root");
+      $user->Load($self->TransactionObj->Creator);
       my $t = new RT::Ticket($user);
       $t->Load($incident->id);
       if ($self->TransactionObj->NewValue == $self->TransactionObj->Creator) {
