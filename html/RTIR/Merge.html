@@ -23,18 +23,22 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
-<& '/RTIR/'.$Type.'/Elements/Tabs', 
-    Ticket => $Ticket, 
-    current_tab => "RTIR/Merge.html?id=".$Ticket->Id. "$QueryString", 
-    subtabs => $refinetabs,
-    Title => $title,
-    Format => $Format,
-    Query => $Query,
-    Rows => $Rows,
-    OrderBy => $OrderBy,
-    Order => $Order,
-    QueryString => $QueryString,
- &>
+
+id: <%$id%><br>
+QueryString: <%$QueryString%><br>
+<& '/RTIR/Search/Elements/RefineTabs',
+   path => "RTIR/Search/MergeRefine.html?Queue=" . $Ticket->QueueObj->Name . "&id=$id$QueryString",
+   Ticket => $Ticket, 
+   current_subtab => "RTIR/Merge.html?id=".$Ticket->Id. "$QueryString", 
+   Queue => $Queue,
+   Title => $title,
+   Format => $Format,
+   Query => $Query,
+   Rows => $Rows,
+   OrderBy => $OrderBy,
+   Order => $Order,
+   QueryString => $QueryString,
+&>
 
 <& /RTIR/Elements/ListActions, actions => \@results &>
 
@@ -103,13 +107,6 @@ if (!$BaseQuery) {
 $Query = "$BaseQuery AND ( $Query )";
 $ARGS{'Query'} = $Query;
 
-my $refinetabs = { };
-
-$refinetabs->{'_a'} = {
-    class => "nav",
-    path => "RTIR/Search/MergeRefine.html?Queue=" . $Ticket->QueueObj->Name . "&id=$id$QueryString",
-    title => loc('Refine') };
-	
 </%INIT>
       
 <%ARGS>

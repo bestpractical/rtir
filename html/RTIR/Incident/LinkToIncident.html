@@ -26,18 +26,18 @@
     Title => $title, 
     Refresh => $session{'tickets_refresh_interval'} &>
 
-<& '/RTIR/Incident/Elements/Tabs', 
-    ChildObj => $ChildObj, 
-    current_tab => "RTIR/Incident/LinkToIncident.html?child=$child",
-    current_subtab => "RTIR/Incident/LinkToIncident.html?child=$child",
-    subtabs => $refinetabs,
-    Title => $title,
-    Format => $Format,
-    Query => $Query,
-    Rows => $Rows,
-    OrderBy => $OrderBy,
-    Order => $Order,
-    QueryString => $QueryString,
+<& '/RTIR/Search/Elements/RefineTabs',
+   path => "RTIR/Search/LinkRefine.html?Queue=Incidents&child=$child$QueryString",
+   current_tab => "RTIR/Incident/LinkToIncident.html?child=$child",
+   ChildObj => $ChildObj, 
+   Queue => 'Incidents',
+   Title => $title,
+   Format => $Format,
+   Query => $Query,
+   Rows => $Rows,
+   OrderBy => $OrderBy,
+   Order => $Order,
+   QueryString => $QueryString,
 &>
 
 <form action='Display.html' method=get>
@@ -92,13 +92,6 @@ if (!$BaseQuery) {
 $Query = "$BaseQuery AND ( $Query )";
 $ARGS{'Query'} = $Query;
 
-my $refinetabs = { };
-
-$refinetabs->{'_a'} = {
-    class => "nav",
-    path => "RTIR/Search/LinkRefine.html?Queue=Incidents&child=$child$QueryString",
-    title => loc('Refine') };
-	
 </%INIT>
 
 <%ARGS>

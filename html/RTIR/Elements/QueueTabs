@@ -200,13 +200,6 @@ if (    $Ticket->CurrentUserHasRight('ModifyTicket')
 }
 } else {
   $mytab = $current_tab;
-  foreach my $tab ( sort keys %{$tabs} ) {
-      if ( $tabs->{$tab}->{'path'} eq $current_tab ) {
-	  $tabs->{$tab}->{"subtabs"}        = $subtabs;
-	  $tabs->{'this'}->{"current_subtab"}        = 
-	      $tabs->{$tab}->{"path"};
-      }
-  }
 }
 
 $tabs->{"A"} = { path      => 'RTIR/Create.html?Queue=' . $QueueName,
@@ -237,6 +230,10 @@ if ($Type eq 'Incident' && $ChildObj) {
     $tabs->{'h'} = { title => loc('Link [_1] #[_2]', $childtype, $ChildObj->Id),
 				  path  => "RTIR/Incident/LinkToIncident.html?child=" . $ChildObj->Id,
 				  separator => 1 };
+
+    if ( $tabs->{'h'}->{'path'} eq $current_tab ) {
+	$tabs->{'h'}->{"subtabs"}        = $subtabs;
+    }
 }
 
 </%INIT>

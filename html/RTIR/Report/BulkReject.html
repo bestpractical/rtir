@@ -25,15 +25,18 @@
 <& /RTIR/Elements/Header, 
     Title => $title, 
     Refresh => $session{'tickets_refresh_interval'} &>
-<& 'Elements/Tabs', 
-    current_tab => 'RTIR/Report/BulkReject.html', 
-    Title => $title,
-    Format => $Format,
-    Query => $Query,
-    Rows => $Rows,
-    OrderBy => $OrderBy,
-    Order => $Order,
-    QueryString => $QueryString,
+
+<& '/RTIR/Search/Elements/RefineTabs',
+   path => "RTIR/Search/RejectRefine.html?Queue=$Queue$QueryString",
+   Queue => $Queue,
+   current_tab => $current_tab, 
+   Title => $title,
+   Format => $Format,
+   Query => $Query,
+   Rows => $Rows,
+   OrderBy => $OrderBy,
+   Order => $Order,
+   QueryString => $QueryString,
 &>
 
 <& /RTIR/Elements/ListActions, actions => \@results &>
@@ -121,13 +124,6 @@ if (!$BaseQuery) {
 $Query = "$BaseQuery AND ( $Query )";
 $ARGS{'Query'} = $Query;
 
-my $refinetabs = { };
-
-$refinetabs->{'_a'} = {
-    class => "nav",
-    path => "RTIR/Search/RejectRefine.html?Queue=$Queue$QueryString",
-    title => loc('Refine') };
-	
 </%INIT>
 
 <%ARGS>
@@ -142,4 +138,5 @@ $Page => 1
 $OrderBy => 'id'
 $Order => 'ASC'
 $BaseURL => "/RTIR/Report/BulkReject.html"
+$current_tab => 'RTIR/Report/BulkReject.html'
 </%ARGS>

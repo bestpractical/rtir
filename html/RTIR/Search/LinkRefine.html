@@ -44,12 +44,22 @@
 %# 
 %# }}} END BPS TAGGED BLOCK
 <& /Elements/Header, Title => $title &>
-<& '/RTIR/Incident/Elements/Tabs', 
-    ChildObj => $Ticket, 
-    current_tab => $current_tab, 
-    current_subtab => $current_subtab, 
-    subtabs => $refinetabs,
-    Title => $title &>
+
+<& '/RTIR/Search/Elements/RefineTabs',
+   path => "RTIR/Search/LinkRefine.html?Queue=$Queue&child=".$child,
+   current_tab => "RTIR/Incident/LinkToIncident.html?child=".$child,
+   current_subtab => "RTIR/Search/LinkRefine.html?Queue=$Queue&child=".$child,
+   ChildObj => $Ticket, 
+   Queue => 'Incidents',
+   Title => $title,
+   Format => $Format,
+   Query => $Query,
+   Rows => $Rows,
+   OrderBy => $OrderBy,
+   Order => $Order,
+   QueryString => $QueryString,
+   child => $child,
+&>
 
 <& /RTIR/Search/Elements/BuildQuery, 
     queues => \%queues, 
@@ -70,13 +80,6 @@ my $title = loc("Query Builder");
 my $Ticket = new RT::Ticket($session{'CurrentUser'});
 $Ticket->Load($child);
 
-my $mergetabs = { } ;
-
-$mergetabs->{'_a'} = {
-    class => "nav",
-    path => $current_subtab,
-    title => loc('Refine') };
-	
 my %queues = ();
 my $results;
 my $optionlist;
@@ -84,7 +87,6 @@ my $search_hash;
 my $dirty;
 my $AvailableColumns;
 my $CurrentFormat;
-my ( $Format, $Order, $OrderBy, $RowsPerPage );
 
 my $BaseQuery = $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
 
@@ -99,7 +101,7 @@ if ($NewQuery) {
     $Format = '';
     $Order = '';
     $OrderBy = '';
-    $RowsPerPage = '';
+    $Rows = '';
     # ($search hasn't been set yet; no need to clear)
 
     $m->comp('Elements/ClearQuery', %ARGS);
@@ -114,7 +116,7 @@ if ($NewQuery) {
     $ARGS{'NewQuery'} = 0;
 }
 
-( $Query, $Format, $Order, $OrderBy, $RowsPerPage ) = 
+( $Query, $Format, $Order, $OrderBy, $Rows ) = 
     $m->comp('/RTIR/Search/Elements/ProcessQuery', 
 	     queues => \%queues, 
 	     results => \$results, 
@@ -136,28 +138,25 @@ my ($Type, @states) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
 	    Format => $Format,
             Order => $Order,
             OrderBy => $OrderBy,
-            Rows => $RowsPerPage) if ($Query);
+            Rows => $Rows) if ($Query);
 # }}}
 
 $ARGS{'Query'} = $Query;
-
-my $refinetabs = { };
-
-$refinetabs->{'_a'} = {
-    class => "nav",
-    path => "RTIR/Search/LinkRefine.html?Queue=".$Queue."&child=$child$QueryString",
-    title => loc('Refine') };
 
 $ARGS{'id'} = $child;
 </%INIT>
 
 <%ARGS>
+$ResultPage => '/RTIR/Incident/LinkToIncident.html'
 $NewQuery => 0
 $Queue => undef
 $Query => undef
 $child => undef
-$current_tab => "RTIR/Incident/LinkToIncident.html?child=".$child
-$current_subtab => "RTIR/Search/LinkRefine.html?Queue=$Queue&child=".$child
 $FormAction => 'LinkRefine.html'
-$ResultPage => '/RTIR/Incident/LinkToIncident.html'
+$Format => undef 
+$HideResults => 0
+$Rows => 50
+$Page => 1
+$OrderBy => 'id'
+$Order => 'ASC'
 </%ARGS>
