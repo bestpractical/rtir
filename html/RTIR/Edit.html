@@ -29,7 +29,7 @@
     current_subtab => "RTIR/Edit.html?id=".$Ticket->Id, 
     Title => $Title &>
 
-<& /Elements/ListActions, actions => \@results &>
+<& /RTIR/Elements/ListActions, actions => \@results &>
 
 % if (!$Ticket->CurrentUserHasRight('ModifyTicket')) {
 <%loc("You are not allowed to edit this [_1].", $name)%>
@@ -104,6 +104,8 @@ $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
 
 my (@wresults, @cfresults, @results, @okresults, @dresults, @lresults);
 
+my ($oldstate, $newstate);
+$oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
 unless ($OnlySearchForPeople) {
     @wresults = ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
     @results = ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
@@ -123,6 +125,11 @@ unless ($OnlySearchForPeople) {
                               Actions=>\@results);
 	}
 }
+$newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+if ($newstate ne $oldstate) {
+  push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
+}
+ 
 push @results, @wresults;
 push @results, @cfresults;
 push @results, @dresults;

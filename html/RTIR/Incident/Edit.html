@@ -30,7 +30,7 @@
     Title => loc("Edit Incident #[_1]: [_2]", 
     $Ticket->Id, $Ticket->Subject) &>
 
-<& /Elements/ListActions, actions => \@results &>
+<& /RTIR/Elements/ListActions, actions => \@results &>
 
 % if (!$Ticket->CurrentUserHasRight('ModifyTicket')) {
 <&|/l&>You are not allowed to edit this Incident.</&>
@@ -83,6 +83,8 @@ $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
 
 my (@wresults, @cfresults, @results, @okresults, @dresults, @lresults);
 
+my ($oldstate, $newstate);
+$oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
 unless ($OnlySearchForPeople) {
     @wresults = ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
     @results = ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
@@ -102,6 +104,11 @@ unless ($OnlySearchForPeople) {
                               Actions=>\@results);
 	}
 }
+$newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+if ($newstate ne $oldstate) {
+  push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
+}
+
 push @results, @wresults;
 push @results, @cfresults;
 push @results, @dresults;

@@ -29,7 +29,7 @@
     current_subtab => "RTIR/Incident/BulkReply.html", 
     Title => loc("Bulk reply") &>
 
-<& /Elements/ListActions, actions => \@results &>
+<& /RTIR/Elements/ListActions, actions => \@results &>
 
 <FORM METHOD=POST>
 <TABLE WIDTH=100% border=0 cellpadding=3 CELLSPACING=0>
@@ -126,6 +126,8 @@ if ($do_comment_reply) {
 
 #Iterate through each ticket we've been handed
 while (my $Ticket = $session{'tickets'}->Next) {
+    my ($oldstate, $newstate);
+    $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
 
     if ($do_comment_reply) {
     next unless ($ARGS{"UpdateTicket".$Ticket->Id});
@@ -148,6 +150,10 @@ while (my $Ticket = $session{'tickets'}->Next) {
     my @dateresults = ProcessTicketDates(TicketObj => $Ticket, ARGSRef => \%ARGS);
 
     my @tempresults = (@basicresults, @watchresults, @updateresults, @dateresults);
+    $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+    if ($newstate ne $oldstate) {
+      push (@tempresults, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
+    }
     @tempresults = map { loc("Ticket [_1]: [_2]",$Ticket->Id,$_) } @tempresults;
 
     @results = (@results, @tempresults);

@@ -28,7 +28,7 @@
     current_tab => 'RTIR/Incident/ShowReports.html?id='.$Incident->id,
     Title => $Title &>
 
-<& /Elements/ListActions, actions => \@results &>
+<& /RTIR/Elements/ListActions, actions => \@results &>
 
 <h2><% loc('Total Incident Reports: [_1]', $count) %></h2>
 <form action="ShowReports.html" method="post">

@@ -29,7 +29,7 @@
     current_subtab => 'RTIR/Display.html?id='.$Ticket->id,
     Title => loc("Incident #[_1]: [_2]", $Ticket->Id, $Ticket->Subject) &>
 
-<& /Elements/ListActions, actions => \@Actions &>
+<& /RTIR/Elements/ListActions, actions => \@Actions &>
 
 % if ($id != 'new' && $Ticket->QueueObj->Name ne "Incidents") {
 <&|/l&>This ticket isn't an Incident.</&>
@@ -243,6 +243,8 @@ if ($id eq 'new') {
     }
   }
 
+  my ($oldstate, $newstate);
+  $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
   $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
   chomp ($ARGS{'UpdateContent'}) ;
 
@@ -263,6 +265,10 @@ if ($id eq 'new') {
 
   push (@Actions, @BasicActions);
 
+  $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+  if ($newstate ne $oldstate) {
+    push (@Actions, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
+  }
 }
 
 </%INIT>

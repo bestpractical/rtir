@@ -44,7 +44,7 @@
     Title => $Title &>
 % }
 
-<& /Elements/ListActions, actions => \@results &>
+<& /RTIR/Elements/ListActions, actions => \@results &>
 
 % if ($Split && !$TicketObj->CurrentUserHasRight('ModifyTicket')) {
 <%loc("You are not allowed to split this [_1].", $name)%>

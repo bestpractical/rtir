@@ -30,7 +30,7 @@
     current_subtab => 'RTIR/Display.html?id='.$Ticket->id,
     Title => $Title &>
 
-<& /Elements/ListActions, actions => \@Actions &>
+<& /RTIR/Elements/ListActions, actions => \@Actions &>
 
 % if ($id != 'new' && $Ticket->QueueObj->Name ne $QueueObj->Name) {
 <%loc("This ticket isn't a [_1].", $Type)%>
@@ -155,11 +155,17 @@ if ($ARGS{'id'} eq 'new') {
   }
 
   #Process basics updates
+  my ($oldstate, $newstate);
+  $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
   my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$Ticket);
   my @LinkActions = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
   my @DateActions = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
 
   push (@Actions, @UpdateActions, @BasicActions, @LinkActions, @DateActions);
+  $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+  if ($newstate ne $oldstate) {
+    push (@Actions, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
+  }
 }
 
 unless ($id) {

@@ -1,0 +1,24 @@
+<%INIT>
+
+# $row is passed by reference
+
+# skip things that start with skiplist items
+foreach my $item (@skiplist) {
+  if ($item && substr($$row, 0, length($item)) eq $item) {
+    $$skip = 1;
+  }
+}
+
+# remove _RTIR_ from RTIR custom fields
+my $prefix = '_RTIR_';
+if (substr($$row, 0, length($prefix)) eq $prefix) {
+  $$row = substr($$row, length($prefix));
+}
+
+</%INIT>
+
+<%ARGS>
+$row => undef
+@skiplist => undef
+$skip => 0
+</%ARGS>

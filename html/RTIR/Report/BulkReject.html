@@ -28,7 +28,7 @@
 <& Elements/Tabs, 
     Title => $title &>
 
-<& /Elements/ListActions, actions => \@results &>
+<& /RTIR/Elements/ListActions, actions => \@results &>
 
 <form method=get>
 <input type=hidden name=Status value=<%$Status%>>
@@ -155,7 +155,13 @@ if ($ARGS{'BulkReject'}) {
           push (@results, $msg);
           push @results, "Msg: ".$msg;
         }
+        my ($oldstate, $newstate);
+        $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
         push @results, ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$t);
+        $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+        if ($newstate ne $oldstate) {
+          push (@Actions, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
+        }
       } else {
         push @results, loc("Cannot reject Incident Report #[_1].  Only new reports may be rejected.", $t->id);
       }
