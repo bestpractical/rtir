@@ -1,10 +1,15 @@
+RTIR (RT for Incident Reponse) is a tool for tracking, responding to,
+and investigating reported incidents.  Out of the box, it integrates
+with RT3 (Also available from bestpractical.com)
+
 Installation instructions:
 --------------------------
 
 1) RTIR requires the Business::Hours module.  You should install it
 before proceeding.
 
-2) Install RT 3.0.x
+2) Install RT 3.0.  This version of RTIR requires at least RT
+   3.03pre5.
 
 3) Once RT 3.0 appears to be happily installed, cd into the directory you
    unpacked RTIR into.
@@ -46,3 +51,22 @@ before proceeding.
 8) Initialize the RTIR database by typing "make initdb".
 
 9) Stop and start your web server.
+
+
+Configuring RTIR
+----------------
+
+1) Using the Configurations option in base RT, add the email address
+   of the Network Operations Team (the people who will handle
+   activating and removing Blocks) as AdminCC on the Blocks queue.
+
+2) You may want to modify the email messages that are automatically
+   sent on the creation of Investigations and Blocks.  The templates
+   are "LaunchMessage" in the Investigations queue and "NewMessage" in
+   the Blocks queue.
+
+3) By default, RT3 has certain global Scrips.  You should look through
+   them, and disable any that don't want.
+
+4) Staff members who handle incidents should be added to the DutyTeam
+   group.
