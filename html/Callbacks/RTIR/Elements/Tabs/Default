@@ -17,7 +17,7 @@
 %# END LICENSE BLOCK
 
 <%init>
-$toptabs->{'BB-RTFM'} = { title =>loc("RTIR"),
+$toptabs->{'BB-RTIR'} = { title =>loc("RTIR"),
                           path  => "RTIR/index.html" };
 </%init>
 <%args>
