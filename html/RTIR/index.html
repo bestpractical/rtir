@@ -66,8 +66,16 @@ if ( $ARGS{'q'} ) {
 
     $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
 
+    # Incidents don't have requestors, but children do
     if ( $query =~ m/\@/ ) {
-        $m->comp("/RTIR/Search/Results.html", Queue => 'Incidents', Query => "Requestor = '$query'");
+	my $children = new RT::Tickets($session{'CurrentUser'});
+	$children->FromSQL("(Queue = 'Incident Reports' OR Queue = 'Investigations' OR Queue = 'Blocks') and Requestor LIKE '$query'");
+	my $querystring;
+	while (my $child = $children->Next) {
+	    $querystring .= " OR " if $querystring;
+	    $querystring .= "HasMember = " . $child->Id;
+	}
+        $m->comp("/RTIR/Search/Results.html", Queue => 'Incidents', Query => ($querystring));
 
         return();
     }
