@@ -1,11 +1,11 @@
 <%INIT>
     $COLUMN_MAP->{'Check'} = {
-        title     => 'Check',
+        title     => '_RTIR_Check',
 	value => sub { return '<input type="checkbox" name="UpdateTicket' . $_[0]->id . '">' },
     };
 
     $COLUMN_MAP->{'Radio'} = {
-        title     => 'Radio',
+        title     => '_RTIR_Radio',
 	value => sub { return '<input type="radio" name="SelectedTicket" value="' . $_[0]->id . '">' },
     };
 </%INIT>
