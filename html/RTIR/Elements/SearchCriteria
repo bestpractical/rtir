@@ -31,6 +31,7 @@
 % if (substr($field, 0, 3) eq 'CF.' and $i > 0) {
 % my $j = $i + length("{_RTIR_");
 <%substr($field, $j, index ($field, "}") - $j)%>
+<%substr($field, index ($field, "}") + 1)%>
 % } else {
 <%$field%>
 % }

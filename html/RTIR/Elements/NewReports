@@ -80,7 +80,7 @@
 </TR>
 % }
 </TABLE>
-<a href="<%$RT::WebPath%>/RTIR/Report/BulkReject.html?ClearRestrictions=1&StatusOp==&ValueOfStatus=new">[<%loc("Bulk Reject")%>]</a>
+<a href="<%$RT::WebPath%>/RTIR/Report/BulkReject.html?ClearRestrictions=1">[<%loc("Bulk Reject")%>]</a>
 
 <& /Elements/TitleBoxEnd &>
 
