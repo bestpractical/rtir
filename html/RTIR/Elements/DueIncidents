@@ -106,8 +106,10 @@ while (my $Ticket = $MyTickets->Next) {
         $kids->LimitQueue(VALUE =>'Incident Reports');
         $kids->LimitQueue(VALUE =>'Investigations');
         $kids->LimitQueue(VALUE =>'Blocks');
+	# Make sure the child actually has a due date set
+        $kids->LimitDue(OPERATOR => ">", VALUE => -1);
         $kids->RowsPerPage(1);   
-        $kids->OrderBy( FIELD => 'Due', ORDER => 'DESC');
+        $kids->OrderBy( FIELD => 'Due', ORDER => 'ASC');
         my $due = $Ticket->DueObj;
 
         while (my $kid = $kids->Next) {
