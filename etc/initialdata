@@ -52,11 +52,11 @@
 	Disabled    => 2,
         Values      => [
             {
-                Name      => "JANET-CERT",
+                Name      => "EDUNET",
                 SortOrder => 1
             },
             {
-                Name      => "HEANET-CERT",
+                Name      => "GOVNET",
                 SortOrder => 2
             }
         ],
