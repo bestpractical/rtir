@@ -22,7 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/TitleBoxStart, title => loc("[_1] new unlinked Incident Reports...", $rows), bodyclass=> '' &>
+<& /Elements/TitleBoxStart, title => loc("[_1] overdue Incident Reports...", $rows), bodyclass=> '' &>
 <TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
 <TR>
 <TH ALIGN=RIGHT><&|/l&>#</&></TH>
@@ -74,7 +74,6 @@
 </TR>
 % }
 </TABLE>
-<a href="<%$RT::WebPath%>/RTIR/Report/BulkReject.html?ClearRestrictions=1&StatusOp==&ValueOfStatus=new">[<%loc("Bulk Reject")%>]</a>
 
 <& /Elements/TitleBoxEnd &>
 
@@ -83,6 +82,8 @@
 my $rows = 10;
 my $MyTickets;
 $MyTickets = new RT::Tickets ($session{'CurrentUser'});
+$MyTickets->LimitOwner(VALUE => $session{'CurrentUser'}->Id);
+$MyTickets->LimitOwner(VALUE => $RT::Nobody->id);
 $MyTickets->LimitQueue(VALUE => 'Incident Reports');
 
 my $Queue = new RT::Queue($session{'CurrentUser'});
@@ -94,10 +95,16 @@ $CustomFields->{'find_disabled_rows'} = 1;
 while (my $CustomField = $CustomFields->Next()) {
   if ($CustomField->Name eq '_RTIR_State') {
     $fid = $CustomField->Id;
-    $MyTickets->LimitCustomField(CUSTOMFIELD => $fid, VALUE => 'new');
+    $MyTickets->LimitCustomField(CUSTOMFIELD => $fid, VALUE => 'open');
+    $MyTickets->LimitCustomField(CUSTOMFIELD => $fid, VALUE => 'stalled');
   }
 }
-$MyTickets->RowsPerPage($rows);
-$MyTickets->OrderBy(FIELD => 'Priority', ORDER => 'DESC');
+
+my $date = RT::Date->new($RT::SystemUser);
+$date->Set(Format => 'unix', Value => 0);
+$MyTickets->LimitDue (OPERATOR => ">", VALUE => $date->ISO);
+$date->SetToNow;
+$MyTickets->LimitDue (OPERATOR => "<", VALUE => $date->ISO);
+$MyTickets->OrderBy(FIELD => 'Due', ORDER => 'ASC');
 
 </%INIT>

@@ -245,7 +245,25 @@
        ScripCondition => 'On Create',
        ScripAction    => 'Notify Requestors',
        Template       => 'NewMessage' },
-    {  Queue            => 'Incident Reports',
+    {  Description => "DetectUserResponse",
+       Queue            => 'Incident Reports',
+       ScripCondition => 'On Correspond',
+       ScripAction      => 'User Defined',
+       CustomCommitCode => q[
+# ------------------------------------------------------------------- #
+# ------------------------------------------------------------------- #
+if ($self->TicketObj->Owner ne $self->TransactionObj->Creator) {
+  my $date = RT::Date->new($RT::SystemUser);
+  $date->SetToNow;
+  $self->TicketObj->SetDue($date->ISO);
+}
+  return 1;
+# ------------------------------------------------------------------- #
+	],
+       CustomPrepareCode => '1',
+       Template       => 'Blank' },
+    {  Description => "SetHowReported",
+       Queue            => 'Incident Reports',
        ScripCondition => 'On Create',
        ScripAction      => 'User Defined',
        CustomCommitCode => q[
@@ -332,7 +350,7 @@ $CustomFields->{'find_disabled_rows'} = 1;
 while (my $CustomField = $CustomFields->Next()) {
   if ($CustomField->Name eq '_RTIR_State') {
     my $State;
-    if ($self->TicketObj->Status eq 'new' or $self->TicketObj->Status eq 'open') {
+    if ($self->TicketObj->Status eq 'new' or $self->TicketObj->Status eq 'open' or $self->TicketObj->Status eq 'stalled') {
       $State = 'new';
       while (my $link = $self->TicketObj->MemberOf->Next) {
         my $member = $link->TargetObj;

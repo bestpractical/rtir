@@ -32,11 +32,8 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-Starts: <% $ARGS{'Starts'} %><br>
-
 <FORM METHOD="GET" ENCTYPE="multipart/form-data">
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
-<INPUT TYPE=HIDDEN Name="child" VALUE=<%$child%>>
 <INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
 <INPUT TYPE=HIDDEN NAME=Status Value="<%$ARGS{Status}||'open'%>">
 <input type=hidden name="new-MemberOf"<% $ARGS{'new-MemberOf'} && " VALUE=\"$ARGS{'new-MemberOf'}\"" %>>

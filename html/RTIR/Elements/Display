@@ -123,6 +123,11 @@ if (defined $ARGS{'Action'}) {
     my $action = $1;
     my ($res, $msg)=$Ticket->$action();
     push(@Actions, $msg);
+  } elsif ($ARGS{'Action'} eq 'Respond') {
+    my $date = RT::Date->new($RT::SystemUser);
+    $date->SetToNow;
+    $date->AddDays(10);
+    $ARGS{'Due_Date'} = $date->ISO;
   }
 }
     $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
@@ -143,6 +148,7 @@ if (defined $ARGS{'Action'}) {
 #Process basics updates
 my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$Ticket);
 my @LinkActions = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
+my @DateActions = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
 
 push (@Actions, @BasicActions, @LinkActions);
 }

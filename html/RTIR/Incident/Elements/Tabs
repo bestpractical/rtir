@@ -135,14 +135,14 @@ $tabs->{'this'}->{"subtabs"} = $ticket_page_tabs;
 if (    $Ticket->CurrentUserHasRight('ModifyTicket')
      or $Ticket->CurrentUserHasRight('ReplyToTicket') ) {
     $actions->{'A'} = { title => loc('Reply to Reporters'),
-                        path  => "RTIR/Incident/Reply.html?ClearRestrictions=1&id=".$id,
+                        path  => "RTIR/Incident/Reply.html?DefaultStatus=stalled&ClearRestrictions=1&id=".$id,
     };
 }
 
 if (    $Ticket->CurrentUserHasRight('ModifyTicket')
      or $Ticket->CurrentUserHasRight('ReplyToTicket') ) {
     $actions->{'Ab'} = { title => loc('Reply to All'),
-                        path  => "RTIR/Incident/Reply.html?ClearRestrictions=1&id=".$id."&All=1",
+                        path  => "RTIR/Incident/Reply.html?DefaultStatus=stalled&ClearRestrictions=1&id=".$id."&All=1",
     };
 }
 

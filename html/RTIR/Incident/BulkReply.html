@@ -117,6 +117,11 @@ if ($ARGS{'UpdateContent'} &&
             $do_comment_reply=1;
 }
 
+my $date = RT::Date->new($RT::SystemUser);
+$date->SetToNow;
+$date->AddDays(10);
+$ARGS{'Due_Date'} = $date->ISO;
+
 #Iterate through each ticket we've been handed
 
 while (my $Ticket = $session{'tickets'}->Next) {
@@ -124,6 +129,7 @@ while (my $Ticket = $session{'tickets'}->Next) {
     next unless ($ARGS{"UpdateTicket".$Ticket->Id});
     $RT::Logger->debug ("Matched\n");
     #Update the basics.
+
     my @basicresults = ProcessTicketBasics(TicketObj => $Ticket, ARGSRef => \%ARGS);
     my @dateresults = ProcessTicketDates(TicketObj => $Ticket, ARGSRef => \%ARGS);
     #Update the watchers
