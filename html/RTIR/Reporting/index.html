@@ -32,6 +32,16 @@
 <form action="Report.html" method="get">
 <table>
   <tr>
+    <td class="label"><&|/l&>Constituency</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/EditRTIRField, 
+         QueueObj => $QueueObj, 
+	 Name => 'Constituency',
+	 Default => $RT::_RTIR_Constituency_default,
+	 Rows => 1 &>
+    </td>
+  </tr>
+  <tr>
     <td class=label>Start Date:</td>
     <td class=input>
       <input size=30 name="mystart" value="<%$start->AsString%>"> 
@@ -48,6 +58,9 @@
 </FORM>
 
 <%INIT>
+my $QueueObj = new RT::Queue($session{'CurrentUser'});
+$QueueObj->Load('Incidents');
+
 my $now = new RT::Date($RT::SystemUser);
 $now->SetToNow();
 my $end = new RT::Date($RT::SystemUser);
