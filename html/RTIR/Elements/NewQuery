@@ -1,5 +1,7 @@
 <%INIT>
-my ($Type, @states) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
+my ($Type, @basestates) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
+
+@states = @basestates if !$states[0];
 
 my $Query;
 if ($states[0]) {
@@ -9,7 +11,7 @@ if ($states[0]) {
     }
 }
 
-$Query = "( $Query )" if $Query;
+$Query = "( $Query )" if $Query && (scalar @states) > 1;
 
 return $Query;
 
@@ -17,4 +19,5 @@ return $Query;
 
 <%ARGS>
 $Queue => undef
+@states => undef
 </%ARGS>
