@@ -103,7 +103,7 @@
     {
         Name        => '_RTIR_Description',
         Type        => 'FreeformMultiple',
-        Queue       => '0',
+        Queue       => 'Incidents',
     },
     {
         Name        => '_RTIR_SLA',
@@ -203,6 +203,14 @@
 );
 
 @Scrips = (
+    {  Queue            => 'Investigations',
+       ScripCondition => 'On Create',
+       ScripAction    => 'Notify Requestors',
+       Template       => 'LaunchMessage' },
+    {  Queue            => 'Blocks',
+       ScripCondition => 'On Create',
+       ScripAction    => 'Notify Requestors',
+       Template       => 'NewMessage' },
     {  Description => "SetRTIRState",
        Queue            => 'Blocks',
        ScripCondition   => 'User Defined',
@@ -400,4 +408,60 @@ if ($self->TicketObj->Status eq 'resolved' or
 	],
        CustomPrepareCode => '1',
        Template          => 'Blank', },
+);
+
+@Templates = (
+    { Queue       => 'Blocks',
+      Name        => 'NewMessage',
+      Description => 'Sent when a block is created',
+      Content     => 'Subject: {$Ticket->Subject}
+
+{$Transaction->Content()}
+
+{
+  my $output = "";
+  my $CustomFields = $Ticket->QueueObj->CustomFields();
+  while (my $CustomField = $CustomFields->Next()) {
+    my @mailfields = ("_RTIR_IP", 
+        "_RTIR_Netmask", 
+        "_RTIR_Port",
+        "_RTIR_WhereBlocked");
+    my $Values = $Ticket->CustomFieldValues($CustomField->Id);
+    while (my $Value = $Values->Next()) {
+      for my $field (@mailfields) {
+	 if ($CustomField->Name eq $field) {
+          $output .= $CustomField->Name.": ".$Value->Content."\n";
+        }
+      }
+    }
+  }
+  return $output;
+}
+-------------------------------------------------------------------------
+Please include the string:
+
+         [{$rtname} #{$Ticket->id}]
+
+in the subject line of all future correspondence about this issue. To do so, 
+you may reply to this message.
+
+                        Thank you,
+                        {$Ticket->QueueObj->CorrespondAddress()}', },
+    { Queue       => 'Investigations',
+      Name        => 'LaunchMessage',
+      Description => 'Sent when an investigation is launched',
+      Content     => 'Subject: {$Ticket->Subject}
+
+{$Transaction->Content()}
+
+-------------------------------------------------------------------------
+Please include the string:
+
+         [{$rtname} #{$Ticket->id}]
+
+in the subject line of all future correspondence about this issue. To do so, 
+you may reply to this message.
+
+                        Thank you,
+                        {$Ticket->QueueObj->CorrespondAddress()}', },
 );
