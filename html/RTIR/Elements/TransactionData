@@ -80,7 +80,7 @@ if ($QuoteText) {
 
 % }
 % if ($content) {
-<% $content %>
+<% $content |n %>
 % }
 % }
 <%ARGS>
