@@ -36,11 +36,11 @@
 <input type="hidden" name="Action" value="<% $ARGS{Action} %>">
 <input type="hidden" name="Type" value="<% $ARGS{Type} %>">
 % if ($Type eq 'Report' and $ARGS{'DefaultStatus'} eq 'rejected') {
-%   while (my $link = $Ticket->MemberOf->Next) {
-%     my $member = $link->TargetObj;
-%     if ($member->QueueObj->Name eq 'Incidents') {
-<input type="hidden" name="DeleteLink--<%$link->Type%>-<%$link->Target%>">
-%     }
+%   my $query = "Queue = 'Incidents' AND HasMember = " . $Ticket->Id;
+%   my $incidents = new RT::Tickets($session{'CurrentUser'});
+%   $incidents->FromSQL($query);
+%   while (my $member = $incidents->Next) {
+<input type="hidden" name="DeleteLink--MemberOf-<%$member->Id%>">
 %   }
 % }     
 <font size=-1>

@@ -75,13 +75,14 @@ while (my $Ticket = $session{'tickets'}->Next) {
   if ($Ticket->QueueObj->Name eq "Incidents") {
     $incidents->{$Ticket->Id} = { Ticket => $Ticket };
   } elsif ($Ticket->QueueObj->Name eq "Incident Reports") {
-    my $parents = $Ticket->MemberOf;
-    while (my $link = $parents->Next) {
-      my $parent = $link->TargetObj;
-      if ($parent->QueueObj->Name eq 'Incidents') {
-        $incidents->{$parent->Id} = { Ticket => $parent };
+      my $query = "Queue = 'Incidents' AND HasMember = " . $Ticket->Id;
+      my $parents = new RT::Tickets($session{'CurrentUser'});
+      $parents->FromSQL($query);
+      while (my $parent = $parents->Next) {
+	  if ($parent->QueueObj->Name eq 'Incidents') {
+	      $incidents->{$parent->Id} = { Ticket => $parent };
+	  }
       }
-    }
   }
 }
 

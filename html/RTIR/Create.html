@@ -61,14 +61,11 @@
 % $parentvalue = $IncidentObj->Id;
 % } elsif ($TicketObj) {
 %   $parentvalue = $TicketObj->Id;
-%   my $count = 0;
-%   my $incidents = $TicketObj->MemberOf;
-%   while (my $link = $incidents->Next) {
-%     my $incident = $link->TargetObj;
-%     if ($incident->QueueObj->Name eq 'Incidents') {
-%       $count++;
-%       $parentvalue = $parentvalue." ".$incident->Id;
-%     }
+%   my $query = "Queue = 'Incidents' AND HasMember = " . $TicketObj->Id;
+%   my $incidents = new RT::Tickets($session{'CurrentUser'});
+%   $incidents->FromSQL($query);
+%   while (my $incident = $incidents->Next) {
+%     $parentvalue = $parentvalue." ".$incident->Id;
 %   }
 % }
 % if (defined $parentvalue) {

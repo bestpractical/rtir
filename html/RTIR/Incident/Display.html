@@ -229,14 +229,14 @@ my $DoLinks = sub {
   # Blocks can have multiple incidents
   my $unlinked;
   if ($Type ne 'Block') {
-    while (my $link = $Ticket->MemberOf->Next) {
-      my $member = $link->TargetObj;
-      if ($member->QueueObj->Name eq "Incidents") {
-        $RT::Logger->debug ("Deleting: ".$link->Target."\n");
-        $ARGS{'DeleteLink--'.$link->Type.'-'.$link->Target} = '';
-        $unlinked->{$link->Target} = $link->TargetObj;
+      my $query = "Queue = 'Incidents' AND HasMember = " . $Ticket->Id;
+      my $incidents = new RT::Tickets($session{'CurrentUser'});
+      $incidents->FromSQL($query);
+      while (my $member = $incidents->Next) {
+	  $RT::Logger->debug ("Deleting: ".$member->Id."\n");
+	  $ARGS{'DeleteLink--MemberOf-'.$member->Id} = '';
+	  $unlinked->{$member->Id} = $member;
       }
-    }
   }
 
  # If we don't own the thing we're linking to, change the owner

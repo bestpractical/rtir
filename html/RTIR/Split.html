@@ -26,7 +26,7 @@
     Split => 1,
     Incident => $Incident,
     QuoteTransaction => $QuoteTransaction,
-    Queue => $Queue,
+    Queue => $TicketObj->QueueObj->Name,
     Subject => $TicketObj->Subject,
     Requestors => $TicketObj->RequestorAddresses,
     Cc => $TicketObj->CcAddresses,
@@ -44,30 +44,14 @@ my ($Type, undef) = $m->comp('Elements/Type', Ticket => $TicketObj->Id);
 
 my $Incident;
 if ($Type ne 'Incident') {
-  my $incidents = $TicketObj->MemberOf;
-  while (my $link = $incidents->Next) {
-    my $inc = $link->TargetObj;
-    if ($inc->QueueObj->Name eq 'Incidents') {
-      $Incident = $inc->Id;
-    }
-  }
+    my $query = "Queue = 'Incidents' AND HasMember = " . $TicketObj->Id;
+    my $incidents = new RT::Tickets($session{'CurrentUser'});
+    $incidents->FromSQL($query);
+    $Incident = $incidents->First->Id;
 } else {
-  $m->comp("/RTIR/Incident/Split.html", %ARGS);
-  $m->abort;
+    $m->comp("/RTIR/Incident/Split.html", %ARGS);
+    $m->abort;
 }
-
-
-my $Queue;
-if ($Type eq "Incident") {
-  $Queue = "Incidents";
-} elsif ($Type eq "Report") {
-  $Queue = "Incident Reports";
-} elsif ($Type eq "Investigation") {
-  $Queue = "Investigations";
-} elsif ($Type eq "Block") {
-  $Queue = "Blocks";
-}
-
 
 </%INIT>
 <%ARGS>

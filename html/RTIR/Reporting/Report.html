@@ -272,16 +272,20 @@ sub get_incident_field {
   my $field = shift;
 
   # find the parent incident
-  my $incidents = $t->MemberOf;
+  my $query = "Queue = 'Incidents' AND HasMember = " . $t->Id;
+
+  my $incidents = new RT::Tickets($session{'CurrentUser'});
+  $incidents->FromSQL($query);
+
   my $parent;
   $incidents->GotoFirstItem();
-  while (my $link = $incidents->Next) {
-    my $incident = $link->TargetObj;
+  while (my $incident = $incidents->Next) {
     if ($incident->QueueObj->Name eq 'Incidents') {
       $parent = $incident;
       last;
     }
   }
+
   if ( $parent ) {
       return $parent->FirstCustomFieldValue($field);
   } else {

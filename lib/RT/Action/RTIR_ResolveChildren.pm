@@ -44,7 +44,7 @@
 # 
 # }}} END BPS TAGGED BLOCK
 #
-package RT::Action::RTIR_SetResolveChildren;
+package RT::Action::RTIR_ResolveChildren;
 require RT::Action::Generic;
 
 use strict;
@@ -85,7 +85,6 @@ sub Commit {
     my $members = new RT::Tickets($self->TransactionObj->CurrentUser);
     $members->FromSQL($query);
 
-    my $members = $self->TicketObj->Members;
     while (my $member = $members->Next) {
 	$member->Resolve();
     }
@@ -94,9 +93,9 @@ sub Commit {
 
 # }}}
 
-eval "require RT::Action::RTIR_SetResolveChildren_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_SetResolveChildren_Vendor.pm});
-eval "require RT::Action::RTIR_SetResolveChildren_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_SetResolveChildren_Local.pm});
+eval "require RT::Action::RTIR_ResolveChildren_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_ResolveChildren_Vendor.pm});
+eval "require RT::Action::RTIR_ResolveChildren_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_ResolveChildren_Local.pm});
 
 1;

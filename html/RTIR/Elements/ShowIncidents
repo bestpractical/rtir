@@ -22,15 +22,12 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-% while (my $link = $incidents->Next) {
-% my $incident = $link->TargetObj;
-% if ($incident->QueueObj->Name eq 'Incidents') {
+%  while (my $incident = $incidents->Next) {
 %   $count++;
 % my $State = $m->scomp("/RTIR/Elements/ShowRTIRField", Ticket => $incident, Name => 'State');
 <a href="<%$RT::WebPath%>/RTIR/Display.html?id=<%$incident->Id%>"><%$incident->Id%>: <%$incident->Subject%></a> <i>(<%$State%>)</i>
 % if ($depth < 8) {
 <& /RTIR/Elements/ShowIncidents, Ticket => $incident, depth => ($depth+1) &> 
-% }
 % }
 % }
 % if ($depth == 1 and $count == 0) {
@@ -47,7 +44,10 @@
 <%INIT>
 
 my $count = 0;
-my $incidents = $Ticket->MemberOf;
+
+my $query = "Queue = 'Incidents' AND HasMember = " . $Ticket->Id;
+my $incidents = new RT::Tickets($session{'CurrentUser'});
+$incidents->FromSQL($query);
 
 </%INIT>
 

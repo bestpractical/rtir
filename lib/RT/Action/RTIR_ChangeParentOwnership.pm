@@ -76,10 +76,12 @@ sub Commit {
     my $self = shift;
 
     # change owner of parent Incident(s)
-    while (my $link = $self->TicketObj->MemberOf->Next) {
-	my $incident= $link->TargetObj;
-	if ( $incident->QueueObj->Name eq 'Incidents' &&
-	     $incident->OwnerObj->id != $self->TransactionObj->NewValue) {
+    my $query = "Queue = 'Incidents' AND MemberOf = " . $self->TicketObj->Id;
+
+    my $parents = new RT::Tickets($self->TransactionObj->CurrentUser);
+    $parents->FromSQL($query);
+    while (my $Incident = $parents->Next) {
+	if ( $incident->OwnerObj->id != $self->TransactionObj->NewValue) {
 	    my ($res, $msg); 
 	    my $user = new RT::CurrentUser($self->TransactionObj->CurrentUser);
 	    $user->Load($self->TransactionObj->Creator);
