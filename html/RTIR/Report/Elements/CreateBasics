@@ -115,7 +115,7 @@
               QueueObj => $QueueObj, Name => 'HowReported',
 	      Default => "Email" &>
           </td>
-    <td class=label>
+    <td class=labeltop>
       <%loc("Reporter Type")%>:
     </td>
     <td class=value colspan=2>

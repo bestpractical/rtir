@@ -32,8 +32,6 @@
     Title => $Title &> 
 <%INIT>
 
-my $q = RT::Queue->new($session{'CurrentUser'});
-$q->Load('Investigations');
 my $tabs = {};
 my $current_toptab = "RTIR/Investigation/Listing.html?NewSearch=1",
 my ($actions, $mytab);
@@ -41,29 +39,29 @@ my ($actions, $mytab);
 if ( $Ticket) {
 	
 my $id   = $Ticket->id();
-$mytab = "RTIR/Investigation/Display.html?id=".$id;
+$mytab = "RTIR/Display.html?id=".$id;
 
 $tabs->{"this"} = { class => "currentnav",
-                    path  => "RTIR/Investigation/Display.html?id=" . $Ticket->id,
+                    path  => "RTIR/Display.html?id=" . $Ticket->id,
                     title => loc("Investigation #[_1]", $id),
                     current_subtab => $current_subtab };
 
 my $ticket_page_tabs = {
     _A => { title => loc('Display'),
-            path  => "RTIR/Investigation/Display.html?id=" . $id, },
+            path  => "RTIR/Display.html?id=" . $id, },
 
     _C => { title => loc('Split'),
-            path  => "RTIR/Investigation/Split.html?Ticket=" . $id, },
+            path  => "RTIR/Split.html?Ticket=" . $id, },
 
     _D => { title => loc('Merge'),
-            path  => "RTIR/Investigation/Merge.html?id=" . $id,
+            path  => "RTIR/Merge.html?id=" . $id,
 	    separator => 1 },
 };
 
 # only show edit option if they can do it
 if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
    $ticket_page_tabs->{'_B'} = { title => loc('Edit'),
-            path  => "RTIR/Investigation/Edit.html?id=" . $id, };
+            path  => "RTIR/Edit.html?id=" . $id, };
 }
 
 foreach my $tab ( sort keys %{$ticket_page_tabs} ) {
@@ -78,7 +76,7 @@ $tabs->{'this'}->{"subtabs"} = $ticket_page_tabs;
 if (    $Ticket->CurrentUserHasRight('ModifyTicket')
      or $Ticket->CurrentUserHasRight('ReplyToTicket') ) {
     $actions->{'A'} = { title => loc('Reply'),
-                        path  => "RTIR/Investigation/Update.html?Action=Respond&DefaultStatus=open&id=" . $id,
+                        path  => "RTIR/Update.html?Action=Respond&DefaultStatus=open&id=" . $id,
     };
 }
 
@@ -87,22 +85,22 @@ if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
         $actions->{'B'} = {
 
             path =>
-              "RTIR/Investigation/Update.html?Action=Comment&DefaultStatus=resolved&id=" . $id,
+              "RTIR/Update.html?Action=Comment&DefaultStatus=resolved&id=" . $id,
             title => loc('Resolve') };
     }
     if ( $Ticket->Status ne 'open' ) {
-        $actions->{'C'} = { path => "RTIR/Investigation/Display.html?Status=open&id=" . $id,
+        $actions->{'C'} = { path => "RTIR/Display.html?Status=open&id=" . $id,
                             title => loc('Open it') };
     }
 }
 
 if ( $Ticket->CurrentUserHasRight('OwnTicket') ) {
     if ( $Ticket->OwnerObj->id == $RT::Nobody->id ) {
-        $actions->{'D'} = { path => "RTIR/Investigation/Display.html?Action=Take&id=" . $id,
+        $actions->{'D'} = { path => "RTIR/Display.html?Action=Take&id=" . $id,
                             title => loc('Take') };
     }
     elsif ( $Ticket->OwnerObj->id != $session{CurrentUser}->id ) {
-        $actions->{'E'} = {path => "RTIR/Investigation/Display.html?Action=Steal&id=" . $id,
+        $actions->{'E'} = {path => "RTIR/Display.html?Action=Steal&id=" . $id,
                            title => loc('Steal') };
     }
 }
@@ -110,7 +108,7 @@ if ( $Ticket->CurrentUserHasRight('OwnTicket') ) {
 if (    $Ticket->CurrentUserHasRight('ModifyTicket')
      or $Ticket->CurrentUserHasRight('CommentOnTicket') ) {
     $actions->{'F'} = { title => loc('Comment'),
-                        path  => "RTIR/Investigation/Update.html?Action=Comment&id=" . $id,
+                        path  => "RTIR/Update.html?Action=Comment&id=" . $id,
     };
 }
 } else {

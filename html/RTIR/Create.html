@@ -1,6 +1,6 @@
 %# BEGIN LICENSE BLOCK
 %# 
-%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
 %# 
 %# (Except where explictly superceded by other copyright notices)
 %# 
@@ -24,40 +24,40 @@
 %# END LICENSE BLOCK
 <& /RTIR/Elements/Header, Title => $Title &>
 % if ($Split) {
-<& "/RTIR/Investigation/Elements/Tabs",
-    Ticket => $TicketObj,
-    current_toptab => "RTIR/Incident/Listing.html", 
-    current_tab => "RTIR/Investigation/Split.html?Ticket=".$TicketObj->Id, 
-    current_subtab => "RTIR/Investigation/Split.html?Ticket=".$TicketObj->Id, 
+<& '/RTIR/'.$Type.'/Elements/Tabs', 
+    Ticket => $TicketObj, 
+    current_tab => "RTIR/Split.html?Ticket=".$TicketObj->Id, 
+    current_subtab => "RTIR/Split.html?Ticket=".$TicketObj->Id, 
     Title => $Title &>
 % } elsif ($Incident) {
-<& "/RTIR/Incident/Elements/InvestigationTabs", 
+<& "/RTIR/Incident/Elements/".$Type."Tabs", 
     Ticket => $IncidentObj,
-    current_toptab => "RTIR/Investigation/Listing.html", 
-    current_tab => "RTIR/Investigation/Create.html?Incident=".$Incident, 
+    current_toptab => "RTIR/".$Type."/Listing.html", 
+    current_tab => "RTIR/Create.html?Incident=".$Incident."&Queue=".$Queue, 
     Title => $Title &>
 % } else {
-<& "/RTIR/Investigation/Elements/Tabs",
+<& "/RTIR/".$Type."/Elements/Tabs",
     Ticket => $TicketObj,
     current_toptab => "RTIR/Incident/Listing.html", 
-    current_tab => "RTIR/Investigation/Create.html", 
+    current_tab => "RTIR/Create.html?Queue=".$Queue, 
+    current_subtab => "RTIR/Create.html?Queue=".$Queue, 
     Title => $Title &>
 % }
 
 % if ($Split && !$TicketObj->CurrentUserHasRight('ModifyTicket')) {
-<&|/l&>You are not allowed to split this Investigation.</&>
+<%loc("You are not allowed to split this [_1].", $name)%>
 %    $m->abort();
 % }
 
 <& /RTIR/Elements/Create, 
-    Type => 'Investigation',
+    Type => $Type,
     Queue => $q->Id,
     Status => 'new',
     %ARGS &>
 
 <%INIT>
 my $q = RT::Queue->new($session{'CurrentUser'});
-$q->Load('Investigations');
+$q->Load($Queue);
 my ($Title, $IncidentObj);
 my $TicketObj = $ARGS{TicketObj};
 
@@ -66,14 +66,38 @@ if ($Incident) {
   $IncidentObj = LoadTicket($Incident);
 }
 
-if ($Split) {
-  $Title = loc("Split Investigation #[_1]: [_2]", $TicketObj->id, $TicketObj->Subject);
+my $Type;
+if ($Queue eq "Incidents") {
+  $Type = "Incident";
+} elsif ($Queue eq "Incident Reports") {
+  $Type = "Report";
+} elsif ($Queue eq "Investigations") {
+  $Type = "Investigation";
+} elsif ($Queue eq "Blocks") {
+  $Type = "Block";
+}
+
+my $name;
+if ($Type eq 'Report') {
+  $name = "Incident Report";
 } else {
-  $Title = loc("Launch a new Investigation");
+  $name = $Type;
+}
+
+if ($Type eq 'Incident') {
+  $m->comp("/RTIR/Incident/Create.html", %ARGS);
+  $m->abort;
+}
+
+if ($Split) {
+  $Title = loc("Split [_1] #[_2]: [_3]", $name, $TicketObj->id, $TicketObj->Subject);
+} else {
+  $Title = loc("Create a new [_1]", $name);
 }
 </%INIT>
 
 <%ARGS>
+$Queue => undef
 $Incident => undef
 $Split => 0
 </%ARGS>

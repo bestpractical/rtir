@@ -1,6 +1,6 @@
 %# BEGIN LICENSE BLOCK
 %# 
-%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
 %# 
 %# (Except where explictly superceded by other copyright notices)
 %# 
@@ -22,17 +22,17 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /RTIR/Elements/Header, Title => loc("Edit Investigation #[_1]: [_2]", $Ticket->Id, $Ticket->Subject) &>
-<& /RTIR/Investigation/Elements/Tabs, 
+<& /RTIR/Elements/Header, Title => $Title &>
+<& '/RTIR/'.$Type.'/Elements/Tabs', 
     Ticket => $Ticket, 
-    current_tab => "RTIR/Investigation/Edit.html?id=".$Ticket->Id, 
-    Title => loc("Edit Investigation #[_1]: [_2]", 
-    $Ticket->Id, $Ticket->Subject) &>
+    current_tab => "RTIR/Edit.html?id=".$Ticket->Id, 
+    current_subtab => "RTIR/Edit.html?id=".$Ticket->Id, 
+    Title => $Title &>
 
 <& /Elements/ListActions, actions => \@results &>
 
 % if (!$Ticket->CurrentUserHasRight('ModifyTicket')) {
-<&|/l&>You are not allowed to edit this Investigation.</&>
+<%loc("You are not allowed to edit this [_1].", $name)%>
 %    $m->abort();
 % }
 
@@ -43,13 +43,15 @@
 <tr>
 <td valign=top width=50%>
 <& /Elements/TitleBoxStart, 
-    title => loc("The Basics"),   
+    title => loc("The Basics"), 
     color=> "#993333", 
     width => "100%" &>
-  <& Elements/EditBasics, Ticket => $Ticket &>
+  <& $Type.'/Elements/EditBasics', Ticket => $Ticket, %ARGS &>
 <& /Elements/TitleBoxEnd &>
 
 </td>
+</tr>
+<tr>
 <td valign=top width=50%>
 
 <& /Elements/TitleBoxStart, title => loc('Dates'),  width => "100%", color => "#663366"  &>
@@ -74,6 +76,20 @@
 <%INIT>
 
 my $Ticket = LoadTicket($id);
+my $Type = $m->scomp('Elements/Type', Ticket => $Ticket->Id);
+$Type =~ s/\s+$//;
+
+my $name;
+if ($Type eq 'Report') {
+  $name = "Incident Report";
+} else {
+  $name = $Type;
+}
+
+if ($Type eq 'Incident') {
+  $m->comp("/RTIR/Incident/Edit.html", %ARGS);
+  $m->abort;
+}
 
 my $CanRespond = 0;
 my $CanComment = 0;
@@ -123,6 +139,8 @@ unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
 #It's hard to do this inline, so we'll preload the html of the selectstatus in here.
 my $SelectStatus = $m->scomp("/Elements/SelectStatus", Name => 'Status', Default=> $Ticket->Status);
 my $SelectQueue = $m->scomp("/Elements/SelectQueue", Name => 'Queue', Default =>$Ticket->QueueObj->Id);
+
+my $Title = loc("Edit [_1] #[_2]: [_3]", $name, $Ticket->Id, $Ticket->Subject);
 
 </%INIT>
 

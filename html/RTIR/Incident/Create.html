@@ -32,7 +32,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-% if (($ChildObj || $ARGS{'new-MemberOf'} || $ARGS{'MemberOf-new'}) &&
+% if ($link &&
 %      !$link->CurrentUserHasRight('ModifyTicket')) {
 <&|/l&>You are not allowed to edit this Incident.</&>
 %    $m->abort();
@@ -43,8 +43,8 @@
 <INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
 <INPUT TYPE=HIDDEN NAME=Status Value="<%$ARGS{Status}||'open'%>">
 <INPUT TYPE=HIDDEN NAME=child Value="<%$ARGS{child}%>">
-<input type=hidden name="new-MemberOf"<% $ARGS{'new-MemberOf'} && " VALUE=\"$ARGS{'new-MemberOf'}\"" %>>
-<input type=hidden name="MemberOf-new"<% $ARGS{'MemberOf-new'} && " VALUE=\"$ARGS{'MemberOf-new'}\"" %>>
+<input type=hidden name="new-MemberOf"<% $ARGS{'new-MemberOf'} && " VALUE=$ARGS{'new-MemberOf'}" %>>
+<input type=hidden name="MemberOf-new"<% $ARGS{'MemberOf-new'} && " VALUE=$ARGS{'MemberOf-new'}" %>>
 <A NAME="top">
 	
 <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => $Title &>
@@ -215,16 +215,14 @@
 <& /Elements/Submit, Label => loc("Create")&>
 </FORM>
 
+
 <%INIT>
 # if there isn't a subject, but there is a child, use that one
 my $ChildObj;
 if ((!$Subject) and $child) {
-  $ChildObj = LoadTicket($child);
+#  $ChildObj = LoadTicket($child);
   $Subject = $ChildObj->Subject;
 }
-
-my $QueueObj = new RT::Queue($session{'CurrentUser'});
-$QueueObj->Load("Incidents") || Abort(loc("Queue could not be loaded."));
 
 my ($link, $label);
 if ($ARGS{'new-MemberOf'}) {
@@ -238,12 +236,11 @@ if ($ARGS{'new-MemberOf'}) {
   $label = loc("Link with");
 }
 
+my $QueueObj = new RT::Queue($session{'CurrentUser'});
+$QueueObj->Load("Incidents") || Abort(loc("Queue could not be loaded."));
+
 my $CFs = $QueueObj->CustomFields();
 my $TicketObj = $ARGS{TicketObj};
-
-if (!$current_tab) {
-  $current_tab = "RTIR/Incident/Create.html";
-}
 
 # {{{ deal with deleting uploaded attachments
 foreach my $key (keys %ARGS) {
@@ -291,14 +288,10 @@ if ((!exists $ARGS{'AddMoreAttach'}) && ($ARGS{'id'} eq 'new')) { # new ticket?
 </%INIT>
 
 <%ARGS>
-$DependsOn => undef
-$DependedOnBy => undef
-$MemberOf => undef
 $QuoteTransaction => undef
 $Title => loc("Create a new Incident")
-$current_tab => undef
-$current_subtab => undef
-$people => undef
+$current_tab => "RTIR/Create.html?Queue=Incidents"
+$current_subtab => "RTIR/Create.html?Queue=Incidents"
 $child => undef
 $Subject => undef
 </%ARGS>

@@ -1,6 +1,6 @@
 %# BEGIN LICENSE BLOCK
 %# 
-%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
 %# 
 %# (Except where explictly superceded by other copyright notices)
 %# 
@@ -23,13 +23,13 @@
 %# 
 %# END LICENSE BLOCK
 <& /RTIR/Elements/Header, Title => $title &>
-<& /RTIR/Report/Elements/Tabs, 
+<& '/RTIR/'.$Type.'/Elements/Tabs', 
     Ticket => $Ticket, 
-    current_subtab => "RTIR/Report/Edit.html?id=".$Ticket->Id, 
+    current_subtab => "RTIR/Edit.html?id=".$Ticket->Id, 
     Title => $title &>
 
 <& /RTIR/Elements/Update,
-    Type => 'Report',
+    Type => $Type,
     %ARGS &>
 
 <%INIT>
@@ -38,12 +38,22 @@ my $title;
 my $Ticket = LoadTicket($id);
 my $Status = $ARGS{DefaultStatus} if exists $ARGS{DefaultStatus};
 
-if ($Status eq 'resolved') {
-    $title = loc("Resolve Incident Report #[_1] ([_2])", $Ticket->id, $Ticket->Subject);
-} elsif ($Status eq 'rejected') {
-    $title = loc("Reject Incident Report #[_1] ([_2])", $Ticket->id, $Ticket->Subject);
+my $Type = $m->scomp('Elements/Type', Ticket => $Ticket->Id);
+$Type =~ s/\s+$//;
+
+my $name;
+if ($Type eq 'Report') {
+  $name = "Incident Report";
 } else {
-    $title = loc("Update Incident Report #[_1] ([_2])", $Ticket->id, $Ticket->Subject);
+  $name = $Type;
+}
+
+if ($Status eq 'resolved') {
+    $title = loc("Resolve [_1] #[_2] ([_3])", $name, $Ticket->id, $Ticket->Subject);
+} elsif ($Status eq 'rejected') {
+    $title = loc("Reject [_1] #[_2] ([_3])", $name, $Ticket->id, $Ticket->Subject);
+} else {
+    $title = loc("Update [_1] #[_2] ([_3])", $name, $Ticket->id, $Ticket->Subject);
 }
 
 </%INIT>

@@ -32,8 +32,6 @@
     Title => $Title &> 
 
 <%INIT>
-my $q = RT::Queue->new($session{'CurrentUser'});
-$q->Load('Incident Reports');
 my $tabs = {};
 my $current_toptab = 'RTIR/Report/Listing.html?NewSearch=1',
 my ($actions, $mytab);
@@ -41,27 +39,27 @@ my ($actions, $mytab);
 if ( $Ticket) {
 	
 my $id   = $Ticket->id();
-$mytab = "RTIR/Report/Display.html?id=".$id;
+$mytab = "RTIR/Display.html?id=".$id;
 
 $tabs->{"this"} = { class => "currentnav",
-                    path  => "RTIR/Report/Display.html?id=" . $Ticket->id,
+                    path  => "RTIR/Display.html?id=" . $Ticket->id,
                     title => loc("Incident Report #[_1]", $id),
                     current_subtab => $current_subtab };
 
 my $ticket_page_tabs = {
     _A => { title => loc('Display'),
-            path  => "RTIR/Report/Display.html?id=" . $id, },
+            path  => "RTIR/Display.html?id=" . $id, },
 };
 
 # only show edit option if they can do it
 if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
     $ticket_page_tabs->{'_B'} = { title => loc('Edit'),
-            path  => "RTIR/Report/Edit.html?id=" . $id, };
+            path  => "RTIR/Edit.html?id=" . $id, };
     $ticket_page_tabs->{'_C'} = { title => loc('Split'),
-            path  => "RTIR/Report/Split.html?Ticket=" . $id, };
+            path  => "RTIR/Split.html?Ticket=" . $id, };
 
     $ticket_page_tabs->{'_D'} = { title => loc('Merge'),
-            path  => "RTIR/Report/Merge.html?id=" . $id,
+            path  => "RTIR/Merge.html?id=" . $id,
 	    separator => 1 };
 }
 
@@ -77,7 +75,7 @@ $tabs->{'this'}->{"subtabs"} = $ticket_page_tabs;
 if (    $Ticket->CurrentUserHasRight('ModifyTicket')
      or $Ticket->CurrentUserHasRight('ReplyToTicket') ) {
     $actions->{'A'} = { title => loc('Reply'),
-                        path  => "RTIR/Report/Update.html?Action=Respond&DefaultStatus=stalled&id=" . $id,
+                        path  => "RTIR/Update.html?Action=Respond&DefaultStatus=stalled&id=" . $id,
     };
 }
 
@@ -86,27 +84,27 @@ if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
         $actions->{'Ac'} = {
 
             path =>
-              "RTIR/Report/Update.html?Action=Comment&DefaultStatus=resolved&id=" . $id,
+              "RTIR/Update.html?Action=Comment&DefaultStatus=resolved&id=" . $id,
             title => loc('Resolve') };
         $actions->{'B'} = {
 
             path =>
-              "RTIR/Report/Update.html?Action=Comment&DefaultStatus=rejected&id=" . $id,
+              "RTIR/Update.html?Action=Comment&DefaultStatus=rejected&id=" . $id,
             title => loc('Reject') };
     }
     if ( $Ticket->Status ne 'open' ) {
-        $actions->{'C'} = { path => "RTIR/Report/Display.html?Status=open&id=" . $id,
+        $actions->{'C'} = { path => "RTIR/Display.html?Status=open&id=" . $id,
                             title => loc('Open it') };
     }
 }
 
 if ( $Ticket->CurrentUserHasRight('OwnTicket') ) {
     if ( $Ticket->OwnerObj->id == $RT::Nobody->id ) {
-        $actions->{'D'} = { path => "RTIR/Report/Display.html?Action=Take&id=" . $id,
+        $actions->{'D'} = { path => "RTIR/Display.html?Action=Take&id=" . $id,
                             title => loc('Take') };
     }
     elsif ( $Ticket->OwnerObj->id != $session{CurrentUser}->id ) {
-        $actions->{'E'} = {path => "RTIR/Report/Display.html?Action=Steal&id=" . $id, 
+        $actions->{'E'} = {path => "RTIR/Display.html?Action=Steal&id=" . $id, 
                            title => loc('Steal') };
     }
 }
@@ -114,14 +112,14 @@ if ( $Ticket->CurrentUserHasRight('OwnTicket') ) {
 if (    $Ticket->CurrentUserHasRight('ModifyTicket')
      or $Ticket->CurrentUserHasRight('CommentOnTicket') ) {
     $actions->{'F'} = { title => loc('Comment'),
-                        path  => "RTIR/Report/Update.html?Action=Comment&id=" . $id,
+                        path  => "RTIR/Update.html?Action=Comment&id=" . $id,
     };
 }
 } else {
   $mytab = $current_tab;
 }
 
-$tabs->{"A"} = { path      => 'RTIR/Report/Create.html',
+$tabs->{"A"} = { path      => 'RTIR/Create.html?Queue=Incident Reports',
                  title     => loc('New Incident Report') };
 $tabs->{"g"} = { path      => 'RTIR/Report/Listing.html',
                  title     => loc('Search'),

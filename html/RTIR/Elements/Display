@@ -62,7 +62,7 @@
 	<BR>  
 	  <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket &>
 
-	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
+	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket, DisplayPath => '/RTIR/Display.html' &>
 
 
 	</TD>

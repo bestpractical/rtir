@@ -39,12 +39,12 @@
 %     last if $i++ >= $rows;
 <TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >                                
 <TD ALIGN=RIGHT>
-<A HREF="<% $RT::WebPath %>/RTIR/Report/Display.html?id=<%$Ticket->Id%>">
+<A HREF="<% $RT::WebPath %>/RTIR/Display.html?id=<%$Ticket->Id%>">
 <%$Ticket->Id%>
 </A>
 </TD>
 <TD>
-<A HREF="<% $RT::WebPath %>/RTIR/Report/Display.html?id=<%$Ticket->Id%>">
+<A HREF="<% $RT::WebPath %>/RTIR/Display.html?id=<%$Ticket->Id%>">
 <%$Ticket->Subject || loc('(no subject)')%>
 </A>
 </TD>
@@ -70,11 +70,11 @@
 <TD ALIGN=RIGHT>
 % if ($Ticket->Owner == $session{CurrentUser}->id) {
 [<A HREF="<% $RT::WebPath %>/RTIR/Incident/LinkToIncident.html?id=<%$Ticket->Id%>"><&|/l&>Link</&></A>]
-[<A HREF="<% $RT::WebPath %>/RTIR/Report/Update.html?id=<%$Ticket->Id%>"><&|/l&>Update</&></A>]
+[<A HREF="<% $RT::WebPath %>/RTIR/Update.html?id=<%$Ticket->Id%>"><&|/l&>Update</&></A>]
 % } elsif ($Ticket->Owner == $RT::Nobody->Id) {
-[<A HREF="<% $RT::WebPath %>/RTIR/Report/Display.html?Action=Take&id=<%$Ticket->Id%>"><&|/l&>Take</&></A>]
+[<A HREF="<% $RT::WebPath %>/RTIR/Display.html?Action=Take&id=<%$Ticket->Id%>"><&|/l&>Take</&></A>]
 % } else {
-[<A HREF="<% $RT::WebPath %>/RTIR/Report/Display.html?Action=Steal&id=<%$Ticket->Id%>"><&|/l&>Steal</&></A>]
+[<A HREF="<% $RT::WebPath %>/RTIR/Display.html?Action=Steal&id=<%$Ticket->Id%>"><&|/l&>Steal</&></A>]
 % }
 </TD>
 </TR>

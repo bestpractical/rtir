@@ -35,7 +35,7 @@
   <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$children->{$link}->Base%>-<%$children->{$link}->Type%>-">
 % }
 % my $State = $m->scomp("/RTIR/Elements/ShowRTIRField", Ticket => $t, Name => 'State');
-  <a href="<%$RT::WebPath%>/RTIR/<%$Type%>/Display.html?id=<%$t->Id%>&Type=<%$Type%>"><%$t->Id%>: <%$t->Subject%></a> <i>(<%$State%>)</i>
+  <a href="<%$RT::WebPath%>/RTIR/Display.html?id=<%$t->Id%>&Type=<%$Type%>"><%$t->Id%>: <%$t->Subject%></a> <i>(<%$State%>)</i>
   </td>
   <td align=right>
     <font size="-1"><& ShowDate, date => $t->DueObj &></font>
@@ -88,7 +88,6 @@ while (my $link = $members->Next) {
 $Ticket => undef
 $depth => 1
 $LimitDepth => 0
-$DisplayPath => "/Ticket/Display.html"
 $Delete => 0
 $Type => 'Report'
 $FullList => undef

@@ -24,7 +24,7 @@
 %# END LICENSE BLOCK
 <& /RTIR/Incident/Elements/Tabs, 
     Ticket => $Ticket, 
-    current_tab => 'RTIR/Incident/Display.html?id='.$Ticket->id,
+    current_tab => 'RTIR/Display.html?id='.$Ticket->id,
     current_subtab => 'RTIR/Incident/ShowInvestigations.html?id='.$Ticket->id,
     subtabs => $subtabs,
     Title => $Title &>
@@ -34,7 +34,7 @@
   $q->Load('Investigations');
 
   my $subtabs = {
-    _A => { path => 'RTIR/Investigation/Create.html?Incident='.$Ticket->id,
+    _A => { path => 'RTIR/Create.html?Incident='.$Ticket->id.'&Queue=Investigations',
             title     => loc('Launch Investigation') },
     _B => { path => 'RTIR/Incident/LinkInvestigations.html?ClearRestrictions=1&id='.$Ticket->id,
             title     => loc('Link Investigation') },

@@ -25,7 +25,7 @@
 % if (defined $Ticket) {
 <& /RTIR/Incident/Elements/Tabs, 
     Ticket => $Ticket, 
-    current_tab => 'RTIR/Incident/Display.html?id='.$Ticket->id,
+    current_tab => 'RTIR/Display.html?id='.$Ticket->id,
     current_subtab => 'RTIR/Incident/ShowReports.html?id='.$Ticket->id,
     subtabs => $subtabs,
     Title => $Title &>
@@ -44,7 +44,7 @@
 my $subtabs;
 if ($Ticket) {
   $subtabs = {
-    _A => { path => 'RTIR/Report/Create.html?Incident='.$Ticket->id,
+    _A => { path => 'RTIR/Create.html?Incident='.$Ticket->id.'Queue=Incident Reports',
             title     => loc('New Incident Report') },
     _B => { path => 'RTIR/Incident/LinkReports.html?ClearRestrictions=1&id='.$Ticket->id.'&StatusOp==&ValueOfStatus=new',
             title     => loc('Link Incident Reports') },

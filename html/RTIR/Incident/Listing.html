@@ -36,7 +36,7 @@ if ( $ARGS{'q'} ) {
     my $query = $ARGS{'q'};
 
     if ( $query =~ m/^\s*(\d+)\s*$/ ) {
-        $m->redirect("$RT::WebPath/RTIR/Incident/Display.html?id=$1");
+        $m->redirect("$RT::WebPath/RTIR/Display.html?id=$1");
     }
 
     $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );

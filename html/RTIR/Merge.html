@@ -1,6 +1,6 @@
 %# BEGIN LICENSE BLOCK
 %# 
-%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
 %# 
 %# (Except where explictly superceded by other copyright notices)
 %# 
@@ -23,19 +23,36 @@
 %# 
 %# END LICENSE BLOCK
 <& /RTIR/Elements/Header, Title => $Title &>
-<& /RTIR/Report/Elements/Tabs, 
+<& '/RTIR/'.$Type.'/Elements/Tabs', 
     Ticket => $Ticket, 
-    current_tab => "RTIR/Report/Merge.html?id=".$Ticket->Id, 
+    current_tab => "RTIR/Merge.html?id=".$Ticket->Id, 
+    current_subtab => "RTIR/Merge.html?id=".$Ticket->Id, 
     Title => $Title &>
 
 <& /RTIR/Elements/Merge, 
-    Type => 'Report', 
-    Path => '/RTIR/Report/Merge.html',
+    Type => $Type, 
+    Path => '/RTIR/'.$Type.'/Merge.html',
     %ARGS &>
 
 <%INIT>
 my $Ticket = LoadTicket($id);
-my $Title = loc("Merge Incident Report #[_1]: [_2]", $id, $Ticket->Subject);
+
+my $Type = $m->scomp('Elements/Type', Ticket => $Ticket->Id);
+$Type =~ s/\s+$//;
+
+my $name;
+if ($Type eq 'Report') {
+  $name = "Incident Report";
+} else {
+  $name = $Type;
+}
+
+if ($Type eq 'Incident') {
+  $m->comp("/RTIR/Incident/Display.html", %ARGS);
+  $m->abort;
+}
+
+my $Title = loc("Merge [_1] #[_2]: [_3]", $name, $id, $Ticket->Subject);
 </%INIT>
       
 <%ARGS>

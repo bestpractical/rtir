@@ -24,8 +24,7 @@
 %# END LICENSE BLOCK
 <& /Elements/ListActions, actions => \@results &>
 
-Type: <%$Type%>
-<FORM ACTION="<%$RT::WebPath%>/RTIR/<%$Type%>/Create.html" METHOD="POST" ENCTYPE="multipart/form-data">
+<FORM ACTION="<%$RT::WebPath%>/RTIR/Create.html" METHOD="POST" ENCTYPE="multipart/form-data">
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
 <INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
 <INPUT TYPE=HIDDEN NAME=Status Value="<%$ARGS{Status}||'open'%>">

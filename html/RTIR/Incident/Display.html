@@ -25,8 +25,8 @@
 <& /RTIR/Elements/Header, Title => loc("Incident #[_1]: [_2]", $Ticket->Id, $Ticket->Subject) &>
 <& /RTIR/Incident/Elements/Tabs, 
     Ticket => $Ticket, 
-    current_tab => 'RTIR/Incident/Display.html?id='.$Ticket->id,
-    current_subtab => 'RTIR/Incident/Display.html?id='.$Ticket->id,
+    current_tab => 'RTIR/Display.html?id='.$Ticket->id,
+    current_subtab => 'RTIR/Display.html?id='.$Ticket->id,
     Title => loc("Incident #[_1]: [_2]", $Ticket->Id, $Ticket->Subject) &>
 
 <& /Elements/ListActions, actions => \@Actions &>
@@ -56,7 +56,7 @@
 % if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
     <table width=100%>
     <td align="right">
-		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Report/Create.html?Incident=<%$Ticket->Id%>">New</a> 
+		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Create.html?Incident=<%$Ticket->Id%>&Queue=Incident Reports">New</a> 
 		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Incident/LinkReports.html?ClearRestrictions=1&StatusOp==&ValueOfStatus=new&id=<%$Ticket->Id%>"><%loc("Link")%></a> |
     </td></table>
 % }
@@ -80,7 +80,7 @@
 % if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
 
 		<table width=100%><td align="right">
-		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Investigation/Create.html?Incident=<%$Ticket->Id%>">Launch</a> 
+		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Create.html?Incident=<%$Ticket->Id%>&Queue=Investigations">Launch</a> 
 		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Incident/LinkInvestigations.html?ClearRestrictions=1&id=<%$Ticket->Id%>"><%loc("Link")%></a> |
 		</td></table>
 % }
@@ -102,7 +102,7 @@
 
 % if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
 		<table width=100%><td align="right">
-		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Block/Create.html?Incident=<%$Ticket->Id%>">New</a> 
+		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Create.html?Incident=<%$Ticket->Id%>&Queue=Blocks">New</a> 
 		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Incident/LinkBlocks.html?ClearRestrictions=1&id=<%$Ticket->Id%>"><%loc("Link")%></a> |
 		</td></table>
 % }
@@ -125,7 +125,7 @@
 	<BR>  
 	  <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket &>
 
-	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
+	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket, DisplayPath => "/RTIR/Display.html" &>
 
 
 	</TD>

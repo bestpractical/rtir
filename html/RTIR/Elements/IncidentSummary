@@ -37,20 +37,20 @@
 % my $t = $m->scomp("/RTIR/Elements/Type", Ticket => $Ticket->Id);
 % $t =~ s/\s*$//;
 <TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >
-<td><b><A HREF="<%$RT::WebPath%>/RTIR/Incident/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%></a></b></td>
-<td><b><A HREF="<%$RT::WebPath%>/RTIR/Incident/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Subject%></a></b></td>
+<td><b><A HREF="<%$RT::WebPath%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%></a></b></td>
+<td><b><A HREF="<%$RT::WebPath%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Subject%></a></b></td>
 <td><& "/RTIR/Elements/ShowRTIRField", Ticket => $Ticket, Name => 'State' &>
 </td>
 <TD><%$Ticket->Priority%></TD>
 <td align=right>
 % if ($Type eq 'Report' or $Type eq 'Investigation' or $Type eq 'Block') {
-<a href="<%$RT::WebPath%>/RTIR/Incident/Display.html?child=<%$ticket%>&SelectedTicket=<%$Ticket->Id%>">[<%loc("Link")%>]</a>
+<a href="<%$RT::WebPath%>/RTIR/Display.html?child=<%$ticket%>&SelectedTicket=<%$Ticket->Id%>">[<%loc("Link")%>]</a>
 % } elsif ($ticket and $Type eq $t) {
 %   if ($ticket ne $Ticket->Id) {
-<a href="<%$RT::WebPath%>/RTIR/Incident/Merge.html?id=<%$ticket%>&SelectedTicket=<%$Ticket->Id%>">[<%loc("Merge")%>]</a>
+<a href="<%$RT::WebPath%>/RTIR/Merge.html?id=<%$ticket%>&SelectedTicket=<%$Ticket->Id%>">[<%loc("Merge")%>]</a>
 %   }
 % }
-<a href="<%$RT::WebPath%>/RTIR/Investigation/Create.html?Incident=<%$Ticket->Id%>">[<%loc("Investigate")%>]</a>
+<a href="<%$RT::WebPath%>/RTIR/Create.html?Incident=<%$Ticket->Id%>&Queue=Investigations">[<%loc("Investigate")%>]</a>
 </td>
 </TR>
 % }

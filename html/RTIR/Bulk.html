@@ -60,7 +60,7 @@ while (my $Ticket = $session{'tickets'}->Next) {
 %foreach my $col (@cols) {
 <TD>
 % if ($col eq 'id') {
-<A HREF="<% $RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id()%></A>
+<A HREF="<% $RT::WebPath%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id()%></A>
 % }
 %else {
 <% eval "\$Ticket->$col()" %>&nbsp;
