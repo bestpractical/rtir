@@ -1,0 +1,91 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& /RTIR/Elements/Header, Title => $title &>
+<& '/RTIR/'.$Type.'/Elements/Tabs', 
+    current_tab => "RTIR/Listing.html?NewSearch=1&Queue=".$Queue, 
+    current_subtab => "RTIR/Listing.html?NewSearch=1&Queue=".$Queue, 
+    Title => $title &>
+
+<& /RTIR/Elements/Listing, 
+    Type => $Type, Queue => $Queue, %ARGS &>
+
+<HR>
+
+<& /RTIR/Elements/SearchFields, Path => 'Listing.html', 
+    Queue => $QueueObj->Name, %ARGS &>
+
+<%INIT>
+my $QueueObj = new RT::Queue($session{'CurrentUser'});
+$QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
+
+my ($Type, @states);
+if ($Queue eq "Incidents") {
+  $Type = 'Incident';
+  @states = ('new', 'open');
+} elsif ($Queue eq "Incident Reports") {
+  $Type = 'Report';
+  @states = ('new', 'open');
+} elsif ($Queue eq "Investigations") {
+  $Type = 'Investigation';
+  @states = ('open');
+} if ($Queue eq "Blocks") {
+  $Type = 'Block';
+  @states = ('pending activation', 'active', 'pending removal');
+}
+
+my ($title, $ticketcount);
+$session{'i'}++;
+if ($session{'tickets'}) {
+    if ($ARGS{'DeleteRestriction'}) {
+	$session{'tickets'}->DeleteRestriction($ARGS{'DeleteRestriction'});
+    }
+    if ( ($ARGS{'ClearRestrictions'}) || ($ARGS{'NewSearch'}) ) {
+	$session{'tickets'}->ClearRestrictions;
+	$session{'tickets'}->LimitQueue(VALUE => $QueueObj->Name);
+        my $CustomFields = $QueueObj->CustomFields();
+        $CustomFields->{'find_disabled_rows'} = 1;
+        while (my $CustomField = $CustomFields->Next()) {
+          if ($CustomField->Name eq '_RTIR_State') {
+	    foreach my $state (@states) {
+		$session{'tickets'}->LimitCustomField(CUSTOMFIELD => $CustomField->Id, VALUE => $state);
+	    }
+	}
+      }
+    }
+}
+
+ProcessSearchQuery(ARGS=>\%ARGS);
+$session{'tickets'}->RedoSearch();
+if ( $session{'tickets'}->DescribeRestrictions()) {
+    $ticketcount = $session{tickets}->Count();
+    $title = loc('Found [quant,_1,_2]', $ticketcount, $Type);
+} else {
+    $title = loc("Find [_1]", $Type);
+}
+</%INIT>
+
+<%ARGS>
+$Queue => undef
+</%ARGS>
