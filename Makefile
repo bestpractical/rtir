@@ -6,7 +6,7 @@ RTGROUP			=	rt
 BIN_OWNER		=	root
 
 RT_ROOT			=	/opt/rt3
-RT_HTML_PATH		=	$(RT_ROOT)/local/html
+RT_HTML_PATH		=	$(RT_ROOT)/share/html
 RT_SBIN_PATH		=	$(RT_ROOT)/sbin
 DBA			=	root
 RTIR_CONFIG_FILE	= 	$(RT_ROOT)/etc/RTIR_Config.pm

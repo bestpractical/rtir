@@ -2,6 +2,22 @@ RTIR (RT for Incident Reponse) is a tool for tracking, responding to,
 and investigating reported incidents.  Out of the box, it integrates
 with RT3 (Also available from bestpractical.com)
 
+Upgrading from RTIR 1.0.0:
+--------------------------
+
+RTIR now installs in RT's share/html directory rather than local/html,
+making local modifications to RTIR easier.
+
+1) IMPORTANT!  Back up any modifications that you've made to the
+   /opt/rt3/local/html/RTIR directory.
+
+2) Remove the old RTIR files:
+
+   rm -r /opt/rt3/local/html/RTIR
+
+3) Install RTIR by following the instructions below.
+
+
 Installation instructions:
 --------------------------
 
@@ -69,7 +85,7 @@ Add the following lines to /etc/aliases (or your local equivalent) :
 
 rtir:         "|/opt/rt3/bin/rt-mailgate --queue 'Incident Reports' --action correspond --url http://localhost/"
 
-You should substitute te URL for RT's web interface for "http://localhost/".
+You should substitute the URL for RT's web interface for "http://localhost/".
 
 
 BUGS
