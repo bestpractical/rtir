@@ -36,7 +36,7 @@
 <input type=hidden name=BulkReject value=1>
 
 <& /RTIR/Elements/Listing, 
-    Type => 'Incident', Queue => 'Incidents', check => 'check', %ARGS &>
+    Type => 'Incident', Queue => 'Incidents', check => 'uncheck', %ARGS &>
 
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => loc("Reject") &>
 </form>
