@@ -33,7 +33,10 @@
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
 <INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
 <INPUT TYPE=HIDDEN NAME=Status Value="<%$ARGS{Status}||'new'%>">
-<input type=hidden name="new-MemberOf"<% $Incident && " VALUE=\"$Incident\"" %>>
+% if ($Incident) {
+<input type=hidden name="new-MemberOf" VALUE="<%$Incident%>">
+% }
+
 <A NAME="top">
 	
 <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => $Title &>

@@ -29,11 +29,13 @@
     current_tab => "RTIR/Incident/ShowInvestigations.html?id=".$Incident, 
     current_subtab => "RTIR/Investigation/Create.html", 
     Title => $Title &>
-<FORM ACTION="<%$RT::WebPath%>/RTIR/Investigation/Create.html" METHOD="POST" ENCTYPE="multipart/form-data">
+<FORM ACTION="<%$RT::WebPath%>/RTIR/Investigation/Create.html" METHOD="GET" ENCTYPE="multipart/form-data">
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
 <INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
 <INPUT TYPE=HIDDEN NAME=Status Value="<%$ARGS{Status}||'open'%>">
-<input type=hidden name="new-MemberOf"<% $Incident && " VALUE=\"$Incident\"" %>>
+% if ($Incident) {
+<input type=hidden name="new-MemberOf" VALUE="<%$Incident%>">
+% }
 <A NAME="top">
 	
 <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => $Title &>
