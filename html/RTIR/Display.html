@@ -156,7 +156,8 @@
 </tr>
 <tr>
   <TD VALIGN=TOP width=50%>
-    <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket &>
+    <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, 
+       Attachments => $attachments &>
   </td>
   <TD VALIGN=TOP width=50%>
     <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket, DisplayPath => '/RTIR/Display.html' &>
@@ -277,6 +278,8 @@ my $TimeWorked = $Ticket->TimeWorked;
 if ($Ticket->TimeLeft > 0 ) {
   $TimeWorked = $Ticket->TimeWorked."/".$Ticket->TimeLeft;
 }
+
+my $attachments = $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket);
 
 </%INIT>
 

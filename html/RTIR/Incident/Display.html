@@ -185,7 +185,8 @@
 	  <& /RTIR/Elements/ShowDates, Ticket => $Ticket &>
 	  <& /Elements/TitleBoxEnd &>
 	<BR>  
-	  <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket &>
+	  <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, 
+	     Attachments => $attachments &>
 
 	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket, DisplayPath => "/RTIR/Display.html" &>
 
@@ -372,6 +373,7 @@ if ($children->Count == 0) {
         loc("WARNING: Incident [_1] has no children.", $Ticket->Id));
 }
 
+my $attachments = $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket);
 
 </%INIT>
 
