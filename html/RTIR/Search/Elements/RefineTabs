@@ -1,0 +1,22 @@
+<& '/RTIR/'.$Type.'/Elements/Tabs', 
+    subtabs => $refinetabs,
+    %ARGS
+&>
+
+path: <%$path%><br>
+
+<%INIT>
+my ($Type, undef) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
+
+my $refinetabs = { };
+
+$refinetabs->{'_a'} = {
+    class => "nav",
+    path => $path,
+    title => loc('Refine') };
+</%INIT>
+	
+<%ARGS>
+$path => undef
+$Queue => undef
+</%ARGS>
