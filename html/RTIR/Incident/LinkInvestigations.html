@@ -32,19 +32,14 @@
 <& Elements/BulkLink,
     SubmitCaption => $SubmitCaption, 
     Type => 'Investigation',
-    AssocPath => "/RTIR/Incident/LinkInvestigations.html",
+    Path => "LinkInvestigations.html",
     %ARGS &>
 
 <%INIT>
-my $title = loc("Link Investigations");
 my $IncidentObj = LoadTicket($id);
+my $title = loc("Link selected Investigations to Incident #[_1]", $IncidentObj->Id);
 my $SubmitCaption = loc("Link selected investigations with Incident #[_1]", $IncidentObj->id);
 
-my $q = RT::Queue->new($session{'CurrentUser'});
-$q->Load("Investigations");
-
-$ARGS{'QueueOp'}="=";
-$ARGS{'ValueOfQueue'}=$q->Id;
 </%INIT>
 
 <%ARGS>

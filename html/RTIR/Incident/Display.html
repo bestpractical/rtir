@@ -121,7 +121,7 @@
     <table width=100%>
     <td align="right">
 		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Create.html?Incident=<%$Ticket->Id%>&Queue=Incident Reports">New</a> 
-		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Incident/LinkReports.html?ClearRestrictions=1&StatusOp==&ValueOfStatus=new&id=<%$Ticket->Id%>"><%loc("Link")%></a> |
+		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Incident/LinkReports.html?ClearRestrictions=1&id=<%$Ticket->Id%>"><%loc("Link")%></a> |
     </td></table>
 % }
 
@@ -203,7 +203,7 @@
 
   
 <%INIT>
-my ($Ticket, $ChildObj, @Actions, @results);  
+my ($Ticket, $ChildObj, @Actions);  
 $Ticket = new RT::Ticket($session{'CurrentUser'});
 if ($ARGS{'child'}) {
   $ChildObj = LoadTicket($ARGS{'child'});
@@ -248,14 +248,14 @@ my $DoLinks = sub {
     }
     my $action = $ARGS{'Action'};
     my ($res, $msg)=$Ticket->$action();
-    push (@results, $msg);
+    push (@linkresults, $msg);
   }
 
   push @linkresults, ProcessTicketLinks(TicketObj => $Ticket, ARGSRef => \%ARGS);
 
   @linkresults = map { loc("Ticket [_1]: [_2]",$Ticket->Id,$_) } @linkresults;
 
-  push (@Actions, @results, @linkresults);
+  push (@Actions, @linkresults);
 
 };
 

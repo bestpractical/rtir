@@ -34,19 +34,14 @@
     SubmitCaption => $SubmitCaption, 
     Status => 'open',
     Type => 'Report',
-    AssocPath => "/RTIR/Incident/LinkReports.html",
+    Path => "LinkReports.html",
     %ARGS &>
 
 <%INIT>
-my $title = loc("Link Incident Reports");
 my $IncidentObj = LoadTicket($id);
+my $title = loc("Link selected Incident Reports to Incident #[_1]", $IncidentObj->Id);
 my $SubmitCaption = loc("Link selected reports with Incident #[_1]", $IncidentObj->id);
 
-my $q = RT::Queue->new($session{'CurrentUser'});
-$q->Load("Incident Reports");
-
-$ARGS{'QueueOp'}="=";
-$ARGS{'ValueOfQueue'}=$q->Id;
 </%INIT>
 
 <%ARGS>

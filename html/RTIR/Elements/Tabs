@@ -34,31 +34,32 @@
     AppName => $RT::rtirname &>
 
 <%INIT>
-my $toptabs = { A => { title => loc('RT'),
-                       path  => '', },
-		    B => { title => loc('RTIR Home'),
-                           path => 'RTIR/index.html',
-                         },
-                    C => { title => loc('Incidents'),
-                        path => 'RTIR/Incident/Listing.html?NewSearch=1',
-                      },
-                    D => { title => loc('Incident Reports'),
-                        path => 'RTIR/Report/Listing.html?NewSearch=1',
-                      },
-                    E => { title => loc('Investigations'),
-                        path => 'RTIR/Investigation/Listing.html?NewSearch=1',
-                      },
-                    F => { title => loc('Blocks'),
-                        path => 'RTIR/Block/Listing.html?NewSearch=1',
-                      },
-                    G => { title => loc('Tools'),
-                        path => 'RTIR/Tools/Lookup.html',
-                      },
-                 };
+my $toptabs = { 
+    A => { title => loc('RT'),
+	   path  => '', },
+    B => { title => loc('RTIR Home'),
+	   path => 'RTIR/index.html',
+       },
+    C => { title => loc('Incidents'),
+	   path => 'RTIR/Listing.html?NewSearch=1&Queue=Incidents',
+       },
+    D => { title => loc('Incident Reports'),
+	   path => 'RTIR/Listing.html?NewSearch=1&Queue=Incident Reports',
+       },
+    E => { title => loc('Investigations'),
+	   path => 'RTIR/Listing.html?NewSearch=1&Queue=Investigations',
+       },
+    F => { title => loc('Blocks'),
+	   path => 'RTIR/Listing.html?NewSearch=1&Queue=Blocks',
+       },
+    G => { title => loc('Tools'),
+	   path => 'RTIR/Tools/Lookup.html',
+		   },
+	    };
 my $topactions = {
-	A => { html => $m->scomp('/RTIR/Elements/SimpleSearch') 
-		}
-	};
+    A => { html => $m->scomp('/RTIR/Elements/SimpleSearch') 
+	   }
+};
                     
 </%INIT>
 <%ARGS>

@@ -33,7 +33,7 @@
 
 <%INIT>
 my $tabs = {};
-my $current_toptab = 'RTIR/Report/Listing.html?NewSearch=1',
+my $current_toptab = 'RTIR/Listing.html?NewSearch=1&Queue=Incident Reports',
 my ($actions, $mytab);
 
 if ( $Ticket) {
@@ -59,7 +59,7 @@ if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
             path  => "RTIR/Split.html?Ticket=" . $id, };
 
     $ticket_page_tabs->{'_D'} = { title => loc('Merge'),
-            path  => "RTIR/Merge.html?id=" . $id,
+            path  => "RTIR/Merge.html?NewSearch=1&id=" . $id,
 	    separator => 1 };
 }
 
@@ -126,7 +126,7 @@ if (    $Ticket->CurrentUserHasRight('ModifyTicket')
 
 $tabs->{"A"} = { path      => 'RTIR/Create.html?Queue=Incident Reports',
                  title     => loc('New Incident Report') };
-$tabs->{"g"} = { path      => 'RTIR/Report/Listing.html',
+$tabs->{"g"} = { path      => 'RTIR/Listing.html?NewSearch=1&Queue=Incident Reports',
                  title     => loc('Search'), };
 $tabs->{"h"} = { path      => 'RTIR/Report/BulkReject.html?ClearRestrictions=1',
                  title     => loc('Bulk Reject'),

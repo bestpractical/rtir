@@ -24,10 +24,9 @@
 %# END LICENSE BLOCK
 <FORM METHOD="GET">
 <INPUT TYPE=HIDDEN NAME="Bookmark" VALUE="<% $session{'tickets'}->FreezeLimits()|u %>">
-<input type=hidden name=QueueOp value=<%$ARGS{'QueueOp'}%>>
-<input type=hidden name=ValueOfQueue value=<%$ARGS{'ValueOfQueue'}%>>
+<input type=hidden name=Queue value="<%$ARGS{'Queue'}%>">
 <& /Elements/TitleBoxStart, title => loc('Refine search')&>
-<input type=hidden name="id" value=<%$ARGS{'id'}%>>
+<input type=hidden name="id" value="<%$ARGS{'id'}%>">
 <INPUT TYPE=HIDDEN NAME="CompileRestriction" VALUE=1>
 
 <ul>

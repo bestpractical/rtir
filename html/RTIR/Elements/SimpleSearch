@@ -21,7 +21,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<form action="<% $RT::WebPath %>/RTIR/Incident/Listing.html">
+<form action="<% $RT::WebPath %>/RTIR/Listing.html?NewSearch=1&Queue=Incidents">
 <input size="12" name="q" accesskey="0">
 <input type="submit" value="<&|/l&>Search Incidents</&>">&nbsp;
 </form>

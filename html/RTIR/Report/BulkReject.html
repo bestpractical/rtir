@@ -26,7 +26,7 @@
     Title => $title, 
     Refresh => $session{'tickets_refresh_interval'} &>
 <& Elements/Tabs, 
-    current_tab => 'RTIR/Report/BulkReject.html', 
+    current_tab => 'RTIR/Report/BulkReject.html?ClearRestrictions=1', 
     Title => $title &>
 
 <& /RTIR/Elements/ListActions, actions => \@results &>
@@ -34,145 +34,98 @@
 <form method=get>
 <input type=hidden name=Status value=<%$Status%>>
 <input type=hidden name=BulkReject value=1>
-%if ($ticketcount) {
-<TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
-<& /RTIR/Elements/TicketHeader, check => "check", %ARGS &>
-% my $i;
-%while (my $Ticket = $session{'tickets'}->Next) {
-% $i++;
-<& /RTIR/Elements/TicketRow, Type => 'Report', Ticket => $Ticket, i=> $i, check => "check", %ARGS &>
-% }
-</TABLE>
-<div align=center>
-<font size=2>
-<a href="<%$RT::WebPath%><%$AssocPath%>?id=<%$id%>&GotoPage=1"><&|/l&>First page</&></a>
-&nbsp;&nbsp;
-%  if ( $session{'tickets'}->FirstRow >= $session{'tickets_rows_per_page'}-1 ) {
-<a href="<%$RT::WebPath%><%$AssocPath%>?id=<%$id%>&GotoPage=Prev">&lt;<&|/l&>Previous page</&></a>
-&nbsp;&nbsp;
-%  }                                                                           
-%  if ( $session{'tickets'}->FirstRow + $session{'tickets_rows_per_page'} < $ticketcount ) {                                                               
-<a href="<%$RT::WebPath%><%$AssocPath%>?id=<%$id%>&GotoPage=Next"><&|/l&>Next page</&>&gt;</a>
-%  }
 
-%#&nbsp;&nbsp;<form method=get action="<%$AssocPath%>"><&|/l&>Goto page</&> <input name=GotoPage size=2></form>
-</font>
-</div>
-<!--<div align=right>-->
-<table width="100%" border=0 cellpadding=3 CELLSPACING=1>
-<tr>
-<td align=left>
-(<&|/l, ($session{'tickets'}->FirstRow+1), ($session{'tickets'}->FirstRow() + $session{'tickets'}->RowsPerPage()  ) &>[_1] - [_2] shown</&>)
-</td>
-<td align=right>
-
-<!--</div>-->
-</td>
-</tr>
-</table>
-
-% }
-<HR>
+<& /RTIR/Elements/Listing, 
+    Type => 'Incident', Queue => 'Incidents', check => 'check', %ARGS &>
 
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => loc("Reject") &>
 </form>
 
 <HR>
-<TABLE WIDTH="100%">
-<TR>
-<TD VALIGN="TOP">
-<& /Elements/TitleBoxStart, title => loc('Current search criteria')&>
 
-<& /RTIR/Elements/SearchCriteria, Path => $AssocPath, %ARGS &>
-
-<& /Elements/TitleBoxEnd&>
-</TD>
-<TD>
-
-<& /RTIR/Elements/PickRestriction, Queue => $ARGS{'ValueOfQueue'}, %ARGS &>
-
-</TD>
-</TR>
-</TABLE>
+<& /RTIR/Elements/SearchFields, Path => 'BulkReject.html', 
+    Queue => $QueueObj->Name, %ARGS &>
 
 <%INIT>
 my $title = loc("Reject Incident Reports");
 my $SubmitCaption = loc("Reject selected incident reports");
 
-my $q = RT::Queue->new($session{'CurrentUser'});
-$q->Load("Incident Reports");
+my $QueueObj = RT::Queue->new($session{'CurrentUser'});
+$QueueObj->Load("Incident Reports");
 
 my $ticketcount;
 $session{'i'}++;
 if ($session{'tickets'}) {
     if ($ARGS{'DeleteRestriction'}) {
-	    $session{'tickets'}->DeleteRestriction($ARGS{'DeleteRestriction'});
+	$session{'tickets'}->DeleteRestriction($ARGS{'DeleteRestriction'});
     }
     if ( ($ARGS{'ClearRestrictions'}) || ($ARGS{'NewSearch'}) ) {
 	$session{'tickets'}->ClearRestrictions;
-	$ARGS{'QueueOp'}="=";
-	$ARGS{'ValueOfQueue'}=$q->Id;
-        my $fid;
-        my $CustomFields = $q->CustomFields();
+	$session{'tickets'}->LimitQueue(VALUE => $QueueObj->Name);
+        my $CustomFields = $QueueObj->CustomFields();
         $CustomFields->{'find_disabled_rows'} = 1;
         while (my $CustomField = $CustomFields->Next()) {
           if ($CustomField->Name eq '_RTIR_State') {
-            $fid = $CustomField->Id;
-            $session{'tickets'}->LimitCustomField(CUSTOMFIELD => $fid, VALUE => 'new');
+	      $session{'tickets'}->LimitCustomField(CUSTOMFIELD => $CustomField->Id, VALUE => 'new');
           }
         }
-    }
+    }	
 }
 
 ProcessSearchQuery(ARGS=>\%ARGS);
 $session{'tickets'}->RedoSearch();
-
-$ticketcount = $session{tickets}->Count();
+if ( $session{'tickets'}->DescribeRestrictions()) {
+    $ticketcount = $session{tickets}->Count();
+}
 
 # Iterate through the ARGS hash and remove anything with a null value.
 map ($ARGS{$_} =~ /^$/ && (delete $ARGS{$_}), keys %ARGS);
 
 Abort(loc("No search to operate on.")) unless ($session{'tickets'});
 
-my @results;
+my (@tempresults, @results);
 if ($ARGS{'BulkReject'}) {
-  #Iterate through each ticket we've been handed
-  while (my $t = $session{'tickets'}->Next) {
-    $RT::Logger->debug( "Checking Ticket ".$t->Id ."\n");
-    next unless ($ARGS{"UpdateTicket".$t->Id});
-      my $State = $m->scomp("/RTIR/Elements/ShowRTIRField", Ticket => $t, Name => 'State');
-      $State =~ s/\s+$//;
-      if ($State eq 'new') {
-        # If we don't own the thing we're linking to, change the owner
-        if ($t->OwnerObj->id != $session{'CurrentUser'}->id) {
-          if ($t->OwnerObj->id == $RT::Nobody->id) {
-            $ARGS{'Action'} = 'Take';
-          } else {
-            $ARGS{'Action'} = 'Steal';
-          } 
-          my $action = $ARGS{'Action'};
-          push @results, "Action: ".$ARGS{'Action'};
-          my ($res, $msg)=$t->$action();
-          push (@results, $msg);
-        }
-        my ($oldstate, $newstate);
-        $oldstate = $t->FirstCustomFieldValue('_RTIR_State');
-        push @results, ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$t);
-        $newstate = $t->FirstCustomFieldValue('_RTIR_State');
-        if ($newstate ne $oldstate) {
-          push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
-        }
-      } else {
-        push @results, loc("Cannot reject Incident Report #[_1].  Only new reports may be rejected.", $t->id);
-      }
-  }
+    #Iterate through each ticket we've been handed
+    while (my $t = $session{'tickets'}->Next) {
+	$RT::Logger->debug( "Checking Ticket ".$t->Id ."\n");
+	next unless ($ARGS{"UpdateTicket".$t->Id});
+	my $State = $m->scomp("/RTIR/Elements/ShowRTIRField", Ticket => $t, Name => 'State');
+	$State =~ s/\s+$//;
+	if ($State eq 'new') {
+	    # If we don't own the thing we're linking to, change the owner
+	    if ($t->OwnerObj->id != $session{'CurrentUser'}->id && 
+		$t->OwnerObj->id != $RT::Nobody->id) {
+		    @tempresults = loc("You may not reject tickets that belong to another user.");
+	    } else {
+		@tempresults = ();
+		if ($t->OwnerObj->id != $session{'CurrentUser'}->id &&
+		    $t->OwnerObj->id == $RT::Nobody->id) {
+		    $ARGS{'Action'} = 'Take';
+		    my $action = $ARGS{'Action'};
+		    push @tempresults, "Action: ".$ARGS{'Action'};
+		    my ($res, $msg)=$t->$action();
+		    push (@tempresults, $msg);
+		}
+		my ($oldstate, $newstate);
+		$oldstate = $t->FirstCustomFieldValue('_RTIR_State');
+		push @tempresults, ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$t);
+		$newstate = $t->FirstCustomFieldValue('_RTIR_State');
+		if ($newstate ne $oldstate) {
+		    push (@tempresults, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
+		}
+	    }
+	} else {
+	    push @tempresults, loc("Cannot reject Incident Report #[_1].  Only new reports may be rejected.", $t->id);
+	}
+	@tempresults = map { loc("Ticket [_1]: [_2]",$t->Id,$_) } @tempresults;
+	@results = (@results, @tempresults);
+    }
 }
 
 </%INIT>
 
 <%ARGS>
 $id => undef
-$AssocPath => '/RTIR/Report/BulkReject.html'
 $Status => 'rejected'
 </%ARGS>
 

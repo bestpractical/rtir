@@ -22,105 +22,70 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /RTIR/Elements/ListActions, actions => \@results &>
-
 <form action="Display.html" method=get>
 <input type=hidden name=id value=<%$id%>>
 <input type=hidden name=BulkLink value=1>
-%if ($ticketcount && !  $ARGS{'HideResults'}) {
-<TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
-<& /RTIR/Elements/TicketHeader, check => "check", %ARGS &>
-% my $i;
-%while (my $Ticket = $session{'tickets'}->Next) {
-% $i++;
-<& /RTIR/Elements/TicketRow, Type => $Type, Ticket => $Ticket, i=> $i, check => "check", %ARGS &>
-% }
-</TABLE>
-<div align=center>
-<font size=2>
-<a href="<%$AssocPath%>?id=<%$id%>&GotoPage=1"><&|/l&>First page</&></a>
-&nbsp;&nbsp;
-%  if ( $session{'tickets'}->FirstRow >= $session{'tickets_rows_per_page'}-1 ) {
-<a href="<%$AssocPath%>?id=<%$id%>&GotoPage=Prev">&lt;<&|/l&>Previous page</&></a>
-&nbsp;&nbsp;
-%  }                                                                           
-%  if ( $session{'tickets'}->FirstRow + $session{'tickets_rows_per_page'} < $ticketcount ) {                                                               
-<a href="<%$AssocPath%>?id=<%$id%>&GotoPage=Next"><&|/l&>Next page</&>&gt;</a>
-%  }
 
-%#&nbsp;&nbsp;<form method=get action="<%$AssocPath%>"><&|/l&>Goto page</&> <input name=GotoPage size=2></form>
-</font>
-</div>
-<!--<div align=right>-->
-<table width="100%" border=0 cellpadding=3 CELLSPACING=1>
-<tr>
-<td align=left>
-(<&|/l, ($session{'tickets'}->FirstRow+1), ($session{'tickets'}->FirstRow() + $session{'tickets'}->RowsPerPage()  ) &>[_1] - [_2] shown</&>)
-</td>
-<td align=right>
-
-<!--</div>-->
-</td>
-</tr>
-</table>
-
-% }
-<HR>
+<& /RTIR/Elements/Listing, 
+    Type => $Type, Queue => $Queue, check => 'check', %ARGS &>
 
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => loc("Link") &>
 </form>
 
 <HR>
-<TABLE WIDTH="100%">
-<TR>
-<TD VALIGN="TOP">
-<& /Elements/TitleBoxStart, title => loc('Current search criteria')&>
 
-<& /RTIR/Elements/SearchCriteria, Path => $AssocPath, %ARGS &>
-
-<& /Elements/TitleBoxEnd&>
-</TD>
-<TD>
-
-<& /RTIR/Elements/PickRestriction, Queue => $ARGS{'ValueOfQueue'}, %ARGS &>
-
-</TD>
-</TR>
-</TABLE>
+<& /RTIR/Elements/SearchFields, Path => $Path, %ARGS &>
 
 <%INIT>
+my ($Queue, @states);
+if ($Type eq "Report") {
+  $Queue = 'Incident Reports';
+  @states = ('new', 'open');
+} elsif ($Type eq "Investigation") {
+  $Queue = 'Investigations';
+  @states = ('open');
+} if ($Type eq "Block") {
+  $Queue = 'Blocks';
+  @states = ('pending activation', 'active', 'pending removal');
+}
+
+my $QueueObj = new RT::Queue($session{'CurrentUser'});
+$QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
+
 my ($title, $ticketcount);
 $session{'i'}++;
 if ($session{'tickets'}) {
     if ($ARGS{'DeleteRestriction'}) {
-	    $session{'tickets'}->DeleteRestriction($ARGS{'DeleteRestriction'});
+	$session{'tickets'}->DeleteRestriction($ARGS{'DeleteRestriction'});
     }
     if ( ($ARGS{'ClearRestrictions'}) || ($ARGS{'NewSearch'}) ) {
-	    $session{'tickets'}->ClearRestrictions;
-	}	
+	$session{'tickets'}->ClearRestrictions;
+	$session{'tickets'}->LimitQueue(VALUE => $QueueObj->Name);
+        my $CustomFields = $QueueObj->CustomFields();
+        $CustomFields->{'find_disabled_rows'} = 1;
+        while (my $CustomField = $CustomFields->Next()) {
+          if ($CustomField->Name eq '_RTIR_State') {
+	    foreach my $state (@states) {
+		$session{'tickets'}->LimitCustomField(CUSTOMFIELD => $CustomField->Id, VALUE => $state);
+	    }
+          }
+        }
+    }	
 }
-   ProcessSearchQuery(ARGS=>\%ARGS);
-   $session{'tickets'}->RedoSearch();
-   if ( $session{'tickets'}->DescribeRestrictions()) {
-       $ticketcount = $session{tickets}->Count();
-        $title = loc('Found [quant,_1,incident]', $ticketcount);
-    } else {
-        $title = loc("Find incidents");
-   }
 
-# Iterate through the ARGS hash and remove anything with a null value.
-map ($ARGS{$_} =~ /^$/ && (delete $ARGS{$_}), keys %ARGS);
-
-my ($bgcolor, @results);
-my @cols = qw(id Status Priority Subject QueueObj->Name OwnerObj->Name RequestorAddresses DueAsString );
-
-Abort(loc("No search to operate on.")) unless ($session{'tickets'});
-
+ProcessSearchQuery(ARGS=>\%ARGS);
+$session{'tickets'}->RedoSearch();
+if ( $session{'tickets'}->DescribeRestrictions()) {
+    $ticketcount = $session{tickets}->Count();
+    $title = loc('Found [quant,_1,_2]', $ticketcount, $Type);
+} else {
+    $title = loc("Find [_1]", $Type);
+}
 </%INIT>
 
 <%ARGS>
 $id => undef
 $SubmitCaption => loc("Link Tickets")
-$AssocPath => "/RTIR/Incident/LinkReports.html"
+$Path => "/RTIR/Incident/LinkReports.html"
 $Type => undef
 </%ARGS>

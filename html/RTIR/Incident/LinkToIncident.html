@@ -31,95 +31,58 @@
 
 <form action='Display.html' method=get>
 <input type=hidden name=child value=<%$id%>>
-%if ($ticketcount && !  $ARGS{'HideResults'}) {
-<TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
-<& /RTIR/Elements/TicketHeader, check => "radio", Type => 'Incident', %ARGS &>
-% my $i;
-%while (my $Ticket = $session{'tickets'}->Next) {
-% $i++;
-<& /RTIR/Elements/TicketRow, Type => 'Incident', Ticket => $Ticket, i=> $i, check => "radio", %ARGS &>
-% }
-</TABLE>
-<div align=center>
-<font size=2>
-<a href="LinkToIncident.html?id=<%$id%>&GotoPage=1"><&|/l&>First page</&></a>
-&nbsp;&nbsp;
-%  if ( $session{'tickets'}->FirstRow >= $session{'tickets_rows_per_page'}-1 ) {
-<a href="LinkToIncident.html?id=<%$id%>&GotoPage=Prev">&lt;<&|/l&>Previous page</&></a>
-&nbsp;&nbsp;
-%  }                                                                           
-%  if ( $session{'tickets'}->FirstRow + $session{'tickets_rows_per_page'} < $ticketcount ) {                                                               
-<a href="LinkToIncident.html?id=<%$id%>&GotoPage=Next"><&|/l&>Next page</&>&gt;</a>
-%  }
 
-%#&nbsp;&nbsp;<form method=get action="LinkToIncident.html"><&|/l&>Goto page</&> <input name=GotoPage size=2></form>
-</font>
-</div>
-<!--<div align=right>-->
-<table width="100%" border=0 cellpadding=3 CELLSPACING=1>
-<tr>
-<td align=left>
-(<&|/l, ($session{'tickets'}->FirstRow+1), ($session{'tickets'}->FirstRow() + $session{'tickets'}->RowsPerPage()  ) &>[_1] - [_2] shown</&>)
-</td>
-<td align=right>
-
-<!--</div>-->
-</td>
-</tr>
-</table>
-
-% }
-<HR>
+<& /RTIR/Elements/Listing, 
+    Type => 'Incident', Queue => 'Incidents', check => 'radio', %ARGS &>
 
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => loc("Link") &>
 </form>
 
 <HR>
-<TABLE WIDTH="100%">
-<TR>
-<TD VALIGN="TOP">
-<& /Elements/TitleBoxStart, title => loc('Current search criteria')&>
 
-<& /RTIR/Elements/SearchCriteria, Path => "/RTIR/Incident/LinkToIncident.html", %ARGS &>
-
-<& /Elements/TitleBoxEnd&>
-</TD>
-<TD>
-
-<& /RTIR/Elements/PickRestriction, Queue => $q->id, %ARGS &>
-
-</TD>
-</TR>
-</TABLE>
+<& /RTIR/Elements/SearchFields, Path => 'LinkToIncident.html', 
+    Queue => $QueueObj->Name, %ARGS &>
 
 <%INIT>
 my $ChildObj = LoadTicket($id);
 my $SubmitCaption = loc("Link #[_1] with selected Incident", $ChildObj->id);
 
-my $q = RT::Queue->new($session{'CurrentUser'});
-$q->Load('Incidents');
+my $QueueObj = new RT::Queue($session{'CurrentUser'});
+$QueueObj->Load('Incidents') || Abort(loc("Queue could not be loaded."));
 
-$ARGS{'QueueOp'}="=";
-$ARGS{'ValueOfQueue'}=$q->Id;
+my $name;
+if ($ChildObj->QueueObj->Name eq "Incident Reports") {
+    $name = "Incident Report";
+} elsif ($ChildObj->QueueObj->Name eq "Investigations") {
+    $name = "Investigation";
+} elsif ($ChildObj->QueueObj->Name eq "Blocks") {
+    $name = "Block";
+}
 
 my ($title, $ticketcount);
 $session{'i'}++;
 if ($session{'tickets'}) {
     if ($ARGS{'DeleteRestriction'}) {
-	    $session{'tickets'}->DeleteRestriction($ARGS{'DeleteRestriction'});
+	$session{'tickets'}->DeleteRestriction($ARGS{'DeleteRestriction'});
     }
     if ( ($ARGS{'ClearRestrictions'}) || ($ARGS{'NewSearch'}) ) {
-	    $session{'tickets'}->ClearRestrictions;
-	}	
+	$session{'tickets'}->ClearRestrictions;
+	$session{'tickets'}->LimitQueue(VALUE => $QueueObj->Name);
+        my $CustomFields = $QueueObj->CustomFields();
+        $CustomFields->{'find_disabled_rows'} = 1;
+        while (my $CustomField = $CustomFields->Next()) {
+          if ($CustomField->Name eq '_RTIR_State') {
+	      $session{'tickets'}->LimitCustomField(CUSTOMFIELD => $CustomField->Id, VALUE => 'open');
+          }
+        }
+    }	
 }
 
 ProcessSearchQuery(ARGS=>\%ARGS);
 $session{'tickets'}->RedoSearch();
 if ( $session{'tickets'}->DescribeRestrictions()) {
-  $ticketcount = $session{tickets}->Count();
-  $title = loc('Found [quant,_1,incident]', $ticketcount);
+    $ticketcount = $session{tickets}->Count();
 } else {
-  $title = loc("Find incidents");
 }
 
 # Iterate through the ARGS hash and remove anything with a null value.
@@ -130,7 +93,7 @@ my @cols = qw(id Status Priority Subject QueueObj->Name OwnerObj->Name Requestor
 
 Abort(loc("No search to operate on.")) unless ($session{'tickets'});
 
-#Iterate through each ticket we've been handed
+$title = loc("Link [_1] #[_2] to selected Incident", $name, $id);
 
 </%INIT>
 

@@ -98,25 +98,10 @@
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => $SubmitLabel &>
 </form>
 
-<br>
-<br>
+<HR>
 
-<TABLE WIDTH="100%">
-<TR>
-<TD VALIGN="TOP">
-<& /Elements/TitleBoxStart, title => loc('Current search criteria')&>
-
-<& /RTIR/Elements/SearchCriteria, Path => "/RTIR/Incident/Reply.html", %ARGS &>
-
-<& /Elements/TitleBoxEnd&>
-</TD>
-<TD>
-
-<& /RTIR/Elements/PickRestriction, ValueOfQueue => $Queue->Id, %ARGS &>
-
-</TD>
-</TR>
-</TABLE>
+<& /RTIR/Elements/SearchFields, Path => "/RTIR/Incident/Reply.html", 
+    Queue => $Queue->Name, %ARGS &>
 
 <%INIT>
 

@@ -22,18 +22,18 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-%if ($ticketcount && !  $ARGS{'HideResults'}) {
+%if ($session{tickets}->Count() && !  $ARGS{'HideResults'}) {
 <TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
 <& /RTIR/Elements/TicketHeader, %ARGS &>
 % my $i;
-%while (my $Ticket = $session{'tickets'}->Next) {
+% while (my $Ticket = $session{'tickets'}->Next) {
 % $i++;
 <& /RTIR/Elements/TicketRow, 
     Ticket => $Ticket, 
     i=> $i, 
     Type => $Type,
     %ARGS &>
-%}
+% }
 </TABLE>
 <div align=center>
 <font size=2>
@@ -43,7 +43,7 @@
 <a href="Listing.html?GotoPage=Prev">&lt;<&|/l&>Previous page</&></a>
 &nbsp;&nbsp;
 %  }                                                                           
-%  if ( $session{'tickets'}->FirstRow + $session{'tickets_rows_per_page'} < $ticketcount ) {                                                               
+%  if ( $session{'tickets'}->FirstRow + $session{'tickets_rows_per_page'} < $session{tickets}->Count() ) {                                                               
 <a href="Listing.html?GotoPage=Next"><&|/l&>Next page</&>&gt;</a>
 %  }
 %#&nbsp;&nbsp;<form method=get action="Listing.html"><&|/l&>Goto page</&> <input name=GotoPage size=2></form>
@@ -64,63 +64,12 @@
 </table>
 
 % }
-<TABLE WIDTH="100%">
-<TR>
-<TD VALIGN="TOP">
-<& /Elements/TitleBoxStart, title => loc('Current search criteria')&>
 
-<& /RTIR/Elements/SearchCriteria, Path => "/RTIR/".$Type."/Listing.html", %ARGS &>
-
-<& /Elements/TitleBoxEnd&>
-</TD>
-<TD>
-
-<& /RTIR/Elements/PickRestriction, Queue => $q->id, %ARGS &>
-
-</TD>
-</TR>
-</TABLE>
-
-<%INIT>
-
-my $q = RT::Queue->new($session{'CurrentUser'});
-
-if ($Type eq 'Incident') {
-  $q->Load("Incidents");
-} elsif ($Type eq 'Report') {
-  $q->Load("Incident Reports");
-} elsif ($Type eq 'Investigation') {
-  $q->Load("Investigations");
-} elsif ($Type eq 'Block') {
-  $q->Load("Blocks");
-}
-
-$ARGS{'QueueOp'}="=";
-$ARGS{'ValueOfQueue'}=$q->Id;
-
-my ($title, $ticketcount);
-$session{'i'}++;
-if ($session{'tickets'}) {
-    if ($ARGS{'DeleteRestriction'}) {
-	    $session{'tickets'}->DeleteRestriction($ARGS{'DeleteRestriction'});
-    }
-    if ( ($ARGS{'ClearRestrictions'}) || ($ARGS{'NewSearch'}) ) {
-	    $session{'tickets'}->ClearRestrictions;
-	}	
-}
-   ProcessSearchQuery(ARGS=>\%ARGS);
-   $session{'tickets'}->RedoSearch();
-   if ( $session{'tickets'}->DescribeRestrictions()) {
-       $ticketcount = $session{tickets}->Count();
-        $title = loc('Found [quant,_1,$Type]', $ticketcount);
-    } else {
-        $title = loc("Find [_1]", $Type);
-   }
-</%INIT>
 <%CLEANUP>
 $session{'tickets'}->PrepForSerialization();
 </%CLEANUP>
 
 <%ARGS>
 $Type => undef
+$Queue => undef
 </%ARGS>

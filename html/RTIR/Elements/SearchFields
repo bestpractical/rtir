@@ -1,6 +1,6 @@
 %# BEGIN LICENSE BLOCK
 %# 
-%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
 %# 
 %# (Except where explictly superceded by other copyright notices)
 %# 
@@ -22,6 +22,11 @@
 %# 
 %# 
 %# END LICENSE BLOCK
+<TABLE WIDTH="100%">
+<TR>
+<TD VALIGN="TOP">
+<& /Elements/TitleBoxStart, title => loc('Current search criteria')&>
+
 % my $status;
 %my %restrictions=$session{'tickets'}->DescribeRestrictions();
 %foreach my $row (keys %restrictions){
@@ -40,14 +45,25 @@
 % } else {
 %   $status = "";
 % }
-<A HREF="<%$RT::WebPath.$Path%>?id=<%$id%><%$status%>&DeleteRestriction=<%$row%>">[<&|/l&>delete</&>]</a><br>
+<A HREF="<%$Path%>?id=<%$id%><%$status%>&DeleteRestriction=<%$row%>&Queue=<%$Queue%>">[<&|/l&>delete</&>]</a><br>
 % }
 %}
 <BR>
 <BR>
-<A HREF="<%$RT::WebPath.$Path%>?id=<%$id%><%$status%>&Bookmark=<%$session{'tickets'}->FreezeLimits()|u%>&TicketsSortBy=<%$session{'tickets_sort_by'}%>&TicketsSortOrder=<%$session{'tickets_sort_order'}%>&RowsPerPage=<%$session{'tickets_rows_per_page'}%>"><&|/l&>Bookmarkable URL for this search</&></a>
+<A HREF="<%$Path%>?id=<%$id%><%$status%>&Bookmark=<%$session{'tickets'}->FreezeLimits()|u%>&TicketsSortBy=<%$session{'tickets_sort_by'}%>&TicketsSortOrder=<%$session{'tickets_sort_order'}%>&RowsPerPage=<%$session{'tickets_rows_per_page'}%>&Queue=<%$Queue%>"><&|/l&>Bookmarkable URL for this search</&></a>
+
+<& /Elements/TitleBoxEnd&>
+</TD>
+<TD>
+
+<& /RTIR/Elements/PickRestriction, Queue => $Queue, %ARGS &>
+
+</TD>
+</TR>
+</TABLE>
 
 <%ARGS>
-$Path => '.'
 $id => undef
+$Queue => undef
+$Path => 'Listing.html'
 </%ARGS>

@@ -60,7 +60,7 @@
 
 <tr>
 <td colspan=5>
-<a href="<%$RT::WebPath%>/RTIR/Incident/Listing.html?ClearRestrictions=1&AttachmentField=Content&AttachmentFieldOp=LIKE&ValueOfAttachmentField=<%$q%>">
+<a href="<%$RT::WebPath%>/RTIR/Listing.html?ClearRestrictions=1&Queue=Incidents&AttachmentField=Content&AttachmentFieldOp=LIKE&ValueOfAttachmentField=<%$q%>">
 [<%loc("Refine Search")%>]</a></td>
 </tr>
 </table>

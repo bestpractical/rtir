@@ -25,8 +25,8 @@
 <& /RTIR/Elements/Header, Title => $Title &>
 <& '/RTIR/'.$Type.'/Elements/Tabs', 
     Ticket => $Ticket, 
-    current_tab => "RTIR/Merge.html?id=".$Ticket->Id, 
-    current_subtab => "RTIR/Merge.html?id=".$Ticket->Id, 
+    current_tab => "RTIR/Merge.html?NewSearch=1&id=".$Ticket->Id, 
+    current_subtab => "RTIR/Merge.html?NewSearch=1&id=".$Ticket->Id, 
     Title => $Title &>
 
 <& /RTIR/Elements/ListActions, actions => \@results &>
@@ -39,66 +39,17 @@
 <form action="Merge.html" method="post">
 <input type="hidden" name="id" value="<%$Ticket->id%>">
 <input type="hidden" name="<%$Ticket->Id%>-MergeInto">
-%if ($ticketcount && !  $ARGS{'HideResults'}) {
-<TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
-<& /RTIR/Elements/TicketHeader, check => "check", %ARGS &>
-% my $i;
-%while (my $Ticket = $session{'tickets'}->Next) {
-% next unless ($Ticket->Id ne $id);
-% $i++;
-<& /RTIR/Elements/TicketRow, Type => $Type, Ticket => $Ticket, i=> $i, check => "radio", %ARGS &>
-% }
-</TABLE>
-<div align=center>
-<font size=2>
-<a href="<%$RT::WebPath%>/RTIR/Merge.html?id=<%$id%>&GotoPage=1"><&|/l&>First page</&></a>
-&nbsp;&nbsp;
-%  if ( $session{'tickets'}->FirstRow >= $session{'tickets_rows_per_page'}-1 ) {
-<a href="<%$RT::WebPath%>/RTIR/Merge.html?id=<%$id%>&GotoPage=Prev">&lt;<&|/l&>Previous page</&></a>
-&nbsp;&nbsp;
-%  }                                                                           
-%  if ( $session{'tickets'}->FirstRow + $session{'tickets_rows_per_page'} < $ticketcount ) {                                                               
-<a href="<%$RT::WebPath%>/RTIR/Merge.html?id=<%$id%>&GotoPage=Next"><&|/l&>Next page</&>&gt;</a>
-%  }
 
-%#&nbsp;&nbsp;<form method=get action="<%$RT::WebPath%>/RTIR/Merge.html"><&|/l&>Goto page</&> <input name=GotoPage size=2></form>
-</font>
-</div>
-<!--<div align=right>-->
-<table width="100%" border=0 cellpadding=3 CELLSPACING=1>
-<tr>
-<td align=left>
-(<&|/l, ($session{'tickets'}->FirstRow+1), ($session{'tickets'}->FirstRow() + $session{'tickets'}->RowsPerPage()  ) &>[_1] - [_2] shown</&>)
-</td>
-<td align=right>
-
-<!--</div>-->
-</td>
-</tr>
-</table>
-
-% }
-
-<& /Elements/Submit, Caption=> loc('Merge into selected Ticket') &>
-</form>
+<& /RTIR/Elements/Listing, 
+    Type => 'Incident', Queue => 'Incidents', check => 'radio', %ARGS &>
 
 <HR>
-<TABLE WIDTH="100%">
-<TR>
-<TD VALIGN="TOP">
-<& /Elements/TitleBoxStart, title => loc('Current search criteria')&>
 
-<& /RTIR/Elements/SearchCriteria, Path => '/RTIR/Merge.html', %ARGS &>
+<& /Elements/Submit, Caption=> loc('Merge into selected Ticket'), Label => loc("Merge") &>
+</form>
 
-<& /Elements/TitleBoxEnd &>
-</TD>
-<TD>
-
-<& /RTIR/Elements/PickRestriction, Queue => $Ticket->QueueObj->Id, %ARGS &>
-
-</TD>
-</TR>
-</TABLE>
+<& /RTIR/Elements/SearchFields, Path => 'Merge.html', 
+    Queue => $Ticket->QueueObj->Name, %ARGS &>
 
 <%INIT>
 my $Ticket = LoadTicket($id);
@@ -106,42 +57,55 @@ my $Ticket = LoadTicket($id);
 my $Type = $m->scomp('Elements/Type', Ticket => $Ticket->Id);
 $Type =~ s/\s+$//;
 
-my $name;
-if ($Type eq 'Report') {
-  $name = "Incident Report";
-} else {
-  $name = $Type;
+my @states;
+my $name = $Type;
+if ($Type eq "Incident") {
+  @states = ('open');
+} elsif ($Type eq "Report") {
+  @states = ('new', 'open');
+  $name = 'Incident Report';
+} elsif ($Type eq "Investigation") {
+  @states = ('open');
+} elsif ($Type eq "Block") {
+  @states = ('pending activation', 'active', 'pending removal');
 }
 
-my ($title, $ticketcount);
+my $ticketcount;
 $session{'i'}++;
-my ($bgcolor, @results);
 if ($session{'tickets'}) {
     if ($ARGS{'DeleteRestriction'}) {
-	    $session{'tickets'}->DeleteRestriction($ARGS{'DeleteRestriction'});
+	$session{'tickets'}->DeleteRestriction($ARGS{'DeleteRestriction'});
     }
     if ( ($ARGS{'ClearRestrictions'}) || ($ARGS{'NewSearch'}) ) {
-	    $session{'tickets'}->ClearRestrictions;
-	}	
+	$session{'tickets'}->ClearRestrictions;
+	$session{'tickets'}->LimitQueue(VALUE => $Ticket->QueueObj->Name);
+
+	# we can't merge with ourself
+	$session{'tickets'}->LimitId(VALUE => $Ticket->Id, OPERATOR => '!=');
+
+        my $CustomFields = $Ticket->QueueObj->CustomFields();
+        $CustomFields->{'find_disabled_rows'} = 1;
+        while (my $CustomField = $CustomFields->Next()) {
+          if ($CustomField->Name eq '_RTIR_State') {
+	    foreach my $state (@states) {
+		$session{'tickets'}->LimitCustomField(CUSTOMFIELD => $CustomField->Id, VALUE => $state);
+	    }
+          }
+        }
+    }	
 }
-   ProcessSearchQuery(ARGS=>\%ARGS);
-   $session{'tickets'}->RedoSearch();
-   if ( $session{'tickets'}->DescribeRestrictions()) {
-       $ticketcount = $session{tickets}->Count();
-        $title = loc('Found [quant,_1,incident]', $ticketcount);
-    } else {
-        $title = loc("Find incidents");
-   }
+
+ProcessSearchQuery(ARGS=>\%ARGS);
+$session{'tickets'}->RedoSearch();
+if ( $session{'tickets'}->DescribeRestrictions()) {
+    $ticketcount = $session{tickets}->Count();
+}
 
 # Iterate through the ARGS hash and remove anything with a null value.
 map ($ARGS{$_} =~ /^$/ && (delete $ARGS{$_}), keys %ARGS);
 
-my @cols = qw(id Status Priority Subject QueueObj->Name OwnerObj->Name RequestorAddresses DueAsString );
-
-Abort(loc("No search to operate on.")) unless ($session{'tickets'});
-
 my $merge = $ARGS{'SelectedTicket'};
-my $MergeTicket;
+my ($MergeTicket, @results);
 
 if ($merge) {
   $ARGS{$id.'-MergeInto'} = $merge;

@@ -32,7 +32,7 @@
 <%INIT>
 
 my $tabs = {};
-my $current_toptab = 'RTIR/Block/Listing.html?NewSearch=1',
+my $current_toptab = 'RTIR/Listing.html?NewSearch=1&Queue=Blocks',
 my $actions;
 
 if ( $Ticket) {
@@ -123,7 +123,7 @@ if (    $Ticket->CurrentUserHasRight('ModifyTicket')
 }
 }
 
-$tabs->{"g"} = { path      => 'RTIR/Block/Listing.html',
+$tabs->{"g"} = { path      => 'RTIR/Listing.html?NewSearch=1&Queue=Blocks',
                  title     => loc('Search'),
                  separator => 1 };
 </%INIT>
