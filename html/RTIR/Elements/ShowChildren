@@ -42,6 +42,22 @@
   </td>
 </tr>
 % }
+% while (my $t = $ClosedTickets->Next) {
+% last if ($LimitDepth > 0 && $depth > $LimitDepth);
+% $depth++;
+<tr>
+  <td>
+% if ($Delete) {
+  <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$Ticket->Id%>-MemberOf-">
+% }
+% my $State = $m->scomp("/RTIR/Elements/ShowRTIRField", Ticket => $t, Name => 'State');
+  <a href="<%$RT::WebPath%>/RTIR/Display.html?id=<%$t->Id%>&Type=<%$Type%>"><%$t->Id%>: <%$t->Subject%></a> <i>(<%$State%>)</i>
+  </td>
+  <td align=right>
+    <font size="-1"><& ShowDate, date => $t->DueObj &></font>
+  </td>
+</tr>
+% }
 </table>
 % if ($depth eq 1 and $MyTickets->Count eq 0) {
 % if (defined $QueueName) {
@@ -76,6 +92,13 @@ $MyTickets->LimitStatus(VALUE => "new");
 $MyTickets->LimitStatus(VALUE => "open");
 $MyTickets->LimitStatus(VALUE => "stalled");
 $MyTickets->OrderBy(FIELD => 'Due', ORDER => 'ASC');
+
+my $ClosedTickets;
+$ClosedTickets = new RT::Tickets ($session{'CurrentUser'});
+$ClosedTickets->LimitQueue(VALUE => $QueueName);
+$ClosedTickets->LimitMemberOf($Ticket->Id);
+$ClosedTickets->LimitStatus(VALUE => "resolved");
+$ClosedTickets->OrderBy(FIELD => 'Resolved', ORDER => 'DESC');
 
 </%INIT>
 
