@@ -59,11 +59,12 @@
 <& Elements/ShowResults, 
    Query => $Query, 
    QueryString => $QueryString, 
-   %ARGS 
+   Format => $Format,
 &>
 
 <%INIT>
 my ($Type, @states) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
+$Format = $RT::RTIRSearchResultFormats->{$Type . 'Default'};
 
 my $title = loc("Results");
 

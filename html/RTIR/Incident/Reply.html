@@ -121,7 +121,7 @@
 </form>
 
 <%INIT>
-$Format = $RT::RTIRBulkReplyResultFormat;
+$Format = $RT::RTIRSearchResultFormats->{'BulkReply'};
 my $IncidentObj = LoadTicket($id);
 
 my ($title, $ticketcount, $found);

@@ -82,30 +82,98 @@ Set($_RTIR_Constituency_default, "EDUNET");
 Set($RTIR_OldestRelatedTickets, 60);
 
 # Default formats for RTIR search results
+Set($RTIRSearchResultFormats, {
+    ReportDefault => qq{'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+			'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
+			'__CustomField.Incident Reports.{_RTIR_State}__/Title:State',
+			__LastUpdatedRelative__,
+			__CreatedRelative__,
+			__NEWLINE__,
+			__Requestors__,
+			__OwnerName__,
+			__ToldRelative__,
+			__DueRelative__,
+			__TimeLeft__},
 
-Set ($RTIRMergeSearchResultFormat, qq{___RTIR_Radio__,
-'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
-__Requestors__,__OwnerName__,__CreatedRelative__,__DueRelative__});
+    ReportDefault => qq{'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+			'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
+			'__CustomField.Incident Reports.{_RTIR_State}__/Title:State',
+			__LastUpdatedRelative__,
+			__CreatedRelative__,
+			__NEWLINE__,
+			__Requestors__,
+			__OwnerName__,
+			__ToldRelative__,
+			__DueRelative__,
+			__TimeLeft__},
+    
+    InvestigationDefault => qq{'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+			       '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
+			       '__CustomField.Incident Reports.{_RTIR_State}__/Title:State',
+			       __LastUpdatedRelative__,
+			       __CreatedRelative__,
+			       __NEWLINE__,
+			       __Requestors__,
+			       __OwnerName__,
+			       __ToldRelative__,
+			       __DueRelative__,
+			       __TimeLeft__},
+    
+    BlockDefault => qq{'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+		       '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
+		       '__CustomField.Incident Reports.{_RTIR_State}__/Title:State',
+		       __LastUpdatedRelative__,
+		       __CreatedRelative__,
+		       __NEWLINE__,
+		       __Requestors__,
+		       __OwnerName__,
+		       __ToldRelative__,
+		       __DueRelative__,
+		       __TimeLeft__},
 
-Set ($RTIRLinkSearchResultFormat, qq{___RTIR_Check__,
-'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
-__Requestors__,__OwnerName__,__CreatedRelative__,__DueRelative__});
-
-Set ($RTIRLinkIncidentSearchResultFormat, qq{___RTIR_Radio__,
-'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
-__Requestors__,__OwnerName__,__CreatedRelative__});
-
-Set ($RTIRRejectSearchResultFormat, qq{___RTIR_Check__,
-'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
-__Requestors__,__OwnerName__,__CreatedRelative__,__DueRelative__});
-
-Set ($RTIRBulkReplyResultFormat, qq{___RTIR_Check__,
-'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
-__Requestors__,__OwnerName__,__CreatedRelative__,__DueRelative__});
+    IncidentDefault => qq{'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+			  '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
+			  '__CustomField.Incident Reports.{_RTIR_State}__/Title:State',
+			  __LastUpdatedRelative__,
+			  __CreatedRelative__,
+			  __Priority__,
+			  __NEWLINE__,
+			  __OwnerName__,
+			  __ToldRelative__,
+			  __DueRelative__,
+			  __TimeLeft__},
+    
+    Merge => qq{___RTIR_Radio__,
+		'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+		'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
+		__Requestors__,
+		__OwnerName__,
+		__CreatedRelative__,
+		__DueRelative__},
+    
+    LinkChildren => qq{___RTIR_Check__,
+		       '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+		       '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
+		       __Requestors__,
+		       __OwnerName__,
+		       __CreatedRelative__,
+		       __DueRelative__},
+    
+    LinkIncident => qq{___RTIR_Radio__,
+		       '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+		       '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
+		       __Requestors__,__OwnerName__,__CreatedRelative__},
+    
+    RejectReports, qq{___RTIR_Check__,
+		      '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+		      '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
+		      __Requestors__,__OwnerName__,__CreatedRelative__,__DueRelative__},
+    
+    BulkReply => qq{___RTIR_Check__,
+		    '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+		    '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
+		    __Requestors__,__OwnerName__,__CreatedRelative__,__DueRelative__}
+}
+    );
 
 1;

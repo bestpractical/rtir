@@ -64,7 +64,7 @@
 </form>
 
 <%INIT>
-$Format = $RT::RTIRMergeSearchResultFormat;
+$Format = $RT::RTIRSearchResultFormats->{'Merge'};
 
 my $Ticket = LoadTicket($id);
 my $Queue = $Ticket->QueueObj->Name;
@@ -112,7 +112,7 @@ my $path = "RTIR/Search/Refine.html?ResultPage=$BaseURL&current_tab=$current_tab
 <%ARGS>
 $BaseQuery => undef
 $Query => undef
-$Format => $RT::RTIRMergeSearchResultFormat
+$Format => undef 
 $HideResults => 0
 $Rows => 50
 $Page => 1

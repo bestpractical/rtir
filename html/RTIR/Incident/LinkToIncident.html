@@ -57,7 +57,7 @@
 <HR>
 
 <%INIT>
-$Format = $RT::RTIRLinkIncidentSearchResultFormat;
+$Format = $RT::RTIRSearchResultFormats->{'LinkIncident'};
 
 my ($Type, undef) = $m->comp('/RTIR/Elements/Type', Queue => 'Incidents');
 

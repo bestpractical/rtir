@@ -53,7 +53,7 @@
 my $IncidentObj = LoadTicket($id);
 my $SubmitCaption = loc("Link selected with Incident #[_1]", $IncidentObj->id);
 
-$Format = $RT::RTIRLinkSearchResultFormat;
+$Format = $RT::RTIRSearchResultFormats->{'LinkChildren'};
 
 my $TicketObj = new RT::Ticket($session{'CurrentUser'});
 $TicketObj->Load($id);
@@ -83,7 +83,6 @@ if ( $session{'tickets'}->Query()) {
     $title = loc("Link selected [_1] to Incident #[_2]", $Queue, $IncidentObj->Id);
 }
 
-$m->print("original Query: $Query<br>");
 if (!$Query) {
     $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
 }
