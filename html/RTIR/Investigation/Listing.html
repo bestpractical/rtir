@@ -80,13 +80,19 @@
 </TD>
 <TD>
 
-<& /RTIR/Elements/PickRestriction, %ARGS &>
+<& /RTIR/Elements/PickRestriction, Queue => $q->id, %ARGS &>
 
 </TD>
 </TR>
 </TABLE>
 
 <%INIT>
+
+my $q = RT::Queue->new($session{'CurrentUser'});
+$q->Load("Investigations");
+
+$ARGS{'QueueOp'}="=";
+$ARGS{'ValueOfQueue'}=$q->Id;
 
 my ($title, $ticketcount);
 $session{'i'}++;

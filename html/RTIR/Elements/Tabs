@@ -33,36 +33,24 @@
     title => $Title &>
 
 <%INIT>
-my $incidentq = RT::Queue->new($session{'CurrentUser'});
-$incidentq->Load('Incidents');
-
-my $investigationq = RT::Queue->new($session{'CurrentUser'});
-$investigationq->Load('Investigations');
-
-my $reportsq = RT::Queue->new($session{'CurrentUser'});
-$reportsq->Load('Incident Reports');
-
-my $blocksq = RT::Queue->new($session{'CurrentUser'});
-$blocksq->Load('Blocks');
-
 my $toptabs = { A => { title => loc('RT'),
                        path  => '', },
 		    B => { title => loc('RTIR Home'),
                            path => 'RTIR/index.html',
                          },
                     C => { title => loc('Incidents'),
-                        path => 'RTIR/Incident/Listing.html?NewSearch=1&QueueOp==&ValueOfQueue='.$incidentq->Id
+                        path => 'RTIR/Incident/Listing.html?NewSearch=1',
                       },
                     D => { title => loc('Incident Reports'),
-                        path => 'RTIR/Report/Listing.html?NewSearch=1&QueueOp==&ValueOfQueue='.$reportsq->Id,
+                        path => 'RTIR/Report/Listing.html?NewSearch=1',
                       },
                     E => { title => loc('Investigations'),
-                        path => 'RTIR/Investigation/Listing.html?NewSearch=1&QueueOp==&ValueOfQueue='.$investigationq->Id,
+                        path => 'RTIR/Investigation/Listing.html?NewSearch=1',
                       },
                     F => { title => loc('Blocks'),
-                        path => 'RTIR/Block/Listing.html?NewSearch=1&QueueOp==&ValueOfQueue='.$blocksq->Id,
+                        path => 'RTIR/Block/Listing.html?NewSearch=1',
                       },
-                    F => { title => loc('Tools'),
+                    G => { title => loc('Tools'),
                         path => 'RTIR/Tools/Lookup.html',
                       },
                     ZZ => { title => loc('Preferences'),

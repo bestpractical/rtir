@@ -24,9 +24,13 @@
 %# END LICENSE BLOCK
 <FORM METHOD="GET">
 <INPUT TYPE=HIDDEN NAME="Bookmark" VALUE="<% $session{'tickets'}->FreezeLimits()|u %>">
+<input type=hidden name=QueueOp value=<%$ARGS{'QueueOp'}%>>
+<input type=hidden name=ValueOfQueue value=<%$ARGS{'ValueOfQueue'}%>>
 <& /Elements/TitleBoxStart, title => loc('Refine search')&>
 <input type=hidden name="id" value=<%$ARGS{'id'}%>>
 <INPUT TYPE=HIDDEN NAME="CompileRestriction" VALUE=1>
+
+ValueOfQueue: <%$ARGS{'ValueOfQueue'}%><br>
 
 <ul>
 <li><&|/l&>Owner is</&>  <& /Elements/SelectBoolean, Name => "OwnerOp", 
@@ -64,8 +68,56 @@
 &> 
 <Input Name="ValueOfAttachmentField" Size=20>
 
-% while ( my $CustomField = $CustomFields->Next ) {
+%#% if ($QueueObj->Name eq 'Incidents') {
+%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+%#	Name => 'State' &>
+%#
+%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+%#	Name => 'Constituency' &>
+%#
+%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+%#	Name => 'Description' &>
+%#
+%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+%#	Name => 'SLA' &>
+%#
+%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+%#	Name => 'Type' &>
+%#% } elsif ($QueueObj->Name eq 'Incident Reports') {
+%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+%#	Name => 'State' &>
+%#
+%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+%#	Name => 'HowReported' &>
+%#
+%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+%#	Name => 'ReporterType' &>
+%#
+%#% } elsif ($QueueObj->Name eq 'Investigations') {
+%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+%#	Name => 'State' &>
+%#
+%#% } elsif ($QueueObj->Name eq 'Blocks') {
+%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+%#	Name => 'State' &>
+%#
+%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+%#	Name => 'IP',
+%#	Label => 'IP Address' &>
+%#
+%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+%#	Name => 'Netmask' &>
+%#
+%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+%#	Name => 'Port' &>
+%#
+%#<li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
+%#	Name => 'WhereBlocked',
+%#	Label => 'Where Blocked' &>
+%#
+%#% }
 
+% while ( my $CustomField = $CustomFields->Next ) {
 <li><% $CustomField->Name %> 
         <& /Elements/SelectCustomFieldOperator, Name => "CustomFieldOp". $CustomField->id, 
                                     True => loc("is"), 
@@ -75,6 +127,7 @@
 <& /Elements/SelectCustomFieldValue, Name => "CustomField".$CustomField->id,
                             CustomField => $CustomField,
                             &>
+
 % }
 
 </UL>
@@ -112,14 +165,11 @@
 
 
  <%INIT>
-my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
-$CustomFields->{'find_disabled_rows'} = 1;
- foreach ( $session{'tickets'}->RestrictionValues('Queue') ) {
-        $CustomFields->LimitToQueue($_);
- }
-
- $CustomFields->LimitToGlobal();
- $CustomFields->LimitToQueue($Queue);
+my $QueueObj = RT::Queue->new($session{'CurrentUser'});
+$QueueObj->Load($Queue);
+my $CustomFields = $QueueObj->CustomFields();
+$CustomFields->LimitToGlobal();
+$CustomFields->LimitToQueue($Queue);
 
 </%INIT>
 

@@ -34,9 +34,9 @@
 my $q = RT::Queue->new($session{'CurrentUser'});
 $q->Load('Investigations');
 my $tabs = {};
-my $current_toptab = "RTIR/Investigation/Listing.html?NewSearch=1&QueueOp==&ValueOfQueue=".$q->Id,
+my $current_toptab = "RTIR/Investigation/Listing.html?NewSearch=1",
     my $searchtabs = { new => { title => loc('New Search'),
-                                path => 'RTIR/Investigation/Listing.html?QueueOp==&ValueOfQueue='.$q->Id.'&ClearRestrictions=1'}
+                                path => 'RTIR/Investigation/Listing.html?ClearRestrictions=1'}
                         
 
 } ;
@@ -158,7 +158,7 @@ if (    $Ticket->CurrentUserHasRight('ModifyTicket')
 }
 }
 
-$tabs->{"g"} = { path      => 'RTIR/Investigation/Listing.html?QueueOp==&ValueOfQueue='.$q->Id,
+$tabs->{"g"} = { path      => 'RTIR/Investigation/Listing.html',
                  title     => loc('Search'),
                  separator => 1,
                  subtabs   => $searchtabs };

@@ -24,7 +24,7 @@
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
 <& Elements/Tabs, 
-    current_tab => 'RTIR/Incidents/Listing.html', 
+    current_tab => 'RTIR/Incident/Listing.html', 
     Title => $title &>
 
 %if ($ticketcount && !  $ARGS{'HideResults'}) {
@@ -76,7 +76,7 @@
 </TD>
 <TD>
 
-<& /RTIR/Elements/PickRestriction, %ARGS &>
+<& /RTIR/Elements/PickRestriction, Queue => $q->Id, %ARGS &>
 
 </TD>
 </TR>
