@@ -10,7 +10,7 @@ Set($OverdueAfter, 7);
 
 
 # Set the hash of whois servers
-Set($whois, {1 => "localhost", 2 => "whois.fucknsi.com"});
+Set($whois, {1 => "localhost", 2 => "whois-demo.bestpractical.com"});
 
 
 # Set the number of minutes for the SLA
