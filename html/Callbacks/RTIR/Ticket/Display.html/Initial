@@ -1,0 +1,30 @@
+<%INIT>
+my $Queue;
+if ($TicketObj) {
+    $Queue = $TicketObj->QueueObj->Name;
+} elsif (!$TicketObj && $ARGSRef{'id'}) {
+    $TicketObj = RT::Ticket->new($session{'CurrentUser'});
+    $TicketObj = LoadTicket($ARGSRef{'id'});
+    $Queue = $TicketObj->QueueObj->Name;
+} else {
+    my $QueueObj = RT::Queue->new($session{'CurrentUser'});
+    $QueueObj->Load($ARGSRef{'Queue'});
+    $Queue = $QueueObj->Name;
+}
+
+if ($Queue eq 'Incidents' ||
+    $Queue eq 'Incident Reports' ||
+    $Queue eq 'Investigations' ||
+    $Queue eq 'Blocks') {
+    
+    $m->print("Queue: $Queue<br>");
+    $m->comp('/RTIR/Display.html', %ARGSRef);
+    $m->abort();
+}
+
+</%INIT>
+
+<%ARGS>
+$TicketObj => undef
+%ARGSRef => undef
+</%ARGS>
