@@ -46,7 +46,9 @@ Installation instructions:
    require $RTIR_CONFIG_FILE
      || die ("Couldn't load RTIR config file '$RTIR_CONFIG_FILE'\n$@");
 
-8) Initialize the RTIR database by typing "make initdb".
+8) If you are installindg RTIR for the first time, initialize the RTIR
+   database by typing "make initdb".  Do not attempt to re-initialize
+   the database if you are upgrading.
 
 9) Stop and start your web server.
 
