@@ -46,7 +46,6 @@
 <& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
 <& '/RTIR/'.$Type.'/Elements/Tabs', 
     current_tab => "RTIR/Search/Results.html?Queue=$Queue$QueryString", 
-    current_subtab => "RTIR/Search/Results.html?Queue=$Queue$QueryString", 
     Title => $title,
     Format => $Format,
     Query => $Query,
@@ -101,6 +100,8 @@ my $QueryString = "&".$m->comp('/Elements/QueryString',
 if (!$BaseQuery) {
     $BaseQuery = $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
 }
+
+$Query = "$BaseQuery AND ( $Query )";
 
 </%INIT>
 
