@@ -26,7 +26,8 @@
 
 <& "/RTIR/".$Type."/Elements/Tabs", 
     Ticket => $Ticket, 
-    current_tab => 'RTIR/Display.html?id='.$id,
+    current_tab => 'RTIR/Display.html?id='.$Ticket->id,
+    current_subtab => 'RTIR/Display.html?id='.$Ticket->id,
     Title => $Title &>
 
 <& /Elements/ListActions, actions => \@Actions &>
