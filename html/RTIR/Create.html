@@ -172,7 +172,7 @@
 	      TicketObj => $TicketObj,
               QueueObj => $QueueObj, 
 	      Name => 'HowReported',
-	      Default => $RT::_RTIR_HowReported_default &>
+	      Default => $ARGS{'HowReported-Value'} || $RT::_RTIR_HowReported_default &>
           </td>
     <td class=labeltop>
       <%loc("Reporter Type")%>:
@@ -182,7 +182,7 @@
 	TicketObj => $TicketObj,
         QueueObj => $QueueObj, 
 	Name => 'ReporterType',
-	Default => $RT::_RTIR_ReporterType_default, &>
+	Default => $ARGS{'ReporterType-Value'} || $RT::_RTIR_ReporterType_default, &>
     </td>
         </tr>
       </table>
@@ -198,7 +198,7 @@
 	TicketObj => $TicketObj,
         QueueObj => $QueueObj, 
 	Name => 'IP',
-	Default => $RT::_RTIR_IP_default, &>
+	Default => $ARGS{'IP-Value'} || $RT::_RTIR_IP_default, &>
     </td>
   </tr>
   <tr>
@@ -209,7 +209,7 @@
       <& /RTIR/Elements/EditRTIRField, 
 	TicketObj => $TicketObj,
         QueueObj => $QueueObj, Name => 'Netmask',
-	Default => $RT::_RTIR_Netmask_default, &>
+	Default => $ARGS{'Netmask-Value'} || $RT::_RTIR_Netmask_default, &>
     </td>
   </tr>
   <tr>
@@ -220,7 +220,7 @@
       <& /RTIR/Elements/EditRTIRField, 
 	TicketObj => $TicketObj,
         QueueObj => $QueueObj, Name => 'Port',
-	Default => $RT::_RTIR_Port_default, &>
+	Default => $ARGS{'Port-Value'} || $RT::_RTIR_Netmask_default, &>
     </td>
   </tr>
   <tr>
@@ -231,7 +231,7 @@
       <& /RTIR/Elements/EditRTIRField, 
 	TicketObj => $TicketObj,
         QueueObj => $QueueObj, Name => 'WhereBlocked',
-	Default => $RT::_RTIR_WhereBlocked_default, &>
+	Default => $ARGS{'WhereBlocked-Value'} || $RT::_RTIR_WhereBlocked_default, &>
     </td>
   </tr>
 % }

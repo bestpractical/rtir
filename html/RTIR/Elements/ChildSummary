@@ -60,8 +60,7 @@ Queue: <%$Queue%><br>
 % }
 <tr>
 <td colspan=5>
-<a href="<%$RT::WebPath%>/RTIR/<%$Type%>/Listing.html?ClearRestrictions=1&AttachmentField=Content&AttachmentFieldOp=LIKE&ValueOfAttachmentField=<%$q%>">
-[<%loc("Refine Search")%>]</a>
+[<a href="<%$RT::WebPath%>/RTIR/<%$Type%>/Listing.html?ClearRestrictions=1&AttachmentField=Content&AttachmentFieldOp=LIKE&ValueOfAttachmentField=<%$q%>"><%loc("Refine Search")%></a>]
 % if ($Type eq 'Incident') {
 % my $linkfile;
 %   if ($Queue eq 'Incident Reports') {
@@ -72,10 +71,12 @@ Queue: <%$Queue%><br>
 %     $linkfile="LinkBlocks.html";
 %   }
 % if ($linkfile) {
-<a href="<%$RT::WebPath%>/RTIR/Incident/<%$linkfile%>?ClearRestrictions=1&AttachmentField=Content&AttachmentFieldOp=LIKE&ValueOfAttachmentField=<%$q%>&StatusOp==&ValueOfStatus=new&id=<%$ticket%>">[<%loc("Bulk Link")%>]</a>
+[<a href="<%$RT::WebPath%>/RTIR/Incident/<%$linkfile%>?ClearRestrictions=1&AttachmentField=Content&AttachmentFieldOp=LIKE&ValueOfAttachmentField=<%$q%>&StatusOp==&ValueOfStatus=new&id=<%$ticket%>"><%loc("Bulk Link")%></a>]
 % }
 %   if ($Queue eq 'Investigations' and $lookuptype eq 'email') {
-<br><a href="<%$RT::WebPath%>/RTIR/Create.html?Incident=<%$ticket%>&Requestors=<%$q%>&Queue=Investigations">[<%loc("Launch new: [_1]", $q)%>]</a>
+<br>[<a href="<%$RT::WebPath%>/RTIR/Create.html?Incident=<%$ticket%>&Requestors=<%$q%>&Queue=Investigations"><%loc("Launch new: [_1]", $q)%></a>]
+%   } elsif ($Queue eq 'Blocks' and $lookuptype eq 'ip') {
+<br>[<a href="<%$RT::WebPath%>/RTIR/Create.html?Incident=<%$ticket%>&Queue=Blocks&IP-Value=<%$q%>"><%loc("New Block: [_1]", $q)%></a>]
 %   }
 % }
 </td>

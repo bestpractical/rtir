@@ -21,6 +21,15 @@ my %cb =
 #     $type = substr $type,1;
      return qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}q=${value}">$value</A>];
    },
+   ip => 
+   sub {
+     my ($type,$value) = @_;
+     my $result = qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=ip&q=${value}">$value</A>];
+     if ($incident) {
+       $result .= qq[ [<A HREF="$RT::WebPath/RTIR/Create.html?Incident=$incident&Queue=Blocks&IP-Value=$value">Block</A>] ];
+     }
+     return $result;
+   },
    ipdecimal =>
    sub {
      my ($type,$value) = @_;
@@ -33,15 +42,20 @@ my %cb =
        my $d = hex( substr( $hostnum, 6, 2 ) );
        "$a.$b.$c.$d";
      };
-     return qq[$value <A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=ip&q=$host">($host)</A>];
+   my $result;
+   $result = qq[$value <A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=ip&q=$host">($host)</A>];
+   if ($incident) {
+      $result .= qq[[<A HREF="$RT::WebPath/RTIR/Create.html?Incident=$incident&Queue=Blocks&IP-Value=$host">Block</A>] ];
+   }
+   return $result;
    },
    email =>
    sub {
      my ($type,$value) = @_;
      my ($pre,$post) = split /@/,$value,2;
-     my $result .= qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=email&q=$value">$value</A> ];
+     my $result = qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=email&q=$value">$value</A> ];
 if ($incident) {
-      $result .= qq[<A HREF="$RT::WebPath/RTIR/Create.html?Incident=$incident&Queue=Investigations&Requestors=$value">[Investigate to]</A> ];
+      $result .= qq[[<A HREF="$RT::WebPath/RTIR/Create.html?Incident=$incident&Queue=Investigations&Requestors=$value">Investigate to</A>] ];
 }
       $result .= qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=host&q=$post">($post)</A>];
    },
@@ -61,7 +75,8 @@ if ($incident) {
    host =>
    sub {
      my ($type,$value) = @_;
-     return qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=host&q=$value">$value</A>];
+     my $result =  qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=host&q=$value">$value</A>];
+     return $result;
    },
   );
 
@@ -69,7 +84,7 @@ if ($incident) {
 my %types =
   (
    Ahttpurl	=> [ $RE{URI}{HTTP}{-keep}{-scheme => 'https?'}, $cb{url}],
-   Bip		=> [ q[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}] ],
+   Bip		=> [ q[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}], $cb{ip} ],
    Cipdecimal	=> [ q[\d{8,13}(?!=)], $cb{ipdecimal} ],
    Demail	=> [ q[(?:mailto:)?[\w\.\+-]+\@[\w\.-]+\.\w{2,3}], $cb{email}],
    Fdomain	=> [ q[(?:[\w-]+\.)+[a-z]{2,3}], $cb{host}  ],
