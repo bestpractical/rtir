@@ -31,7 +31,7 @@
 <FORM ACTION="Update.html" NAME="TicketUpdate" 
 	METHOD=POST enctype="multipart/form-data">
 <input type="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction} %>">
-<input type="hidden" name="Status" value="<% $ARGS{DefaultStatus} %>">
+<input type="hidden" name="DefaultStatus" value="<% $ARGS{DefaultStatus} %>">
 <input type="hidden" name="Action" value="<% $ARGS{Action} %>">
 <input type="hidden" name="Type" value="<% $ARGS{Type} %>">
 % if ($Type eq 'Report' and $ARGS{'DefaultStatus'} eq 'rejected') {
@@ -104,7 +104,6 @@ $ARGS{UpdateTimeWorked}%>"> <&|/l&>minutes</&>
 
 my $title;
 my $Ticket = LoadTicket($id);
-my $Status = $ARGS{DefaultStatus} if exists $ARGS{DefaultStatus};
 
 my $Type = $m->scomp('Elements/Type', Ticket => $Ticket->Id);
 $Type =~ s/\s+$//;
@@ -116,9 +115,18 @@ if ($Type eq 'Report') {
   $name = $Type;
 }
 
-if ($Status eq 'resolved') {
+
+unless($DefaultStatus){
+    $DefaultStatus=($ARGS{'Status'} ||$Ticket->Status());
+}
+
+if ($DefaultStatus =~ '^new$'){
+        $DefaultStatus='open';
+}
+
+if ($DefaultStatus eq 'resolved') {
     $title = loc("Resolve [_1] #[_2] ([_3])", $name, $Ticket->id, $Ticket->Subject);
-} elsif ($Status eq 'rejected') {
+} elsif ($DefaultStatus eq 'rejected') {
     $title = loc("Reject [_1] #[_2] ([_3])", $name, $Ticket->id, $Ticket->Subject);
 } else {
     $title = loc("Update [_1] #[_2] ([_3])", $name, $Ticket->id, $Ticket->Subject);
@@ -126,8 +134,6 @@ if ($Status eq 'resolved') {
 
 my $CanRespond = 0;
 my $CanComment = 0;
-
-$DefaultStatus = $Ticket->Status() unless ($DefaultStatus);
 
 # Things needed in the template - we'll do the processing here, just
 # for the convenience:
