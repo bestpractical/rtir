@@ -32,7 +32,7 @@ instruct:
 	@echo ""
 	@echo "Congratulations. RTIR has been installed. "
 	@echo ""
-	@echo "You must now edit the file $(RT_ROOT)/RT_SiteConfig.pm as described"
+	@echo "You must now edit the file $(RT_ROOT)/etc/RT_SiteConfig.pm as described"
 	@echo "in the README, then stop and start your web server."
 	@echo ""
 	@echo "After that, you need to initialize RTIR's database by running" 
