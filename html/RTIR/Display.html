@@ -30,7 +30,7 @@
     current_subtab => 'RTIR/Display.html?id='.$Ticket->id,
     Title => $Title &>
 
-<& /RTIR/Elements/ListActions, actions => \@Actions &>
+<& /Elements/ListActions, actions => \@Actions &>
 
 % if ($id != 'new' && $Ticket->QueueObj->Name ne $QueueObj->Name) {
 <%loc("This ticket isn't a [_1].", $Type)%>

@@ -29,7 +29,7 @@
     current_subtab => 'RTIR/Display.html?id='.$Ticket->id,
     Title => loc("Incident #[_1]: [_2]", $Ticket->Id, $Ticket->Subject) &>
 
-<& /RTIR/Elements/ListActions, actions => \@Actions &>
+<& /Elements/ListActions, actions => \@Actions &>
 
 % if ($id != 'new' && $Ticket->QueueObj->Name ne "Incidents") {
 <&|/l&>This ticket isn't an Incident.</&>

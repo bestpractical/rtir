@@ -39,7 +39,7 @@
    QueryString => $QueryString,
 &>
 
-<& /RTIR/Elements/ListActions, actions => \@results &>
+<& /Elements/ListActions, actions => \@results &>
 
 % if (!$Ticket->CurrentUserHasRight('ModifyTicket')) {
 <%loc("You are not allowed to merge this [_1].", $Type)%>

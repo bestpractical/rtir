@@ -29,7 +29,7 @@
     current_subtab => "RTIR/Edit.html?id=".$Ticket->Id, 
     Title => $Title &>
 
-<& /RTIR/Elements/ListActions, actions => \@results &>
+<& /Elements/ListActions, actions => \@results &>
 
 % if (!$Ticket->CurrentUserHasRight('ModifyTicket')) {
 <%loc("You are not allowed to edit this [_1].", $name)%>

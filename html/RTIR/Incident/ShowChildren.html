@@ -29,7 +29,7 @@
     current_tab => 'RTIR/Incident/ShowChildren.html?Queue=' . $Queue . 'id='.$Incident->id,
     Title => $Title &>
 
-<& /RTIR/Elements/ListActions, actions => \@results &>
+<& /Elements/ListActions, actions => \@results &>
 
 <h2><% loc('Total [_1]: [_2]', $Queue, $count) %></h2>
 <form action="ShowChildren.html" method="post">

@@ -30,7 +30,7 @@
     Title => loc("Edit Incident #[_1]: [_2]", 
     $Ticket->Id, $Ticket->Subject) &>
 
-<& /RTIR/Elements/ListActions, actions => \@results &>
+<& /Elements/ListActions, actions => \@results &>
 
 % if (!$Ticket->CurrentUserHasRight('ModifyTicket')) {
 <&|/l&>You are not allowed to edit this Incident.</&>
