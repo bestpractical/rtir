@@ -77,12 +77,13 @@
     <td class=input>
       <input size=30 name="q" value="<%$q%>"> at 
       <select name="server">
-% foreach my $s (%{$servers}) {
+% foreach my $s (sort keys %{$servers}) {
+% next unless $servers->{$s};
 % my $selected = "";
-% if ($s eq $server) {
+% if ($servers->{$s} eq $server) {
 %   $selected = " SELECTED";
 % }
-        <option value="<%$s%>"<%$selected%>><%$s%></option>
+        <option value="<%$servers->{$s}%>"<%$selected%>><%$servers->{$s}%></option>
 % }
       </select>
     </td>
@@ -134,10 +135,10 @@ parse this data.
 % }
 
 <%init>
-foreach my $s (%$servers) {
+foreach my $s (sort keys %$servers) {
   # just pick the first one
-  $server = $s unless ($server);
-  last
+  $server = $servers->{$s} unless ($server);
+  last;
 }
 
 use Net::Whois::RIPE;
