@@ -134,14 +134,17 @@ parse this data.
 % }
 
 <%init>
-foreach my $s (%{$servers}) {
-  $server = $s
+foreach my $s (%$servers) {
+  # just pick the first one
+  $server = $s unless ($server);
+  last
 }
+
 use Net::Whois::RIPE;
 my $query = Net::Whois::RIPE->new($server);
 my ($iterator, $error);
 if ($query) {
-     $iterator = $query->query_iterator($q);
+    $iterator = $query->query_iterator($q);
 } else {
     $error = "Unable to connect to whois server '$server'";
 }

@@ -32,10 +32,6 @@
     <TD class="value"><% $Ticket->StartsObj->AsString %></TD>
   </TR>
   <TR>
-    <TD class="label"><&|/l&>Started</&>:</TD>
-    <TD class="value"><% $Ticket->StartedObj->AsString %></TD>
-  </TR>
-  <TR>
     <TD class="label"><&|/l&>Due</&>:</TD>
     <TD class="value"><% $Ticket->DueObj->AsString  %></TD>
   </TR>

@@ -78,7 +78,7 @@
       <&|/l&>Cc</&>:
     </TD>
     <TD class=value COLSPAN=5>
-      <INPUT Name="Cc" Value="<%($ARGS{Cc}) || $session{CurrentUser}->EmailAddress%>" SIZE=40>
+      <INPUT Name="Cc" Value="<%($ARGS{Cc})%>" SIZE=40>
       <i><font size=-2>
       <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)</&></font></i>
     </TD>

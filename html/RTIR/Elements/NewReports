@@ -29,7 +29,7 @@
 <TH ALIGN=LEFT><&|/l&>Subject</&></TH>
 <TH ALIGN=LEFT><&|/l&>State</&></TH>
 <TH ALIGN=LEFT><&|/l&>Owner</&></TH>
-<TH ALIGN=LEFT><&|/l&>Due</&></TH>
+<TH ALIGN=LEFT><&|/l&>Created</&></TH>
 <TH ALIGN=LEFT>&nbsp;</TH>
 </TR>
   <TR>    
@@ -65,7 +65,7 @@
 <%$Ticket->OwnerObj->Name%>
 </TD>
 <TD>
-<& ShowDate, date => $Ticket->DueObj &>
+<% $Ticket->CreatedObj->AsString %>
 </TD>
 <TD ALIGN=RIGHT>
 % if ($Ticket->Owner == $session{CurrentUser}->id) {

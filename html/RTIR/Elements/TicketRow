@@ -34,7 +34,7 @@ CLASS="evenline"
 <TD><small><%$Ticket->Requestors->MemberEmailAddressesAsString%></small></TD>
 <TD><%$Ticket->Owner == $RT::Nobody->Id ? loc('Nobody') : $Ticket->OwnerObj->Name%></TD>
 <TD><SMALL><%$Ticket->ToldObj->AgeAsString || '-'%></SMALL></TD>
-<TD><SMALL><%$Ticket->DueObj->AsString || '-'%></SMALL></TD>
+<TD><SMALL><& /RTIR/Elements/ShowDate, date => $Ticket->DueObj &></SMALL></TD>
 <TD><SMALL><%$Ticket->TimeLeft%></SMALL></TD>
 </TR>
 </SPAN>
