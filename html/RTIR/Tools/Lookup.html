@@ -177,10 +177,16 @@ my $current_subtab;
 my $TicketType;
 my $TicketObj;
 #  {{{ Set up the whois query
-foreach my $s (sort keys %$servers) {
-  # just pick the first one
-  $server = $servers->{$s} unless ($server);
-  last;
+if (!$server) {
+  foreach my $s (sort keys %$servers) {
+    # just pick the first one
+    if (ref($servers->{$s}) eq 'HASH') {
+        $server = $servers->{$s}->{'Host'} unless ($server);
+    } else {
+        $server = $servers->{$s} unless ($server);
+    }
+    last;
+  }
 }
 
 $beauty = ( exists($beauties->{ ({ reverse %$servers }->{$server}) })
