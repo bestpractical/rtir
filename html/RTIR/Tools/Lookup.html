@@ -34,7 +34,7 @@
 
 <TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
 <& /Elements/TicketList, 
-    SingleRecord => $TicketObj,
+    Query  => "id = ".$TicketObj->id,
     Format => $Format,
     &>
 </table>
