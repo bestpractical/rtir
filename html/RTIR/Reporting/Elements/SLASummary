@@ -86,7 +86,7 @@ foreach my $key ( keys %$class_tix ) {
 	
 	my $bizhours = Business::Hours->new();
 	if ($RT::BusinessHours) {
-	    $bizhours->business_hours($RT::BusinessHours);
+	    $bizhours->business_hours(%$RT::BusinessHours);
 	}
 	$bizhours->for_timespan( Start => $t->StartsObj->Unix, 
 				 End => $t->StartedObj->Unix );
