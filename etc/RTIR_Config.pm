@@ -17,10 +17,6 @@ Set($whois, { 1 => { Host => "localhost", },
 	  },
     );
 
-# Beautified hostnames
-Set($WhoisNames, {1 => "Internal Lookup",
-		  2 => "BPS Whois",
-	      } );
 
 # Set the name of the Business::SLA class
 # Use this if you have a custom SLA module
