@@ -233,6 +233,9 @@ custom action cleanup content in each of these queues to read
 }
 # ------------------------------------------------------------------- #
 
+9) In the Incidents, Incident Reports, Investigations, and Blocks
+Queues, give the DutyTeam group the "ShowTemplate" right.
+
 Upgrading from RTIR 1.0.0:
 --------------------------
 
