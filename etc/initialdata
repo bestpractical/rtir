@@ -265,6 +265,54 @@
     },
 );
 
+@ScripActions = (
+
+    {  Name        => 'Set Due to Now',    # loc
+       Description => 'Set the due date to the current time' ,                                            # loc
+       ExecModule => 'RTIR_SetDueToNow',
+    },
+    {  Name        => 'Set Starts to Now',    # loc
+       Description => 'Set the starts date to the current time' ,                                            # loc
+       ExecModule => 'RTIR_SetStartsToNow',
+    },
+    {  Name        => 'Set Due by SLA',    # loc
+       Description => 'Set the due date according to SLA' ,                                            # loc
+       ExecModule => 'RTIR_SetDueBySLA',
+    },
+    {  Name        => 'Set Due Correspond',    # loc
+       Description => 'Set the due date for correspondence' ,                                            # loc
+       ExecModule => 'RTIR_SetDueCorrespond',
+    },
+    {  Name        => 'Unset Due',    # loc
+       Description => 'Unset the due date' ,                                            # loc
+       ExecModule => 'RTIR_UnsetDue',
+    },
+    {  Name        => 'Set Starts by Business Hours',    # loc
+       Description => 'Set the starts date according to Business Hours' ,                                            # loc
+       ExecModule => 'RTIR_SetStartsByBizHours',
+    },
+    {  Name        => 'Set How Reported',    # loc
+       Description => 'Set how the Incident Report was reported' ,                                            # loc
+       ExecModule => 'RTIR_SetHowReported',
+    },
+    {  Name        => 'Resolve Children',    # loc
+       Description => "Resolve an Incident's children",                                            # loc
+       ExecModule => 'RTIR_ResolveChildren',
+    },
+    {  Name        => 'Change Child Ownership',    # loc
+       Description => "Change the ownership of Incident's children",                                            # loc
+       ExecModule => 'RTIR_ChangeChildOwnership',
+    },
+    {  Name        => 'Change Parent Ownership',    # loc
+       Description => 'Change the ownership of the parent Incident' ,                                            # loc
+       ExecModule => 'RTIR_ChangeParentOwnership',
+    },
+    {  Name        => 'Open Parent',    # loc
+       Description => 'Open the parent Incident when a child reopens' ,                                            # loc
+       ExecModule => 'RTIR_OpenParent',
+    },
+);
+
 @Scrips = (
     {  Description    => 'NotifyOnLaunch',
        Queue          => 'Investigations',
@@ -278,266 +326,208 @@
        Template       => 'NewMessage' },
     {  Description => "DetectUserResponse",
        Queue          => 'Incident Reports',
-       ScripCondition => 'On Correspond',
-       ScripAction      => 'User Defined',
-       CustomCommitCode => q[
+       ScripCondition => 'User Defined',
+       CustomIsApplicableCode => q[
 # ------------------------------------------------------------------- #
-if ($self->TicketObj->Owner ne $self->TransactionObj->Creator) {
-  my $date = RT::Date->new($RT::SystemUser);
-  $date->SetToNow;
-  $self->TicketObj->SetDue($date->ISO);
+if ($self->TransactionObj->Type eq 'Correspond' && 
+    $self->TicketObj->Owner ne $self->TransactionObj->Creator) {
+    return 1;
+} else {
+    return 0;
 }
-  return 1;
-# ------------------------------------------------------------------- #
-	],
-       CustomPrepareCode => '1',
+# ------------------------------------------------------------------- #	],
+       ScripAction      => 'Set Due to Now',
        Template       => 'Blank' },
     {  Description => "DetectUserResponse",
        Queue            => 'Investigations',
-       ScripCondition => 'On Correspond',
-       ScripAction      => 'User Defined',
-       CustomCommitCode => q[
+       ScripCondition => 'User Defined',
+       CustomIsApplicableCode => q[
 # ------------------------------------------------------------------- #
-if ($self->TicketObj->Owner ne $self->TransactionObj->Creator) {
-  my $date = RT::Date->new($RT::SystemUser);
-  $date->SetToNow;
-  $self->TicketObj->SetDue($date->ISO);
+if ($self->TransactionObj->Type eq 'Correspond' && 
+    $self->TicketObj->Owner ne $self->TransactionObj->Creator) {
+    return 1;
+} else {
+    return 0;
 }
-  return 1;
-# ------------------------------------------------------------------- #
-	],
-       CustomPrepareCode => '1',
+# ------------------------------------------------------------------- #	],
+       ScripAction      => 'Set Due to Now',
        Template       => 'Blank' },
     {  Description => "DetectUserResponse",
        Queue            => 'Blocks',
-       ScripCondition => 'On Correspond',
-       ScripAction      => 'User Defined',
-       CustomCommitCode => q[
+       ScripCondition => 'User Defined',
+       CustomIsApplicableCode => q[
 # ------------------------------------------------------------------- #
-if ($self->TicketObj->Owner ne $self->TransactionObj->Creator) {
-  my $date = RT::Date->new($RT::SystemUser);
-  $date->SetToNow;
-  $self->TicketObj->SetDue($date->ISO);
+if ($self->TransactionObj->Type eq 'Correspond' && 
+    $self->TicketObj->Owner ne $self->TransactionObj->Creator) {
+    return 1;
+} else {
+    return 0;
 }
-  return 1;
-# ------------------------------------------------------------------- #
-	],
-       CustomPrepareCode => '1',
+# ------------------------------------------------------------------- #	],
+       ScripAction      => 'Set Due to Now',
        Template       => 'Blank' },
     {  Description => "SetStartsDate",
        Queue            => 'Incidents',
        ScripCondition => 'On Create',
-       ScripAction      => 'User Defined',
-       CustomCommitCode => q[
-# ------------------------------------------------------------------- #
-if ($self->TicketObj->StartsObj->AsString eq "Not set") {
-  my $date = RT::Date->new($RT::SystemUser);
-  $date->SetToNow;
-  $self->TicketObj->SetStarts($date->ISO);
-}
-  return 1;
-# ------------------------------------------------------------------- #	],
+       ScripAction      => 'Set Starts to Now',
        CustomPrepareCode => '1',
        Template       => 'Blank' },
-    {  Description => "SetDates",
+    {  Description => "SetDue",
        Queue            => 'Incident Reports',
        ScripCondition => 'On Create',
-       ScripAction      => 'User Defined',
-       CustomCommitCode => q[
+       ScripAction      => 'Set Due by SLA',
+       Template       => 'Blank' },
+    {  Description => "SetStarts",
+       Queue            => 'Incident Reports',
+       ScripCondition => 'On Create',
+       ScripAction      => 'Set Starts by Business Hours',
+       Template       => 'Blank' },
+    {  Description => "SetStarts",
+       Queue            => 'Investigations',
+       ScripCondition => 'On Create',
+       ScripAction      => 'Set Starts by Business Hours',
+       Template       => 'Blank' },
+    {  Description => "SetStarts",
+       Queue            => 'Blocks',
+       ScripCondition => 'On Create',
+       ScripAction      => 'Set Starts by Business Hours',
+       Template       => 'Blank' },
+    {  Description => "SetDue",
+       Queue            => 'Investigations',
+       ScripCondition => 'On Create',
+       ScripAction      => 'Set Due Correspond',
+       Template       => 'Blank' },
+    {  Description => "SetDue",
+       Queue            => 'Blocks',
+       ScripCondition => 'On Create',
+       ScripAction      => 'Set Due Correspond',
+       Template       => 'Blank' },
+    {  Description => "UnsetDue",
+       Queue            => 'Incident Reports',
+       ScripCondition => 'User Defined',
+       CustomIsApplicableCode => q[
 # ------------------------------------------------------------------- #
-my $sla;
-my $date = RT::Date->new($RT::SystemUser);
-$date->SetToNow;
-use Business::Hours;
-my $bizhours = new Business::Hours;
-if ($RT::BusinessHours) {
-  $bizhours->business_hours(%$RT::BusinessHours);
-}
-
-if ($self->TicketObj->FirstCustomFieldValue('_RTIR_SLA')) {
-  $sla = $self->TicketObj->FirstCustomFieldValue('_RTIR_SLA');
-} elsif ($bizhours->first_after($date->Unix) != $date->Unix) {
-  $sla = "Full service: out of hours";
+if (($self->TransactionObj->Type eq "Status" or
+    ($self->TransactionObj->Type eq "Set" and 
+     $self->TransactionObj->Field eq "Status")) and
+     ($self->TransactionObj->NewValue eq 'rejected' ||
+      $self->TransactionObj->NewValue eq 'resolved')) {
+  return 1;
 } else {
-  $sla = "Full service";
+  return 0;
 }
-
-my $addminutes = $RT::SLA->{$sla};
-if ($self->TicketObj->StartsObj->AsString eq "Not set") {
-  my $starts = $bizhours->first_after($date->Unix);
-  $date->Set(Format => 'unix', Value => $starts);
-  $self->TicketObj->SetStarts($date->ISO);
-  my $due = $bizhours->add_seconds($date->Unix, $addminutes * 60);
-  $date->Set(Format => 'unix', Value => $due);
-  $self->TicketObj->SetDue($date->ISO);
-}
-my $cf = RT::CustomField->new($self->TransactionObj->CurrentUser);
-$cf->LoadByNameAndQueue(Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_SLA');
-unless ($cf->Id) { 
-    return(1);
-}
-$self->TicketObj->AddCustomFieldValue(Field => $cf->id, Value => $sla);
-return 1;
-# ------------------------------------------------------------------- #
-	],
-       CustomPrepareCode => '1',
-       Template       => 'Blank' },
-    {  Description => "SetDates",
-       Queue            => 'Investigations',
-       ScripCondition => 'On Create',
-       ScripAction      => 'User Defined',
-       CustomCommitCode => q[
-# ------------------------------------------------------------------- #
-my $date = RT::Date->new($RT::SystemUser);
-$date->SetToNow;
-if ($self->TicketObj->StartsObj->AsString eq "Not set") {
-  $self->TicketObj->SetStarts($date->ISO);
-}
-if ($self->TicketObj->DueObj->AsString eq "Not set") {
-  $date->AddDays($RT::OverdueAfter);
-  use Business::Hours;
-  my $bizhours = new Business::Hours;
-  if ($RT::BusinessHours) {
-    $bizhours->business_hours(%$RT::BusinessHours);
-  }
-  my $due = $bizhours->first_after($date->Unix);
-  $date->Set(Format => 'unix', Value => $due);
-  $self->TicketObj->SetDue($date->ISO);
-}
-  return 1;
-# ------------------------------------------------------------------- #	],
-       CustomPrepareCode => '1',
-       Template       => 'Blank' },
-    {  Description => "SetDates",
-       Queue            => 'Blocks',
-       ScripCondition => 'On Create',
-       ScripAction      => 'User Defined',
-       CustomCommitCode => q[
-# ------------------------------------------------------------------- #
-my $date = RT::Date->new($RT::SystemUser);
-$date->SetToNow;
-if ($self->TicketObj->StartsObj->AsString eq "Not set") {
-  $self->TicketObj->SetStarts($date->ISO);
-}
-if ($self->TicketObj->DueObj->AsString eq "Not set") {
-  $date->AddDays($RT::OverdueAfter);
-  use Business::Hours;
-  my $bizhours = new Business::Hours;
-  if ($RT::BusinessHours) {
-    $bizhours->business_hours(%$RT::BusinessHours);
-  }
-  my $due = $bizhours->first_after($date->Unix);
-  $date->Set(Format => 'unix', Value => $due);
-  $self->TicketObj->SetDue($date->ISO);
-}
-  return 1;
-# ------------------------------------------------------------------- #	],
-       CustomPrepareCode => '1',
+# ------------------------------------------------------------------- # ],
+       ScripAction      => 'Unset Due',
        Template       => 'Blank' },
     {  Description => "UnsetDue",
+       Queue            => 'Investigations',
+       ScripCondition => 'User Defined',
+       CustomIsApplicableCode => q[
+# ------------------------------------------------------------------- #
+if (($self->TransactionObj->Type eq "Status" or
+    ($self->TransactionObj->Type eq "Set" and 
+     $self->TransactionObj->Field eq "Status")) and
+     ($self->TransactionObj->NewValue eq 'rejected' ||
+      $self->TransactionObj->NewValue eq 'resolved')) {
+  return 1;
+} else {
+  return 0;
+}
+# ------------------------------------------------------------------- # ],
+       ScripAction      => 'Unset Due',
+       Template       => 'Blank' },
+    {  Description => "UnsetDue",
+       Queue            => 'Blocks',
+       ScripCondition => 'User Defined',
+       CustomIsApplicableCode => q[
+# ------------------------------------------------------------------- #
+if ($self->TransactionObj->Type eq "Status" or
+   ($self->TransactionObj->Type eq "Set" and 
+    $self->TransactionObj->Field eq "Status")) and
+    ($self->TransactionObj->NewValue eq 'open' ||
+     $self->TransactionObj->NewValue eq 'rejected' ||
+     $self->TransactionObj->NewValue eq 'resolved') {
+  return 1;
+} else {
+  return 0;
+}
+# ------------------------------------------------------------------- # ],
+       ScripAction      => 'Unset Due',
+       Template       => 'Blank' },
+    {  Description => "UnsetDue",
+       Queue            => 'Blocks',
+       ScripCondition => 'User Defined',
+       CustomIsApplicableCode => q[
+# ------------------------------------------------------------------- #
+if ($self->TransactionObj->Type eq "Status" or
+   ($self->TransactionObj->Type eq "Set" and 
+    $self->TransactionObj->Field eq "Status")) and
+    ($self->TransactionObj->NewValue eq 'stalled') {
+  return 1;
+} else {
+  return 0;
+}
+# ------------------------------------------------------------------- # ],
+       ScripAction      => 'Set Due Correspond',
+       Template       => 'Blank' },
+    {  Description => "SetDueReopen",
        Queue            => 'Incident Reports',
-       ScripCondition => 'On Status Change',
-       ScripAction      => 'User Defined',
-       CustomCommitCode => q[
+       ScripCondition => 'User Defined',
+       CustomIsApplicableCode => q[
 # ------------------------------------------------------------------- #
-my $date = RT::Date->new($RT::SystemUser);
-if ($self->TransactionObj->NewValue eq 'rejected' ||
-    $self->TransactionObj->NewValue eq 'resolved') {
-  $date->Set(Format => 'unix', Value=> 0);
-  $self->TicketObj->SetDue($date->ISO);
-} elsif ( ( $self->TransactionObj->OldValue eq 'rejected' ||
-            $self->TransactionObj->OldValue eq 'resolved') &&
-           $self->TransactionObj->NewValue eq 'open') {
-  $date->SetToNow;
-  use Business::Hours;
-  my $bizhours = new Business::Hours;
-  if ($RT::BusinessHours) {
-    $bizhours->business_hours(%$RT::BusinessHours);
-  }
-  my $due = $bizhours->first_after($date->Unix);
-  $date->Set(Format => 'unix', Value => $due);
-  $self->TicketObj->SetDue($date->ISO);
-}
+if (($self->TransactionObj->Type eq "Status" or
+    ($self->TransactionObj->Type eq "Set" and 
+     $self->TransactionObj->Field eq "Status")) and
+     (( $self->TransactionObj->OldValue eq 'rejected' ||
+        $self->TransactionObj->OldValue eq 'resolved') &&
+      $self->TransactionObj->NewValue eq 'open')) {
   return 1;
-# ------------------------------------------------------------------- #	],
-       CustomPrepareCode => '1',
+} else {
+  return 0;
+}
+# ------------------------------------------------------------------- # ],
+       ScripAction      => 'Set Due by SLA',
        Template       => 'Blank' },
-    {  Description => "UnsetDue",
+    {  Description => "SetDueReopen",
        Queue            => 'Investigations',
-       ScripCondition => 'On Status Change',
-       ScripAction      => 'User Defined',
-       CustomCommitCode => q[
+       ScripCondition => 'User Defined',
+       CustomIsApplicableCode => q[
 # ------------------------------------------------------------------- #
-my $date = RT::Date->new($RT::SystemUser);
-if ($self->TransactionObj->NewValue eq 'rejected' ||
-    $self->TransactionObj->NewValue eq 'resolved') {
-  $date->Set(Format => 'unix', Value=> 0);
-  $self->TicketObj->SetDue($date->ISO);
-} elsif ( ( $self->TransactionObj->OldValue eq 'rejected' ||
-            $self->TransactionObj->OldValue eq 'resolved') &&
-           $self->TransactionObj->NewValue eq 'open') {
-  $date->SetToNow;
-  use Business::Hours;
-  my $bizhours = new Business::Hours;
-  if ($RT::BusinessHours) {
-    $bizhours->business_hours(%$RT::BusinessHours);
-  }
-  my $due = $bizhours->first_after($date->Unix);
-  $date->Set(Format => 'unix', Value => $due);
-  $self->TicketObj->SetDue($date->ISO);
-}
-
-return 1;
-# ------------------------------------------------------------------- #	],
-       CustomPrepareCode => '1',
-       Template       => 'Blank' },
-    {  Description => "UnsetDue",
-       Queue            => 'Blocks',
-       ScripCondition => 'On Status Change',
-       ScripAction      => 'User Defined',
-       CustomCommitCode => q[
-# ------------------------------------------------------------------- #
-my $date = RT::Date->new($RT::SystemUser);
-if ($self->TransactionObj->NewValue eq 'open' ||
-    $self->TransactionObj->NewValue eq 'rejected' ||
-    $self->TransactionObj->NewValue eq 'resolved') {
-  $date->Set(Format => 'unix', Value=> 0);
-  $self->TicketObj->SetDue($date->ISO);
-} elsif ($self->TransactionObj->NewValue eq 'stalled') {
-  $date->SetToNow;
-  $date->AddDays($RT::OverdueAfter);
-  use Business::Hours;
-  my $bizhours = new Business::Hours;
-  if ($RT::BusinessHours) {
-    $bizhours->business_hours(%$RT::BusinessHours);
-  }
-  my $due = $bizhours->first_after($date->Unix);
-  $date->Set(Format => 'unix', Value => $due);
-  $self->TicketObj->SetDue($date->ISO);
-}
+if (($self->TransactionObj->Type eq "Status" or
+    ($self->TransactionObj->Type eq "Set" and 
+     $self->TransactionObj->Field eq "Status")) and
+     (( $self->TransactionObj->OldValue eq 'rejected' ||
+        $self->TransactionObj->OldValue eq 'resolved') &&
+      $self->TransactionObj->NewValue eq 'open')) {
   return 1;
-# ------------------------------------------------------------------- #	],
-       CustomPrepareCode => '1',
+} else {
+  return 0;
+}
+# ------------------------------------------------------------------- # ],
+       ScripAction      => 'Set Due by SLA',
+       Template       => 'Blank' },
+    {  Description => "SetDueReopen",
+       Queue            => 'Blocks',
+       ScripCondition => 'User Defined',
+       CustomIsApplicableCode => q[
+# ------------------------------------------------------------------- #
+if (($self->TransactionObj->Type eq "Status" or
+    ($self->TransactionObj->Type eq "Set" and 
+     $self->TransactionObj->Field eq "Status")) and
+     (( $self->TransactionObj->OldValue eq 'rejected' ||
+        $self->TransactionObj->OldValue eq 'resolved') &&
+      $self->TransactionObj->NewValue eq 'open')) {
+  return 1;
+} else {
+  return 0;
+}
+# ------------------------------------------------------------------- # ],
+       ScripAction      => 'Set Due by SLA',
        Template       => 'Blank' },
     {  Description => "SetHowReported",
        Queue            => 'Incident Reports',
        ScripCondition => 'On Create',
-       ScripAction      => 'User Defined',
-       CustomCommitCode => q[
-# ------------------------------------------------------------------- #
-my $cf = RT::CustomField->new($self->TransactionObj->CurrentUser);
-$cf->LoadByNameAndQueue(Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_HowReported');
-unless ($cf->Id) { 
-    return(1);
-}
-my $Values = $self->TicketObj->CustomFieldValues($cf->id);
-if (!$Values->Next) {
-  $self->TicketObj->AddCustomFieldValue(Field => $cf->id, Value => "Email");
-}
-  return 1;
-# ------------------------------------------------------------------- #
-	],
-       CustomPrepareCode => '1',
+       ScripAction      => 'Set How Reported',
        Template       => 'Blank' },
     {  Description => "SetRTIRState",
        Queue            => 'Blocks',
@@ -719,229 +709,42 @@ return 1;
     {  Description => "ResolveAllChildren",
        Queue            => 'Incidents',
        ScripCondition   => 'On Status Change',
-       ScripAction      => 'User Defined',
-       CustomCommitCode => q[
-# ------------------------------------------------------------------- #
-if ($self->TransactionObj->NewValue eq 'resolved' or 
-    $self->TransactionObj->NewValue eq 'rejected') {
-  my $members = $self->TicketObj->Members;
-  while (my $link = $members->Next) {
-    my $member= $link->BaseObj;
-    if ($member->QueueObj->Name eq 'Blocks' or
-        $member->QueueObj->Name eq 'Investigations' or
-        $member->QueueObj->Name eq 'Incident Reports') {
-      $member->Resolve();
-    }
-  }
-}
-# ------------------------------------------------------------------- #
-	],
-       CustomPrepareCode => '1',
+       ScripAction      => 'Resolve Children',
        Template          => 'Blank', },
     {  Description => "FixOwnership",
        Queue            => 'Incidents',
        ScripCondition   => 'On Owner Change',
-       ScripAction      => 'User Defined',
-       CustomCommitCode => q[
-# ------------------------------------------------------------------- #
-{
-  # change owner of child Incident Reports, Investigations, Blocks
-  while (my $link = $self->TicketObj->Members->Next) {
-    my $member= $link->BaseObj;
-    if ( ($member->QueueObj->Name eq 'Incident Reports' ||
-          $member->QueueObj->Name eq 'Investigations' ||
-          $member->QueueObj->Name eq 'Blocks' ) &&
-          $member->OwnerObj->id != $self->TransactionObj->NewValue) {
-      my ($res, $msg); 
-      my $user = new RT::CurrentUser($self->TransactionObj->CurrentUser);
-      $user->Load($self->TransactionObj->Creator);
-      my $t = new RT::Ticket($user);
-      $t->Load($member->id);
-      if ($self->TransactionObj->NewValue == $self->TransactionObj->Creator) {
-        if ($self->TransactionObj->CurrentUser->id == $RT::Nobody->id) {
-          ($res, $msg) = $t->Take();
-        } else {
-          ($res, $msg) = $t->Steal();
-	}
-      } else {
-          ($res, $msg) = $t->SetOwner($self->TransactionObj->NewValue);
-      }
-      $RT::Logger->debug("FixOwnership Scrip: ".$msg)
-    }
-  }
-  return 1;
-}
-# ------------------------------------------------------------------- #
-	],
-       CustomPrepareCode => '1',
+       ScripAction      => 'Change Child Ownership',
        Template          => 'Blank', },
     {  Description => "FixOwnership",
        Queue            => 'Incident Reports',
        ScripCondition   => 'On Owner Change',
-       ScripAction      => 'User Defined',
-       CustomCommitCode => q[
-# ------------------------------------------------------------------- #
-{
-  # change owner of parent Incident(s)
-  while (my $link = $self->TicketObj->MemberOf->Next) {
-    my $incident= $link->TargetObj;
-    if ( $incident->QueueObj->Name eq 'Incidents' &&
-         $incident->OwnerObj->id != $self->TransactionObj->NewValue) {
-      my ($res, $msg); 
-      my $user = new RT::CurrentUser($self->TransactionObj->CurrentUser);
-      $user->Load($self->TransactionObj->Creator);
-      my $t = new RT::Ticket($user);
-      $t->Load($incident->id);
-      if ($self->TransactionObj->NewValue == $self->TransactionObj->Creator) {
-          ($res, $msg) = $t->Steal();
-      } else {
-          ($res, $msg) = $t->SetOwner($self->TransactionObj->NewValue);
-      }
-      $RT::Logger->debug("FixOwnership Scrip: ".$msg)
-    }
-  }
-  return 1;
-}
-# ------------------------------------------------------------------- #
-	],
-       CustomPrepareCode => '1',
+       ScripAction      => 'Change Parent Ownership',
        Template          => 'Blank', },
     {  Description => "FixOwnership",
        Queue            => 'Investigations',
        ScripCondition   => 'On Owner Change',
-       ScripAction      => 'User Defined',
-       CustomCommitCode => q[
-# ------------------------------------------------------------------- #
-{
-  # change owner of parent Incident(s)
-  while (my $link = $self->TicketObj->MemberOf->Next) {
-    my $incident= $link->TargetObj;
-    if ( $incident->QueueObj->Name eq 'Incidents' &&
-         $incident->OwnerObj->id != $self->TransactionObj->NewValue) {
-      my ($res, $msg); 
-      my $user = new RT::CurrentUser($self->TransactionObj->CurrentUser);
-      $user->Load($self->TransactionObj->Creator);
-      my $t = new RT::Ticket($user);
-      $t->Load($incident->id);
-      if ($self->TransactionObj->NewValue == $self->TransactionObj->Creator) {
-          ($res, $msg) = $t->Steal();
-      } else {
-          ($res, $msg) = $t->SetOwner($self->TransactionObj->NewValue);
-      }
-      $RT::Logger->debug("FixOwnership Scrip: ".$msg)
-    }
-  }
-  return 1;
-}
-# ------------------------------------------------------------------- #
-	],
-       CustomPrepareCode => '1',
+       ScripAction      => 'Change Parent Ownership',
        Template          => 'Blank', },
     {  Description => "FixOwnership",
        Queue            => 'Blocks',
        ScripCondition   => 'On Owner Change',
-       ScripAction      => 'User Defined',
-       CustomCommitCode => q[
-# ------------------------------------------------------------------- #
-{
-  # change owner of parent Incident(s)
-  while (my $link = $self->TicketObj->MemberOf->Next) {
-    my $incident= $link->TargetObj;
-    if ( $incident->QueueObj->Name eq 'Incidents' &&
-         $incident->OwnerObj->id != $self->TransactionObj->NewValue) {
-      my ($res, $msg); 
-      my $user = new RT::CurrentUser($self->TransactionObj->CurrentUser);
-      $user->Load($self->TransactionObj->Creator);
-      my $t = new RT::Ticket($user);
-      $t->Load($incident->id);
-      if ($self->TransactionObj->NewValue == $self->TransactionObj->Creator) {
-          ($res, $msg) = $t->Steal();
-      } else {
-          ($res, $msg) = $t->SetOwner($self->TransactionObj->NewValue);
-      }
-      $RT::Logger->debug("FixOwnership Scrip: ".$msg)
-    }
-  }
-  return 1;
-}
-# ------------------------------------------------------------------- #
-	],
-       CustomPrepareCode => '1',
+       ScripAction      => 'Change Parent Ownership',
        Template          => 'Blank', },
     {  Description => "ReopenIncident",
        Queue            => 'Incident Reports',
        ScripCondition   => 'On Status Change',
-       ScripAction      => 'User Defined',
-       CustomCommitCode => q[
-# ------------------------------------------------------------------- #
-# If if the child becomes not-closed, make sure the Incident is re-opened
-if ($self->TransactionObj->NewValue ne 'rejected' &&
-    $self->TransactionObj->NewValue ne 'resolved') {
-  my $parents = $self->TicketObj->MemberOf;
-  while (my $link = $parents->Next) {
-    my $member = $link->TargetObj;
-    if ($member->QueueObj->Name eq 'Incidents') {
-      if ($member->Status eq 'rejected' ||
-          $member->Status eq 'resolved') {
-        $member->Open();
-      }
-    }
-  }
-}
-return 1;
-# ------------------------------------------------------------------- #
-	],
-       CustomPrepareCode => '1',
+       ScripAction      => 'Open Parent',
        Template          => 'Blank', },
     {  Description => "ReopenIncident",
        Queue            => 'Investigations',
        ScripCondition   => 'On Status Change',
-       ScripAction      => 'User Defined',
-       CustomCommitCode => q[
-# ------------------------------------------------------------------- #
-# If if the child becomes not-closed, make sure the Incident is re-opened
-if ($self->TransactionObj->NewValue ne 'rejected' &&
-    $self->TransactionObj->NewValue ne 'resolved') {
-  my $parents = $self->TicketObj->MemberOf;
-  while (my $link = $parents->Next) {
-    my $member = $link->TargetObj;
-    if ($member->QueueObj->Name eq 'Incidents') {
-      if ($member->Status eq 'rejected' ||
-          $member->Status eq 'resolved') {
-        $member->Open();
-      }
-    }
-  }
-}
-return 1;
-# ------------------------------------------------------------------- #
-	],
-       CustomPrepareCode => '1',
+       ScripAction      => 'Open Parent',
        Template          => 'Blank', },
     {  Description => "ReopenIncident",
        Queue            => 'Blocks',
        ScripCondition   => 'On Status Change',
-       ScripAction      => 'User Defined',
-       CustomCommitCode => q[
-# ------------------------------------------------------------------- #
-# If if the child becomes not-closed, make sure the Incident is re-opened
-if ($self->TransactionObj->NewValue ne 'rejected' &&
-    $self->TransactionObj->NewValue ne 'resolved') {
-  my $parents = $self->TicketObj->MemberOf;
-  while (my $link = $parents->Next) {
-    my $member = $link->TargetObj;
-    if ($member->QueueObj->Name eq 'Incidents') {
-      if ($member->Status eq 'rejected' ||
-          $member->Status eq 'resolved') {
-        $member->Open();
-      }
-    }
-  }
-}
-return 1;
-# ------------------------------------------------------------------- #
-	],
-       CustomPrepareCode => '1',
+       ScripAction      => 'Open Parent',
        Template          => 'Blank', },
 );
 
