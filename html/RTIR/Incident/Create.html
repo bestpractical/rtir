@@ -42,6 +42,7 @@
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
 <INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
 <INPUT TYPE=HIDDEN NAME=Status Value="<%$ARGS{Status}||'open'%>">
+<INPUT TYPE=HIDDEN NAME=child Value="<%$ARGS{child}%>">
 <input type=hidden name="new-MemberOf"<% $ARGS{'new-MemberOf'} && " VALUE=\"$ARGS{'new-MemberOf'}\"" %>>
 <input type=hidden name="MemberOf-new"<% $ARGS{'MemberOf-new'} && " VALUE=\"$ARGS{'MemberOf-new'}\"" %>>
 <A NAME="top">
