@@ -165,7 +165,6 @@ my $SelectStatus = $m->scomp("/Elements/SelectStatus", Name => 'Status', Default
 my $SelectQueue = $m->scomp("/Elements/SelectQueue", Name => 'Queue', Default =>$Ticket->QueueObj->Id);
 
 my $Title = loc("Edit Block #[_1]: [_2]", $Ticket->Id, $Ticket->Subject);
-
 my $State;
 my $CustomFields = $Ticket->QueueObj->CustomFields();
 while (my $CustomField = $CustomFields->Next()) {

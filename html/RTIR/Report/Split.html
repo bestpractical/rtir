@@ -24,6 +24,7 @@
 %# END LICENSE BLOCK
 <& /RTIR/Report/Create.html, 
     Split => 1,
+    Incident => $Incident,
     QuoteTransaction => $QuoteTransaction,
     Queue => $Queue,
     Subject => $TicketObj->Subject,
@@ -40,8 +41,16 @@
 my $TicketObj = LoadTicket($Ticket);
 my $Queue = new RT::Queue($session{'CurrentUser'});
 $Queue->Load("Incident Reports") || Abort(loc("Queue could not be loaded."));
-</%INIT>
 
+my $Incident;
+my $incidents = $TicketObj->MemberOf;
+while (my $link = $incidents->Next) {
+  my $inc = $link->TargetObj;
+  if ($inc->QueueObj->Name eq 'Incidents') {
+    $Incident = $inc->Id;
+  }
+}
+</%INIT>
 <%ARGS>
 $MemberOf => undef
 $QuoteTransaction => undef

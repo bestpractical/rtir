@@ -22,6 +22,12 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<FORM ACTION="<% $RT::WebPath%>/RTIR/Report/Create.html" method="POST">
-<input type="submit" value="New Incident Report">
-</FORM>
+<& /RTIR/Common/Create.html, 
+    Type => 'Report',
+    Queue => $q->Id,
+    %ARGS &>
+
+<%INIT>
+my $q = RT::Queue->new($session{'CurrentUser'});
+$q->Load('Incident Reports');
+</%INIT>

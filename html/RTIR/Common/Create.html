@@ -23,18 +23,26 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $Title &>
-% if ($TicketObj) {
+% if ($Incident) {
+% if ($Split) {
 <& "/RTIR/".$Type."/Elements/Tabs",
     Ticket => $TicketObj,
-    current_toptab => "RTIR/".$Type."/Listing.html", 
+    current_toptab => "RTIR/Incident/Listing.html", 
+    current_tab => "RTIR/".$Type."/Display.html?id=".$TicketObj->Id, 
+    current_subtab => "RTIR/".$Type."/Split.html?Ticket=".$TicketObj->Id, 
+    Title => $Title &>
+% } else {
+<& "/RTIR/".$Type."/Elements/Tabs",
+    Ticket => $TicketObj,
+    current_toptab => "RTIR/Incident/Listing.html", 
     current_tab => "RTIR/".$Type."/Split.html", 
     Title => $Title &>
+% }
 % } else {
 <& "/RTIR/Incident/Elements/".$Type."Tabs", 
     Ticket => $IncidentObj,
-    current_toptab => "RTIR/Incident/Listing.html", 
-    current_tab => "RTIR/Incident/Show".$Type."s.html?id=".$Incident, 
-    current_subtab => "RTIR/Common/Create.html", 
+    current_toptab => "RTIR/".$Type."/Listing.html", 
+    current_tab => "RTIR/".$Type."/Create.html", 
     Title => $Title &>
 % }
 <FORM ACTION="<%$RT::WebPath%>/RTIR/Common/Create.html" METHOD="POST" ENCTYPE="multipart/form-data">
@@ -236,6 +244,7 @@ my $QueueObj = new RT::Queue($session{'CurrentUser'});
 my $QueueName;
 my $TicketObj = $ARGS{TicketObj};
 my $IncidentObj;
+my $Status = $ARGS{'Status'};
 
 if ($Incident) {
   $IncidentObj = new RT::Ticket($session{'CurrentUser'});
@@ -243,6 +252,7 @@ if ($Incident) {
 }
 
 if ($Type eq "Investigation") {
+  $Status = 'open';
   if ($Split) {
     $Title = loc("Split Investigation #[_1]: [_2]", $TicketObj->id, $TicketObj->Subject);
   } else {
@@ -250,6 +260,7 @@ if ($Type eq "Investigation") {
   }
   $QueueName = "Investigations";
 } elsif ($Type eq "Block") {
+  $Status = 'new';
   if ($Split) {
     $Title = loc("Split Block #[_1]: [_2]", $TicketObj->id, $TicketObj->Subject);
   } else {
@@ -257,6 +268,7 @@ if ($Type eq "Investigation") {
   }
   $QueueName = "Blocks";
 } else {
+  $Status = 'new';
   if ($Split) {
     $Title = loc("Split Incident Report #[_1]: [_2]", $TicketObj->id, $TicketObj->Subject);
   } else {

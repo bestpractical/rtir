@@ -22,12 +22,20 @@
 %# 
 %# 
 %# END LICENSE BLOCK
+% if (defined $Ticket) {
 <& /RTIR/Incident/Elements/Tabs, 
     Ticket => $Ticket, 
     current_tab => 'RTIR/Incident/Display.html?id='.$Ticket->id,
     current_subtab => 'RTIR/Incident/ShowReports.html?id='.$Ticket->id,
     subtabs => $subtabs,
     Title => $Title &>
+% } else {
+<& /RTIR/Report/Elements/Tabs, 
+    current_tab => $current_tab,
+    current_subtab => $current_subtab,
+    subtabs => $subtabs,
+    Title => $Title &>
+% }
 
 <%INIT>
   my $q = RT::Queue->new($session{'CurrentUser'});

@@ -100,7 +100,6 @@ my $ticket_page_tabs = {
     _B => { title => loc('Edit'),
             path  => "RTIR/Report/Edit.html?id=" . $id, },
 
-
     _C => { title => loc('Split'),
             path  => "RTIR/Report/Split.html?Ticket=" . $id, },
 
@@ -165,6 +164,8 @@ if (    $Ticket->CurrentUserHasRight('ModifyTicket')
 }
 }
 
+$tabs->{"A"} = { path      => 'RTIR/Report/Create.html',
+                 title     => loc('New Incident Report') };
 $tabs->{"g"} = { path      => 'RTIR/Report/Listing.html?QueueOp==&ValueOfQueue='.$q->Id,
                  title     => loc('Search'),
                  separator => 1,
