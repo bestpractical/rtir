@@ -99,6 +99,9 @@ my $SubmitCaption = loc("Link #[_1] with selected Incident", $ChildObj->id);
 my $q = RT::Queue->new($session{'CurrentUser'});
 $q->Load('Incidents');
 
+$ARGS{'QueueOp'}="=";
+$ARGS{'ValueOfQueue'}=$q->Id;
+
 my ($title, $ticketcount);
 $session{'i'}++;
 if ($session{'tickets'}) {

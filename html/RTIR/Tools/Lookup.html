@@ -29,7 +29,7 @@
     current_subtab => $current_subtab, 
     Title => $title &>
 % if ($ticket) {
-<& /Elements/TitleBoxStart, title => loc("Current [_1]: #[_2]", $TicketType, $ticket) &>
+<& /Elements/TitleBoxStart, title => loc("Current [_1]: #[_2]", $TicketType, $ticket), color=> "#993333" &>
 <TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
 <& /RTIR/Elements/TicketHeader, Type => $TicketType, %ARGS &>
 <& /RTIR/Elements/TicketRow, Type => $TicketType, Ticket => $TicketObj, %ARGS &>
@@ -42,17 +42,17 @@
 <TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
 <tr><td valign=top width=50%>
 
+<& /Elements/TitleBoxStart, title => loc('Incidents: [_1]', $q) &>
+<& /RTIR/Elements/IncidentSummary, Type => $TicketType, ticket => $ticket, q => $q &>
+<& /Elements/TitleBoxEnd&>
+
+<br>
+
 <& /Elements/TitleBoxStart, title => loc('Incident Reports: [_1]', $q), color=> "#336633"&>
 <& /RTIR/Elements/ChildSummary, Queue => 'Incident Reports', Type => $TicketType, ticket => $ticket, lookuptype => $type, q => $q &>
 <& /Elements/TitleBoxEnd&>
 
 </td><td width=50% valign=top>
-
-<& /Elements/TitleBoxStart, title => loc('Incidents: [_1]', $q), color=> "#336633" &>
-<& /RTIR/Elements/IncidentSummary, ticket => $ticket, q => $q &>
-<& /Elements/TitleBoxEnd&>
-
-<br>
 
 <& /Elements/TitleBoxStart, title => loc('Investigations: [_1]', $q), color=> "#336633" &>
 <& /RTIR/Elements/ChildSummary, Queue => 'Investigations', Type => $TicketType, ticket => $ticket, lookuptype => $type, q => $q &>

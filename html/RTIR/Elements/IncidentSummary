@@ -23,43 +23,70 @@
 %# 
 %# END LICENSE BLOCK
 <TABLE width=100% border=0 cellpadding=2 CELLSPACING=0>
+<TR>
+<td><b><&|/l&>id<b></&></td>
+<td><b><&|/l&>Subject<b></&></td>
+<td><b><&|/l&>State<b></&></td>
+<td><b><&|/l&>Priority<b></&></td>
+<td align=right><b><&|/l&>Actions<b></&></td>
+</TR>
 % my $i=0;
-% my $State;
-%while (my $Ticket = $session{'tickets'}->Next) {
-% next unless ($Ticket->QueueObj->Name eq "Incidents");
+% foreach my $incident (sort keys %{$incidents}) {
+% my $Ticket = $incidents->{$incident}->{'Ticket'};
 % $i++;
+% my $t = $m->scomp("/RTIR/Elements/Type", Ticket => $Ticket->Id);
+% $t =~ s/\s*$//;
 <TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >
 <td><b><A HREF="<%$RT::WebPath%>/RTIR/Incident/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%></a></b></td>
 <td><b><A HREF="<%$RT::WebPath%>/RTIR/Incident/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Subject%></a></b></td>
 <td><& "/RTIR/Elements/ShowRTIRField", Ticket => $Ticket, Name => 'State' &>
 </td>
 <TD><%$Ticket->Priority%></TD>
+<td align=right>
 % if ($Type eq 'Report' or $Type eq 'Investigation' or $Type eq 'Block') {
-<td align=right><a href="<%$RT::WebPath%>/RTIR/Incident/Display.html?child=<%$ticket%>&SelectedTicket=<%$Ticket->Id%>">[<%loc("Link")%>]</a></td>
-% } elsif ($ticket and $Type eq 'Incident') {
-% if ($ticket ne $Ticket->Id) {
-<td align=right><a href="<%$RT::WebPath%>/RTIR/Incident/Merge.html?id=<%$ticket%>&SelectedTicket=<%$Ticket->Id%>">[<%loc("Merge")%>]</a></td>
-% } else {
-<td align=right><i>(<%loc("current")%>)</i></td>
+<a href="<%$RT::WebPath%>/RTIR/Incident/Display.html?child=<%$ticket%>&SelectedTicket=<%$Ticket->Id%>">[<%loc("Link")%>]</a>
+% } elsif ($ticket and $Type eq $t) {
+%   if ($ticket ne $Ticket->Id) {
+<a href="<%$RT::WebPath%>/RTIR/Incident/Merge.html?id=<%$ticket%>&SelectedTicket=<%$Ticket->Id%>">[<%loc("Merge")%>]</a>
+%   }
 % }
-% }
+<a href="<%$RT::WebPath%>/RTIR/Investigation/Create.html?Incident=<%$Ticket->Id%>">[<%loc("Investigate")%>]</a>
+</td>
 </TR>
 % }
 % if ($i == 0) {
-<tr><td><i>(no incidents)</i></td></tr>
+<tr><td colspan=5><i>(no incidents)</i></td></tr>
 % }
+
 <tr>
-<td><a href="<%$RT::WebPath%>/RTIR/Incident/Listing.html?ClearRestrictions=1&AttachmentField=Content&AttachmentFieldOp=LIKE&ValueOfAttachmentField=<%$q%>">
-[<%loc("Search")%>]</a></td>
+<td colspan=5>
+<a href="<%$RT::WebPath%>/RTIR/Incident/Listing.html?ClearRestrictions=1&AttachmentField=Content&AttachmentFieldOp=LIKE&ValueOfAttachmentField=<%$q%>">
+[<%loc("Refine Search")%>]</a></td>
 </tr>
 </table>
 
 <%INIT>
 my $Queue = 'Incidents';
-my $Type = 'Incident';
+my $incidents;
+
+while (my $Ticket = $session{'tickets'}->Next) {
+  if ($Ticket->QueueObj->Name eq "Incidents") {
+    $incidents->{$Ticket->Id} = { Ticket => $Ticket };
+  } elsif ($Ticket->QueueObj->Name eq "Incident Reports") {
+    my $parents = $Ticket->MemberOf;
+    while (my $link = $parents->Next) {
+      my $parent = $link->TargetObj;
+      if ($parent->QueueObj->Name eq 'Incidents') {
+        $incidents->{$parent->Id} = { Ticket => $parent };
+      }
+    }
+  }
+}
+
 </%INIT>
 
 <%ARGS>
+$Type => undef
 $ticket => undef
 $q => undef
 </%ARGS>

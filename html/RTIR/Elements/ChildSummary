@@ -23,6 +23,13 @@
 %# 
 %# END LICENSE BLOCK
 <TABLE width=100% border=0 cellpadding=2 CELLSPACING=0>
+<TR>
+<td><b><&|/l&>id<b></&></td>
+<td><b><&|/l&>Subject<b></&></td>
+<td><b><&|/l&>State<b></&></td>
+<td><b><&|/l&>Priority<b></&></td>
+<td align=right><b><&|/l&>Actions<b></&></td>
+</TR>
 % my $i=0;
 %while (my $Ticket = $session{'tickets'}->Next) {
 % next unless ($Ticket->QueueObj->Name eq $Queue);
@@ -39,23 +46,21 @@
 % } elsif ($Type eq $t) {
 % if ($ticket ne $Ticket->Id) {
 <td align=right><a href="<%$RT::WebPath%>/RTIR/<%$Type%>/Merge.html?id=<%$ticket%>&SelectedTicket=<%$Ticket->Id%>">[<%loc("Merge")%>]</a></td>
-% } else {
-<td align=right><i>(<%loc("current")%>)</i></td>
 % }
 % }
 </TR>
 % }
 % if ($i == 0) {
-<tr><td><i><%loc("(no [_1])", $Queue)%></i></td></tr>
+<tr><td colspan=5><i><%loc("(no [_1])", $Queue)%></i></td></tr>
 % }
 <tr>
-<td>
+<td colspan=5>
 <a href="<%$RT::WebPath%>/RTIR/<%$Type%>/Listing.html?ClearRestrictions=1&AttachmentField=Content&AttachmentFieldOp=LIKE&ValueOfAttachmentField=<%$q%>">
-[<%loc("Search")%>]</a>
+[<%loc("Refine Search")%>]</a>
 % if ($Type eq 'Incident') {
 <a href="<%$RT::WebPath%>/RTIR/Incident/LinkReports.html?ClearRestrictions=1&AttachmentField=Content&AttachmentFieldOp=LIKE&ValueOfAttachmentField=<%$q%>&StatusOp==&ValueOfStatus=new&id=<%$ticket%>">[<%loc("Bulk Link")%>]</a>
 %   if ($Queue eq 'Investigations' and $lookuptype eq 'email') {
-<a href="<%$RT::WebPath%>/RTIR/Investigation/Create.html?Incident=<%$ticket%>">[<%loc("Launch new: [_1]", $q)%>]</a>
+<a href="<%$RT::WebPath%>/RTIR/Investigation/Create.html?Incident=<%$ticket%>&Requestors=<%$q%>">[<%loc("Launch new: [_1]", $q)%>]</a>
 %   }
 % }
 </td>
