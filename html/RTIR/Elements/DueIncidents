@@ -35,9 +35,10 @@
 </TR>
   <TR>    
 % my $i;
-% foreach my $link (keys %{$due}) {
-%   next if (!$incidents->{$link});
-%   my $Ticket = $incidents->{$link}->TargetObj;
+% foreach my $link (sort keys %{$incidents}) {
+%   my $id = $incidents->{$link}->{'id'};
+%   next if (!$id);
+%   my $Ticket = $incidents->{$link}->{'Ticket'}->TargetObj;
 %   next if $Ticket->HasUnresolvedDependencies( Type => 'approval' );
 %   last if $i++ >= $rows;
 <TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >                                
@@ -71,7 +72,7 @@
 <%$Ticket->Priority%>
 </TD>
 <TD>
-<& ShowDate, date => $due->{$link} &>
+<& ShowDate, date => $incidents->{$link}->{'Due'} &>
 </TD>
 <TD ALIGN=RIGHT>
 % if ($Ticket->Owner != $session{CurrentUser}->id) {
@@ -107,25 +108,26 @@ $MyTickets->LimitStatus(VALUE => "open");
 $MyTickets->LimitStatus(VALUE => "stalled");
 $MyTickets->OrderBy(FIELD => 'Due', ORDER => 'ASC');
 
-my ($incidents, $due);
+my ($incidents, $seen);
+my $c = 0;
 while (my $Ticket = $MyTickets->Next) {
   my $members = $Ticket->MemberOf;
   while (my $link = $members->Next) {
     my $member= $link->TargetObj;
     next unless ($member->QueueObj->Name eq 'Incidents' );
-    if ( !exists $incidents->{$member->Id} ||
-         ( $Ticket->DueObj->Unix > 0 &&
-           $Ticket->DueObj->Unix < $due->{$member->Id}->Unix ||
-           $due->{$member->Id} == 0 )) {
-      $incidents->{$member->Id} = $link;
-      $due->{$member->Id} = $Ticket->DueObj;
+    if ( !exists $seen->{$member->Id}) {
+      $seen->{$member->Id} = $member->Id;
+      $incidents->{$c} = { id => $member->Id, 
+		       Ticket => $link, 
+		       Due => $Ticket->DueObj };
+      $c++;
     }
   }
 }
 
 my $num;
-if (scalar keys %{$incidents} < $rows) {
-  $num = scalar keys %{$incidents};
+if (scalar keys %$seen < $rows) {
+  $num = scalar keys %$seen;
 } else {
   $num = $rows;
 }
@@ -133,9 +135,9 @@ if (scalar keys %{$incidents} < $rows) {
 my $title;
 if ($owner) {
   $title = loc("[_1] of [_2] most due incidents owned by [_3] (and unowned)...", 
-               $num, scalar keys %{$incidents}, $owner->Name);
+               $num, scalar keys %{$seen}, $owner->Name);
 } else {
-  $title = loc("[_1] of [_2] most due incidents...", $num, scalar keys %{$incidents});
+  $title = loc("[_1] of [_2] most due incidents...", $num, scalar keys %{$seen});
 }
 </%INIT>
 
