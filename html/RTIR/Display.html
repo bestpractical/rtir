@@ -29,32 +29,144 @@
     current_tab => 'RTIR/Display.html?id='.$id,
     Title => $Title &>
 
-<& /RTIR/Elements/Display, 
-    Type => $Type,
-    %ARGS &>
+<& /Elements/ListActions, actions => \@Actions &>
+
+% if ($id != 'new' && $Ticket->QueueObj->Name ne $QueueObj->Name) {
+<%loc("This ticket isn't a [_1].", $Type)%>
+%   $m->abort();
+% }
+
+<table border=0 cellpadding=0 cellspacing=2 width=100%>
+<tr>
+<td valign=top colspan=2>
+<& /Elements/TitleBoxStart, title => loc("The Basics"), 
+	title_class=> 'inverse' &>
+
+<& '/RTIR/'.$Type.'/Elements/ShowBasics', Ticket => $Ticket &>
+
+<& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket &>
+
+<& /Elements/TitleBoxEnd &>
+
+</td>
+</tr>
+<tr>
+        <TD VALIGN=TOP width=50%>
+        <BR>
+	  <& /Elements/TitleBoxStart, title => loc('People'), 
+		title_class=> 'inverse' &>
+	  <& /RTIR/Incident/Elements/ShowPeople, Ticket => $Ticket &>
+	  <& /Elements/TitleBoxEnd &>
+	<BR>
+	</TD>
+<td>
+        <BR>
+	  <& /Elements/TitleBoxStart, title => loc("Dates"),
+		title_class=> 'inverse',  
+		 color => "#663366" &>
+	  <& /RTIR/Incident/Elements/ShowDates, Ticket => $Ticket &>
+	  <& /Elements/TitleBoxEnd &>
+	<BR>  
+	  <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket &>
+
+	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket, DisplayPath => '/RTIR/Display.html' &>
+
+
+	</TD>
+      </TR>
+</table>
+<& /RTIR/Elements/ShowHistory , 
+      Ticket => $Ticket, 
+      Collapsed => $ARGS{'Collapsed'}, 
+      ShowHeaders => $ARGS{'ShowHeaders'} &> 
 
 <%INIT>
+my (@Actions, $Type, $name);
 my $Ticket = new RT::Ticket($session{'CurrentUser'});
+my $QueueObj = new RT::Queue($session{'CurrentUser'});
 if ($id ne 'new') {
   $Ticket = LoadTicket($id);
   unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
     Abort("No permission to view ticket");
   }
+ $QueueObj->Load($Ticket->QueueObj->Name) || Abort(loc("Queue could not be loaded."));
+} else {
+ $QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
 }
 
-my $Type = $m->scomp('Elements/Type', Ticket => $Ticket->Id);
+# Incidents have their own Create.html
+if ($QueueObj->Name eq 'Incidents') {
+  $m->comp("/RTIR/Incident/Display.html", %ARGS);
+  $m->abort;
+}
+
+if ($ARGS{'id'} eq 'new') {
+    # {{{ Create a new ticket
+    
+    unless ($QueueObj->CurrentUserHasRight('CreateTicket')) {
+	Abort('You have no permission to create tickets in that queue.');
+    }
+    ($Ticket, @Actions) =
+       CreateTicket(Attachments => $session{'Attachments'}, %ARGS);
+    delete $session{'Attachments'};
+    unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
+      Abort("No permission to view newly created ticket #".$Ticket->id.".");
+    }
+    # }}}
+} else { 
+    $Ticket = LoadTicket($ARGS{'id'});
+    unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
+	Abort("No permission to view ticket");
+    }
+
+    $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
+    chomp ($ARGS{'UpdateContent'}) ;
+
+    my @UpdateActions;
+    if ($ARGS{'UpdateContent'} &&
+        $ARGS{'UpdateContent'} ne '' &&
+        $ARGS{'UpdateContent'} ne  "-- \n" .
+                                $session{'CurrentUser'}->UserObj->Signature
+       ) {
+            $ARGS{UpdateAttachments} = $session{'Attachments'};
+	    ProcessUpdateMessage(ARGSRef=>\%ARGS, 
+				 Actions=>\@UpdateActions, 
+				 TicketObj=>$Ticket);
+            delete $session{'Attachments'};
+	}
+
+  if (defined $ARGS{'Action'}) {
+    if ($ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
+      my $action = $1;
+      my ($res, $msg)=$Ticket->$action();
+      push(@Actions, $msg);
+    } elsif ($ARGS{'Action'} eq 'Respond' && @UpdateActions) {
+      my $date = RT::Date->new($RT::SystemUser);
+      $date->SetToNow;
+      $date->AddDays($RT::overdueafter);
+      $ARGS{'Due_Date'} = $date->ISO;
+    }
+  }
+
+  #Process basics updates
+  my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$Ticket);
+  my @LinkActions = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
+  my @DateActions = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
+
+  push (@Actions, @UpdateActions, @BasicActions, @LinkActions, @DateActions);
+}
+
+unless ($id) {
+    Abort('No incident specified');
+}
+
+$Type = $m->scomp('Elements/Type', Ticket => $Ticket->Id);
 $Type =~ s/\s+$//;
 
-my $name;
 if ($Type eq 'Report') {
   $name = "Incident Report";
 } else {
   $name = $Type;
-}
-
-if ($Type eq 'Incident') {
-  $m->comp("/RTIR/Incident/Display.html", %ARGS);
-  $m->abort;
 }
 
 my $Title = loc("[_1] #[_2]: [_3]", $name, $Ticket->Id, $Ticket->Subject);
@@ -62,4 +174,5 @@ my $Title = loc("[_1] #[_2]: [_3]", $name, $Ticket->Id, $Ticket->Subject);
 
 <%ARGS>
 $id => undef
+$Queue=>undef
 </%ARGS>

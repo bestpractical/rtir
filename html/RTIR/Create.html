@@ -44,37 +44,79 @@
     Title => $Title &>
 % }
 
+<& /Elements/ListActions, actions => \@results &>
+
 % if ($Split && !$TicketObj->CurrentUserHasRight('ModifyTicket')) {
 <%loc("You are not allowed to split this [_1].", $name)%>
 %    $m->abort();
 % }
 
-<& /RTIR/Elements/Create, 
-    Type => $Type,
-    Queue => $q->Id,
-    Status => 'new',
-    %ARGS &>
+<FORM ACTION="<%$RT::WebPath%>/RTIR/Create.html" METHOD="POST" ENCTYPE="multipart/form-data">
+<INPUT TYPE=HIDDEN Name="id" VALUE="new">
+<INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
+<INPUT TYPE=HIDDEN NAME=Status Value="<%$ARGS{Status}||'open'%>">
+<INPUT TYPE=HIDDEN NAME=Type Value="<%$Type%>">
+<INPUT TYPE=HIDDEN NAME=Incident Value="<%$ARGS{Incident}%>">
+% my $parentvalue;
+% if ($IncidentObj) {
+% $parentvalue = $IncidentObj->Id;
+% } elsif ($TicketObj) {
+%   $parentvalue = $TicketObj->Id;
+%   my $count = 0;
+%   my $incidents = $TicketObj->MemberOf;
+%   while (my $link = $incidents->Next) {
+%     my $incident = $link->TargetObj;
+%     if ($incident->QueueObj->Name eq 'Incidents') {
+%       $count++;
+%       $parentvalue = $parentvalue." ".$incident->Id;
+%     }
+%   }
+% }
+% if (defined $parentvalue) {
+<input type=hidden name="new-MemberOf" VALUE="<%$parentvalue%>">
+% }
+<A NAME="top">
+
+<& '/RTIR/'.$Type.'/Elements/CreateBasics', 
+  Ticket => $TicketObj,
+  QueueObj => $QueueObj, 
+  IncidentObj => $IncidentObj,
+  %ARGS &>
+	
+<& /Elements/Submit, Label => loc("Create")&>
+</FORM>
 
 <%INIT>
-my $q = RT::Queue->new($session{'CurrentUser'});
-$q->Load($Queue);
+my $QueueObj = new RT::Queue($session{'CurrentUser'});
+$QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
+
+my ($Type, $Status);
+if ($Queue eq "Incidents") {
+  $Type = "Incident";
+  $Status = 'open';
+} elsif ($Queue eq "Incident Reports") {
+  $Type = "Report";
+  $Status = 'new';
+} elsif ($Queue eq "Investigations") {
+  $Type = "Investigation";
+  $Status = 'open';
+} elsif ($Queue eq "Blocks") {
+  $Type = "Block";
+  $Status = 'new';
+}
+
+# Incidents have their own Create.html
+if ($Type eq 'Incident') {
+  $m->comp("/RTIR/Incident/Create.html", %ARGS);
+  $m->abort;
+}
+
 my ($Title, $IncidentObj);
 my $TicketObj = $ARGS{TicketObj};
 
 if ($Incident) {
   $IncidentObj = new RT::Ticket($session{'CurrentUser'});
   $IncidentObj = LoadTicket($Incident);
-}
-
-my $Type;
-if ($Queue eq "Incidents") {
-  $Type = "Incident";
-} elsif ($Queue eq "Incident Reports") {
-  $Type = "Report";
-} elsif ($Queue eq "Investigations") {
-  $Type = "Investigation";
-} elsif ($Queue eq "Blocks") {
-  $Type = "Block";
 }
 
 my $name;
@@ -84,16 +126,59 @@ if ($Type eq 'Report') {
   $name = $Type;
 }
 
-if ($Type eq 'Incident') {
-  $m->comp("/RTIR/Incident/Create.html", %ARGS);
-  $m->abort;
-}
-
 if ($Split) {
   $Title = loc("Split [_1] #[_2]: [_3]", $name, $TicketObj->id, $TicketObj->Subject);
 } else {
   $Title = loc("Create a new [_1]", $name);
 }
+
+my $CFs = $QueueObj->CustomFields();
+
+# {{{ deal with deleting uploaded attachments
+foreach my $key (keys %ARGS) {
+    if ($key =~ m/^DeleteAttach-(.+)$/) {
+	delete $session{'Attachments'}{$1};
+    }
+    $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
+}
+
+# {{{ store the uploaded attachment in session
+if ($ARGS{'Attach'}) {			# attachment?
+    $session{'Attachments'} = {} unless defined $session{'Attachments'};
+
+     # strip leading directories
+     $ARGS{'Attach'} =~ s#^.*[\\/]##;
+
+
+    my $attachment = MakeMIMEEntity(
+        Subject             => "$ARGS{'Attach'}",
+        Body                => "",
+        AttachmentFieldName => 'Attach'
+    );
+    $session{'Attachments'} = { %{$session{'Attachments'} || {}},
+				$ARGS{'Attach'} => $attachment };
+}
+# }}}
+
+# delete temporary storage entry to make WebUI clean
+unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
+    delete $session{'Attachments'};
+}
+
+
+# }}}
+
+my @results;
+if ((!exists $ARGS{'AddMoreAttach'}) && ($ARGS{'id'} eq 'new')) { # new ticket?
+  if ($Type ne 'Investigation' ||
+      ($Type eq 'Investigation' &&  $ARGS{'Requestors'})) {
+    $m->comp('Display.html', %ARGS);
+    $m->abort();
+#  } else {
+#    push @results, "Investigation launch failed: You must enter a correspondent.";
+  }
+}
+
 </%INIT>
 
 <%ARGS>
