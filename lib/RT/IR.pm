@@ -93,4 +93,9 @@ sub SLAInit {
 
 }
 
+eval "require RT::IR_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/IR_Vendor.pm});
+eval "require RT::IR_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/IR_Local.pm});
+
 1;
