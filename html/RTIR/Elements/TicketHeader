@@ -17,7 +17,7 @@
 <& /Search/Elements/TicketHeaderCell , Attribute => 'Requestor(s)'&>
 <& /Search/Elements/TicketHeaderCell , Attribute => 'Created'&>
 <& /Search/Elements/TicketHeaderCell , Attribute => 'Told', Header => 'Last Contact'&>
-<TH class="ticketheader">&nbsp;</TH>
+<& /Search/Elements/TicketHeaderCell , Attribute => 'Due', Header => 'Due'&>
 <& /Search/Elements/TicketHeaderCell , Attribute => 'TimeLeft', Header => 'Left'&>
 </TR>
 

@@ -70,7 +70,11 @@
 <tr><td class="label">
 <&|/l&>Owner</&>:  
 </td><td>
-<& /Elements/SelectOwner, Name=>"Owner", Default => ($ARGS{'Owner'} || $Ticket->OwnerObj->Id()), QueueObj => $Ticket->QueueObj, TicketObj => $Ticket &>
+<& /Elements/SelectOwner, 
+    Name=>"Owner", 
+    Default => ($ARGS{Owner}||$Ticket->OwnerObj->Id()||$session{'CurrentUser'}->Id||undef), 
+    QueueObj => $Ticket->QueueObj, 
+    TicketObj => $Ticket &>
 <&|/l&>Worked</&>: <input size=4 name="UpdateTimeWorked" value="<%
 $ARGS{UpdateTimeWorked}%>"> <&|/l&>minutes</&>
 </td></tr>

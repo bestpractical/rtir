@@ -29,15 +29,8 @@
 
 <FORM METHOD=POST>
 <TABLE WIDTH=100% border=0 cellpadding=3 CELLSPACING=0>
-<TR>
-%foreach my $col (@cols) {
-% my $colalias = $col;
-% $colalias =~ s/(Obj\-\>|)(Name|AsString)//;
 
-<TH><% loc($colalias) %>&nbsp;</TH>
-%}
-</TR>
-
+<& /RTIR/Elements/TicketHeader, %ARGS &>
 % my $i;
 
 <%PERL>
@@ -46,28 +39,10 @@ $session{'tickets'}->RedoSearch();
 while (my $Ticket = $session{'tickets'}->Next) {
  next unless ($ARGS{"UpdateTicket".$Ticket->Id});
  $i++;
- if ($i % 2) {
-     $bgcolor = "#dddddd";
- }
- else {
-     $bgcolor = "#ffffff";
- }
-      </%PERL>
+</%PERL>
 
-<TR bgcolor="<%$bgcolor%>">
-%# The ticket view is controlled by config.pm, WebOptions
-%foreach my $col (@cols) {
-<TD>
-% if ($col eq 'id') {
-<A HREF="<% $RT::WebPath%>/Ticket/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id()%></A>
+<& /RTIR/Elements/TicketRow, Type => 'Report', Ticket => $Ticket, i=> $i, %ARGS &>
 % }
-%else {
-<% eval "\$Ticket->$col()" %>&nbsp;
-%}
-</TD>
-%}
-</TR>
-%}
 
 </TABLE>
 
@@ -81,6 +56,16 @@ while (my $Ticket = $session{'tickets'}->Next) {
 
 <& /Elements/TitleBoxStart, title => loc('Reply to selected tickets') &>
 <table>
+<tr><td class="label">
+<&|/l&>Owner</&>:  
+</td><td>
+<& /Elements/SelectOwner, 
+    Name=>"Owner", 
+    Default => ($ARGS{Owner}||$session{'CurrentUser'}->Id||undef), 
+ &>
+<&|/l&>Worked</&>: <input size=4 name="UpdateTimeWorked" value="<%
+$ARGS{UpdateTimeWorked}%>"> <&|/l&>minutes</&>
+</td></tr>
 <tr><td align=right><&|/l&>Subject</&>:</td><td> <input name="UpdateSubject" size=60 value=""></td></tr>
  <tr><td align=right><&|/l&>Attach</&>:</td><td><input name="UpdateAttachment" type="file"></td></tr>
  <tr><td colspan="2">
@@ -99,8 +84,7 @@ while (my $Ticket = $session{'tickets'}->Next) {
 # Iterate through the ARGS hash and remove anything with a null value.
 map ($ARGS{$_} =~ /^$/ && (delete $ARGS{$_}), keys %ARGS);
 
-my ($bgcolor, @results);
-my @cols = qw(id Status Priority Subject QueueObj->Name OwnerObj->Name RequestorAddresses DueAsString );
+my (@results);
 
 Abort(loc("No search to operate on.")) unless ($session{'tickets'});
 

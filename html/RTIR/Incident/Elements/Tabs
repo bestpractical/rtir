@@ -166,7 +166,8 @@ if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
 }
 
 if ( $Ticket->CurrentUserHasRight('OwnTicket') &&
-     $Ticket->Status eq 'open') {
+     $Ticket->Status ne 'resolved' &&
+     $Ticket->Status ne 'rejected') {
     if ( $Ticket->OwnerObj->id == $RT::Nobody->id ) {
         $actions->{'D'} = { path => "RTIR/Incident/Display.html?Action=Take&id=" . $id,
                             title => loc('Take') };

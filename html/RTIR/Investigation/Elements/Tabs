@@ -121,7 +121,7 @@ $tabs->{'this'}->{"subtabs"} = $ticket_page_tabs;
 if (    $Ticket->CurrentUserHasRight('ModifyTicket')
      or $Ticket->CurrentUserHasRight('ReplyToTicket') ) {
     $actions->{'A'} = { title => loc('Reply'),
-                        path  => "RTIR/InvestigationUpdate.html?Action=Respond&id=" . $id,
+                        path  => "RTIR/Investigation/Update.html?Action=Respond&DefaultStatus=open&id=" . $id,
     };
 }
 
