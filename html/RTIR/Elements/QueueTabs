@@ -38,7 +38,8 @@
 my ($Type, undef) = $m->comp('/RTIR/Elements/Type', Queue => $QueueName);
 
 my $tabs = {};
-my $current_toptab = 'RTIR/Search/Results.html?Queue=' . $QueueName . $QueryString,
+my $current_toptab = 'RTIR/Search/Results.html?Queue=' . $QueueName;
+
 my ($actions, $mytab);
 my $searchtabs = { } ;
 
@@ -177,7 +178,7 @@ $tabs->{"g"} = { path      => 'RTIR/Search/Results.html?Queue=' . $QueueName . $
                  subtabs   => $searchtabs };
 
 if ($Type eq 'Report') {
-$tabs->{"h"} = { path      => 'RTIR/$Type/BulkReject.html?ClearRestrictions=1',
+$tabs->{"h"} = { path      => 'RTIR/Report/BulkReject.html?ClearRestrictions=1',
                  title     => loc('Bulk Reject'),
                  separator => 1 };
 }

@@ -34,6 +34,7 @@
     AppName => $RT::rtirname &>
 
 <%INIT>
+
 my $toptabs = { 
     A => { title => loc('RT'),
 	   path  => '', },
@@ -41,13 +42,13 @@ my $toptabs = {
 	   path => 'RTIR/index.html',
        },
     C => { title => loc('Incidents'),
-	   path => 'RTIR/Search/Results.html?Queue=Incidents' . $QueryString },
+	   path => 'RTIR/Search/Results.html?Queue=Incidents' },
     D => { title => loc('Incident Reports'),
-	   path => 'RTIR/Search/Results.html?Queue=Incident Reports' . $QueryString },
+	   path => 'RTIR/Search/Results.html?Queue=Incident Reports'},
     E => { title => loc('Investigations'),
-	   path => 'RTIR/Search/Results.html?Queue=Investigations' . $QueryString },
+	   path => 'RTIR/Search/Results.html?Queue=Investigations'},
     F => { title => loc('Blocks'),
-	   path => 'RTIR/Search/Results.html?Queue=Blocks' . $QueryString },
+	   path => 'RTIR/Search/Results.html?Queue=Blocks'},
     G => { title => loc('Tools'),
 	   path => 'RTIR/Tools/Lookup.html',
 		   },
