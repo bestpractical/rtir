@@ -105,6 +105,7 @@ if ($ARGS{'BulkReject'}) {
     }
 }
 
+# We can only reject new tickets, so set the states.
 my @states = ['new'];
 if (!$Query) {
     $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue, states => @states);
