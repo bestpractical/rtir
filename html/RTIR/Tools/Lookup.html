@@ -143,7 +143,9 @@
 % if ($q) {
 <h2>WHOIS Results</h2>
 % }
-
+% if ($error){
+<b><%$error%></b>
+% }
 % if ($iterator) {
 %   while (my $obj = $iterator->next) {
 %     my @lines_starting_with_space = grep ( /^(\s+)(\w+)/, $obj->content());
@@ -173,9 +175,12 @@ parse this data.
 <%init>
 use Net::Whois::RIPE;
 my $query = Net::Whois::RIPE->new($server);
-#$query->no_recursive;
-my $iterator = $query->query_iterator($q);
-
+my ($iterator, $error);
+if ($query) {
+     $iterator = $query->query_iterator($q);
+} else {
+    $error = "Unable to connect to whois server '$server'";
+}
 $ARGS{'AttachmentField'}="Content";
 $ARGS{'AttachmentFieldOp'}="LIKE";
 $ARGS{'ValueOfAttachmentField'}=$q;
