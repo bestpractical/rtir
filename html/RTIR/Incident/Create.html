@@ -1,6 +1,6 @@
 %# BEGIN LICENSE BLOCK
 %# 
-%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# Copyright (c) 1996-2003 Jesse Vincent <jesse@bestpractical.com>
 %# 
 %# (Except where explictly superceded by other copyright notices)
 %# 
@@ -153,18 +153,10 @@
 
 % if ($Transactions) {
 <TEXTAREA COLS=72 ROWS=15 WRAP=HARD NAME="Content">
-% while (my $Transaction = $Transactions->Next) {
-% next if ($Transaction->Type eq 'CustomField' and substr($Transaction->BriefDescription, 0, 6) eq '_RTIR_');
-% my $transdate = $Transaction->CreatedAsString();
-<%$transdate%> <%$Transaction->CreatorObj->Name%> - <%$Transaction->BriefDescription%>
-% my $attachments = $Transaction->Attachments;
-% $attachments->GotoFirstItem;
-% while (my $message=$attachments->Next) {
-%    #we don't want to show any empty transactions, unless they have kids
-%    next unless ($message->Content || $message->Children->Count);
-<% $message->Content%>
-% }
-% }
+<& /RTIR/Elements/TransactionData, 
+    Transactions => $Transactions,
+    Type => 'messages',
+    Include => {'Create', 'Correspond'} &>
 </textarea>
 % } else {
   <& /Elements/MessageBox, QuoteTransaction => $QuoteTransaction &>
