@@ -1,0 +1,215 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& /Elements/Header, Title => $Title &>
+<& /RTIR/Tools/Elements/Tabs, 
+    current_toptab => "RTIR/Tools/ScriptedAction.html", 
+    current_tab => $current_tab, 
+    current_subtab => $current_subtab, 
+    Title => $Title &>
+
+<& /Elements/ListActions, actions => \@finalresults &>
+
+<FORM METHOD="GET" NAME="TicketUpdate" ENCTYPE="multipart/form-data">
+<INPUT TYPE=HIDDEN NAME=id Value="new">
+<INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
+<INPUT TYPE=HIDDEN NAME=Status Value="<%$ARGS{Status}||'open'%>">
+<input type=hidden Name="WatcherTypeEmail1" value="Requestor">
+<input type=hidden name="UpdateType" value="response">
+<input type=hidden name="Action" value="Respond">
+<A NAME="top">
+	
+<& /Elements/TitleBoxStart, contentbg => "#cccccc", title => $Title &>
+<TABLE border=0 cellpadding=0 cellspacing=2>
+  <TR>
+    <TD class=label>
+      <&|/l&>Owner</&>:
+    </TD>
+    <TD>
+      <& /Elements/SelectOwner, 
+          Name => "Owner", 
+	  QueueObj => $QueueObj, 
+	  Default => $ARGS{Owner}||$session{'CurrentUser'}->Id||undef &>
+    </TD>
+  </TR>
+  <TR>
+    <TD class=labeltop>
+      <&|/l&>Addresses</&>:
+    </TD>
+    <TD COLSPAN=5>
+% if (exists $ARGS{Addresses}) {
+      <& /Elements/MessageBox, Name=>"Addresses", Width => 30, Default=>$ARGS{Addresses}, %ARGS&>
+% } else {
+      <& /Elements/MessageBox, Name=> 'Addresses', Width => 30 &>
+% }
+    </TD>
+  </TR>
+  <TR>
+    <TD ALIGN=RIGHT COLSPAN=2>
+    </TD>
+  </TR>
+  <TR>
+    <TD class=label>
+      <&|/l&>Subject</&>:
+    </TD>
+    <TD class=value COLSPAN=5>
+      <INPUT Name="Subject" SIZE=60 MAXSIZE=100 value="<% $ARGS{'Subject'} %>">
+    </TD>
+  </TR>
+<TR>
+  <TD class=labeltop>
+    <&|/l&>Message</&>:
+  </TD>
+  <TD COLSPAN=5>
+% if (exists $ARGS{UpdateContent}) {
+<& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, %ARGS&>
+% } else {
+<& /Elements/MessageBox, Name=>"UpdateContent", %ARGS &>
+% }
+  </TD>
+</TR>
+<TR>
+  <TD>
+  </TD>
+  <TD VALIGN=TOP>
+    <& /Elements/TitleBoxStart, title => loc("Dates"),
+		title_class=> 'inverse',  
+		 color => "#663366" &>
+
+    <TABLE BORDER=0>
+      <TR>
+        <TD ALIGN=RIGHT><&|/l&>Starts</&>:</TD>
+% my $nowstring = gmtime();
+% if ($ARGS{Starts}) {
+	  <TD><input size=30 name="Starts" VALUE="<%$ARGS{Starts}%>"></TD>
+% } else {
+	  <TD><input size=30 name="Starts" VALUE="<%$nowstring%>"></TD>
+% }
+      </TR>
+      <TR>
+        <TD ALIGN=RIGHT><&|/l&>Due</&>:</TD>
+	<TD><input size=30 name="Due"<% $ARGS{Due} && " VALUE=\"$ARGS{Due}\"" %>></TD>
+      </TR>
+    </TABLE>
+    <& /Elements/TitleBoxEnd &>
+  </TD>
+</TR>
+</TABLE>
+<& /Elements/TitleBoxEnd &>
+<& /Elements/Submit, Label => loc("Create")&>
+</FORM>
+
+<%INIT>
+my @addrs;
+my ($Ticket, @Actions, @results, @finalresults);  
+my $QueueObj = new RT::Queue($session{'CurrentUser'});
+$QueueObj->Load("Incident Reports") || Abort(loc("Queue could not be loaded."));
+
+if (!defined $current_tab) {
+  $current_tab = "RTIR/Tools/ScriptedAction.html"; 
+}
+
+my $CFs = $QueueObj->CustomFields();
+
+my $addresses = $ARGS{'Addresses'};
+# replace \r\n with \n
+$addresses =~ s/\r\n/\n/g;
+# trim blanks from ends
+$addresses =~ s/^\s+//;
+$addresses =~ s/\s+$//;
+# replace newlines with commas (for use with parse_csv)
+$addresses =~ s/\n/,/g;
+@addrs = parse_csv($addresses);
+    
+foreach my $addr (@addrs) {
+if ($ARGS{'id'} eq 'new') { # new ticket?
+    # {{{ Create a new ticket
+    
+    my $Queue = new RT::Queue($session{'CurrentUser'});	
+    unless ($Queue->Load($ARGS{'Queue'})) {
+	Abort('Queue not found');
+    }
+    
+    unless ($Queue->CurrentUserHasRight('CreateTicket')) {
+	Abort('You have no permission to create tickets in that queue.');
+    }
+    ($Ticket, @Actions) =
+       CreateTicket(Attachments => $session{'Attachments'}, %ARGS);
+    delete $session{'Attachments'};
+    unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
+      Abort("No permission to view newly created ticket #".$Ticket->id.".");
+    }
+    # }}}
+}
+
+    my @watchresults;
+
+      $ARGS{"WatcherAddressEmail1"} = $addr;
+
+      #Update the watchers
+      push @watchresults, ProcessTicketWatchers(TicketObj => $Ticket, ARGSRef => \%ARGS);    
+
+    my @updateresults; 
+    $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
+    chomp ($ARGS{'UpdateContent'}) ;
+
+    if ($ARGS{'UpdateContent'} &&
+        $ARGS{'UpdateContent'} ne '' &&
+        $ARGS{'UpdateContent'} ne  "-- \n" .
+                                $session{'CurrentUser'}->UserObj->Signature
+       ) {
+	    ProcessUpdateMessage(ARGSRef=>\%ARGS, 
+				 Actions=>\@Actions, 
+				 TicketObj=>$Ticket);
+	}
+
+    my @tempresults = (@watchresults, @updateresults);
+    @tempresults = map { loc("Ticket [_1]: [_2]",$Ticket->Id,$_) } @tempresults;
+
+    @Actions = (@Actions, @results, @tempresults);
+    push @finalresults, @Actions;
+}
+
+sub parse_csv {
+    my $text = shift;      # record containing comma-separated values
+    my @new  = ();
+    push(@new, $+) while $text =~ m{
+        # the first part groups the phrase inside the quotes.
+        # see explanation of this pattern in MRE
+        "([^\"\\]*(?:\\.[^\"\\]*)*)",?
+           |  ([^,]+),?
+           | ,
+       }gx;
+       push(@new, undef) if substr($text, -1,1) eq ',';
+       return @new;      # list of values that were comma-separated
+}
+
+
+</%INIT>
+
+<%ARGS>
+$Title => loc("Scripted Action: Create Incident Reports")
+$current_tab => undef
+$current_subtab => undef
+</%ARGS>

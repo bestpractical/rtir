@@ -37,6 +37,9 @@ my $current_toptab = "RTIR/Tools/Lookup.html";
 $tabs->{"A"} = { path      => 'RTIR/Tools/Lookup.html?NewSearch=1',
                  title     => loc('Lookup'),
  };
+$tabs->{"B"} = { path      => 'RTIR/Tools/ScriptedAction.html',
+                 title     => loc('Scripted Action'),
+ };
 </%INIT>
 
   
