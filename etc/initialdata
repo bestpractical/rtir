@@ -162,7 +162,7 @@
                 SortOrder => 1
             },
             {
-                Name      => "Incoming",
+                Name      => "IncidentCoord",
                 SortOrder => 2
             }
         ],
@@ -386,6 +386,8 @@ while (my $CustomField = $CustomFields->Next()) {
        CustomIsApplicableCode => q[
 # ------------------------------------------------------------------- #
   if ($self->TransactionObj->Type eq "Status" or
+     ($self->TransactionObj->Type eq "Set" and 
+      $self->TransactionObj->Field eq "Status") or
     $self->TransactionObj->Type eq "Create" or
     $self->TransactionObj->Type eq "CustomField") {
     return 1;
@@ -431,6 +433,8 @@ while (my $CustomField = $CustomFields->Next()) {
     $self->TransactionObj->Type eq "Create" or
     ($self->TransactionObj->Type eq "AddLink" and 
      $self->TransactionObj->Field eq "MemberOf") or
+    ($self->TransactionObj->Type eq "Set" and 
+     $self->TransactionObj->Field eq "Status") or
     $self->TransactionObj->Type eq "CustomField") {
     return 1;
   } else {
@@ -477,6 +481,8 @@ while (my $CustomField = $CustomFields->Next()) {
        CustomIsApplicableCode => q[
 # ------------------------------------------------------------------- #
   if ($self->TransactionObj->Type eq "Status" or
+     ($self->TransactionObj->Type eq "Set" and 
+      $self->TransactionObj->Field eq "Status") or
     $self->TransactionObj->Type eq "Create" or
     $self->TransactionObj->Type eq "CustomField") {
     return 1;
@@ -516,8 +522,10 @@ while (my $CustomField = $CustomFields->Next()) {
        CustomIsApplicableCode => q[
 # ------------------------------------------------------------------- #
   if ($self->TransactionObj->Type eq "Status" or
-    $self->TransactionObj->Type eq "Create" or
-    $self->TransactionObj->Type eq "CustomField") {
+      ($self->TransactionObj->Type eq "Set" and 
+       $self->TransactionObj->Field eq "Status") or
+      $self->TransactionObj->Type eq "Create" or
+      $self->TransactionObj->Type eq "CustomField") {
     return 1;
   } else {
     return 0;
@@ -533,7 +541,9 @@ $CustomFields->{'find_disabled_rows'} = 1;
 while (my $CustomField = $CustomFields->Next()) {
   if ($CustomField->Name eq '_RTIR_State') {
     my $State;
-    if ($self->TicketObj->Status eq 'open') {
+    if ($self->TicketObj->Status eq 'new' ||
+        $self->TicketObj->Status eq 'open' ||
+	$self->TicketObj->Status eq 'stalled') {
       $State = 'open';
     } elsif ($self->TicketObj->Status eq 'resolved') {
       $State = 'resolved';
@@ -550,7 +560,6 @@ while (my $CustomField = $CustomFields->Next()) {
 	],
        CustomPrepareCode => '1',
        Template          => 'Blank', },
-
     {  Description => "ResolveAllChildren",
        Queue            => 'Incidents',
        ScripCondition   => 'User Defined',

@@ -23,7 +23,11 @@
 %# 
 %# END LICENSE BLOCK
 <& /RTIR/Elements/Header, Title => loc("Bulk reply") &>
-<& /RTIR/Incident/Elements/Tabs, Title => loc("Bulk reply") &>
+<& /RTIR/Incident/Elements/Tabs, 
+    Ticket => $Incident,
+    current_tab => "RTIR/Incident/Display.html?id=".$Incident->Id, 
+    current_subtab => "RTIR/Incident/BulkReply.html", 
+    Title => loc("Bulk reply") &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -49,10 +53,7 @@ while (my $Ticket = $session{'tickets'}->Next) {
 % if ($i == 0) {
 <i>(<&|/l&>No tickets selected</&>)</i>
 % } else {
-
 <HR>
-
-<input type=hidden name="UpdateType" value="response">
 
 <& /Elements/TitleBoxStart, title => loc('Reply to selected tickets') &>
 <table>
@@ -65,6 +66,12 @@ while (my $Ticket = $session{'tickets'}->Next) {
  &>
 <&|/l&>Worked</&>: <input size=4 name="UpdateTimeWorked" value="<%
 $ARGS{UpdateTimeWorked}%>"> <&|/l&>minutes</&>
+</td></tr>
+<tr><td align=right><&|/l&>Update Type</&>:</td>
+<td><select name="UpdateType">
+  <option value="private" <%$CommentDefault%>><&|/l&>Comments (Not sent to requestors)</&></option>
+   <option value="response" <%$ResponseDefault%>><&|/l&>Response to requestors</&></option>
+</select> 
 </td></tr>
 <tr><td align=right><&|/l&>Subject</&>:</td>
 <td><i>(<&|/l&>uses subjects from tickets</&>)</i></td></tr>
@@ -81,10 +88,19 @@ $ARGS{UpdateTimeWorked}%>"> <&|/l&>minutes</&>
 </FORM>
 <%INIT>
 
+my (@results, @statusresults);
+
+my ($CommentDefault, $ResponseDefault);
+if (($ARGS{'Action'} eq 'Comment') or ($ARGS{'UpdateType'} eq 'private')) {
+   $CommentDefault = "SELECTED"; 
+} else {
+    $ResponseDefault = "SELECTED";
+}
+
+my $Incident = LoadTicket($ARGS{'id'});
+
 # Iterate through the ARGS hash and remove anything with a null value.
 map ($ARGS{$_} =~ /^$/ && (delete $ARGS{$_}), keys %ARGS);
-
-my (@results);
 
 Abort(loc("No search to operate on.")) unless ($session{'tickets'});
 
@@ -101,22 +117,22 @@ if ($ARGS{'UpdateContent'} &&
             $do_comment_reply=1;
 }
 
+my (@updateresults, @basicresults, @watchresults); 
+if ($do_comment_reply) {
+  @statusresults = ProcessTicketBasics(TicketObj => $Incident, ARGSRef => \%ARGS);
+}
+
 #Iterate through each ticket we've been handed
-
 while (my $Ticket = $session{'tickets'}->Next) {
-    $RT::Logger->debug( "Checking Ticket ".$Ticket->Id ."\n");
-    next unless ($ARGS{"UpdateTicket".$Ticket->Id});
-    $RT::Logger->debug ("Matched\n");
-    #Update the basics.
 
-    my @basicresults = ProcessTicketBasics(TicketObj => $Ticket, ARGSRef => \%ARGS);
-
-    #Update the watchers
-    my @watchresults = ProcessTicketWatchers(TicketObj => $Ticket, ARGSRef => \%ARGS);    
-    
-    my @updateresults; 
     if ($do_comment_reply) {
+    next unless ($ARGS{"UpdateTicket".$Ticket->Id});
+
     ProcessUpdateMessage(TicketObj => $Ticket, ARGSRef => \%ARGS, Actions => \@updateresults); 
+
+    @basicresults = ProcessTicketBasics(TicketObj => $Ticket, ARGSRef => \%ARGS);
+
+    @watchresults = ProcessTicketWatchers(TicketObj => $Ticket, ARGSRef => \%ARGS);    
    } 
 
     my $date;
@@ -126,6 +142,7 @@ while (my $Ticket = $session{'tickets'}->Next) {
       $date->AddDays($RT::overdueafter);
       $ARGS{'Due_Date'} = $date->ISO;
     }
+
     my @dateresults = ProcessTicketDates(TicketObj => $Ticket, ARGSRef => \%ARGS);
 
     my @tempresults = (@basicresults, @watchresults, @updateresults, @dateresults);
@@ -134,4 +151,5 @@ while (my $Ticket = $session{'tickets'}->Next) {
     @results = (@results, @tempresults);
 }
 
+@results = (@statusresults, @results);
 </%INIT>

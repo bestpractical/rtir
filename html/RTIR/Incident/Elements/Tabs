@@ -153,13 +153,13 @@ if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
     if ( $Ticket->Status ne 'resolved' ) {
         $actions->{'Ac'} = {
 
-            path =>
-              "RTIR/Incident/Update.html?Action=Comment&DefaultStatus=resolved&id=" . $id,
+              path  => "RTIR/Incident/Reply.html?Action=Comment&DefaultStatus=resolved&ClearRestrictions=1&id=".$id."&All=1",
+
             title => loc('Resolve') };
         $actions->{'B'} = {
 
             path =>
-              "RTIR/Incident/Update.html?Action=Comment&DefaultStatus=rejected&id=" . $id,
+              "RTIR/Incident/Update.html?Action=Respond&DefaultStatus=rejected&id=" . $id,
             title => loc('Abandon') };
     }
     if ( $Ticket->Status ne 'open' ) {

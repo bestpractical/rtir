@@ -30,8 +30,9 @@
     Title => $title &>
 
 <form action="BulkReply.html" method=get>
-<input type=hidden name='ValueOfQueue' value=<%$Queue->Id%>>
 <input type=hidden name=id value=<%$id%>>
+<input type=hidden name=IncidentObj value=<%$IncidentObj%>>
+<input type=hidden name=Status value=<%$ARGS{'DefaultStatus'}%>>
 %if ($ticketcount && !  $ARGS{'HideResults'}) {
 <TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
 <& /RTIR/Elements/TicketHeader, check => "check", Type => 'Report', %ARGS &>
@@ -96,7 +97,7 @@
 % }
 <HR>
 
-<& /Elements/Submit, Name => "SubmitTicket", Caption => loc("Reply to selected Reporters"), Label => loc("Reply") &>
+<& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => $SubmitLabel &>
 </form>
 
 <br>
@@ -161,12 +162,19 @@ if ($session{'tickets'}) {
         $found = loc("Find incidents");
    }
 
-
-
-if ($All) {
-  $title = loc("Incident #[_1]: Reply to All", $id);
+my $SubmitCaption;
+if ($ARGS{'DefaultStatus'} eq 'resolved') {
+  $title = loc("Resolve Incident #[_1] (including children)", $id);
+  $SubmitCaption = loc("Resolve Incident");
+  $SubmitLabel = loc("Resolve");
 } else {
-  $title = loc("Incident #[_1]: Reply to Reporters", $id);
+  $SubmitCaption = loc("Reply to selected correspondents");
+  $SubmitLabel = loc("Reply");
+  if ($All) {
+    $title = loc("Incident #[_1]: Reply to All", $id);
+  } else {
+    $title = loc("Incident #[_1]: Reply to Reporters", $id);
+  }
 }
 
 </%INIT>

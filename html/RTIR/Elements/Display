@@ -83,7 +83,9 @@ unless ($id) {
 
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 my ($QueueName, $Title);
-if ($Type eq "Investigation") {
+if ($Type eq "Incident") {
+  $QueueName = "Incidents";
+} elsif ($Type eq "Investigation") {
   $QueueName = "Investigations";
 } elsif ($Type eq "Block") {
   $QueueName = "Blocks";

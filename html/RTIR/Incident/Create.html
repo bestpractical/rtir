@@ -247,13 +247,12 @@ if ($ARGS{'new-MemberOf'}) {
   $label = loc("Link with");
 }
 
-if (!defined $current_tab) {
-  $current_tab = "RTIR/Incident/Create.html"; 
-}
-
 my $CFs = $QueueObj->CustomFields();
-
 my $TicketObj = $ARGS{TicketObj};
+
+if (!$current_tab) {
+  $current_tab = "RTIR/Incident/Create.html";
+}
 
 # {{{ deal with deleting uploaded attachments
 foreach my $key (keys %ARGS) {
