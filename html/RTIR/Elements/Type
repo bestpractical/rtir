@@ -22,25 +22,37 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<%$Type%>
 <%INIT>
-my $TicketObj = new RT::Ticket($session{'CurrentUser'});
-$TicketObj = LoadTicket($Ticket);
-my $name = $TicketObj->QueueObj->Name;
-my $Type;
+my $name;
 
-if ($name eq "Incidents") {
-  $Type = "Incident";
-} elsif ($name eq "Incident Reports") {
-  $Type = "Report";
-} elsif ($name eq "Investigations") {
-  $Type = "Investigation";
-} elsif ($name eq "Blocks") {
-  $Type = "Block";
+if ($Ticket) {
+    my $TicketObj = new RT::Ticket($session{'CurrentUser'});
+    $TicketObj = LoadTicket($Ticket);
+    $name = $TicketObj->QueueObj->Name;
+} else {
+    $name = $Queue;
 }
+
+my ($Type, @states);
+if ($Queue eq "Incidents") {
+  $Type = 'Incident';
+  @states = ('new', 'open');
+} elsif ($Queue eq "Incident Reports") {
+  $Type = 'Report';
+  @states = ('new', 'open');
+} elsif ($Queue eq "Investigations") {
+  $Type = 'Investigation';
+  @states = ('open');
+} if ($Queue eq "Blocks") {
+  $Type = 'Block';
+  @states = ('pending activation', 'active', 'pending removal');
+}
+
+return ($Type, @states);
 
 </%INIT>
 
 <%ARGS>
 $Ticket => undef
+$Queue => undef
 </%ARGS>
