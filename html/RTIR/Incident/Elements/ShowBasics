@@ -62,6 +62,14 @@
 	content => $Ticket->TimeWorked,
 	size => 5 &>
   <tr>
+    <td class="label"><&|/l&>Constituency</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/ShowRTIRField, 
+         Ticket => $Ticket, 
+	 Name => 'Constituency' &>
+    </td>
+  </tr>
+  <tr>
     <td class="label"><&|/l&>Type</&>:</td>
     <td class="value">
       <& /RTIR/Elements/ShowRTIRField, 

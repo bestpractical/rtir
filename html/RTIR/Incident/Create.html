@@ -84,7 +84,7 @@
     </TD>
   </TR>
   <tr>
-    <td class="label"><&|/l&>Description</&>:</td>
+    <td class="labeltop"><&|/l&>Description</&>:</td>
     <td class="value">
       <& /RTIR/Elements/EditRTIRField, 
          QueueObj => $QueueObj, 
@@ -93,13 +93,25 @@
     </td>
   </tr>
   <tr>
+    <td class="label"><&|/l&>Contituency</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/EditRTIRField, 
+         QueueObj => $QueueObj, 
+	 Name => 'Constituency',
+	 Default => 'JANET-CERT',
+	 Rows => 1 &>
+    </td>
+  </tr>
+  <tr>
     <td class="label"><&|/l&>Type</&>:</td>
     <td class="value">
       <& /RTIR/Elements/EditRTIRField, 
          QueueObj => $QueueObj, 
-	 Name => 'Type' &>
+	 Name => 'Type',
+	 Rows => 1 &>
     </td>
   </tr>
+  <TR>
     <TD colspan=2>
       <& /Ticket/Elements/EditCustomFields, 
         TicketObj => $TicketObj, QueueObj => $QueueObj &>

@@ -33,6 +33,14 @@
 	Ticket => $Ticket &>
     </td>
   </tr>
+  <tr>
+    <td class="label">
+      <&|/l&>Owner</&>:
+    </td>
+    <td class="value">
+      <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id &>
+    </td>
+  </tr>
   <& /Elements/ShadedInputRow, 
       title => loc('Subject'),
       name => "Subject",
@@ -47,14 +55,6 @@
 	 Cols => 60 &>
     </td>
   </tr>
-  <tr>
-    <td class="label">
-      <&|/l&>Owner</&>:
-    </td>
-    <td class="value">
-      <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id &>
-    </td>
-  </tr>
   <& /Elements/ShadedInputRow,
 	title => loc('Priority'),
 	name => "Priority",
@@ -66,11 +66,21 @@
 	content => $Ticket->TimeWorked,
 	size => 5 &>
   <tr>
+    <td class="label"><&|/l&>Consituency</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/EditRTIRField, 
+         TicketObj => $Ticket, 
+	 Name => 'Constituency',
+	 Rows => 1 &>
+    </td>
+  </tr>
+  <tr>
     <td class="label"><&|/l&>Type</&>:</td>
     <td class="value">
       <& /RTIR/Elements/EditRTIRField, 
          TicketObj => $Ticket, 
-	 Name => 'Type' &>
+	 Name => 'Type',
+	 Rows => 1 &>
     </td>
   </tr>
 </table>

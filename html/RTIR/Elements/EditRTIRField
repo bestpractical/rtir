@@ -28,6 +28,7 @@
     CustomField => $CustomField, 
     NamePrefix => $NamePrefix,
     Default => $Default,
+    Rows => $Rows,
     Cols => $Cols &>
 % }
 
@@ -60,5 +61,6 @@ $TicketObj => undef
 $QueueObj => undef
 $Name => undef
 $Cols => undef
+$Rows => undef
 $Default => undef
 </%ARGS>
