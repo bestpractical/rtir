@@ -147,7 +147,7 @@ while (my $Ticket = $session{'tickets'}->Next) {
       use Business::Hours;
       my $bizhours = new Business::Hours;
       if ($RT::BusinessHours) {
-	  $bizhours->set_business_hours($RT::BusinessHours);
+	  $bizhours->business_hours($RT::BusinessHours);
       }
       my $due = $bizhours->first_after($date->Unix);
       $date->Set(Format => 'unix', Value => $due);

@@ -355,7 +355,7 @@ if ($self->TicketObj->StartsObj->AsString eq "Not set") {
   use Business::Hours;
   my $bizhours = new Business::Hours;
   if ($RT::BusinessHours) {
-    $bizhours->set_business_hours($RT::BusinessHours);
+    $bizhours->business_hours($RT::BusinessHours);
   }
   my $starts = $bizhours->first_after($date->Unix);
   $date->Set(Format => 'unix', Value => $starts);
@@ -393,7 +393,7 @@ if ($self->TicketObj->DueObj->AsString eq "Not set") {
   use Business::Hours;
   my $bizhours = new Business::Hours;
   if ($RT::BusinessHours) {
-    $bizhours->set_business_hours($RT::BusinessHours);
+    $bizhours->business_hours($RT::BusinessHours);
   }
   my $due = $bizhours->first_after($date->Unix);
   $date->Set(Format => 'unix', Value => $due);
@@ -419,7 +419,7 @@ if ($self->TicketObj->DueObj->AsString eq "Not set") {
   use Business::Hours;
   my $bizhours = new Business::Hours;
   if ($RT::BusinessHours) {
-    $bizhours->set_business_hours($RT::BusinessHours);
+    $bizhours->business_hours($RT::BusinessHours);
   }
   my $due = $bizhours->first_after($date->Unix);
   $date->Set(Format => 'unix', Value => $due);
@@ -447,7 +447,7 @@ if ($self->TransactionObj->NewValue eq 'rejected' ||
   use Business::Hours;
   my $bizhours = new Business::Hours;
   if ($RT::BusinessHours) {
-    $bizhours->set_business_hours($RT::BusinessHours);
+    $bizhours->business_hours($RT::BusinessHours);
   }
   my $due = $bizhours->first_after($date->Unix);
   $date->Set(Format => 'unix', Value => $due);
@@ -475,7 +475,7 @@ if ($self->TransactionObj->NewValue eq 'rejected' ||
   use Business::Hours;
   my $bizhours = new Business::Hours;
   if ($RT::BusinessHours) {
-    $bizhours->set_business_hours($RT::BusinessHours);
+    $bizhours->business_hours($RT::BusinessHours);
   }
   my $due = $bizhours->first_after($date->Unix);
   $date->Set(Format => 'unix', Value => $due);
@@ -504,7 +504,7 @@ if ($self->TransactionObj->NewValue eq 'open' ||
   use Business::Hours;
   my $bizhours = new Business::Hours;
   if ($RT::BusinessHours) {
-    $bizhours->set_business_hours($RT::BusinessHours);
+    $bizhours->business_hours($RT::BusinessHours);
   }
   my $due = $bizhours->first_after($date->Unix);
   $date->Set(Format => 'unix', Value => $due);

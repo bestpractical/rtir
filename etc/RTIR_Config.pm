@@ -37,7 +37,6 @@ Set($_RTIR_Constituency_default, "EDUNET");
 # if left unset, defaults are Monday through Friday 09:00 to 18:00
 
 #Set($BusinessHours, 
-#  {
 #    0 => { Name => 'Sunday',
 #           Start => undef,
 #	   End => undef},
@@ -65,7 +64,6 @@ Set($_RTIR_Constituency_default, "EDUNET");
 #    6 => { Name => 'Saturday',
 #           Start => undef,
 #           End => undef},
-#  }
 #);
 
 
