@@ -30,9 +30,11 @@ follow the instructions below.
 Then, proceed with the installation instructions in the README.  Do
 not re-initialize the database.
 
-After you have followed the installation instructions in the README,
-you must delete the following Scrips (go to Configuration / Queues /
-<Queue Name> / Scrips):
+After you have followed the installation instructions in the
+README, you must do the following:
+
+1) Delete the following Scrips (go to Configuration / Queues / <Queue
+Name> / Scrips):
 
 In the Incidents Queue:
   SetStartsDate
@@ -74,7 +76,9 @@ In the Blocks Queue:
   FixOwnership
   ReopenIncident
 
-Then, type "make upgrade" and follow the instructions.
+2) Run the etc/upgrade/upgrade.pl script.
+
+3) Then, type "make upgrade" and follow the instructions.
 
 Upgrading from RTIR 1.1.2:
 --------------------------
