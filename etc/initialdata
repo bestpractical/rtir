@@ -342,16 +342,25 @@ if ($self->TicketObj->StartsObj->AsString eq "Not set") {
        ScripAction      => 'User Defined',
        CustomCommitCode => q[
 # ------------------------------------------------------------------- #
+my $sla = 'Full service';
+if ($self->TicketObj->FirstCustomFieldValue('_RTIR_SLA')) {
+  $sla = $self->TicketObj->FirstCustomFieldValue('_RTIR_SLA');
+} else {
+  $sla = 'Full service';
+}
+my $addminutes = $RT::SLA->{$sla};
 if ($self->TicketObj->StartsObj->AsString eq "Not set") {
   my $date = RT::Date->new($RT::SystemUser);
   $date->SetToNow;
   $self->TicketObj->SetStarts($date->ISO);
+  $date->AddSeconds($addminutes * 60);
+  $self->TicketObj->SetDue($date->ISO);
 }
 my $CustomFields = $self->TicketObj->QueueObj->CustomFields();
 $CustomFields->{'find_disabled_rows'} = 1;
 while (my $CustomField = $CustomFields->Next()) {
   if ($CustomField->Name eq '_RTIR_SLA') {
-    $self->TicketObj->AddCustomFieldValue(Field => $CustomField->id, Value => 'Full service');
+    $self->TicketObj->AddCustomFieldValue(Field => $CustomField->id, Value => $sla);
     last;
   }
 }

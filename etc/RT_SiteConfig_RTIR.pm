@@ -10,6 +10,9 @@ Set($overdueafter, 7);
 # Set the hash of whois servers
 Set($whois, {1 => "localhost", 2=> "whois.fucknsi.com"});
 
+# Set the number of minutes for the SLA
+Set($SLA, {'Full service' => 60, 'Reduced service' => 120});
+
 # This is the string that indicates a reply, and which will be
 # pre-pended to subjects when you reply to tickets.
 

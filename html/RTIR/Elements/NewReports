@@ -29,7 +29,7 @@
 <TH ALIGN=LEFT><&|/l&>Subject</&></TH>
 <TH ALIGN=LEFT><&|/l&>State</&></TH>
 <TH ALIGN=LEFT><&|/l&>Owner</&></TH>
-<TH ALIGN=LEFT><&|/l&>Created</&></TH>
+<TH ALIGN=LEFT><&|/l&>Due</&></TH>
 <TH ALIGN=LEFT>&nbsp;</TH>
 </TR>
   <TR>    
@@ -65,7 +65,7 @@
 <%$Ticket->OwnerObj->Name%>
 </TD>
 <TD>
-<% $Ticket->CreatedObj->AsString %>
+<& ShowDate, date => $Ticket->DueObj &>
 </TD>
 <TD ALIGN=RIGHT>
 % if ($Ticket->Owner == $session{CurrentUser}->id) {
@@ -90,7 +90,7 @@ my $rows = 10;
 my $MyTickets;
 $MyTickets = new RT::Tickets ($session{'CurrentUser'});
 $MyTickets->LimitQueue(VALUE => 'Incident Reports');
-$MyTickets->OrderBy(FIELD => 'Created', ORDER => 'ASC');
+$MyTickets->OrderBy(FIELD => 'Due', ORDER => 'ASC');
 
 my $fid;
 my $Queue = new RT::Queue($session{'CurrentUser'});
@@ -108,6 +108,5 @@ if (!$Queue->Load("Incident Reports")) {
 }
 
 $MyTickets->RowsPerPage($rows);
-$MyTickets->OrderBy(FIELD => 'Created', ORDER => 'ASC');
 
 </%INIT>
