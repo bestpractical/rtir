@@ -24,31 +24,57 @@
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $Title &>
 % if ($TicketObj) {
-<& /RTIR/Report/Elements/Tabs,
+<& "/RTIR/".$Type."/Elements/Tabs",
     Ticket => $TicketObj,
-    current_toptab => "RTIR/Report/Listing.html", 
-    current_tab => "RTIR/Report/Split.html", 
+    current_toptab => "RTIR/".$Type."/Listing.html", 
+    current_tab => "RTIR/".$Type."/Split.html", 
     Title => $Title &>
 % } else {
-<& /RTIR/Incident/Elements/ReportTabs, 
+<& "/RTIR/Incident/Elements/".$Type."Tabs", 
     Ticket => $IncidentObj,
     current_toptab => "RTIR/Incident/Listing.html", 
-    current_tab => "RTIR/Incident/ShowReports.html?id=".$Incident, 
-    current_subtab => "RTIR/Report/Create.html", 
+    current_tab => "RTIR/Incident/Show".$Type."s.html?id=".$Incident, 
+    current_subtab => "RTIR/Common/Create.html", 
     Title => $Title &>
-%}
-<FORM ACTION="<%$RT::WebPath%>/RTIR/Report/Create.html" METHOD="GET" ENCTYPE="multipart/form-data">
+% }
+<FORM ACTION="<%$RT::WebPath%>/RTIR/Common/Create.html" METHOD="POST" ENCTYPE="multipart/form-data">
 <INPUT TYPE=HIDDEN Name="id" VALUE="new">
 <INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
-<INPUT TYPE=HIDDEN NAME=Status Value="<%$ARGS{Status}||'new'%>">
+<INPUT TYPE=HIDDEN NAME=Status Value="<%$ARGS{Status}||'open'%>">
+<INPUT TYPE=HIDDEN NAME=Type Value="<%$ARGS{Type}%>">
+% my $parentvalue;
 % if ($Incident) {
-<input type=hidden name="new-MemberOf" VALUE="<%$Incident%>">
+% $parentvalue = $Incident;
+% } elsif ($TicketObj) {
+%   $parentvalue = $TicketObj->Id;
+%   my $count = 0;
+%   my $incidents = $TicketObj->MemberOf;
+%   while (my $link = $incidents->Next) {
+%     my $incident = $link->TargetObj;
+%     if ($incident->QueueObj->Name eq 'Incidents') {
+%       $count++;
+%       $parentvalue = $parentvalue." ".$incident->Id;
+%     }
+%   }
 % }
-
+% if (defined $parentvalue) {
+<input type=hidden name="new-MemberOf" VALUE="<%$parentvalue%>">
+% }
 <A NAME="top">
 	
 <& /Elements/TitleBoxStart, contentbg => "#cccccc", title => $Title &>
 <TABLE border=0 cellpadding=0 cellspacing=2>
+% if (defined $ARGS{'new-MemberOf'}) {
+  <TR>
+    <TD ALIGN=RIGHT><&|/l&>Split from</&>:</TD>
+    <TD><% $ARGS{'new-MemberOf'} %></TD>
+  </TR>
+% } elsif ($Incident) {
+  <TR>
+    <TD ALIGN=RIGHT><&|/l&>Incident</&>:</TD>
+    <TD><% $Incident %></TD>
+  </TR>
+% }
   <TR>
     <TD class=label>
       <&|/l&>Owner</&>:
@@ -60,12 +86,6 @@
 	  Default => $ARGS{Owner}||undef &>
     </TD>
   </TR>
-% if (defined $ARGS{'new-MemberOf'}) {
-  <TR>
-    <TD ALIGN=RIGHT><&|/l&>Split from</&>:</TD>
-    <TD><% $ARGS{'new-MemberOf'} %></TD>
-  </TR>
-% }
   <TR>
     <TD class=label>
       <&|/l&>Subject</&>:
@@ -105,7 +125,7 @@
   <TR>
     <TD colspan=2>
       <& /Ticket/Elements/EditCustomFields, 
-        TicketObj => $TicketObj, QueueObj => $QueueObj &>
+        TicketObj => $TicketObj, QueueObj => $QueueObj&>
     </TD>
   </TR>
 <TR>
@@ -213,9 +233,7 @@
 
 <%INIT>
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
-$QueueObj->Load("Incident Reports") || Abort(loc("Queue could not be loaded."));
-my $CFs = $QueueObj->CustomFields();
-
+my $QueueName;
 my $TicketObj = $ARGS{TicketObj};
 my $IncidentObj;
 
@@ -223,6 +241,32 @@ if ($Incident) {
   $IncidentObj = new RT::Ticket($session{'CurrentUser'});
   $IncidentObj = LoadTicket($Incident);
 }
+
+if ($Type eq "Investigation") {
+  if ($Split) {
+    $Title = loc("Split Investigation #[_1]: [_2]", $TicketObj->id, $TicketObj->Subject);
+  } else {
+    $Title = loc("Create a new Investigation");
+  }
+  $QueueName = "Investigations";
+} elsif ($Type eq "Block") {
+  if ($Split) {
+    $Title = loc("Split Block #[_1]: [_2]", $TicketObj->id, $TicketObj->Subject);
+  } else {
+    $Title = loc("Create a new Block");
+  }
+  $QueueName = "Blocks";
+} else {
+  if ($Split) {
+    $Title = loc("Split Incident Report #[_1]: [_2]", $TicketObj->id, $TicketObj->Subject);
+  } else {
+    $Title = loc("Create a new Incident Report");
+  }
+  $QueueName = "Incident Reports";
+}
+$QueueObj->Load($QueueName) || Abort(loc("Queue could not be loaded."));
+
+my $CFs = $QueueObj->CustomFields();
 
 # {{{ deal with deleting uploaded attachments
 foreach my $key (keys %ARGS) {
@@ -258,6 +302,8 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
 
 # }}}
 
+my $foo;
+
 if ((!exists $ARGS{'AddMoreAttach'}) && ($ARGS{'id'} eq 'new')) { # new ticket?
     $m->comp('Display.html', %ARGS);
     $m->abort();
@@ -270,5 +316,7 @@ $DependedOnBy => undef
 $MemberOf => undef
 $QuoteTransaction => undef
 $Incident => undef
-$Title => loc("Create a new Incident Report")
+$Title => undef
+$Type => "Report"
+$Split => 0
 </%ARGS>

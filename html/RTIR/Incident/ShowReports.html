@@ -37,8 +37,7 @@
 <& /RTIR/Elements/ShowChildren, 
     Delete => 1,
     Ticket => $Incident, 
-    QueueName => 'Incident Reports',
-    DisplayPath => "/RTIR/Report/Display.html" &>
+    Type => 'Report' &>
 <& /Elements/Submit, Caption=> loc('Unlink Report') &>
 </form>
 

@@ -34,8 +34,7 @@
 <i><%loc("Check box to unlink")%></i>
 <& /RTIR/Elements/ShowChildren, 
     Ticket => $Incident, 
-    QueueName => 'Investigations',
-    DisplayPath => "/RTIR/Investigation/Display.html" &>
+    Type => 'Investigation' &>
 <& /Elements/Submit, Caption=> loc('Unlink investigation') &>
 </form>
 

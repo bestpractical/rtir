@@ -89,13 +89,13 @@ if ( defined $session{'tickets'} ) {
 
 
 $tabs->{"this"} = { class => "currentnav",
-                    path  => "RTIR/Investigation/Display.html?id=" . $Ticket->id,
+                    path  => "RTIR/Common/Display.html?id=" . $Ticket->id . "&Type=Investigation",
                     title => loc("Investigation #[_1]", $id),
                     current_subtab => $current_subtab };
 
 my $ticket_page_tabs = {
     _A => { title => loc('Display'),
-            path  => "RTIR/Investigation/Display.html?id=" . $id, },
+            path  => "RTIR/Common/Display.html?id=" . $id . "&Type=Investigation", },
 
     _B => { title => loc('Edit'),
             path  => "RTIR/Investigation/Edit.html?id=" . $id, },
@@ -121,7 +121,7 @@ $tabs->{'this'}->{"subtabs"} = $ticket_page_tabs;
 if (    $Ticket->CurrentUserHasRight('ModifyTicket')
      or $Ticket->CurrentUserHasRight('ReplyToTicket') ) {
     $actions->{'A'} = { title => loc('Reply'),
-                        path  => "RTIR/Update.html?Action=Respond&id=" . $id. "&PostTo=/RTIR/Investigation/Display.html",
+                        path  => "RTIR/Update.html?Action=Respond&id=" . $id. "&PostTo=/RTIR/Common/Display.html&Type=Investigation",
     };
 }
 
@@ -131,22 +131,22 @@ if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
 
             path =>
               "RTIR/Update.html?Action=Comment&DefaultStatus=resolved&id="
-              . $id. "&PostTo=/RTIR/Investigation/Display.html",
+              . $id. "&PostTo=/RTIR/Common/Display.html&Type=Investigation",
             title => loc('Resolve') };
     }
     if ( $Ticket->Status ne 'open' ) {
-        $actions->{'C'} = { path => "RTIR/Investigation/Display.html?Status=open&id=" . $id,
+        $actions->{'C'} = { path => "RTIR/Common/Display.html?Status=open&id=" . $id . "&Type=Investigation",
                             title => loc('Open it') };
     }
 }
 
 if ( $Ticket->CurrentUserHasRight('OwnTicket') ) {
     if ( $Ticket->OwnerObj->id == $RT::Nobody->id ) {
-        $actions->{'D'} = { path => "RTIR/Investigation/Display.html?Action=Take&id=" . $id,
+        $actions->{'D'} = { path => "RTIR/Common/Display.html?Action=Take&id=" . $id . "&Type=Investigation",
                             title => loc('Take') };
     }
     elsif ( $Ticket->OwnerObj->id != $session{CurrentUser}->id ) {
-        $actions->{'E'} = {path => "RTIR/Investigation/Display.html?Action=Steal&id=" . $id,
+        $actions->{'E'} = {path => "RTIR/Common/Display.html?Action=Steal&id=" . $id . "&Type=Investigation",
                            title => loc('Steal') };
     }
 }
@@ -154,7 +154,7 @@ if ( $Ticket->CurrentUserHasRight('OwnTicket') ) {
 if (    $Ticket->CurrentUserHasRight('ModifyTicket')
      or $Ticket->CurrentUserHasRight('CommentOnTicket') ) {
     $actions->{'F'} = { title => loc('Comment'),
-                        path  => "RTIR/Update.html?Action=Comment&id=" . $id. "&PostTo=/RTIR/Investigation/Display.html",
+                        path  => "RTIR/Update.html?Action=Comment&id=" . $id. "&PostTo=/RTIR/Common/Display.html&Type=Investigation",
     };
 }
 }

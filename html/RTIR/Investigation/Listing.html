@@ -33,7 +33,11 @@
 % my $i;
 %while (my $Ticket = $session{'tickets'}->Next) {
 % $i++;
-<& Elements/TicketRow, Ticket => $Ticket, i=> $i, %ARGS &>
+<& /RTIR/Common/Elements/TicketRow, 
+    Ticket => $Ticket, 
+    i=> $i, 
+    Type => 'Investigation',
+    %ARGS &>
 %}
 </TABLE>
 <div align=center>

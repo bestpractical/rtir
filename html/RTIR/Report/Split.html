@@ -22,7 +22,9 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& Create.html, MemberOf => $MemberOf,
+<& /RTIR/Common/Create.html, 
+    Type => 'Report',
+    Split => 1,
     QuoteTransaction => $QuoteTransaction,
     Queue => $Queue,
     Subject => $TicketObj->Subject,
@@ -33,8 +35,7 @@
     Status => $TicketObj->Status,
     Owner => $TicketObj->Owner,
     InitialPriority => $TicketObj->InitialPriority,
-    FinalPriority => $TicketObj->FinalPriority,
-    Title => loc("Split Incident Report #[_1]: [_2]", $TicketObj->id, $TicketObj->Subject) &>
+    FinalPriority => $TicketObj->FinalPriority &>
 
 <%INIT>
 my $TicketObj = LoadTicket($Ticket);

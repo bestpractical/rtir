@@ -22,7 +22,9 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& Create.html, MemberOf => $MemberOf,
+<& /RTIR/Common/Create.html, 
+    Type => "Investigation",
+    Split => 1,
     QuoteTransaction => $QuoteTransaction,
     Queue => $Queue,
     Subject => $TicketObj->Subject,
@@ -43,7 +45,6 @@ $Queue->Load("Investigations") || Abort(loc("Queue could not be loaded."));
 </%INIT>
 
 <%ARGS>
-$MemberOf => undef
 $QuoteTransaction => undef
 $Ticket => undef
 </%ARGS>

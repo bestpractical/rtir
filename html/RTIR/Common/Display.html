@@ -23,9 +23,9 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/Header, Title => $Title &>
-<& /RTIR/Report/Elements/Tabs, 
+<& "/RTIR/".$Type."/Elements/Tabs", 
     Ticket => $Ticket, 
-    current_tab => 'RTIR/Report/Display.html?id='.$Ticket->id,
+    current_tab => 'RTIR/'.$Type.'/Display.html?id='.$Ticket->id,
     Title => $Title &>
 
 <& /Elements/ListActions, actions => \@Actions &>
@@ -126,6 +126,17 @@ $Collapsed => undef
 
 $Ticket = new RT::Ticket($session{'CurrentUser'});
 
+my $QueueObj = new RT::Queue($session{'CurrentUser'});
+my ($QueueName, $Title);
+if ($Type eq "Investigation") {
+  $QueueName = "Investigations";
+} elsif ($Type eq "Block") {
+  $QueueName = "Blocks";
+} else {
+  $QueueName = "Incident Reports";
+}
+$QueueObj->Load($QueueName) || Abort(loc("Queue could not be loaded."));
+
 unless ($id) {
     Abort('No incident specified');
 }
@@ -133,16 +144,12 @@ unless ($id) {
 if ($ARGS{'id'} eq 'new') {
     # {{{ Create a new ticket
     
-    my $Queue = new RT::Queue($session{'CurrentUser'});	
-    unless ($Queue->Load($ARGS{'Queue'})) {
-	Abort('Queue not found');
-    }
-    
-    unless ($Queue->CurrentUserHasRight('CreateTicket')) {
+    unless ($QueueObj->CurrentUserHasRight('CreateTicket')) {
 	Abort('You have no permission to create tickets in that queue.');
     }
     ($Ticket, @Actions) =
        CreateTicket(Attachments => $session{'Attachments'}, %ARGS);
+    push (@Actions);
     delete $session{'Attachments'};
     unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
       Abort("No permission to view newly created ticket #".$Ticket->id.".");
@@ -190,6 +197,16 @@ my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$Ticket);
 push (@Actions, @BasicActions);
 }
 
-my $Title = loc("Incident Report #[_1]: [_2]", $Ticket->Id, $Ticket->Subject);
+if ($Type eq "Investigation") {
+  $Title = loc("Investigation #[_1]: [_2]", $Ticket->Id, $Ticket->Subject);
+} elsif ($Type eq "Block") {
+  $Title = loc("Block #[_1]: [_2]", $Ticket->Id, $Ticket->Subject);
+} else {
+  $Title = loc("Incident Report #[_1]: [_2]", $Ticket->Id, $Ticket->Subject);
+}
 
 </%INIT>
+
+<%ARGS>
+$Type => "Report"
+</%ARGS>

@@ -34,10 +34,10 @@
   $q->Load("Blocks");
 
   my $subtabs = {
-    _A => { path => 'RTIR/Block/Create.html?Incident='.$Ticket->id,
+    _A => { path => 'RTIR/Common/Create.html?Incident='.$Ticket->id."&Type=Block",
             title     => loc('New Block') },
     _B => { path => 'RTIR/Incident/AssociateBlocks.html?QueueOp==&ValueOfQueue='.$q->Id.'&ClearRestrictions=1&Incident='.$Ticket->id.'&StatusOp==&ValueOfStatus=new',
-            title     => loc('Associate Blocks') },
+            title     => loc('Link Blocks') },
     };
 
 </%INIT>

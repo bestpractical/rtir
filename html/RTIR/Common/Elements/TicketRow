@@ -6,8 +6,8 @@ CLASS="oddline"
 CLASS="evenline"
 % }
 >
-<TD ROWSPAN="2"><B><A HREF="<%$RT::WebPath%>/RTIR/Investigation/Display.html?id=<%$Ticket->Id%>"><%$Ticket->id%></a></B></TD>
-<TD><B><A HREF="<%$RT::WebPath%>/RTIR/Investigation/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Subject%></a></B></TD>
+<TD ROWSPAN="2"><B><A HREF="<%$RT::WebPath%>/RTIR/Common/Display.html?id=<%$Ticket->Id%>&Type=<%$Type%>"><%$Ticket->id%></a></B></TD>
+<TD><B><A HREF="<%$RT::WebPath%>/RTIR/Common/Display.html?id=<%$Ticket->Id%>&Type=<%$Type%>"><%$Ticket->Subject%></a></B></TD>
 <TD><%loc($Ticket->Status)%></TD>
 <TD><%$Ticket->QueueObj->Name%></TD>
 <TD><%$Ticket->Owner == $RT::Nobody->Id ? loc('Nobody') : $Ticket->OwnerObj->Name%></TD>
@@ -29,4 +29,5 @@ CLASS="evenline"
 <%ARGS>
 $Ticket => undef
 $i => undef
+$Type => 'Report'
 </%ARGS>

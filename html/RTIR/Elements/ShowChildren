@@ -30,7 +30,7 @@
 % if ($Delete) {
   <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
 % }
-  <a href="<%$RT::WebPath%><%$DisplayPath%>?id=<%$member->Id%>"><%$member->Id%>: <%$member->Subject%></a> [<%$member->Status%>]<br>
+  <a href="<%$RT::WebPath%>/RTIR/<%$Type%>/Display.html?id=<%$member->Id%>&Type=<%$Type%>"><%$member->Id%>: <%$member->Subject%></a> [<%$member->Status%>]<br>
 % if ($LimitDepth > 0 and $depth < $LimitDepth) {
 <& ShowChildren, Ticket => $member, depth => ($depth+1) &> 
 % }
@@ -48,14 +48,23 @@
 
 my $count = 0;
 my $members = $Ticket->Members;
+my $QueueName;
+
+if ($Type eq "Investigation") {
+  $QueueName = "Investigations";
+} elsif ($Type eq "Block") {
+  $QueueName = "Blocks";
+} else {
+  $QueueName = "Incident Reports";
+}
 
 </%INIT>
 
 <%ARGS>
 $Ticket => undef
-$QueueName => undef
 $depth => 1
 $LimitDepth => 0
 $DisplayPath => "/Ticket/Display.html"
 $Delete => 0
+$Type => 'Report'
 </%ARGS>
