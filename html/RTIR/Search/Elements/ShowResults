@@ -1,4 +1,5 @@
 <& /Elements/TicketList, 
+    RTIRCheck => $RTIRCheck,
     Query => $Query,
     AllowSorting => 1,
     OrderBy => $OrderBy,
@@ -47,4 +48,5 @@ $Order => 'ASC'
 $QueryString => undef
 $Queue => undef
 $BaseURL => $RT::WebPath."/Search/Results.html?"
+$RTIRCheck => undef
 </%ARGS>

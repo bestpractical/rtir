@@ -51,10 +51,11 @@
     QueryString => $QueryString, 
     BaseURL => $BaseURL,
     Format => $Format,
+    RTIRCheck => $RTIRCheck,
     &>
 
-<a href="BulkReject.html?check=check">[Select All]</a>
-<a href="BulkReject.html?check=uncheck">[Unselect All]</a>
+<a href="BulkReject.html?RTIRCheck=All">[Select All]</a>
+<a href="BulkReject.html?RTIRCheck=None">[Unselect All]</a>
 
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => loc("Reject") &>
 </form>
@@ -129,7 +130,7 @@ my $path = "RTIR/Search/Refine.html?ResultPage=$BaseURL&current_tab=$current_tab
 
 <%ARGS>
 $Status => 'rejected'
-$check => 'uncheck'
+$RTIRCheck => 'None'
 $Query => undef
 $BaseQuery => undef
 $Queue => 'Incident Reports'

@@ -1,16 +1,40 @@
 <%INIT>
+my %args = $m->caller_args(4);
+
+my $check;
+$check = $args{'RTIRCheck'} if $args{'RTIRCheck'};
+
     $COLUMN_MAP->{'_RTIR_Check'} = {
         title     => ' ',
-	value => sub { return '<input type="checkbox" name="UpdateTicket' . $_[0]->id . '">' },
+	value => sub {
+	    my $selected = '';
+	    if ($check eq 'All') {
+		$selected = 'CHECKED';
+	    } elsif ($check eq 'All') {
+		$selected = '';
+	    } elsif ($check == $_[0]->id) {
+		$selected = 'CHECKED';
+	    } elsif (ref($check) eq 'ARRAY') {
+		foreach my $check (@$check) {
+		    if ($_[0]->id == $check) {
+			$selected = 'CHECKED';
+		    }
+		}
+	    }
+	    return '<input type="checkbox" name="UpdateTicket' . $_[0]->id . '" ' . $selected . '>' },
     };
 
     $COLUMN_MAP->{'_RTIR_Radio'} = {
         title     => ' ',
-	value => sub { return '<input type="radio" name="SelectedTicket" value="' . $_[0]->id . '">' },
+	value => sub { 
+	    my $selected = '';
+	    if ($_[0]->id == $check) {
+		$selected = 'CHECKED';
+	    }
+	    return '<input type="radio" name="SelectedTicket" value="' . $_[0]->id . '" ' . $selected . '>' },
     };
 </%INIT>
 
 <%ARGS>
 $COLUMN_MAP => undef
-$id => undef
 </%ARGS>
