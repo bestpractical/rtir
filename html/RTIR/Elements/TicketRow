@@ -6,11 +6,12 @@ CLASS="oddline"
 CLASS="evenline"
 % }
 >
+% my $checkval;
 % if (defined $check) {
 %   if ($check eq "check") {
-%     my $checkval = "CHECKED";
+%     $checkval = "CHECKED";
 %   }
-<TD rowspan=2><input type=checkbox name="UpdateTicket<%$Ticket->Id%>" $checkval></TD>
+<TD rowspan=2><input type=checkbox name="UpdateTicket<%$Ticket->Id%>" <%$checkval%>></TD>
 % } elsif ($check eq "radio") {
 <TD rowspan=2><input type=radio name="SelectedTicket" value="<%$Ticket->Id%>"></TD>
 % }

@@ -36,7 +36,10 @@
 <input type=hidden name=BulkReject value=1>
 
 <& /RTIR/Elements/Listing, 
-    Type => 'Incident', Queue => 'Incidents', check => 'uncheck', %ARGS &>
+    Type => 'Incident', Queue => 'Incidents', check => $check, %ARGS &>
+
+<a href="BulkReject.html?check=check">[Select All]</a>
+<a href="BulkReject.html?check=uncheck">[Unselect All]</a>
 
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => loc("Reject") &>
 </form>
@@ -130,7 +133,7 @@ if ($ARGS{'BulkReject'}) {
 </%INIT>
 
 <%ARGS>
-$id => undef
 $Status => 'rejected'
+$check => 'uncheck'
 </%ARGS>
 
