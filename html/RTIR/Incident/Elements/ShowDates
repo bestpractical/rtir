@@ -31,10 +31,20 @@
     <TD class="label"><&|/l&>Starts</&>:</TD>
     <TD class="value"><% $Ticket->StartsObj->AsString %></TD>
   </TR>
+% if ($Ticket->QueueObj->Name eq 'Incident Reports' ||
+%     $Ticket->QueueObj->Name eq 'Investigations' ||
+%     $Ticket->QueueObj->Name eq 'Blocks') {
+  <TR>
+    <TD class="label"><&|/l&>Started</&>:</TD>
+    <TD class="value"><% $Ticket->StartedObj->AsString %></TD>
+  </TR>
+% }
+% if ($Ticket->QueueObj->Name ne 'Incidents') {
   <TR>
     <TD class="label"><&|/l&>Due</&>:</TD>
     <TD class="value"><% $Ticket->DueObj->AsString  %></TD>
   </TR>
+% }
   <TR>
     <TD class="label"><&|/l&>Updated</&>:</TD>
     <TD class="value"><A HREF="#lasttrans"><% $Ticket->LastUpdated ? (loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)) : loc("Never") | h %></a></TD>
