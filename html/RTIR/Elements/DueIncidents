@@ -28,7 +28,6 @@
 <TH ALIGN=RIGHT><&|/l&>#</&></TH>
 <TH ALIGN=LEFT><&|/l&>Subject</&></TH>
 <TH ALIGN=LEFT><&|/l&>Owner</&></TH>
-<TH ALIGN=LEFT><&|/l&>State</&></TH>
 <TH ALIGN=LEFT><&|/l&>Priority</&></TH>
 <TH ALIGN=LEFT><&|/l&>Due</&></TH>
 <TH ALIGN=LEFT>&nbsp;</TH>
@@ -53,9 +52,6 @@
 </TD>
 <TD>
 <%$Ticket->OwnerObj->Name%>
-</TD>
-<TD>
-<& /RTIR/Elements/ShowRTIRField, Ticket => $Ticket, Name => 'State'&>
 </TD>
 <TD>
 <%$Ticket->Priority%>
