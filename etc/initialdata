@@ -387,16 +387,84 @@ if ($self->TicketObj->DueObj->AsString eq "Not set") {
 # ------------------------------------------------------------------- #	],
        CustomPrepareCode => '1',
        Template       => 'Blank' },
-    {  Description => "SetStartsDate",
+    {  Description => "SetDates",
        Queue            => 'Blocks',
        ScripCondition => 'On Create',
        ScripAction      => 'User Defined',
        CustomCommitCode => q[
 # ------------------------------------------------------------------- #
+my $date = RT::Date->new($RT::SystemUser);
+$date->SetToNow;
 if ($self->TicketObj->StartsObj->AsString eq "Not set") {
-  my $date = RT::Date->new($RT::SystemUser);
-  $date->SetToNow;
   $self->TicketObj->SetStarts($date->ISO);
+}
+if ($self->TicketObj->DueObj->AsString eq "Not set") {
+  $date->AddDays($RT::overdueafter);
+  $self->TicketObj->SetDue($date->ISO);
+}
+  return 1;
+# ------------------------------------------------------------------- #	],
+       CustomPrepareCode => '1',
+       Template       => 'Blank' },
+    {  Description => "UnsetDue",
+       Queue            => 'Incident Reports',
+       ScripCondition => 'On Status Change',
+       ScripAction      => 'User Defined',
+       CustomCommitCode => q[
+# ------------------------------------------------------------------- #
+my $date = RT::Date->new($RT::SystemUser);
+if ($self->TransactionObj->NewValue eq 'rejected' ||
+    $self->TransactionObj->NewValue eq 'resolved') {
+  $date->Set(Format => 'unix', Value=> 0);
+  $self->TicketObj->SetDue($date->ISO);
+} elsif ( ( $self->TransactionObj->OldValue eq 'rejected' ||
+            $self->TransactionObj->OldValue eq 'resolved') &&
+           $self->TransactionObj->NewValue eq 'open') {
+  $date->SetToNow;
+  $self->TicketObj->SetDue($date->ISO);
+}
+  return 1;
+# ------------------------------------------------------------------- #	],
+       CustomPrepareCode => '1',
+       Template       => 'Blank' },
+    {  Description => "UnsetDue",
+       Queue            => 'Investigations',
+       ScripCondition => 'On Status Change',
+       ScripAction      => 'User Defined',
+       CustomCommitCode => q[
+# ------------------------------------------------------------------- #
+my $date = RT::Date->new($RT::SystemUser);
+if ($self->TransactionObj->NewValue eq 'rejected' ||
+    $self->TransactionObj->NewValue eq 'resolved') {
+  $date->Set(Format => 'unix', Value=> 0);
+  $self->TicketObj->SetDue($date->ISO);
+} elsif ( ( $self->TransactionObj->OldValue eq 'rejected' ||
+            $self->TransactionObj->OldValue eq 'resolved') &&
+           $self->TransactionObj->NewValue eq 'open') {
+  $date->SetToNow;
+  $self->TicketObj->SetDue($date->ISO);
+}
+
+return 1;
+# ------------------------------------------------------------------- #	],
+       CustomPrepareCode => '1',
+       Template       => 'Blank' },
+    {  Description => "UnsetDue",
+       Queue            => 'Blocks',
+       ScripCondition => 'On Status Change',
+       ScripAction      => 'User Defined',
+       CustomCommitCode => q[
+# ------------------------------------------------------------------- #
+my $date = RT::Date->new($RT::SystemUser);
+if ($self->TransactionObj->NewValue eq 'open' ||
+    $self->TransactionObj->NewValue eq 'rejected' ||
+    $self->TransactionObj->NewValue eq 'resolved') {
+  $date->Set(Format => 'unix', Value=> 0);
+  $self->TicketObj->SetDue($date->ISO);
+} elsif ($self->TransactionObj->NewValue eq 'stalled') {
+  $date->SetToNow;
+  $date->AddDays($RT::overdueafter);
+  $self->TicketObj->SetDue($date->ISO);
 }
   return 1;
 # ------------------------------------------------------------------- #	],

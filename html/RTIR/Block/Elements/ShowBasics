@@ -23,7 +23,9 @@
 %# 
 %# END LICENSE BLOCK
 <table>
-  <tr>
+<tr>
+<td>
+<table>
   <tr>
     <td class=label>
       <%loc("State")%>:
@@ -31,13 +33,6 @@
     <td class=value colspan=2>
       <& /RTIR/Elements/ShowRTIRField, Ticket => $Ticket, Name => 'State' &>
     </td>
-  </tr>
-    <TD>
-    <TD>
-      <& /Elements/ShadedBox, 
-          title => loc('Time Worked'),
-          content => loc('[_1] min', $TimeWorked) &>
-    </TD>
   </tr>
   <tr>
     <td class=label>
@@ -47,9 +42,9 @@
       <& /RTIR/Elements/ShowIncidents, Ticket => $Ticket &>
     </td>
   </tr>
-</table>
-
-<table>
+  <& /Elements/ShadedRow, 
+      title => loc('Time Worked'),
+      content => loc('[_1] min', $TimeWorked) &>
   <tr>
     <td class="label"><&|/l&>IP Address</&>:</td>
     <td class="value">
@@ -82,6 +77,9 @@
 	 Name => 'WhereBlocked' &>
     </td>
   </tr>
+</table>
+</td>
+</tr>
 </table>
 
 <%INIT>

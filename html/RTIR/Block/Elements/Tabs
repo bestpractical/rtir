@@ -77,7 +77,7 @@ if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
         $actions->{'Ac'} = {
 
             path =>
-              "RTIR/Update.html?Action=Comment&DefaultStatus=stalled&id="
+              "RTIR/Update.html?Action=Respond&DefaultStatus=stalled&id="
               . $id,
             title => loc('Request Removal') };
     }
