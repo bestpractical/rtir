@@ -1,0 +1,27 @@
+<%INIT>
+
+# Set $skip to 1 if transaction matches criteria
+# $skip is passed by reference
+
+# get the queue name
+my $Queue = $Transaction->TicketObj->QueueObj->Name;
+
+# only check if it's an RTIR queue
+if ($Queue eq 'Incidents' ||
+    $Queue eq 'Incident Reports' ||
+    $Queue eq 'Investigations' ||
+    $Queue eq 'Blocks') {
+  if ($Transaction->Type eq 'Status' && $Transaction->Field eq 'Status' ||
+      $Transaction->Type eq 'Set' && $Transaction->Field eq 'Status') {
+    $$skip = 1;
+  } else {
+    $$skip = 0;
+  }
+}
+
+</%INIT>
+
+<%ARGS>
+$skip => undef
+$Transaction => undef
+</%ARGS>

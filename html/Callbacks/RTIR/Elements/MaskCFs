@@ -1,0 +1,16 @@
+<%INIT>
+
+# remove the prefix from the beginning of the text
+# useful for removing _RTIR_ from RTIR custom fields
+# $text is passed by reference
+
+if (substr($$text, 0, length($prefix)) eq $prefix) {
+  $$text = substr($$text, length($prefix));
+}
+
+</%INIT>
+
+<%ARGS>
+$text => undef
+$prefix => '_RTIR_'
+</%ARGS>
