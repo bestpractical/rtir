@@ -65,12 +65,21 @@
     <td class=input>
       <select name="server">
 % foreach my $s (sort keys %{$servers}) {
-% next unless $servers->{$s};
+% my ($host, $name);
+% my $srv = $servers->{$s};
+% next unless $srv;
+% if (ref($srv) eq 'HASH') {
+% $host = $srv->{'Host'};
+% $name = $srv->{'FriendlyName'};
+% } else {
+% $host = $srv;
+% }
+% next unless $srv;
 % my $selected = "";
 % if ($servers->{$s} eq $server) {
 %   $selected = " SELECTED";
 % }
-        <option value="<%$servers->{$s}%>"<%$selected%>><%$servers->{$s}%></option>
+        <option value="<%$host%>"<%$selected%>><%$name || $host%></option>
 % }
       </select>
   </tr>
