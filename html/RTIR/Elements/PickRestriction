@@ -44,8 +44,6 @@
 <&|/l&>Subject</&> <& /Elements/SelectMatch, Name => "SubjectOp" &> 
 <INPUT Name="ValueOfSubject" SIZE=20>
 
-<input type="hidden" name=loc("ValueOfQueue") value=$Queue>
-
 <li><&|/l&>Priority</&> <& /Elements/SelectEqualityOperator, Name => "PriorityOp" &>
 
 <INPUT Name="ValueOfPriority" SIZE=5>

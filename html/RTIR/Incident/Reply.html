@@ -1,0 +1,129 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
+<& Elements/ReportTabs, 
+    Ticket => $IncidentObj, 
+    current_tab => 'RTIR/Incident/ShowReports.html?id='.$IncidentObj->id,
+    current_subtab => 'RTIR/Incident/ReplyToReporters.html',
+    Title => $title &>
+
+%if ($ticketcount && !  $ARGS{'HideResults'}) {
+<TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
+<& /Search/Elements/TicketHeader, %ARGS &>
+% my $i;
+%while (my $Ticket = $session{'tickets'}->Next) {
+% $i++;
+<& Elements/TicketRow, Ticket => $Ticket, i=> $i, %ARGS &>
+%}
+</TABLE>
+<div align=center>
+<font size=2>
+<a href="ReplyToReporters.html?Incident=<%$Incident%>&GotoPage=1"><&|/l&>First page</&></a>
+&nbsp;&nbsp;
+%  if ( $session{'tickets'}->FirstRow >= $session{'tickets_rows_per_page'}-1 ) {
+<a href="ReplyToReporters.html?Incident=<%$Incident%>&GotoPage=Prev">&lt;<&|/l&>Previous page</&></a>
+&nbsp;&nbsp;
+%  }                                                                           
+%  if ( $session{'tickets'}->FirstRow + $session{'tickets_rows_per_page'} < $ticketcount ) {                                                               
+<a href="ReplyToReporters.html?Incident=<%$Incident%>&GotoPage=Next"><&|/l&>Next page</&>&gt;</a>
+%  }
+%#&nbsp;&nbsp;<form method=get action="ReplyToReporters.html"><&|/l&>Goto page</&> <input name=GotoPage size=2></form>
+</font>
+</div>
+<!--<div align=right>-->
+<table width="100%" border=0 cellpadding=3 CELLSPACING=1>
+<tr>
+<td align=left>
+(<&|/l, ($session{'tickets'}->FirstRow+1), ($session{'tickets'}->FirstRow() + $session{'tickets'}->RowsPerPage()  ) &>[_1] - [_2] shown</&>)
+</td>
+<td align=right>
+
+<a href="BulkReply.html?Incident=<%$Incident%>&Status=open"><&|/l&>Reply to Reporters</&></a>
+<!--</div>-->
+</td>
+</tr>
+</table>
+
+% }
+<TABLE WIDTH="100%">
+<TR>
+<TD VALIGN="TOP">
+<& /Elements/TitleBoxStart, title => loc('Current search criteria')&>
+
+%my %restrictions=$session{'tickets'}->DescribeRestrictions();
+%foreach my $row (keys %restrictions){
+<%$restrictions{"$row"}%> <A HREF="ReplyToReporters.html?Incident=<%$Incident%>&DeleteRestriction=<%$row%>">[<&|/l&>delete</&>]</a><br>
+%}
+<BR>
+<BR>
+<A HREF="ReplyToReporters.html?Incident=<%$Incident%>&Bookmark=<%$session{'tickets'}->FreezeLimits()|u%>&TicketsSortBy=<%$session{'tickets_sort_by'}%>&TicketsSortOrder=<%$session{'tickets_sort_order'}%>&RowsPerPage=<%$session{'tickets_rows_per_page'}%>"><&|/l&>Bookmarkable URL for this search</&></a>
+<& /Elements/TitleBoxEnd&>
+</TD>
+<TD>
+
+<& /RTIR/Elements/PickRestriction, %ARGS &>
+
+</TD>
+</TR>
+</TABLE>
+
+<%INIT>
+
+my $IncidentObj = LoadTicket($Incident);
+
+my ($title, $ticketcount);
+$session{'i'}++;
+if ($session{'tickets'}) {
+    if ($ARGS{'DeleteRestriction'}) {
+	    $session{'tickets'}->DeleteRestriction($ARGS{'DeleteRestriction'});
+    }
+    if ( ($ARGS{'ClearRestrictions'}) || ($ARGS{'NewSearch'}) ) {
+	    $session{'tickets'}->ClearRestrictions;
+	}	
+}
+   ProcessSearchQuery(ARGS=>\%ARGS);
+   $session{'tickets'}->RedoSearch();
+   $session{'tickets'}->LimitQueue(VALUE => "Incident Reports");
+
+   if ($All) {
+     $session{'tickets'}->LimitQueue(VALUE => "Investigations");
+   }
+
+   if ( $session{'tickets'}->DescribeRestrictions()) {
+       $ticketcount = $session{tickets}->Count();
+        $title = loc('Found [quant,_1,incident]', $ticketcount);
+    } else {
+        $title = loc("Find incidents");
+   }
+
+</%INIT>
+<%CLEANUP>
+$session{'tickets'}->PrepForSerialization();
+</%CLEANUP>
+
+<%ARGS>
+$Incident => undef
+$All => 0
+</%ARGS>
