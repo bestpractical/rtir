@@ -433,18 +433,9 @@ if ((!exists $ARGS{'AddMoreAttach'}) && ($ARGS{'id'} eq 'new')) { # new ticket?
 }
 
 my $sla;
-my $date = RT::Date->new($RT::SystemUser);
-$date->SetToNow;
-use Business::Hours;
-my $bizhours = new Business::Hours;
-if ($RT::BusinessHours) {
-  $bizhours->business_hours(%$RT::BusinessHours);
-}
-# see if we're in business hours or not
-if ($bizhours->first_after($date->Unix) != $date->Unix) {
-  $sla = $RT::_RTIR_SLA_outofhours_default;
-} else {
-  $sla = $RT::_RTIR_SLA_inhours_default;
+if ($Queue eq 'Incident Reports') {
+    use RT::IR;
+    $sla = RT::IR::DefaultSLA();
 }
 
 </%INIT>

@@ -82,7 +82,8 @@ sub Commit {
     my $date = RT::Date->new($RT::SystemUser);
     $date->SetToNow;
 
-    my $bizhours = $self->GetBusinessHours();
+    use RT::IR;
+    my $bizhours = RT::IR::BusinessHours();
 
     my $starts = $bizhours->first_after($date->Unix);
     $date->Set(Format => 'unix', Value => $starts);
@@ -92,18 +93,6 @@ sub Commit {
 }
 
 # }}}
-
-sub GetBusinessHours {
-    my $self = shift;
-
-    use Business::Hours;
-    my $bizhours = new Business::Hours;
-    if ($RT::BusinessHours) {
-	$bizhours->business_hours(%$RT::BusinessHours);
-    }
-
-    return $bizhours;
-}
 
 eval "require RT::Action::RTIR_SetStartsByBizHours_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_SetStartsByBizHours_Vendor.pm});

@@ -52,12 +52,9 @@ foreach my $key ( keys %$class_tix ) {
     #
     if ($t->StartsObj->Unix > 0 && $t->StartedObj->Unix > 0) {
 	# Get a Business::Hours object for the period in question
-	use Business::Hours;
-	
-	my $bizhours = Business::Hours->new();
-	if ($RT::BusinessHours) {
-	    $bizhours->business_hours(%$RT::BusinessHours);
-	}
+	use RT::IR;
+	my $bizhours = RT::IR::BusinessHours();
+
 	my $started_time;
 	if ($t->StartsObj->Unix < $t->StartedObj->Unix) {
 	    $bizhours->for_timespan( Start => $t->StartsObj->Unix, 

@@ -74,44 +74,35 @@ Look up the SLA and set the Due date accordingly.
 
 sub Commit {
     my $self = shift;
+    use RT::IR;
 
-    my $date = RT::Date->new($RT::SystemUser);
-    $date->SetToNow;
-    use Business::Hours;
-    my $bizhours = new Business::Hours;
-    if ($RT::BusinessHours) {
-	$bizhours->business_hours(%$RT::BusinessHours);
+    # TODO: return if it isn't an Incident Report
+
+    # now that we know the SLA, set the value of the CF
+    if (! $self->TicketObj->FirstCustomFieldValue('_RTIR_SLA')) {
+	my $cf = RT::CustomField->new($self->CurrentUser);
+
+	$cf->LoadByNameAndQueue(Queue => $self->QueueObj->Id, Name => '_RTIR_SLA');
+	unless ($cf->Id) { 
+	    return(1);
+	}
+
+	my $SLAObj = RT::IR::SLAInit();
+	my $sla = $SLAObj->SLA(time());
+
+	$self->AddCustomFieldValue(Field => $cf->id, 
+				   Value => $sla);
+
     }
-
-    my $sla;
-    if ($self->TicketObj->FirstCustomFieldValue('_RTIR_SLA')) {
-	$sla = $self->TicketObj->FirstCustomFieldValue('_RTIR_SLA');
-    } elsif ($bizhours->first_after($date->Unix) != $date->Unix) {
-	$sla = "Full service: out of hours";
-    } else {
-	$sla = "Full service";
-    }
-
-    # now that we know the SLA, set the value
-    my $cf = RT::CustomField->new($self->TransactionObj->CurrentUser);
-    $cf->LoadByNameAndQueue(Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_SLA');
-    unless ($cf->Id) { 
-	return(1);
-    }
-    $self->TicketObj->AddCustomFieldValue(Field => $cf->id, Value => $sla);
-
-    # look up how many minutes to add for this SLA
-    my $addminutes = $RT::SLA->{$sla};
-
-    # find the next business time
-    my $starts = $bizhours->first_after($date->Unix);
-    $date->Set(Format => 'unix', Value => $starts);
-
-    # add the SLA minutes to that
-    my $due = $bizhours->add_seconds($date->Unix, $addminutes * 60);
-    $date->Set(Format => 'unix', Value => $due);
 
     # set the due date
+    my $SLAObj = RT::IR::SLAInit();
+
+    # TODO: specify a start date, but default to now
+    my $due = $SLAObj->Due(time(), $SLAObj->SLA(time()));
+
+    my $date = RT::Date->new($RT::SystemUser);
+    $date->Set(Format => 'unix', Value => $due);
     $self->TicketObj->SetDue($date->ISO);
 
     return 1;

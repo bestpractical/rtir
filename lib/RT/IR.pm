@@ -44,58 +44,47 @@
 # 
 # }}} END BPS TAGGED BLOCK
 #
-package RT::Action::RTIR_SetDueCorrespond;
-require RT::Action::Generic;
+package RT::IR;
 
-use strict;
-use vars qw/@ISA/;
-@ISA = qw(RT::Action::Generic);
+sub BusinessHours {
 
-=head2 Prepare
+    use Business::Hours;
 
-Always run this.
+    my $bizhours = new Business::Hours;
+    if ($RT::BusinessHours) {
+	$bizhours->business_hours(%$RT::BusinessHours);
+    }
 
-=cut
-
-
-sub Prepare {
-    my $self = shift;
-
-    return 1;
+    return $bizhours;
 }
 
-# {{{ sub Commit
+sub DefaultSLA {
 
-=head2 Commit
+    my $sla;
+    my $SLAObj = SLAInit();
+    $sla = $SLAObj->SLA(time());
 
-Look up the SLA and set the Due date accordingly.
-
-=cut
-
-sub Commit {
-    my $self = shift;
-
-    use RT::IR;
-    my $bizhours = RT::IR::BusinessHours();
-
-    my $date = RT::Date->new($RT::SystemUser);
-    $date->SetToNow;
-
-    $date->AddDays($RT::OverdueAfter);
-
-    my $due = $bizhours->first_after($date->Unix);
-    $date->Set(Format => 'unix', Value => $due);
-    $self->TicketObj->SetDue($date->ISO);
-
-    return 1;
+    return $sla;
 
 }
 
-# }}}
+sub SLAInit {
 
-eval "require RT::Action::RTIR_SetDueCorrespond_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_SetDueCorrespond_Vendor.pm});
-eval "require RT::Action::RTIR_SetDueCorrespond_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_SetDueCorrespond_Local.pm});
+    use Business::SLA;
+    my $SLAObj = new Business::SLA;
+
+    my $bh = RT::IR::BusinessHours();
+    $SLAObj->SetInHoursDefault($RT::_RTIR_SLA_inhours_default);
+    $SLAObj->SetOutOfHoursDefault($RT::_RTIR_SLA_outofhours_default);
+
+    $SLAObj->SetBusinessHours($bh);
+
+    foreach my $key (keys %$RT::SLA) {
+	$SLAObj->Add($key, ( BusinessMinutes =>  $RT::SLA->{$key} ));
+    }
+
+    return $SLAObj;
+
+}
 
 1;
