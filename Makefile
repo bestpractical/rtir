@@ -10,7 +10,7 @@ RT_HTML_PATH		=	$(RT_ROOT)/local/html
 RT_SBIN_PATH		=	$(RT_ROOT)/sbin
 DBA			=	root
 SITE_CONFIG_RTIR_FILE	= 	$(RT_ROOT)/etc/RT_SiteConfig_RTIR.pm
-TAG			=       rtir-1-0-alpha-1
+TAG			=       rtir-1-0-beta-1
 
 
 install: config-install install-html instruct
