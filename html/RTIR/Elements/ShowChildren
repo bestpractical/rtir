@@ -25,40 +25,23 @@
 % if ($Delete) {
 <i><%loc("Check box to unlink")%></i><br>
 % }
-<table width=100% cellspacing=0 cellpadding=0 border=0>
-% while (my $t = $MyTickets->Next) {
-% last if ($LimitDepth > 0 && $depth > $LimitDepth);
-% $depth++;
-<tr>
-  <td>
-% if ($Delete) {
-  <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$t->Id%>-MemberOf-">
-% }
-% my $State = $m->scomp("/RTIR/Elements/ShowRTIRField", Ticket => $t, Name => 'State');
-  <a href="<%$RT::WebPath%>/RTIR/Display.html?id=<%$t->Id%>"><%$t->Id%>: <%$t->Subject%></a> <i>(<%$State%>)</i>
-  </td>
-  <td align=right>
-    <font size="-1"><& ShowDate, date => $t->DueObj &></font>
-  </td>
-</tr>
-% }
-% while (my $t = $ClosedTickets->Next) {
-% last if ($LimitDepth > 0 && $depth > $LimitDepth);
-% $depth++;
-<tr>
-  <td>
-% if ($Delete) {
-  <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$Ticket->Id%>-MemberOf-">
-% }
-% my $State = $m->scomp("/RTIR/Elements/ShowRTIRField", Ticket => $t, Name => 'State');
-  <a href="<%$RT::WebPath%>/RTIR/Display.html?id=<%$t->Id%>"><%$t->Id%>: <%$t->Subject%></a> <i>(<%$State%>)</i>
-  </td>
-  <td align=right>
-    <font size="-1"><& ShowDate, date => $t->DueObj &></font>
-  </td>
-</tr>
-% }
-</table>
+
+<& /Elements/TicketList, 
+   Collection => $MyTickets,
+   Format => $Format,
+   Rows => $Rows,
+   ShowHeader => 0,
+   ShowNavigation => 0,
+&>
+
+<& /Elements/TicketList, 
+   Collection => $ClosedTickets,
+   Format => $Format,
+   Rows => $Rows,
+   ShowHeader => 0,
+   ShowNavigation => 0,
+&>
+
 % if ($depth eq 1 and $MyTickets->Count eq 0) {
 % if (defined $Queue) {
   <i>(<% loc("no [_1]", $Queue) %>)</i>
@@ -66,7 +49,7 @@
   <i>loc("no children")</i>
 % }
 % } else {
-% if (($LimitDepth > 0) && ($MyTickets->Count >= $LimitDepth)) {
+% if (($Rows > 0) && ($MyTickets->Count >= $Rows)) {
 % if (defined $FullList) {
 <a href="<%$FullList%>"><i><%loc("More... ([_1] total)", $MyTickets->Count)%></i></a><br>
 % }
@@ -74,29 +57,51 @@
 % }
 
 <%INIT>
-my $MyTickets;
-$MyTickets = new RT::Tickets ($session{'CurrentUser'});
-$MyTickets->LimitQueue(VALUE => $Queue);
-$MyTickets->LimitMemberOf($Ticket->Id);
-$MyTickets->LimitStatus(VALUE => "new");
-$MyTickets->LimitStatus(VALUE => "open");
-$MyTickets->LimitStatus(VALUE => "stalled");
-$MyTickets->OrderBy(FIELD => 'Due', ORDER => 'ASC');
+$Format = $RT::RTIRSearchResultFormats->{'DueIncidents'};
+$Format = qq{'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+			'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
+	'<I>__CustomField.$Queue.{_RTIR_State}__</I>/Title:State',
+	__DueRelative__};
 
-my $ClosedTickets;
-$ClosedTickets = new RT::Tickets ($session{'CurrentUser'});
-$ClosedTickets->LimitQueue(VALUE => $Queue);
-$ClosedTickets->LimitMemberOf($Ticket->Id);
-$ClosedTickets->LimitStatus(VALUE => "resolved");
-$ClosedTickets->OrderBy(FIELD => 'Resolved', ORDER => 'DESC');
+if ($Delete) {
+    $Format = "___RTIR_Check__, " . $Format;
+}
+
+$Query = $m->comp('/RTIR/Elements/NewQuery', 
+             Queue => $Queue);
+
+$Query .= " AND MemberOf = " . $Ticket->Id;
+
+if (!$BaseQuery) {
+    $BaseQuery = $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
+}
+
+$Query = "$BaseQuery AND ( $Query )";
+$OrderBy = 'Due';
+my $MyTickets = new RT::Tickets($session{'CurrentUser'});
+$MyTickets->FromSQL($Query);
+
+my $ClosedQuery = "MemberOf = " . $Ticket->Id;
+$ClosedQuery .= " AND Status = 'resolved'";
+
+$ClosedQuery = "$BaseQuery AND ( $ClosedQuery )";
+my $ClosedOrderBy = 'Resolved';
+my $ClosedOrder = 'DESC';
+my $ClosedTickets = new RT::Tickets($session{'CurrentUser'});
+$ClosedTickets->FromSQL($ClosedQuery);
 
 </%INIT>
 
 <%ARGS>
+$Query => undef
+$BaseQuery => undef
+$QueryString => undef
+$Format => undef
 $Queue => undef
 $Ticket => undef
+$OrderBy => undef
 $depth => 1
-$LimitDepth => 0
+$Rows => 0
 $Delete => 0
 $FullList => undef
 </%ARGS>

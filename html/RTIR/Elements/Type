@@ -42,7 +42,7 @@ if ($name eq "Incidents") {
   @states = ('new', 'open');
 } elsif ($name eq "Investigations") {
   $Type = 'Investigation';
-  @states = ('open');
+  @states = ('open', 'stalled');
 } if ($name eq "Blocks") {
   $Type = 'Block';
   @states = ('pending activation', 'active', 'pending removal');

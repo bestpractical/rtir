@@ -125,7 +125,7 @@
     <& /RTIR/Elements/ShowChildren, 
 	    Ticket => $Ticket, 
 	    Queue => 'Incident Reports',
-	    LimitDepth => 8,
+	    Rows => 8,
             FullList => $RT::WebPath."/RTIR/Incident/ShowChildren.html?Queue=Incident Reports&id=".$Ticket->id
  &>
 <& /Elements/TitleBoxEnd &>
@@ -149,7 +149,7 @@
 	        <& /RTIR/Elements/ShowChildren, 
 		    Ticket => $Ticket, 
 		    Queue => 'Investigations',
-		    LimitDepth => 8,
+		    Rows => 8,
 		    FullList => $RT::WebPath."/RTIR/Incident/ShowChildren.html?Queue=Investigations&id=".$Ticket->id
  &>
 	<& /Elements/TitleBoxEnd &>
@@ -171,7 +171,7 @@
 	        <& /RTIR/Elements/ShowChildren, 
 		    Ticket => $Ticket, 
 		    Queue => 'Blocks',
-		    LimitDepth => 8,
+		    Rows => 8,
 		    FullList => $RT::WebPath."/RTIR/Incident/ShowChildren.html?Queue=Blocks&id=".$Ticket->id &>
 	<& /Elements/TitleBoxEnd &>
   </td>
