@@ -1,13 +1,158 @@
-<& /Elements/Header, Title => "Lookup $q using server $server" &>
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& /Elements/Header, Title => $title &>
+<& /RTIR/Tools/Elements/Tabs, 
+    current_toptab => 'RTIR/Tools/Lookup.html', 
+    current_tab => 'RTIR/Tools/Lookup.html?NewSearch=1', 
+    current_subtab => $current_subtab, 
+    Title => $title &>
+
+% my $i;
+%if ($ticketcount && !  $ARGS{'HideResults'}) {
+<TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
+<tr><td width=50% valign=top>
+<& /Elements/TitleBoxStart, title => loc('Incidents')&>
+<TABLE width=100% border=0 cellpadding=2 CELLSPACING=0>
+% $i=0;
+% my $State;
+%while (my $Ticket = $session{'tickets'}->Next) {
+% next unless ($Ticket->QueueObj->Name eq "Incidents");
+% $i++;
+<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >
+% $State = $m->scomp("/RTIR/Elements/ShowRTIRField", Ticket => $Ticket, Name => 'State');
+<td><%$Ticket->Id%></td>
+<td><b><A HREF="<%$RT::WebPath%>/RTIR/Incident/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Subject%></a></b></td>
+<td><%$State%></td>
+<TD><%$Ticket->Priority%></TD>
+</TR>
+% }
+% if ($i == 0) {
+<tr><td><i>(no incidents)</i></td></tr>
+% }
+</table>
+<& /Elements/TitleBoxEnd&>
+
+<& /Elements/TitleBoxStart, title => loc('Incident Reports')&>
+<TABLE width=100% border=0 cellpadding=2 CELLSPACING=0>
+% $i=0;
+%while (my $Ticket = $session{'tickets'}->Next) {
+% next unless ($Ticket->QueueObj->Name eq "Incident Reports");
+% $i++;
+<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >
+% $State = $m->scomp("/RTIR/Elements/ShowRTIRField", Ticket => $Ticket, Name => 'State');
+<td><%$Ticket->Id%></td>
+<td><b><%$Ticket->Subject%></b></td>
+<td><%$State%></td>
+<TD><%$Ticket->Priority%></TD>
+</TR>
+% }
+% if ($i == 0) {
+<tr><td><i>(no incident reports)</i></td></tr>
+% }
+</table>
+<& /Elements/TitleBoxEnd&>
+
+</td><td valign=top>
+
+<& /Elements/TitleBoxStart, title => loc('Investigations')&>
+<TABLE width=100% border=0 cellpadding=2 CELLSPACING=0>
+% $i=0;
+%while (my $Ticket = $session{'tickets'}->Next) {
+% next unless ($Ticket->QueueObj->Name eq "Investigations");
+% $i++;
+<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >
+% $State = $m->scomp("/RTIR/Elements/ShowRTIRField", Ticket => $Ticket, Name => 'State');
+<td><%$Ticket->Id%></td>
+<td><b><%$Ticket->Subject%></b></td>
+<td><%$State%></td>
+<TD><%$Ticket->Priority%></TD>
+</TR>
+% }
+% if ($i == 0) {
+<tr><td><i>(no investigations)</i></td></tr>
+% }
+</table>
+<& /Elements/TitleBoxEnd&>
+
+<& /Elements/TitleBoxStart, title => loc('Blocks')&>
+<TABLE width=100% border=0 cellpadding=2 CELLSPACING=0>
+% $i=0;
+%while (my $Ticket = $session{'tickets'}->Next) {
+% next unless ($Ticket->QueueObj->Name eq "Blocks");
+% $i++;
+<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >
+% $State = $m->scomp("/RTIR/Elements/ShowRTIRField", Ticket => $Ticket, Name => 'State');
+<td><%$Ticket->Id%></td>
+<td><%$Ticket->Subject%></td>
+<td><%$State%></td>
+</TR>
+% }
+% if ($i == 0) {
+<tr><td><i>(no blocks)</i></td></tr>
+</table></td></tr>
+% }
+</TABLE>
+<& /Elements/TitleBoxEnd&>
+% }
+
+<hr>
+
+<h2>Look Up Information</h2>
+<table>
+<form action="Lookup.html" method="get">
+  <tr>
+    <td class=label>WHOIS:</td>
+    <td class=input><input size=30 name="q" value="<%$q%>"> at <input size="20" name="server" value ="<%$server%>"></td>
+    <td align=left><input type=submit value="Go"></td>
+  </tr>
+</form>
+
+<form action="Traceroute.html" method="get" target="_blank">
+  <tr>
+    <td class=label>Traceroute to:</td>
+    <td class=input><input size=30 name="q" value="<%$q%>"></td>
+    <td align=left><input type=submit value="Go"></td>
+  </tr>
+</form>
+</table>
+
+<hr>
+
+% if ($q) {
+<h2>WHOIS Results</h2>
+% }
+
 % if ($iterator) {
-%while (my $obj = $iterator->next) {
-% my @lines_starting_with_space = grep ( /^(\s+)(\w+)/, $obj->content());
-% if ($handparse || $#lines_starting_with_space >= 4) { #we couldn't parse that. suck
-% my $content = join("", $obj->content());
-% $m->comp( '/RTIR/Elements/MakeClicky', content => \$content);
+%   while (my $obj = $iterator->next) {
+%     my @lines_starting_with_space = grep ( /^(\s+)(\w+)/, $obj->content());
+%     if ($handparse || $#lines_starting_with_space >= 4) { #we couldn't parse that. suck
+%       my $content = join("", $obj->content());
+%       $m->comp( '/RTIR/Elements/MakeClicky', content => \$content);
 <pre><%$content|n%></pre>
 <br>
-% } else {
+%     } else {
 Structured RIPE whois data returned. Click <a
 href="Lookup.html?q=<%$q%>&server=<%$server%>&handparse=1">here</a> to manually
 parse this data.
@@ -21,23 +166,42 @@ parse this data.
 <%$value|n%><br>
 %                       }
 % }
-% } 
 % }
 % }
-<form action="Lookup.html" method="get">
-Look up <input size=30 name="q" value="<%$q%>"> at <input size="20" name="server" value ="<%$server%>"><input type=submit value="Go">
-</form>
-
-<form action="Traceroute.html" method="get">
-Traceroute to <input size=30 name="q" value="<%$q%>">
-<input type=submit value="Go">
-</form>
+% }
 
 <%init>
 use Net::Whois::RIPE;
 my $query = Net::Whois::RIPE->new($server);
 #$query->no_recursive;
 my $iterator = $query->query_iterator($q);
+
+$ARGS{'AttachmentField'}="Content";
+$ARGS{'AttachmentFieldOp'}="LIKE";
+$ARGS{'ValueOfAttachmentField'}=$q;
+
+my $title = "Lookup $q using server $server";
+my $ticketcount;
+$session{'i'}++;
+if ($session{'tickets'}) {
+    if ($ARGS{'DeleteRestriction'}) {
+	    $session{'tickets'}->DeleteRestriction($ARGS{'DeleteRestriction'});
+    }
+    if ( ($ARGS{'ClearRestrictions'}) || ($ARGS{'NewSearch'}) ) {
+	    $session{'tickets'}->ClearRestrictions;
+	}	
+}
+   ProcessSearchQuery(ARGS=>\%ARGS);
+   $session{'tickets'}->RedoSearch();
+   if ( $session{'tickets'}->DescribeRestrictions()) {
+       $ticketcount = $session{tickets}->Count();
+   }
+
+my $current_subtab;
+if ($q) {
+  $current_subtab = 'RTIR/Tools/Lookup.html?q='.$q."&server=".$server; 
+}
+
 </%init>
 <%args>
 $server => 'whois.fucknsi.com'

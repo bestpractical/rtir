@@ -22,28 +22,27 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Header, Title => $title &>
-<h1><%$title%></h1>
-% while (<TR>) {
-% sleep(2);
-% my $content = $_;
-% $m->comp('/RTIR/Elements/MakeClicky', content =>\$content);
-<%$content |n%><BR>
-% $m->flush_buffer();
-% }
-% close(TR);
-<%init>
-my $host;
-if ($q =~ /^[A-Z0-9.]+$/i) {
- $host = $q;
-open(TR, "/usr/sbin/traceroute $host|");
-tied(%session)->release_all_locks();
-}
-else {
-    Abort("Invalid search query");
-}
-my $title = "Traceroute to ".$host;
-</%init>
-<%args>
-$q => undef
-</%args>
+<& /Elements/Callback, tabs => $tabs, %ARGS &>
+<& /RTIR/Elements/Tabs, 
+    tabs => $tabs, 
+    current_tab => $current_tab, 
+    current_toptab => $current_toptab,
+    Title => $Title &> 
+
+<%INIT>
+
+my $tabs = {};
+my $current_toptab = "RTIR/Tools/Lookup.html";
+
+$tabs->{"A"} = { path      => 'RTIR/Tools/Lookup.html?NewSearch=1',
+                 title     => loc('Lookup'),
+ };
+</%INIT>
+
+  
+<%ARGS>
+$host => undef
+$current_tab => undef
+$current_subtab => undef
+$Title => undef
+</%ARGS>
