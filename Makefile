@@ -19,6 +19,7 @@ config-install:
 	[ -f $(RTIR_CONFIG_FILE) ] || cp etc/RTIR_Config.pm $(RTIR_CONFIG_FILE)
 	chgrp $(RTGROUP) $(RTIR_CONFIG_FILE)
 	chown $(BIN_OWNER) $(DESTDIR)/$(RTIR_CONFIG_FILE)
+	chmod 0550 $(DESTDIR)/$(RTIR_CONFIG_FILE)
 
 	@echo "Installed configuration. about to install RTIR in  $(RT_ROOT)"
 
