@@ -59,11 +59,7 @@ my $toptabs = { A => { title => loc('RT'),
                       },
                  };
 my $topactions = {
-	A => { html => $m->scomp('/RTIR/Elements/CreateIncident')	
-		},
-	B => { html => $m->scomp('/RTIR/Elements/CreateReport')	
-		},
-	C => { html => $m->scomp('/RTIR/Elements/SimpleSearch') 
+	A => { html => $m->scomp('/RTIR/Elements/SimpleSearch') 
 		}
 	};
                     
