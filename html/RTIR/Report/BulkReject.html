@@ -53,6 +53,11 @@ my $SubmitCaption = loc("Reject selected incident reports");
 my $QueueObj = RT::Queue->new($session{'CurrentUser'});
 $QueueObj->Load("Incident Reports");
 
+if (! $session{'tickets'}) {
+    # Init a new search
+    $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
+}
+
 my $ticketcount;
 $session{'i'}++;
 if ($session{'tickets'}) {

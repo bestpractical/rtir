@@ -155,6 +155,11 @@ $ARGS{'AttachmentField'}="Content";
 $ARGS{'AttachmentFieldOp'}="LIKE";
 $ARGS{'ValueOfAttachmentField'}=$q;
 
+if (! $session{'tickets'}) {
+    # Init a new search
+    $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
+}
+
 my $title = "Lookup $q using server $server";
 my $ticketcount;
 $session{'i'}++;

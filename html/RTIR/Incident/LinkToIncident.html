@@ -59,6 +59,11 @@ if ($ChildObj->QueueObj->Name eq "Incident Reports") {
     $name = "Block";
 }
 
+if (! $session{'tickets'}) {
+    # Init a new search
+    $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
+}
+
 my ($title, $ticketcount);
 $session{'i'}++;
 if ($session{'tickets'}) {

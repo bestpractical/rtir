@@ -124,6 +124,11 @@ while (my $CustomField = $CustomFields->Next()) {
   }
 }
 
+if (! $session{'tickets'}) {
+    # Init a new search
+    $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
+}
+
 $session{'i'}++;
 if ($session{'tickets'}) {
     if ($ARGS{'DeleteRestriction'}) {

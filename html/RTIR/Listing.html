@@ -55,6 +55,11 @@ if ($Queue eq "Incidents") {
   @states = ('pending activation', 'active', 'pending removal');
 }
 
+if (! $session{'tickets'}) {
+    # Init a new search
+    $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
+}
+
 my ($title, $ticketcount);
 $session{'i'}++;
 if ($session{'tickets'}) {
