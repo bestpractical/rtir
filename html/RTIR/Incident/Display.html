@@ -63,13 +63,13 @@
 
 </td>
 <td valign=top>
-<& /Elements/TitleBoxStart, title => loc('Linked Incident Reports'), 
+<& /Elements/TitleBoxStart, title => loc('Incident Reports'), 
     title_href => "$RT::WebPath/RTIR/Incident/ShowReports.html?id=".$Incident->Id, 
     title_class=> 'inverse',  
     titleright => '', color=> "#336633" &>
     <table width=100%>
     <td align="right">
-		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Common/Create.html?Incident=<%$Incident->Id%>&Type=Report">New</a> 
+		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Report/Create.html?Incident=<%$Incident->Id%>">New</a> 
 		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Incident/AssociateReports.html?QueueOp==&ValueOfQueue=Incident Reports&ClearRestrictions=1&Incident=<%$Incident->Id%>"><%loc("Link")%></a> 
     </td></table>
     <& /RTIR/Elements/ShowChildren, 
@@ -81,12 +81,12 @@
 </tr>
 <tr>
   <TD VALIGN=TOP width=50%>
-	  <& /Elements/TitleBoxStart, title => loc('Linked Investigations'), 
+	  <& /Elements/TitleBoxStart, title => loc('Investigations'), 
 		title_href => "$RT::WebPath/RTIR/Incident/ShowInvestigations.html?id=".$Incident->Id, 
 		title_class=> 'inverse',  
 		titleright => '', color=> "#336633" &>
 		<table width=100%><td align="right">
-		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Common/Create.html?Incident=<%$Incident->Id%>&Type=Investigation">Launch</a> 
+		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Investigation/Create.html?Incident=<%$Incident->Id%>">Launch</a> 
 		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Incident/AssociateInvestigations.html?QueueOp==&ValueOfQueue=Investigations&ClearRestrictions=1&Incident=<%$Incident->Id%>"><%loc("Link")%></a> 
 		</td></table>
 	        <& /RTIR/Elements/ShowChildren, 
@@ -97,12 +97,12 @@
   </td>
   <TD VALIGN=TOP width=50%>
 
-	  <& /Elements/TitleBoxStart, title => loc('Linked Blocks'), 
+	  <& /Elements/TitleBoxStart, title => loc('Blocks'), 
 		title_href => "$RT::WebPath/RTIR/Incident/ShowBlocks.html?id=".$Incident->Id, 
 		title_class=> 'inverse',  
 		titleright => '', color=> "#336633" &>
 		<table width=100%><td align="right">
-		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Common/Create.html?Incident=<%$Incident->Id%>&Type=Block">New</a> 
+		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Block/Create.html?Incident=<%$Incident->Id%>">New</a> 
 		<font size="-1">| <a href="<%$RT::WebPath%>/RTIR/Incident/AssociateBlocks.html?QueueOp==&ValueOfQueue=Blocks&ClearRestrictions=1&Incident=<%$Incident->Id%>"><%loc("Link")%></a> 
 		</td></table>
 	        <& /RTIR/Elements/ShowChildren, 

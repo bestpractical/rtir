@@ -26,13 +26,13 @@
 % my $member= $link->BaseObj;
 % if ((!defined $QueueName) or $member->QueueObj->Name eq $QueueName) {
 %   $count++;
+% if ($LimitDepth > 0 and $depth < $LimitDepth) {
   <li>
 % if ($Delete) {
   <INPUT TYPE=CHECKBOX NAME="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
 % }
   <a href="<%$RT::WebPath%>/RTIR/<%$Type%>/Display.html?id=<%$member->Id%>&Type=<%$Type%>"><%$member->Id%>: <%$member->Subject%></a> [<%$member->Status%>]<br>
-% if ($LimitDepth > 0 and $depth < $LimitDepth) {
-<& ShowChildren, Ticket => $member, depth => ($depth+1) &> 
+% $depth++
 % }
 % }
 % }
@@ -42,6 +42,7 @@
 % } else {
   <i>loc("no children")</i>
 % }
+% } else {
 % }
 
 <%INIT>

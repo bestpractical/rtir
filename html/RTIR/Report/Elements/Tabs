@@ -89,13 +89,13 @@ if ( defined $session{'tickets'} ) {
 
 
 $tabs->{"this"} = { class => "currentnav",
-                    path  => "RTIR/Common/Display.html?id=" . $Ticket->id . "&Type=Report",
+                    path  => "RTIR/Report/Display.html?id=" . $Ticket->id,
                     title => loc("Incident Report #[_1]", $id),
                     current_subtab => $current_subtab };
 
 my $ticket_page_tabs = {
     _A => { title => loc('Display'),
-            path  => "RTIR/Common/Display.html?id=" . $id . "&Type=Report", },
+            path  => "RTIR/Report/Display.html?id=" . $id, },
 
     _B => { title => loc('Edit'),
             path  => "RTIR/Report/Edit.html?id=" . $id, },
@@ -121,7 +121,7 @@ $tabs->{'this'}->{"subtabs"} = $ticket_page_tabs;
 if (    $Ticket->CurrentUserHasRight('ModifyTicket')
      or $Ticket->CurrentUserHasRight('ReplyToTicket') ) {
     $actions->{'A'} = { title => loc('Reply'),
-                        path  => "RTIR/Update.html?Action=Respond&id=" . $id. "&PostTo=/RTIR/Common/Display.html&Type=Report",
+                        path  => "RTIR/Update.html?Action=Respond&id=" . $id. "&PostTo=/RTIR/Report/Display.html",
     };
 }
 
@@ -131,24 +131,28 @@ if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
 
             path =>
               "RTIR/Update.html?Action=Comment&DefaultStatus=resolved&id="
-              . $id. "&PostTo=/RTIR/Common/Display.html&Type=Report",
+              . $id. "&PostTo=/RTIR/Report/Display.html",
             title => loc('Resolve') };
         $actions->{'B'} = {
 
             path =>
               "RTIR/Update.html?Action=Comment&DefaultStatus=rejected&id="
-              . $id. "&PostTo=/RTIR/Common/Display.html&Type=Report",
+              . $id. "&PostTo=/RTIR/Report/Display.html",
             title => loc('Reject') };
+    }
+    if ( $Ticket->Status ne 'open' ) {
+        $actions->{'C'} = { path => "RTIR/Report/Display.html?Status=open&id=" . $id,
+                            title => loc('Open it') };
     }
 }
 
 if ( $Ticket->CurrentUserHasRight('OwnTicket') ) {
     if ( $Ticket->OwnerObj->id == $RT::Nobody->id ) {
-        $actions->{'D'} = { path => "RTIR/Common/Display.html?Action=Take&id=" . $id . "&Type=Report",
+        $actions->{'D'} = { path => "RTIR/Report/Display.html?Action=Take&id=" . $id,
                             title => loc('Take') };
     }
     elsif ( $Ticket->OwnerObj->id != $session{CurrentUser}->id ) {
-        $actions->{'E'} = {path => "RTIR/Common/Display.html?Action=Steal&id=" . $id . "&Type=Report", 
+        $actions->{'E'} = {path => "RTIR/Report/Display.html?Action=Steal&id=" . $id, 
                            title => loc('Steal') };
     }
 }
@@ -156,7 +160,7 @@ if ( $Ticket->CurrentUserHasRight('OwnTicket') ) {
 if (    $Ticket->CurrentUserHasRight('ModifyTicket')
      or $Ticket->CurrentUserHasRight('CommentOnTicket') ) {
     $actions->{'F'} = { title => loc('Comment'),
-                        path  => "RTIR/Update.html?Action=Comment&id=" . $id. "&PostTo=/RTIR/Common/Display.html&Type=Report",
+                        path  => "RTIR/Update.html?Action=Comment&id=" . $id. "&PostTo=/RTIR/Report/Display.html",
     };
 }
 }

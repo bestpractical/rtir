@@ -24,7 +24,6 @@
 %# END LICENSE BLOCK
 <& /RTIR/Incident/Elements/Tabs, 
     Ticket => $Ticket, 
-    current_tab => 'RTIR/Incident/ShowReports.html?id='.$Ticket->id,
     current_subtab => $current_subtab,
     subtabs => $subtabs,
     Title => $Title &>
@@ -33,12 +32,15 @@
   my $q = RT::Queue->new($session{'CurrentUser'});
   $q->Load("Incident Reports");
 
-  my $subtabs = {
-    _A => { path => 'RTIR/Common/Create.html?Incident='.$Ticket->id."&Type=Report",
+my $subtabs;
+if ($Ticket) {
+  $subtabs = {
+    _A => { path => 'RTIR/Report/Create.html?Incident='.$Ticket->id,
             title     => loc('New Incident Report') },
     _B => { path => 'RTIR/Incident/AssociateReports.html?QueueOp==&ValueOfQueue='.$q->Id.'&ClearRestrictions=1&Incident='.$Ticket->id.'&StatusOp==&ValueOfStatus=new',
             title     => loc('Link Incident Reports') },
     };
+}
 
 </%INIT>
 
