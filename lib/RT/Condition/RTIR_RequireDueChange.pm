@@ -46,7 +46,7 @@
  
 
 
-package RT::Condition::RTIR_RequireStateChange;
+package RT::Condition::RTIR_RequireDueChange;
 require RT::Condition::Generic;
 
 use strict;
@@ -56,32 +56,27 @@ use vars qw/@ISA/;
 
 =head2 IsApplicable
 
-If the ticket was closed
+If a child had a Due Date change or changes parents.
 
 =cut
 
 sub IsApplicable {
     my $self = shift;
 
-    if ($self->TransactionObj->Type eq "Status" or
-	($self->TransactionObj->Type eq "Set" and 
-	 $self->TransactionObj->Field eq "Status") or
-	($self->TransactionObj->Type eq "AddLink" and 
-	 $self->TransactionObj->Field eq "MemberOf") or
-	$self->TransactionObj->Type eq "Create" or
-	$self->TransactionObj->Type eq "CustomField" or
+    if ($self->TransactionObj->Type eq 'DeleteLink' ||
+	$self->TransactionObj->Type eq "AddLink" ||
 	($self->TransactionObj->Type eq "Set" and
-	 $self->TransactionObj->Field eq "Queue")) {
+	 $self->TransactionObj->Field eq "Due")) {
 	return 1;
     } else {
 	return 0;
     }
 }
 
-eval "require RT::Condition::RTIR_RequireStateChange_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/RTIR_RequireStateChange_Vendor.pm});
-eval "require RT::Condition::RTIR_RequireStateChange_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/RTIR_RequireStateChange_Local.pm});
+eval "require RT::Condition::RTIR_RequireDueChange_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/RTIR_RequireDueChange_Vendor.pm});
+eval "require RT::Condition::RTIR_RequireDueChange_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/RTIR_RequireDueChange_Local.pm});
 
 1;
 

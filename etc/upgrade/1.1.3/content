@@ -1,0 +1,36 @@
+@ScripActions = (
+
+    {  Name        => 'RTIR Set Incident Due',    # loc
+       Description => 'Set the due date of parent Incident' ,                                            # loc
+       ExecModule => 'RTIR_SetDueIncident',
+    },
+
+);
+
+@ScripConditions = (
+
+    {  Name        => 'RTIR Require Due Change',    # loc
+       Description => 'A ticket requires a state change' ,                                            # loc
+       ApplicableTransTypes => 'Any',
+       ExecModule => 'RTIR_RequireDueChange',
+    },
+
+);
+
+@Scrips = (
+   {  Description => "SetRTIRState",
+      Queue            => 'Incident Reports',
+      ScripCondition   => 'RTIR Require Due Change',
+      ScripAction      => 'RTIR Set Incident Due',
+      Template          => 'Blank', },
+   {  Description => "SetRTIRState",
+      Queue            => 'Investigations',
+      ScripCondition   => 'RTIR Require Due Change',
+      ScripAction      => 'RTIR Set Incident Due',
+      Template          => 'Blank', },
+   {  Description => "SetRTIRState",
+      Queue            => 'Blocks',
+      ScripCondition   => 'RTIR Require Due Change',
+      ScripAction      => 'RTIR Set Incident Due',
+      Template          => 'Blank', },
+);

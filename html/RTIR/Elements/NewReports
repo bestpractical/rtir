@@ -25,64 +25,27 @@
 <& /Elements/TitleBoxStart, 
 	title_href =>"$RT::WebPath/RTIR/Search/Results.html?Queue=$Queue$QueryString",
 	title_class=> 'inverse',  
-	title => loc("[_1] of [_2] new unlinked Incident Reports...", $num, $MyTickets->Count), bodyclass=> '' &>
-<TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
-<TR>
-<TH ALIGN=RIGHT><&|/l&>#</&></TH>
-<TH ALIGN=LEFT><&|/l&>Subject</&></TH>
-<TH ALIGN=LEFT><&|/l&>From</&></TH>
-<TH ALIGN=LEFT><&|/l&>Owner</&></TH>
-<TH ALIGN=LEFT><&|/l&>Due</&></TH>
-<TH ALIGN=LEFT>&nbsp;</TH>
-</TR>
-  <TR>    
-% my $i;
-% while (my $Ticket = $MyTickets->Next) {
-%     next if $Ticket->HasUnresolvedDependencies( Type => 'approval' );
-%     last if $i++ >= $rows;
-<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >                                
-<TD ALIGN=RIGHT>
-<A HREF="<% $RT::WebPath %>/RTIR/Display.html?id=<%$Ticket->Id%>">
-<%$Ticket->Id%>
-</A>
-</TD>
-<TD>
-<A HREF="<% $RT::WebPath %>/RTIR/Display.html?id=<%$Ticket->Id%>">
-<%$Ticket->Subject || loc('(no subject)')%>
-</A>
-</TD>
-<TD>
-<%$Ticket->RequestorAddresses%>
-</TD>
-<TD>
-<%$Ticket->OwnerObj->Name%>
-</TD>
-<TD>
-<& ShowDate, date => $Ticket->DueObj &>
-</TD>
-<TD ALIGN=RIGHT>
-% if ($Ticket->Owner == $session{CurrentUser}->id) {
-[<A HREF="<% $RT::WebPath %>/RTIR/Incident/LinkToIncident.html?ClearRestrictions=1&id=<%$Ticket->Id%>"><&|/l&>Link</&></A>]
-[<A HREF="<% $RT::WebPath %>/RTIR/Update.html?id=<%$Ticket->Id%>"><&|/l&>Update</&></A>]
-% } elsif ($Ticket->Owner == $RT::Nobody->Id) {
-[<A HREF="<% $RT::WebPath %>/RTIR/Display.html?Action=Take&id=<%$Ticket->Id%>"><&|/l&>Take</&></A>]
-% } else {
-[<A HREF="<% $RT::WebPath %>/RTIR/Display.html?Action=Steal&id=<%$Ticket->Id%>"><&|/l&>Steal</&></A>]
-% }
-</TD>
-</TR>
-% }
-</TABLE>
+	title => $title, 
+	bodyclass=> '' &>
+
+<& /RTIR/Search/Elements/ShowResults, 
+   Query => $Query, 
+   QueryString => $QueryString, 
+   Format => $Format,
+   Rows => 10,
+&>
+
 <a href="<%$RT::WebPath%>/RTIR/Report/BulkReject.html?ClearRestrictions=1">[<%loc("Bulk Reject")%>]</a>
 
 <& /Elements/TitleBoxEnd &>
 
 
 <%INIT>
-my $Query;
-if (!$Query) {
-    $Query .= "'CF.$Queue.{_RTIR_State}' = 'new'";
-}
+$Format = $RT::RTIRSearchResultFormats->{'DueIncidents'};
+
+$Query = $m->comp('/RTIR/Elements/NewQuery', 
+             Queue => $Queue,	
+             states => [ 'new' ]);
 
 my $QueryString = "&".$m->comp('/Elements/QueryString',
                                Query => $Query,
@@ -92,22 +55,19 @@ my $QueryString = "&".$m->comp('/Elements/QueryString',
                                Order => $Order,
                                Page => $Page);
 
-my $MyTickets;
-my $rows = 10;
-$MyTickets = new RT::Tickets ($session{'CurrentUser'});
-$MyTickets->FromSQL("Queue = '$Queue' AND ($Query)");
-$MyTickets->RowsPerPage($rows);
-
-my $num;
-if ($MyTickets->Count < $rows) {
-  $num = $MyTickets->Count;
-} else {
-  $num = $rows;
+if (!$BaseQuery) {
+    $BaseQuery = $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
 }
+
+$Query = "$BaseQuery AND ( $Query )";
+
+my $title = loc("New unlinked Incident Reports...");
 
 </%INIT>
 
 <%ARGS>
+$Query => undef
+$BaseQuery => undef
 $Queue => 'Incident Reports'
 $Format => undef 
 $HideResults => 0

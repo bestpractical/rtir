@@ -23,115 +23,43 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/TitleBoxStart, title => $title, bodyclass=> '' &>
-<TABLE BORDER=0 cellspacing=0 cellpadding=1 WIDTH=100%>
-<TR>
-<TH ALIGN=RIGHT><&|/l&>#</&></TH>
-<TH ALIGN=LEFT><&|/l&>Subject</&></TH>
-<TH ALIGN=LEFT><&|/l&>Owner</&></TH>
-<TH ALIGN=LEFT><&|/l&>Priority</&></TH>
-<TH ALIGN=LEFT><&|/l&>Due</&></TH>
-<TH ALIGN=LEFT>&nbsp;</TH>
-</TR>
-  <TR>    
-% my $i;
-% foreach my $entry (sort(keys(%most_due))) {
-% my $tickethash = $most_due{$entry};
-% foreach my $item (sort(keys(%$tickethash))) {
-% my $Ticket = $tickethash->{$item}->{ticket};
-% my $due = $tickethash->{$item}->{due};
-<TR class="<% $i++%2 ? 'oddline' : 'evenline'%>" >                                
-<TD ALIGN=RIGHT>
-<A HREF="<% $RT::WebPath %>/RTIR/Display.html?id=<%$Ticket->Id%>">
-<%$Ticket->Id%>
-</a>
-</TD>
-<TD>
-<A HREF="<% $RT::WebPath %>/RTIR/Display.html?id=<%$Ticket->Id%>">
-<%$Ticket->Subject || loc('(no subject)')%>
-</A>
-</TD>
-<TD>
-<%$Ticket->OwnerObj->Name%>
-</TD>
-<TD>
-<%$Ticket->Priority%>
-</TD>
-<TD>
-<& ShowDate, date => $due &>
-</TD>
-<TD ALIGN=RIGHT>
-% if ($Ticket->Owner != $session{CurrentUser}->id) {
-%   if ($Ticket->Owner == $RT::Nobody->Id) {
-[<A HREF="<% $RT::WebPath %>/RTIR/Display.html?Action=Take&id=<%$Ticket->Id%>"><&|/l&>Take</&></A>]
-%   } else {
-[<A HREF="<% $RT::WebPath %>/RTIR/Display.html?Action=Steal&id=<%$Ticket->Id%>"><&|/l&>Steal</&></A>]
-%   }
-% } else {
-&nbsp;
-% }
-</TD>
-</TR>
-% }
-% }
-</TABLE>
+
+<& /RTIR/Search/Elements/ShowResults, 
+   Query => $Query, 
+   QueryString => $QueryString, 
+   Format => $Format,
+   Rows => 10,
+&>
+
 <& /Elements/TitleBoxEnd &>
 
-
 <%INIT>
-my $MyTickets;
-$MyTickets = new RT::Tickets ($session{'CurrentUser'});
-$MyTickets->LimitQueue(VALUE => 'Incidents');
+$Format = $RT::RTIRSearchResultFormats->{'DueIncidents'};
+
+my $Query = "Queue = 'Incidents'";
+
 if ($owner) {
-  $MyTickets->LimitOwner(VALUE => $owner->id);
-  $MyTickets->LimitOwner(VALUE => $RT::Nobody->id);
-}
-#my $date = ParseDateToISO("0");
-#$MyTickets->LimitDue(VALUE => $date, OPERATOR => ">");
-$MyTickets->LimitStatus(VALUE => "new");
-$MyTickets->LimitStatus(VALUE => "open");
-$MyTickets->LimitStatus(VALUE => "stalled");
-$MyTickets->OrderBy(FIELD => 'Due', ORDER => 'ASC');
-
-my %most_due;
-
-my ($incidents, $seen);
-my $c = 0;
-while (my $Ticket = $MyTickets->Next) {
-        my $kids = RT::Tickets->new($session{'CurrentUser'});
-        $kids->LimitMemberOf($Ticket->Id);
-        $kids->LimitQueue(VALUE =>'Incident Reports');
-        $kids->LimitQueue(VALUE =>'Investigations');
-        $kids->LimitQueue(VALUE =>'Blocks');
-	# Make sure the child actually has a due date set
-        $kids->LimitDue(OPERATOR => ">", VALUE => -1);
-        $kids->RowsPerPage(1);   
-        $kids->OrderBy( FIELD => 'Due', ORDER => 'ASC');
-        my $due = $Ticket->DueObj;
-
-        while (my $kid = $kids->Next) {
-                if ($kid->DueObj->Unix > $Ticket->DueObj->Unix) {
-                        $due = $kid->DueObj;
-                }
-        }
-	my $tickethash = {};
-	if ($most_due{$due->Unix}) {
-	    $tickethash = $most_due{$due->Unix};
-        }
-        $tickethash->{$Ticket->Id} = { due => $due, ticket => $Ticket };
-        $most_due{$due->Unix} = $tickethash;
+  $Query .= " AND (Owner = " . $owner->id . " OR Owner = 'Nobody')";
 }
 
+$Query .= " AND " . 
+    $m->comp('/RTIR/Elements/NewQuery', 
+             Queue => 'Incidents',
+             states => [ 'new', 'open', 'stalled' ]);
 
 my $title;
 if ($owner) {
-  $title = loc("Most due incidents owned by [_2] (and unowned)...", 
-              $MyTickets->Count, $owner->Name);
+  $title = loc("Most due incidents owned by [_1] (and unowned)...", 
+              $owner->Name);
 } else {
-  $title = loc("Most due incidents...", $MyTickets->Count);
+  $title = loc("Most due incidents...");
 }
 </%INIT>
 
 <%ARGS>
 $rows => 10
 $owner => undef
+$OrderBy => undef
+$Format => undef
+$QueryString => undef
 </%ARGS>

@@ -43,45 +43,67 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
- 
-
-
-package RT::Condition::RTIR_RequireStateChange;
-require RT::Condition::Generic;
+#
+package RT::Action::RTIR_SetDueIncident;
+require RT::Action::Generic;
 
 use strict;
 use vars qw/@ISA/;
-@ISA = qw(RT::Condition::Generic);
+@ISA = qw(RT::Action::Generic);
 
+=head2 Prepare
 
-=head2 IsApplicable
-
-If the ticket was closed
+Always run this.
 
 =cut
 
-sub IsApplicable {
+
+sub Prepare {
     my $self = shift;
 
-    if ($self->TransactionObj->Type eq "Status" or
-	($self->TransactionObj->Type eq "Set" and 
-	 $self->TransactionObj->Field eq "Status") or
-	($self->TransactionObj->Type eq "AddLink" and 
-	 $self->TransactionObj->Field eq "MemberOf") or
-	$self->TransactionObj->Type eq "Create" or
-	$self->TransactionObj->Type eq "CustomField" or
-	($self->TransactionObj->Type eq "Set" and
-	 $self->TransactionObj->Field eq "Queue")) {
-	return 1;
-    } else {
-	return 0;
-    }
+    return 1;
 }
 
-eval "require RT::Condition::RTIR_RequireStateChange_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/RTIR_RequireStateChange_Vendor.pm});
-eval "require RT::Condition::RTIR_RequireStateChange_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/RTIR_RequireStateChange_Local.pm});
+# {{{ sub Commit
+
+=head2 Commit
+
+Set the Due date based on the most due child.
+
+=cut
+
+sub Commit {
+    my $self = shift;
+
+    my $incident;
+    if ($self->TransactionObj->Type eq 'DeleteLink') {
+	my $uri = new RT::URI($self->CurrentUser);
+	$uri->FromURI($self->TransactionObj->OldValue);
+	$incident = $uri->Object;
+    } else {
+	my $incidents = new RT::Tickets($self->CurrentUser);
+	$incidents->FromSQL("Queue = 'Incidents' AND HasMember = " . $self->TicketObj->id);
+
+	$incident = $incidents->First;
+    }
+
+    if ($incident) {
+	my $children = new RT::Tickets($self->CurrentUser);
+	$children->FromSQL("(Queue = 'Incident Reports' OR Queue = 'Investigations' OR Queue = 'Blocks') AND (Status = 'new' OR Status = 'open') AND MemberOf = " . $incident->Id);
+	$children->OrderBy(FIELD => 'Due', ORDER => 'ASC');
+
+	my $mostdue = $children->First();
+	if ($mostdue) {
+	    $incident->SetDue($mostdue->DueObj->ISO);
+	} else {
+	    $incident->SetDue(0);
+	}
+    }
+
+    return 1;
+
+}
+
+# }}}
 
 1;
-

@@ -283,6 +283,10 @@
        Description => 'Set the due date for correspondence' ,                                            # loc
        ExecModule => 'RTIR_SetDueCorrespond',
     },
+    {  Name        => 'RTIR Set Incident Due',    # loc
+       Description => 'Set the due date of parent Incident' ,                                            # loc
+       ExecModule => 'RTIR_SetDueIncident',
+    },
     {  Name        => 'RTIR Unset Due',    # loc
        Description => 'Unset the due date' ,                                            # loc
        ExecModule => 'RTIR_UnsetDue',
@@ -350,6 +354,11 @@
        Description => 'A ticket requires a state change' ,                                            # loc
        ApplicableTransTypes => 'Any',
        ExecModule => 'RTIR_RequireStateChange',
+    },
+    {  Name        => 'RTIR Require Due Change',    # loc
+       Description => 'The due date of the parent incident must be changed' ,                                            # loc
+       ApplicableTransTypes => 'Any',
+       ExecModule => 'RTIR_RequireDueChange',
     },
 
 );
@@ -478,6 +487,23 @@
        ScripCondition   => 'RTIR Require State Change',
        ScripAction      => 'RTIR Set Incident State',
        Template          => 'Blank', },
+
+   {  Description => "SetRTIRState",
+      Queue            => 'Incident Reports',
+      ScripCondition   => 'RTIR Require Due Change',
+      ScripAction      => 'RTIR Set Incident Due',
+      Template          => 'Blank', },
+   {  Description => "SetRTIRState",
+      Queue            => 'Investigations',
+      ScripCondition   => 'RTIR Require Due Change',
+      ScripAction      => 'RTIR Set Incident Due',
+      Template          => 'Blank', },
+   {  Description => "SetRTIRState",
+      Queue            => 'Blocks',
+      ScripCondition   => 'RTIR Require Due Change',
+      ScripAction      => 'RTIR Set Incident Due',
+      Template          => 'Blank', },
+
     {  Description => "ResolveAllChildren",
        Queue            => 'Incidents',
        ScripCondition   => 'On Status Change',
