@@ -64,11 +64,10 @@
       <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id &>
     </td>
   </tr>
-  <& /Elements/ShadedInputRow, 
-      title => loc('Subject'),
-      name => "Subject",
-      content => $Ticket->Subject,
-      size => 60 &>
+  <tr>
+    <td class="label"><&|/l&>Subject</&>:</td>
+    <td class="value"><input name=Subject value="<%$Ticket->Subject|h%>" SIZE=50></td>
+  </tr>
   <tr>
     <td class="label"><&|/l&>Description</&>:</td>
     <td class="value">
@@ -78,16 +77,14 @@
 	 Cols => 60 &>
     </td>
   </tr>
-  <& /Elements/ShadedInputRow,
-	title => loc('Priority'),
-	name => "Priority",
-	content => $Ticket->Priority,
-	size => 5 &>
-  <& /Elements/ShadedInputRow,
-	title => loc('Time Worked'),
-	name => "TimeWorked",
-	content => $Ticket->TimeWorked,
-	size => 5 &>
+  <tr>
+    <td class="label"><&|/l&>Priority</&>:</td>
+    <td class="value"><input name=Priority value="<%$TicketObj->Priority|h%>" SIZE="5"></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Time Worked</&>:</td>
+    <td class="value"><input name=TimeWorked value="<%$Ticket->TimeWorked|h%>" SIZE="5"></td>
+  </tr>
   <tr>
     <td class="label"><&|/l&>Constituency</&>:</td>
     <td class="value">

@@ -56,11 +56,10 @@
       <& /RTIR/Elements/ShowRTIRField, Ticket => $Ticket, Name => 'State' &>
     </td>
   </tr>
-  <& /Elements/ShadedInputRow, 
-    title => loc('Subject'),
-    name => "Subject",
-    content => $Ticket->Subject,
-    size => 30 &>
+  <tr>
+    <td class="label"><&|/l&>Subject</&>:</td>
+    <td class="value"><input name=Subject value="<%$Ticket->Subject|h%>" SIZE=50></td>
+  </tr>
   <TR>
     <TD class=label>
       <&|/l&>Owner</&>:
@@ -77,11 +76,10 @@
       <& /RTIR/Elements/ShowIncidents, Ticket => $Ticket &>
     </td>
   </tr>
-  <& /Elements/ShadedInputRow,
-	title => loc('Time Worked'),
-	name => "TimeWorked",
-	content => $Ticket->TimeWorked,
-	size => 5 &>
+  <tr>
+    <td class="label"><&|/l&>Time Worked</&>:</td>
+    <td class="value"><input name=TimeWorked value="<%$Ticket->TimeWorked|h%>" SIZE="5"></td>
+  </tr>
 
 % if ($Type eq 'Report') {
   <tr>
@@ -187,7 +185,7 @@
 <%INIT>
 
 my $Ticket = LoadTicket($id);
-($Type, undef) = $m->comp('Elements/Type', Ticket => $Ticket->Id);
+my ($Type, undef) = $m->comp('Elements/Type', Ticket => $Ticket->Id);
 
 my $name;
 if ($Type eq 'Report') {
