@@ -83,7 +83,7 @@ $ARGS{UpdateTimeWorked}%>"> <&|/l&>minutes</&>
 </table>
 <& /Elements/TitleBoxEnd &>
 
-<& /Elements/Submit &>
+<& /Elements/Submit, Name => "ProcessReply" &>
 
 % }
 
@@ -112,7 +112,9 @@ my $do_comment_reply=0;
 $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
 chomp ($ARGS{'UpdateContent'}) ;
 
-if ($ARGS{'UpdateContent'} &&
+if (($ARGS{ProcessReply} && 
+    $ARGS{Status} eq 'resolved' || $ARGS{Status} eq 'rejected') ||
+    $ARGS{'UpdateContent'} &&
     $ARGS{'UpdateContent'} ne '' &&
     $ARGS{'UpdateContent'} ne  "-- \n" .
     $session{'CurrentUser'}->UserObj->Signature) {
