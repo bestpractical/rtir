@@ -70,13 +70,9 @@ if ($session{'tickets'}) {
     if ( ($ARGS{'ClearRestrictions'}) || ($ARGS{'NewSearch'}) ) {
 	$session{'tickets'}->ClearRestrictions;
 	$session{'tickets'}->LimitQueue(VALUE => $QueueObj->Name);
-        my $CustomFields = $QueueObj->CustomFields();
-        $CustomFields->{'find_disabled_rows'} = 1;
-        while (my $CustomField = $CustomFields->Next()) {
-          if ($CustomField->Name eq '_RTIR_State') {
-	      $session{'tickets'}->LimitCustomField(CUSTOMFIELD => $CustomField->Id, VALUE => 'new');
-          }
-        }
+	my $cf = RT::CustomField->new($session{'CurrentUser'});
+	$cf->LoadByNameAndQueue(Queue => $QueueObj->Id, Name => '_RTIR_State');
+	$session{'tickets'}->LimitCustomField(CUSTOMFIELD => $cf->Id, VALUE => 'new');
     }	
 }
 

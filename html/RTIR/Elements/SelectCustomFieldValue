@@ -22,26 +22,18 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-% if (defined $CustomField) {
+% if (defined $cf) {
 <& /Elements/SelectCustomFieldValue,
-    CustomField => $CustomField, 
+    CustomField => $cf, 
     Name => $FieldName &>
 % }
 
 <%INIT>
-my $CustomField;
-my $FieldName;
-
-my $CustomFields = $QueueObj->CustomFields();
-$CustomFields->{'find_disabled_rows'} = 1;
-
-while (my $cf = $CustomFields->Next()) {
-  if ((index($cf->Name, "_RTIR_".$Name) eq 0)) {
-    $FieldName = "CustomField".$cf->id;
-    $CustomField = $cf;
-  }
-}
+my $cf = RT::CustomField->new($session{'CurrentUser'});
+$cf->LoadByNameAndQueue(Queue => $QueueObj->Id, Name => "_RTIR_".$Name);
+my $FieldName = "CustomField".$cf->id;
 </%INIT>
+
 <%ARGS>
 $QueueObj => undef
 $Name => undef

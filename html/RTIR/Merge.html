@@ -88,15 +88,11 @@ if ($session{'tickets'}) {
 	# we can't merge with ourself
 	$session{'tickets'}->LimitId(VALUE => $Ticket->Id, OPERATOR => '!=');
 
-        my $CustomFields = $Ticket->QueueObj->CustomFields();
-        $CustomFields->{'find_disabled_rows'} = 1;
-        while (my $CustomField = $CustomFields->Next()) {
-          if ($CustomField->Name eq '_RTIR_State') {
-	    foreach my $state (@states) {
-		$session{'tickets'}->LimitCustomField(CUSTOMFIELD => $CustomField->Id, VALUE => $state);
-	    }
-          }
-        }
+	my $cf = RT::CustomField->new($session{'CurrentUser'});
+	$cf->LoadByNameAndQueue(Queue => 'Incidents', Name => '_RTIR_State');
+	foreach my $state (@states) {
+	    $session{'tickets'}->LimitCustomField(CUSTOMFIELD => $cf->Id, VALUE => $state);
+	}
     }	
 }
 

@@ -36,21 +36,6 @@
     QueueObj => $QueueObj, 
     Name => $Name &>
 
-<%INIT>
-my $CustomField;
-my $FieldName;
-
-my $CustomFields = $QueueObj->CustomFields();
-$CustomFields->{'find_disabled_rows'} = 1;
-
-while (my $cf = $CustomFields->Next()) {
-  if ((index($cf->Name, "_RTIR_".$Name) eq 0)) {
-    $FieldName = "CustomField".$cf->id;
-    $CustomField = $cf;
-  }
-}
-</%INIT>
-
 <%ARGS>
 $Name => undef
 $Label => undef

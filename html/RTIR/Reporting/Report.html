@@ -183,53 +183,34 @@ my $end = ParseDateToISO($myend);
 $Constituency = $ARGS{$Constituency} if $Constituency;
 
 # of new reports created during the period broken down by function
-my ($fid, $types, $classifications, $sla_levels, $CustomFields);
-my $Queue = new RT::Queue($session{'CurrentUser'});
-$Queue->Load('Incidents');
-$CustomFields = $Queue->CustomFields();
-$CustomFields->{'find_disabled_rows'} = 1;
+my ($cf, $values, $fid, $types, $classifications, $sla_levels);
 my $i = 0;
-while (my $CustomField = $CustomFields->Next()) {
-  if ($CustomField->Name eq '_RTIR_Function') {
-    $fid = $CustomField->Id;
-    my $values = $CustomField->Values;
-    while (my $value = $values->Next) {
-      $types->{$i} = $value->Name;
-      $i++;
-    }
-  }
+$cf = RT::CustomField->new($session{'CurrentUser'});
+$cf->LoadByNameAndQueue(Queue => 'Incidents', Name => '_RTIR_Function');
+$values = $cf->Values;
+while (my $value = $values->Next) {
+    $types->{$i} = $value->Name;
+    $i++;
 }
 
 # of new reports created during the period broken down by classification
-$Queue = new RT::Queue($session{'CurrentUser'});
-$Queue->Load('Incidents');
-$CustomFields = $Queue->CustomFields();
-$CustomFields->{'find_disabled_rows'} = 1;
 $i = 0;
-while (my $CustomField = $CustomFields->Next()) {
-  if ($CustomField->Name eq '_RTIR_Classification') {
-    $fid = $CustomField->Id;
-    my $values = $CustomField->Values;
-    while (my $value = $values->Next) {
-      $classifications->{$i} = $value->Name;
-      $i++;
-    }
-  }
+$cf = RT::CustomField->new($session{'CurrentUser'});
+$cf->LoadByNameAndQueue(Queue => 'Incidents', Name => '_RTIR_Classification');
+$values = $cf->Values;
+while (my $value = $values->Next) {
+    $classifications->{$i} = $value->Name;
+    $i++;
 }
 $classifications->{$i} = 'Unclassified';
 
 # of new reports created during the period broken down by SLA level
-$Queue->Load('Incident Reports');
-$CustomFields = $Queue->CustomFields();
-$CustomFields->{'find_disabled_rows'} = 1;
-while (my $CustomField = $CustomFields->Next()) {
-  if ($CustomField->Name eq '_RTIR_SLA') {
-    $fid = $CustomField->Id;
-    my $values = $CustomField->Values;
-    while (my $value = $values->Next) {
-      $sla_levels->{$value->Name} = $value->Description;
-    }
-  }
+$cf = RT::CustomField->new($session{'CurrentUser'});
+$cf->LoadByNameAndQueue(Queue => 'Incident Reports', Name => '_RTIR_SLA');
+$fid = $cf->Id;
+$values = $cf->Values;
+while (my $value = $values->Next) {
+    $sla_levels->{$value->Name} = $value->Description;
 }
 
 my $rtstart = new RT::Date($RT::SystemUser);

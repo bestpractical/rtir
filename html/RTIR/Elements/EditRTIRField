@@ -22,14 +22,14 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-% if (defined $CustomField) {
-% if ($CustomField->Type eq 'FreeformSingle') {
-<input type=hidden name=<%$Name%> value=<%$NamePrefix%><%$CustomField->id%>-Value> 
+% if (defined $cf) {
+% if ($cf->Type eq 'FreeformSingle') {
+<input type=hidden name=<%$Name%> value=<%$NamePrefix%><%$cf->id%>-Value> 
 % } else {
-<input type=hidden name=<%$Name%> value=<%$NamePrefix%><%$CustomField->id%>-Values>
+<input type=hidden name=<%$Name%> value=<%$NamePrefix%><%$cf->id%>-Values>
 % }
 <& /Ticket/Elements/EditCustomField, TicketObj => $TicketObj, 
-    CustomField => $CustomField, 
+    CustomField => $cf, 
     NamePrefix => $NamePrefix,
     Default => $Default,
     Rows => $Rows,
@@ -37,28 +37,24 @@
 % }
 
 <%INIT>
-my $CustomFields;
-my $CustomField;
 my $Values;
 my $NamePrefix;
+my $q;
 
 if (defined $TicketObj) {
-  $CustomFields = $TicketObj->QueueObj->CustomFields();
+  $q = $TicketObj->QueueObj->Id;
   $NamePrefix = "Ticket-".$TicketObj->Id."-CustomField-";
 } else {
-  $CustomFields = $QueueObj->CustomFields();
+  $q = $QueueObj->Id;
   $NamePrefix = "CustomField-";
 }
-$CustomFields->{'find_disabled_rows'} = 1;
 
-while (my $cf = $CustomFields->Next()) {
-  if ((index($cf->Name, "_RTIR_".$Name) eq 0)) {
-    $CustomField = $cf;
-    if ($TicketObj) {
-      $Values = $TicketObj->CustomFieldValues($CustomField->id);
-    }
-  }
+my $cf = RT::CustomField->new($session{'CurrentUser'});
+$cf->LoadByNameAndQueue(Queue => $q, Name => "_RTIR_".$Name);
+if ($TicketObj) {
+    $Values = $TicketObj->CustomFieldValues($cf->id);
 }
+
 </%INIT>
 <%ARGS>
 $TicketObj => undef

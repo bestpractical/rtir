@@ -70,14 +70,10 @@ if ($session{'tickets'}) {
 	$session{'tickets'}->ClearRestrictions;
 	$session{'tickets'}->LimitQueue(VALUE => $QueueObj->Name);
 	if (!$setstate) {
-	    my $CustomFields = $QueueObj->CustomFields();
-	    $CustomFields->{'find_disabled_rows'} = 1;
-	    while (my $CustomField = $CustomFields->Next()) {
-		if ($CustomField->Name eq '_RTIR_State') {
-		    foreach my $state (@states) {
-			$session{'tickets'}->LimitCustomField(CUSTOMFIELD => $CustomField->Id, VALUE => $state);
-		    }
-		}
+	    my $cf = RT::CustomField->new($session{'CurrentUser'});
+	    $cf->LoadByNameAndQueue(Queue => $QueueObj->Id, Name => '_RTIR_State');
+	    foreach my $state (@states) {
+		$session{'tickets'}->LimitCustomField(CUSTOMFIELD => $cf->Id, VALUE => $state);
 	    }
 	}
     }
