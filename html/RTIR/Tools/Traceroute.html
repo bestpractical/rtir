@@ -10,6 +10,7 @@ my $host;
 if ($q =~ /^[A-Z0-9.]+$/i) {
  $host = $q;
 open(TR, "/usr/sbin/traceroute $host|");
+tied(%session)->release_all_locks();
 }
 else {
     Abort("Invalid search query");
