@@ -18,9 +18,20 @@ Set($whois, {1 => "localhost", 2 => "whois-demo.bestpractical.com"});
 
 # Set the number of minutes for the SLA
 
-Set($SLA, {'Full service' => 60, 
-	   'Full service: out of hours' => 120, 
-	   'Reduced service' => 120});
+Set($SLA, {'Full service' => { BusinessMinutes => 60, 
+			       RealMinutes => 0,
+			   },
+	   'Full service: out of hours' =>  { BusinessMinutes => 120, 
+					      RealMinutes => 0,
+					  },
+	   'Reduced service' =>  { BusinessMinutes => 120, 
+				   RealMinutes => 0,
+			       },
+#	   '60 Real Minutes' =>  { BusinessMinutes => undef, 
+#				   RealMinutes => 60,
+#			       },
+       }
+    );
 
 
 # Set the defaults for RTIR custom fields

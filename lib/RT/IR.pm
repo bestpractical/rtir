@@ -82,7 +82,11 @@ sub SLAInit {
     $SLAObj->SetBusinessHours($bh);
 
     foreach my $key (keys %$RT::SLA) {
-	$SLAObj->Add($key, ( BusinessMinutes =>  $RT::SLA->{$key} ));
+	if ($RT::SLA->{$key} =~ /^\d+$/) {
+	    $SLAObj->Add($key, ( BusinessMinutes =>  $RT::SLA->{$key} ));
+	} else {
+	    $SLAObj->Add($key, %{$RT::SLA->{$key}} );
+	}
     }
 
     return $SLAObj;
