@@ -342,7 +342,7 @@ if ($self->TicketObj->StartsObj->AsString eq "Not set") {
        ScripAction      => 'User Defined',
        CustomCommitCode => q[
 # ------------------------------------------------------------------- #
-my $sla = 'Full service';
+my $sla;
 if ($self->TicketObj->FirstCustomFieldValue('_RTIR_SLA')) {
   $sla = $self->TicketObj->FirstCustomFieldValue('_RTIR_SLA');
 } else {
@@ -352,8 +352,16 @@ my $addminutes = $RT::SLA->{$sla};
 if ($self->TicketObj->StartsObj->AsString eq "Not set") {
   my $date = RT::Date->new($RT::SystemUser);
   $date->SetToNow;
+  use Business::Hours;
+  my $bizhours = new Business::Hours;
+  if ($RT::BusinessHours) {
+    $bizhours->set_business_hours($RT::BusinessHours);
+  }
+  my $starts = $bizhours->first_after($date->Unix);
+  $date->Set(Format => 'unix', Value => $starts);
   $self->TicketObj->SetStarts($date->ISO);
-  $date->AddSeconds($addminutes * 60);
+  my $due = $bizhours->add_seconds($date->Unix, $addminutes * 60);
+  $date->Set(Format => 'unix', Value => $due);
   $self->TicketObj->SetDue($date->ISO);
 }
 my $CustomFields = $self->TicketObj->QueueObj->CustomFields();
@@ -365,7 +373,8 @@ while (my $CustomField = $CustomFields->Next()) {
   }
 }
   return 1;
-# ------------------------------------------------------------------- #	],
+# ------------------------------------------------------------------- #
+	],
        CustomPrepareCode => '1',
        Template       => 'Blank' },
     {  Description => "SetDates",
@@ -381,6 +390,13 @@ if ($self->TicketObj->StartsObj->AsString eq "Not set") {
 }
 if ($self->TicketObj->DueObj->AsString eq "Not set") {
   $date->AddDays($RT::OverdueAfter);
+  use Business::Hours;
+  my $bizhours = new Business::Hours;
+  if ($RT::BusinessHours) {
+    $bizhours->set_business_hours($RT::BusinessHours);
+  }
+  my $due = $bizhours->first_after($date->Unix);
+  $date->Set(Format => 'unix', Value => $due);
   $self->TicketObj->SetDue($date->ISO);
 }
   return 1;
@@ -400,6 +416,13 @@ if ($self->TicketObj->StartsObj->AsString eq "Not set") {
 }
 if ($self->TicketObj->DueObj->AsString eq "Not set") {
   $date->AddDays($RT::OverdueAfter);
+  use Business::Hours;
+  my $bizhours = new Business::Hours;
+  if ($RT::BusinessHours) {
+    $bizhours->set_business_hours($RT::BusinessHours);
+  }
+  my $due = $bizhours->first_after($date->Unix);
+  $date->Set(Format => 'unix', Value => $due);
   $self->TicketObj->SetDue($date->ISO);
 }
   return 1;
@@ -421,6 +444,13 @@ if ($self->TransactionObj->NewValue eq 'rejected' ||
             $self->TransactionObj->OldValue eq 'resolved') &&
            $self->TransactionObj->NewValue eq 'open') {
   $date->SetToNow;
+  use Business::Hours;
+  my $bizhours = new Business::Hours;
+  if ($RT::BusinessHours) {
+    $bizhours->set_business_hours($RT::BusinessHours);
+  }
+  my $due = $bizhours->first_after($date->Unix);
+  $date->Set(Format => 'unix', Value => $due);
   $self->TicketObj->SetDue($date->ISO);
 }
   return 1;
@@ -442,6 +472,13 @@ if ($self->TransactionObj->NewValue eq 'rejected' ||
             $self->TransactionObj->OldValue eq 'resolved') &&
            $self->TransactionObj->NewValue eq 'open') {
   $date->SetToNow;
+  use Business::Hours;
+  my $bizhours = new Business::Hours;
+  if ($RT::BusinessHours) {
+    $bizhours->set_business_hours($RT::BusinessHours);
+  }
+  my $due = $bizhours->first_after($date->Unix);
+  $date->Set(Format => 'unix', Value => $due);
   $self->TicketObj->SetDue($date->ISO);
 }
 
@@ -464,6 +501,13 @@ if ($self->TransactionObj->NewValue eq 'open' ||
 } elsif ($self->TransactionObj->NewValue eq 'stalled') {
   $date->SetToNow;
   $date->AddDays($RT::OverdueAfter);
+  use Business::Hours;
+  my $bizhours = new Business::Hours;
+  if ($RT::BusinessHours) {
+    $bizhours->set_business_hours($RT::BusinessHours);
+  }
+  my $due = $bizhours->first_after($date->Unix);
+  $date->Set(Format => 'unix', Value => $due);
   $self->TicketObj->SetDue($date->ISO);
 }
   return 1;

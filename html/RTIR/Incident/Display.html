@@ -351,7 +351,6 @@ foreach my $arg (%ARGS) {
   if (substr($arg, 0, length('DeleteLink--MemberOf-')) eq
       'DeleteLink--MemberOf-') {
     my $t = substr($arg, length('DeleteLink--MemberOf-'));
-    $m->print("Arg: ".$t."<br>");
     my $children = new RT::Tickets ($session{'CurrentUser'});
     $children->LimitQueue(VALUE => 'Incident Reports');
     $children->LimitQueue(VALUE => 'Investigations');

@@ -144,6 +144,13 @@ while (my $Ticket = $session{'tickets'}->Next) {
       $date = RT::Date->new($RT::SystemUser);
       $date->SetToNow;
       $date->AddDays($RT::OverdueAfter);
+      use Business::Hours;
+      my $bizhours = new Business::Hours;
+      if ($RT::BusinessHours) {
+	  $bizhours->set_business_hours($RT::BusinessHours);
+      }
+      my $due = $bizhours->first_after($date->Unix);
+      $date->Set(Format => 'unix', Value => $due);
       $ARGS{'Due_Date'} = $date->AsString;
     }
 
