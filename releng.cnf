@@ -1,0 +1,7 @@
+PRODUCT			        = rtir
+TAG			            = 1.0.5
+CANONICAL_REPO		    = svn+ssh://svn.bestpractical.com/svn/bps-public/rtir/
+TAGS		            = tags/
+TRUNK	                = trunk/
+TMP_DIR			        = /tmp
+RELEASE_DIR		        = /home/ftp/pub/rt/devel
