@@ -149,7 +149,6 @@ if ($ARGS{'id'} eq 'new') {
     }
     ($Ticket, @Actions) =
        CreateTicket(Attachments => $session{'Attachments'}, %ARGS);
-    push (@Actions);
     delete $session{'Attachments'};
     unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
       Abort("No permission to view newly created ticket #".$Ticket->id.".");
