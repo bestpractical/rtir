@@ -25,9 +25,16 @@
 <& /RTIR/Elements/Header, 
     Title => $title, 
     Refresh => $session{'tickets_refresh_interval'} &>
-<& Elements/Tabs, 
-    current_tab => 'RTIR/Report/BulkReject.html?ClearRestrictions=1', 
-    Title => $title &>
+<& 'Elements/Tabs', 
+    current_tab => 'RTIR/Report/BulkReject.html', 
+    Title => $title,
+    Format => $Format,
+    Query => $Query,
+    Rows => $Rows,
+    OrderBy => $OrderBy,
+    Order => $Order,
+    QueryString => $QueryString,
+&>
 
 <& /RTIR/Elements/ListActions, actions => \@results &>
 
@@ -44,48 +51,9 @@
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => loc("Reject") &>
 </form>
 
-<HR>
-
-<& /RTIR/Elements/SearchFields, Path => '/RTIR/Report/BulkReject.html', 
-    Queue => $QueueObj->Name, %ARGS &>
-
 <%INIT>
 my $title = loc("Reject Incident Reports");
 my $SubmitCaption = loc("Reject selected incident reports");
-
-my $QueueObj = RT::Queue->new($session{'CurrentUser'});
-$QueueObj->Load("Incident Reports");
-
-if (! $session{'tickets'}) {
-    # Init a new search
-    $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
-}
-
-my $ticketcount;
-$session{'i'}++;
-if ($session{'tickets'}) {
-    if ($ARGS{'DeleteRestriction'}) {
-	$session{'tickets'}->DeleteRestriction($ARGS{'DeleteRestriction'});
-    }
-    if ( ($ARGS{'ClearRestrictions'}) || ($ARGS{'NewSearch'}) ) {
-	$session{'tickets'}->ClearRestrictions;
-	$session{'tickets'}->LimitQueue(VALUE => $QueueObj->Name);
-	my $cf = RT::CustomField->new($session{'CurrentUser'});
-	$cf->LoadByNameAndQueue(Queue => $QueueObj->Id, Name => '_RTIR_State');
-	$session{'tickets'}->LimitCustomField(CUSTOMFIELD => $cf->Id, VALUE => 'new');
-    }	
-}
-
-ProcessSearchQuery(ARGS=>\%ARGS);
-$session{'tickets'}->RedoSearch();
-if ( $session{'tickets'}->DescribeRestrictions()) {
-    $ticketcount = $session{tickets}->Count();
-}
-
-# Iterate through the ARGS hash and remove anything with a null value.
-map ($ARGS{$_} =~ /^$/ && (delete $ARGS{$_}), keys %ARGS);
-
-Abort(loc("No search to operate on.")) unless ($session{'tickets'});
 
 my (@tempresults, @results);
 if ($ARGS{'BulkReject'}) {
@@ -126,10 +94,40 @@ if ($ARGS{'BulkReject'}) {
     }
 }
 
+if (!$Query) {
+    $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
+}
+
+$ARGS{'Query'} = $Query;
+
+my $QueryString = "&".$m->comp('/Elements/QueryString',
+                               Query => $Query,
+                               Format => $Format,
+                               Rows => $Rows,
+                               OrderBy => $OrderBy,
+                               Order => $Order,
+                               Page => $Page);
+
+if (!$BaseQuery) {
+    $BaseQuery = $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
+}
+
+$Query = "'CF.Incident Reports.{_RTIR_State}' = 'new' AND $BaseQuery AND ( $Query )";
+
+$session{'tickets'}->FromSQL($Query);
+
 </%INIT>
 
 <%ARGS>
 $Status => 'rejected'
 $check => 'uncheck'
+$Query => undef
+$BaseQuery => undef
+$Queue => 'Incident Reports'
+$Format => undef 
+$Rows => 50
+$Page => 1
+$OrderBy => 'id'
+$Order => 'ASC'
 </%ARGS>
 

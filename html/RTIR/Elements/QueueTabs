@@ -178,7 +178,7 @@ $tabs->{"g"} = { path      => 'RTIR/Search/Results.html?Queue=' . $QueueName . $
                  subtabs   => $searchtabs };
 
 if ($Type eq 'Report') {
-$tabs->{"h"} = { path      => 'RTIR/Report/BulkReject.html?ClearRestrictions=1',
+$tabs->{"h"} = { path      => 'RTIR/Report/BulkReject.html',
                  title     => loc('Bulk Reject'),
                  separator => 1 };
 }

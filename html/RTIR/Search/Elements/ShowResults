@@ -10,11 +10,14 @@
 
    &>
 <div align=right>
-<a href="<%$RT::WebPath%>/Search/Bulk.html<%$QueryString%>"><&|/l&>Update multiple tickets</&></a><br>
-<a href="<%$RT::WebPath%>/Search/Results.html<%$QueryString%>"><&|/l&>Bookmarkable link</&></a><br>
-<a href="<%$RT::WebPath%>/Search/Results.tsv<%$QueryString%>"><&|/l&>spreadsheet</&></a> |
-<a href="<%$RT::WebPath%>/Search/Results.rdf<%$QueryString%>"><&|/l&>RSS</&></a> |
-<a href="<%$RT::WebPath%>/Tools/Offline.html<%$QueryString%>"><&|/l&>Work offline</&></a><br>
+
+% if ($Queue eq 'Incident Reports') {
+%# this would do well as a Callback
+<a href="<%$RT::WebPath%>/RTIR/Report/BulkReject.html?Queue=<%$Queue%><%$QueryString%>"><&|/l&>Bulk Reject</&></a><br>
+% }
+<a href="<%$RT::WebPath%>/RTIR/Search/Results.html?Queue=<%$Queue%><%$QueryString%>"><&|/l&>Bookmarkable link</&></a><br>
+<a href="<%$RT::WebPath%>/Search/Results.tsv?Queue=<%$Queue%><%$QueryString%>"><&|/l&>spreadsheet</&></a> |
+<a href="<%$RT::WebPath%>/Search/Results.rdf?Queue=<%$Queue%><%$QueryString%>"><&|/l&>RSS</&></a> |
 </div>
 
 <%ARGS>
@@ -26,4 +29,5 @@ $Page => 1
 $OrderBy => 'id'
 $Order => 'ASC'
 $QueryString => undef
+$Queue => undef
 </%ARGS>
