@@ -7,8 +7,6 @@
     Page => $Page,
     Format => $Format,
     BaseURL => $BaseURL,
-    check => $ARGS{'check'},
-    CheckName => $ARGS{'CheckName'},
    &>
 
 <div align=right>

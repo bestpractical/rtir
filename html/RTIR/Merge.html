@@ -42,8 +42,6 @@
 <input type="hidden" name="<%$Ticket->Id%>-MergeInto">
 
 <& /RTIR/Search/Elements/ShowResults, 
-    check => 'radio',
-    CheckName => 'SelectedTicket',
     Queue => $Queue,
     QueryString => $QueryString, 
     BaseURL => $RT::WebPath."/RTIR/Merge.html?id=$id&",
