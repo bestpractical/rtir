@@ -24,33 +24,79 @@
 %# END LICENSE BLOCK
 <& /RTIR/Elements/Header, Title => $Title &>
 <& /RTIR/Tools/Elements/Tabs, 
-    current_toptab => "RTIR/Tools/ScriptedAction.html", 
     current_tab => $current_tab, 
     current_subtab => $current_subtab, 
     Title => $Title &>
 
 <& /RTIR/Elements/ListActions, actions => \@finalresults &>
 
-<FORM METHOD="GET" NAME="TicketUpdate" ENCTYPE="multipart/form-data">
+<FORM METHOD="GET" action="ScriptedAction.html" NAME="ScriptedAction" ENCTYPE="multipart/form-data">
+<input type=hidden Name="loop" value="<%$ARGS{'loop'}%>">
 <input type=hidden Name="WatcherTypeEmail1" value="Requestor">
 <input type=hidden name="UpdateType" value="response">
 <input type=hidden name="Action" value="Respond">
 <input type=hidden name="Owner" value=<%$session{'CurrentUser'}->Id%>>
-
 <INPUT TYPE=HIDDEN NAME=id Value="new">
 <INPUT TYPE=HIDDEN NAME=Status Value="<%$ARGS{Status}||'open'%>">
 <A NAME="top">
 	
-<& /Elements/TitleBoxStart, contentbg => "#cccccc", title => $Title &>
+% if (exists $ARGS{'TestAddresses'}) {
+<& /Elements/TitleBoxStart, contentbg => "#cccccc", 
+    title => 'Address test results' &>
+<ul>
+%   foreach my $key (keys %$addrhash) {
+  <li><%$addrhash->{$key}->{'IP'}%>: <%$addrhash->{$key}->{'Address'}%>
+%   }
+</ul>
+<& /Elements/TitleBoxEnd &>
+<BR>
+% }
+
+<& /Elements/TitleBoxStart, contentbg => "#cccccc", title => loc("Identify Recipients") &>
+
 <TABLE border=0 cellpadding=0 cellspacing=2>
+% if ($loop eq 'IP') {
+  <TR>
+    <td class=label>WHOIS:</td>
+  <td>
+  <table>
+  <tr>
+    <td class=input>
+      <select name="server">
+% foreach my $s (sort keys %{$servers}) {
+% next unless $servers->{$s};
+% my $selected = "";
+% if ($servers->{$s} eq $server) {
+%   $selected = " SELECTED";
+% }
+        <option value="<%$servers->{$s}%>"<%$selected%>><%$servers->{$s}%></option>
+% }
+      </select>
+  </tr>
+  </table>
+  </td>
+  </TR>
   <TR>
     <TD class=label>
-      <&|/l&>Owner</&>:
+      <&|/l&>Contact Field</&>:
     </TD>
     <TD>
-      <%$session{'CurrentUser'}->Name%>
+      <INPUT Name="field" value="<% $ARGS{'field'} %>">
     </TD>
   </TR>
+  <TR>
+    <TD class=labeltop>
+      <&|/l&>IP Addresses</&>:<br><small>arg: <i>_IP_</i></small>
+    </TD>
+    <TD COLSPAN=5>
+% if (exists $ARGS{IPs}) {
+      <& /Elements/MessageBox, Name=>"IPs", Width => 30, Default=>$ARGS{IPs}, %ARGS&>
+% } else {
+      <& /Elements/MessageBox, Name=> 'IPs', Width => 30 &>
+% }
+    </TD>
+  </TR>
+% } else {
   <TR>
     <TD class=labeltop>
       <&|/l&>Addresses</&>:<br><small>arg: <i>_ADDR_</i></small>
@@ -63,6 +109,7 @@
 % }
     </TD>
   </TR>
+% }
 <TR>
   <TD class=label>
     <&|/l&>Template</&>:
@@ -83,8 +130,26 @@
     <TD ALIGN=RIGHT COLSPAN=2>
     </TD>
   </TR>
-  <TR><TD colspan=2><hr></TD></TR>
+</table>
+% if ($loop eq "IP") {
+<& /Elements/Submit, Name => "TestAddresses", Caption => loc("Test email addresses"), Label => loc("Test")&>
+% }
+<& /Elements/TitleBoxEnd &>
 
+<BR>
+
+<& /Elements/TitleBoxStart, contentbg => "#cccccc", title => loc("Message information") &>
+
+<TABLE border=0 cellpadding=0 cellspacing=2>
+  <TR>
+    <TD class=label>
+      <&|/l&>Owner</&>:
+    </TD>
+    <TD>
+      <%$session{'CurrentUser'}->Name%>
+    </TD>
+  </TR>
+`
 <& /RTIR/Incident/Elements/Create, Title => $Title, QueueObj => $incidentq, %ARGS &>
 
 <TR>
@@ -92,22 +157,38 @@
     <&|/l&>Message</&>:
   </TD>
   <TD COLSPAN=5>
-% if (exists $ARGS{UpdateContent}) {
-<& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, %ARGS&>
+% if (exists $ARGS{Content}) {
+<& /Elements/MessageBox, Name=>"Content", Default=>$ARGS{Content}, %ARGS&>
 % } else {
-<& /Elements/MessageBox, Name=>"UpdateContent", %ARGS &>
+<& /Elements/MessageBox, Name=>"Content", %ARGS &>
 % }
   </TD>
 </TR>
 </TABLE>
+
 <& /Elements/TitleBoxEnd &>
-<& /Elements/Submit, Label => loc("Create")&>
+<& /Elements/Submit, Name => "SubmitAction", Caption => loc("Create the Incidents and Investigations"), Label => loc("Create")&>
 </FORM>
 
 <%INIT>
-my @addrs;
 my ($Incident, $Ticket);
-my (@IncidentActions, @InvestigationActions, @finalresults);  
+my (@IncidentActions, @ChildActions);
+my (@watchresults, @updateresults, @finalresults);  
+
+$ARGS{'loop'} = $loop if !defined $ARGS{'loop'};
+
+if ($loop eq 'address') {
+  $current_subtab = "RTIR/Tools/ScriptedAction.html",
+} else {
+  $current_subtab =  'RTIR/Tools/ScriptedAction.html?loop=IP';
+}
+
+# get the list of WHOIS servers
+foreach my $s (sort keys %$servers) {
+  # just pick the first one
+  $server = $servers->{$s} unless ($server);
+  last;
+}
 
 # Load the Incidents Queue
 my $incidentq = new RT::Queue($session{'CurrentUser'});	
@@ -115,37 +196,82 @@ unless ($incidentq->Load('Incidents')) {
   Abort('Queue not found');
 }
 
-# Load the Investigationss Queue
+# Load the Investigations Queue
 my $investigationq = new RT::Queue($session{'CurrentUser'});	
 unless ($investigationq->Load('Investigations')) {
   Abort('Queue not found');
 }
 
-my $addresses = $ARGS{'Addresses'};
-# replace \r\n with \n
-$addresses =~ s/\r\n/\n/g;
-# trim blanks from ends
-$addresses =~ s/^\s+//;
-$addresses =~ s/\s+$//;
-# replace newlines with commas (for use with parse_csv)
-$addresses =~ s/\n/,/g;
-@addrs = parse_csv($addresses);
-    
-foreach my $addr (@addrs) {
+# Load the Incident Reports Queue
+my $reportq = new RT::Queue($session{'CurrentUser'});	
+unless ($reportq->Load('Incident Reports')) {
+  Abort('Queue not found');
+}
+
+my $addrhash = {};
+
+if ( exists $ARGS{SubmitAction} || exists $ARGS{'TestAddresses'} ) {
+if ($loop eq 'address') {
+  my ($addresses, @addrs);
+  $addresses = $ARGS{'Addresses'};
+  # replace \r\n with \n
+  $addresses =~ s/\r\n/\n/g;
+  # trim blanks from ends
+  $addresses =~ s/^\s+//;
+  $addresses =~ s/\s+$//;
+  # replace newlines with commas (for use with parse_csv)
+  $addresses =~ s/\n/,/g;
+  @addrs = parse_csv($addresses);
+  my $i = 0;
+  foreach my $addr (@addrs) {
+    $addrhash->{$i} = {Address => $addr, IP => loc("IP_UNKNOWN")};
+    $i++;
+  }
+} elsif ($loop eq 'IP') {
+  my ($ipnums, @ips);
+  $ipnums = $ARGS{'IPs'};
+  # replace \r\n with \n
+  $ipnums =~ s/\r\n/\n/g;
+  # trim blanks from ends
+  $ipnums =~ s/^\s+//;
+  $ipnums =~ s/\s+$//;
+  # replace newlines with commas (for use with parse_csv)
+  $ipnums =~ s/\n/,/g;
+  @ips = parse_csv($ipnums);
+  my $i = 0;
+  foreach my $ip (@ips) {
+    my ($a, $err);
+    $m->comp('Elements/GetEmailFromIP', server => $ARGS{'server'}, q => $ip, field => $ARGS{'field'}, address => \$a, error => \$err);
+    if ($err) {
+      # no addresses
+      push(@finalresults, loc("Could not connect to whois server [_1] while getting address for [_2]", $server, $ip));
+      next;
+    }
+    $addrhash->{$i} = {Address => $a, IP => $ip};
+    $i++;
+  }
+}
+}
+
+if ( exists $ARGS{SubmitAction} ) {
+
+foreach my $key (keys %$addrhash) {
+  my $addr = $addrhash->{$key}->{'Address'};
+  my $ip = $addrhash->{$key}->{'IP'};
   if ((!exists $ARGS{'AddMoreAttach'}) && 
       ($ARGS{'id'} eq 'new')) { # new ticket?
     # {{{ Create a new ticket
     
-# {{{ deal with deleting uploaded attachments
-foreach my $key (keys %ARGS) {
+  # {{{ deal with deleting uploaded attachments
+  foreach my $key (keys %ARGS) {
     if ($key =~ m/^DeleteAttach-(.+)$/) {
 	delete $session{'Attachments'}{$1};
     }
     $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
-}
+  }
 
-# {{{ store the uploaded attachment in session
-if ($ARGS{'Attach'}) {			# attachment?
+  # {{{ store the uploaded attachment in session
+  if ($ARGS{'Attach'}) {			# attachment?
     $session{'Attachments'} = {} unless defined $session{'Attachments'};
 
     # strip leading directories
@@ -159,23 +285,28 @@ if ($ARGS{'Attach'}) {			# attachment?
     );
     $session{'Attachments'} = { %{$session{'Attachments'} || {}},
 				$ARGS{'Attach'} => $attachment };
-}
+  }
 # }}}
 
-# delete temporary storage entry to make WebUI clean
-unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
+  # delete temporary storage entry to make WebUI clean
+  unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
     delete $session{'Attachments'};
-}
+  }
 
 
 # }}}
 
+  # if the subject contains _ADDR_ or _IP_
+  # substitute appropriately
+  $ARGS{'Subject'} =~ s/_ADDR_/$addr/g;
+  $ARGS{'Subject'} =~ s/_IP_/$ip/g;
+
+  if ($addr ne loc("ADDRESS_UNKNOWN")) {
     # create the Incident
     unless ($incidentq->CurrentUserHasRight('CreateTicket')) {
 	Abort('You have no permission to create tickets in that queue.');
     }
     $ARGS{'Queue'} = $incidentq->Id;
-    $ARGS{'Content'} = $ARGS{'UpdateContent'};
 
     ($Incident, @IncidentActions) =
        CreateTicket(Attachments => $session{'Attachments'}, %ARGS);
@@ -190,18 +321,19 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
     }
     $ARGS{'new-MemberOf'} = $Incident->Id;
     $ARGS{'Queue'} = $investigationq->Id;
-    $ARGS{'Content'} = "";
     # Create the investigation without attachments, and send them later
-    ($Ticket, @InvestigationActions) =
+    ($Ticket, @ChildActions) =
        CreateTicket(%ARGS);
     unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
       Abort("No permission to view newly created ticket #".$Ticket->id.".");
     }
+    $ARGS{'new-MemberOf'} = undef;
+    $ARGS{'Queue'} = undef;
 
     # add the address as a Requestor and update the watchers
     $ARGS{"WatcherAddressEmail1"} = $addr;
-    my @watchresults;
     push @watchresults, ProcessTicketWatchers(TicketObj => $Ticket, ARGSRef => \%ARGS);    
+    $ARGS{"WatcherAddressEmail1"} = undef;
 
     # find the Create transaction, so we can pass it to the template
     my $transaction;
@@ -209,9 +341,11 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
 	last if ($transaction->Type eq 'Create');
     }
 
-    # if the template's argument contains _ADDR_, substitute the address
+    # if the template's argument contains _ADDR_ or _IP_
+    # substitute appropriately
     my $arg = $ARGS{'TemplateArg'};
     $arg =~ s/_ADDR_/$addr/g;
+    $arg =~ s/_IP_/$ip/g;
 
     # load the selected template
     my $TemplateObj = new RT::Template($session{'CurrentUser'});
@@ -230,22 +364,37 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
     # the content will be part of the template, if desired
     $ARGS{'UpdateContent'} = " ";
     $ARGS{UpdateAttachments} = $session{'Attachments'};
-    my @updateresults; 
     ProcessUpdateMessage(ARGSRef=>\%ARGS, 
 			 Actions=>\@updateresults, 
 			 TicketObj=>$Ticket);
+  } else {
 
-    # say what ticket these refer to
-    my @tempresults = (@watchresults, @updateresults);
-    @tempresults = map { loc("Ticket [_1]: [_2]",$Ticket->Id,$_) } @tempresults;
-
-    # put all the results together
-    push (@finalresults, @IncidentActions, @InvestigationActions, @tempresults);
-
-    # delete attachments only after they've been sent to everyone
-    delete $session{'Attachments'};
-
+    # create an unlinked incident report
+    unless ($reportq->CurrentUserHasRight('CreateTicket')) {
+	Abort('You have no permission to create tickets in that queue.');
+    }
+    $ARGS{'Queue'} = $reportq->Id;
+    # Create the investigation without attachments, and send them later
+    ($Ticket, @ChildActions) =
+       CreateTicket(%ARGS);
+    unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
+      Abort("No permission to view newly created ticket #".$Ticket->id.".");
+    }
+    $ARGS{'Queue'} = undef;
   }
+
+  # say what ticket these refer to
+  my @tempresults = (@watchresults, @updateresults);
+  @tempresults = map { loc("Ticket [_1]: [_2]",$Ticket->Id,$_) } @tempresults;
+
+  # put all the results together
+  push (@finalresults, @IncidentActions, @ChildActions,, @tempresults);
+
+  # delete attachments only after they've been sent to everyone
+  delete $session{'Attachments'};
+  }
+}
+
 }
 
 sub parse_csv {
@@ -266,7 +415,10 @@ sub parse_csv {
 </%INIT>
 
 <%ARGS>
+$servers => $RT::whois
+$server => undef
 $Title => loc("Scripted Action: Create Incidents and Investigations")
 $current_tab => "RTIR/Tools/ScriptedAction.html"; 
 $current_subtab => undef
+$loop => 'address'
 </%ARGS>

@@ -154,7 +154,6 @@ if ($ARGS{'BulkReject'}) {
           push @results, "Action: ".$ARGS{'Action'};
           my ($res, $msg)=$t->$action();
           push (@results, $msg);
-          push @results, "Msg: ".$msg;
         }
         my ($oldstate, $newstate);
         $oldstate = $t->FirstCustomFieldValue('_RTIR_State');
