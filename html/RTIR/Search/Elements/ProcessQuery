@@ -659,7 +659,7 @@ $session{'CurrentSearchHash'} = $search_hash;
 
 # {{{ Show the results, if we were asked.
 if ( $ARGS{"DoSearch"} ) {
-    $m->comp("../Results.html" , Query => $Query, Format => $Format, Order => $Order, OrderBy => $OrderBy, Rows => $RowsPerPage, BaseQuery => $BaseQuery);
+    $m->comp($ResultPage , Query => $Query, Format => $Format, Order => $Order, OrderBy => $OrderBy, Rows => $RowsPerPage, BaseQuery => $BaseQuery);
     $m->abort();
 }
 # }}}
@@ -688,4 +688,5 @@ $search_hash => undef
 $dirty => 0
 $AvailableColumns => undef
 $CurrentFormat => undef
+$ResultPage => "../Results.html"
 </%ARGS>
