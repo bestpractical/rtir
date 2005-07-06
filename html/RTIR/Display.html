@@ -168,7 +168,8 @@
       Ticket => $Ticket, 
       Collapsed => $ARGS{'Collapsed'}, 
       ShowHeaders => $ARGS{'ShowHeaders'},
-      UpdatePath => "$RT::WebPath/RTIR/Update.html",
+      UpdatePath  => "$RT::WebPath/RTIR/Update.html",
+      DisplayPath => "$RT::WebPath/RTIR/Display.html?id=".$Ticket->id,
 &> 
 
 <%INIT>
