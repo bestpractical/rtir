@@ -30,7 +30,7 @@
     current_subtab => 'RTIR/Display.html?id='.$Ticket->id,
     Title => $Title &>
 
-<& /Elements/ListActions, actions => \@Actions &>
+<& /Elements/ListActions, actions => \@results &>
 
 % if ($id != 'new' && $Ticket->QueueObj->Name ne $QueueObj->Name) {
 <%loc("This ticket isn't a [_1].", $Type)%>
@@ -172,7 +172,7 @@
 &> 
 
 <%INIT>
-my (@Actions, $Type, $name);
+my ($Type, $name);
 my $Ticket = new RT::Ticket($session{'CurrentUser'});
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 if ($id ne 'new') {
@@ -197,7 +197,7 @@ if ($ARGS{'id'} eq 'new') {
     unless ($QueueObj->CurrentUserHasRight('CreateTicket')) {
 	Abort('You have no permission to create tickets in that queue.');
     }
-    ($Ticket, @Actions) =
+    ($Ticket, @results) =
        CreateTicket(Attachments => $session{'Attachments'}, %ARGS);
     delete $session{'Attachments'};
     unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
@@ -231,7 +231,7 @@ if ($ARGS{'id'} eq 'new') {
     if ($ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
       my $action = $1;
       my ($res, $msg)=$Ticket->$action();
-      push(@Actions, $msg);
+      push(@results, $msg);
     }
   }
 
@@ -242,10 +242,10 @@ if ($ARGS{'id'} eq 'new') {
   my @LinkActions = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
   my @DateActions = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
 
-  push (@Actions, @UpdateActions, @BasicActions, @LinkActions, @DateActions);
+  push (@results, @UpdateActions, @BasicActions, @LinkActions, @DateActions);
   $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
   if ($newstate ne $oldstate) {
-    push (@Actions, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
+    push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
   }
 }
 
@@ -275,4 +275,5 @@ my $attachments = $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket
 <%ARGS>
 $id => undef
 $Queue=>undef
+@results => undef
 </%ARGS>

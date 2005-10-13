@@ -29,7 +29,7 @@
     current_subtab => 'RTIR/Display.html?id='.$Ticket->id,
     Title => loc("Incident #[_1]: [_2]", $Ticket->Id, $Ticket->Subject) &>
 
-<& /Elements/ListActions, actions => \@Actions &>
+<& /Elements/ListActions, actions => \@results &>
 
 % if ($id != 'new' && $Ticket->QueueObj->Name ne "Incidents") {
 <&|/l&>This ticket isn't an Incident.</&>
@@ -203,7 +203,7 @@
 
   
 <%INIT>
-my ($Ticket, $ChildObj, @Actions);  
+my ($Ticket, $ChildObj);  
 $Ticket = new RT::Ticket($session{'CurrentUser'});
 if ($ARGS{'child'}) {
   $ChildObj = LoadTicket($ARGS{'child'});
@@ -255,7 +255,7 @@ my $DoLinks = sub {
 
   @linkresults = map { loc("Ticket [_1]: [_2]",$Ticket->Id,$_) } @linkresults;
 
-  push (@Actions, @linkresults);
+  push (@results, @linkresults);
 
 };
 
@@ -270,7 +270,7 @@ if ($id eq 'new') {
   unless ($Queue->CurrentUserHasRight('CreateTicket')) {
     Abort('You have no permission to create tickets in that queue.');
   }
-  ($Ticket, @Actions) =
+  ($Ticket, @results) =
      CreateTicket(Attachments => $session{'Attachments'}, %ARGS);
   delete $session{'Attachments'};
   unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
@@ -299,7 +299,7 @@ if ($id eq 'new') {
     if ($ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
       my $action = $1;
       my ($res, $msg)=$Ticket->$action();
-      push(@Actions, $msg);
+      push(@results, $msg);
     }
   } elsif ($ARGS{'BulkLink'}) {
     #Iterate through each ticket we've been handed
@@ -322,7 +322,7 @@ if ($id eq 'new') {
       ) {
     $ARGS{UpdateAttachments} = $session{'Attachments'};
     ProcessUpdateMessage(ARGSRef=>\%ARGS, 
-	  	         Actions=>\@Actions, 
+	  	         Actions=>\@results, 
 		         TicketObj=>$Ticket);
     delete $session{'Attachments'};
   }
@@ -330,11 +330,11 @@ if ($id eq 'new') {
   #Process basics updates
   my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$Ticket);
 
-  push (@Actions, @BasicActions);
+  push (@results, @BasicActions);
 
   $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
   if ($newstate ne $oldstate) {
-    push (@Actions, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
+    push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
   }
 }
 
@@ -357,7 +357,7 @@ foreach my $arg (%ARGS) {
     $children->LimitQueue(VALUE => 'Blocks');
     $children->LimitMemberOf($t);
     if ($children->Count == 0) {
-      push (@Actions, 
+      push (@results, 
             loc("WARNING: Incident [_1] has no children.", $t));
     }
   }
@@ -371,7 +371,7 @@ $children->LimitQueue(VALUE => 'Investigations');
 $children->LimitQueue(VALUE => 'Blocks');
 $children->LimitMemberOf($Ticket->Id);
 if ($children->Count == 0) {
-  push (@Actions, 
+  push (@results, 
         loc("WARNING: Incident [_1] has no children.", $Ticket->Id));
 }
 
@@ -383,4 +383,5 @@ my $attachments = $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket
 $id => undef
 $SelectedTicket => undef
 $child => undef
+@results => ()
 </%ARGS>

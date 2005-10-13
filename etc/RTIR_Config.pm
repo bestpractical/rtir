@@ -232,4 +232,9 @@ Set($RTIRSearchResultFormats, {
 },
     );
 
+
+# Enable this option if you want jump to display screen after saving changes
+# on the edit screen.
+Set($DisplayAfterEdit, 1);
+
 1;

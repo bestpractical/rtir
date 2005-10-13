@@ -130,7 +130,7 @@
 </table>
 <BR>
 
-<& /Elements/Submit, Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#333399" &>
+<& /Elements/Submit, Name => 'SaveChanges', Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#333399" &>
 </form>
 
 <%INIT>
@@ -181,6 +181,11 @@ push @results, @cfresults;
 push @results, @dresults;
 push @results, @lresults;
 push @results, @okresults;
+
+if( $ARGS{'SaveChanges'} && $RT::DisplayAfterEdit ) {
+    $m->comp("/RTIR/Incident/Display.html", results => [@results], %ARGS);
+    $m->abort;
+}
 
 # If they've gone and moved the ticket to somewhere they can't see, etc...
 # TODO: display the results, even if we can't display the ticket.
