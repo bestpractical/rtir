@@ -1,12 +1,16 @@
 name: RT-IR
-version: 1.1.4
+version: 1.9.HEAD
 abstract: RT IR Extension
 author: Best Practical Solutions <sales@bestpractical.com>
 license: GPL Version 2
 distribution_type: module
+requires:
+  Business::Hours: 0
+  Business::SLA: 0
+  Net::Whois::RIPE: 0
 no_index:
   directory:
     - etc
     - html
     - inc
-generated_by: Module::Install version 0.36
+generated_by: Module::Install version 0.37
