@@ -43,7 +43,7 @@
 <table border=0 cellspacing=2 cellpadding=0 width=100%>
 <tr>
 <td valign=top width=50%>
-<& /Elements/TitleBoxStart, title => loc('Modify incident # [_1]', $Ticket->Id),   color=> "#993333", width => "100%" &>
+<& /Widgets/TitleBoxStart, title => loc('Modify incident # [_1]', $Ticket->Id),   color=> "#993333", width => "100%" &>
 
 <table>
   <tr>
@@ -114,16 +114,16 @@
   </tr>
 </table>
 
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 
 </td>
 </tr>
 <tr>
 <td valign=top width=50%>
 
-<& /Elements/TitleBoxStart, title => loc('Dates'),  width => "100%", color => "#663366"  &>
+<& /Widgets/TitleBoxStart, title => loc('Dates'),  width => "100%", color => "#663366"  &>
 <& /RTIR/Elements/EditDates, TicketObj => $Ticket &>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 
 </td>
 </tr>

@@ -25,7 +25,7 @@
 <FORM METHOD="GET">
 <INPUT TYPE=HIDDEN NAME="Bookmark" VALUE="<% $session{'tickets'}->FreezeLimits()|u %>">
 <input type=hidden name=Queue value="<%$ARGS{'Queue'}%>">
-<& /Elements/TitleBoxStart, title => loc('Refine search')&>
+<& /Widgets/TitleBoxStart, title => loc('Refine search')&>
 <input type=hidden name="id" value="<%$ARGS{'id'}%>">
 <INPUT TYPE=HIDDEN NAME="CompileRestriction" VALUE=1>
 
@@ -134,9 +134,9 @@
 
 </UL>
 
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 
-<& /Elements/TitleBoxStart, title => loc('Ordering and sorting')&>
+<& /Widgets/TitleBoxStart, title => loc('Ordering and sorting')&>
 
 <UL>
 
@@ -159,7 +159,7 @@
 
 
 
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 
 <& /Elements/Submit, Label => loc('Search'), Name => 'Action'&>
 

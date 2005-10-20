@@ -30,7 +30,7 @@
     Title => $title &>
 
 % if ($ticket) {
-<& /Elements/TitleBoxStart, title => loc("Current [_1]: #[_2]", $TicketType, $ticket), color=> "#993333" &>
+<& /Widgets/TitleBoxStart, title => loc("Current [_1]: #[_2]", $TicketType, $ticket), color=> "#993333" &>
 
 <TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
 <& /Elements/TicketList, 
@@ -38,7 +38,7 @@
     Format => $Format,
     &>
 </table>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 <hr>
 % }
 
@@ -46,17 +46,17 @@
 <TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
 <tr><td valign=top width=50%>
 
-<& /Elements/TitleBoxStart, 
+<& /Widgets/TitleBoxStart, 
     title => loc('Incidents: [_1]', $q) &>
 <& /RTIR/Elements/IncidentSummary, 
     Type => $TicketType, 
     ticket => $ticket, 
     q => $q &>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 
 <br>
 
-<& /Elements/TitleBoxStart, 
+<& /Widgets/TitleBoxStart, 
     title => loc('Incident Reports: [_1]', $q), 
     color=> "#336633"&>
 <& /RTIR/Elements/ChildSummary, 
@@ -65,11 +65,11 @@
     ticket => $ticket, 
     lookuptype => $type, 
     q => $q &>
-<& /Elements/TitleBoxEnd&>
+<& /Widgets/TitleBoxEnd&>
 
 </td><td width=50% valign=top>
 
-<& /Elements/TitleBoxStart, 
+<& /Widgets/TitleBoxStart, 
     title => loc('Investigations: [_1]', $q), 
     color=> "#336633" &>
 <& /RTIR/Elements/ChildSummary, 
@@ -78,11 +78,11 @@
     ticket => $ticket, 
     lookuptype => $type, 
     q => $q &>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 
 <br>
 
-<& /Elements/TitleBoxStart, 
+<& /Widgets/TitleBoxStart, 
     title => loc('Blocks: [_1]', $q), 
     color=> "#336633" &>
 <& /RTIR/Elements/ChildSummary, 
@@ -91,7 +91,7 @@
     ticket => $ticket, 
     lookuptype => $type, 
     q => $q &>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 </TABLE>
 % }
 

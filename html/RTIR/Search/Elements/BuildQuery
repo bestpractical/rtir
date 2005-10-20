@@ -60,7 +60,7 @@
 
 </td>
 <td valign=top class="boxcontainer">
-<& /Elements/TitleBoxStart, title => loc("Query") . ": " .$Description &>
+<& /Widgets/TitleBoxStart, title => loc("Query") . ": " .$Description &>
 <& /Search/Elements/NewListActions, actions => \@actions &>
 <select size="10" name="clauses" style="width: 100%">
 <%$optionlist|n%>
@@ -77,7 +77,7 @@
 <input type=submit name="Toggle" value="And/Or">
 %#<input type=submit name="EditQuery" value="Advanced">
 </center>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 <br>
 
 <& /Search/Elements/EditSearches, CurrentSearch => $search_hash, Dirty => $dirty, SearchId => $SearchId &>

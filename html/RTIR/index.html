@@ -32,12 +32,12 @@
 <& /RTIR/Elements/NewReports &>
 </TD>
 <TD VALIGN=TOP>
-<& /Elements/TitleBoxStart, title=>loc("Refresh") &>
+<& /Widgets/TitleBoxStart, title=>loc("Refresh") &>
 <form method=get action="index.html">
 <& /RTIR/Elements/Refresh, Name => 'HomeRefreshInterval', Default => $session {'home_refresh_interval'} &>
 <input type=submit value="<&|/l&>Go!</&>">
 </form>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 </TD>
 </TR>
 </TR>

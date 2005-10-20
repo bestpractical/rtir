@@ -22,7 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/TitleBoxStart, 
+<& /Widgets/TitleBoxStart, 
 	title_href =>"$RT::WebPath/RTIR/Search/Results.html?Queue=$Queue$QueryString",
 	title_class=> 'inverse',  
 	title => $title, 
@@ -37,7 +37,7 @@
 
 <a href="<%$RT::WebPath%>/RTIR/Report/BulkReject.html?ClearRestrictions=1">[<%loc("Bulk Reject")%>]</a>
 
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 
 
 <%INIT>

@@ -47,7 +47,7 @@
 <input type=hidden name="MemberOf-new"<% $ARGS{'MemberOf-new'} && " VALUE=$ARGS{'MemberOf-new'}" %>>
 <A NAME="top">
 	
-<& /Elements/TitleBoxStart, contentbg => "#cccccc", title => $Title &>
+<& /Widgets/TitleBoxStart, contentbg => "#cccccc", title => $Title &>
 <TABLE border=0 cellpadding=0 cellspacing=2>
 % if ($link) {
 %   my ($Type, undef) = $m->comp("/RTIR/Elements/Type", Ticket => $link->Id);
@@ -110,7 +110,7 @@
   <TD>
   </TD>
   <TD WIDTH="50%" VALIGN=TOP>
-    <& /Elements/TitleBoxStart, title => loc('The Basics'), 
+    <& /Widgets/TitleBoxStart, title => loc('The Basics'), 
 	title_class=> 'inverse',  
 	color => "#993333" &>
     <TABLE BORDER=0>
@@ -131,11 +131,11 @@
 	<TD><input size=3 name="TimeLeft" value="<% $ARGS{TimeLeft}||"0" %>"></TD>
       </TR>
     </TABLE>
-    <& /Elements/TitleBoxEnd &>
+    <& /Widgets/TitleBoxEnd &>
   </TD>
 
   <TD VALIGN=TOP>
-    <& /Elements/TitleBoxStart, title => loc("Dates"),
+    <& /Widgets/TitleBoxStart, title => loc("Dates"),
 		title_class=> 'inverse',  
 		 color => "#663366" &>
 
@@ -153,11 +153,11 @@
 	<TD><input size=10 name="Due" value="<% $ARGS{Due} %>"></TD>
       </TR>
     </TABLE>
-    <& /Elements/TitleBoxEnd &>
+    <& /Widgets/TitleBoxEnd &>
   </TD>
 </TR>
 </TABLE>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 
 <& /Elements/Submit, Label => loc("Create")&>
 </FORM>

@@ -61,7 +61,7 @@
 <HR>
 
 % my $i;
-<& /Elements/TitleBoxStart, title => loc('Reply to selected tickets') &>
+<& /Widgets/TitleBoxStart, title => loc('Reply to selected tickets') &>
 <table>
 <tr><td class="label">
 <&|/l&>Owner</&>:  
@@ -87,7 +87,7 @@ $ARGS{UpdateTimeWorked}%>"> <&|/l&>minutes</&>
 <& /RTIR/Elements/UpdateData, %ARGS &>
 
 </table>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => $SubmitLabel &>
 </form>

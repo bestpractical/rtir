@@ -39,7 +39,7 @@
 <table border=0 cellpadding=0 cellspacing=2 width=100%>
 <tr>
 <td valign=top width=50%>
-<& /Elements/TitleBoxStart, title => loc('Incident #[_1]', $Ticket->Id), 
+<& /Widgets/TitleBoxStart, title => loc('Incident #[_1]', $Ticket->Id), 
 	title_href =>"$RT::WebPath/RTIR/Edit.html?id=".$Ticket->Id, 
 	title_class=> 'inverse' &>
 
@@ -105,11 +105,11 @@
   </tr>
 </table>
 
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 
 </td>
 <td valign=top>
-<& /Elements/TitleBoxStart, title => loc('Incident Reports'), 
+<& /Widgets/TitleBoxStart, title => loc('Incident Reports'), 
     title_href => "$RT::WebPath/RTIR/Incident/ShowChildren.html?Queue=Incident Reports&id=".$Ticket->Id, 
     title_class=> 'inverse',  
     titleright => '', color=> "#336633" &>
@@ -128,12 +128,12 @@
 	    Rows => 8,
             FullList => $RT::WebPath."/RTIR/Incident/ShowChildren.html?Queue=Incident Reports&id=".$Ticket->id
  &>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 </td>
 </tr>
 <tr>
   <TD VALIGN=TOP width=50%>
-	  <& /Elements/TitleBoxStart, title => loc('Investigations'), 
+	  <& /Widgets/TitleBoxStart, title => loc('Investigations'), 
 		title_href => "$RT::WebPath/RTIR/Incident/ShowChildren.html?Queue=Investigations&id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		titleright => '', color=> "#336633" &>
@@ -152,11 +152,11 @@
 		    Rows => 8,
 		    FullList => $RT::WebPath."/RTIR/Incident/ShowChildren.html?Queue=Investigations&id=".$Ticket->id
  &>
-	<& /Elements/TitleBoxEnd &>
+	<& /Widgets/TitleBoxEnd &>
   </td>
   <TD VALIGN=TOP width=50%>
 
-	  <& /Elements/TitleBoxStart, title => loc('Blocks'), 
+	  <& /Widgets/TitleBoxStart, title => loc('Blocks'), 
 		title_href => "$RT::WebPath/RTIR/Incident/ShowChildren.html?Queue=Blocks&id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		titleright => '', color=> "#336633" &>
@@ -173,17 +173,17 @@
 		    Queue => 'Blocks',
 		    Rows => 8,
 		    FullList => $RT::WebPath."/RTIR/Incident/ShowChildren.html?Queue=Blocks&id=".$Ticket->id &>
-	<& /Elements/TitleBoxEnd &>
+	<& /Widgets/TitleBoxEnd &>
   </td>
 </tr>
 <tr>
 <td colspan=2>
-	  <& /Elements/TitleBoxStart, title => loc("Dates"),
+	  <& /Widgets/TitleBoxStart, title => loc("Dates"),
 	  	title_href =>"$RT::WebPath/RTIR/Edit.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		color => "#663366" &>
 	  <& /RTIR/Elements/ShowDates, Ticket => $Ticket &>
-	  <& /Elements/TitleBoxEnd &>
+	  <& /Widgets/TitleBoxEnd &>
 	<BR>  
 	  <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, 
 	     Attachments => $attachments &>

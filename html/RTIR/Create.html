@@ -73,7 +73,7 @@
 % }
 <A NAME="top">
 
-<& /Elements/TitleBoxStart, contentbg => "#cccccc", title => $Title &>
+<& /Widgets/TitleBoxStart, contentbg => "#cccccc", title => $Title &>
 <TABLE border=0 cellpadding=0 cellspacing=2>
 % if ($Incident) {
   <TR>
@@ -299,7 +299,7 @@
   <TD>
   </TD>
   <TD VALIGN=TOP>
-    <& /Elements/TitleBoxStart, title => loc("Dates"),
+    <& /Widgets/TitleBoxStart, title => loc("Dates"),
 		title_class=> 'inverse',  
 		 color => "#663366" &>
 
@@ -313,12 +313,12 @@
 	<TD><input size=10 name="Due"<% $ARGS{Due} && " VALUE=\"$ARGS{Due}\"" %>></TD>
       </TR>
     </TABLE>
-    <& /Elements/TitleBoxEnd &>
+    <& /Widgets/TitleBoxEnd &>
   </TD>
 </TR>
 
 </TABLE>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 
 % if ($Type eq 'Investigation') {
 <& /Elements/Submit, Name => "Create", Label => loc("Launch")&>

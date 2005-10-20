@@ -42,7 +42,7 @@
 <table border=0 cellspacing=2 cellpadding=0 width=100%>
 <tr>
 <td valign=top width=50%>
-<& /Elements/TitleBoxStart, 
+<& /Widgets/TitleBoxStart, 
     title => loc("The Basics"), 
     color=> "#993333", 
     width => "100%" &>
@@ -156,16 +156,16 @@
   </tr>
 </table>
 
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 
 </td>
 </tr>
 <tr>
 <td valign=top width=50%>
 
-<& /Elements/TitleBoxStart, title => loc('Dates'),  width => "100%", color => "#663366"  &>
+<& /Widgets/TitleBoxStart, title => loc('Dates'),  width => "100%", color => "#663366"  &>
 <& /RTIR/Elements/EditDates, TicketObj => $Ticket &>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 
 </td>
 </tr>
@@ -173,9 +173,9 @@
 <BR>
 
 
-<& /Elements/TitleBoxStart, title => loc('People'),width => "100%", color=> "#333399" &>
+<& /Widgets/TitleBoxStart, title => loc('People'),width => "100%", color=> "#333399" &>
 <& /RTIR/Elements/EditPeople, Ticket => $Ticket, UserField => $UserField, UserString => $UserString, UserOp => $UserOp &>
-<& /Elements/TitleBoxEnd &>
+<& /Widgets/TitleBoxEnd &>
 
 <BR>
 
