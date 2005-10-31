@@ -22,84 +22,70 @@
 %# 
 %# 
 %# END LICENSE BLOCK
+
+% if( $ShowStatesSelector ) {
+%   foreach my $s( @possible_states ) {
+%       my $checked = (grep { $_ eq $s } @States)? 'checked': '';
+<input type="checkbox" name="States" value="<% $s %>" <% $checked %> />&nbsp;<% $s %>
+%   }
+<& /Elements/Submit, Name => 'RefineStates', Label => loc('Filter states') &>
+% }
+
 % if ($Delete) {
 <i><%loc("Check box to unlink")%></i><br>
 % }
-
 <& /Elements/TicketList, 
-   Collection => $MyTickets,
+   Collection => $children,
    Format => $Format,
    Rows => $Rows,
+   ShowHeader => $ShowHeader,
    OrderBy => $OrderBy,
-   ShowHeader => 0,
    ShowNavigation => 0,
 &>
+% unless( $children->Count ) {
+%   if ($Queue) {
+        <i>(<% loc("no [_1]", $Queue) %>)</i>
+%   } else {
+        <i>(<% loc("no children") %>)</i>
+%   }
+% }
+<br />
 
-<& /Elements/TicketList, 
-   Collection     => $ClosedTickets,
-   Format         => $Format,
-   Rows           => $Rows,
-   OrderBy        => 'Resolved',
-   Order          => 'DESC',
-   ShowHeader     => 0,
-   ShowNavigation => 0,
-&>
-
-% if ($depth eq 1 and $MyTickets->Count eq 0) {
-% if (defined $Queue) {
-  <i>(<% loc("no [_1]", $Queue) %>)</i>
-% } else {
-  <i>loc("no children")</i>
-% }
-% } else {
-% if (($Rows > 0) && ($MyTickets->Count >= $Rows)) {
-% if (defined $FullList) {
-<a href="<%$FullList%>"><i><%loc("More... ([_1] total)", $MyTickets->Count)%></i></a><br>
-% }
-% }
+% if( $FullList && $Rows > 0 && $children->Count >= $Rows ) {
+<a href="<%$FullList%>"><i><%loc("More... ([_1] total)", $children->Count)%></i></a><br>
 % }
 
 <%INIT>
-my ($Type, @states) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
-$Format = $RT::RTIRSearchResultFormats->{'Child' . $Type};
+unless( @States ) {
+    @States = $m->comp("/RTIR/Elements/States", Queue => $Queue);
+}
+my @possible_states = $m->comp("/RTIR/Elements/States", Queue => $Queue, Inactive => 1 );
+my ($Type) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
 
-my %seen = ();
-@states = map lc, grep $_ && !$seen{$_}++, (@states, @AddStates);
-
+$Format ||= $RT::RTIRSearchResultFormats->{'Child' . $Type};
 if ($Delete) {
     $Format = "___RTIR_Check__, " . $Format;
 }
 
-if (!$BaseQuery) {
-    $BaseQuery = $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
-}
-
-$Query  = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue, states => [@states] );
-$Query .= " AND MemberOf = " . $Ticket->Id;
-$Query  = "$BaseQuery AND ( $Query )";
-
-my $MyTickets = new RT::Tickets($session{'CurrentUser'});
-$MyTickets->FromSQL($Query);
-
-my $ClosedQuery = "MemberOf = ". $Ticket->Id ." AND Status = 'resolved'";
-$ClosedQuery  = "$BaseQuery AND ( $ClosedQuery )";
-
-my $ClosedTickets = new RT::Tickets($session{'CurrentUser'});
-$ClosedTickets->FromSQL($ClosedQuery);
+my $children = new RT::Tickets($session{'CurrentUser'});
+$children->FromSQL( $m->comp( '/RTIR/Elements/ChildrenQuery',
+                              Queue  => $Queue,
+                              Ticket => $Ticket,
+                              States => [@States],
+                            )
+                  );
 
 </%INIT>
 
 <%ARGS>
-$Query => undef
-$BaseQuery => undef
-$QueryString => undef
 $Format => undef
 $Queue => undef
 $Ticket => undef
 $OrderBy => 'Due'
-$depth => 1
 $Rows => 0
 $Delete => 0
 $FullList => undef
-@AddStates => ()
+@States => ()
+$ShowHeader => 0
+$ShowStatesSelector => 0
 </%ARGS>

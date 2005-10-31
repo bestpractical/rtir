@@ -25,66 +25,81 @@
 <& /RTIR/Elements/Header, Title => $Title &>
 <& /RTIR/Incident/Elements/LinkTabs, 
     Queue => $Queue,
-    Ticket => $Incident, 
-    current_tab => 'RTIR/Incident/ShowChildren.html?Queue=' . $Queue . 'id='.$Incident->id,
-    Title => $Title &>
+    Ticket => $Incident,
+    current_tab => "RTIR/Incident/ShowChildren.html?Queue=$Queue&id=". $Incident->id,
+    Title => $Title,
+&>
 
 <& /Elements/ListActions, actions => \@results &>
 
-<h2><% loc('Total [_1]: [_2]', $Queue, $count) %></h2>
-<form action="ShowChildren.html" method="post">
-<input type="hidden" name="id" value="<%$Incident->id%>">
-<input type="hidden" name="Queue" value="<%$Queue%>">
-% my $delete = 0;
-% if ($Incident->CurrentUserHasRight('ModifyTicket')) {
-% $delete = 1;
+% if( $children->CountAll == $all_children->CountAll ) {
+<h2><% loc('Total [_1]: [_2]', $Queue, $children->CountAll) %></h2>
+% } else {
+<h2><% loc('Total [_1]: [_2]([_3])', $Queue, $children->CountAll, $all_children->CountAll) %></h2>
 % }
 
-<& /RTIR/Elements/ShowChildren, 
-    Delete => $delete,
-    Ticket => $Incident, 
-    Queue => $Queue,
-    FullList => $RT::WebPath."/RTIR/Incident/ShowChildren.html?Queue=$Queue&id=".$Incident->id
-    &>
-<& /Elements/Submit, Caption=> loc('Unlink Report') &>
+<form action="ShowChildren.html" method="POST">
+<input type="hidden" name="id" value="<%$Incident->id%>">
+<input type="hidden" name="Queue" value="<%$Queue%>">
+
+<& /RTIR/Elements/ShowChildren,
+    Ticket             => $Incident,
+    Queue              => $Queue,
+    States             => [@States],
+    FullList           => $RT::WebPath."/RTIR/Incident/ShowChildren.html?Queue=$Queue&id=".$Incident->id,
+    Delete             => $delete,
+    ShowHeader         => 1,
+    ShowStatesSelector => 1,
+&>
+
+<& /Elements/Submit, Name => 'Unlink', Label => loc('Unlink Report') &>
 </form>
 
 <%INIT>
-  my ($Incident, $Title, $count);
-
-  $Incident = new RT::Ticket($session{'CurrentUser'});
-  $Incident = LoadTicket($id);
-
-  # translate the checkbox args to what ProcessTicketLinks expects
-  foreach my $arg (keys %ARGS) {
-      if ($arg =~ /^UpdateTicket(\d+)/) {
-	  $ARGS{'DeleteLink-' . $1 . '-MemberOf-'} = 1;
-      }
-  }
-
-  my @results = ProcessTicketLinks( TicketObj => $Incident, ARGSRef => \%ARGS);
-
-  $Title = loc("$Queue for Incident #[_1]: [_2]", $Incident->Id, $Incident->Subject);
-
-  unless ($id) {
+unless ($id) {
     Abort('No incident specified');
-  }
+}
 
-  $Incident = LoadTicket($ARGS{'id'});
-  unless ($Incident->CurrentUserHasRight('ShowTicket')) {
+my @results;
+my $Incident = LoadTicket($id);
+
+if( $ARGS{'Unlink'} ) {
+      # translate the checkbox args to what ProcessTicketLinks expects
+      foreach my $arg (keys %ARGS) {
+          if ($arg =~ /^UpdateTicket(\d+)/) {
+              $ARGS{'DeleteLink-' . $1 . '-MemberOf-'} = 1;
+          }
+      }
+      push @results, ProcessTicketLinks( TicketObj => $Incident, ARGSRef => \%ARGS );
+}
+
+unless ($Incident->CurrentUserHasRight('ShowTicket')) {
     Abort("No permission to view ticket");
-  }
+}
 
-  my $query = "Queue = '$Queue' AND MemberOf = " . $Incident->Id;
+my $Title = loc("$Queue for Incident #[_1]: [_2]", $Incident->Id, $Incident->Subject);
 
-  my $members = new RT::Tickets($session{'CurrentUser'});
-  $members->FromSQL($query);
+my $delete = $Incident->CurrentUserHasRight('ModifyTicket') ? 1: 0;
 
-  $count = $members->Count;
+my $children = new RT::Tickets($session{'CurrentUser'});
+$children->FromSQL( $m->comp( '/RTIR/Elements/ChildrenQuery',
+                              Queue  => $Queue,
+                              Ticket => $Incident,
+                              States => [@States],
+                            )
+                  );
 
+my @possible_states = $m->comp("/RTIR/Elements/States", Queue => $Queue, Inactive => 1 );
+my $all_children = new RT::Tickets($session{'CurrentUser'});
+$all_children->FromSQL( $m->comp( '/RTIR/Elements/ChildrenQuery',
+                                  Queue  => $Queue,
+                                  Ticket => $Incident,
+                                  States => [@possible_states],
+                                )
+                      );
 </%INIT>
-
 <%ARGS>
 $id => undef
 $Queue => 'Incident Reports'
+@States => ()
 </%ARGS>
