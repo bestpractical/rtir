@@ -114,8 +114,8 @@ Set($RTIR_OldestRelatedTickets, 60);
 # Default formats for RTIR search results
 Set($RTIRSearchResultFormats, {
     ReportDefault => qq{'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-			'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
-			'__CustomField.Incident Reports.{_RTIR_State}__/Title:State',
+			'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+			'__CustomField.{_RTIR_State}__/TITLE:State',
 			__LastUpdatedRelative__,
 			__CreatedRelative__,
 			__NEWLINE__,
@@ -127,8 +127,8 @@ Set($RTIRSearchResultFormats, {
 			__TimeLeft__},
 
     InvestigationDefault => qq{'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-			       '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
-			       '__CustomField.Incident Reports.{_RTIR_State}__/Title:State',
+			       '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+			       '__CustomField.{_RTIR_State}__/TITLE:State',
 			       __LastUpdatedRelative__,
 			       __CreatedRelative__,
 			       __NEWLINE__,
@@ -140,8 +140,8 @@ Set($RTIRSearchResultFormats, {
 			       __TimeLeft__},
     
     BlockDefault => qq{'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-		       '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
-		       '__CustomField.Incident Reports.{_RTIR_State}__/Title:State',
+		       '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+		       '__CustomField.{_RTIR_State}__/TITLE:State',
 		       __LastUpdatedRelative__,
 		       __CreatedRelative__,
 		       __NEWLINE__,
@@ -153,8 +153,8 @@ Set($RTIRSearchResultFormats, {
 		       __TimeLeft__},
 
     IncidentDefault => qq{'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-			  '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
-			  '__CustomField.Incident Reports.{_RTIR_State}__/Title:State',
+			  '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+			  '__CustomField.{_RTIR_State}__/TITLE:State',
 			  __LastUpdatedRelative__,
 			  __CreatedRelative__,
 			  __Priority__,
@@ -166,7 +166,7 @@ Set($RTIRSearchResultFormats, {
     
     Merge => qq{___RTIR_Radio__,
 		'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-		'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
+		'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
 		__Requestors__,
 		__OwnerName__,
 		__CreatedRelative__,
@@ -174,7 +174,7 @@ Set($RTIRSearchResultFormats, {
     
     LinkChildren => qq{___RTIR_Check__,
 		       '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-		       '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
+		       '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
 		       __Requestors__,
 		       __OwnerName__,
 		       __CreatedRelative__,
@@ -182,50 +182,50 @@ Set($RTIRSearchResultFormats, {
     
     LinkIncident => qq{___RTIR_Radio__,
 		       '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-		       '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
+		       '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
 		       __OwnerName__,
 		       __CreatedRelative__
 		       },
     
     RejectReports, qq{___RTIR_Check__,
 		      '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-		      '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
+		      '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
 		      __Requestors__,__OwnerName__,__CreatedRelative__,__DueRelative__},
     
     BulkReply => qq{___RTIR_Check__,
 		    '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-		    '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
+		    '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
 		    __Requestors__,__OwnerName__,__CreatedRelative__,__DueRelative__},
 
     DueIncidents => qq{'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-		       '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
+		       '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
 		       '__Owner__',
 		       '__Priority__',
 		       '__DueRelative__',
 		   },
 
     NewReports => qq{'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-		       '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
+		       '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
 		       '__Requestors__',
 		       '__Owner__',
 		       '__DueRelative__',
 		   },
 
     ChildReport => qq{'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-			'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
-	'<I>__CustomField.Incident Reports.{_RTIR_State}__</I>/Title:State',
+			'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+	'<I>__CustomField.{_RTIR_State}__</I>/TITLE:State',
 	__DueRelative__,
 		  },
 
     ChildInvestigation => qq{'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-			     '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
-			     '<I>__CustomField.Investigations.{_RTIR_State}__</I>/Title:State',
+			     '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+			     '<I>__CustomField.{_RTIR_State}__</I>/TITLE:State',
 			     __DueRelative__,
 			 },
 
     ChildBlock => qq{'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-		     '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/Title:Subject',
-		     '<I>__CustomField.Blocks.{_RTIR_State}__</I>/Title:State',
+		     '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+		     '<I>__CustomField.{_RTIR_State}__</I>/TITLE:State',
 		     __DueRelative__,
 		 },
 
