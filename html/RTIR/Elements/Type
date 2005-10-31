@@ -22,37 +22,31 @@
 %# 
 %# 
 %# END LICENSE BLOCK
+<%ONCE>
+my %type = (
+    'Incidents'        => 'Incident',
+    'Incident Reports' => 'Report',
+    'Investigations'   => 'Investigation',
+    'Blocks'           => 'Block',
+);
+</%ONCE>
 <%INIT>
-my $name;
 
-if ($Ticket) {
-    my $TicketObj = new RT::Ticket($session{'CurrentUser'});
-    $TicketObj = LoadTicket($Ticket);
-    $name = $TicketObj->QueueObj->Name;
-} else {
-    $name = $Queue;
+unless( $Queue ) {
+    $TicketObj = LoadTicket($Ticket) if $Ticket && !$TicketObj;
+    if( $TicketObj ) {
+        $Queue = $TicketObj->QueueObj->Name;
+    }
 }
 
-my ($Type, @states);
-if ($name eq "Incidents") {
-  $Type = 'Incident';
-  @states = ('new', 'open');
-} elsif ($name eq "Incident Reports") {
-  $Type = 'Report';
-  @states = ('new', 'open');
-} elsif ($name eq "Investigations") {
-  $Type = 'Investigation';
-  @states = ('open', 'stalled');
-} if ($name eq "Blocks") {
-  $Type = 'Block';
-  @states = ('pending activation', 'active', 'pending removal');
-}
-
-return ($Type, @states);
+my $type = $type{$Queue} || '';
+my @states = $m->comp("/RTIR/Elements/States", Queue => $Queue);
+return ($type, @states);
 
 </%INIT>
 
 <%ARGS>
 $Ticket => undef
+$TicketObj => undef
 $Queue => undef
 </%ARGS>
