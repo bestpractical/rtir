@@ -54,6 +54,8 @@
     Order => $Order,
     QueryString => $QueryString,
 &>
+
+<& /Elements/ListActions, actions => \@results &>
 <hr>
 
 <& Elements/ShowResults, 
@@ -115,4 +117,5 @@ $Page => 1
 $OrderBy => 'id'
 $Order => 'ASC'
 $Queue => undef
+@results => []
 </%ARGS>

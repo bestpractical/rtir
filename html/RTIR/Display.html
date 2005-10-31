@@ -175,97 +175,100 @@
 my ($Type, $name);
 my $Ticket = new RT::Ticket($session{'CurrentUser'});
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
+
 if ($id ne 'new') {
-  $Ticket = LoadTicket($id);
-  unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
-    Abort("No permission to view ticket");
-  }
- $QueueObj->Load($Ticket->QueueObj->Name) || Abort(loc("Queue could not be loaded."));
-} else {
- $QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
+    $Ticket = LoadTicket($id);
+    unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
+        Abort("No permission to view ticket");
+    }
+    $QueueObj->Load($Ticket->QueueObj->Name) || Abort(loc("Queue could not be loaded."));
+} elsif( $Queue ) {
+    $QueueObj->Load($Queue);
+    Abort(loc("Queue could not be loaded.")) unless $QueueObj->id;
 }
 
 # Incidents have their own Create.html
-if ($QueueObj->Name eq 'Incidents') {
-  $m->comp("/RTIR/Incident/Display.html", %ARGS);
-  $m->abort;
+if (($QueueObj->Name || '') eq 'Incidents') {
+    $m->comp("/RTIR/Incident/Display.html", %ARGS);
+    $m->abort;
 }
 
-if ($ARGS{'id'} eq 'new') {
-    # {{{ Create a new ticket
-    
+if ( $id && $id eq 'new' ) {
+    $Ticket = LoadTicket($id);
     unless ($QueueObj->CurrentUserHasRight('CreateTicket')) {
-	Abort('You have no permission to create tickets in that queue.');
+        Abort('You have no permission to create tickets in that queue.');
     }
-    ($Ticket, @results) =
-       CreateTicket(Attachments => $session{'Attachments'}, %ARGS);
+    ($Ticket, @results) = CreateTicket( Attachments => $session{'Attachments'},
+                                        %ARGS
+                                      );
     delete $session{'Attachments'};
     unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
-      Abort("No permission to view newly created ticket #".$Ticket->id.".");
-    $ARGS{'id'} = $Ticket->Id;
+        Abort("No permission to view newly created ticket #".$Ticket->id.".");
+        $ARGS{'id'} = $id = $Ticket->Id;
     }
-    # }}}
-} else { 
-    $Ticket = LoadTicket($ARGS{'id'});
+} elsif( $id ) {
     unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
-	Abort("No permission to view ticket");
+        Abort("No permission to view ticket");
     }
 
-    $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
-    chomp ($ARGS{'UpdateContent'}) ;
+    $ARGS{'UpdateContent'} =~ s/\r*\n/\n/og;
+    chomp ($ARGS{'UpdateContent'});
 
     my @UpdateActions;
-    if ($ARGS{'UpdateContent'} &&
-        $ARGS{'UpdateContent'} ne '' &&
-        $ARGS{'UpdateContent'} ne  "-- \n" .
-                                $session{'CurrentUser'}->UserObj->Signature
+    if ( $ARGS{'UpdateContent'} &&
+         $ARGS{'UpdateContent'} ne  "-- \n" . $session{'CurrentUser'}->UserObj->Signature
        ) {
-            $ARGS{UpdateAttachments} = $session{'Attachments'};
-	    ProcessUpdateMessage(ARGSRef=>\%ARGS, 
-				 Actions=>\@UpdateActions, 
-				 TicketObj=>$Ticket);
-            delete $session{'Attachments'};
-	}
-
-  if (defined $ARGS{'Action'}) {
-    if ($ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
-      my $action = $1;
-      my ($res, $msg)=$Ticket->$action();
-      push(@results, $msg);
+        $ARGS{UpdateAttachments} = $session{'Attachments'};
+        ProcessUpdateMessage( ARGSRef=>\%ARGS, 
+                              Actions=>\@UpdateActions, 
+                              TicketObj=>$Ticket);
+        delete $session{'Attachments'};
     }
-  }
 
-  #Process basics updates
-  my ($oldstate, $newstate);
-  $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
-  my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$Ticket);
-  my @LinkActions = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
-  my @DateActions = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
+    if ($ARGS{'Action'} && $ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
+        my $action = $1;
+        my ($res, $msg)=$Ticket->$action();
+        push(@results, $msg);
+    }
 
-  push (@results, @UpdateActions, @BasicActions, @LinkActions, @DateActions);
-  $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
-  if ($newstate ne $oldstate) {
-    push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
-  }
-}
+    my $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
 
-unless ($id) {
+    #Process basics updates
+    push @results, ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$Ticket);
+    push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
+    push @results, ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
+
+    my $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+    if ($newstate ne $oldstate) {
+        push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
+
+        if( $newstate eq 'rejected' ) {
+            $m->comp( "/RTIR/Search/Results.html",
+                       %ARGS,
+                       Queue => $QueueObj->Name,
+                       results => [@results],
+                    );
+            $m->abort;
+        }
+    }
+
+} else {
     Abort('No incident specified');
 }
 
 ($Type, undef) = $m->comp('Elements/Type', Ticket => $Ticket->Id);
 
 if ($Type eq 'Report') {
-  $name = "Incident Report";
+    $name = "Incident Report";
 } else {
-  $name = $Type;
+    $name = $Type;
 }
 
 my $Title = loc("[_1] #[_2]: [_3]", $name, $Ticket->Id, $Ticket->Subject);
 
 my $TimeWorked = $Ticket->TimeWorked;
 if ($Ticket->TimeLeft > 0 ) {
-  $TimeWorked = $Ticket->TimeWorked."/".$Ticket->TimeLeft;
+    $TimeWorked .= "/".$Ticket->TimeLeft;
 }
 
 my $attachments = $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket);
@@ -273,7 +276,7 @@ my $attachments = $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket
 </%INIT>
 
 <%ARGS>
-$id => undef
-$Queue=>undef
+$id => ''
+$Queue => undef
 @results => undef
 </%ARGS>
