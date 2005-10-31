@@ -26,74 +26,79 @@
 <& /RTIR/Elements/Tabs, 
     Title => "RT for Incident Response", 
     current_toptab => 'RTIR/index.html' &>
-<TABLE BORDER=0 WIDTH=100%>
-<TR VALIGN=TOP>
-<TD WIDTH=70%>
+
+<TABLE BORDER=0 WIDTH=100%><TR VALIGN=TOP><TD WIDTH=70%>
+
 <& /RTIR/Elements/NewReports &>
-</TD>
-<TD VALIGN=TOP>
+
+</TD><TD VALIGN=TOP>
+
 <& /Widgets/TitleBoxStart, title=>loc("Refresh") &>
+
 <form method=get action="index.html">
 <& /RTIR/Elements/Refresh, Name => 'HomeRefreshInterval', Default => $session {'home_refresh_interval'} &>
 <input type=submit value="<&|/l&>Go!</&>">
 </form>
-<& /Widgets/TitleBoxEnd &>
-</TD>
-</TR>
-</TR>
-<TR VALIGN=TOP>
-<TD colspan=2 WIDTH=100%>
-<& /RTIR/Elements/DueIncidents, owner => $session{'CurrentUser'} &>
-<BR>
-<& /RTIR/Elements/DueIncidents &>
-</TD>
-</TR>
-</TABLE>
 
-<%init>
+<& /Widgets/TitleBoxEnd &>
+
+</TD></TR><TR VALIGN=TOP><TD colspan=2 WIDTH=100%>
+
+<& /RTIR/Elements/DueIncidents, owner => $session{'CurrentUser'} &>
+
+<BR>
+
+<& /RTIR/Elements/DueIncidents &>
+
+</TD></TR></TABLE>
+
+<%INIT>
 if ( $ARGS{'q'} ) {
     my $query = $ARGS{'q'};
 
-   if ( $query =~ m/^\s*(\d+)\s*$/ ) {
-        $m->comp("/RTIR/Display.html" , id=> $1);
+    if ( $query =~ m/^\s*(\d+)\s*$/ ) {
+        $m->comp( '/RTIR/Display.html' , id=> $1 );
         return();
     }
 
-    if ($m->comp('/Elements/Callback', _CallbackName => 'SearchPreFilter', 
-		 query => $query, %ARGS)) {
-	return();
+    if ( $m->comp( '/Elements/Callback',
+                   _CallbackName => 'SearchPreFilter',
+                   query => $query,
+                   %ARGS
+                 )) {
+        return;
     }
 
     $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
 
     # Incidents don't have requestors, but children do
     if ( $query =~ m/\@/ ) {
-	my $children = new RT::Tickets($session{'CurrentUser'});
-	$children->FromSQL("(Queue = 'Incident Reports' OR Queue = 'Investigations' OR Queue = 'Blocks') and Requestor LIKE '$query'");
-	my $querystring;
-	while (my $child = $children->Next) {
-	    $querystring .= " OR " if $querystring;
-	    $querystring .= "HasMember = " . $child->Id;
-	}
+        my $children = new RT::Tickets($session{'CurrentUser'});
+        $children->FromSQL( "( Queue = 'Incident Reports' OR
+                               Queue = 'Investigations' OR
+                               Queue = 'Blocks'
+                             ) AND Requestor LIKE '$query'"
+                          );
+        my $querystring;
+        while (my $child = $children->Next) {
+            $querystring .= " OR " if $querystring;
+            $querystring .= "HasMember = " . $child->Id;
+        }
         $m->comp("/RTIR/Search/Results.html", Queue => 'Incidents', Query => ($querystring));
 
-        return();
+        return;
     }
 
-    #
-    # Any search on queue name or subject will be for new/open tickets
-    # only.
-    #
 
+    # Any search on queue name or subject will be for new/open tickets only.
     my $status = "'CF.Incidents.{_RTIR_State}' = 'new' OR 'CF.Incidents.{_RTIR_State}' = 'open'";
-
     $m->comp("/RTIR/Search/Results.html", Queue => 'Incidents', Query => "Subject LIKE '$query' AND ($status)");
-    return();
 
+    return;
 }
 
 if ($ARGS{'HomeRefreshInterval'}) {
-	$session{'home_refresh_interval'} = $ARGS{'HomeRefreshInterval'};
+    $session{'home_refresh_interval'} = $ARGS{'HomeRefreshInterval'};
 }
 
-</%init>
+</%INIT>
