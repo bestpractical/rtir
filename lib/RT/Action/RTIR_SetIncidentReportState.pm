@@ -75,28 +75,32 @@ Set the Block state.
 sub Commit {
     my $self = shift;
 
-    my $State;
     my $cf = RT::CustomField->new($self->TransactionObj->CurrentUser);
     $cf->LoadByNameAndQueue(Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_State');
-    unless ($cf->Id) { 
+    unless ($cf->Id) {
         return(1);
     }
-    if ($self->TicketObj->Status eq 'new' or $self->TicketObj->Status eq 'open' or $self->TicketObj->Status eq 'stalled') {
-	$State = 'new';
+
+    my $state;
+    my $status = $self->TicketObj->Status;
+    if ( $status =~ /^(?:new|open|stalled)$/ ) {
+        $state = 'new';
+
         my $parents = RT::Tickets->new($self->TransactionObj->CurrentUser);
         $parents->LimitHasMember($self->TicketObj->id);
         $parents->LimitQueue(VALUE => 'Incidents');
-	if ($parents->First) {
-	    $State = 'open';
+        if ($parents->Count) {
+            $state = 'open';
         }
-    } elsif ($self->TicketObj->Status eq 'resolved') {
-	$State = 'resolved';
-    } elsif ($self->TicketObj->Status eq 'rejected') {
-	$State = 'rejected';
+    } elsif ($status eq 'resolved') {
+        $state = 'resolved';
+    } elsif ($status eq 'rejected') {
+        $state = 'rejected';
     } else {
-	return 0;
+        return (1);
     }
-    $self->TicketObj->AddCustomFieldValue(Field => $cf->id, Value => $State);
+
+    $self->TicketObj->AddCustomFieldValue(Field => $cf->id, Value => $state);
     return 1;
 }
 
