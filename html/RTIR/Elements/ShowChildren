@@ -30,15 +30,18 @@
    Collection => $MyTickets,
    Format => $Format,
    Rows => $Rows,
+   OrderBy => $OrderBy,
    ShowHeader => 0,
    ShowNavigation => 0,
 &>
 
 <& /Elements/TicketList, 
-   Collection => $ClosedTickets,
-   Format => $Format,
-   Rows => $Rows,
-   ShowHeader => 0,
+   Collection     => $ClosedTickets,
+   Format         => $Format,
+   Rows           => $Rows,
+   OrderBy        => 'Resolved',
+   Order          => 'DESC',
+   ShowHeader     => 0,
    ShowNavigation => 0,
 &>
 
@@ -57,33 +60,30 @@
 % }
 
 <%INIT>
-my ($Type, undef) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
+my ($Type, @states) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
 $Format = $RT::RTIRSearchResultFormats->{'Child' . $Type};
+
+my %seen = ();
+@states = map lc, grep $_ && !$seen{$_}++, (@states, @AddStates);
 
 if ($Delete) {
     $Format = "___RTIR_Check__, " . $Format;
 }
 
-$Query = $m->comp('/RTIR/Elements/NewQuery', 
-             Queue => $Queue);
-
-$Query .= " AND MemberOf = " . $Ticket->Id;
-
 if (!$BaseQuery) {
     $BaseQuery = $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
 }
 
-$Query = "$BaseQuery AND ( $Query )";
-$OrderBy = 'Due';
+$Query  = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue, states => [@states] );
+$Query .= " AND MemberOf = " . $Ticket->Id;
+$Query  = "$BaseQuery AND ( $Query )";
+
 my $MyTickets = new RT::Tickets($session{'CurrentUser'});
 $MyTickets->FromSQL($Query);
 
-my $ClosedQuery = "MemberOf = " . $Ticket->Id;
-$ClosedQuery .= " AND Status = 'resolved'";
+my $ClosedQuery = "MemberOf = ". $Ticket->Id ." AND Status = 'resolved'";
+$ClosedQuery  = "$BaseQuery AND ( $ClosedQuery )";
 
-$ClosedQuery = "$BaseQuery AND ( $ClosedQuery )";
-my $ClosedOrderBy = 'Resolved';
-my $ClosedOrder = 'DESC';
 my $ClosedTickets = new RT::Tickets($session{'CurrentUser'});
 $ClosedTickets->FromSQL($ClosedQuery);
 
@@ -96,9 +96,10 @@ $QueryString => undef
 $Format => undef
 $Queue => undef
 $Ticket => undef
-$OrderBy => undef
+$OrderBy => 'Due'
 $depth => 1
 $Rows => 0
 $Delete => 0
 $FullList => undef
+@AddStates => ()
 </%ARGS>
