@@ -42,103 +42,102 @@
 <input type=hidden name=Status value=<%$Status%>>
 <input type=hidden name=BulkReject value="1">
 
+% if( $session{'tickets'}->Count ) {
+<a href="BulkReject.html?RTIRCheck=All">[Select All]</a>
+<a href="BulkReject.html?RTIRCheck=None">[Unselect All]</a>
+% }
+
 <& /RTIR/Search/Elements/ShowResults, 
-    Queue => $Queue,
     Query => $Query,
     QueryString => $QueryString, 
     BaseURL => $BaseURL,
     Format => $Format,
     RTIRCheck => $RTIRCheck,
-    &>
+&>
 
+% if( $session{'tickets'}->Count ) {
 <a href="BulkReject.html?RTIRCheck=All">[Select All]</a>
 <a href="BulkReject.html?RTIRCheck=None">[Unselect All]</a>
-
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => loc("Reject") &>
+% }
+
 </form>
 
 <%INIT>
-$Format = $RT::RTIRSearchResultFormats->{'RejectReports'};
+$Format         ||= $RT::RTIRSearchResultFormats->{'RejectReports'};
 my $title         = loc("Reject Incident Reports");
 my $SubmitCaption = loc("Reject selected incident reports");
 
-$m->comp(
-    '/RTIR/Elements/Header',
-    Title   => $title,
-    Refresh => $session{'tickets_refresh_interval'}
-);
+$m->comp( '/RTIR/Elements/Header',
+           Title   => $title,
+           Refresh => $session{'tickets_refresh_interval'},
+        );
 
 my ( @results );
 
 if ( $ARGS{'BulkReject'} ) {
+    my @tempresults;
 
     #Iterate through each ticket we've been handed
     while ( my $t = $session{'tickets'}->Next ) {
-        my @tempresults;
         $m->out('<!--  Processing <%$t->id%> -->');
         $m->flush_buffer;
-        next unless ( $ARGS{ "UpdateTicket" . $t->Id } );
-        my $State = $m->scomp(
-            "/RTIR/Elements/ShowRTIRField",
-            Ticket => $t,
-            Name   => 'State'
-        );
-        $State =~ s/\s+$//;
-        if ( $State eq 'new' ) {
+        next unless ( $ARGS{ "UpdateTicket". $t->Id } );
 
-            # If we don't own the thing we're linking to, change the owner
-            if (   $t->OwnerObj->id != $session{'CurrentUser'}->id
-                && $t->OwnerObj->id != $RT::Nobody->id )
-            {
-                @tempresults =
-                  loc(
-                    "You may not reject tickets that belong to another user.");
-            }
-            else {
-                @tempresults = ();
-                if (   $t->OwnerObj->id != $session{'CurrentUser'}->id
-                    && $t->OwnerObj->id == $RT::Nobody->id )
-                {
-                    $ARGS{'Action'} = 'Take';
-                    my $action = $ARGS{'Action'};
-                    push @tempresults, "Action: " . $ARGS{'Action'};
-                    my ( $res, $msg ) = $t->$action();
-                    push( @tempresults, $msg );
-                }
-                my ( $oldstate, $newstate );
-                $oldstate = $t->FirstCustomFieldValue('_RTIR_State');
-                push @tempresults,
-                  ProcessTicketBasics( ARGSRef => \%ARGS, TicketObj => $t );
-                $newstate = $t->FirstCustomFieldValue('_RTIR_State');
-                if ( $newstate ne $oldstate ) {
-                    push(
-                        @tempresults,
-                        loc(
-                            "State changed from [_1] to [_2]", $oldstate,
-                            $newstate
-                        )
-                    );
-                }
-            }
+        unless( $t->FirstCustomFieldValue('_RTIR_State') eq 'new' ) {
+            push @tempresults, [ $t->id, loc("Only new reports may be rejected.") ];
+            next;
         }
-        else {
+
+        # If we don't own the thing we're linking to, change the owner
+        if (   $t->OwnerObj->id != $session{'CurrentUser'}->id
+            && $t->OwnerObj->id != $RT::Nobody->id )
+        {
+            push @tempresults, [ 
+                $t->id, 
+                loc("You may not reject tickets that belong to another user.") 
+            ];
+            next;
+        }
+
+        if ( $t->OwnerObj->id != $session{'CurrentUser'}->id &&
+             $t->OwnerObj->id == $RT::Nobody->id ) {
+            my $action = $ARGS{'Action'} = 'Take';
+            push @tempresults, [ $t->id, loc("Action: ") . $ARGS{'Action'} ];
+            my ( $res, $msg ) = $t->$action();
+            push( @tempresults, $msg );
+        }
+
+        my $oldstate = $t->FirstCustomFieldValue('_RTIR_State');
+        
+        push @tempresults,
+             map { [ $t->id, $_ ] }
+             ProcessTicketBasics( ARGSRef => \%ARGS, TicketObj => $t );
+
+        my $newstate = $t->FirstCustomFieldValue('_RTIR_State');
+        if ( $newstate ne $oldstate ) {
             push @tempresults,
-              loc(
-"Cannot reject Incident Report #[_1].  Only new reports may be rejected.",
-                $t->id
-              );
+                 [ $t->id, loc("State changed from [_1] to [_2]", $oldstate, $newstate ) ];
         }
-        @tempresults =
-          map { loc( "Ticket [_1]: [_2]", $t->Id, $_ ) } @tempresults;
-        @results = ( @results, @tempresults );
     }
+    push @results, map { loc( "Ticket [_1]: [_2]", $_->[0], $_->[1] ) }
+                   @tempresults;
+    # force redo search if we changed state
+    $session{'tickets'}->RedoSearch;
 }
 
-# We can only reject new tickets, so set the states.
-my @states = ['new'];
+
+# FIXME: Doesn't work as expected with refined search.
+# also is not clear should it use Query from
+# /RTIR/Search/Results.html?Queue=Incident%20Reports or 
+# own? and can it be refined at all?
 if ( !$Query ) {
-    $Query =
-      $m->comp( '/RTIR/Elements/NewQuery', Queue => $Queue, states => @states );
+    # We can only reject new tickets, so set the states.
+    $Query = $m->comp(
+        '/RTIR/Elements/NewQuery',
+        Queue => $Queue,
+        states => ['new'],
+    );
 }
 
 my $QueryString = $m->comp(
@@ -156,9 +155,12 @@ if ( !$BaseQuery ) {
 }
 
 $Query = "$BaseQuery AND ( $Query )";
-
-my $path =
-"RTIR/Search/Refine.html?$QueryString&ResultPage=$BaseURL&current_tab=$current_tab&Queue=$Queue";
+my $path = "RTIR/Search/Refine.html?$QueryString&";
+$path .= $m->comp( '/Elements/QueryString',
+                   ResultPage  => $BaseURL,
+                   current_tab => $current_tab,
+                   Queue       => $Queue,
+                 );
 
 </%INIT>
 
