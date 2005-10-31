@@ -1,25 +1,22 @@
 <%INIT>
-my ($Type, @basestates) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
-
-@states = @basestates if !$states[0];
-
-my $Query;
-if ($states[0]) {
-    foreach my $state (@states) {
-        $Query .= " OR " if $Query;
-        $Query .= "'CF.{_RTIR_State}' = '$state'";
-    }
+@states = grep $_, @states;
+unless( @states ) {
+    (undef, @states) = $m->comp("/RTIR/Elements/Type", %ARGS);
 }
+push @states, @add_states;
 
-$Query = "( $Query )" if $Query && (scalar @states) > 1;
+my %seen = ();
+@states =  grep !$seen{$_}++, map lc, @states;
 
-return $Query;
-
-$RT::Logger->crit($Query);
+my $query = join " OR ",
+            map "'CF.{_RTIR_State}' = '$_'",
+            @states;
+$query = "( $query )" if $query;
+return $query;
 
 </%INIT>
-
 <%ARGS>
 $Queue => undef
-@states => undef
+@states => ()
+@add_states => ()
 </%ARGS>
