@@ -1,12 +1,6 @@
 <%INIT>
-
-my ($Type, @states) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
-
-my $BaseQuery = "Queue = '$Queue'";
-
-return $BaseQuery;
+return "Queue = '$Queue'";
 </%INIT>
-
 <%ARGS>
-$Queue => undef
+$Queue => ''
 </%ARGS>
