@@ -194,7 +194,6 @@ if (($QueueObj->Name || '') eq 'Incidents') {
 }
 
 if ( $id && $id eq 'new' ) {
-    $Ticket = LoadTicket($id);
     unless ($QueueObj->CurrentUserHasRight('CreateTicket')) {
         Abort('You have no permission to create tickets in that queue.');
     }
@@ -202,10 +201,12 @@ if ( $id && $id eq 'new' ) {
                                         %ARGS
                                       );
     delete $session{'Attachments'};
+    
     unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
         Abort("No permission to view newly created ticket #".$Ticket->id.".");
-        $ARGS{'id'} = $id = $Ticket->Id;
     }
+    
+    $ARGS{'id'} = $id = $Ticket->Id;
 } elsif( $id ) {
     unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
         Abort("No permission to view ticket");
