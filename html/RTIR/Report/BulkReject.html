@@ -22,7 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-
+<& '/RTIR/Elements/Header', Title => $title &>
 <& '/RTIR/Search/Elements/RefineTabs',
    path => $path,
    Queue => $Queue,
@@ -39,17 +39,16 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="<%$RT::WebPath%>/RTIR/Report/BulkReject.html" method="POST">
-<input type=hidden name=Status value=<%$Status%>>
-<input type=hidden name=BulkReject value="1">
+<input type="hidden" name="Status" value="<% $Status %>">
 
 % if( $session{'tickets'}->Count ) {
 <a href="BulkReject.html?RTIRCheck=All">[Select All]</a>
 <a href="BulkReject.html?RTIRCheck=None">[Unselect All]</a>
 % }
 
-<& /RTIR/Search/Elements/ShowResults, 
+<& /RTIR/Search/Elements/ShowResults,
     Query => $Query,
-    QueryString => $QueryString, 
+    QueryString => $QueryString,
     BaseURL => $BaseURL,
     Format => $Format,
     RTIRCheck => $RTIRCheck,
@@ -58,7 +57,7 @@
 % if( $session{'tickets'}->Count ) {
 <a href="BulkReject.html?RTIRCheck=All">[Select All]</a>
 <a href="BulkReject.html?RTIRCheck=None">[Unselect All]</a>
-<& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => loc("Reject") &>
+<& /Elements/Submit, Name => "BulkReject", Caption => $SubmitCaption, Label => loc("Reject") &>
 % }
 
 </form>
@@ -68,24 +67,25 @@ $Format         ||= $RT::RTIRSearchResultFormats->{'RejectReports'};
 my $title         = loc("Reject Incident Reports");
 my $SubmitCaption = loc("Reject selected incident reports");
 
-$m->comp( '/RTIR/Elements/Header',
-           Title   => $title,
-           Refresh => $session{'tickets_refresh_interval'},
-        );
-
 my ( @results );
-
 if ( $ARGS{'BulkReject'} ) {
     my @tempresults;
 
     #Iterate through each ticket we've been handed
-    while ( my $t = $session{'tickets'}->Next ) {
-        $m->out('<!--  Processing <%$t->id%> -->');
+    foreach my $id( @SelectedTickets ) {
+        $m->out('<!--  Processing <%$id%> -->');
         $m->flush_buffer;
-        next unless ( $ARGS{ "UpdateTicket". $t->Id } );
+
+        my $t = RT::Ticket->new( $session{'CurrentUser'} );
+        $t->Load( $id );
+        unless( $t->id ) {
+            push @tempresults, [ $id, loc("Couldn't load ticket.") ];
+            next;
+        }
+        $id = $t->id;
 
         unless( $t->FirstCustomFieldValue('_RTIR_State') eq 'new' ) {
-            push @tempresults, [ $t->id, loc("Only new reports may be rejected.") ];
+            push @tempresults, [ $id, loc("Only new reports may be rejected.") ];
             next;
         }
 
@@ -94,8 +94,8 @@ if ( $ARGS{'BulkReject'} ) {
             && $t->OwnerObj->id != $RT::Nobody->id )
         {
             push @tempresults, [ 
-                $t->id, 
-                loc("You may not reject tickets that belong to another user.") 
+                $id,
+                loc("You may not reject tickets that belong to another user."),
             ];
             next;
         }
@@ -103,21 +103,21 @@ if ( $ARGS{'BulkReject'} ) {
         if ( $t->OwnerObj->id != $session{'CurrentUser'}->id &&
              $t->OwnerObj->id == $RT::Nobody->id ) {
             my $action = $ARGS{'Action'} = 'Take';
-            push @tempresults, [ $t->id, loc("Action: ") . $ARGS{'Action'} ];
+            push @tempresults, [ $id, loc("Action: ") . $ARGS{'Action'} ];
             my ( $res, $msg ) = $t->$action();
-            push( @tempresults, $msg );
+            push( @tempresults, [ $id, $msg ] );
         }
 
         my $oldstate = $t->FirstCustomFieldValue('_RTIR_State');
         
         push @tempresults,
-             map { [ $t->id, $_ ] }
+             map { [ $id, $_ ] }
              ProcessTicketBasics( ARGSRef => \%ARGS, TicketObj => $t );
 
         my $newstate = $t->FirstCustomFieldValue('_RTIR_State');
         if ( $newstate ne $oldstate ) {
             push @tempresults,
-                 [ $t->id, loc("State changed from [_1] to [_2]", $oldstate, $newstate ) ];
+                 [ $id, loc("State changed from [_1] to [_2]", $oldstate, $newstate ) ];
         }
     }
     push @results, map { loc( "Ticket [_1]: [_2]", $_->[0], $_->[1] ) }
@@ -163,7 +163,6 @@ $path .= $m->comp( '/Elements/QueryString',
                  );
 
 </%INIT>
-
 <%ARGS>
 $Status => 'rejected'
 $RTIRCheck => 'None'
@@ -177,4 +176,5 @@ $OrderBy => 'id'
 $Order => 'ASC'
 $BaseURL => $RT::WebPath . "/RTIR/Report/BulkReject.html?"
 $current_tab => 'RTIR/Report/BulkReject.html'
+@SelectedTickets => ()
 </%ARGS>
