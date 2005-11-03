@@ -1,15 +1,14 @@
-<& /Elements/TicketList, 
+<& /Elements/TicketList,
+    %ARGS,
     RTIRCheck => $RTIRCheck,
     Query => $Query,
-    AllowSorting => 1,
     OrderBy => $OrderBy,
     Order => $Order,
     Rows => $Rows,
     Page => $Page,
     Format => $Format,
     BaseURL => $BaseURL,
-    ShowNavigation => 0
-   &>
+&>
 
 <div align="right">
 
@@ -18,12 +17,6 @@
 <a href="<%$RT::WebPath%>/RTIR/Report/BulkReject.html<%$QueryString%>&Queue=<%$Queue%>"><&|/l&>Bulk Reject</&></a><br>
 % }
 
-%if (0) {
-<a href="<%$BaseURL%><%$QueryString%>&Queue=<%$Queue|u%>"><&|/l&>Bookmarkable link</&></a><br>
-<a href="<%$RT::WebPath%>/Search/Results.tsv?Queue=<%$Queue%><%$QueryString%>"><&|/l&>spreadsheet</&></a> |
-<a href="<%$RT::WebPath%>/Search/Results.rdf?Queue=<%$Queue%><%$QueryString%>"><&|/l&>RSS</&></a> |
-
-% }
 </div>
 
 <%INIT>
@@ -36,21 +29,20 @@ if ($OrderBy ne $session{'CurrentSearchHash'}->{'OrderBy'}
     or $Order ne $session{'CurrentSearchHash'}->{'Order'}) {
     $session{'CurrentSearchHash'}->{'OrderBy'} = $OrderBy;
     $session{'CurrentSearchHash'}->{'Order'}   = $Order;
-    # Invalidate the ordering cache
-    undef $session{'tickets'}->{'items_array'};
 }
 </%INIT>
-
 <%ARGS>
+$Queue => undef
 $Query => undef
-$Format => undef 
+$Format => undef
 $HideResults => 0
 $Rows => 50
 $Page => 1
 $OrderBy => 'id'
 $Order => 'ASC'
 $QueryString => undef
-$Queue => undef
 $BaseURL => $RT::WebPath."/Search/Results.html?"
 $RTIRCheck => undef
+$ShowNavigation => 0
+$AllowSorting => 1
 </%ARGS>
