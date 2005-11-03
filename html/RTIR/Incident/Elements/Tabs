@@ -22,14 +22,4 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /RTIR/Elements/QueueTabs, 
-    QueueName => 'Incidents',
-    current_tab => $current_tab,
-    current_subtab => $current_subtab,
-    %ARGS
-&> 
-
-<%ARGS>
-$current_tab => undef
-$current_subtab => undef
-</%ARGS>
+<& /RTIR/Elements/QueueTabs, QueueName => 'Incidents', %ARGS &>

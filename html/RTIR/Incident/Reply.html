@@ -33,48 +33,49 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="Reply.html" method=get>
-<input type=hidden name=id value=<%$id%>>
-<input type=hidden name=Status value=<%$ARGS{'DefaultStatus'}%>>
-<input type=hidden name=All value=<%$ARGS{'All'}%>>
-<input type=hidden name=Query value="<%$Query%>">
-<input type=hidden name=BaseQuery value="<%$BaseQuery%>">
+<form action="Reply.html" method="GET">
+<input type="hidden" name="id" value="<% $id %>">
+<input type="hidden" name="Status" value="<% $ARGS{'DefaultStatus'} %>">
+<input type="hidden" name="All" value="<% $ARGS{'All'} %>">
+<input type="hidden" name="Query" value="<% $Query %>">
+<input type="hidden" name="BaseQuery" value="<% $BaseQuery %>">
 
 <h2>Reporters</h2>
 <& /RTIR/Search/Elements/ShowResults, 
-    BaseQuery => $BaseQuery,
-    Query => "($Query) AND Queue = 'Incident Reports'",
+    BaseQuery   => $BaseQuery,
+    Query       => "($Query) AND Queue = 'Incident Reports'",
     QueryString => $QueryString, 
-    BaseURL => $BaseURL,
-    Format => $Format,
-    &>
+    BaseURL     => $BaseURL,
+    Format      => $Format,
+&>
 
 <h2>Investigation Correspondents</h2>
-<& /RTIR/Search/Elements/ShowResults, 
-    BaseQuery => $BaseQuery,
-    Query => "($Query) AND Queue = 'Investigations'",
+<& /RTIR/Search/Elements/ShowResults,
+    BaseQuery   => $BaseQuery,
+    Query       => "($Query) AND Queue = 'Investigations'",
     QueryString => $QueryString, 
-    BaseURL => $BaseURL,
-    Format => $Format,
-    &>
+    BaseURL     => $BaseURL,
+    Format      => $Format,
+&>
 
 <HR>
 
 % my $i;
 <& /Widgets/TitleBoxStart, title => loc('Reply to selected tickets') &>
-<table>
-<tr><td class="label">
+<table><tr><td class="label">
 <&|/l&>Owner</&>:  
 </td><td>
-<& /Elements/SelectOwner, 
+<& /Elements/SelectOwner,
     Name=>"Owner", 
-    Default => ($ARGS{Owner}||$session{'CurrentUser'}->Id||undef), 
- &>
-<&|/l&>Worked</&>: <input size=4 name="UpdateTimeWorked" value="<%
-$ARGS{UpdateTimeWorked}%>"> <&|/l&>minutes</&>
-</td></tr>
-<tr><td align=right><&|/l&>Update Type</&>:</td>
-<td><select name="UpdateType">
+    Default => ($ARGS{Owner}||$session{'CurrentUser'}->Id||undef),
+&>
+<&|/l&>Worked</&>:
+<input size=4 name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked} %>">
+<&|/l&>minutes</&>
+</td></tr><tr><td align=right>
+<&|/l&>Update Type</&>:
+</td><td>
+<select name="UpdateType">
   <option value="private" <%$CommentDefault%>><&|/l&>Comments (Not sent to requestors)</&></option>
 % if ($ARGS{Status} ne 'resolved' && $ARGS{Status} ne 'rejected') {
    <option value="response" <%$ResponseDefault%>><&|/l&>Response to requestors</&></option>
@@ -177,23 +178,21 @@ $MyTickets->FromSQL("$Query");
 
 #Iterate through each ticket we've been handed
 while (my $Ticket = $MyTickets->Next) {
-    my ($oldstate, $newstate);
-    $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+    my $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
 
     if ($do_comment_reply) {
-    next unless ($ARGS{"UpdateTicket".$Ticket->Id});
+        next unless ($ARGS{"UpdateTicket".$Ticket->Id});
+        ProcessUpdateMessage(TicketObj => $Ticket, ARGSRef => \%ARGS, Actions => \@updateresults); 
 
-    ProcessUpdateMessage(TicketObj => $Ticket, ARGSRef => \%ARGS, Actions => \@updateresults); 
+        @basicresults = ProcessTicketBasics(TicketObj => $Ticket, ARGSRef => \%ARGS);
 
-    @basicresults = ProcessTicketBasics(TicketObj => $Ticket, ARGSRef => \%ARGS);
-
-    @watchresults = ProcessTicketWatchers(TicketObj => $Ticket, ARGSRef => \%ARGS);    
-   } 
+        @watchresults = ProcessTicketWatchers(TicketObj => $Ticket, ARGSRef => \%ARGS);    
+    } 
 
     my @dateresults = ProcessTicketDates(TicketObj => $Ticket, ARGSRef => \%ARGS);
 
     my @tempresults = (@basicresults, @watchresults, @updateresults, @dateresults);
-    $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+    my $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
     if ($newstate ne $oldstate) {
       push (@tempresults, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
     }

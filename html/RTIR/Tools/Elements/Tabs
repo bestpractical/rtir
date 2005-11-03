@@ -23,13 +23,14 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/Callback, tabs => $tabs, %ARGS &>
-<& /RTIR/Elements/Tabs, 
-    tabs => $tabs, 
-    current_toptab => $current_toptab, 
-    current_tab => $current_tab, 
+<& /RTIR/Elements/Tabs,
+    tabs           => $tabs,
+    current_toptab => $current_toptab,
+    current_tab    => $current_tab,
     current_subtab => $current_subtab,
-    subtabs => $script_tabs,
-    Title => $Title &> 
+    subtabs        => $script_tabs,
+    Title          => $Title,
+&>
 
 <%INIT>
 my $tabs = {};
@@ -37,26 +38,23 @@ my $current_toptab = "RTIR/Tools/Lookup.html";
 
 my $script_tabs = {
     _A => { title => loc('By Email address'),
-            path  => 'RTIR/Tools/ScriptedAction.html', },
+            path  => 'RTIR/Tools/ScriptedAction.html' },
     _B => { title => loc('By IP address'),
-            path  => 'RTIR/Tools/ScriptedAction.html?loop=IP', },
+            path  => 'RTIR/Tools/ScriptedAction.html?loop=IP' },
 };
 
 $tabs->{"A"} = { path      => 'RTIR/Tools/Lookup.html?NewSearch=1',
-                 title     => loc('Lookup'),
- };
-$tabs->{"B"} = { path      => 'RTIR/Reporting/index.html',
-                 title     => loc('Reporting'),
- };
-$tabs->{"C"} = { path      => 'RTIR/Tools/ScriptedAction.html',
-                 title     => loc('Scripted Action'),
-		 subtabs   => $script_tabs,
-		 current_subtab   => $current_subtab,
- };
+                 title     => loc('Lookup') };
 
+$tabs->{"B"} = { path      => 'RTIR/Reporting/index.html',
+                 title     => loc('Reporting') };
+
+$tabs->{"C"} = { path           => 'RTIR/Tools/ScriptedAction.html',
+                 title          => loc('Scripted Action'),
+                 subtabs        => $script_tabs,
+                 current_subtab => $current_subtab };
 </%INIT>
 
-  
 <%ARGS>
 $subtabs => undef
 $current_tab => undef

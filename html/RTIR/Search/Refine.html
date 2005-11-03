@@ -81,14 +81,14 @@
     Page => $Page,
     Order => $Order,
     OrderBy => $OrderBy,
-    &>
+&>
 
 <%INIT>
 my $SearchId;
 
-if (!$Ticket && $id) {
+if ( !$Ticket && $id ) {
     $Ticket = new RT::Ticket($session{'CurrentUser'});
-    $Ticket->Load($id);
+    $Ticket->Load( $id );
 }
 
 my %queues = ();
@@ -127,35 +127,43 @@ if ($NewQuery) {
 
 ( $Query, $Format, $Order, $OrderBy, $Rows, $SearchId ) = 
     $m->comp('/RTIR/Search/Elements/ProcessQuery', 
-	     queues => \%queues, 
-	     results => \$results, 
-	     optionlist => \$optionlist,
-	     search_hash => \$search_hash,
-	     dirty => \$dirty,
-	     AvailableColumns => \$AvailableColumns,
-	     CurrentFormat => \$CurrentFormat,
-	     BaseQuery => $BaseQuery,
-	     ResultPage => $ResultPage,
-	     id => $id,
-	     %ARGS);
+             queues => \%queues, 
+             results => \$results, 
+             optionlist => \$optionlist,
+             search_hash => \$search_hash,
+             dirty => \$dirty,
+             AvailableColumns => \$AvailableColumns,
+             CurrentFormat => \$CurrentFormat,
+             BaseQuery => $BaseQuery,
+             ResultPage => $ResultPage,
+             id => $id,
+             %ARGS);
 
 my ($Type, @states) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
 
 # {{{ Build a querystring for the tabs
-
-    $QueryString = '&' . $m->comp('/Elements/QueryString', 
-	    Query => $Query,
-	    Format => $Format,
-            Order => $Order,
-            OrderBy => $OrderBy,
-            Rows => $Rows) if ($Query);
+$QueryString = $m->comp('/Elements/QueryString', 
+        Query => $Query,
+        Format => $Format,
+        Order => $Order,
+        OrderBy => $OrderBy,
+        Rows => $Rows) if ($Query);
 # }}}
 
-my $path = $BaseURL."?Queue=$Queue&id=".$id.$QueryString;
+my $path = $BaseURL;
+if( $path !~ /[?&]$/ ) {
+    $path .= ($path =~ /\?/)? '&': '?';
+}
+$path .= $m->comp( '/Elements/QueryString',
+                   Queue => $Queue,
+                   id    => $id,
+                 );
+$path .= "&$QueryString";
 
 </%INIT>
 
 <%ARGS>
+$id => undef
 $Ticket => undef
 $title => loc("Refine Search")
 $ResultPage => undef
@@ -164,7 +172,6 @@ $NewQuery => 0
 $Queue => undef
 $Query => undef
 $QueryString => undef
-$id => undef
 $Format => undef 
 $HideResults => 0
 $Rows => 50

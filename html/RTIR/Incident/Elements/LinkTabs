@@ -22,43 +22,40 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-% if (defined $Ticket) {
+% if ( $Ticket ) {
 <& /RTIR/Incident/Elements/Tabs, 
     appendtabs => $appendtabs,
-    subtabs => $refinetabs,
+    subtabs    => $refinetabs,
     %ARGS &>
 % } else {
-<& '/RTIR/' . $Type . '/Elements/Tabs', 
-    subtabs => $refinetabs,
+<& '/RTIR/' . $Type . '/Elements/Tabs',
+    subtabs    => $refinetabs,
     appendtabs => $appendtabs,
     %ARGS &>
 % }
 
 <%INIT>
-my $appendtabs;
-my $refinetabs = { };
-my $Type;
-if ($Ticket && $Tab) {
-    ($Type, undef) = $m->comp('/RTIR/Elements/Type', Queue => $Queue);
+my ($Type) = $m->comp('/RTIR/Elements/Type', Queue => $Queue);
 
-    $appendtabs = {
-	_I => { path => $current_subtab,
-		title     => $Tab },
+my ($appendtabs, $refinetabs);
+if ( $Ticket && $Tab ) {
+
+    $appendtabs->{'_I'} = {
+        path  => $current_subtab,
+        title => $Tab,
     };
 
     $refinetabs->{'_a'} = {
-	class => "nav",
-	path => $current_subtab,
-	title => loc('Refine') };
+        class => "nav",
+        path => $current_subtab,
+        title => loc('Refine'),
+    };
 }
 
 </%INIT>
-
 <%ARGS>
 $Ticket => undef
-$current_tab => undef
 $current_subtab => undef
-$Title => undef
 $Queue => undef
 $Tab => undef
 </%ARGS>

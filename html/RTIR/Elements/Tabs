@@ -23,12 +23,12 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/PageLayout, 
-    toptabs => $toptabs, 
+    toptabs => $toptabs,
     topactions => $topactions,
-    tabs => $tabs, 
-    actions => $actions, 
-    current_tab => $current_tab, 
-    current_subtab => $current_subtab, 
+    tabs => $tabs,
+    actions => $actions,
+    current_tab => $current_tab,
+    current_subtab => $current_subtab,
     current_toptab => $current_toptab,
     title => $Title,
     AppName => $RT::rtirname &>
@@ -37,27 +37,25 @@
 
 my $toptabs = { 
     A => { title => loc('RT'),
-	   path  => '', },
+           path  => '' },
     B => { title => loc('RTIR Home'),
-	   path => 'RTIR/index.html',
-       },
+           path => 'RTIR/index.html' },
     C => { title => loc('Incidents'),
-	   path => 'RTIR/Search/Results.html?Queue=Incidents' },
+           path => 'RTIR/Search/Results.html?Queue=Incidents' },
     D => { title => loc('Incident Reports'),
-	   path => 'RTIR/Search/Results.html?Queue=Incident Reports'},
+           path => 'RTIR/Search/Results.html?Queue=Incident%20Reports' },
     E => { title => loc('Investigations'),
-	   path => 'RTIR/Search/Results.html?Queue=Investigations'},
+           path => 'RTIR/Search/Results.html?Queue=Investigations' },
     F => { title => loc('Blocks'),
-	   path => 'RTIR/Search/Results.html?Queue=Blocks'},
+           path => 'RTIR/Search/Results.html?Queue=Blocks' },
     G => { title => loc('Tools'),
-	   path => 'RTIR/Tools/Lookup.html',
-		   },
-	    };
-my $topactions = {
-    A => { html => $m->scomp('/RTIR/Elements/SimpleSearch') 
-	   }
+           path => 'RTIR/Tools/Lookup.html' },
 };
-                    
+
+my $topactions = {
+    A => { html => $m->scomp('/RTIR/Elements/SimpleSearch') }
+};
+
 </%INIT>
 <%ARGS>
 $current_toptab => undef
@@ -66,11 +64,4 @@ $current_subtab => undef
 $tabs => undef
 $actions => undef
 $Title => undef
-$QueryString => undef
-$Query => undef
-$Format => undef
-$Rows => undef
-$OrderBy => undef
-$Order => undef
-$Page => undef
 </%ARGS>

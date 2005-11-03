@@ -23,24 +23,25 @@
 %# 
 %# END LICENSE BLOCK
 <& /RTIR/Elements/Header, Title => $Title &>
-% if ($Split) {
+% my $EscapedQueue = $m->comp('/Elements/QueryString', Queue => $Queue );
+% if ( $Split ) {
 <& '/RTIR/'.$Type.'/Elements/Tabs', 
     Ticket => $TicketObj, 
     current_tab => "RTIR/Split.html?Ticket=".$TicketObj->Id, 
     current_subtab => "RTIR/Split.html?Ticket=".$TicketObj->Id, 
     Title => $Title &>
-% } elsif ($Incident) {
+% } elsif ( $Incident ) {
 <& "/RTIR/Incident/Elements/LinkTabs", 
     Queue => $Queue,
     Ticket => $IncidentObj,
-    current_tab => "RTIR/Create.html?Incident=".$Incident."&Queue=".$Queue, 
-    current_subtab => "RTIR/Create.html?Incident=".$Incident."&Queue=".$Queue, 
+    current_tab => "RTIR/Create.html?Incident=$Incident&$EscapedQueue",
+    current_subtab => "RTIR/Create.html?Incident=$Incident&$EscapedQueue",
     Title => $Title &>
 % } else {
 <& "/RTIR/".$Type."/Elements/Tabs",
     Ticket => $TicketObj,
-    current_tab => "RTIR/Create.html?Queue=".$Queue, 
-    current_subtab => "RTIR/Create.html?Queue=".$Queue, 
+    current_tab => "RTIR/Create.html?$EscapedQueue",
+    current_subtab => "RTIR/Create.html?$EscapedQueue",
     Title => $Title &>
 % }
 
