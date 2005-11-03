@@ -80,12 +80,14 @@ if ( $ARGS{'BulkReject'} ) {
         $t->Load( $id );
         unless( $t->id ) {
             push @tempresults, [ $id, loc("Couldn't load ticket.") ];
+            push @tempresults, [ $id, loc("Skipped.") ];
             next;
         }
         $id = $t->id;
 
         unless( $t->FirstCustomFieldValue('_RTIR_State') eq 'new' ) {
             push @tempresults, [ $id, loc("Only new reports may be rejected.") ];
+            push @tempresults, [ $id, loc("Skipped.") ];
             next;
         }
 
@@ -97,22 +99,24 @@ if ( $ARGS{'BulkReject'} ) {
                 $id,
                 loc("You may not reject tickets that belong to another user."),
             ];
+            push @tempresults, [ $id, loc("Skipped.") ];
             next;
         }
 
         if ( $t->Owner != $session{'CurrentUser'}->id &&
              $t->Owner == $RT::Nobody->id ) {
-            my $action = $ARGS{'Action'} = 'Take';
-            push @tempresults, [ $id, loc("Action: ") . $ARGS{'Action'} ];
-            my ( $res, $msg ) = $t->$action();
-            push( @tempresults, [ $id, $msg ] );
+            my ( $res, $msg ) = $t->Take;
+            unless( $res ) {
+                push( @tempresults, [ $id, loc("Couldn't take ticket: [_1]", $msg) ] );
+            } else {
+                push( @tempresults, [ $id, loc("Took ticket.") ] );
+                push( @tempresults, [ $id, $msg ] ) if $msg;
+            }
         }
 
         my $oldstate = $t->FirstCustomFieldValue('_RTIR_State');
         
-        push @tempresults,
-             map { [ $id, $_ ] }
-             ProcessTicketBasics( ARGSRef => \%ARGS, TicketObj => $t );
+        push @tempresults, ProcessTicketBasics( ARGSRef => \%ARGS, TicketObj => $t );
 
         my $newstate = $t->FirstCustomFieldValue('_RTIR_State');
         if ( $newstate ne $oldstate ) {
@@ -120,7 +124,7 @@ if ( $ARGS{'BulkReject'} ) {
                  [ $id, loc("State changed from [_1] to [_2]", $oldstate, $newstate ) ];
         }
     }
-    push @results, map { loc( "Ticket [_1]: [_2]", $_->[0], $_->[1] ) }
+    push @results, map { ref($_)? loc( "Ticket [_1]: [_2]", $_->[0], $_->[1] ): $_ }
                    @tempresults;
     # force redo search if we changed state
     $session{'tickets'}->RedoSearch;
