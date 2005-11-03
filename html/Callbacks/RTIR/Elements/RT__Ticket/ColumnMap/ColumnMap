@@ -11,39 +11,38 @@ $COLUMN_MAP->{'_RTIR_Check'} = {
     value => sub {
         my $selected = '';
         if ( $check eq 'All' ) {
-            $selected = 'CHECKED';
+            $selected = 'checked';
         }
-        elsif ( $check eq 'All' ) {
+        elsif ( $check eq 'None' ) {
             $selected = '';
         }
         elsif ( $check == $_[0]->id ) {
-            $selected = 'CHECKED';
+            $selected = 'checked';
         }
         elsif ( ref($check) eq 'ARRAY' ) {
             foreach my $check (@$check) {
                 if ( $_[0]->id == $check ) {
-                    $selected = 'CHECKED';
+                    $selected = 'checked';
                 }
             }
         }
-        return ( \'<input type="checkbox" name="UpdateTicket',
-            $_[0]->id, \'" ', $selected, \'>' );
+        return ( \'<input type="checkbox" name="SelectedTickets" value="',
+                 $_[0]->id, \'" ', $selected, \' />' );
     },
 };
 
 $COLUMN_MAP->{'_RTIR_Radio'} = {
-    title => ( \'&nbsp;' ),
+    title => '&nbsp;',
     value => sub {
         my $selected = '';
         if ( $_[0]->id == $check ) {
-            $selected = 'CHECKED';
+            $selected = 'checked';
         }
         return ( \'<input type="radio" name="SelectedTicket" value="',
-            $_[0]->id, \'" ', $selected, \'>' );
+                 $_[0]->id, \'" ', $selected, \' />' );
     },
 };
 </%INIT>
-
 <%ARGS>
 $COLUMN_MAP => undef
 </%ARGS>
