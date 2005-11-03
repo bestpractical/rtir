@@ -90,8 +90,8 @@ if ( $ARGS{'BulkReject'} ) {
         }
 
         # If we don't own the thing we're linking to, change the owner
-        if (   $t->OwnerObj->id != $session{'CurrentUser'}->id
-            && $t->OwnerObj->id != $RT::Nobody->id )
+        if (   $t->Owner != $session{'CurrentUser'}->id
+            && $t->Owner != $RT::Nobody->id )
         {
             push @tempresults, [ 
                 $id,
@@ -100,8 +100,8 @@ if ( $ARGS{'BulkReject'} ) {
             next;
         }
 
-        if ( $t->OwnerObj->id != $session{'CurrentUser'}->id &&
-             $t->OwnerObj->id == $RT::Nobody->id ) {
+        if ( $t->Owner != $session{'CurrentUser'}->id &&
+             $t->Owner == $RT::Nobody->id ) {
             my $action = $ARGS{'Action'} = 'Take';
             push @tempresults, [ $id, loc("Action: ") . $ARGS{'Action'} ];
             my ( $res, $msg ) = $t->$action();

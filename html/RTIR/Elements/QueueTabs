@@ -175,11 +175,11 @@ if (    $Ticket->CurrentUserHasRight('ModifyTicket')
     }
 
 if ( $Ticket->CurrentUserHasRight('OwnTicket') ) {
-    if ( $Ticket->OwnerObj->id == $RT::Nobody->id ) {
+    if ( $Ticket->Owner == $RT::Nobody->id ) {
         $actions->{'D'} = { path => "RTIR/Display.html?Action=Take&id=" . $id,
                             title => loc('Take') };
     }
-    elsif ( $Ticket->OwnerObj->id != $session{CurrentUser}->id ) {
+    elsif ( $Ticket->Owner != $session{CurrentUser}->id ) {
         $actions->{'E'} = {path => "RTIR/Display.html?Action=Steal&id=" . $id, 
                            title => loc('Steal') };
     }

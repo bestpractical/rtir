@@ -84,7 +84,7 @@
 </td><td>
 <& /Elements/SelectOwner, 
     Name=>"Owner", 
-    Default => ($ARGS{Owner}||$Ticket->OwnerObj->Id()||$session{'CurrentUser'}->Id||undef), 
+    Default => ($ARGS{Owner}||$Ticket->Owner()||$session{'CurrentUser'}->Id||undef), 
     QueueObj => $Ticket->QueueObj, 
     TicketObj => $Ticket &>
 <&|/l&>Worked</&>: <input size=4 name="UpdateTimeWorked" value="<%

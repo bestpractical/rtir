@@ -236,8 +236,8 @@ my $DoLinks = sub {
   }
 
  # If we don't own the thing we're linking to, change the owner
-  if ($Ticket->OwnerObj->id != $session{'CurrentUser'}->id) {
-    if ($Ticket->OwnerObj->id == $RT::Nobody->id) {
+  if ($Ticket->Owner != $session{'CurrentUser'}->id) {
+    if ($Ticket->Owner == $RT::Nobody->id) {
       $ARGS{'Action'} = 'Take';
     } else {
       $ARGS{'Action'} = 'Steal';

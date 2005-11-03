@@ -79,7 +79,7 @@ sub Commit {
 
     # change owner of child Incident Reports, Investigations, Blocks
     while (my $member = $members->Next) {
-	if ($member->OwnerObj->id != $self->TransactionObj->NewValue) {
+	if ($member->Owner != $self->TransactionObj->NewValue) {
 	    my ($res, $msg); 
 	    my $user = new RT::CurrentUser($self->TransactionObj->CurrentUser);
 	    $user->Load($self->TransactionObj->Creator);

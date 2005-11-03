@@ -78,7 +78,7 @@ sub Commit {
     my $parents = new RT::Tickets($self->TransactionObj->CurrentUser);
     $parents->FromSQL($query);
     while (my $incident = $parents->Next) {
-	if ( $incident->OwnerObj->id != $self->TransactionObj->NewValue) {
+	if ( $incident->Owner != $self->TransactionObj->NewValue) {
 	    my ($res, $msg); 
 	    my $user = new RT::CurrentUser($self->TransactionObj->CurrentUser);
 	    $user->Load($self->TransactionObj->Creator);
