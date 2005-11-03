@@ -45,7 +45,7 @@
 %# }}} END BPS TAGGED BLOCK
 <& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
 <& '/RTIR/'.$Type.'/Elements/Tabs', 
-    current_tab => "RTIR/Search/Results.html?Queue=$Queue$QueryString", 
+    current_tab => "RTIR/Search/Results.html?Queue=$Queue&$QueryString",
     Title => $title,
     Format => $Format,
     Query => $Query,
@@ -56,57 +56,38 @@
 &>
 
 <& /Elements/ListActions, actions => \@results &>
-<hr>
+<hr />
 
-<& Elements/ShowResults, 
-   Query => $Query, 
-   QueryString => $QueryString, 
-   Format => $Format,
+<& Elements/ShowResults,
+    %ARGS,
+    Query => $Query, 
+    QueryString => $QueryString, 
+    Format => $Format,
 &>
 
 <%INIT>
-my ($Type, @states) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
-$Format = $RT::RTIRSearchResultFormats->{$Type . 'Default'};
+my ($Type, undef) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
+$Format ||= $RT::RTIRSearchResultFormats->{$Type . 'Default'};
 
 my $title = loc("Results");
-$session{'i'}++;
-$session{'tickets'} = RT::Tickets->new($session{'CurrentUser'})  unless ($session{'tickets'});
-$session{'tickets'}->FromSQL($Query) if ($Query);
-$session{'tickets'}->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
 
-if ($OrderBy ne $session{'CurrentSearchHash'}->{'OrderBy'}
-    or $Order ne $session{'CurrentSearchHash'}->{'Order'}) {
-    $session{'CurrentSearchHash'}->{'OrderBy'} = $OrderBy;
-    $session{'CurrentSearchHash'}->{'Order'}   = $Order;
-    # Invalidate the ordering cache
-    undef $session{'tickets'}->{'items_array'};
-}
+$Query ||= $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
+$BaseQuery ||= $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
 
-if (!$Query) {
-    $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
-}
+my $QueryString = $m->comp( '/Elements/QueryString',
+                            BaseQuery => $BaseQuery,
+                            Query => $Query,
+                            Format => $Format,
+                            Rows => $Rows,
+                            OrderBy => $OrderBy,
+                            Order => $Order,
+                            Page => $Page
+                          );
 
-my $QueryString = "&".$m->comp('/Elements/QueryString',
-                               Query => $Query,
-                               Format => $Format,
-                               Rows => $Rows,
-                               OrderBy => $OrderBy,
-                               Order => $Order,
-                               Page => $Page);
 
-if (!$BaseQuery) {
-    $BaseQuery = $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
-}
-
-$Query = "$BaseQuery AND ( $Query )";
-$ARGS{'Query'} = $Query;
+$Query = "($BaseQuery) AND ( $Query )";
 
 </%INIT>
-
-<%CLEANUP>
-$session{'tickets'}->PrepForSerialization();
-</%CLEANUP>
-
 <%ARGS>
 $BaseQuery => undef
 $Query => undef
