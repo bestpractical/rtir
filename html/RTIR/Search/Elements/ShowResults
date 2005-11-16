@@ -8,16 +8,18 @@
     Page => $Page,
     Format => $Format,
     BaseURL => $BaseURL,
+    ShowNavigation => $ShowNavigation,
+    AllowSorting => $AllowSorting,
 &>
 
-<div align="right">
-
-% if ($Queue eq 'Incident Reports') {
+% if ( $Queue eq 'Incident Reports' && $ShowNavigation ) {
 %# this would do well as a Callback
-<a href="<%$RT::WebPath%>/RTIR/Report/BulkReject.html<%$QueryString%>&Queue=<%$Queue%>"><&|/l&>Bulk Reject</&></a><br>
-% }
 
+<div align="right">
+<a href="<%$RT::WebPath%>/RTIR/Report/BulkReject.html<%$QueryString%>&Queue=<%$Queue%>"><&|/l&>Bulk Reject</&></a><br>
 </div>
+
+% }
 
 <%INIT>
 $session{'i'}++;
