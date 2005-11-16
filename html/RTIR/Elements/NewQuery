@@ -1,7 +1,7 @@
 <%INIT>
 @states = grep $_, @states;
 unless( @states ) {
-    (undef, @states) = $m->comp("/RTIR/Elements/Type", %ARGS);
+    @states = $m->comp("/RTIR/Elements/States", %ARGS );
 }
 push @states, @add_states;
 
