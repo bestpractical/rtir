@@ -26,7 +26,7 @@
 <& Elements/LinkTabs, 
     Queue => 'Incident Reports',
     Ticket => $IncidentObj, 
-    current_tab => 'RTIR/Incident/ShowChildren.html?Queue=Incident Reports&id='.$IncidentObj->id,
+    current_tab => 'RTIR/Incident/ShowChildren.html?Queue=Incident Reports&id='.$id,
     current_subtab => 'RTIR/Incident/ReplyToReporters.html',
     Tab => 'Bulk Reply',
     Title => $title &>
@@ -40,77 +40,49 @@
 <input type="hidden" name="Query" value="<% $Query %>">
 <input type="hidden" name="BaseQuery" value="<% $BaseQuery %>">
 
-<h2>Reporters</h2>
-<& /RTIR/Search/Elements/ShowResults, 
+<h2><&|/l&>Reporters</&></h2>
+<& /RTIR/Search/Elements/ShowResults,
     BaseQuery   => $BaseQuery,
     Query       => "($Query) AND Queue = 'Incident Reports'",
     QueryString => $QueryString, 
     BaseURL     => $BaseURL,
     Format      => $Format,
+    Rows        => 0,
 &>
 
-<h2>Investigation Correspondents</h2>
+% if ( $All ) {
+<h2><&|/l&>Investigation Correspondents</&></h2>
 <& /RTIR/Search/Elements/ShowResults,
     BaseQuery   => $BaseQuery,
     Query       => "($Query) AND Queue = 'Investigations'",
     QueryString => $QueryString, 
     BaseURL     => $BaseURL,
     Format      => $Format,
+    Rows        => 0,
 &>
+
+% }
 
 <HR>
 
-% my $i;
-<& /Widgets/TitleBoxStart, title => loc('Reply to selected tickets') &>
-<table><tr><td class="label">
-<&|/l&>Owner</&>:  
-</td><td>
-<& /Elements/SelectOwner,
-    Name=>"Owner", 
-    Default => ($ARGS{Owner}||$session{'CurrentUser'}->Id||undef),
-&>
-<&|/l&>Worked</&>:
-<input size=4 name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked} %>">
-<&|/l&>minutes</&>
-</td></tr><tr><td align=right>
-<&|/l&>Update Type</&>:
-</td><td>
-<select name="UpdateType">
-  <option value="private" <%$CommentDefault%>><&|/l&>Comments (Not sent to requestors)</&></option>
-% if ($ARGS{Status} ne 'resolved' && $ARGS{Status} ne 'rejected') {
-   <option value="response" <%$ResponseDefault%>><&|/l&>Response to requestors</&></option>
-% }
-</select> 
-</td></tr>
-<tr><td align=right><&|/l&>Subject</&>:</td>
-<td><i>(<&|/l&>uses subjects from tickets</&>)</i></td></tr>
-
-<& /RTIR/Elements/UpdateData, %ARGS &>
-
-</table>
-<& /Widgets/TitleBoxEnd &>
+<& Elements/ReplyForm, AllowResponse => ($ARGS{Status} !~ /^(?:resolved|rejected)$/) &>
 
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => $SubmitLabel &>
 </form>
 
 <%INIT>
-$Format = $RT::RTIRSearchResultFormats->{'BulkReply'};
+my (@results);
 
-my $IncidentObj = LoadTicket($id);
+my $IncidentObj = LoadTicket( $id );
+$id = $ARGS{'id'} = $IncidentObj->id;
 
-my $title;
-
-if (!$Query) {
-    $Query = "('CF.Incident Reports.{_RTIR_State}' = 'open' OR 'CF.Investigations.{_RTIR_State}' = 'open') AND MemberOf = $id";
-}
-
-my $QueryString = "&".$m->comp('/Elements/QueryString',
-                               Query => $Query,
-                               Format => $Format,
-                               Rows => $Rows,
-                               OrderBy => $OrderBy,
-                               Order => $Order,
-                               Page => $Page);
+my $QueryString = $m->comp( '/Elements/QueryString',
+                            Query => $Query,
+                            Format => $Format,
+                            Rows => $Rows,
+                            OrderBy => $OrderBy,
+                            Order => $Order,
+                            Page => $Page);
 
 if (!$BaseQuery) {
     $BaseQuery = "Queue = 'Incident Reports'";
@@ -119,35 +91,26 @@ if (!$BaseQuery) {
 
 $Query = "$BaseQuery AND ( $Query )";
 
-my ($SubmitCaption, $SubmitLabel);
+my ($title, $SubmitCaption, $SubmitLabel);
 if ($ARGS{'DefaultStatus'} eq 'resolved') {
-  $title = loc("Resolve Incident #[_1] (including children)", $id);
-  $SubmitCaption = loc("Resolve Incident");
-  $SubmitLabel = loc("Resolve");
+    $title = loc("Resolve Incident #[_1] (including children)", $id);
+    $SubmitCaption = loc("Resolve Incident");
+    $SubmitLabel = loc("Resolve");
 } elsif ($ARGS{'DefaultStatus'} eq 'rejected') {
-  $title = loc("Abandon Incident #[_1] (including children)", $id);
-  $SubmitCaption = loc("Abandon Incident");
-  $SubmitLabel = loc("Abandon");
+    $title = loc("Abandon Incident #[_1] (including children)", $id);
+    $SubmitCaption = loc("Abandon Incident");
+    $SubmitLabel = loc("Abandon");
 } else {
-  $SubmitCaption = loc("Reply to selected correspondents");
-  $SubmitLabel = loc("Reply");
-  if ($All) {
-    $title = loc("Incident #[_1]: Reply to All", $id);
-  } else {
-    $title = loc("Incident #[_1]: Reply to Reporters", $id);
-  }
+    $SubmitCaption = loc("Reply to selected correspondents");
+    $SubmitLabel = loc("Reply");
+    if ($All) {
+        $title = loc("Incident #[_1]: Reply to All", $id);
+    } else {
+        $title = loc("Incident #[_1]: Reply to Reporters", $id);
+    }
 }
 
-my (@results, @statusresults);
 
-my ($CommentDefault, $ResponseDefault);
-if (($ARGS{'Action'} eq 'Comment') or ($ARGS{'UpdateType'} eq 'private')) {
-   $CommentDefault = "SELECTED"; 
-} else {
-    $ResponseDefault = "SELECTED";
-}
-
-my $Incident = LoadTicket($ARGS{'id'});
 
 # Iterate through the ARGS hash and remove anything with a null value.
 map ($ARGS{$_} =~ /^$/ && (delete $ARGS{$_}), keys %ARGS);
@@ -156,53 +119,50 @@ Abort(loc("No search to operate on.")) unless ($session{'tickets'});
 
 my $do_comment_reply=0;
 # Prepare for ticket updates
-$ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
-chomp ($ARGS{'UpdateContent'}) ;
+$ARGS{'UpdateContent'} =~ s/\r+\n/\n/g;
+chomp ($ARGS{'UpdateContent'});
 
-if (($ARGS{ProcessReply} && 
-    $ARGS{Status} eq 'resolved' || $ARGS{Status} eq 'rejected') ||
-    $ARGS{'UpdateContent'} &&
-    $ARGS{'UpdateContent'} ne '' &&
-    $ARGS{'UpdateContent'} ne  "-- \n" .
-    $session{'CurrentUser'}->UserObj->Signature) {
+if (( $ARGS{Status} eq 'resolved' || $ARGS{Status} eq 'rejected') ||
+    ($ARGS{'UpdateContent'} &&
+     $ARGS{'UpdateContent'} ne  "-- \n" .
+     $session{'CurrentUser'}->UserObj->Signature)) {
             $do_comment_reply=1;
 }
 
-my (@updateresults, @basicresults, @watchresults); 
-if ($do_comment_reply) {
-  @statusresults = ProcessTicketBasics(TicketObj => $Incident, ARGSRef => \%ARGS);
-}
+if ( $do_comment_reply ) {
+    foreach my $id( @SelectedTickets ) {
+        my $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
+        $Ticket->Load( $id );
+        unless( $Ticket->id ) {
+            push @results, loc( "Ticket [_1]: Couldn't load ticket.", $id );
+            next;
+        }
+        $id = $Ticket->id;
 
-my $MyTickets = new RT::Tickets($session{'CurrentUser'});
-$MyTickets->FromSQL("$Query");
+        my $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+
+        my @tempresults;
+        my @tmp;
+        ProcessUpdateMessage(TicketObj => $Ticket, ARGSRef => \%ARGS, Actions => \@tmp);
+        push @tempresults, @tmp;
+
+        push @tempresults, ProcessTicketBasics(TicketObj => $Ticket, ARGSRef => \%ARGS);
+
+        my $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+        if ($newstate ne $oldstate) {
+            push (@tempresults, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
+        }
+
+        push @results, map { loc("Ticket [_1]: [_2]", $id, $_) } @tempresults;
+    }
+
+    # shouldn't we record message into incident?
+    push @results, ProcessTicketBasics(TicketObj => $IncidentObj, ARGSRef => \%ARGS);
+}
 
 #Iterate through each ticket we've been handed
-while (my $Ticket = $MyTickets->Next) {
-    my $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
-
-    if ($do_comment_reply) {
-        next unless ($ARGS{"UpdateTicket".$Ticket->Id});
-        ProcessUpdateMessage(TicketObj => $Ticket, ARGSRef => \%ARGS, Actions => \@updateresults); 
-
-        @basicresults = ProcessTicketBasics(TicketObj => $Ticket, ARGSRef => \%ARGS);
-
-        @watchresults = ProcessTicketWatchers(TicketObj => $Ticket, ARGSRef => \%ARGS);    
-    } 
-
-    my @dateresults = ProcessTicketDates(TicketObj => $Ticket, ARGSRef => \%ARGS);
-
-    my @tempresults = (@basicresults, @watchresults, @updateresults, @dateresults);
-    my $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
-    if ($newstate ne $oldstate) {
-      push (@tempresults, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
-    }
-    @tempresults = map { loc("Ticket [_1]: [_2]",$Ticket->Id,$_) } @tempresults;
-
-    @results = (@results, @tempresults);
-}
-
-@results = (@statusresults, @results);
-
+my $MyTickets = new RT::Tickets($session{'CurrentUser'});
+$MyTickets->FromSQL( $Query );
 </%INIT>
 
 <%ARGS>
@@ -210,12 +170,13 @@ $id => undef
 $All => 0
 $BaseURL => $RT::WebPath . "/RTIR/Incident/Reply.html?DefaultStatus=stalled&id=$id"
 $BaseQuery => undef
-$Query => undef
-$Format => undef 
+$Query => "CF.{_RTIR_State} = 'open' AND MemberOf = $id";
+$Format => $RT::RTIRSearchResultFormats->{'BulkReply'};
 $HideResults => 0
 $Rows => 50
 $Page => 1
 $OrderBy => 'id'
 $Order => 'ASC'
 $Action => 'Correspond'
+@SelectedTickets => ()
 </%ARGS>
