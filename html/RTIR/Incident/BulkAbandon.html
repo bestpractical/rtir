@@ -1,0 +1,202 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& '/RTIR/Elements/Header', Title => $title &>
+<& '/RTIR/Search/Elements/RefineTabs',
+    path        => $path,
+    Queue       => $Queue,
+    current_tab => $current_tab, 
+    Title       => $title,
+    Format      => $Format,
+    Query       => $Query,
+    Rows        => $Rows,
+    OrderBy     => $OrderBy,
+    Order       => $Order,
+    QueryString => $QueryString,
+&>
+
+<& /Elements/ListActions, actions => \@results &>
+
+<form action="<%$RT::WebPath%>/RTIR/Incident/BulkAbandon.html" method="POST">
+<input type="hidden" name="Status" value="<% $Status %>">
+
+<%perl>
+# XXX: cache result set to check if get empty results
+my $result_set = $m->scomp(
+    '/RTIR/Search/Elements/ShowResults',
+    Query       => $Query,
+    QueryString => $QueryString, 
+    BaseURL     => $BaseURL,
+    Format      => $Format,
+    RTIRCheck   => $RTIRCheck,
+);
+</%perl>
+
+% if( $session{'tickets'}->Count ) {
+<a href="BulkAbandon.html?RTIRCheck=All">[Select All]</a>
+<a href="BulkAbandon.html?RTIRCheck=None">[Unselect All]</a>
+% $m->out( $result_set );
+<a href="BulkAbandon.html?RTIRCheck=All">[Select All]</a>
+<a href="BulkAbandon.html?RTIRCheck=None">[Unselect All]</a>
+<br />
+
+<& /Widgets/TitleBoxStart, title => loc("Select recipients") &>
+% foreach my $box( @CheckBox ) {
+% my $checked = (scalar grep $_ && $box->{'Value'}, @ReplyToAll )? ' checked' : '';
+<input type="checkbox" name="ReplyToAll" value="<% $box->{'Value'} %>" <% $checked %>" />
+<% $box->{'Title'} %><br />
+% }
+<& /Widgets/TitleBoxEnd &>
+<br />
+
+<& Elements/ReplyForm &>
+
+<& /Elements/Submit, Name => "BulkAbandon", Caption => $SubmitCaption, Label => loc("Reject") &>
+% } else {
+<i><% loc("no incidents") %></i>
+% }
+</form>
+
+<%INIT>
+my @CheckBox = (
+    { Value => 'Incident Reports',        Title => loc("Reply to all reports") },
+    { Value => 'Investigations', Title => loc("Reply to all investigations") },
+);
+my $title = loc('Abandon Incidents');
+my $SubmitCaption = loc("Reject selected incident reports");
+
+my ( @results );
+
+if ( $ARGS{'BulkAbandon'} ) {
+    my @tempresults;
+
+    my @incidents;
+    foreach my $id ( @SelectedTickets ) {
+        $m->out('<!--  Processing <%$t->id%> -->'); $m->flush_buffer;
+
+        my $t = RT::Ticket->new( $session{'CurrentUser'} );
+        $t->Load( $id );
+        unless( $t->id ) {
+            push @tempresults, [ $id, loc("Couldn't load ticket.") ];
+            next;
+        }
+        $id = $t->id;
+
+        unless( $t->QueueObj->Name eq 'Incidents' ) {
+            push @tempresults, [ $id, loc("Is not incident.") ];
+            next;
+        }
+
+        # process replies
+        if( scalar @ReplyToAll ) {
+            use Data::Dumper;
+            # XXX: why do we limit to open?
+            my $query = "CF.{_RTIR_State} = 'open' AND MemberOf = $id";
+            $query .= " AND (". join(' OR ', map "Queue = '$_'", @ReplyToAll) .")";
+            my $members = new RT::Tickets( $t->CurrentUser );
+            $members->FromSQL( $query );
+            while( my $member = $members->Next ) {
+                my @tmp;
+                ProcessUpdateMessage(TicketObj => $member, ARGSRef => \%ARGS, Actions => \@tmp);
+                push @tempresults, @tmp;
+            }
+        }
+        
+        # process status updates
+        my @tmp;
+        my $members = new RT::Tickets( $t->CurrentUser );
+        # XXX: do we want limit queues?
+        $members->FromSQL( "MemberOf = $id" );
+        while( my $member = $members->Next ) {
+            push @tmp, $member;
+        }
+
+        push @tmp, $t;
+        foreach my $t( @tmp ) {
+            my $oldstate = $t->FirstCustomFieldValue('_RTIR_State');
+            
+            push @tempresults, ProcessTicketBasics( ARGSRef => \%ARGS, TicketObj => $t );
+
+            my $newstate = $t->FirstCustomFieldValue('_RTIR_State');
+            if ( $newstate ne $oldstate ) {
+                push @tempresults,
+                     [ $t->id, loc("State changed from [_1] to [_2]", $oldstate, $newstate ) ];
+            }
+        }
+    }
+
+    push @results,
+         map { ref($_)? loc( "Ticket [_1]: [_2]", $_->[0], $_->[1] ): $_ }
+         @tempresults;
+
+    # force redo search if we changed tickets
+    $session{'tickets'}->RedoSearch;
+}
+
+
+# FIXME: Doesn't work as expected with refined search.
+# also is not clear should it use Query from
+# /RTIR/Search/Results.html?Queue=Incident%20Reports or 
+# own? and can it be refined at all?
+
+# We can only reject new tickets, so set the states.
+$Query ||= $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue, Inactive => 1 );
+$BaseQuery ||= $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue );
+
+my $QueryString = $m->comp(
+    '/Elements/QueryString',
+    Query   => $Query,
+    Format  => $Format,
+    Rows    => $Rows,
+    OrderBy => $OrderBy,
+    Order   => $Order,
+    Page    => $Page
+);
+
+
+$Query = "$BaseQuery AND ( $Query )";
+my $path = "RTIR/Search/Refine.html?$QueryString&";
+$path .= $m->comp( '/Elements/QueryString',
+                   ResultPage  => $BaseURL,
+                   current_tab => $current_tab,
+                   Queue       => $Queue,
+                 );
+
+</%INIT>
+<%ARGS>
+$Status => 'rejected'
+$RTIRCheck => 'None'
+$Query => undef
+$BaseQuery => undef
+$Queue => 'Incidents'
+$Format => $RT::RTIRSearchResultFormats->{'RejectReports'};
+$Rows => 50
+$Page => 1
+$OrderBy => 'id'
+$Order => 'ASC'
+$BaseURL => $RT::WebPath . "/RTIR/Report/BulkAbandon.html"
+$current_tab => 'RTIR/Report/BulkAbandon.html'
+@SelectedTickets => ()
+@ReplyToAll => ()
+</%ARGS>
