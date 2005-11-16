@@ -423,9 +423,8 @@ foreach my $key (keys %$addrhash) {
     # the content will be part of the template, if desired
     $ARGS{'UpdateContent'} = " ";
     $ARGS{UpdateAttachments} = $session{'Attachments'};
-    ProcessUpdateMessage(ARGSRef=>\%ARGS, 
-			 Actions=>\@updateresults, 
-			 TicketObj=>$Ticket);
+    push @updateresults, ProcessUpdateMessage( ARGSRef => \%ARGS,
+                                               TicketObj=>$Ticket );
 
     # restore original subject
     $ARGS{'Subject'} = $orig_subject;

@@ -87,7 +87,7 @@
     <td class="value">
       <& /RTIR/Elements/EditRTIRField, 
          TicketObj => $Ticket, 
-	 Name => 'SLA' &>
+         Name => 'SLA' &>
     </td>
   </tr>
   <tr>
@@ -99,7 +99,7 @@
         <tr>
           <td>
             <& /RTIR/Elements/EditRTIRField, 
-	      TicketObj => $Ticket,
+              TicketObj => $Ticket,
               Name => 'HowReported' &>
           </td>
     <td class=labeltop>
@@ -107,7 +107,7 @@
     </td>
     <td class=value colspan=2>
       <& /RTIR/Elements/EditRTIRField, 
-	TicketObj => $Ticket,
+        TicketObj => $Ticket,
         Name => 'ReporterType' &>
     </td>
         </tr>
@@ -120,7 +120,7 @@
     <td class="value">
       <& /RTIR/Elements/EditRTIRField, 
          TicketObj => $Ticket,
-	 Name => 'IP' &>
+         Name => 'IP' &>
     </td>
   </tr>
   <tr>
@@ -128,7 +128,7 @@
     <td class="value">
       <& /RTIR/Elements/EditRTIRField, 
          TicketObj => $Ticket, 
-	 Name => 'Netmask' &>
+         Name => 'Netmask' &>
     </td>
   </tr>
   <tr>
@@ -136,7 +136,7 @@
     <td class="value">
       <& /RTIR/Elements/EditRTIRField, 
          TicketObj => $Ticket, 
-	 Name => 'Port' &>
+         Name => 'Port' &>
     </td>
   </tr>
   <tr>
@@ -144,7 +144,7 @@
     <td class="value">
       <& /RTIR/Elements/EditRTIRField, 
          TicketObj => $Ticket, 
-	 Name => 'WhereBlocked' &>
+         Name => 'WhereBlocked' &>
     </td>
   </tr>
 % }
@@ -209,41 +209,20 @@ $CanRespond = 1 if ( $Ticket->CurrentUserHasRight('ReplyToTicket') or
 $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
                      $Ticket->CurrentUserHasRight('ModifyTicket') );
 
-
-my (@wresults, @cfresults, @results, @okresults, @dresults, @lresults);
-
-my ($oldstate, $newstate);
-$oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+my $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
 unless ($OnlySearchForPeople) {
-    @wresults = ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
-    @results = ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
-    @cfresults = ProcessTicketCustomFieldUpdates(ARGSRef => \%ARGS);
-    @dresults = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
-    @lresults = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
-
-    $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
-
-    if ($ARGS{'UpdateContent'} && 
-	$ARGS{'UpdateContent'} ne '' && 
-	$ARGS{'UpdateContent'} ne  "-- \n" . 
-				$session{'CurrentUser'}->UserObj->Signature
-       ) {
-   	 ProcessUpdateMessage(TicketObj => $Ticket, 
-			      ARGSRef=>\%ARGS, 
-                              Actions=>\@results);
-	}
+    push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS );
+    push @results, ProcessTicketBasics(   TicketObj => $Ticket, ARGSRef => \%ARGS );
+    push @results, ProcessTicketCustomFieldUpdates( ARGSRef => \%ARGS );
+    push @results, ProcessTicketDates(    TicketObj => $Ticket, ARGSRef => \%ARGS );
+    push @results, ProcessTicketLinks(    TicketObj => $Ticket, ARGSRef => \%ARGS );
+    push @results, ProcessUpdateMessage(  TicketObj => $Ticket, ARGSRef=>\%ARGS );
 }
-$newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+my $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
 if ($newstate ne $oldstate) {
   push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
 }
  
-push @results, @wresults;
-push @results, @cfresults;
-push @results, @dresults;
-push @results, @lresults;
-push @results, @okresults;
-
 if( $ARGS{'SaveChanges'} && $RT::DisplayAfterEdit ) {
     $m->comp("/RTIR/Display.html", results => [@results], %ARGS);
     $m->abort;
@@ -263,8 +242,6 @@ my $SelectQueue = $m->scomp("/Elements/SelectQueue", Name => 'Queue', Default =>
 my $Title = loc("Edit [_1] #[_2]: [_3]", $name, $Ticket->Id, $Ticket->Subject);
 
 </%INIT>
-
-
 
 <%ARGS>
 $OnlySearchForPeople => undef

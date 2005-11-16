@@ -176,13 +176,13 @@ my ($Type, $name);
 my $Ticket = new RT::Ticket($session{'CurrentUser'});
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 
-if ($id ne 'new') {
-    $Ticket = LoadTicket($id);
+if ( $id ne 'new' ) {
+    $Ticket = LoadTicket( $id );
     unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
         Abort("No permission to view ticket");
     }
     $QueueObj->Load($Ticket->QueueObj->Name) || Abort(loc("Queue could not be loaded."));
-} elsif( $Queue ) {
+} elsif ( $Queue ) {
     $QueueObj->Load($Queue);
     Abort(loc("Queue could not be loaded.")) unless $QueueObj->id;
 }
@@ -193,7 +193,7 @@ if (($QueueObj->Name || '') eq 'Incidents') {
     $m->abort;
 }
 
-if ( $id && $id eq 'new' ) {
+if ( $id eq 'new' ) {
     unless ($QueueObj->CurrentUserHasRight('CreateTicket')) {
         Abort('You have no permission to create tickets in that queue.');
     }
@@ -212,19 +212,8 @@ if ( $id && $id eq 'new' ) {
         Abort("No permission to view ticket");
     }
 
-    $ARGS{'UpdateContent'} =~ s/\r*\n/\n/og;
-    chomp ($ARGS{'UpdateContent'});
-
-    my @UpdateActions;
-    if ( $ARGS{'UpdateContent'} &&
-         $ARGS{'UpdateContent'} ne  "-- \n" . $session{'CurrentUser'}->UserObj->Signature
-       ) {
-        $ARGS{UpdateAttachments} = $session{'Attachments'};
-        ProcessUpdateMessage( ARGSRef=>\%ARGS, 
-                              Actions=>\@UpdateActions, 
-                              TicketObj=>$Ticket);
-        delete $session{'Attachments'};
-    }
+    $ARGS{UpdateAttachments} = delete $session{'Attachments'};
+    push @results, ProcessUpdateMessage( ARGSRef=>\%ARGS, TicketObj=>$Ticket );
 
     if ($ARGS{'Action'} && $ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
         my $action = $1;
@@ -252,9 +241,6 @@ if ( $id && $id eq 'new' ) {
             $m->abort;
         }
     }
-
-} else {
-    Abort('No incident specified');
 }
 
 ($Type, undef) = $m->comp('Elements/Type', Ticket => $Ticket->Id);

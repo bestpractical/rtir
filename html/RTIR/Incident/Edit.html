@@ -140,47 +140,25 @@ my $Ticket = LoadTicket($id);
 my $CanRespond = 0;
 my $CanComment = 0;
 
-
 $CanRespond = 1 if ( $Ticket->CurrentUserHasRight('ReplyToTicket') or
                      $Ticket->CurrentUserHasRight('ModifyTicket') ); 
 
 $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
                      $Ticket->CurrentUserHasRight('ModifyTicket') );
 
-
-my (@wresults, @cfresults, @results, @okresults, @dresults, @lresults);
-
-my ($oldstate, $newstate);
-$oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+my $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
 unless ($OnlySearchForPeople) {
-    @wresults = ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
-    @results = ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
-    @cfresults = ProcessTicketCustomFieldUpdates(ARGSRef => \%ARGS);
-    @dresults = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
-    @lresults = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
-
-    $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
-
-    if ($ARGS{'UpdateContent'} && 
-	$ARGS{'UpdateContent'} ne '' && 
-	$ARGS{'UpdateContent'} ne  "-- \n" . 
-				$session{'CurrentUser'}->UserObj->Signature
-       ) {
-   	 ProcessUpdateMessage(TicketObj => $Ticket, 
-			      ARGSRef=>\%ARGS, 
-                              Actions=>\@results);
-	}
+    push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
+    push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
+    push @results, ProcessTicketCustomFieldUpdates(ARGSRef => \%ARGS);
+    push @results, ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
+    push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
+   	push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef=>\%ARGS );
 }
-$newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+my $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
 if ($newstate ne $oldstate) {
   push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
 }
-
-push @results, @wresults;
-push @results, @cfresults;
-push @results, @dresults;
-push @results, @lresults;
-push @results, @okresults;
 
 if( $ARGS{'SaveChanges'} && $RT::DisplayAfterEdit ) {
     $m->comp("/RTIR/Incident/Display.html", results => [@results], %ARGS);
@@ -193,14 +171,7 @@ if( $ARGS{'SaveChanges'} && $RT::DisplayAfterEdit ) {
 unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
    Abort("No permission to view ticket");
 }
-
-#It's hard to do this inline, so we'll preload the html of the selectstatus in here.
-my $SelectStatus = $m->scomp("/Elements/SelectStatus", Name => 'Status', Default=> $Ticket->Status);
-my $SelectQueue = $m->scomp("/Elements/SelectQueue", Name => 'Queue', Default =>$Ticket->QueueObj->Id);
-
 </%INIT>
-
-
 
 <%ARGS>
 $OnlySearchForPeople => undef

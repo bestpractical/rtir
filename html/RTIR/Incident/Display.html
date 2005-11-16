@@ -39,8 +39,8 @@
 <table border=0 cellpadding=0 cellspacing=2 width=100%><tr><td valign=top width=50%>
 
 <& /Widgets/TitleBoxStart, title => loc('Incident #[_1]', $Ticket->Id), 
-	title_href =>"$RT::WebPath/RTIR/Edit.html?id=".$Ticket->Id, 
-	title_class=> 'inverse' &>
+        title_href =>"$RT::WebPath/RTIR/Edit.html?id=".$Ticket->Id, 
+        title_class=> 'inverse' &>
 
 <table>
   <tr>
@@ -53,8 +53,8 @@
     </td>
     <td class="value">
       <& /RTIR/Elements/ShowRTIRField, 
-	Name => 'State', 
-	Ticket => $Ticket &>
+        Name => 'State', 
+        Ticket => $Ticket &>
     </td>
   </tr>
   <tr>
@@ -66,8 +66,8 @@
     <td class="value">
       <& /RTIR/Elements/ShowRTIRField, 
          Ticket => $Ticket, 
-	 Name => 'Description',
-	 Cols => 60 &>
+         Name => 'Description',
+         Cols => 60 &>
     </td>
   </tr>
   <tr>
@@ -83,7 +83,7 @@
     <td class="value">
       <& /RTIR/Elements/ShowRTIRField, 
          Ticket => $Ticket, 
-	 Name => 'Constituency' &>
+         Name => 'Constituency' &>
     </td>
   </tr>
   <tr>
@@ -91,7 +91,7 @@
     <td class="value">
       <& /RTIR/Elements/ShowRTIRField, 
          Ticket => $Ticket, 
-	 Name => 'Function' &>
+         Name => 'Function' &>
     </td>
   </tr>
   <tr>
@@ -99,7 +99,7 @@
     <td class="value">
       <& /RTIR/Elements/ShowRTIRField, 
          Ticket => $Ticket, 
-	 Name => 'Classification' &>
+         Name => 'Classification' &>
     </td>
   </tr>
 </table>
@@ -229,9 +229,9 @@ my $DoLinks = sub {
       my $incidents = new RT::Tickets($session{'CurrentUser'});
       $incidents->FromSQL($query);
       while (my $member = $incidents->Next) {
-	  $RT::Logger->debug ("Deleting: ".$member->Id."\n");
-	  $ARGS{'DeleteLink--MemberOf-'.$member->Id} = '';
-	  $unlinked->{$member->Id} = $member;
+          $RT::Logger->debug ("Deleting: ".$member->Id."\n");
+          $ARGS{'DeleteLink--MemberOf-'.$member->Id} = '';
+          $unlinked->{$member->Id} = $member;
       }
   }
 
@@ -258,7 +258,7 @@ my $DoLinks = sub {
 if ($id eq 'new') {
   # {{{ Create a new ticket
     
-  my $Queue = new RT::Queue($session{'CurrentUser'});	
+  my $Queue = new RT::Queue($session{'CurrentUser'});        
   unless ($Queue->Load($ARGS{'Queue'})) {
     Abort('Queue not found');
   }
@@ -283,7 +283,7 @@ if ($id eq 'new') {
 } else { 
     $Ticket = LoadTicket($id);
     unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
-	Abort("No permission to view ticket");
+        Abort("No permission to view ticket");
     }
 
   if ($ChildObj) {
@@ -308,25 +308,12 @@ if ($id eq 'new') {
 
   my ($oldstate, $newstate);
   $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
-  $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
-  chomp ($ARGS{'UpdateContent'}) ;
 
-  if ($ARGS{'UpdateContent'} &&
-      $ARGS{'UpdateContent'} ne '' &&
-      $ARGS{'UpdateContent'} ne  "-- \n" .
-                              $session{'CurrentUser'}->UserObj->Signature
-      ) {
-    $ARGS{UpdateAttachments} = $session{'Attachments'};
-    ProcessUpdateMessage(ARGSRef=>\%ARGS, 
-	  	         Actions=>\@results, 
-		         TicketObj=>$Ticket);
-    delete $session{'Attachments'};
-  }
+  $ARGS{UpdateAttachments} = delete $session{'Attachments'};
+  push @results, ProcessUpdateMessage( ARGSRef => \%ARGS, TicketObj => $Ticket );
 
   #Process basics updates
-  my @BasicActions = ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$Ticket);
-
-  push (@results, @BasicActions);
+  push @results, ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$Ticket);
 
   $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
   if ($newstate ne $oldstate) {

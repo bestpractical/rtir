@@ -117,9 +117,7 @@ if ( $ARGS{'BulkAbandon'} ) {
             my $members = new RT::Tickets( $t->CurrentUser );
             $members->FromSQL( $query );
             while( my $member = $members->Next ) {
-                my @tmp;
-                ProcessUpdateMessage(TicketObj => $member, ARGSRef => \%ARGS, Actions => \@tmp);
-                push @tempresults, @tmp;
+                push @tempresults, ProcessUpdateMessage(TicketObj => $member, ARGSRef => \%ARGS );
             }
         }
         

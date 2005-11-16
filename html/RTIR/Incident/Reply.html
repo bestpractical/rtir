@@ -117,19 +117,7 @@ map ($ARGS{$_} =~ /^$/ && (delete $ARGS{$_}), keys %ARGS);
 
 Abort(loc("No search to operate on.")) unless ($session{'tickets'});
 
-my $do_comment_reply=0;
-# Prepare for ticket updates
-$ARGS{'UpdateContent'} =~ s/\r+\n/\n/g;
-chomp ($ARGS{'UpdateContent'});
-
-if (( $ARGS{Status} eq 'resolved' || $ARGS{Status} eq 'rejected') ||
-    ($ARGS{'UpdateContent'} &&
-     $ARGS{'UpdateContent'} ne  "-- \n" .
-     $session{'CurrentUser'}->UserObj->Signature)) {
-            $do_comment_reply=1;
-}
-
-if ( $do_comment_reply ) {
+if ( $SubmitTicket ) {
     foreach my $id( @SelectedTickets ) {
         my $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
         $Ticket->Load( $id );
@@ -140,15 +128,11 @@ if ( $do_comment_reply ) {
         $id = $Ticket->id;
 
         my $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
-
-        my @tempresults;
-        my @tmp;
-        ProcessUpdateMessage(TicketObj => $Ticket, ARGSRef => \%ARGS, Actions => \@tmp);
-        push @tempresults, @tmp;
-
-        push @tempresults, ProcessTicketBasics(TicketObj => $Ticket, ARGSRef => \%ARGS);
+        push @tempresults, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS );
+        push @tempresults, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
         my $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+
         if ($newstate ne $oldstate) {
             push (@tempresults, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
         }
@@ -157,7 +141,7 @@ if ( $do_comment_reply ) {
     }
 
     # shouldn't we record message into incident?
-    push @results, ProcessTicketBasics(TicketObj => $IncidentObj, ARGSRef => \%ARGS);
+    push @results, ProcessTicketBasics( TicketObj => $IncidentObj, ARGSRef => \%ARGS );
 }
 
 #Iterate through each ticket we've been handed
@@ -179,4 +163,5 @@ $OrderBy => 'id'
 $Order => 'ASC'
 $Action => 'Correspond'
 @SelectedTickets => ()
+$SubmitTicket => 1
 </%ARGS>
