@@ -74,9 +74,8 @@ $business_hours->set_business_hours(%working_hours);
 $business_hours->for_timespan(Start => $monthstart, End => $monthend);
 
 while (my $t = $sla_check->Next) {
-       
+    # XXX: is this bug? we don't use this variables
     my $sla = $t->FirstCustomFieldValue('SLA');
-   
     my $time_on_clock = $business_hours->between($t->CreatedObj->Unix, $t->ResolvedObj->Unix);
  
 
@@ -115,6 +114,7 @@ while (my $t = $sla_check->Next) {
                 $total_diff += $diff;
 
         }
+        # XXX: we don't use this. What this code for
         my $average_secs = $total_diff/$i;
 
 
