@@ -9,8 +9,12 @@ my %meta = (
 <%INIT>
 my @states;
 if( $Queue ) {
-    push @states, @{ $meta{ $Queue }->{'Active'} } if $Active;
-    push @states, @{ $meta{ $Queue }->{'Inactive'} } if $Inactive;
+    unless( $meta{ $Queue } ) {
+        $RT::Logger->error( "Queue '$Queue' has no states" );
+        return ();
+    }
+    push @states, @{ $meta{ $Queue }->{'Active'} || [] } if $Active;
+    push @states, @{ $meta{ $Queue }->{'Inactive'} || [] } if $Inactive;
 } else {
     foreach ( values %meta ) {
         push @states, @{ $_->{'Active'} || [] } if $Active;
