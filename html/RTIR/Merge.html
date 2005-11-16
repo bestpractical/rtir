@@ -69,7 +69,7 @@ $Format = $RT::RTIRSearchResultFormats->{'Merge'};
 my $Ticket = LoadTicket($id);
 my $Queue = $Ticket->QueueObj->Name;
 
-my ($Type, @states) = $m->comp('Elements/Type', Ticket => $Ticket->Id);
+my ($Type) = $m->comp('Elements/Type', Ticket => $Ticket->Id);
 
 my $merge = $ARGS{'SelectedTicket'};
 my ($MergeTicket, @results);

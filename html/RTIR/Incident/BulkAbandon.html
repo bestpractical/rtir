@@ -91,7 +91,6 @@ my ( @results );
 if ( $ARGS{'BulkAbandon'} ) {
     my @tempresults;
 
-    my @incidents;
     foreach my $id ( @SelectedTickets ) {
         $m->out('<!--  Processing <%$t->id%> -->'); $m->flush_buffer;
 

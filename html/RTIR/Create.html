@@ -383,8 +383,6 @@ if ($Split) {
   }
 }
 
-my $CFs = $QueueObj->CustomFields();
-
 # {{{ deal with deleting uploaded attachments
 foreach my $key (keys %ARGS) {
     if ($key =~ m/^DeleteAttach-(.+)$/) {

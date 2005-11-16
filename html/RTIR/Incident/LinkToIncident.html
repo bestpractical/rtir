@@ -59,7 +59,7 @@
 <%INIT>
 $Format = $RT::RTIRSearchResultFormats->{'LinkIncident'};
 
-my ($Type, undef) = $m->comp('/RTIR/Elements/Type', Queue => 'Incidents');
+my ($Type) = $m->comp('/RTIR/Elements/Type', Queue => 'Incidents');
 
 my $ChildObj = LoadTicket($id);
 my $Queue = $ChildObj->QueueObj->Name;

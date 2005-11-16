@@ -2,7 +2,6 @@
 use Tree::Simple;
 
 my $search;
-my $title = loc("Query Builder");
 
 # {{{ Clear out unwanted data
 if ($NewQuery or $ARGS{'Delete'}) {
@@ -454,8 +453,6 @@ sub ParseQuery {
         }
 
         # State Machine:
-        my $parentdepth = $depth;
-
         # Parens are highest priority
         if ( $current & PAREN ) {
             if ( $val eq "(" ) {
@@ -606,7 +603,7 @@ if ( $ARGS{'Save'} ) {
         }
 
         if ($container_object->id ) { 
-	    # If we got one or the other, add the saerch        
+	    # If we got one or the other, add the search
 	    my ( $search_id, $search_msg ) = $container_object->AddAttribute(
 									     Name        => 'SavedSearch',
 									     Description => $Description,

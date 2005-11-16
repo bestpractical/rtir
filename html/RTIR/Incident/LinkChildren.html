@@ -58,9 +58,7 @@ $Format = $RT::RTIRSearchResultFormats->{'LinkChildren'};
 my $TicketObj = new RT::Ticket($session{'CurrentUser'});
 $TicketObj->Load($id);
 
-my ($Type, @states) = $m->comp('/RTIR/Elements/Type', Queue => $Queue);
-
-my ($LinkType, @linkstates) = $m->comp('/RTIR/Elements/Type', Queue => $Queue);
+my ($Type) = $m->comp('/RTIR/Elements/Type', Queue => $Queue);
 
 my ($title, $ticketcount);
 $session{'i'}++;

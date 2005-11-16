@@ -40,7 +40,7 @@
 <INPUT TYPE=HIDDEN NAME=id Value="new">
 <INPUT TYPE=HIDDEN NAME=Status Value="<%$ARGS{Status}||'open'%>">
 <A NAME="top">
-	
+        
 % if (exists $ARGS{'TestAddresses'}) {
 <& /Widgets/TitleBoxStart, contentbg => "#cccccc", 
     title => 'Address test results' &>
@@ -242,19 +242,19 @@ foreach my $s (sort keys %$servers) {
 }
 
 # Load the Incidents Queue
-my $incidentq = new RT::Queue($session{'CurrentUser'});	
+my $incidentq = new RT::Queue($session{'CurrentUser'});        
 unless ($incidentq->Load('Incidents')) {
   Abort('Queue not found');
 }
 
 # Load the Investigations Queue
-my $investigationq = new RT::Queue($session{'CurrentUser'});	
+my $investigationq = new RT::Queue($session{'CurrentUser'});        
 unless ($investigationq->Load('Investigations')) {
   Abort('Queue not found');
 }
 
 # Load the Incident Reports Queue
-my $reportq = new RT::Queue($session{'CurrentUser'});	
+my $reportq = new RT::Queue($session{'CurrentUser'});        
 unless ($reportq->Load('Incident Reports')) {
   Abort('Queue not found');
 }
@@ -321,13 +321,13 @@ foreach my $key (keys %$addrhash) {
   # {{{ deal with deleting uploaded attachments
   foreach my $key (keys %ARGS) {
     if ($key =~ m/^DeleteAttach-(.+)$/) {
-	delete $session{'Attachments'}{$1};
+        delete $session{'Attachments'}{$1};
     }
     $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
   }
 
   # {{{ store the uploaded attachment in session
-  if ($ARGS{'Attach'}) {			# attachment?
+  if ($ARGS{'Attach'}) {                        # attachment?
     $session{'Attachments'} = {} unless defined $session{'Attachments'};
 
     # strip leading directories
@@ -340,7 +340,7 @@ foreach my $key (keys %$addrhash) {
         AttachmentFieldName => 'Attach'
     );
     $session{'Attachments'} = { %{$session{'Attachments'} || {}},
-				$ARGS{'Attach'} => $attachment };
+                                $ARGS{'Attach'} => $attachment };
   }
 # }}}
 
@@ -361,13 +361,13 @@ foreach my $key (keys %$addrhash) {
   if ($addr ne loc("ADDRESS_UNKNOWN")) {
     # create the Incident
     unless ($incidentq->CurrentUserHasRight('CreateTicket')) {
-	Abort('You have no permission to create tickets in that queue.');
+        Abort('You have no permission to create tickets in that queue.');
     }
     $ARGS{'Queue'} = $incidentq->Id;
 
     if (!$Incident) {
         ($Incident, @IncidentActions) =
-	   CreateTicket(Attachments => $session{'Attachments'}, %ARGS);
+           CreateTicket(Attachments => $session{'Attachments'}, %ARGS);
         unless ($Incident->CurrentUserHasRight('ShowTicket')) {
             Abort("No permission to view newly created ticket #".$Incident->id.".");
         }
@@ -376,7 +376,7 @@ foreach my $key (keys %$addrhash) {
 
     # create the linked investigation
     unless ($investigationq->CurrentUserHasRight('CreateTicket')) {
-	Abort('You have no permission to create tickets in that queue.');
+        Abort('You have no permission to create tickets in that queue.');
     }
     $ARGS{'new-MemberOf'} = $Incident->Id;
     $ARGS{'Queue'} = $investigationq->Id;
@@ -397,7 +397,7 @@ foreach my $key (keys %$addrhash) {
     # find the Create transaction, so we can pass it to the template
     my $transaction;
     while ($transaction = $Ticket->Transactions->Next) {
-	last if ($transaction->Type eq 'Create');
+        last if ($transaction->Type eq 'Create');
     }
 
     # if the template's argument contains _ADDR_ or _IP_
@@ -409,16 +409,17 @@ foreach my $key (keys %$addrhash) {
     # load the selected template
     my $TemplateObj = new RT::Template($session{'CurrentUser'});
     $TemplateObj->Load($ARGS{'Template'});
+    # XXX: why don't we handle return values?
     my ( $result, $message ) = $TemplateObj->Parse(
                                          Argument       => $arg,
                                          TicketObj      => $Ticket,
-					 TransactionObj => $transaction,
+                                         TransactionObj => $transaction,
     );
 
 
     # add the template's MIMEObj to the Attachments list
     $session{'Attachments'} = { _Body => $TemplateObj->MIMEObj,
-				%{$session{'Attachments'} || {}} };
+                                %{$session{'Attachments'} || {}} };
 
     # the content will be part of the template, if desired
     $ARGS{'UpdateContent'} = " ";
@@ -433,7 +434,7 @@ foreach my $key (keys %$addrhash) {
 
     # create an unlinked incident report
     unless ($reportq->CurrentUserHasRight('CreateTicket')) {
-	Abort('You have no permission to create tickets in that queue.');
+        Abort('You have no permission to create tickets in that queue.');
     }
     $ARGS{'Queue'} = $reportq->Id;
     # Create the investigation without attachments, and send them later

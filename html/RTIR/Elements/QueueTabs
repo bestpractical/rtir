@@ -40,7 +40,7 @@ if( $QueryString =~ s/^&// ) {
     Carp::cluck("queue string had leading &");
 }
 
-my ($Type, undef) = $m->comp('/RTIR/Elements/Type', Queue => $QueueName);
+my ($Type) = $m->comp('/RTIR/Elements/Type', Queue => $QueueName);
 
 my $EscapedQueueName = $m->comp('/Elements/QueryString', Queue => $QueueName );
 
@@ -222,7 +222,7 @@ if ($Type eq 'Report') {
 }
 elsif ( $Type eq 'Incident' && $Ticket && $Ticket->QueueObj->Name ne 'Incidents') {
     my $childq = $Ticket->QueueObj->Name;
-    my ($childtype, undef) = $m->comp('/RTIR/Elements/Type', Queue => $childq);
+    my ($childtype) = $m->comp('/RTIR/Elements/Type', Queue => $childq);
     
     $tabs->{'h'} = { title     => loc( 'Link [_1] #[_2]', $childtype, $Ticket->Id ),
                      path      => "RTIR/Incident/LinkToIncident.html?id=". $Ticket->Id,

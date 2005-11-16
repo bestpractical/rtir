@@ -219,7 +219,7 @@ my $DoLinks = sub {
   my $Target = shift;
 
   my @linkresults;
-  my ($Type, undef) = $m->comp("/RTIR/Elements/Type", Ticket => $Ticket->Id);
+  my ($Type) = $m->comp("/RTIR/Elements/Type", Ticket => $Ticket->Id);
   $ARGS{$Ticket->Id.'-MemberOf'} = $Target->Id;
 
   # Blocks can have multiple incidents

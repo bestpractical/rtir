@@ -217,7 +217,7 @@ if ( $id eq 'new' ) {
 
     if ($ARGS{'Action'} && $ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
         my $action = $1;
-        my ($res, $msg)=$Ticket->$action();
+        my (undef, $msg) = $Ticket->$action();
         push(@results, $msg);
     }
 

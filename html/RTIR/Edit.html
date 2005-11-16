@@ -185,7 +185,7 @@
 <%INIT>
 
 my $Ticket = LoadTicket($id);
-my ($Type, undef) = $m->comp('Elements/Type', Ticket => $Ticket->Id);
+my ($Type) = $m->comp('Elements/Type', Ticket => $Ticket->Id);
 
 my $name;
 if ($Type eq 'Report') {
@@ -234,10 +234,6 @@ if( $ARGS{'SaveChanges'} && $RT::DisplayAfterEdit ) {
 unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
    Abort("No permission to view ticket");
 }
-
-#It's hard to do this inline, so we'll preload the html of the selectstatus in here.
-my $SelectStatus = $m->scomp("/Elements/SelectStatus", Name => 'Status', Default=> $Ticket->Status);
-my $SelectQueue = $m->scomp("/Elements/SelectQueue", Name => 'Queue', Default =>$Ticket->QueueObj->Id);
 
 my $Title = loc("Edit [_1] #[_2]: [_3]", $name, $Ticket->Id, $Ticket->Subject);
 

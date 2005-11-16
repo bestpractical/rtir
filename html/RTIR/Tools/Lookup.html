@@ -242,7 +242,7 @@ if ($q) {
   $current_subtab = 'RTIR/Tools/Lookup.html?q='.$q."&server=".$server; 
     my ( $val, $msg ) =
       $session{'tickets'}->FromSQL(
-            "(     ContentType = 'text/plain' "
+            "( ContentType = 'text/plain' "
           . "OR ContentType = 'text' "
           . "OR ContentType = 'text/html' )"
           . " AND Content LIKE '$q' "
@@ -250,8 +250,9 @@ if ($q) {
           . $now->ISO
           . "'" );
 
+    $RT::Logger->warning( $msg ) unless $val;
 }
-				   
+
 if ($ticket) {
   ($TicketType, undef) = $m->comp("/RTIR/Elements/Type", Ticket => $ticket);
   $TicketObj = LoadTicket($ticket);

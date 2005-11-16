@@ -66,7 +66,7 @@
 &>
 
 <%INIT>
-my ($Type, undef) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
+my ($Type) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
 $Format ||= $RT::RTIRSearchResultFormats->{$Type . 'Default'};
 
 my $title = loc("Results");

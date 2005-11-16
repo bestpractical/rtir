@@ -1,7 +1,7 @@
 <%$Value|n%> 
 <%init>
 use Regexp::Common 'RE_ALL';
-my $domain_pat = $RE{net}{domain}{-keep};
+my $domain_pat = $RE{net}{domain}{-keep}; # XXX: why don't we this?
 
 $Value =~ s/(\s|^)([A-Z]([A-Z0-9]+)(?:-[A-Z]+)?-([A-Z]+))($|\s)/$1$2 [Handle: <a href="Lookup.html?server=$server&q=$2">$2<\/a>]\n/gxi;;
 
