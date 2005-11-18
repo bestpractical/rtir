@@ -29,7 +29,7 @@
 <& Elements/LinkTabs, 
     Queue => $Queue,
     Ticket => $IncidentObj, 
-    current_subtab => 'RTIR/Incident/LinkChildren.html?ClearRestrictions=1&id='.$IncidentObj->id.'&Queue='.$Queue,
+    current_subtab => 'RTIR/Incident/LinkChildren.html?id='.$IncidentObj->id.'&Queue='.$Queue,
     Tab => loc('Link [_1]', $Queue),
     Title => $title,
  &>

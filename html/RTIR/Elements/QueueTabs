@@ -122,11 +122,11 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
         if ($Type eq 'Incident') {
             $actions->{'A'} = {
                 title => loc('Reply to Reporters'),
-                path  => "RTIR/Incident/Reply.html?DefaultStatus=stalled&ClearRestrictions=1&id=$id",
+                path  => "RTIR/Incident/Reply.html?DefaultStatus=stalled&id=$id",
             };
             $actions->{'Ab'} = {
                 title => loc('Reply to All'),
-                path  => "RTIR/Incident/Reply.html?DefaultStatus=stalled&ClearRestrictions=1&id=$id&All=1",
+                path  => "RTIR/Incident/Reply.html?DefaultStatus=stalled&id=$id&All=1",
             };
         } else {
             $actions->{'A'} = {
@@ -159,11 +159,11 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
         elsif ( $Type eq 'Incident' ) {
             if ( $Ticket->Status ne 'resolved' ) {
                 $actions->{'Ac'} = {
-                    path  => "RTIR/Incident/Reply.html?Action=Comment&DefaultStatus=resolved&ClearRestrictions=1&id=$id&All=1",
+                    path  => "RTIR/Incident/Reply.html?Action=Comment&DefaultStatus=resolved&id=$id&All=1",
                     title => loc('Resolve'),
                 };
                 $actions->{'B'} = {
-                    path  => "RTIR/Incident/Reply.html?Action=Comment&DefaultStatus=rejected&ClearRestrictions=1&id=$id&All=1",
+                    path  => "RTIR/Incident/Reply.html?Action=Comment&DefaultStatus=rejected&id=$id&All=1",
                     title => loc('Abandon'),
                 };
             }

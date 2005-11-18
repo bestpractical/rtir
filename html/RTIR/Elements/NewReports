@@ -35,7 +35,7 @@
    Rows => 10,
 &>
 
-<a href="<%$RT::WebPath%>/RTIR/Report/BulkReject.html?ClearRestrictions=1">[<%loc("Bulk Reject")%>]</a>
+<a href="<%$RT::WebPath%>/RTIR/Report/BulkReject.html">[<%loc("Bulk Reject")%>]</a>
 
 <& /Widgets/TitleBoxEnd &>
 

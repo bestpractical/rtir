@@ -61,7 +61,7 @@
 [<a href="<%$RT::WebPath%>/RTIR/Search/Refine.html?Queue=<%$Queue%><%$QueryString%>"><%loc("Refine Search")%></a>]
 % if ($Type eq 'Incident') {
 % if ($Queue) {
-[<a href="<%$RT::WebPath%>/RTIR/Incident/LinkChildren.html?ClearRestrictions=1&Queue=<%$Queue%>&Query=Content LIKE '<%$q%>'&id=<%$ticket%>"><%loc("Bulk Link")%></a>]
+[<a href="<%$RT::WebPath%>/RTIR/Incident/LinkChildren.html?Queue=<%$Queue%>&Query=Content LIKE '<%$q%>'&id=<%$ticket%>"><%loc("Bulk Link")%></a>]
 % }
 %   if ($Queue eq 'Investigations' and $lookuptype eq 'email') {
 <br>[<a href="<%$RT::WebPath%>/RTIR/Create.html?Incident=<%$ticket%>&Requestors=<%$q%>&Queue=Investigations"><%loc("Launch new: [_1]", $q)%></a>]
