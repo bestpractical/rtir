@@ -126,7 +126,7 @@
             Ticket    => $Ticket, 
             Queue     => 'Incident Reports',
             Rows      => 8,
-            FullList  => $RT::WebPath."/RTIR/Incident/ShowChildren.html?Queue=Incident Reports&id=".$Ticket->id,
+            FullList  => $RT::WebPath."/RTIR/Incident/ShowChildren.html?Queue=Incident%20Reports&id=".$Ticket->id,
     &>
 <& /Widgets/TitleBoxEnd &>
 
@@ -199,163 +199,135 @@
 
   
 <%INIT>
-my ($Ticket, $ChildObj);  
-$Ticket = new RT::Ticket($session{'CurrentUser'});
-if ($ARGS{'child'}) {
-  $ChildObj = LoadTicket($ARGS{'child'});
+my ($Ticket, $ChildObj);
+$Ticket = new RT::Ticket( $session{'CurrentUser'} );
+if ( $ARGS{'child'} ) {
+    $ChildObj = LoadTicket( $ARGS{'child'} );
 }
 
 if ($SelectedTicket) {
-  $id = $SelectedTicket;
-  $ARGS{'Status'} = "open";
+    $id = $SelectedTicket;
+    $ARGS{'Status'} = "open";
 }
-
-unless ($id) {
-    Abort('No incident specified');
-}
+Abort('No incident specified') unless $id;
 
 my $DoLinks = sub {
-  my $Ticket = shift;
-  my $Target = shift;
+    my $Ticket = shift;
+    my $Target = shift;
 
-  my @linkresults;
-  my ($Type) = $m->comp("/RTIR/Elements/Type", Ticket => $Ticket->Id);
-  $ARGS{$Ticket->Id.'-MemberOf'} = $Target->Id;
+    my @results;
+    my ($Type) = $m->comp( "/RTIR/Elements/Type", TicketObj => $Ticket );
+    $ARGS{ $Ticket->Id .'-MemberOf' } = $Target->Id;
 
-  # Blocks can have multiple incidents
-  my $unlinked;
-  if ($Type ne 'Block') {
-      my $query = "Queue = 'Incidents' AND HasMember = " . $Ticket->Id;
-      my $incidents = new RT::Tickets($session{'CurrentUser'});
-      $incidents->FromSQL($query);
-      while (my $member = $incidents->Next) {
-          $RT::Logger->debug ("Deleting: ".$member->Id."\n");
-          $ARGS{'DeleteLink--MemberOf-'.$member->Id} = '';
-          $unlinked->{$member->Id} = $member;
-      }
-  }
-
- # If we don't own the thing we're linking to, change the owner
-  if ($Ticket->Owner != $session{'CurrentUser'}->id) {
-    if ($Ticket->Owner == $RT::Nobody->id) {
-      $ARGS{'Action'} = 'Take';
-    } else {
-      $ARGS{'Action'} = 'Steal';
+    # Blocks can have multiple incidents
+    my $unlinked;
+    if ( $Type ne 'Block' ) {
+        my $query = "Queue = 'Incidents' AND HasMember = " . $Ticket->Id;
+        my $incidents = new RT::Tickets( $session{'CurrentUser'} );
+        $incidents->FromSQL( $query );
+        while ( my $member = $incidents->Next ) {
+            $RT::Logger->debug ("Deleting: ".$member->Id."\n");
+            # XXX: this code looks wrong absolutly.
+            $ARGS{'DeleteLink--MemberOf-'. $member->Id} = '';
+            $unlinked->{ $member->Id } = $member;
+        }
     }
-    my $action = $ARGS{'Action'};
-    my ($res, $msg)=$Ticket->$action();
-    push (@linkresults, $msg);
-  }
 
-  push @linkresults, ProcessTicketLinks(TicketObj => $Ticket, ARGSRef => \%ARGS);
+    # If we don't own the thing we're linking to, change the owner
+    if ( $Ticket->Owner != $session{'CurrentUser'}->id ) {
+        my $action = 'Steal';
+        if ( $Ticket->Owner == $RT::Nobody->id ) {
+            $action = 'Take';
+        }
+        my ($res, $msg) = $Ticket->$action();
+        push @results, $msg;
+    }
 
-  @linkresults = map { loc("Ticket [_1]: [_2]",$Ticket->Id,$_) } @linkresults;
+    push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
-  push (@results, @linkresults);
-
+    return map { loc("Ticket [_1]: [_2]", $Ticket->Id, $_) } @results;
 };
 
-if ($id eq 'new') {
-  # {{{ Create a new ticket
-    
-  my $Queue = new RT::Queue($session{'CurrentUser'});        
-  unless ($Queue->Load($ARGS{'Queue'})) {
-    Abort('Queue not found');
-  }
-    
-  unless ($Queue->CurrentUserHasRight('CreateTicket')) {
-    Abort('You have no permission to create tickets in that queue.');
-  }
-  ($Ticket, @results) =
-     CreateTicket(Attachments => $session{'Attachments'}, %ARGS);
-  delete $session{'Attachments'};
-  unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
-    Abort("No permission to view newly created ticket #".$Ticket->id.".");
-  }
-  $ARGS{'id'} = $Ticket->Id;
-  # }}}
+if ( $id eq 'new' ) {
+    my $Queue = new RT::Queue($session{'CurrentUser'});
+    $Queue->Load( $ARGS{'Queue'} ) || Abort(loc("Queue could not be loaded."));
 
-  if ($ChildObj) {
-    $ARGS{'id'}=$Ticket->Id;
-    &$DoLinks($ChildObj, $Ticket);
-  }
+    unless ( $Queue->CurrentUserHasRight('CreateTicket') ) {
+        Abort('You have no permission to create tickets in that queue.');
+    }
+    ($Ticket, @results) =
+        CreateTicket( Attachments => $session{'Attachments'}, %ARGS );
+    delete $session{'Attachments'};
 
+    unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
+        Abort("No permission to view newly created ticket #".$Ticket->id.".");
+    }
+
+    $ARGS{'id'} = $id = $Ticket->Id;
+
+    push @results, $DoLinks->( $ChildObj, $Ticket ) if $ChildObj;
 } else { 
-    $Ticket = LoadTicket($id);
-    unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
+    $Ticket = LoadTicket( $id );
+    $ARGS{'id'} = $id = $Ticket->Id;
+
+    my $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+
+    push @results, $DoLinks->( $ChildObj, $Ticket ) if $ChildObj;
+
+    if ( $ARGS{'Action'} && $ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/ ) {
+        my $action = $1;
+        my ($res, $msg) = $Ticket->$action();
+        push @results, $msg;
+    }
+
+    # XXX: check usage of this option
+    if ( $ARGS{'BulkLink'} ) {
+        #Iterate through each ticket we've been handed
+        while ( my $t = $session{'tickets'}->Next ) {
+            next unless $ARGS{ "UpdateTicket". $t->Id };
+            push @results, $DoLinks->( $t, $Ticket );
+        }
+    }
+
+    $ARGS{UpdateAttachments} = delete $session{'Attachments'};
+    push @results, ProcessUpdateMessage( ARGSRef => \%ARGS, TicketObj => $Ticket );
+    push @results, ProcessTicketBasics( ARGSRef => \%ARGS, TicketObj=>$Ticket );
+
+    my $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+    if ($newstate ne $oldstate) {
+        push @results, loc("State changed from [_1] to [_2]", $oldstate, $newstate);
+    }
+
+    # XXX: need the way to show @results when aborting
+    unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
         Abort("No permission to view ticket");
     }
-
-  if ($ChildObj) {
-    $ARGS{'id'}=$Ticket->Id;
-    &$DoLinks($ChildObj, $Ticket);
-  }
-
-  if (defined $ARGS{'Action'}) {
-    if ($ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
-      my $action = $1;
-      my ($res, $msg)=$Ticket->$action();
-      push(@results, $msg);
-    }
-  } elsif ($ARGS{'BulkLink'}) {
-    #Iterate through each ticket we've been handed
-    my $IncidentObj = LoadTicket($id);
-    while (my $t = $session{'tickets'}->Next) {
-      next unless ($ARGS{"UpdateTicket".$t->Id});
-      &$DoLinks($t, $IncidentObj);
-    }
-  }
-
-  my ($oldstate, $newstate);
-  $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
-
-  $ARGS{UpdateAttachments} = delete $session{'Attachments'};
-  push @results, ProcessUpdateMessage( ARGSRef => \%ARGS, TicketObj => $Ticket );
-
-  #Process basics updates
-  push @results, ProcessTicketBasics(ARGSRef => \%ARGS, TicketObj=>$Ticket);
-
-  $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
-  if ($newstate ne $oldstate) {
-    push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
-  }
 }
 
-my $TimeWorked;
-if (defined $Ticket) {
-  $TimeWorked = $Ticket->TimeWorked;
-  if ($Ticket->TimeLeft > 0 ) {
-    $TimeWorked = $Ticket->TimeWorked."/".$Ticket->TimeLeft;
-  }
+my $TimeWorked = $Ticket->TimeWorked;
+if ( $Ticket->TimeLeft > 0 ) {
+    $TimeWorked .= '/'. $Ticket->TimeLeft;
 }
 
 # If we deleted any links, check if what we deleted from still has children
-foreach my $arg (%ARGS) {
-  if (substr($arg, 0, length('DeleteLink--MemberOf-')) eq
-      'DeleteLink--MemberOf-') {
-    my $t = substr($arg, length('DeleteLink--MemberOf-'));
-    my $children = new RT::Tickets ($session{'CurrentUser'});
-    $children->LimitQueue(VALUE => 'Incident Reports');
-    $children->LimitQueue(VALUE => 'Investigations');
-    $children->LimitQueue(VALUE => 'Blocks');
-    $children->LimitMemberOf($t);
+if ( grep $_ =~ /^DeleteLink-.*-MemberOf-.*$/, keys %ARGS ) {
+    my $children = new RT::Tickets( $session{'CurrentUser'} );
+    $children->LimitQueue( VALUE => 'Incident Reports' );
+    $children->LimitQueue( VALUE => 'Investigations' );
+    $children->LimitQueue( VALUE => 'Blocks' );
+    $children->LimitMemberOf( $id );
     if ($children->Count == 0) {
-      push (@results, 
-            loc("WARNING: Incident [_1] has no children.", $t));
+        push @results, loc("WARNING: Incident [_1] has no children.", $id);
     }
-  }
 }
 
-# Check if the current incident still has children
-my $children;
-$children = new RT::Tickets ($session{'CurrentUser'});
-$children->LimitQueue(VALUE => 'Incident Reports');
-$children->LimitQueue(VALUE => 'Investigations');
-$children->LimitQueue(VALUE => 'Blocks');
-$children->LimitMemberOf($Ticket->Id);
-if ($children->Count == 0) {
-  push (@results, 
-        loc("WARNING: Incident [_1] has no children.", $Ticket->Id));
+if( delete $ARGS{'Quick'} ) {
+    $m->comp( '/RTIR/Search/Results.html',  
+              %ARGS,
+              Queue => $Ticket->QueueObj->Name,
+              results => \@results
+            );
+    $m->abort;
 }
 
 my $attachments = $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket);

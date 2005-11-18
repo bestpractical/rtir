@@ -138,16 +138,20 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
 
     if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
         if ( $Type eq 'Report' ) {
-            if ( $Ticket->Status ne 'resolved' and $Ticket->Status ne 'rejected' ) {
+            if ( $Ticket->QueueObj->IsActiveStatus( $Ticket->Status ) ) {
                 my $state = $Ticket->FirstCustomFieldValue('_RTIR_State');
                 if ($state ne 'new') {
                     $actions->{'Ac'} = {
                         path => "RTIR/Update.html?Action=Comment&DefaultStatus=resolved&id=$id",
                         title => loc('Resolve'),
                     };
+                    $actions->{'Acc'} = {
+                        path => "RTIR/Display.html?Status=resolved&Quick=1&id=$id",
+                        title => loc('Quick Resolve'),
+                    };
                 }
                 $actions->{'B'} = {
-                    path => "RTIR/Display.html?Status=rejected&id=$id",
+                    path => "RTIR/Display.html?Status=rejected&Quick=1&id=$id",
                     title => loc('Quick Reject'),
                 };
                 $actions->{'Bb'} = {
@@ -157,10 +161,14 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
             }
         }
         elsif ( $Type eq 'Incident' ) {
-            if ( $Ticket->Status ne 'resolved' ) {
+            if ( $Ticket->QueueObj->IsActiveStatus( $Ticket->Status ) ) {
                 $actions->{'Ac'} = {
                     path  => "RTIR/Incident/Reply.html?Action=Comment&DefaultStatus=resolved&id=$id&All=1",
                     title => loc('Resolve'),
+                };
+                $actions->{'Acc'} = {
+                    path => "RTIR/Display.html?Status=resolved&Quick=1&id=$id",
+                    title => loc('Quick Resolve'),
                 };
                 $actions->{'B'} = {
                     path  => "RTIR/Incident/Reply.html?Action=Comment&DefaultStatus=rejected&id=$id&All=1",
