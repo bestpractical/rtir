@@ -27,31 +27,17 @@
     Title => "RT for Incident Response", 
     current_toptab => 'RTIR/index.html' &>
 
-<TABLE BORDER=0 WIDTH=100%><TR VALIGN=TOP><TD WIDTH=70%>
-
-<& /RTIR/Elements/NewReports &>
-
-</TD><TD VALIGN=TOP>
-
-<& /Widgets/TitleBoxStart, title=>loc("Refresh") &>
-
-<form method=get action="index.html">
-<& /RTIR/Elements/Refresh, Name => 'HomeRefreshInterval', Default => $session {'home_refresh_interval'} &>
-<input type=submit value="<&|/l&>Go!</&>">
-</form>
-
-<& /Widgets/TitleBoxEnd &>
-
-</TD></TR><TR VALIGN=TOP><TD colspan=2 WIDTH=100%>
-
-<& /RTIR/Elements/UserDueIncidents &>
-
-<BR>
-
-<& /RTIR/Elements/DueIncidents &>
-
-</TD></TR></TABLE>
-
+<& /Elements/ListActions, actions => \@results &>
+<& /Elements/MyRT, Portlets => {
+    body => [
+        { type => 'component', name => '/RTIR/Elements/NewReports' },
+        { type => 'component', name => '/RTIR/Elements/UserDueIncidents' },
+        { type => 'component', name => '/RTIR/Elements/DueIncidents' },
+    ],
+    summary => [
+        { type => 'component', name => '/Elements/RefreshHomepage' },
+    ],
+} &>
 <%INIT>
 if ( $ARGS{'q'} ) {
     my $query = $ARGS{'q'};
@@ -97,8 +83,12 @@ if ( $ARGS{'q'} ) {
     return;
 }
 
-if ($ARGS{'HomeRefreshInterval'}) {
+if ( $ARGS{'HomeRefreshInterval'} ) {
     $session{'home_refresh_interval'} = $ARGS{'HomeRefreshInterval'};
+    push @results, loc( 'Updated refresh interval.');
 }
 
 </%INIT>
+<%ARGS>
+@results => ()
+</%ARGS>
