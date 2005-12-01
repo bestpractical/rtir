@@ -96,8 +96,8 @@ my $QueryString = "&".$m->comp('/Elements/QueryString',
                                Query => $Query,
                                Format => $Format,
                                Rows => $Rows,
-                               OrderBy => $OrderBy,
-                               Order => $Order,
+                               OrderBy => $ARGS{'OrderBy'},
+                               Order => $ARGS{'Order'},
                                Page => $Page);
 
 </%INIT>
@@ -110,6 +110,4 @@ $Format => undef
 $HideResults => 0
 $Rows => 50
 $Page => 1
-$OrderBy => 'id'
-$Order => 'ASC'
 </%ARGS>

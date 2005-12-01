@@ -22,44 +22,24 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Widgets/TitleBoxStart, title => $title, bodyclass=> '' &>
-
-<& /RTIR/Search/Elements/ShowResults, 
-   Query => $Query, 
-   QueryString => $QueryString, 
-   Format => $Format,
-   Rows => 10,
+<&| /Widgets/TitleBox,
+    title => $ARGS{'Title'} || loc("Most due incidents"),
+    bodyclass=> '',
 &>
 
-<& /Widgets/TitleBoxEnd &>
+<& /RTIR/Search/Elements/ShowResults, %ARGS, Query => $Query &>
+
+</&>
 
 <%INIT>
-$Format = $RT::RTIRSearchResultFormats->{'DueIncidents'};
+$ARGS{'Format'} ||= $RT::RTIRSearchResultFormats->{'DueIncidents'};
+$ARGS{'Rows'}   ||= 10;
 
-my $Query = "Queue = 'Incidents'";
+my $Query  = "Queue = 'Incidents'";
+$Query    .= " AND ". $m->comp( '/RTIR/Elements/NewQuery', Queue => 'Incidents' );
+$Query    .= " AND $ARGS{Query}" if $ARGS{'Query'};
 
-if ($owner) {
-  $Query .= " AND (Owner = " . $owner->id . " OR Owner = 'Nobody')";
-}
-
-$Query .= " AND " . 
-    $m->comp('/RTIR/Elements/NewQuery', 
-             Queue => 'Incidents',
-             states => [ 'new', 'open', 'stalled' ]);
-
-my $title;
-if ($owner) {
-  $title = loc("Most due incidents owned by [_1] (and unowned)", 
-              $owner->Name);
-} else {
-  $title = loc("Most due incidents");
-}
+use Data::Dumper;
+$RT::Logger->crit( Dumper(\%ARGS) );
+$RT::Logger->crit( $Query );
 </%INIT>
-
-<%ARGS>
-$rows => 10
-$owner => undef
-$OrderBy => undef
-$Format => undef
-$QueryString => undef
-</%ARGS>

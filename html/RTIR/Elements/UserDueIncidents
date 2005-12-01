@@ -1,0 +1,13 @@
+<& /RTIR/Elements/DueIncidents,
+    %ARGS,
+    Title => $Title,
+    Query => $Query,
+&>
+<%INIT>
+my $Owner = delete $ARGS{'Owner'} || $session{'CurrentUser'};
+
+my $Query  = "(Owner = " . $Owner->id . " OR Owner = 'Nobody')";
+$Query    .= " AND $ARGS{Query}" if $ARGS{'Query'};
+
+my $Title = loc( "Most due incidents owned by [_1] (and unowned)", $Owner->Name );
+</%INIT>
