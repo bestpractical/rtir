@@ -199,7 +199,7 @@ Set($RTIRSearchResultFormats, {
 
     DueIncidents => qq{'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
 		       '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
-		       '__Owner__',
+		       '__OwnerName__',
 		       '__Priority__',
 		       '__DueRelative__',
 		   },
@@ -207,7 +207,7 @@ Set($RTIRSearchResultFormats, {
     NewReports => qq{'<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
 		       '<B><A HREF="$RT::WebPath/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
 		       '__Requestors__',
-		       '__Owner__',
+		       '__OwnerName__',
 		       '__DueRelative__',
 		   },
 
