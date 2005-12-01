@@ -39,7 +39,7 @@ my $Query  = "Queue = 'Incidents'";
 $Query    .= " AND ". $m->comp( '/RTIR/Elements/NewQuery', Queue => 'Incidents' );
 $Query    .= " AND $ARGS{Query}" if $ARGS{'Query'};
 
-use Data::Dumper;
-$RT::Logger->crit( Dumper(\%ARGS) );
-$RT::Logger->crit( $Query );
 </%INIT>
+<%ATTR>
+Description => loc('Due Incidents')
+</%ATTR>

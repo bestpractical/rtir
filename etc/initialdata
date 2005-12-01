@@ -832,3 +832,18 @@ you may reply to this message.
       Queue => 'Blocks',
       Right  => 'ReplyToTicket', },
 );
+
+@Attributes = ( {
+    Name => 'RTIR_HomepageSettings',
+    Description => 'RTIR homepage settings',
+    Content => { 
+        body => [
+            { type => 'component',  name => '/RTIR/Elements/NewReports' },
+            { type => 'component',  name => '/RTIR/Elements/UserDueIncidents' },
+            { type => 'component',  name => '/RTIR/Elements/DueIncidents' },
+        ],
+        summary => [
+	        { type => 'component', name => 'RefreshHomepage' },
+        ]
+    },
+} );

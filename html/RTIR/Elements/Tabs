@@ -50,6 +50,8 @@ my $toptabs = {
            path => 'RTIR/Search/Results.html?Queue=Blocks' },
     G => { title => loc('Tools'),
            path => 'RTIR/Tools/Lookup.html' },
+    H => { title => loc('Preferences'),
+           path => 'RTIR/Prefs/Home.html' },
 };
 
 my $topactions = {

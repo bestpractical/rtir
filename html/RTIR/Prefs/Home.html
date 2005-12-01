@@ -1,0 +1,89 @@
+<& /Elements/Header, Title => $title &>
+<& /RTIR/Elements/Tabs, current_toptab => 'RTIR/Prefs/Home.html', Title => $title &>
+<& /Elements/ListActions, actions => \@results &>
+
+<& /Widgets/SelectionBox:header, nojs => 1 &>
+% foreach my $box( @boxes ) {
+<&|/Widgets/TitleBox,
+    title => loc('RT at a glance') .': '. loc( $box->{Name} ),
+    bodyclass => ""
+&>
+<& /Widgets/SelectionBox:show, self => $box, nojs => 1 &>
+</&>
+% }
+
+<%INIT>
+# XXX: copy&past of the similar RT's page
+
+my @results;
+my $title = loc("Customize '[_1]'", loc("RTIR home page") );
+my $user = $session{'CurrentUser'}->UserObj;
+
+unless (exists $session{'my_rtir_portlets'}) {
+    my ($d_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('RTIR_HomepageSettings');
+    $session{'my_rtir_portlets'} = $user->Preferences('RTIR_HomepageSettings', $d_portlets->Content);
+}
+my $portlets = $session{'my_rtir_portlets'};
+
+my %seen;
+
+my @items;
+foreach my $comp ( grep !$seen{$_}++, @$RT::RTIR_HomepageComponents ) {
+    use Data::Dumper;
+    #$RT::Logger->error( Dumper($comp, $m->fetch_comp($comp)) );
+    my $desc;
+    my $obj = $m->fetch_comp($comp);
+    $desc = $obj->attr_if_exists('Description') if $obj;
+    unless( $desc ) {
+        $desc = $comp;
+        $desc =~ s/^.*\///;
+    }
+    push @items, ["component-$comp", $desc];
+}
+
+my @sys_searches;
+my @searches = $m->comp( "/Search/Elements/UserSearches" );
+foreach my $s( @searches ) {
+    #XXX: get rid of this exception
+    if ( $s->{'Type'} eq 'system' ) {
+        push @items, ["system-".$s->{'Description'}, $s->{'Description'} ];
+        push @sys_searches, [ $s->{'Description'}, $s->{'Search'} ];
+    }
+    else {
+        my $oid = join '-', ref $s->{'Object'},
+                            $s->{'Object'}->Id,
+                            'SavedSearch',
+                            $s->{'Search'};
+        push @items, [ "saved-$oid", loc("Saved Search: [_1]", $s->{'Description'}) ];
+    }
+}
+
+use Data::Dumper;
+$RT::Logger->error( Dumper( \@items ) );
+
+my @boxes;
+foreach my $pane ( sort keys %$portlets ) {
+    push @boxes,
+        $m->comp(
+            '/Widgets/SelectionBox:new',
+            Action    => 'Home.html',
+            Name      => $pane,
+            Available => \@items,
+            AutoSave  => 1,
+            OnSubmit  => sub {
+                my $self = shift;
+                $portlets->{$pane} = [
+                    map { m/(\w+)-(.*)$}/; { type => $1, name => $2, }}
+                    @{$self->{Current}}
+                ];
+                $user->SetPreferences('RTIR_HomepageSettings', $portlets);
+                push @results, loc ('Preferences saved for [_1].', $pane);
+                delete $session{'my_rtir_portlets'};
+            },
+            Selected  => [ map { join '-', @{$_}{qw/type name/} } @{ $portlets->{$pane} } ]
+        );
+}
+
+$m->comp ('/Widgets/SelectionBox:process', %ARGS, self => $_, nojs => 1) for @boxes;
+
+</%INIT>

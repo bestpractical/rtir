@@ -28,17 +28,17 @@
     current_toptab => 'RTIR/index.html' &>
 
 <& /Elements/ListActions, actions => \@results &>
-<& /Elements/MyRT, Portlets => {
-    body => [
-        { type => 'component', name => '/RTIR/Elements/NewReports' },
-        { type => 'component', name => '/RTIR/Elements/UserDueIncidents' },
-        { type => 'component', name => '/RTIR/Elements/DueIncidents' },
-    ],
-    summary => [
-        { type => 'component', name => '/Elements/RefreshHomepage' },
-    ],
-} &>
+<& /Elements/MyRT, Portlets => $portlets &>
 <%INIT>
+
+# XXX: this should be automated!!!
+unless (exists $session{'my_rtir_portlets'}) {
+    my ($d_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('RTIR_HomepageSettings');
+    $session{'my_rtir_portlets'} = $session{'CurrentUser'}->UserObj->Preferences('RTIR_HomepageSettings', $d_portlets->Content);
+}
+my $portlets = $session{'my_rtir_portlets'};
+
+
 if ( $ARGS{'q'} ) {
     my $query = $ARGS{'q'};
 
