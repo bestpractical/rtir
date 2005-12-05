@@ -46,9 +46,7 @@
 #
 package RT::Action::RTIR_SetHowReported;
 
-
 use strict;
-
 use base 'RT::Action::RTIR';
 
 =head2 Prepare
@@ -56,7 +54,6 @@ use base 'RT::Action::RTIR';
 Always run this.
 
 =cut
-
 
 sub Prepare {
     my $self = shift;
@@ -77,12 +74,11 @@ sub Commit {
 
     my $cf = RT::CustomField->new($self->TransactionObj->CurrentUser);
     $cf->LoadByNameAndQueue(Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_HowReported');
-    unless ($cf->Id) { 
-	return(1);
-    }
-    my $Values = $self->TicketObj->CustomFieldValues($cf->id);
-    if (!$Values->Next) {
-	$self->TicketObj->AddCustomFieldValue(Field => $cf->id, Value => "Email");
+    return unless $cf->Id;
+
+    my $Values = $self->TicketObj->CustomFieldValues( $cf->id );
+    unless ( $Values->Count ) {
+        $self->TicketObj->AddCustomFieldValue( Field => $cf->id, Value => "Email" );
     }
     return 1;
 }
