@@ -46,9 +46,7 @@
 #
 package RT::Action::RTIR_SetStartsByBizHours;
 
-
 use strict;
-
 use base 'RT::Action::RTIR';
 
 =head2 Prepare
@@ -57,18 +55,14 @@ Determine if the Starts date is already set.
 
 =cut
 
-
 sub Prepare {
     my $self = shift;
 
-    if ($self->TicketObj->StartsObj->Unix < 0) {
-	return 1;
-    } else {
-	return 0;
+    if ($self->TicketObj->StartsObj->Unix > 0) {
+        return 0;
     }
+    return 1;
 }
-
-# {{{ sub Commit
 
 =head2 Commit
 
@@ -90,8 +84,6 @@ sub Commit {
 
     return 1;
 }
-
-# }}}
 
 eval "require RT::Action::RTIR_SetStartsByBizHours_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_SetStartsByBizHours_Vendor.pm});
