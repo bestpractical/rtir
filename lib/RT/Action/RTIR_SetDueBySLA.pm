@@ -74,23 +74,20 @@ Look up the SLA and set the Due date accordingly.
 
 sub Commit {
     my $self = shift;
+    my $time = time;
 
     # TODO: return if it isn't an Incident Report
 
     # now that we know the SLA, set the value of the CF
-    if (! $self->TicketObj->FirstCustomFieldValue('_RTIR_SLA')) {
-	my $cf = RT::CustomField->new($self->CurrentUser);
+    unless ( $self->TicketObj->FirstCustomFieldValue('_RTIR_SLA') ) {
+        my $cf = RT::CustomField->new( $self->CurrentUser );
+        $cf->LoadByNameAndQueue(Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_SLA');
+        return unless $cf->Id;
 
-	$cf->LoadByNameAndQueue(Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_SLA');
-	unless ($cf->Id) { 
-	    return(1);
-	}
+        my $SLAObj = RT::IR::SLAInit();
+        my $sla = $SLAObj->SLA( $time );
 
-	my $SLAObj = RT::IR::SLAInit();
-	my $sla = $SLAObj->SLA(time());
-
-	$self->TicketObj->AddCustomFieldValue(Field => $cf->id, 
-				   Value => $sla);
+        $self->TicketObj->AddCustomFieldValue( Field => $cf->id, Value => $sla );
 
     }
 
@@ -98,11 +95,11 @@ sub Commit {
     my $SLAObj = RT::IR::SLAInit();
 
     # TODO: specify a start date, but default to now
-    my $due = $SLAObj->Due(time(), $SLAObj->SLA(time()));
+    my $due = $SLAObj->Due( $time, $SLAObj->SLA( $time ) );
 
-    my $date = RT::Date->new($RT::SystemUser);
-    $date->Set(Format => 'unix', Value => $due);
-    $self->TicketObj->SetDue($date->ISO);
+    my $date = RT::Date->new( $RT::SystemUser );
+    $date->Set( Format => 'unix', Value => $due );
+    $self->TicketObj->SetDue( $date->ISO );
 
     return 1;
 }
