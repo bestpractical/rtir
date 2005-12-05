@@ -73,23 +73,20 @@ sub Commit {
     my $self = shift;
 
     # change owner of parent Incident(s)
-    my $query = "Queue = 'Incidents' AND HasMember = " . $self->TicketObj->Id;
-
-    my $parents = new RT::Tickets($self->TransactionObj->CurrentUser);
+    my $query =  "Queue = 'Incidents'".
+                ."AND HasMember = " . $self->TicketObj->Id
+                ."AND Owner != ". $self->TransactionObj->NewValue;
+    my $parents = new RT::Tickets( $self->CreatorCurrentUser );
     $parents->FromSQL($query);
-    while (my $incident = $parents->Next) {
-	if ( $incident->Owner != $self->TransactionObj->NewValue) {
-	    my ($res, $msg); 
-	    my $user = new RT::CurrentUser($self->TransactionObj->CurrentUser);
-	    $user->Load($self->TransactionObj->Creator);
-	    my $t = new RT::Ticket($user);
-	    $t->Load($incident->id);
-	    if ($self->TransactionObj->NewValue == $self->TransactionObj->Creator) {
-		($res, $msg) = $t->Steal();
-	    } else {
-		($res, $msg) = $t->SetOwner($self->TransactionObj->NewValue);
-	    }
-	}
+
+    while ( my $incident = $parents->Next ) {
+        my ($res, $msg);
+        if ($self->TransactionObj->NewValue == $self->TransactionObj->Creator) {
+            ($res, $msg) = $incident->Steal;
+        } else {
+            ($res, $msg) = $incident->SetOwner($self->TransactionObj->NewValue);
+        }
+        $RT::Logger->info("Couldn't set owner: $msg") unless $res;
     }
     return 1;
 }
