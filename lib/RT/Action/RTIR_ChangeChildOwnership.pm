@@ -74,15 +74,12 @@ sub Commit {
 
     my $transaction = $transaction;
 
-    my $user = new RT::CurrentUser($transaction->CurrentUser);
-    $user->Load($transaction->Creator);
-    my $members = new RT::Tickets( $user );
-
     my $query =  "(Queue = 'Incident Reports'"
                 ." OR Queue = 'Investigations'"
                 ." OR Queue = 'Blocks'"
                 .") AND MemberOf = " . $self->TicketObj->Id
                 ." AND Owner != ". $transaction->NewValue;
+    my $members = new RT::Tickets( $self->CreatorCurrentUser );
     $members->FromSQL($query);
 
     my $action_cb;
