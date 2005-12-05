@@ -91,7 +91,7 @@ sub Commit {
     my $query =  "(Queue = 'Incident Reports'"
                 ." OR Queue = 'Investigations'"
                 ." OR Queue = 'Blocks'"
-                .") AND MemberOf = " . $$incident->Id
+                .") AND MemberOf = " . $incident->Id
                 ." AND ("
                 . join( " OR ", map "Status = '$_'", @RT::ActiveStatus )
                 .")";
