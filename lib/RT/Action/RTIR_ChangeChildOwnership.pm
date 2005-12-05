@@ -72,29 +72,34 @@ Change the ownership of children.
 sub Commit {
     my $self = shift;
 
-    my $query = "(Queue = 'Incident Reports' OR Queue = 'Investigations' OR Queue = 'Blocks') AND MemberOf = " . $self->TicketObj->Id;
+    my $transaction = $transaction;
 
-    my $members = new RT::Tickets($self->TransactionObj->CurrentUser);
+    my $user = new RT::CurrentUser($transaction->CurrentUser);
+    $user->Load($transaction->Creator);
+    my $members = new RT::Tickets( $user );
+
+    my $query =  "(Queue = 'Incident Reports'"
+                ." OR Queue = 'Investigations'"
+                ." OR Queue = 'Blocks'"
+                .") AND MemberOf = " . $self->TicketObj->Id
+                ." AND Owner != ". $transaction->NewValue;
     $members->FromSQL($query);
 
+    my $action_cb;
+    if ( $transaction->NewValue == $transaction->Creator ) {
+        if ( $transaction->CurrentUser->id == $RT::Nobody->id ) {
+            $action_cb = sub { return $_[0]->Take }
+        } else {
+            $action_cb = sub { return $_[0]->Steal }
+        }
+    } else {
+        $action_cb = sub { return $_[0]->SetOwner( $transaction->NewValue ) }
+    }
+
     # change owner of child Incident Reports, Investigations, Blocks
-    while (my $member = $members->Next) {
-	if ($member->Owner != $self->TransactionObj->NewValue) {
-	    my ($res, $msg); 
-	    my $user = new RT::CurrentUser($self->TransactionObj->CurrentUser);
-	    $user->Load($self->TransactionObj->Creator);
-	    my $t = new RT::Ticket($user);
-	    $t->Load($member->id);
-	    if ($self->TransactionObj->NewValue == $self->TransactionObj->Creator) {
-		if ($self->TransactionObj->CurrentUser->id == $RT::Nobody->id) {
-		    ($res, $msg) = $t->Take();
-		} else {
-		    ($res, $msg) = $t->Steal();
-		}
-	    } else {
-		($res, $msg) = $t->SetOwner($self->TransactionObj->NewValue);
-	    }
-	}
+    while ( my $member = $members->Next ) {
+        my ($res, $msg) = $action_cb->( $member );
+        $RT::Logger->info( "Couldn't change owner: $msg" ) unless $res;
     }
     return 1;
 }
