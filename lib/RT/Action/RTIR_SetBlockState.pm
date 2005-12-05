@@ -45,51 +45,26 @@
 # }}} END BPS TAGGED BLOCK
 #
 package RT::Action::RTIR_SetBlockState;
+
 use strict;
-use base 'RT::Action::RTIR';
+use base 'RT::Action::RTIR_SetState';
 
-=head2 Prepare
+=head1 GetState
 
-Always run this.
-
-=cut
-
-sub Prepare {
-    my $self = shift;
-
-    return 1;
-}
-
-# {{{ sub Commit
-
-=head2 Commit
-
-Set the Block state.
+Returns state of the C<Block>.
 
 =cut
 
-my %state = (
-    new      => 'pending activation',
-    open     => 'active',
-    stalled  => 'pending removal',
-    resolved => 'removed',
-);
-
-sub Commit {
+sub GetState {
     my $self = shift;
-
-    my $cf = new RT::CustomField( $self->TransactionObj->CurrentUser );
-    $cf->LoadByNameAndQueue( Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_State' );
-    return 1 unless $cf->Id;
-
-    my $state = $state{ $self->TicketObj->Status };
-    return 1 unless $state;
-
-    $self->TicketObj->AddCustomFieldValue( Field => $cf->id, Value => $state );
-    return 1;
+    my %state = (
+        new      => 'pending activation',
+        open     => 'active',
+        stalled  => 'pending removal',
+        resolved => 'removed',
+    );
+    return $state{ $self->TicketObj->Status } || '';
 }
-
-# }}}
 
 eval "require RT::Action::RTIR_SetBlockState_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_SetBlockState_Vendor.pm});

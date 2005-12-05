@@ -47,53 +47,25 @@
 package RT::Action::RTIR_SetIncidentState;
 
 use strict;
-use base 'RT::Action::RTIR';
+use base 'RT::Action::RTIR_SetState';
 
-=head2 Prepare
+=head2 GetState
 
-Always run this.
-
-=cut
-
-sub Prepare {
-    my $self = shift;
-
-    return 1;
-}
-
-# {{{ sub Commit
-
-=head2 Commit
-
-Set the Block state.
+Returns state of the C<Incident>.
 
 =cut
 
-my %state = (
-    new      => 'open',
-    open     => 'open',
-    stalled  => 'open',
-    resolved => 'resolved',
-    rejected => 'abandoned',
-);
-
-sub Commit {
+sub GetState {
     my $self = shift;
-    my $t = $self->TicketObj;
-
-    my $cf = RT::CustomField->new($self->TransactionObj->CurrentUser);
-    $cf->LoadByNameAndQueue(Queue => $t->QueueObj->Id, Name => '_RTIR_State');
-    return 1 unless $cf->Id;
-
-    my $state = $state{ $t->Status };
-    return 1 unless $state;
-
-    my ($res, $msg) = $t->AddCustomFieldValue(Field => $cf->id, Value => $State);
-    $RT::Logger->info("Couldn't add custom field value: $msg") unless $res;
-    return 1;
+    my %state = (
+        new      => 'open',
+        open     => 'open',
+        stalled  => 'open',
+        resolved => 'resolved',
+        rejected => 'abandoned',
+    );
+    return $state{ $self->TicketObj->Status };
 }
-
-# }}}
 
 eval "require RT::Action::RTIR_SetIncidentState_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_SetIncidentState_Vendor.pm});

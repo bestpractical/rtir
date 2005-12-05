@@ -46,53 +46,24 @@
 #
 package RT::Action::RTIR_SetInvestigationState;
 
-
 use strict;
+use base 'RT::Action::RTIR_SetState';
 
-use base 'RT::Action::RTIR';
+=head2 GetState
 
-=head2 Prepare
-
-Always run this.
-
-=cut
-
-
-sub Prepare {
-    my $self = shift;
-
-    return 1;
-}
-
-# {{{ sub Commit
-
-=head2 Commit
-
-Set the Block state.
+Returns state of the C<Investigation>.
 
 =cut
 
-sub Commit {
+sub GetState {
     my $self = shift;
-
-    my $State;
-    my $cf = RT::CustomField->new($self->TransactionObj->CurrentUser);
-    $cf->LoadByNameAndQueue(Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_State');
-    unless ($cf->Id) { 
-	return(1);
-    }
-    if ($self->TicketObj->Status eq 'open' or $self->TicketObj->Status eq 'new') {
-	$State = 'open';
-    } elsif ($self->TicketObj->Status eq 'resolved') {
-	$State = 'resolved';
-    } else {
-	return 0;
-    }
-    $self->TicketObj->AddCustomFieldValue(Field => $cf->id, Value => $State);
-    return 1;
+    my %state = (
+        open => 'new',
+        new  => 'new',
+        resolved => 'resolved',
+    );
+    return $state{ $self->TicketObj->Status } || '';
 }
-
-# }}}
 
 eval "require RT::Action::RTIR_SetInvestigationState_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_SetInvestigationState_Vendor.pm});
