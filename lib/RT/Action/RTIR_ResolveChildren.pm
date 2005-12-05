@@ -58,12 +58,12 @@ Check if the Incident is being closed.
 sub Prepare {
     my $self = shift;
 
-    if ($self->TransactionObj->NewValue eq 'resolved' or 
-	$self->TransactionObj->NewValue eq 'rejected') {
-	return 1;
-    } else {
-	return 0;
+    unless ( $self->TransactionObj->NewValue eq 'resolved' ||
+             $self->TransactionObj->NewValue eq 'rejected' )
+    {
+        return 0;
     }
+    return 1;
 }
 
 # {{{ sub Commit
@@ -77,13 +77,19 @@ Resolve all children.
 sub Commit {
     my $self = shift;
 
-    my $query = "(Queue = 'Incident Reports' OR Queue = 'Investigations' OR Queue = 'Blocks') AND MemberOf = " . $self->TicketObj->Id;
+    my $query =  "(Queue = 'Incident Reports'"
+                ." OR Queue = 'Investigations'"
+                ." OR Queue = 'Blocks'"
+                .") AND MemberOf = " . $self->TicketObj->Id
+                ."AND (".
+                . join " AND ", map "Status != '$_'", @RT::InactiveStatus;
+                .")";
 
-    my $members = new RT::Tickets($self->TransactionObj->CurrentUser);
-    $members->FromSQL($query);
-
-    while (my $member = $members->Next) {
-	$member->Resolve();
+    my $members = new RT::Tickets( $self->TransactionObj->CurrentUser );
+    $members->FromSQL( $query );
+    while ( my $member = $members->Next ) {
+        my ($res, $msg) = $member->Resolve;
+        $RT::Logger->info( "Couldn't resolve ticket: $msg" ) unless $res;
     }
     return 1;
 }
