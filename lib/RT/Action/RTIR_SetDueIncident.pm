@@ -76,28 +76,34 @@ sub Commit {
     my $self = shift;
 
     my $incident;
-    if ($self->TransactionObj->Type eq 'DeleteLink') {
-	my $uri = new RT::URI($self->CurrentUser);
-	$uri->FromURI($self->TransactionObj->OldValue);
-	$incident = $uri->Object;
+    if ( $self->TransactionObj->Type eq 'DeleteLink' ) {
+        my $uri = new RT::URI( $self->CurrentUser );
+        $uri->FromURI( $self->TransactionObj->OldValue );
+        $incident = $uri->Object;
     } else {
-	my $incidents = new RT::Tickets($self->CurrentUser);
-	$incidents->FromSQL("Queue = 'Incidents' AND HasMember = " . $self->TicketObj->id);
-
-	$incident = $incidents->First;
+        my $incidents = new RT::Tickets($self->CurrentUser);
+        $incidents->FromSQL("Queue = 'Incidents' AND HasMember = " . $self->TicketObj->id);
+        $incidents->RowsPerPage(1);
+        $incident = $incidents->First;
     }
+    return 1 unless $incident;
 
-    if ($incident) {
-	my $children = new RT::Tickets($self->CurrentUser);
-	$children->FromSQL("(Queue = 'Incident Reports' OR Queue = 'Investigations' OR Queue = 'Blocks') AND (Status = 'new' OR Status = 'open') AND MemberOf = " . $incident->Id);
-	$children->OrderBy(FIELD => 'Due', ORDER => 'ASC');
-
-	my $mostdue = $children->First();
-	if ($mostdue) {
-	    $incident->SetDue($mostdue->DueObj->ISO);
-	} else {
-	    $incident->SetDue(0);
-	}
+    my $query =  "(Queue = 'Incident Reports'"
+                ." OR Queue = 'Investigations'"
+                ." OR Queue = 'Blocks'"
+                .") AND MemberOf = " . $$incident->Id
+                ." AND ("
+                . join( " OR ", map "Status = '$_'", @RT::ActiveStatus )
+                .")";
+    my $children = new RT::Tickets($self->CurrentUser);
+    $children->FromSQL( $query );
+    $children->OrderBy( FIELD => 'Due', ORDER => 'ASC' );
+    $children->RowsPerPage(1);
+    my $mostdue = $children->First;
+    if ($mostdue) {
+        $incident->SetDue($mostdue->DueObj->ISO);
+    } else {
+        $incident->SetDue(0);
     }
 
     return 1;
