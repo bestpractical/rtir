@@ -46,9 +46,7 @@
 #
 package RT::Action::RTIR_SetStartsToNow;
 
-
 use strict;
-
 use base 'RT::Action::RTIR';
 
 =head2 Prepare
@@ -57,25 +55,21 @@ Determine if the Starts date is already set.
 
 =cut
 
-
 sub Prepare {
     my $self = shift;
 
     # if triggered by a "Set Starts" transaction, return 0
     if ($self->TransactionObj->Type eq 'Set' &&
-	$self->TransactionObj->Field eq 'Starts') {
-	return 0;
+        $self->TransactionObj->Field eq 'Starts')
+    {
+        return 0;
     }
 
     # set if the Starts value isn't already set
-    if ($self->TicketObj->StartsObj->Unix < 0) {
-	return 1;
-    } else {
-	return 0;
-    }
-}
+    return 0 if $self->TicketObj->StartsObj->Unix > 0;
 
-# {{{ sub Commit
+    return 1;
+}
 
 =head2 Commit
 
@@ -92,8 +86,6 @@ sub Commit {
 
     return 1;
 }
-
-# }}}
 
 eval "require RT::Action::RTIR_SetStartsToNow_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_SetStartsToNow_Vendor.pm});
