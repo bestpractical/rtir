@@ -46,9 +46,7 @@
 #
 package RT::Action::RTIR_UnsetDue;
 
-
 use strict;
-
 use base 'RT::Action::RTIR';
 
 =head2 Prepare
@@ -57,14 +55,11 @@ Always run this.
 
 =cut
 
-
 sub Prepare {
     my $self = shift;
 
     return 1;
 }
-
-# {{{ sub Commit
 
 =head2 Commit
 
@@ -76,14 +71,11 @@ sub Commit {
     my $self = shift;
 
     my $date = RT::Date->new($RT::SystemUser);
-
     $date->Set(Format => 'unix', Value=> 0);
-    $self->TicketObj->SetDue($date->ISO);
+    $self->TicketObj->SetDue( $date->ISO );
 
     return 1;
 }
-
-# }}}
 
 eval "require RT::Action::RTIR_UnsetDue_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_UnsetDue_Vendor.pm});
