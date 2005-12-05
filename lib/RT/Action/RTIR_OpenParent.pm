@@ -75,17 +75,18 @@ sub Commit {
 
     # If the child becomes not-closed, make sure the Incident is re-opened
     if ($self->TransactionObj->NewValue ne 'rejected' &&
-	$self->TransactionObj->NewValue ne 'resolved') {
-	my $query = "Queue = 'Incidents' AND HasMember = " . $self->TicketObj->Id;
+        $self->TransactionObj->NewValue ne 'resolved')
+    {
+        my $query = "Queue = 'Incidents'"
+                   ." AND HasMember = " . $self->TicketObj->Id
+                   ." AND (Status = 'rejected' OR Status = 'resolved')";
 
-	my $parents = new RT::Tickets($self->TransactionObj->CurrentUser);
-	$parents->FromSQL($query);
-	while (my $member = $parents->Next) {
-	    if ($member->Status eq 'rejected' ||
-		$member->Status eq 'resolved') {
-		$member->Open();
-	    }
-	}
+        my $parents = new RT::Tickets($self->TransactionObj->CurrentUser);
+        $parents->FromSQL($query);
+        while (my $member = $parents->Next) {
+            my ($res, $msg) = $member->Open;
+            $RT::Logger->info("Couldn't open ticket: $msg") unless $res;
+        }
     }
     return 1;
 }
