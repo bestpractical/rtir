@@ -46,9 +46,7 @@
 #
 package RT::Action::RTIR_SetIncidentState;
 
-
 use strict;
-
 use base 'RT::Action::RTIR';
 
 =head2 Prepare
@@ -56,7 +54,6 @@ use base 'RT::Action::RTIR';
 Always run this.
 
 =cut
-
 
 sub Prepare {
     my $self = shift;
@@ -72,27 +69,27 @@ Set the Block state.
 
 =cut
 
+my %state = (
+    new      => 'open',
+    open     => 'open',
+    stalled  => 'open',
+    resolved => 'resolved',
+    rejected => 'abandoned',
+);
+
 sub Commit {
     my $self = shift;
+    my $t = $self->TicketObj;
 
-    my $State;
     my $cf = RT::CustomField->new($self->TransactionObj->CurrentUser);
-    $cf->LoadByNameAndQueue(Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_State');
-    unless ($cf->Id) { 
-        return(1);
-    }
-    if ($self->TicketObj->Status eq 'new' ||
-	$self->TicketObj->Status eq 'open' ||
-	$self->TicketObj->Status eq 'stalled') {
-	$State = 'open';
-    } elsif ($self->TicketObj->Status eq 'resolved') {
-	$State = 'resolved';
-    } elsif ($self->TicketObj->Status eq 'rejected') {
-	$State = 'abandoned';
-    } else {
-	return 0;
-    }
-    $self->TicketObj->AddCustomFieldValue(Field => $cf->id, Value => $State);
+    $cf->LoadByNameAndQueue(Queue => $t->QueueObj->Id, Name => '_RTIR_State');
+    return 1 unless $cf->Id;
+
+    my $state = $state{ $t->Status };
+    return 1 unless $state;
+
+    my ($res, $msg) = $t->AddCustomFieldValue(Field => $cf->id, Value => $State);
+    $RT::Logger->info("Couldn't add custom field value: $msg") unless $res;
     return 1;
 }
 
