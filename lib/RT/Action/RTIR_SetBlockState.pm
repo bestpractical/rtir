@@ -48,20 +48,11 @@ package RT::Action::RTIR_SetBlockState;
 use strict;
 use base 'RT::Action::RTIR';
 
-
-
-
-
-use strict;
-
-use base 'RT::Action::RTIR';
-
 =head2 Prepare
 
 Always run this.
 
 =cut
-
 
 sub Prepare {
     my $self = shift;
@@ -77,28 +68,24 @@ Set the Block state.
 
 =cut
 
+my %state = (
+    new      => 'pending activation',
+    open     => 'active',
+    stalled  => 'pending removal',
+    resolved => 'removed',
+);
+
 sub Commit {
     my $self = shift;
 
-    my $State;
-    my $cf = RT::CustomField->new($self->TransactionObj->CurrentUser);
-    $cf->LoadByNameAndQueue(Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_State');
-    unless ($cf->Id) { 
-	return(1);
-    }
+    my $cf = new RT::CustomField( $self->TransactionObj->CurrentUser );
+    $cf->LoadByNameAndQueue( Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_State' );
+    return 1 unless $cf->Id;
 
-    if ($self->TicketObj->Status eq 'new') {
-	$State = 'pending activation';
-    } elsif ($self->TicketObj->Status eq 'open') {
-	$State = 'active';
-    } elsif ($self->TicketObj->Status eq 'stalled') {
-	$State = 'pending removal';
-    } elsif ($self->TicketObj->Status eq 'resolved') {
-	$State = 'removed';
-    } else {
-	return 0;
-    }
-    $self->TicketObj->AddCustomFieldValue(Field => $cf->id, Value => $State);
+    my $state = $state{ $self->TicketObj->Status };
+    return 1 unless $state;
+
+    $self->TicketObj->AddCustomFieldValue( Field => $cf->id, Value => $state );
     return 1;
 }
 
