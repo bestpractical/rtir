@@ -46,9 +46,8 @@
 #
 package RT::Action::RTIR_SetDueReopen;
 
-
 use strict;
-
+use RT::IR;
 use base 'RT::Action::RTIR';
 
 =head2 Prepare
@@ -73,8 +72,6 @@ Set the Due date to a configured value.
 sub Commit {
     my $self = shift;
 
-    use RT::IR;
-
     # create a new SLA object
     my $SLAObj = RT::IR::SLAInit();
 
@@ -82,17 +79,18 @@ sub Commit {
     my $bh = RT::IR::BusinessHours();
 
     # Set the defaults from the RTIR_Config.pm file
-    $SLAObj->SetInHoursDefault($RT::SLA_Reopen_InHours);
-    $SLAObj->SetOutOfHoursDefault($RT::SLA_Reopen_OutOfHours);
+    $SLAObj->SetInHoursDefault( $RT::SLA_Reopen_InHours );
+    $SLAObj->SetOutOfHoursDefault( $RT::SLA_Reopen_OutOfHours );
 
-    $SLAObj->SetBusinessHours($bh);
+    $SLAObj->SetBusinessHours( $bh );
 
     # get the due date
-    my $due = $SLAObj->Due(time(), $SLAObj->SLA(time()));
+    my $time = time;
+    my $due = $SLAObj->Due( $time, $SLAObj->SLA( $time ) );
 
-    my $date = RT::Date->new($RT::SystemUser);
-    $date->Set(Format => 'unix', Value => $due);
-    $self->TicketObj->SetDue($date->ISO);
+    my $date = RT::Date->new( $RT::SystemUser );
+    $date->Set( Format => 'unix', Value => $due );
+    $self->TicketObj->SetDue( $date->ISO );
 
     return 1;
 }
