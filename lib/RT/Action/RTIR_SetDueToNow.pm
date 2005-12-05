@@ -46,9 +46,8 @@
 #
 package RT::Action::RTIR_SetDueToNow;
 
-
 use strict;
-
+use RT::IR;
 use base 'RT::Action::RTIR';
 
 =head2 Prepare
@@ -62,9 +61,9 @@ sub Prepare {
     my $self = shift;
 
     if ($self->TicketObj->Owner ne $self->TransactionObj->Creator) {
-	return 1;
+        return 1;
     } else {
-	return 0;
+        return 0;
     }
 }
 
@@ -79,22 +78,20 @@ Set the Due date to a configured value.
 sub Commit {
     my $self = shift;
 
-    use RT::IR;
-
     # create a new SLA object
     my $SLAObj = RT::IR::SLAInit();
-
-    # set the Business::Hours
-    my $bh = RT::IR::BusinessHours();
 
     # Set the defaults from the RTIR_Config.pm file
     $SLAObj->SetInHoursDefault($RT::SLA_Response_InHours);
     $SLAObj->SetOutOfHoursDefault($RT::SLA_Response_OutOfHours);
 
+    # set the Business::Hours
+    my $bh = RT::IR::BusinessHours();
     $SLAObj->SetBusinessHours($bh);
 
     # get the due date
-    my $due = $SLAObj->Due(time(), $SLAObj->SLA(time()));
+    my $time = time;
+    my $due = $SLAObj->Due( $time, $SLAObj->SLA( $time ) );
 
     my $date = RT::Date->new($RT::SystemUser);
     $date->Set(Format => 'unix', Value => $due);
