@@ -1,12 +1,11 @@
 <& /Elements/TicketList,
     %ARGS,
+    Collection => $collection,
     RTIRCheck => $RTIRCheck,
-    Query => $Query,
     OrderBy => $OrderBy,
     Order => $Order,
     Rows => $Rows,
     Page => $Page,
-    Format => $Format,
     BaseURL => $BaseURL,
     ShowNavigation => $ShowNavigation,
     AllowSorting => $AllowSorting,
@@ -22,29 +21,31 @@
 % }
 
 <%INIT>
-$session{'i'}++;
-$session{'tickets'} = RT::Tickets->new($session{'CurrentUser'})  unless ($session{'tickets'});
-$session{'tickets'}->FromSQL($Query) if ($Query);
-$session{'tickets'}->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
+my $collection = $session{'tickets'} || RT::Tickets->new( $session{'CurrentUser'} );
+$collection->FromSQL( $Query ) if $Query;
+$session{'tickets'} = $collection;
 
-if ($OrderBy ne $session{'CurrentSearchHash'}->{'OrderBy'}
-    or $Order ne $session{'CurrentSearchHash'}->{'Order'}) {
+if ( $OrderBy ne $session{'CurrentSearchHash'}->{'OrderBy'}
+     || $Order ne $session{'CurrentSearchHash'}->{'Order'} )
+{
     $session{'CurrentSearchHash'}->{'OrderBy'} = $OrderBy;
     $session{'CurrentSearchHash'}->{'Order'}   = $Order;
 }
+
+return '' if !$ShowEmpty && !$collection->CountAll;
+
 </%INIT>
 <%ARGS>
 $Queue => undef
 $Query => undef
-$Format => undef
-$HideResults => 0
 $Rows => 50
 $Page => 1
-$OrderBy => 'id'
-$Order => 'ASC'
+$OrderBy => $session{'CurrentSearchHash'}->{'OrderBy'} || 'id'
+$Order => $session{'CurrentSearchHash'}->{'Order'} || 'ASC'
 $QueryString => undef
 $BaseURL => $RT::WebPath."/Search/Results.html?"
 $RTIRCheck => undef
 $ShowNavigation => 0
 $AllowSorting => 1
+$ShowEmpty => 0
 </%ARGS>
