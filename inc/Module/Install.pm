@@ -1,6 +1,6 @@
-#line 1 "inc/Module/Install.pm - /usr/local/share/perl/5.8.4/Module/Install.pm"
+#line 1 "inc/Module/Install.pm - /usr/lib/perl5/vendor_perl/5.8.7/Module/Install.pm"
 package Module::Install;
-$VERSION = '0.36';
+$VERSION = '0.37';
 
 die << "." unless $INC{join('/', inc => split(/::/, __PACKAGE__)).'.pm'};
 Please invoke ${\__PACKAGE__} with:
