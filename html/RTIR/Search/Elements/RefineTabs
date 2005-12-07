@@ -6,15 +6,15 @@
 <%INIT>
 my ($Type) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
 
-my $refinetabs = { };
-$refinetabs->{'_a'} = {
-    class => "nav",
-    path  => $path,
-    title => loc('Refine'),
+my $refinetabs = {
+    _a => {
+        class => "nav",
+        path  => delete $ARGS{'path'},
+        title => loc('Refine'),
+    },
 };
 </%INIT>
-	
+
 <%ARGS>
-$path => undef
-$Queue => undef
+$Queue => ''
 </%ARGS>

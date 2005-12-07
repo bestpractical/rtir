@@ -99,7 +99,7 @@ my $dirty;
 my $AvailableColumns;
 my $CurrentFormat;
 
-my $BaseQuery = $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
+$BaseQuery ||= $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
 
 if ($NewQuery) {
     # If it's a new query, wipe it ourselves...
@@ -163,15 +163,17 @@ $path .= "&$QueryString";
 <%ARGS>
 $id => undef
 $Ticket => undef
+
 $title => loc("Refine Search")
 $ResultPage => undef
 $BaseURL => 'RTIR/Search/Refine.html'
 $NewQuery => 0
-$Queue => undef
-$Query => undef
+
+$Queue => ''
+$BaseQuery => ''
+$Query => ''
 $QueryString => undef
-$Format => undef 
-$HideResults => 0
+$Format => undef
 $Rows => 50
 $Page => 1
 $OrderBy => 'id'

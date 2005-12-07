@@ -23,15 +23,18 @@
 %# 
 %# END LICENSE BLOCK
 <& /Elements/PageLayout, 
-    toptabs => $toptabs,
     topactions => $topactions,
-    tabs => $tabs,
     actions => $actions,
+
+    toptabs => $toptabs,
+    current_toptab => $current_toptab,
+
+    tabs => $tabs,
     current_tab => $current_tab,
     current_subtab => $current_subtab,
-    current_toptab => $current_toptab,
     title => $Title,
-    AppName => $RT::rtirname &>
+    AppName => $RT::rtirname,
+&>
 
 <%INIT>
 

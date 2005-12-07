@@ -34,18 +34,16 @@
 &> 
 
 <%INIT>
-
 if( $QueryString =~ s/^&// ) {
-    require Carp;
-    Carp::cluck("queue string had leading &");
+    $RT::Logger->warning("queue string has leading &");
 }
 
 my ($Type) = $m->comp('/RTIR/Elements/Type', Queue => $QueueName);
 
 my $EscapedQueueName = $m->comp('/Elements/QueryString', Queue => $QueueName );
+my $current_toptab = 'RTIR/Search/Results.html?'. $EscapedQueueName;
 
 my $tabs = {};
-my $current_toptab = 'RTIR/Search/Results.html?'. $EscapedQueueName;
 
 my ($actions, $mytab);
 my $searchtabs = { } ;
@@ -207,7 +205,10 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
 my $refinetabs = { };
 $refinetabs->{'_a'} = {
     class => "nav",
-    path => "RTIR/Search/Refine.html?ResultPage=/RTIR/Search/Results.html&$EscapedQueueName&$QueryString",
+    path => "RTIR/Search/Refine.html?$EscapedQueueName&$QueryString&".
+        $m->comp( '/Elements/QueryString',
+                  ResultPage => "/RTIR/Search/Results.html?$EscapedQueueName",
+                ),
     title => loc('Refine'),
 };
 
@@ -240,14 +241,14 @@ elsif ( $Type eq 'Incident' ) {
 
 foreach ( keys %{$tabs} ) {
     if ( $tabs->{ $_ }->{'path'} eq $current_tab ) {
-        $tabs->{ $_ }->{'subtabs'} = $subtabs;
+        $tabs->{ $_ }->{'subtabs'} = { %{$tabs->{ $_ }->{'subtabs'} || {}}, %$subtabs };
     }
 }
 
 </%INIT>
 <%ARGS>
 $Ticket => undef
-$subtabs => undef
+$subtabs => {}
 $appendtabs => undef
 $current_tab => undef
 $current_subtab => undef
