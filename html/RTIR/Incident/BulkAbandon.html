@@ -109,7 +109,6 @@ if ( $ARGS{'BulkAbandon'} ) {
 
         # process replies
         if( scalar @ReplyToAll ) {
-            use Data::Dumper;
             # XXX: why do we limit to open?
             my $query = "CF.{_RTIR_State} = 'open' AND MemberOf = $id";
             $query .= " AND (". join(' OR ', map "Queue = '$_'", @ReplyToAll) .")";
