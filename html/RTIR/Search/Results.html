@@ -44,7 +44,7 @@
 %# 
 %# }}} END BPS TAGGED BLOCK
 <& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
-<& '/RTIR/'.$Type.'/Elements/Tabs', 
+<& '/RTIR/'.$Type.'/Elements/Tabs',
     current_tab => "RTIR/Search/Results.html?Queue=$Queue&$QueryString",
     Title => $title,
     Format => $Format,
@@ -56,7 +56,6 @@
 &>
 
 <& /Elements/ListActions, actions => \@results &>
-<hr />
 
 <& Elements/ShowResults,
     %ARGS,
@@ -66,13 +65,12 @@
 &>
 
 <%INIT>
-my ($Type) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
-$Format ||= $RT::RTIRSearchResultFormats->{$Type . 'Default'};
-
 my $title = loc("Results");
 
-$Query ||= $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
+my ($Type) = $m->comp( "/RTIR/Elements/Type", Queue => $Queue );
+$Format    ||= $RT::RTIRSearchResultFormats->{ $Type . 'Default' };
 $BaseQuery ||= $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
+$Query     ||= $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
 
 my $QueryString = $m->comp( '/Elements/QueryString',
                             BaseQuery => $BaseQuery,
@@ -92,11 +90,10 @@ $Query = "($BaseQuery) AND ( $Query )";
 $BaseQuery => undef
 $Query => undef
 $Format => undef 
-$HideResults => 0
 $Rows => 50
 $Page => 1
 $OrderBy => 'id'
 $Order => 'ASC'
-$Queue => undef
+$Queue => ''
 @results => ()
 </%ARGS>
