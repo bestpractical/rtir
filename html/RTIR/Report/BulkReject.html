@@ -104,13 +104,13 @@ if ( $ARGS{'BulkReject'} ) {
         }
 
         if ( $t->Owner != $session{'CurrentUser'}->id &&
-             $t->Owner == $RT::Nobody->id ) {
+             $t->Owner == $RT::Nobody->id )
+        {
             my ( $res, $msg ) = $t->Take;
             unless( $res ) {
                 push( @tempresults, [ $id, loc("Couldn't take ticket: [_1]", $msg) ] );
             } else {
-                push( @tempresults, [ $id, loc("Took ticket.") ] );
-                push( @tempresults, [ $id, $msg ] ) if $msg;
+                push( @tempresults, [ $id, loc("Took ticket. [_1]", $msg) ] );
             }
         }
 
@@ -130,33 +130,23 @@ if ( $ARGS{'BulkReject'} ) {
     $session{'tickets'}->RedoSearch;
 }
 
-
 # FIXME: Doesn't work as expected with refined search.
 # also is not clear should it use Query from
 # /RTIR/Search/Results.html?Queue=Incident%20Reports or 
 # own? and can it be refined at all?
-if ( !$Query ) {
-    # We can only reject new tickets, so set the states.
-    $Query = $m->comp(
-        '/RTIR/Elements/NewQuery',
-        Queue => $Queue,
-        states => ['new'],
-    );
-}
+$BaseQuery ||= $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue );
+$Query     ||= $m->comp( '/RTIR/Elements/NewQuery', Queue => $Queue, states => 'new' );
 
 my $QueryString = $m->comp(
     '/Elements/QueryString',
-    Query   => $Query,
-    Format  => $Format,
-    Rows    => $Rows,
-    OrderBy => $OrderBy,
-    Order   => $Order,
-    Page    => $Page
+    BaseQuery => $BaseQuery,
+    Query     => $Query,
+    Format    => $Format,
+    Rows      => $Rows,
+    OrderBy   => $OrderBy,
+    Order     => $Order,
+    Page      => $Page
 );
-
-if ( !$BaseQuery ) {
-    $BaseQuery = $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue );
-}
 
 $Query = "$BaseQuery AND ( $Query )";
 my $path = "RTIR/Search/Refine.html?$QueryString&";
