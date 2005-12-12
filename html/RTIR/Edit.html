@@ -184,6 +184,8 @@
 
 <%INIT>
 
+my @results;
+
 my $Ticket = LoadTicket($id);
 my ($Type) = $m->comp('Elements/Type', Ticket => $Ticket->Id);
 
