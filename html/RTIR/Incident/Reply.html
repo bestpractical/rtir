@@ -126,8 +126,9 @@ if ( $SubmitTicket ) {
             next;
         }
         $id = $Ticket->id;
-
         my $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+
+        my @tempresults;
         push @tempresults, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS );
         push @tempresults, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
