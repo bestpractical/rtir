@@ -231,15 +231,6 @@ if ( $id eq 'new' ) {
     }
 }
 
-if( delete $ARGS{'Quick'} ) {
-    $m->comp( '/RTIR/Search/Results.html',
-              %ARGS,
-              Queue => $Queue->Name,
-              results => \@results
-            );
-    $m->abort;
-}
-
 unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
     if( $id eq 'new' ) {
         Abort("No permission to view newly created ticket #".$Ticket->id.".");

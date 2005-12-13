@@ -321,15 +321,6 @@ if ( grep $_ =~ /^DeleteLink-.*-MemberOf-.*$/, keys %ARGS ) {
     }
 }
 
-if( delete $ARGS{'Quick'} ) {
-    $m->comp( '/RTIR/Search/Results.html',  
-              %ARGS,
-              Queue => $Ticket->QueueObj->Name,
-              results => \@results
-            );
-    $m->abort;
-}
-
 my $attachments = $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket);
 
 </%INIT>

@@ -144,12 +144,12 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
                         title => loc('Resolve'),
                     };
                     $actions->{'Acc'} = {
-                        path => "RTIR/Display.html?Status=resolved&Quick=1&id=$id",
+                        path => "RTIR/Display.html?Status=resolved&id=$id",
                         title => loc('Quick Resolve'),
                     };
                 }
                 $actions->{'B'} = {
-                    path => "RTIR/Display.html?Status=rejected&Quick=1&id=$id",
+                    path => "RTIR/Display.html?Status=rejected&id=$id",
                     title => loc('Quick Reject'),
                 };
                 $actions->{'Bb'} = {
@@ -165,7 +165,7 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
                     title => loc('Resolve'),
                 };
                 $actions->{'Acc'} = {
-                    path => "RTIR/Display.html?Status=resolved&Quick=1&id=$id",
+                    path => "RTIR/Display.html?Status=resolved&id=$id",
                     title => loc('Quick Resolve'),
                 };
                 $actions->{'B'} = {
