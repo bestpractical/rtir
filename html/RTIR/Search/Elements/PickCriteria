@@ -53,7 +53,7 @@
 <tr>
 <td class="label"><&|/l&>Aggregator</&>:</td>
 <td class="operator">&nbsp;</td>
-<td class="value"><& SelectAndOr, Name => "AndOr" &></td>
+<td class="value"><& /Search/Elements/SelectAndOr, Name => "AndOr" &></td>
 </tr>
 
 <tr class="separator"><td colspan=3><hr /></td></tr>
