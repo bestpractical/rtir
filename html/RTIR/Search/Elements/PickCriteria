@@ -44,29 +44,27 @@
 %# 
 %# }}} END BPS TAGGED BLOCK
 <& /Widgets/TitleBoxStart, title => loc('Add Criteria')&>
+<&| /Widgets/TitleBox, title => loc('Add Criteria')&>
+
 <table width=100% cellspacing=0 cellpadding=0 border=0>
-  <tr>
-    <td>
-      <table cellspacing=0 border=0>
-        <tr><td class=label>
-        Aggregator:
-        </td>
-        <td><& /Search/Elements/SelectAndOr, Name => "AndOr" &>
-        </td></tr>
-      </table>
-    </td></tr>
-  <tr>
-    <td colspan=3>
-      <hr>
-    </td>
-  </tr>
-  <& PickBasics &>
-  <& PickCFs, Queue => $Queue &>
-  <& /Search/Elements/PickCFs, cfqueues => $cfqueues &>
-  <tr><td>&nbsp;</td></tr>
+
+<tr><th><&|/l&>Field</&></th><th><&|/l&>Operator</&></th><th><&|/l&>Value</&></th></tr>
+
+<tr>
+<td class="label"><&|/l&>Aggregator</&>:</td>
+<td class="operator">&nbsp;</td>
+<td class="value"><& SelectAndOr, Name => "AndOr" &></td>
+</tr>
+
+<tr class="separator"><td colspan=3><hr /></td></tr>
+
+<& /Search/Elements/PickBasics &>
+<& PickCFs, Queue => $Queue &>
+<& /Search/Elements/PickCFs, cfqueues => $cfqueues &>
+
 </table>
 
-<& /Widgets/TitleBoxEnd &>
+</&>
 
 <%INIT>
 my $cfqueues = ();
