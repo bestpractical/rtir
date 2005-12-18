@@ -1,4 +1,5 @@
 <%INIT>
+return unless $m->request_comp->path =~ m{^/RTIR};
 foreach( @$Conditions ) {
     next unless ($_->{'Name'}||'') =~ /^(?:Queue|Status)$/;
     $_ = undef;
