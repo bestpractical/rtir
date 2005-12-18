@@ -63,9 +63,13 @@
 </form>
 
 <%INIT>
-$Format         ||= $RT::RTIRSearchResultFormats->{'RejectReports'};
 my $title         = loc("Reject Incident Reports");
 my $SubmitCaption = loc("Reject selected incident reports");
+
+$Format         ||= $RT::RTIRSearchResultFormats->{'RejectReports'};
+unless( $Format =~ /__RTIR_Check__/ ) {
+    $Format = "___RTIR_Check__,$Format";
+}
 
 my ( @results );
 if ( $ARGS{'BulkReject'} ) {
@@ -85,12 +89,6 @@ if ( $ARGS{'BulkReject'} ) {
         }
         $id = $t->id;
 
-        unless( $t->FirstCustomFieldValue('_RTIR_State') eq 'new' ) {
-            push @tempresults, [ $id, loc("Only new reports may be rejected.") ];
-            push @tempresults, [ $id, loc("Skipped.") ];
-            next;
-        }
-
         # If we don't own the thing we're linking to, change the owner
         if (   $t->Owner != $session{'CurrentUser'}->id
             && $t->Owner != $RT::Nobody->id )
@@ -103,6 +101,8 @@ if ( $ARGS{'BulkReject'} ) {
             next;
         }
 
+        my $oldstate = $t->FirstCustomFieldValue('_RTIR_State');
+        
         if ( $t->Owner != $session{'CurrentUser'}->id &&
              $t->Owner == $RT::Nobody->id )
         {
@@ -114,8 +114,6 @@ if ( $ARGS{'BulkReject'} ) {
             }
         }
 
-        my $oldstate = $t->FirstCustomFieldValue('_RTIR_State');
-        
         push @tempresults, ProcessTicketBasics( ARGSRef => \%ARGS, TicketObj => $t );
 
         my $newstate = $t->FirstCustomFieldValue('_RTIR_State');
@@ -129,13 +127,6 @@ if ( $ARGS{'BulkReject'} ) {
     # force redo search if we changed state
     $session{'tickets'}->RedoSearch;
 }
-
-# FIXME: Doesn't work as expected with refined search.
-# also is not clear should it use Query from
-# /RTIR/Search/Results.html?Queue=Incident%20Reports or 
-# own? and can it be refined at all?
-$BaseQuery ||= $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue );
-$Query     ||= $m->comp( '/RTIR/Elements/NewQuery', Queue => $Queue, states => 'new' );
 
 my $QueryString = $m->comp(
     '/Elements/QueryString',
@@ -158,17 +149,22 @@ $path .= $m->comp( '/Elements/QueryString',
 
 </%INIT>
 <%ARGS>
-$Status => 'rejected'
-$RTIRCheck => 'None'
-$Query => undef
-$BaseQuery => undef
-$Queue => 'Incident Reports'
-$Format => undef 
-$Rows => 50
-$Page => 1
-$OrderBy => 'id'
-$Order => 'ASC'
-$BaseURL => $RT::WebPath . "/RTIR/Report/BulkReject.html?"
-$current_tab => 'RTIR/Report/BulkReject.html'
+$Queue           => 'Incident Reports'
+
+# FIXME: Doesn't work as expected with refined search.
+# also is not clear should it use Query from
+# /RTIR/Search/Results.html?Queue=Incident%20Reports or 
+# own? and can it be refined at all?
+$BaseQuery       => $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue )
+$Query           => $m->comp( '/RTIR/Elements/NewQuery',  Queue => $Queue )
+$Status          => 'rejected'
+$RTIRCheck       => 'None'
+$Format          => undef
+$Rows            => 50
+$Page            => 1
+$OrderBy         => 'id'
+$Order           => 'ASC'
+$BaseURL         => $RT::WebPath . "/RTIR/Report/BulkReject.html?"
+$current_tab     => 'RTIR/Report/BulkReject.html'
 @SelectedTickets => ()
 </%ARGS>

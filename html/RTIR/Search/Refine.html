@@ -140,7 +140,7 @@ if ($NewQuery) {
              %ARGS);
 
 # {{{ Build a querystring for the tabs
-$QueryString = $m->comp('/Elements/QueryString', 
+my $QueryString = $m->comp('/Elements/QueryString', 
         Query => $Query,
         Format => $Format,
         Order => $Order,
@@ -172,7 +172,6 @@ $NewQuery => 0
 $Queue => ''
 $BaseQuery => ''
 $Query => ''
-$QueryString => undef
 $Format => undef
 $Rows => 50
 $Page => 1

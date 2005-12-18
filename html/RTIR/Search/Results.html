@@ -45,13 +45,13 @@
 %# }}} END BPS TAGGED BLOCK
 <& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
 <& '/RTIR/'.$Type.'/Elements/Tabs',
-    current_tab => "RTIR/Search/Results.html?Queue=$Queue&$QueryString",
-    Title => $title,
-    Format => $Format,
-    Query => $Query,
-    Rows => $Rows,
-    OrderBy => $OrderBy,
-    Order => $Order,
+    current_tab => "RTIR/Search/Results.html?$EscapedQueue&$QueryString",
+    Title       => $title,
+    Format      => $Format,
+    Query       => $Query,
+    Rows        => $Rows,
+    OrderBy     => $OrderBy,
+    Order       => $Order,
     QueryString => $QueryString,
 &>
 
@@ -59,41 +59,44 @@
 
 <& Elements/ShowResults,
     %ARGS,
-    Query => $Query, 
-    QueryString => $QueryString, 
-    Format => $Format,
+    Queue       => $Queue,
+    BaseQuery   => $BaseQuery,
+    Query       => $Query,
+    Format      => $Format,
+    Rows        => $Rows,
+    Page        => $Page,
+    OrderBy     => $OrderBy,
+    Order       => $Order,
+    QueryString => $QueryString,
 &>
 
 <%INIT>
 my $title = loc("Results");
 
-my ($Type) = $m->comp( "/RTIR/Elements/Type", Queue => $Queue );
+my ($Type)   = $m->comp( '/RTIR/Elements/Type', Queue => $Queue );
 $Format    ||= $RT::RTIRSearchResultFormats->{ $Type . 'Default' };
-$BaseQuery ||= $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
-$Query     ||= $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
 
 my $QueryString = $m->comp( '/Elements/QueryString',
                             BaseQuery => $BaseQuery,
-                            Query => $Query,
-                            Format => $Format,
-                            Rows => $Rows,
-                            OrderBy => $OrderBy,
-                            Order => $Order,
-                            Page => $Page
+                            Query     => $Query,
+                            Format    => $Format,
+                            Rows      => $Rows,
+                            OrderBy   => $OrderBy,
+                            Order     => $Order,
+                            Page      => $Page,
                           );
 
-
-$Query = "($BaseQuery) AND ( $Query )";
+my $EscapedQueue = $m->comp( '/Elements/QueryString', Queue => $Queue );
 
 </%INIT>
 <%ARGS>
-$BaseQuery => undef
-$Query => undef
-$Format => undef 
-$Rows => 50
-$Page => 1
-$OrderBy => 'id'
-$Order => 'ASC'
-$Queue => ''
-@results => ()
+$Queue     => ''
+$BaseQuery => $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue )
+$Query     => $m->comp( '/RTIR/Elements/NewQuery', Queue => $Queue )
+$Format    => undef
+$Rows      => 50
+$Page      => 1
+$OrderBy   => 'id'
+$Order     => 'ASC'
+@results   => ()
 </%ARGS>
