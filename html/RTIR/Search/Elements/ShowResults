@@ -15,12 +15,15 @@
 %# this would do well as a Callback
 
 <div align="right">
-<a href="<%$RT::WebPath%>/RTIR/Report/BulkReject.html<%$QueryString%>&Queue=<%$Queue%>"><&|/l&>Bulk Reject</&></a><br>
+<a href="<%$RT::WebPath%>/RTIR/Report/BulkReject.html?Queue=<%$Queue|u%>&<% $QueryString %>"><&|/l&>Bulk Reject</&></a><br>
 </div>
 
 % }
 
 <%INIT>
+
+$Query = join ' AND ', map "( $_ )", grep $_, $BaseQuery, $Query;
+
 my $collection = $session{'tickets'} || RT::Tickets->new( $session{'CurrentUser'} );
 $collection->FromSQL( $Query ) if $Query;
 $session{'tickets'} = $collection;
@@ -36,16 +39,17 @@ return '' if !$ShowEmpty && !$collection->CountAll;
 
 </%INIT>
 <%ARGS>
-$Queue => undef
-$Query => undef
-$Rows => 50
-$Page => 1
-$OrderBy => $session{'CurrentSearchHash'}->{'OrderBy'} || 'id'
-$Order => $session{'CurrentSearchHash'}->{'Order'} || 'ASC'
-$QueryString => undef
-$BaseURL => $RT::WebPath."/Search/Results.html?"
-$RTIRCheck => undef
+$Queue          => ''
+$BaseQuery      => ''
+$Query          => ''
+$QueryString    => ''
+$Rows           => undef
+$Page           => 1
+$OrderBy        => $session{'CurrentSearchHash'}->{'OrderBy'} || 'id'
+$Order          => $session{'CurrentSearchHash'}->{'Order'} || 'ASC'
+$BaseURL        => $RT::WebPath."/Search/Results.html?"
+$RTIRCheck      => undef
 $ShowNavigation => 0
-$AllowSorting => 1
-$ShowEmpty => 0
+$AllowSorting   => 1
+$ShowEmpty      => 0
 </%ARGS>
