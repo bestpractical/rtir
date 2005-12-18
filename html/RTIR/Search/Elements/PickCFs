@@ -43,41 +43,43 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
-% while ( my $CustomField = $CustomFields->Next ) {
-% my $label = $CustomField->Name;
-% next unless ($label =~ s/^_RTIR_//g);
-<tr><td class=label>
-
-% my $name;
-% if ($CustomField->QueueObj && $CustomField->QueueObj->id) {
-%   $name = "'CF." . $CustomField->QueueObj->Name . 
-%	".{" . $CustomField->Name . "}'";
-% } else {
-%   $name = "'CF." . $CustomField->Name . "'";
+% foreach( @lines ) {
+<& /Search/Elements/ConditionRow, Condition => $_ &>
 % }
-<% $label %> 
-</td>
-<td>
-<& /Elements/SelectCustomFieldOperator, Name => $name . "Op", 
-                            True => loc("is"), 
-                            False => loc("isn't"), 
-                            TrueVal=> '=', FalseVal => '!=' &>
-</td>
-<td>
-<& /Elements/SelectCustomFieldValue, Name => "ValueOf" . $name,
-                            CustomField => $CustomField,
-                            &>
-</td></tr>
-% }
-
 <%INIT>
 my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
 my $QueueObj = RT::Queue->new($session{'CurrentUser'});
 $QueueObj->Load($Queue);
 
 $CustomFields->{"find_disabled_rows"} = 1;
-$CustomFields->LimitToQueue($QueueObj->Id);
-$CustomFields->LimitToGlobal();
+$CustomFields->LimitToQueue( $QueueObj->Id );
+$CustomFields->LimitToGlobal;
+
+my @lines;
+while ( my $CustomField = $CustomFields->Next ) {
+    my $label = $CustomField->Name;
+    next unless $label =~ s/^_RTIR_//;
+
+    my %line;
+    $line{'Name'} = "'CF.{" . $CustomField->Name . "}'";
+    $line{'Field'} = $label;
+    $line{'Op'} = {
+        Type => 'component',
+        Path => '/Elements/SelectCustomFieldOperator',
+        Arguments => { True => loc("is"),
+                       False => loc("isn't"),
+                       TrueVal=> '=',
+                       FalseVal => '!=',
+                     },
+    };
+    $line{'Value'} = {
+        Type => 'component',
+        Path => '/Elements/SelectCustomFieldValue',
+        Arguments => { CustomField => $CustomField },
+    };
+    push @lines, \%line;
+}
+
 </%INIT>
 
 <%ARGS>
