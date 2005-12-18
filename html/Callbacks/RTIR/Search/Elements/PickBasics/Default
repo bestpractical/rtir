@@ -1,0 +1,9 @@
+<%INIT>
+foreach( @$Conditions ) {
+    next unless ($_->{'Name'}||'') =~ /^(?:Queue|Status)$/;
+    $_ = undef;
+}
+</%INIT>
+<%ARGS>
+$Conditions => [],
+</%ARGS>
