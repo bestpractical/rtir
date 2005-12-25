@@ -1,33 +1,24 @@
 <%INIT>
 
+my %selected;
+{
+    my $tmp = $m->request_args->{'SelectedTickets'};
+    $tmp = [$tmp] unless UNIVERSAL::isa( $tmp, 'ARRAY' );
+    push @$tmp, $m->request_args->{'SelectedTicket'};
+    %selected = map { $_ => 1 } grep $_, @$tmp;
+}
+
 # This is scary and should totally be refactored -- jesse
-my %args = $m->caller_args(4);
-
-my $check;
-$check = $args{'RTIRCheck'} if $args{'RTIRCheck'};
-
 $COLUMN_MAP->{'_RTIR_Check'} = {
-    title => '&nbsp;',
+    title => sub {
+        return ( \qq{<input type="checkbox" name="AllSelectedTickets" value="1"
+                            onclick="setCheckbox(this.form, 'SelectedTickets', this.checked)"/>} );
+    },
     value => sub {
         my $selected = '';
-        if ( $check eq 'All' ) {
-            $selected = 'checked';
-        }
-        elsif ( $check eq 'None' ) {
-            $selected = '';
-        }
-        elsif ( $check == $_[0]->id ) {
-            $selected = 'checked';
-        }
-        elsif ( ref($check) eq 'ARRAY' ) {
-            foreach my $check (@$check) {
-                if ( $_[0]->id == $check ) {
-                    $selected = 'checked';
-                }
-            }
-        }
-        return ( \'<input type="checkbox" name="SelectedTickets" value="',
-                 $_[0]->id, \'" ', $selected, \' />' );
+        my $id = $_[0]->id;
+        $selected = 'checked' if $selected{ $id };
+        return ( \qq{<input type="checkbox" name="SelectedTickets" value="$id" $selected />} );
     },
 };
 
@@ -35,11 +26,9 @@ $COLUMN_MAP->{'_RTIR_Radio'} = {
     title => '&nbsp;',
     value => sub {
         my $selected = '';
-        if ( $_[0]->id == $check ) {
-            $selected = 'checked';
-        }
-        return ( \'<input type="radio" name="SelectedTicket" value="',
-                 $_[0]->id, \'" ', $selected, \' />' );
+        my $id = $_[0]->id;
+        $selected = 'checked' if $selected{ $id };
+        return ( \qq{<input type="radio" name="SelectedTicket" value="$id" $selected />} );
     },
 };
 </%INIT>
