@@ -45,21 +45,20 @@
 # XXX: cache result set to check if get empty results
 my $result_set = $m->scomp(
     '/RTIR/Search/Elements/ShowResults',
+    Queue       => $Queue,
+    BaseQuery   => $BaseQuery,
     Query       => $Query,
-    QueryString => $QueryString, 
-    BaseURL     => $BaseURL,
     Format      => $Format,
-    RTIRCheck   => $RTIRCheck,
+    Rows        => $Rows,
+    OrderBy     => $OrderBy,
+    Order       => $Order,
+    Page        => $Page,
+    BaseURL     => $BaseURL,
 );
 </%perl>
 
 % if( $session{'tickets'}->Count ) {
-<a href="BulkAbandon.html?RTIRCheck=All">[Select All]</a>
-<a href="BulkAbandon.html?RTIRCheck=None">[Unselect All]</a>
 % $m->out( $result_set );
-<a href="BulkAbandon.html?RTIRCheck=All">[Select All]</a>
-<a href="BulkAbandon.html?RTIRCheck=None">[Unselect All]</a>
-<br />
 
 <& /Widgets/TitleBoxStart, title => loc("Select recipients") &>
 % foreach my $box( @CheckBox ) {
@@ -72,7 +71,13 @@ my $result_set = $m->scomp(
 
 <& Elements/ReplyForm &>
 
-<& /Elements/Submit, Name => "BulkAbandon", Caption => $SubmitCaption, Label => loc("Reject") &>
+<& /Elements/Submit,
+    Name => "BulkAbandon",
+    Caption => $SubmitCaption,
+    Label => loc("Reject"),
+    CheckAll => 1, ClearAll => 1,
+    CheckboxName => 'SelectedTickets',
+&>
 % } else {
 <i><% loc("no incidents") %></i>
 % }
@@ -80,8 +85,8 @@ my $result_set = $m->scomp(
 
 <%INIT>
 my @CheckBox = (
-    { Value => 'Incident Reports',        Title => loc("Reply to all reports") },
-    { Value => 'Investigations', Title => loc("Reply to all investigations") },
+    { Value => 'Incident Reports', Title => loc("Reply to all reports") },
+    { Value => 'Investigations',   Title => loc("Reply to all investigations") },
 );
 my $title = loc('Abandon Incidents');
 my $SubmitCaption = loc("Reject selected incident reports");
@@ -157,9 +162,6 @@ if ( $ARGS{'BulkAbandon'} ) {
 # own? and can it be refined at all?
 
 # We can only reject new tickets, so set the states.
-$Query ||= $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue, Inactive => 1 );
-$BaseQuery ||= $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue );
-
 my $QueryString = $m->comp(
     '/Elements/QueryString',
     Query   => $Query,
@@ -171,7 +173,6 @@ my $QueryString = $m->comp(
 );
 
 
-$Query = "$BaseQuery AND ( $Query )";
 my $path = "RTIR/Search/Refine.html?$QueryString&";
 $path .= $m->comp( '/Elements/QueryString',
                    ResultPage  => $BaseURL,
@@ -181,17 +182,16 @@ $path .= $m->comp( '/Elements/QueryString',
 
 </%INIT>
 <%ARGS>
-$Status => 'rejected'
-$RTIRCheck => 'None'
-$Query => undef
-$BaseQuery => undef
-$Queue => 'Incidents'
-$Format => $RT::RTIRSearchResultFormats->{'RejectReports'};
-$Rows => 50
-$Page => 1
-$OrderBy => 'id'
-$Order => 'ASC'
-$BaseURL => $RT::WebPath . "/RTIR/Report/BulkAbandon.html"
+$Status    => 'rejected'
+$Queue     => 'Incidents'
+$BaseQuery => $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue );
+$Query     => $m->comp( '/RTIR/Elements/NewQuery', Queue => $Queue, Inactive => 1 );
+$Format    => $RT::RTIRSearchResultFormats->{'RejectReports'};
+$Rows      => 50
+$Page      => 1
+$OrderBy   => 'id'
+$Order     => 'ASC'
+$BaseURL   => $RT::WebPath . "/RTIR/Report/BulkAbandon.html"
 $current_tab => 'RTIR/Incident/BulkAbandon.html'
 @SelectedTickets => ()
 @ReplyToAll => ()

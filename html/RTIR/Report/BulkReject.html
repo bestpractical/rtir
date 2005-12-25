@@ -41,23 +41,27 @@
 <form action="<%$RT::WebPath%>/RTIR/Report/BulkReject.html" method="POST">
 <input type="hidden" name="Status" value="<% $Status %>">
 
-% if( $session{'tickets'}->Count ) {
-<a href="BulkReject.html?RTIRCheck=All">[Select All]</a>
-<a href="BulkReject.html?RTIRCheck=None">[Unselect All]</a>
-% }
-
 <& /RTIR/Search/Elements/ShowResults,
-    Query => $Query,
-    QueryString => $QueryString,
-    BaseURL => $BaseURL,
-    Format => $Format,
-    RTIRCheck => $RTIRCheck,
+    Queue     => $Queue,
+    BaseQuery => $BaseQuery,
+    Query     => $Query,
+    Format    => $Format,
+    Rows      => $Rows,
+    OrderBy   => $OrderBy,
+    Order     => $Order,
+    Page      => $Page,
+    BaseURL   => $BaseURL,
+    Format    => $Format,
 &>
 
 % if( $session{'tickets'}->Count ) {
-<a href="BulkReject.html?RTIRCheck=All">[Select All]</a>
-<a href="BulkReject.html?RTIRCheck=None">[Unselect All]</a>
-<& /Elements/Submit, Name => "BulkReject", Caption => $SubmitCaption, Label => loc("Reject") &>
+<& /Elements/Submit,
+    Name => "BulkReject",
+    Caption => $SubmitCaption,
+    Label => loc("Reject"),
+    CheckAll => 1, ClearAll => 1,
+    CheckboxName => 'SelectedTickets',
+&>
 % }
 
 </form>
@@ -66,10 +70,7 @@
 my $title         = loc("Reject Incident Reports");
 my $SubmitCaption = loc("Reject selected incident reports");
 
-$Format         ||= $RT::RTIRSearchResultFormats->{'RejectReports'};
-unless( $Format =~ /__RTIR_Check__/ ) {
-    $Format = "___RTIR_Check__,$Format";
-}
+$Format = "___RTIR_Check__,$Format" unless $Format =~ /__RTIR_Check__/;
 
 my ( @results );
 if ( $ARGS{'BulkReject'} ) {
@@ -130,7 +131,6 @@ if ( $ARGS{'BulkReject'} ) {
 
 my $QueryString = $m->comp(
     '/Elements/QueryString',
-    BaseQuery => $BaseQuery,
     Query     => $Query,
     Format    => $Format,
     Rows      => $Rows,
@@ -139,7 +139,6 @@ my $QueryString = $m->comp(
     Page      => $Page
 );
 
-$Query = "$BaseQuery AND ( $Query )";
 my $path = "RTIR/Search/Refine.html?$QueryString&";
 $path .= $m->comp( '/Elements/QueryString',
                    ResultPage  => $BaseURL,
@@ -150,16 +149,10 @@ $path .= $m->comp( '/Elements/QueryString',
 </%INIT>
 <%ARGS>
 $Queue           => 'Incident Reports'
-
-# FIXME: Doesn't work as expected with refined search.
-# also is not clear should it use Query from
-# /RTIR/Search/Results.html?Queue=Incident%20Reports or 
-# own? and can it be refined at all?
 $BaseQuery       => $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue )
 $Query           => $m->comp( '/RTIR/Elements/NewQuery',  Queue => $Queue )
 $Status          => 'rejected'
-$RTIRCheck       => 'None'
-$Format          => undef
+$Format          => $RT::RTIRSearchResultFormats->{'RejectReports'};
 $Rows            => 50
 $Page            => 1
 $OrderBy         => 'id'

@@ -1,7 +1,6 @@
 <& /Elements/TicketList,
     %ARGS,
     Collection => $collection,
-    RTIRCheck => $RTIRCheck,
     OrderBy => $OrderBy,
     Order => $Order,
     Rows => $Rows,
@@ -48,7 +47,6 @@ $Page           => 1
 $OrderBy        => $session{'CurrentSearchHash'}->{'OrderBy'} || 'id'
 $Order          => $session{'CurrentSearchHash'}->{'Order'} || 'ASC'
 $BaseURL        => $RT::WebPath."/Search/Results.html?"
-$RTIRCheck      => undef
 $ShowNavigation => 0
 $AllowSorting   => 1
 $ShowEmpty      => 0
