@@ -22,40 +22,40 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<TABLE>
-  <TR>
-    <TD class="label"><&|/l&>Created</&>:</TD>
-    <TD class="value"><% $Ticket->CreatedObj->AsString %></TD>
-  </TR>
-  <TR>
-    <TD class="label"><&|/l&>Starts</&>:</TD>
-    <TD class="value"><% $Ticket->StartsObj->AsString %></TD>
-  </TR>
+<table>
+  <tr>
+    <td class="label"><&|/l&>Created</&>:</td>
+    <td class="value"><% $Ticket->CreatedObj->AsString %></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Starts</&>:</td>
+    <td class="value"><% $Ticket->StartsObj->AsString %></td>
+  </tr>
 % if ($Ticket->QueueObj->Name eq 'Incident Reports' ||
 %     $Ticket->QueueObj->Name eq 'Investigations' ||
 %     $Ticket->QueueObj->Name eq 'Blocks') {
-  <TR>
-    <TD class="label"><&|/l&>Started</&>:</TD>
-    <TD class="value"><% $Ticket->StartedObj->AsString %></TD>
-  </TR>
+  <tr>
+    <td class="label"><&|/l&>Started</&>:</td>
+    <td class="value"><% $Ticket->StartedObj->AsString %></td>
+  </tr>
 % }
 % if ($Ticket->QueueObj->Name ne 'Incidents') {
-  <TR>
-    <TD class="labeltop"><&|/l&>Due</&>:</TD>
-    <TD class="value">
+  <tr>
+    <td class="labeltop"><&|/l&>Due</&>:</td>
+    <td class="value">
         <% $Ticket->DueObj->AsString %>
 % if ($RT::OverdueAfter) {
-        <br>
+        <br />
         [<a href="Display.html?Due_Date=now%20%2B%20<%$RT::OverdueAfter%>%20days&id=<%$Ticket->Id%>"><%loc("Set to [_1] days from now", $RT::OverdueAfter)%></a>]
 % }
-    </TD>
-  </TR>
+    </td>
+  </tr>
 % }
-  <TR>
-    <TD class="label"><&|/l&>Updated</&>:</TD>
-    <TD class="value"><A HREF="#lasttrans"><% $Ticket->LastUpdated ? (loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)) : loc("Never") | h %></a></TD>
-  </TR>
-</TABLE>
+  <tr>
+    <td class="label"><&|/l&>Updated</&>:</td>
+    <td class="value"><a href="#lasttrans"><% $Ticket->LastUpdated ? (loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)) : loc("Never") | h %></a></td>
+  </tr>
+</table>
 <%ARGS>
 $Ticket => undef
 </%ARGS>

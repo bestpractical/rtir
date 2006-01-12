@@ -24,9 +24,9 @@
 %# END LICENSE BLOCK
 % if ($cf->id) {
 % if ($cf->Type eq 'FreeformSingle') {
-<input type="hidden" name="<%$Name%>" value="<%$NamePrefix%><%$cf->id%>-Value"> 
+<input type="hidden" name="<%$Name%>" value="<%$NamePrefix%><%$cf->id%>-Value" /> 
 % } else {
-<input type="hidden" name="<%$Name%>" value="<%$NamePrefix%><%$cf->id%>-Values">
+<input type="hidden" name="<%$Name%>" value="<%$NamePrefix%><%$cf->id%>-Values" />
 % }
 <& /Ticket/Elements/EditCustomField, TicketObj => $TicketObj, 
     CustomField => $cf, 

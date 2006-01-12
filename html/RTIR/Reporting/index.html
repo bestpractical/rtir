@@ -42,15 +42,15 @@
     </td>
   </tr>
   <tr>
-    <td class=label>Start Date:</td>
-    <td class=input>
-      <input size=30 name="mystart" value="<%$start->AsString%>"> 
+    <td class="label">Start Date:</td>
+    <td class="input">
+      <input size="30" name="mystart" value="<%$start->AsString%>" /> 
     </td>
   </tr>
   <tr>
-    <td class=label>End Date:</td>
-    <td class=input>
-      <input size=30 name="myend" value="<%$end->AsString%>"> 
+    <td class="label">End Date:</td>
+    <td class="input">
+      <input size="30" name="myend" value="<%$end->AsString%>" /> 
     </td>
   </tr>
 </table>
@@ -59,7 +59,7 @@
     Label => loc("Text")&>
 <& /Elements/Submit, Caption => loc("Generate and HTML report"), 
     Label => loc("HTML")&>
-</FORM>
+</form>
 
 <%INIT>
 my $QueueObj = new RT::Queue($session{'CurrentUser'});

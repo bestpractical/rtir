@@ -12,7 +12,7 @@ my %selected;
 $COLUMN_MAP->{'_RTIR_Check'} = {
     title => sub {
         return ( \qq{<input type="checkbox" name="AllSelectedTickets" value="1"
-                            onclick="setCheckbox(this.form, 'SelectedTickets', this.checked)"/>} );
+                            onclick="setCheckbox(this.form, 'SelectedTickets', this.checked)" />} );
     },
     value => sub {
         my $selected = '';

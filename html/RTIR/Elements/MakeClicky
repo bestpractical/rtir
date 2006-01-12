@@ -19,14 +19,14 @@ my %cb =
    default => sub {
      my ($type,$value) = @_;
 #     $type = substr $type,1;
-     return qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}q=${value}">$value</A>];
+     return qq[<a href="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}q=${value}">$value</a>];
    },
    ip => 
    sub {
      my ($type,$value) = @_;
-     my $result = qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=ip&q=${value}">$value</A>];
+     my $result = qq[<a href="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=ip&q=${value}">$value</a>];
      if ($incident) {
-       $result .= qq[ [<A HREF="$RT::WebPath/RTIR/Create.html?Incident=$incident&Queue=Blocks&IP-Value=$value">Block</A>] ];
+       $result .= qq[ [<a href="$RT::WebPath/RTIR/Create.html?Incident=$incident&Queue=Blocks&IP-Value=$value">Block</a>] ];
      }
      return $result;
    },
@@ -44,9 +44,9 @@ my %cb =
        "$a.$b.$c.$d";
      };
    my $result;
-   $result = qq[$value <A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=ip&q=$host">($host)</A>];
+   $result = qq[$value <a href="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=ip&q=$host">($host)</a>];
    if ($incident) {
-      $result .= qq[[<A HREF="$RT::WebPath/RTIR/Create.html?Incident=$incident&Queue=Blocks&IP-Value=$host">Block</A>] ];
+      $result .= qq[[<a href="$RT::WebPath/RTIR/Create.html?Incident=$incident&Queue=Blocks&IP-Value=$host">Block</a>] ];
    }
    return $result;
    },
@@ -54,32 +54,32 @@ my %cb =
    sub {
      my ($type,$value) = @_;
      my ($pre,$post) = split /@/,$value,2;
-     my $result = qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=email&q=$value">$value</A> ];
+     my $result = qq[<a href="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=email&q=$value">$value</a> ];
 if ($incident) {
     if ($r->uri =~ /Lookup.html$/) {
-	$result .= qq[<INPUT TYPE=CHECKBOX NAME="Requestorbox-$value" UNCHECKED>];
+	$result .= qq[<input type="checkbox" name="Requestorbox-$value" unchecked />];
     }
-    $result .= qq[[<A HREF="$RT::WebPath/RTIR/Create.html?Incident=$incident&Queue=Investigations&Requestors=$value">Investigate to</A>] ];
+    $result .= qq[[<a href="$RT::WebPath/RTIR/Create.html?Incident=$incident&Queue=Investigations&Requestors=$value">Investigate to</a>] ];
 }
-     $result .= qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=host&q=$post">($post)</A>];
+     $result .= qq[<a href="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=host&q=$post">($post)</a>];
  },
    url =>
    sub {
      my ($type,$value) = @_;
      my $uri  = URI::URL->new($value);
      my $host = $uri->host;
-     return qq[<A TARGET=new HREF="$value">$value</A> ].
-       qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=host&q=$host">($host)</A>];
+     return qq[<a target="new" href="$value">$value</a> ].
+       qq[<a href="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=host&q=$host">($host)</a>];
    },
    noc =>
    sub {
      my ($type,$value) = @_;
-     return qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=handle&q=$value">$value</A>];
+     return qq[<a href="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=handle&q=$value">$value</a>];
    },
    host =>
    sub {
      my ($type,$value) = @_;
-     my $result =  qq[<A HREF="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=host&q=$value">$value</A>];
+     my $result =  qq[<a href="$RT::WebPath/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=host&q=$value">$value</a>];
      return $result;
    },
   );

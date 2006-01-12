@@ -14,7 +14,7 @@
 %# this would do well as a Callback
 
 <div align="right">
-<a href="<%$RT::WebPath%>/RTIR/Report/BulkReject.html?Queue=<%$Queue|u%>&<% $QueryString %>"><&|/l&>Bulk Reject</&></a><br>
+<a href="<%$RT::WebPath%>/RTIR/Report/BulkReject.html?Queue=<%$Queue|u%>&<% $QueryString %>"><&|/l&>Bulk Reject</&></a><br />
 </div>
 
 % }

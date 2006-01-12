@@ -37,12 +37,12 @@
 %    $m->abort();
 % }
 
-<FORM METHOD=POST ACTION="Edit.html" ENCTYPE="multipart/form-data">
-<INPUT TYPE=HIDDEN NAME=id VALUE="<%$Ticket->Id%>">
+<form method="post" action="Edit.html" enctype="multipart/form-data">
+<input type="hidden" name="id" value="<%$Ticket->Id%>" />
 
-<table border=0 cellspacing=2 cellpadding=0 width=100%>
+<table border="0" cellspacing="2" cellpadding="0" width="100%">
 <tr>
-<td valign=top width=50%>
+<td valign="top" width="50%">
 <& /Widgets/TitleBoxStart, title => loc('Modify incident # [_1]', $Ticket->Id),   color=> "#993333", width => "100%" &>
 
 <table>
@@ -66,7 +66,7 @@
   </tr>
   <tr>
     <td class="label"><&|/l&>Subject</&>:</td>
-    <td class="value"><input name=Subject value="<%$Ticket->Subject|h%>" SIZE=50></td>
+    <td class="value"><input name="Subject" value="<%$Ticket->Subject|h%>" size="50" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Description</&>:</td>
@@ -79,11 +79,11 @@
   </tr>
   <tr>
     <td class="label"><&|/l&>Priority</&>:</td>
-    <td class="value"><input name=Priority value="<%$Ticket->Priority|h%>" SIZE="5"></td>
+    <td class="value"><input name="Priority" value="<%$Ticket->Priority|h%>" size="5" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Time Worked</&>:</td>
-    <td class="value"><input name=TimeWorked value="<%$Ticket->TimeWorked|h%>" SIZE="5"></td>
+    <td class="value"><input name="TimeWorked" value="<%$Ticket->TimeWorked|h%>" size="5" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Constituency</&>:</td>
@@ -119,7 +119,7 @@
 </td>
 </tr>
 <tr>
-<td valign=top width=50%>
+<td valign="top" width="50%">
 
 <& /Widgets/TitleBoxStart, title => loc('Dates'),  width => "100%", color => "#663366"  &>
 <& /RTIR/Elements/EditDates, TicketObj => $Ticket &>
@@ -128,7 +128,7 @@
 </td>
 </tr>
 </table>
-<BR>
+<br />
 
 <& /Elements/Submit, Name => 'SaveChanges', Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#333399" &>
 </form>

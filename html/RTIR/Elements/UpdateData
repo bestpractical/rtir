@@ -22,29 +22,29 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<tr><td align=right><&|/l&>Cc</&>:</td><td> <input name="UpdateCc" size=60
-value=<% $ARGS{UpdateCc} %>><BR>
-<i><font size=-2>
+<tr><td align="right"><&|/l&>Cc</&>:</td><td> <input name="UpdateCc" size="60"
+value="<% $ARGS{UpdateCc} %>" /><br />
+<i><font size="-2">
 <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)</&></font></i>
 </td></tr>
-<tr><td align=right><&|/l&>Bcc</&>:</td><td> <input name="UpdateBcc" size=60 VALUE="<%$ARGS{UpdateBcc}%>"><BR>
-<i><font size=-2>
+<tr><td align="right"><&|/l&>Bcc</&>:</td><td> <input name="UpdateBcc" size="60" value="<%$ARGS{UpdateBcc}%>" /><br />
+<i><font size="-2">
 <&|/l&>(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)</&></font></i>
 </td></tr>
 % if (exists $session{'Attachments'}) {
-<TD>
+<td>
 <&|/l&>Attached file</&>:
-</TD>
-<TD COLSPAN=5>
-<&|/l&>Check box to delete</&><BR>
+</td>
+<td colspan="5">
+<&|/l&>Check box to delete</&><br />
 % foreach my $attach_name (keys %{$session{'Attachments'}}) {
-<input type="checkbox" name="DeleteAttach-<%$attach_name%>"><%$attach_name%><BR>
+<input type="checkbox" name="DeleteAttach-<%$attach_name%>" /><%$attach_name%><br />
 % } # end of foreach
-</TD>
-</TR>
-<TR>
+</td>
+</tr>
+<tr>
 % } # end of if
-<tr><td align=right><&|/l&>Attach</&>:</td><td><input name="Attach" type="file"><INPUT TYPE=SUBMIT NAME="AddMoreAttach" VALUE="<&|/l&>Add More Files</&>"><input type="hidden" name="UpdateAttach" value="1">
+<tr><td align="right"><&|/l&>Attach</&>:</td><td><input name="Attach" type="file" /><input type="submit" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" /><input type="hidden" name="UpdateAttach" value="1" />
 </td></tr>
 <tr><td align="right" valign="top"><&|/l&>Message</&>:</td><td>
 <& /Elements/Callback, Page => '/Ticket/Update.html',_CallbackName => 'BeforeMessageBox', %ARGS &>

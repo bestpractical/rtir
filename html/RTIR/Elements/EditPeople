@@ -22,9 +22,9 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<TABLE>
-<TR>
-<TD VALIGN=TOP width=50%>
+<table>
+<tr>
+<td valign="top" width="50%">
 <h3><&|/l&>Current Correspondents</&></h3>
 <table>
   <tr>
@@ -39,7 +39,7 @@
     </td>
   </tr>
   <tr>
-    <td height=1 colspan=2 bgcolor=#999999></td>
+    <td height="1" colspan="2" bgcolor="#999999"></td>
   <tr>
   <tr>
     <td class="labeltop">
@@ -50,7 +50,7 @@
     </td>
   </tr>
   <tr>
-    <td height=1 colspan=2 bgcolor=#999999></td>
+    <td height="1" colspan="2" bgcolor="#999999"></td>
   <tr>
     <td class="labeltop">
       <&|/l&>Admin Cc</&>:
@@ -61,19 +61,19 @@
   </tr>
 </table>
 
-</TD>
-<TD VALIGN=TOP width=50%>
+</td>
+<td valign="top" width="50%">
 
 <h3><&|/l&>New Correspondents</&></h3>
-<&|/l&>Find people whose</&><BR>
+<&|/l&>Find people whose</&><br />
 <& /Elements/SelectUsers &>
-<input type=submit name="OnlySearchForPeople" value="<&|/l&>Go!</&>">
+<input type="submit" name="OnlySearchForPeople" value="<&|/l&>Go!</&>" />
 
 <& AddWatchers, Ticket => $Ticket, UserString => $UserString,
         UserOp => $UserOp, UserField => $UserField &> 
-</TD>
-</TR>
-</TABLE>
+</td>
+</tr>
+</table>
 
 <%ARGS>
 $UserField => undef

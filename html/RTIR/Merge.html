@@ -47,8 +47,8 @@
 % }
 
 <form action="<%$RT::WebPath%>/RTIR/Merge.html" method="post">
-<input type="hidden" name="id" value="<%$Ticket->id%>">
-<input type="hidden" name="<%$Ticket->Id%>-MergeInto">
+<input type="hidden" name="id" value="<%$Ticket->id%>" />
+<input type="hidden" name="<%$Ticket->Id%>-MergeInto" />
 
 <& /RTIR/Search/Elements/ShowResults, 
     Queue => $Queue,
@@ -58,7 +58,7 @@
     Format => $Format,
     &>
 
-<HR>
+<hr>
 
 <& /Elements/Submit, Caption=> loc('Merge into selected Ticket'), Label => loc("Merge") &>
 </form>

@@ -22,14 +22,14 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-  <TR>
-    <TD class=label>
+  <tr>
+    <td class="label">
       <&|/l&>Subject</&>:
-    </TD>
-    <TD class=value COLSPAN=5>
-      <INPUT Name="Subject" SIZE=60 MAXSIZE=100 value="<% $ARGS{'Subject'} %>">
-    </TD>
-  </TR>
+    </td>
+    <td class="value" colspan="5">
+      <input name="Subject" size="60" maxsize="100" value="<% $ARGS{'Subject'} %>" />
+    </td>
+  </tr>
   <tr>
     <td class="labeltop"><&|/l&>Description</&>:</td>
     <td class="value">
@@ -70,34 +70,34 @@
 	 Rows => 1 &>
     </td>
   </tr>
-  <TR>
-    <TD colspan=2>
+  <tr>
+    <td colspan="2">
       <& /Ticket/Elements/EditCustomFields, 
         TicketObj => $TicketObj, QueueObj => $QueueObj &>
-    </TD>
-  </TR>
-<TR>
+    </td>
+  </tr>
+<tr>
 % if (exists $session{'Attachments'}) {
-<TD>
+<td>
 <&|/l&>Attached file</&>:
-</TD>
-<TD COLSPAN=5>
-<&|/l&>Check box to delete</&><BR>
+</td>
+<td colspan="5">
+<&|/l&>Check box to delete</&><br />
 % foreach my $attach_name (keys %{$session{'Attachments'}}) {
-<input type="checkbox" name="DeleteAttach-<%$attach_name%>"><%$attach_name%><BR>
+<input type="checkbox" name="DeleteAttach-<%$attach_name%>" /><%$attach_name%><br />
 % } # end of foreach
-</TD>
-</TR>
-<TR>
+</td>
+</tr>
+<tr>
 % } # end of if
-<TD class=label>
+<td class="label">
 <&|/l&>Attach file</&>:
-</TD>
-<TD class=value COLSPAN=5>
-<INPUT TYPE=FILE NAME="Attach">
-<INPUT TYPE=SUBMIT NAME="AddMoreAttach" VALUE="<&|/l&>Add More Files</&>">
-</TD>
-</TR>
+</td>
+<td class="value" colspan="5">
+<input type="file" name="Attach" />
+<input type="submit" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" />
+</td>
+</tr>
 
 <%ARGS>
 $Title => undef

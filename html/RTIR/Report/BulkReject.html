@@ -38,8 +38,8 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%$RT::WebPath%>/RTIR/Report/BulkReject.html" method="POST">
-<input type="hidden" name="Status" value="<% $Status %>">
+<form action="<%$RT::WebPath%>/RTIR/Report/BulkReject.html" method="post">
+<input type="hidden" name="Status" value="<% $Status %>" />
 
 <& /RTIR/Search/Elements/ShowResults,
     Queue     => $Queue,

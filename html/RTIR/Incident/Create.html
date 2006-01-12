@@ -38,7 +38,7 @@ if ( $link && !$link->CurrentUserHasRight('ModifyTicket') ) {
 }
 </%PERL>
 
-<form action="Create.html" method="POST" enctype="multipart/form-data">
+<form action="Create.html" method="post" enctype="multipart/form-data">
 
 <input type="hidden" name="id" value="new" />
 <input type="hidden" name="Queue" value="<% $QueueObj->Name %>" />
@@ -46,7 +46,7 @@ if ( $link && !$link->CurrentUserHasRight('ModifyTicket') ) {
 <input type="hidden" name="child" value="<% $ARGS{'child'} %>" />
 <input type="hidden" name="new-MemberOf" value="<% $ARGS{'new-MemberOf'} %>" />
 <input type="hidden" name="MemberOf-new" value="<% $ARGS{'MemberOf-new'} %>" />
-<A name="top">
+<a name="top">
 
 <&| /Widgets/TitleBox, title => $Title &>
 <table border="0" cellpadding="0" cellspacing="2">
@@ -61,7 +61,7 @@ if ( $link && !$link->CurrentUserHasRight('ModifyTicket') ) {
 % if ($ChildObj) {
     <td class="label"><&|/l&>Owner</&>:</td>
     <td class="value"><% $ChildObj->OwnerObj->Name %></td>
-    <input type="hidden" name="Owner" value=<% $ChildObj->Owner %> />
+    <input type="hidden" name="Owner" value="<% $ChildObj->Owner %>" />
 % } else {
     <td class="label"><&|/l&>Owner</&>:</td>
     <td>
@@ -76,7 +76,7 @@ if ( $link && !$link->CurrentUserHasRight('ModifyTicket') ) {
 
 <& Elements/Create, Title => $Title, TicketObj => $TicketObj, QueueObj => $QueueObj, %ARGS &>
 
-<tr><td class=labeltop><&|/l&>Message</&>:</td>
+<tr><td class="labeltop"><&|/l&>Message</&>:</td>
 <td>
 <%PERL>
 unless ( exists $ARGS{Content} ) {
@@ -110,16 +110,16 @@ unless ( exists $ARGS{Content} ) {
 &>
 <table border="0">
     <tr><td align="right"><&|/l&>Priority</&>:</td>
-    <td><input size=3 name="InitialPriority" value="<% $ARGS{InitialPriority} || $QueueObj->InitialPriority %>"></td></tr>
+    <td><input size="3" name="InitialPriority" value="<% $ARGS{InitialPriority} || $QueueObj->InitialPriority %>" /></td></tr>
 
     <tr><td align="right"><&|/l&>Final Priority</&>:</td>
-    <td><input size=3 name="FinalPriority" value="<% $ARGS{FinalPriority} || $QueueObj->FinalPriority %>"></td></tr>
+    <td><input size="3" name="FinalPriority" value="<% $ARGS{FinalPriority} || $QueueObj->FinalPriority %>" /></td></tr>
 
     <tr><td align="right"><&|/l&>Time Worked</&>:</td>
-    <td><input size=3 name="TimeWorked" value="<% $ARGS{TimeWorked} || '0' %>"></td></tr>
+    <td><input size="3" name="TimeWorked" value="<% $ARGS{TimeWorked} || '0' %>" /></td></tr>
 
     <tr><td align="right"><&|/l&>Time Left</&>:</td>
-    <td><input size=3 name="TimeLeft" value="<% $ARGS{TimeLeft} || '0' %>"></td></tr>
+    <td><input size="3" name="TimeLeft" value="<% $ARGS{TimeLeft} || '0' %>" /></td></tr>
 </table>
 </&>
 
@@ -133,10 +133,10 @@ unless ( exists $ARGS{Content} ) {
 <table border="0">
 
     <tr><td align="right"><&|/l&>Starts</&>:</td>
-    <td><input size=10 name="Starts" value="<% $ARGS{'Starts'} || '' %>"></td></tr>
+    <td><input size="10" name="Starts" value="<% $ARGS{'Starts'} || '' %>" /></td></tr>
     
     <tr><td align="right"><&|/l&>Due</&>:</td>
-	<td><input size=10 name="Due" value="<% $ARGS{'Due'} || '' %>"></td></tr>
+	<td><input size="10" name="Due" value="<% $ARGS{'Due'} || '' %>" /></td></tr>
 
 </table>
 </&>

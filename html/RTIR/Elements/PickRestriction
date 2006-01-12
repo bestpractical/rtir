@@ -22,12 +22,12 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<FORM METHOD="GET">
-<INPUT TYPE=HIDDEN NAME="Bookmark" VALUE="<% $session{'tickets'}->FreezeLimits()|u %>">
-<input type=hidden name=Queue value="<%$ARGS{'Queue'}%>">
+<form method="get">
+<input type="hidden" name="Bookmark" value="<% $session{'tickets'}->FreezeLimits()|u %>" />
+<input type="hidden" name="Queue" value="<%$ARGS{'Queue'}%>" />
 <& /Widgets/TitleBoxStart, title => loc('Refine search')&>
-<input type=hidden name="id" value="<%$ARGS{'id'}%>">
-<INPUT TYPE=HIDDEN NAME="CompileRestriction" VALUE=1>
+<input type="hidden" name="id" value="<%$ARGS{'id'}%>" />
+<input type="hidden" name="CompileRestriction" value="1" />
 
 <ul>
 <li><&|/l&>Owner is</&>  <& /Elements/SelectBoolean, Name => "OwnerOp", 
@@ -39,15 +39,15 @@
 <li>
 <&|/l&>Requestor email address</&> 
 <& /Elements/SelectMatch, Name => "RequestorOp" &>
-<INPUT Name="ValueOfRequestor" SIZE=20>
+<input name="ValueOfRequestor" size="20" />
 
 <li>
 <&|/l&>Subject</&> <& /Elements/SelectMatch, Name => "SubjectOp" &> 
-<INPUT Name="ValueOfSubject" SIZE=20>
+<input name="ValueOfSubject" size="20" />
 
 <li><&|/l&>Priority</&> <& /Elements/SelectEqualityOperator, Name => "PriorityOp" &>
 
-<INPUT Name="ValueOfPriority" SIZE=5>
+<input name="ValueOfPriority" size="5" />
 
 <li>
 <&|/l&>Date</&> 
@@ -64,7 +64,7 @@
 			    TrueVal => 'LIKE', 
 			    FalseVal => 'NOT LIKE' 
 &> 
-<Input Name="ValueOfAttachmentField" Size=20>
+<input name="ValueOfAttachmentField" size="20" />
 
 % if ($QueueObj->Name eq 'Incidents') {
 <li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
@@ -132,13 +132,13 @@
 
 % }
 
-</UL>
+</ul>
 
 <& /Widgets/TitleBoxEnd &>
 
 <& /Widgets/TitleBoxStart, title => loc('Ordering and sorting')&>
 
-<UL>
+<ul>
 
 <li><&|/l&>Results per page</&> <& /Elements/SelectResultsPerPage, Name => "RowsPerPage", 
 							Default => $session{'tickets_rows_per_page'} || '50'
@@ -149,13 +149,13 @@
 &> 
 <& /Elements/SelectSortOrder, Name => 'TicketsSortOrder', Default => $session{'tickets_sort_order'} &>
 
-<li><input type="checkbox" name="HideResults" <%$ARGS{'HideResults'} && 'CHECKED'%>> <&|/l&>Don't show search results</&>
+<li><input type="checkbox" name="HideResults" <%$ARGS{'HideResults'} && 'CHECKED'%> /> <&|/l&>Don't show search results</&>
 <li><& /Elements/Refresh, Name => 'RefreshSearchInterval' , Default => $session{'tickets_refresh_interval'} &>
 
-</UL>
+</ul>
 
 
-</DIV>
+</div>
 
 
 
@@ -163,7 +163,7 @@
 
 <& /Elements/Submit, Label => loc('Search'), Name => 'Action'&>
 
-</FORM>
+</form>
 
 
  <%INIT>

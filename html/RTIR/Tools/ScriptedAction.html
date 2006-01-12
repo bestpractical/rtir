@@ -30,16 +30,16 @@
 
 <& /Elements/ListActions, actions => \@finalresults &>
 
-<FORM METHOD="GET" action="ScriptedAction.html" NAME="ScriptedAction" ENCTYPE="multipart/form-data">
-<input type=hidden Name="incidentid" value=<%$incidentid%>>
-<input type=hidden Name="loop" value="<%$ARGS{'loop'}%>">
-<input type=hidden Name="WatcherTypeEmail1" value="Requestor">
-<input type=hidden name="UpdateType" value="response">
-<input type=hidden name="Action" value="Respond">
-<input type=hidden name="Owner" value=<%$session{'CurrentUser'}->Id%>>
-<INPUT TYPE=HIDDEN NAME=id Value="new">
-<INPUT TYPE=HIDDEN NAME=Status Value="<%$ARGS{Status}||'open'%>">
-<A NAME="top">
+<form method="get" action="ScriptedAction.html" name="ScriptedAction" enctype="multipart/form-data">
+<input type="hidden" name="incidentid" value="<%$incidentid%>" />
+<input type="hidden" name="loop" value="<%$ARGS{'loop'}%>" />
+<input type="hidden" name="WatcherTypeEmail1" value="Requestor" />
+<input type="hidden" name="UpdateType" value="response" />
+<input type="hidden" name="Action" value="Respond" />
+<input type="hidden" name="Owner" value="<%$session{'CurrentUser'}->Id%>" />
+<input type="hidden" name="id" value="new" />
+<input type="hidden" name="Status" value="<%$ARGS{Status}||'open'%>" />
+<a name="top">
         
 % if (exists $ARGS{'TestAddresses'}) {
 <& /Widgets/TitleBoxStart, contentbg => "#cccccc", 
@@ -50,19 +50,19 @@
 %   }
 </ul>
 <& /Widgets/TitleBoxEnd &>
-<BR>
+<br />
 % }
 
 <& /Widgets/TitleBoxStart, contentbg => "#cccccc", title => loc("Identify Recipients") &>
 
-<TABLE border=0 cellpadding=0 cellspacing=2>
+<table border="0" cellpadding="0" cellspacing="2">
 % if ($loop eq 'IP') {
-  <TR>
-    <td class=label>WHOIS:</td>
+  <tr>
+    <td class="label">WHOIS:</td>
   <td>
   <table>
   <tr>
-    <td class=input>
+    <td class="input">
       <select name="server">
 % foreach my $s (sort keys %{$servers}) {
 % my ($host, $name);
@@ -85,111 +85,111 @@
   </tr>
   </table>
   </td>
-  </TR>
-  <TR>
-    <TD class=label>
+  </tr>
+  <tr>
+    <td class="label">
       <&|/l&>Contact Field</&>:
-    </TD>
-    <TD>
-      <INPUT Name="field" value="<% $ARGS{'field'} %>">
-    </TD>
-  </TR>
-  <TR>
-    <TD class=labeltop>
-      <&|/l&>IP Addresses</&>:<br><small>arg: <i>_IP_</i></small>
-    </TD>
-    <TD COLSPAN=5>
+    </td>
+    <td>
+      <input name="field" value="<% $ARGS{'field'} %>" />
+    </td>
+  </tr>
+  <tr>
+    <td class="labeltop">
+      <&|/l&>IP Addresses</&>:<br /><small>arg: <i>_IP_</i></small>
+    </td>
+    <td colspan="5">
 % if (exists $ARGS{IPs}) {
       <& /Elements/MessageBox, Name=>"IPs", Width => 30, Default=>$ARGS{IPs}, %ARGS&>
 % } else {
       <& /Elements/MessageBox, Name=> 'IPs', Width => 30 &>
 % }
-    </TD>
-  </TR>
+    </td>
+  </tr>
 % } else {
-  <TR>
-    <TD class=labeltop>
-      <&|/l&>Addresses</&>:<br><small>arg: <i>_ADDR_</i></small>
-    </TD>
-    <TD COLSPAN=5>
+  <tr>
+    <td class="labeltop">
+      <&|/l&>Addresses</&>:<br /><small>arg: <i>_ADDR_</i></small>
+    </td>
+    <td colspan="5">
 % if (exists $ARGS{Addresses}) {
       <& /Elements/MessageBox, Name=>"Addresses", Width => 30, Default=>$ARGS{Addresses}, %ARGS&>
 % } else {
       <& /Elements/MessageBox, Name=> 'Addresses', Width => 30 &>
 % }
-    </TD>
-  </TR>
+    </td>
+  </tr>
 % }
-<TR>
-  <TD class=label>
+<tr>
+  <td class="label">
     <&|/l&>Template</&>:
-  </TD>
-  <TD>
+  </td>
+  <td>
     <& /Admin/Elements/SelectTemplate, Name => "Template", Default => $ARGS{'Template'}, Queue => $investigationq->Id &>
-  </TD>
-</TR>
-<TR>
-  <TD class=label>
+  </td>
+</tr>
+<tr>
+  <td class="label">
     <&|/l&>Argument</&>:
-  </TD>
-  <TD>
-    <INPUT Name="TemplateArg" SIZE=60 value="<% $ARGS{'TemplateArg'} %>">
-  </TD>
-</TR>
-  <TR>
-    <TD ALIGN=RIGHT COLSPAN=2>
-    </TD>
-  </TR>
+  </td>
+  <td>
+    <input name="TemplateArg" size="60" value="<% $ARGS{'TemplateArg'} %>" />
+  </td>
+</tr>
+  <tr>
+    <td align="right" colspan="2">
+    </td>
+  </tr>
 </table>
 % if ($loop eq "IP") {
 <& /Elements/Submit, Name => "TestAddresses", Caption => loc("Test email addresses"), Label => loc("Test")&>
 % }
 <& /Widgets/TitleBoxEnd &>
 
-<BR>
+<br />
 
 <& /Widgets/TitleBoxStart, contentbg => "#cccccc", title => loc("Message information") &>
 
-<TABLE border=0 cellpadding=0 cellspacing=2>
-  <TR>
-    <TD class=label>
+<table border="0" cellpadding="0" cellspacing="2">
+  <tr>
+    <td class="label">
       <&|/l&>Owner</&>:
-    </TD>
-    <TD>
+    </td>
+    <td>
       <%$session{'CurrentUser'}->Name%>
-    </TD>
-  </TR>
+    </td>
+  </tr>
 
 % if (!$incidentid) {
 <& /RTIR/Incident/Elements/Create, Title => $Title, QueueObj => $incidentq, %ARGS &>
 % } else {
-  <TR>
-    <TD class=label>
+  <tr>
+    <td class="label">
       <&|/l&>Subject</&>:
-    </TD>
-    <TD>
-      <input size=60 name="Subject" value="<%$ARGS{'Subject'} || $Incident->Subject%>">
-    </TD>
-  </TR>
+    </td>
+    <td>
+      <input size="60" name="Subject" value="<%$ARGS{'Subject'} || $Incident->Subject%>" />
+    </td>
+  </tr>
 % }
 
-<TR>
-  <TD class=labeltop>
+<tr>
+  <td class="labeltop">
     <&|/l&>Message</&>:
-  </TD>
-  <TD COLSPAN=5>
+  </td>
+  <td colspan="5">
 % if (exists $ARGS{Content}) {
 <& /Elements/MessageBox, Name=>"Content", Default=>$ARGS{Content}, %ARGS&>
 % } else {
 <& /Elements/MessageBox, Name=>"Content", %ARGS &>
 % }
-  </TD>
-</TR>
-</TABLE>
+  </td>
+</tr>
+</table>
 
 <& /Widgets/TitleBoxEnd &>
 <& /Elements/Submit, Name => "SubmitAction", Caption => loc("Create the Incidents and Investigations"), Label => loc("Create")&>
-</FORM>
+</form>
 
 <%INIT>
 my ($Incident, $Ticket);

@@ -28,48 +28,48 @@
     current_subtab => "RTIR/Edit.html?id=".$Ticket->Id, 
     Title => $title &>
 
-<FORM ACTION="Update.html" NAME="TicketUpdate" 
-	METHOD=POST enctype="multipart/form-data">
-<input type="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction} %>">
-<input type="hidden" name="DefaultStatus" value="<% $ARGS{DefaultStatus} %>">
-<input type="hidden" name="Status" value="<% $ARGS{DefaultStatus} %>">
-<input type="hidden" name="Action" value="<% $ARGS{Action} %>">
+<form action="Update.html" name="TicketUpdate" 
+	method="post" enctype="multipart/form-data">
+<input type="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction} %>" />
+<input type="hidden" name="DefaultStatus" value="<% $ARGS{DefaultStatus} %>" />
+<input type="hidden" name="Status" value="<% $ARGS{DefaultStatus} %>" />
+<input type="hidden" name="Action" value="<% $ARGS{Action} %>" />
 % if ($Type eq 'Report' and $ARGS{'DefaultStatus'} eq 'rejected') {
 %   my $query = "Queue = 'Incidents' AND HasMember = " . $Ticket->Id;
 %   my $incidents = new RT::Tickets($session{'CurrentUser'});
 %   $incidents->FromSQL($query);
 %   while (my $member = $incidents->Next) {
-<input type="hidden" name="DeleteLink--MemberOf-<%$member->Id%>">
+<input type="hidden" name="DeleteLink--MemberOf-<%$member->Id%>" />
 %   }
 % }     
-<font size=-1>
+<font size="-1">
 
-<TABLE>
-<TR><TD>
-<a href="Edit.html?id=<%$Ticket->Id%>"><&|/l&>Correspondents</&></A></TD><TD align=right>
+<table>
+<tr><td>
+<a href="Edit.html?id=<%$Ticket->Id%>"><&|/l&>Correspondents</&></a></td><td align="right">
 <&|/l&>Requestor</&>:
-</TD><TD>
+</td><td>
 <b><% $Ticket->RequestorAddresses %></b>
-</TD></TR>
-<TR><TD>&nbsp;</TD><TD align=right>
+</td></tr>
+<tr><td>&nbsp;</td><td align="right">
 <&|/l&>Cc</&>:
-</TD><TD>
+</td><td>
 <b><% $Ticket->CcAddresses %></b>
-</TD></TR>
-<TR><TD>&nbsp;</TD><TD align=right>
+</td></tr>
+<tr><td>&nbsp;</td><td align="right">
 <&|/l&>AdminCc</&>:
-</TD><TD>
+</td><td>
 <b><% $Ticket->AdminCcAddresses %></b>
-</TD></TR>
-</TR>
-</TABLE>
+</td></tr>
+</tr>
+</table>
 <hr>
 
-<TABLE BORDER=0>
+<table border="0">
 
-<tr><td align=right><&|/l&>State</&>:</td>
+<tr><td align="right"><&|/l&>State</&>:</td>
 <td><%$State%></td></tr>
-<tr><td align=right><&|/l&>Update Type</&>:</td>
+<tr><td align="right"><&|/l&>Update Type</&>:</td>
 <td><select name="UpdateType">
 % if ($CanComment) {
   <option value="private" <%$CommentDefault%>><&|/l&>Comments (Not sent to requestors)</&></option>
@@ -87,18 +87,18 @@
     Default => ($ARGS{Owner}||$Ticket->Owner()||$session{'CurrentUser'}->Id||undef), 
     QueueObj => $Ticket->QueueObj, 
     TicketObj => $Ticket &>
-<&|/l&>Worked</&>: <input size=4 name="UpdateTimeWorked" value="<%
-$ARGS{UpdateTimeWorked}%>"> <&|/l&>minutes</&>
+<&|/l&>Worked</&>: <input size="4" name="UpdateTimeWorked" value="<%
+$ARGS{UpdateTimeWorked}%>" /> <&|/l&>minutes</&>
 </td></tr>
-<tr><td align=right><&|/l&>Subject</&>:</td><td> <input name="UpdateSubject" size=60 value="<% $Subject %>"></td></tr>
+<tr><td align="right"><&|/l&>Subject</&>:</td><td> <input name="UpdateSubject" size="60" value="<% $Subject %>" /></td></tr>
 
 <& /RTIR/Elements/UpdateData, Ticket => $Ticket, Type => 'Incident', %ARGS &>
 
-<INPUT TYPE=HIDDEN NAME=id VALUE="<%$Ticket->Id%>"><br>
+<input type="hidden" name="id" value="<%$Ticket->Id%>" /><br />
 </table>
 
 <& /Elements/Submit, Name => 'SubmitTicket' &>
-</FORM>
+</form>
 
 <%INIT>
 

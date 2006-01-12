@@ -47,10 +47,10 @@ Reports unresolved at the end of the period;<% scalar keys %$tix_unresolved_prun
   </tr>
 </table>
 <table>
-<tr><th align=left colspan=2>Incident Report Summary (including unlinked Incident Reports)</th></tr>
+<tr><th align="left" colspan="2">Incident Report Summary (including unlinked Incident Reports)</th></tr>
 <tr>
   <td>Outstanding reports at the beginning of this period</td>
-  <td class=value> <% scalar keys %$outstanding_pruned %></td>
+  <td class="value"> <% scalar keys %$outstanding_pruned %></td>
 </tr>
 <tr>
   <td>Total new reports for this period</td>
@@ -81,7 +81,7 @@ Incident reports received
 
 % } else {
 <table>
-<th align=left colspan=2>Incident reports received</th>
+<th align="left" colspan="2">Incident reports received</th>
 % }
 <%perl>
 
@@ -109,7 +109,7 @@ foreach my $key (sort keys %$classifications) {
 % } else {
 <tr>
   <td><%$class%></td>
-  <td class=value><%$class_count%></td>
+  <td class="value"><%$class_count%></td>
 </tr>
 % }
 <%perl>

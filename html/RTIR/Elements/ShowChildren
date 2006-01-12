@@ -32,7 +32,7 @@
 % }
 
 % if ($Delete) {
-<i><%loc("Check box to unlink")%></i><br>
+<i><%loc("Check box to unlink")%></i><br />
 % }
 <& /Elements/TicketList, 
    Collection => $children,
@@ -52,7 +52,7 @@
 <br />
 
 % if( $FullList && $Rows > 0 && $children->Count >= $Rows ) {
-<a href="<%$FullList%>"><i><%loc("More... ([_1] total)", $children->Count)%></i></a><br>
+<a href="<%$FullList%>"><i><%loc("More... ([_1] total)", $children->Count)%></i></a><br />
 % }
 
 <%INIT>

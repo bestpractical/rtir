@@ -21,20 +21,20 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<SELECT NAME="<%$Name%>">
-<OPTION VALUE="-1"
+<select name="<%$Name%>">
+<option value="-1"
 %unless ($Default) {
- SELECTED
+ selected
 %}
-><&|/l&>Never</&></OPTION>
+><&|/l&>Never</&></option>
 %foreach my $value (@refreshevery) {
-<OPTION VALUE="<%$value%>"
+<option value="<%$value%>"
 % if ($value == $Default) {
-SELECTED 
+selected 
 % }
-><&|/l, $value/60 &>Every [_1] minutes</&></OPTION>
+><&|/l, $value/60 &>Every [_1] minutes</&></option>
 %}
-</SELECT>
+</select>
 
 <%INIT>
 my @refreshevery = qw(120 300 600 1200 3600 7200);

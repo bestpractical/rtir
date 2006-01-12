@@ -22,38 +22,38 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<table width=100%>
+<table width="100%">
 <tr>
-  <td valign=top width=45%>
-    <table width=100%>
-      <th colspan=2>At the start of the time period</th>
+  <td valign="top" width="45%">
+    <table width="100%">
+      <th colspan="2">At the start of the time period</th>
       <tr>
         <td>Outstanding Incident Reports</td>
-        <td align=right> <% scalar %$outstanding %></td>
+        <td align="right"> <% scalar %$outstanding %></td>
       </tr>
     </table>
   </td>
   <td></td>
-  <td valign=top width=45%>
+  <td valign="top" width="45%">
     <table width =100%>
-      <th colspan=2>During the time period</th>
+      <th colspan="2">During the time period</th>
       <tr>
        <td>Total <%$service_level%> Incident Reports created</td>
-       <td align=right><% $tix_count %></td>
+       <td align="right"><% $tix_count %></td>
       </tr>
       <tr>
         <td>
           Incident Reports for which SLA time was met
         </td>
-	<td align=right><% $sla_count %></td>
+	<td align="right"><% $sla_count %></td>
       </tr>
       <tr>
         <td>Resolved Incident Reports</td>
-	<td align=right><% $resolved_count%></td>
+	<td align="right"><% $resolved_count%></td>
       </tr>
       <tr>
         <td>Unresolved Incident Reports </td>
-	<td align=right><% $unresolved_count%></td>
+	<td align="right"><% $unresolved_count%></td>
       </tr>
     </table>
   </td>

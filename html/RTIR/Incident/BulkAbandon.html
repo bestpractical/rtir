@@ -38,8 +38,8 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%$RT::WebPath%>/RTIR/Incident/BulkAbandon.html" method="POST">
-<input type="hidden" name="Status" value="<% $Status %>">
+<form action="<%$RT::WebPath%>/RTIR/Incident/BulkAbandon.html" method="post">
+<input type="hidden" name="Status" value="<% $Status %>" />
 
 <%perl>
 # XXX: cache result set to check if get empty results

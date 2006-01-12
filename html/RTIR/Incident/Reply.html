@@ -33,12 +33,12 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="Reply.html" method="GET">
-<input type="hidden" name="id" value="<% $id %>">
-<input type="hidden" name="Status" value="<% $ARGS{'DefaultStatus'} %>">
-<input type="hidden" name="All" value="<% $ARGS{'All'} %>">
-<input type="hidden" name="Query" value="<% $Query %>">
-<input type="hidden" name="BaseQuery" value="<% $BaseQuery %>">
+<form action="Reply.html" method="get">
+<input type="hidden" name="id" value="<% $id %>" />
+<input type="hidden" name="Status" value="<% $ARGS{'DefaultStatus'} %>" />
+<input type="hidden" name="All" value="<% $ARGS{'All'} %>" />
+<input type="hidden" name="Query" value="<% $Query %>" />
+<input type="hidden" name="BaseQuery" value="<% $BaseQuery %>" />
 
 <h2><&|/l&>Reporters</&></h2>
 <& /RTIR/Search/Elements/ShowResults,
@@ -63,7 +63,7 @@
 
 % }
 
-<HR>
+<hr>
 
 <& Elements/ReplyForm, AllowResponse => ($ARGS{Status} !~ /^(?:resolved|rejected)$/) &>
 

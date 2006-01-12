@@ -37,27 +37,27 @@
 %   $m->abort();
 % }
 
-<table border=0 cellpadding=0 cellspacing=2 width=100%>
+<table border="0" cellpadding="0" cellspacing="2" width="100%">
 <tr>
-<td valign=top colspan=2>
+<td valign="top" colspan="2">
 <& /Widgets/TitleBoxStart, title => loc("The Basics"), 
 	title_href =>"$RT::WebPath/RTIR/Edit.html?id=".$Ticket->Id, 
 	title_class=> 'inverse' &>
 
 <table>
   <tr>
-    <td class=label>
+    <td class="label">
       <%loc("State")%>:
     </td>
-    <td class=value colspan=2>
+    <td class="value" colspan="2">
       <& /RTIR/Elements/ShowRTIRField, Ticket => $Ticket, Name => 'State' &>
     </td>
   </tr>
   <tr>
-    <td class=label>
+    <td class="label">
       <%loc("Incident")%>:
     </td>
-    <td class=value colspan=2>
+    <td class="value" colspan="2">
       <& /RTIR/Elements/ShowIncidents, Ticket => $Ticket &>
     </td>
   </tr>
@@ -67,19 +67,19 @@
   </tr>
 % if ($Type eq 'Report') {
   <tr>
-    <td class=label>
+    <td class="label">
       <%loc("How Reported")%>:
     </td>
-    <td class=value colspan=2>
+    <td class="value" colspan="2">
       <& /RTIR/Elements/ShowRTIRField, 
          Ticket => $Ticket, Name => 'HowReported' &>
     </td>
   </tr>
   <tr>
-    <td class=label>
+    <td class="label">
       <%loc("Reporter Type")%>:
     </td>
-    <td class=value colspan=2>
+    <td class="value" colspan="2">
       <& /RTIR/Elements/ShowRTIRField, 
 	Ticket => $Ticket, Name => 'ReporterType' &>
     </td>
@@ -134,35 +134,35 @@
 </td>
 </tr>
 <tr>
-  <TD VALIGN=TOP width=50%>
-    <BR>
+  <td valign="top" width="50%">
+    <br />
     <& /Widgets/TitleBoxStart, title => loc('People'), 
 	title_href =>"$RT::WebPath/RTIR/Edit.html?id=".$Ticket->Id, 
 	title_class=> 'inverse' &>
     <& /RTIR/Elements/ShowPeople, Ticket => $Ticket &>
     <& /Widgets/TitleBoxEnd &>
-    <BR>
-  </TD>
+    <br />
+  </td>
   <td>
-        <BR>
+        <br />
 	  <& /Widgets/TitleBoxStart, title => loc("Dates"),
 	  	title_href =>"$RT::WebPath/RTIR/Edit.html?id=".$Ticket->Id, 
 		title_class=> 'inverse',  
 		color => "#663366" &>
 	  <& /RTIR/Elements/ShowDates, Ticket => $Ticket &>
 	  <& /Widgets/TitleBoxEnd &>
-	<BR>  
+	<br />  
   </td>
 </tr>
 <tr>
-  <TD VALIGN=TOP width=50%>
+  <td valign="top" width="50%">
     <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, 
        Attachments => $attachments &>
   </td>
-  <TD VALIGN=TOP width=50%>
+  <td valign="top" width="50%">
     <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket, DisplayPath => '/RTIR/Display.html' &>
-  </TD>
-</TR>
+  </td>
+</tr>
 </table>
 <& /Ticket/Elements/ShowHistory , 
       Ticket => $Ticket, 

@@ -36,12 +36,12 @@
 %    $m->abort();
 % }
 
-<FORM METHOD=POST ACTION="Edit.html" ENCTYPE="multipart/form-data">
-<INPUT TYPE=HIDDEN NAME=id VALUE="<%$Ticket->Id%>">
+<form method="post" action="Edit.html" enctype="multipart/form-data">
+<input type="hidden" name="id" value="<%$Ticket->Id%>" />
 
-<table border=0 cellspacing=2 cellpadding=0 width=100%>
+<table border="0" cellspacing="2" cellpadding="0" width="100%">
 <tr>
-<td valign=top width=50%>
+<td valign="top" width="50%">
 <& /Widgets/TitleBoxStart, 
     title => loc("The Basics"), 
     color=> "#993333", 
@@ -49,36 +49,36 @@
 
 <table>
   <tr>
-    <td class=label>
+    <td class="label">
       <%loc("State")%>:
     </td>
-    <td class=value colspan=2>
+    <td class="value" colspan="2">
       <& /RTIR/Elements/ShowRTIRField, Ticket => $Ticket, Name => 'State' &>
     </td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Subject</&>:</td>
-    <td class="value"><input name=Subject value="<%$Ticket->Subject|h%>" SIZE=50></td>
+    <td class="value"><input name="Subject" value="<%$Ticket->Subject|h%>" size="50" /></td>
   </tr>
-  <TR>
-    <TD class=label>
-      <&|/l&>Owner</&>:
-    </TD>
-    <TD>
-      <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->Owner &>
-    </TD>
-  </TR>
   <tr>
-    <td class=label>
+    <td class="label">
+      <&|/l&>Owner</&>:
+    </td>
+    <td>
+      <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->Owner &>
+    </td>
+  </tr>
+  <tr>
+    <td class="label">
       <%loc("Incident")%>:
     </td>
-    <td class=value>
+    <td class="value">
       <& /RTIR/Elements/ShowIncidents, Ticket => $Ticket &>
     </td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Time Worked</&>:</td>
-    <td class="value"><input name=TimeWorked value="<%$Ticket->TimeWorked|h%>" SIZE="5"></td>
+    <td class="value"><input name="TimeWorked" value="<%$Ticket->TimeWorked|h%>" size="5" /></td>
   </tr>
 
 % if ($Type eq 'Report') {
@@ -91,10 +91,10 @@
     </td>
   </tr>
   <tr>
-    <td class=labeltop>
+    <td class="labeltop">
       <%loc("How Reported")%>:
     </td>
-    <td class=value colspan=2>
+    <td class="value" colspan="2">
       <table>
         <tr>
           <td>
@@ -102,10 +102,10 @@
               TicketObj => $Ticket,
               Name => 'HowReported' &>
           </td>
-    <td class=labeltop>
+    <td class="labeltop">
       <%loc("Reporter Type")%>:
     </td>
-    <td class=value colspan=2>
+    <td class="value" colspan="2">
       <& /RTIR/Elements/EditRTIRField, 
         TicketObj => $Ticket,
         Name => 'ReporterType' &>
@@ -150,7 +150,7 @@
 % }
 
   <tr>
-    <td colspan=2>
+    <td colspan="2">
       <& /Ticket/Elements/EditCustomFields, TicketObj => $Ticket &>
     </td>
   </tr>
@@ -161,7 +161,7 @@
 </td>
 </tr>
 <tr>
-<td valign=top width=50%>
+<td valign="top" width="50%">
 
 <& /Widgets/TitleBoxStart, title => loc('Dates'),  width => "100%", color => "#663366"  &>
 <& /RTIR/Elements/EditDates, TicketObj => $Ticket &>
@@ -170,14 +170,14 @@
 </td>
 </tr>
 </table>
-<BR>
+<br />
 
 
 <& /Widgets/TitleBoxStart, title => loc('People'),width => "100%", color=> "#333399" &>
 <& /RTIR/Elements/EditPeople, Ticket => $Ticket, UserField => $UserField, UserString => $UserString, UserOp => $UserOp &>
 <& /Widgets/TitleBoxEnd &>
 
-<BR>
+<br />
 
 <& /Elements/Submit, Name => 'SaveChanges', Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#333399" &>
 </form>

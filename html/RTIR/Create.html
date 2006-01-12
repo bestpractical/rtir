@@ -55,11 +55,11 @@
 %    $m->abort();
 % }
 
-<FORM ACTION="<%$RT::WebPath%>/RTIR/Create.html" METHOD="POST" ENCTYPE="multipart/form-data">
-<input type="hidden" Name="id" value="new" />
-<input type="hidden" NAME="Queue" value="<% $QueueObj->Name %>" />
-<input type="hidden" NAME="Status" value="<% $Status || 'open' %>" />
-<input type="hidden" NAME="Incident" value="<% $ARGS{Incident} %>" />
+<form action="<%$RT::WebPath%>/RTIR/Create.html" method="post" enctype="multipart/form-data">
+<input type="hidden" name="id" value="new" />
+<input type="hidden" name="Queue" value="<% $QueueObj->Name %>" />
+<input type="hidden" name="Status" value="<% $Status || 'open' %>" />
+<input type="hidden" name="Incident" value="<% $ARGS{Incident} %>" />
 % my $parentvalue;
 % if ($IncidentObj) {
 % $parentvalue = $IncidentObj->Id;
@@ -78,7 +78,7 @@
 <a name="top">
 
 <& /Widgets/TitleBoxStart, contentbg => "#cccccc", title => $Title &>
-<table border=0 cellpadding=0 cellspacing=2>
+<table border="0" cellpadding="0" cellspacing="2">
 % if ($Incident) {
   <tr>
     <td align="right"><&|/l&>Incident</&>:</td>
@@ -91,7 +91,7 @@
   </tr>
 % }
   <tr>
-    <td class=label>
+    <td class="label">
       <&|/l&>Owner</&>:
     </td>
     <td>
@@ -102,50 +102,50 @@
     </td>
   </tr>
   <tr>
-    <td class=label>
+    <td class="label">
       <&|/l&>Subject</&>:
     </td>
-    <td class=value COLSPAN=5>
-      <input Name="Subject" SIZE=60 MAXSIZE=100 value="<% $Subject || ''%>">
+    <td class="value" colspan="5">
+      <input name="Subject" size="60" maxsize="100" value="<% $Subject || ''%>" />
     </td>
   </tr>
   <tr>
       <td align="right"><&|/l&>Time Worked</&>:</td>
-    <td colspan=2>
+    <td colspan="2">
       <table>
       <tr>
-	<td><input size=3 name="TimeWorked"<% $ARGS{TimeWorked} && " value=\"$ARGS{TimeWorked}\""  %>></td>
+	<td><input size="3" name="TimeWorked"<% $ARGS{TimeWorked} && " value=\"$ARGS{TimeWorked}\""  %> /></td>
         <td align="right"><&|/l&>Time Left</&>:</td>
-	<td><input size=3 name="TimeLeft"<% $ARGS{TimeLeft} && " value=\"$ARGS{TimeLeft}\"" %>></td>
+	<td><input size="3" name="TimeLeft"<% $ARGS{TimeLeft} && " value=\"$ARGS{TimeLeft}\"" %> /></td>
       </tr>
       </table>
     </td>     
   </tr>
   <tr>
-    <td class=label>
+    <td class="label">
       <&|/l&>Correspondents</&>:
     </td>
-    <td COLSPAN=5>
-      <input Name="Requestors" Value="<%$ARGS{Requestors}%>" SIZE=40>
+    <td colspan="5">
+      <input name="Requestors" value="<%$ARGS{Requestors}%>" size="40" />
     </td>
   </tr>
   <tr>
-    <td class=label>
+    <td class="label">
       <&|/l&>Cc</&>:
     </td>
-    <td class=value COLSPAN=5>
-      <input Name="Cc" Value="<%($ARGS{Cc})%>" SIZE=40>
-      <i><font size=-2>
+    <td class="value" colspan="5">
+      <input name="Cc" value="<%($ARGS{Cc})%>" size="40" />
+      <i><font size="-2">
       <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)</&></font></i>
     </td>
   </tr>
   <tr>
-    <td class=label>
+    <td class="label">
       <&|/l&>Admin Cc</&>:
     </td>
-    <td class=value COLSPAN=5>
-      <input Name="AdminCc" Value="<%($ARGS{AdminCc}) || ""%>" SIZE=40>
-      <i><font size=-2>
+    <td class="value" colspan="5">
+      <input name="AdminCc" value="<%($ARGS{AdminCc}) || ""%>" size="40" />
+      <i><font size="-2">
       <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)</&></font></i>
     </td>
   </tr>
@@ -161,10 +161,10 @@
     </td>
   </tr>
   <tr>
-    <td class=labeltop>
+    <td class="labeltop">
       <%loc("How Reported")%>:
     </td>
-    <td class=value colspan=2>
+    <td class="value" colspan="2">
       <table>
         <tr>
           <td>
@@ -174,10 +174,10 @@
 	      Name => 'HowReported',
 	      Default => $ARGS{'HowReported-Value'} || $RT::_RTIR_HowReported_default &>
           </td>
-    <td class=labeltop>
+    <td class="labeltop">
       <%loc("Reporter Type")%>:
     </td>
-    <td class=value colspan=2>
+    <td class="value" colspan="2">
       <& /RTIR/Elements/EditRTIRField, 
 	TicketObj => $TicketObj,
         QueueObj => $QueueObj, 
@@ -190,10 +190,10 @@
   </tr>
 % } elsif ($Type eq "Block") {
   <tr>
-    <td class=label>
+    <td class="label">
       <%loc("IP address")%>:
     </td>
-    <td class=value>
+    <td class="value">
       <& /RTIR/Elements/EditRTIRField, 
 	TicketObj => $TicketObj,
         QueueObj => $QueueObj, 
@@ -202,10 +202,10 @@
     </td>
   </tr>
   <tr>
-    <td class=label>
+    <td class="label">
       <%loc("Netmask")%>:
     </td>
-    <td class=value colspan=2>
+    <td class="value" colspan="2">
       <& /RTIR/Elements/EditRTIRField, 
 	TicketObj => $TicketObj,
         QueueObj => $QueueObj, Name => 'Netmask',
@@ -213,10 +213,10 @@
     </td>
   </tr>
   <tr>
-    <td class=label>
+    <td class="label">
       <%loc("Port")%>:
     </td>
-    <td class=value colspan=2>
+    <td class="value" colspan="2">
       <& /RTIR/Elements/EditRTIRField, 
 	TicketObj => $TicketObj,
         QueueObj => $QueueObj, Name => 'Port',
@@ -224,10 +224,10 @@
     </td>
   </tr>
   <tr>
-    <td class=label>
+    <td class="label">
       <%loc("Where Blocked")%>:
     </td>
-    <td class=value colspan=2>
+    <td class="value" colspan="2">
       <& /RTIR/Elements/EditRTIRField, 
 	TicketObj => $TicketObj,
         QueueObj => $QueueObj, Name => 'WhereBlocked',
@@ -236,7 +236,7 @@
   </tr>
 % }
   <tr>
-    <td colspan=2>
+    <td colspan="2">
       <& /Ticket/Elements/EditCustomFields, 
         TicketObj => $TicketObj, 
 	QueueObj => $QueueObj &>
@@ -247,28 +247,28 @@
 <td>
 <&|/l&>Attached file</&>:
 </td>
-<td COLSPAN=5>
-<&|/l&>Check box to delete</&><BR>
+<td colspan="5">
+<&|/l&>Check box to delete</&><br />
 % foreach my $attach_name (keys %{$session{'Attachments'}}) {
-<input type="checkbox" name="DeleteAttach-<%$attach_name%>"><%$attach_name%><BR>
+<input type="checkbox" name="DeleteAttach-<%$attach_name%>" /><%$attach_name%><br />
 % } # end of foreach
 </td>
 </tr>
 <tr>
 % } # end of if
-<td class=label>
+<td class="label">
 <&|/l&>Attach file</&>:
 </td>
-<td class=value COLSPAN=5>
-<input TYPE=FILE NAME="Attach">
-<input TYPE=SUBMIT NAME="AddMoreAttach" value="<&|/l&>Add More Files</&>">
+<td class="value" colspan="5">
+<input type="file" name="Attach" />
+<input type="submit" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" />
 </td>
 </tr>
 <tr>
-<td class=labeltop>
+<td class="labeltop">
 <&|/l&>Message</&>:
 </td>
-<td COLSPAN=5>
+<td colspan="5">
 % if (!exists $ARGS{Content}) {
 %   my $Transactions;
 %   if ($TicketObj) {
@@ -292,29 +292,29 @@
 %   }
 % }
 <& /Elements/MessageBox, Default => $ARGS{Content}, QuoteTransaction => $QuoteTransaction &>
-  <BR>
+  <br />
   </td>
 </tr>
 <tr>
-  <td align="right" COLSPAN=2>
+  <td align="right" colspan="2">
   </td>
 </tr>
 <tr>
   <td>
   </td>
-  <td VALIGN=TOP>
+  <td valign="top">
     <& /Widgets/TitleBoxStart, title => loc("Dates"),
 		title_class=> 'inverse',  
 		 color => "#663366" &>
 
-    <table BORDER=0>
+    <table border="0">
       <tr>
         <td align="right"><&|/l&>Starts</&>:</td>
-	  <td><input size=10 name="Starts" value="<% $ARGS{Starts} || '' %>" /></td>
+	  <td><input size="10" name="Starts" value="<% $ARGS{Starts} || '' %>" /></td>
       </tr>
       <tr>
         <td align="right"><&|/l&>Due</&>:</td>
-	<td><input size=10 name="Due" value="<% $ARGS{Due} || '' %>" /></td>
+	<td><input size="10" name="Due" value="<% $ARGS{Due} || '' %>" /></td>
       </tr>
     </table>
     <& /Widgets/TitleBoxEnd &>
@@ -329,7 +329,7 @@
 % } else {
 <& /Elements/Submit, Name => "Create", Label => loc("Create")&>
 % }
-</FORM>
+</form>
 
 <%INIT>
 my $QueueObj = new RT::Queue($session{'CurrentUser'});

@@ -9,10 +9,10 @@
 &>
 
 <&|/l&>Worked</&>:
-<input size="4" name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked} %>">
+<input size="4" name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked} %>" />
 <& /Elements/SelectTimeUnits, Name => 'UpdateTimeWorked-TimeUnits' &>
 
-</td></tr><tr><td align=right>
+</td></tr><tr><td align="right">
 
 <&|/l&>Update Type</&>:
 
@@ -27,7 +27,7 @@
 % }
 </select>
 
-</td></tr><tr><td align=right><&|/l&>Subject</&>:</td>
+</td></tr><tr><td align="right"><&|/l&>Subject</&>:</td>
 <td><i>(<&|/l&>uses subjects from tickets</&>)</i></td></tr>
 
 <& /RTIR/Elements/UpdateData, %ARGS &>

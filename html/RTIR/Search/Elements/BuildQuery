@@ -44,22 +44,22 @@
 %# 
 %# }}} END BPS TAGGED BLOCK
 
-<FORM METHOD="POST" ACTION="Refine.html" NAME="BuildQuery">
-<input type=hidden name=SearchId value="<%$SearchId%>">
-<input type=hidden name=Query value="<%$Query%>">
-<input type=hidden name=Format value="<%$Format%>">
-<input type=hidden name=BaseQuery value="<%$BaseQuery%>">
-<input type=hidden name=Queue value="<%$Queue%>">
-<input type=hidden name=id value="<%$id%>">
-<input type=hidden name=ResultPage value="<%$ResultPage%>">
-<table width=100%>
+<form method="post" action="Refine.html" name="BuildQuery">
+<input type="hidden" name="SearchId" value="<%$SearchId%>" />
+<input type="hidden" name="Query" value="<%$Query%>" />
+<input type="hidden" name="Format" value="<%$Format%>" />
+<input type="hidden" name="BaseQuery" value="<%$BaseQuery%>" />
+<input type="hidden" name="Queue" value="<%$Queue%>" />
+<input type="hidden" name="id" value="<%$id%>" />
+<input type="hidden" name="ResultPage" value="<%$ResultPage%>" />
+<table width="100%">
 <tr>
-<td valign=top class="boxcontainer">
+<td valign="top" class="boxcontainer">
 <& PickCriteria, query => $Query, Queue => $Queue &>
 <& /Elements/Submit, Caption => loc('Add additional criteria'), Label => loc('Add'), Name => 'AddClause'&>
 
 </td>
-<td valign=top class="boxcontainer">
+<td valign="top" class="boxcontainer">
 <& /Widgets/TitleBoxStart, title => loc("Query") . ": " .$Description &>
 <& /Search/Elements/NewListActions, actions => \@actions &>
 <select size="10" name="clauses" style="width: 100%">
@@ -67,24 +67,24 @@
 </select>
 </td></tr><tr><td bgcolor="#dddddd" colspan="2">
 <center>
-<input type=submit name="Up" value="^">
-<input type=submit name="Down" value="v">
-<input type=submit name="Left" value="<">
-<input type=submit name="Right" value=">">
-<input type=submit name="DeleteClause" value="Delete">
+<input type="submit" name="Up" value="^" />
+<input type="submit" name="Down" value="v" />
+<input type="submit" name="Left" value="<" />
+<input type="submit" name="Right" value=">" />
+<input type="submit" name="DeleteClause" value="Delete" />
 <br />
-<input type=submit name="Clear" value="Clear">
-<input type=submit name="Toggle" value="And/Or">
-%#<input type=submit name="EditQuery" value="Advanced">
+<input type="submit" name="Clear" value="Clear" />
+<input type="submit" name="Toggle" value="And/Or" />
+%#<input type="submit" name="EditQuery" value="Advanced" />
 </center>
 <& /Widgets/TitleBoxEnd &>
-<br>
+<br />
 
 <& /Search/Elements/EditSearches, CurrentSearch => $search_hash, Dirty => $dirty, SearchId => $SearchId &>
 </td>
 </tr>
 <tr>
-<td colspan=2 class="boxcontainer">
+<td colspan="2" class="boxcontainer">
 
 <& /Search/Elements/DisplayOptions, %ARGS, 
     Format=> $Format,
@@ -96,7 +96,7 @@
 </td>
 </tr>
 </table>
-</FORM>
+</form>
 
 <%ARGS>
 $id => undef

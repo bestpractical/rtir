@@ -558,7 +558,7 @@ sub _match {
 
 sub debug {
     my $message = shift;
-    $m->print($message . "<br>");
+    $m->print($message . "<br />");
 }
 
 # }}}

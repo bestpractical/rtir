@@ -38,9 +38,9 @@
 <h2><% loc('Total [_1]: [_2]([_3])', $Queue, $children->CountAll, $all_children->CountAll) %></h2>
 % }
 
-<form action="ShowChildren.html" method="POST">
-<input type="hidden" name="id" value="<%$Incident->id%>">
-<input type="hidden" name="Queue" value="<%$Queue%>">
+<form action="ShowChildren.html" method="post">
+<input type="hidden" name="id" value="<%$Incident->id%>" />
+<input type="hidden" name="Queue" value="<%$Queue%>" />
 
 <& /RTIR/Elements/ShowChildren,
     Ticket             => $Incident,

@@ -41,7 +41,7 @@
 &>
 
 <form action="<%$RT::WebPath%>/RTIR/Incident/Display.html" method="post">
-<input type="hidden" name="child" value=<%$id%>>
+<input type="hidden" name="child" value="<%$id%>" />
 
 <& /RTIR/Search/Elements/ShowResults, 
     Queue => $Queue,
@@ -54,7 +54,7 @@
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => loc("Link") &>
 </form>
 
-<HR>
+<hr>
 
 <%INIT>
 $Format = $RT::RTIRSearchResultFormats->{'LinkIncident'};

@@ -32,7 +32,7 @@
 % if ($ticket) {
 <& /Widgets/TitleBoxStart, title => loc("Current [_1]: #[_2]", $TicketType, $ticket), color=> "#993333" &>
 
-<TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
+<table width="100%" border="0" cellpadding="2" cellspacing="0">
 <& /Elements/TicketList, 
     Query  => "id = ".$TicketObj->id,
     Format => $Format,
@@ -43,8 +43,8 @@
 % }
 
 % unless ( $ARGS{'HideResults'}) {
-<TABLE WIDTH=100% border=0 cellpadding=2 CELLSPACING=0>
-<tr><td valign=top width=50%>
+<table width="100%" border="0" cellpadding="2" cellspacing="0">
+<tr><td valign="top" width="50%">
 
 <& /Widgets/TitleBoxStart, 
     title => loc('Incidents: [_1]', $q) &>
@@ -54,7 +54,7 @@
     q => $q &>
 <& /Widgets/TitleBoxEnd &>
 
-<br>
+<br />
 
 <& /Widgets/TitleBoxStart, 
     title => loc('Incident Reports: [_1]', $q), 
@@ -67,7 +67,7 @@
     q => $q &>
 <& /Widgets/TitleBoxEnd&>
 
-</td><td width=50% valign=top>
+</td><td width="50%" valign="top">
 
 <& /Widgets/TitleBoxStart, 
     title => loc('Investigations: [_1]', $q), 
@@ -80,7 +80,7 @@
     q => $q &>
 <& /Widgets/TitleBoxEnd &>
 
-<br>
+<br />
 
 <& /Widgets/TitleBoxStart, 
     title => loc('Blocks: [_1]', $q), 
@@ -92,7 +92,7 @@
     lookuptype => $type, 
     q => $q &>
 <& /Widgets/TitleBoxEnd &>
-</TABLE>
+</table>
 % }
 
 <hr>
@@ -100,11 +100,11 @@
 <h2>Look Up Information</h2>
 <table>
 <form action="Lookup.html" method="get">
-<input type=hidden name="ticket" value=<%$ARGS{'ticket'}%>>
+<input type="hidden" name="ticket" value="<%$ARGS{'ticket'}%>" />
   <tr>
-    <td class=label>WHOIS:</td>
-    <td class=input>
-      <input size=30 name="q" value="<%$q%>"> at 
+    <td class="label">WHOIS:</td>
+    <td class="input">
+      <input size="30" name="q" value="<%$q%>" /> at 
       <select name="server">
 % foreach my $s (sort keys %{$servers}) {
 % my ($host, $name);
@@ -125,15 +125,15 @@
 % }
       </select>
     </td>
-    <td align=left><input type=submit value="Go"></td>
+    <td align="left"><input type="submit" value="Go" /></td>
   </tr>
 </form>
 
 <form action="Traceroute.html" method="get" target="_blank">
   <tr>
-    <td class=label>Traceroute to:</td>
-    <td class=input><input size=30 name="q" value="<%$q%>"></td>
-    <td align=left><input type=submit value="Go"></td>
+    <td class="label">Traceroute to:</td>
+    <td class="input"><input size="30" name="q" value="<%$q%>" /></td>
+    <td align="left"><input type="submit" value="Go" /></td>
   </tr>
 </form>
 </table>
@@ -143,9 +143,9 @@
 % if ($q) {
 <h2>WHOIS Results</h2>
 % if ($TicketObj && $TicketObj->QueueObj->Name eq 'Incidents') {
-<FORM METHOD=POST ACTION="/RTIR/Tools/ScriptedAction.html">
-<input type=hidden NAME="incidentid" VALUE=<%$TicketObj->Id%>>
-<input type=hidden NAME="Subject" VALUE="<%$TicketObj->Subject%>">
+<form method="post" action="/RTIR/Tools/ScriptedAction.html">
+<input type="hidden" name="incidentid" value="<%$TicketObj->Id%>" />
+<input type="hidden" name="Subject" value="<%$TicketObj->Subject%>" />
 
 % }
 % }
@@ -162,19 +162,19 @@
 %    $DoInvestigate = 1;
 % }
 <pre><%$content|n%></pre>
-<br>
+<br />
 %     } else {
 Structured RIPE whois data returned. Click <a
 href="Lookup.html?q=<%$q%>&server=<%$server%>&handparse=1">here</a> to manually
 parse this data.
-<BR>Warnings <%$obj->warnings%>
-<BR>errors <%$obj->errors%>
+<br />Warnings <%$obj->warnings%>
+<br />errors <%$obj->errors%>
 <hr>
 %               foreach my $attribute ($obj->attributes()) {
 %                       foreach  my $value ($obj->$attribute()) {
                                <b><%$attribute%></b>: 
 % $m->comp( '/RTIR/Elements/MakeClicky', ticket => $TicketObj, url_params => "ticket=".$ticket, content => \$value);
-<%$value|n%><br>
+<%$value|n%><br />
 %                       }
 % }
 
@@ -187,7 +187,7 @@ parse this data.
 <& /Elements/Submit, Name => "InvestigateTo", Caption => loc("Investigate to selected addresses"), Label => loc("Investigate")&>
 % }
 
-</FORM>
+</form>
 
 <%init>
 my $current_subtab;

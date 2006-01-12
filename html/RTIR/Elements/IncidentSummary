@@ -22,26 +22,26 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<TABLE width=100% border=0 cellpadding=2 CELLSPACING=0>
-<TR>
+<table width="100%" border="0" cellpadding="2" cellspacing="0">
+<tr>
 <td><b><&|/l&>id<b></&></td>
 <td><b><&|/l&>Subject<b></&></td>
 <td><b><&|/l&>State<b></&></td>
 <td><b><&|/l&>Priority<b></&></td>
-<td align=right><b><&|/l&>Actions<b></&></td>
-</TR>
+<td align="right"><b><&|/l&>Actions<b></&></td>
+</tr>
 % my $i=0;
 % foreach my $incident (sort keys %{$incidents}) {
 % my $Ticket = $incidents->{$incident}->{'Ticket'};
 % $i++;
 % my ($t) = $m->comp("/RTIR/Elements/Type", Ticket => $Ticket->Id);
-<TR class="<% $i%2 ? 'oddline' : 'evenline'%>" >
-<td><b><A HREF="<%$RT::WebPath%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%></a></b></td>
-<td><b><A HREF="<%$RT::WebPath%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Subject%></a></b></td>
+<tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
+<td><b><a href="<%$RT::WebPath%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%></a></b></td>
+<td><b><a href="<%$RT::WebPath%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Subject%></a></b></td>
 <td><& "/RTIR/Elements/ShowRTIRField", Ticket => $Ticket, Name => 'State' &>
 </td>
-<TD><%$Ticket->Priority%></TD>
-<td align=right>
+<td><%$Ticket->Priority%></td>
+<td align="right">
 % if ($Type eq 'Report' or $Type eq 'Investigation' or $Type eq 'Block') {
 <a href="<%$RT::WebPath%>/RTIR/Display.html?child=<%$ticket%>&id=<%$Ticket->Id%>">[<%loc("Link")%>]</a>
 % } elsif ($ticket and $Type eq $t) {
@@ -51,14 +51,14 @@
 % }
 <a href="<%$RT::WebPath%>/RTIR/Create.html?Incident=<%$Ticket->Id%>&Queue=Investigations">[<%loc("Investigate")%>]</a>
 </td>
-</TR>
+</tr>
 % }
 % if ($i == 0) {
-<tr><td colspan=5><i>(no incidents)</i></td></tr>
+<tr><td colspan="5"><i>(no incidents)</i></td></tr>
 % }
 
 <tr>
-<td colspan=5>
+<td colspan="5">
 % if ($Type eq 'Report' or $Type eq 'Investigation' or $Type eq 'Block') {
 [<a href="<%$RT::WebPath%>/RTIR/Create.html?child=<%$ticket%>&Queue=Incidents"><b>New</b></a>]
 % }

@@ -36,7 +36,7 @@
 %  $m->abort();
 %}
 
-<table border=0 cellpadding=0 cellspacing=2 width=100%><tr><td valign=top width=50%>
+<table border="0" cellpadding="0" cellspacing="2" width="100%"><tr><td valign="top" width="50%">
 
 <& /Widgets/TitleBoxStart, title => loc('Incident #[_1]', $Ticket->Id), 
         title_href =>"$RT::WebPath/RTIR/Edit.html?id=".$Ticket->Id, 
@@ -106,7 +106,7 @@
 
 <& /Widgets/TitleBoxEnd &>
 
-</td><td valign=top>
+</td><td valign="top">
 
 <& /Widgets/TitleBoxStart,
     title => loc('Incident Reports'),
@@ -116,7 +116,7 @@
 &>
 
 % if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
-    <table width=100%><tr><td align="right"><font size="-1">
+    <table width="100%"><tr><td align="right"><font size="-1">
         | <a href="<%$RT::WebPath%>/RTIR/Create.html?Incident=<%$Ticket->Id%>&Queue=Incident%20Reports"><%loc('New')%></a>
         | <a href="<%$RT::WebPath%>/RTIR/Incident/LinkChildren.html?id=<%$Ticket->Id%>&Queue=Incident%20Reports"><%loc("Link")%></a> |
     </font></td></tr></table>
@@ -130,7 +130,7 @@
     &>
 <& /Widgets/TitleBoxEnd &>
 
-</td></tr><tr><td VALIGN=TOP width=50%>
+</td></tr><tr><td valign="top" width="50%">
 
 <& /Widgets/TitleBoxStart, title => loc('Investigations'), 
     title_href => "$RT::WebPath/RTIR/Incident/ShowChildren.html?Queue=Investigations&id=".$Ticket->Id, 
@@ -138,7 +138,7 @@
     titleright => '', color=> "#336633" &>
 
 % if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
-    <table width=100%><tr><td align="right"><font size="-1">
+    <table width="100%"><tr><td align="right"><font size="-1">
         | <a href="<%$RT::WebPath%>/RTIR/Create.html?Incident=<%$Ticket->Id%>&Queue=Investigations"><%loc('Launch')%></a> 
         | <a href="<%$RT::WebPath%>/RTIR/Incident/LinkChildren.html?id=<%$Ticket->Id%>&Queue=Investigations%>"><%loc("Link")%></a> |
     </font></td></tr></table>
@@ -151,7 +151,7 @@
     FullList => $RT::WebPath."/RTIR/Incident/ShowChildren.html?Queue=Investigations&id=".$Ticket->id,
 &>
 
-</td><td VALIGN=TOP width=50%>
+</td><td valign="top" width="50%">
 
 <& /Widgets/TitleBoxStart, title => loc('Blocks'), 
     title_href => "$RT::WebPath/RTIR/Incident/ShowChildren.html?Queue=Blocks&id=".$Ticket->Id, 
@@ -159,7 +159,7 @@
     titleright => '', color=> "#336633" &>
 
 % if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
-    <table width=100%><tr><td align="right"><font size="-1">
+    <table width="100%"><tr><td align="right"><font size="-1">
         | <a href="<%$RT::WebPath%>/RTIR/Create.html?Incident=<%$Ticket->Id%>&Queue=Blocks"><%loc('New')%></a> 
         | <a href="<%$RT::WebPath%>/RTIR/Incident/LinkChildren.html?id=<%$Ticket->Id%>&Queue=Blocks>"><%loc("Link")%></a> |
     </font></td></tr></table>
@@ -174,7 +174,7 @@
 
 <& /Widgets/TitleBoxEnd &>
 
-</td></tr><tr><td colspan=2>
+</td></tr><tr><td colspan="2">
 
 <& /Widgets/TitleBoxStart, title => loc("Dates"),
     title_href =>"$RT::WebPath/RTIR/Edit.html?id=".$Ticket->Id, 
