@@ -26,37 +26,40 @@
 % my $EscapedQueue = $m->comp('/Elements/QueryString', Queue => $Queue );
 % if ( $Split ) {
 <& '/RTIR/'.$Type.'/Elements/Tabs', 
-    Ticket => $TicketObj, 
-    current_tab => "RTIR/Split.html?Ticket=".$TicketObj->Id, 
-    current_subtab => "RTIR/Split.html?Ticket=".$TicketObj->Id, 
-    Title => $Title &>
+    Title          => $Title,
+    Ticket         => $TicketObj,
+    current_tab    => "RTIR/Split.html?Ticket=".$TicketObj->Id,
+    current_subtab => "RTIR/Split.html?Ticket=".$TicketObj->Id,
+&>
 % } elsif ( $Incident ) {
-<& "/RTIR/Incident/Elements/LinkTabs", 
-    Queue => $Queue,
-    Ticket => $IncidentObj,
-    current_tab => "RTIR/Create.html?Incident=$Incident&$EscapedQueue",
+<& "/RTIR/Incident/Elements/LinkTabs",
+    Title          => $Title,
+    Ticket         => $IncidentObj,
+    Queue          => $Queue,
+    current_tab    => "RTIR/Create.html?Incident=$Incident&$EscapedQueue",
     current_subtab => "RTIR/Create.html?Incident=$Incident&$EscapedQueue",
-    Title => $Title &>
+&>
 % } else {
 <& "/RTIR/".$Type."/Elements/Tabs",
-    Ticket => $TicketObj,
-    current_tab => "RTIR/Create.html?$EscapedQueue",
+    Title          => $Title,
+    Ticket         => $TicketObj,
+    current_tab    => "RTIR/Create.html?$EscapedQueue",
     current_subtab => "RTIR/Create.html?$EscapedQueue",
-    Title => $Title &>
+&>
 % }
 
 <& /Elements/ListActions, actions => \@results &>
 
-% if ($Split && !$TicketObj->CurrentUserHasRight('ModifyTicket')) {
-<%loc("You are not allowed to split this [_1].", $name)%>
+% if ( $Split && !$TicketObj->CurrentUserHasRight('ModifyTicket') ) {
+<% loc("You are not allowed to split this [_1].", $name) %>
 %    $m->abort();
 % }
 
 <FORM ACTION="<%$RT::WebPath%>/RTIR/Create.html" METHOD="POST" ENCTYPE="multipart/form-data">
-<INPUT TYPE=HIDDEN Name="id" VALUE="new">
-<INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
-<INPUT TYPE=HIDDEN NAME=Status Value="<%$Status||'open'%>">
-<INPUT TYPE=HIDDEN NAME=Incident Value="<%$ARGS{Incident}%>">
+<input type="hidden" Name="id" value="new" />
+<input type="hidden" NAME="Queue" value="<% $QueueObj->Name %>" />
+<input type="hidden" NAME="Status" value="<% $Status || 'open' %>" />
+<input type="hidden" NAME="Incident" value="<% $ARGS{Incident} %>" />
 % my $parentvalue;
 % if ($IncidentObj) {
 % $parentvalue = $IncidentObj->Id;
@@ -70,82 +73,82 @@
 %   }
 % }
 % if (defined $parentvalue) {
-<input type=hidden name="new-MemberOf" VALUE="<%$parentvalue%>">
+<input type="hidden" name="new-MemberOf" value="<% $parentvalue %>" />
 % }
-<A NAME="top">
+<a name="top">
 
 <& /Widgets/TitleBoxStart, contentbg => "#cccccc", title => $Title &>
-<TABLE border=0 cellpadding=0 cellspacing=2>
+<table border=0 cellpadding=0 cellspacing=2>
 % if ($Incident) {
-  <TR>
-    <TD ALIGN=RIGHT><&|/l&>Incident</&>:</TD>
-    <TD><% $Incident %></TD>
-  </TR>
+  <tr>
+    <td align="right"><&|/l&>Incident</&>:</td>
+    <td><% $Incident %></td>
+  </tr>
 % } elsif (defined $parentvalue) {
-  <TR>
-    <TD ALIGN=RIGHT><&|/l&>Split from</&>:</TD>
-    <TD><% $parentvalue %></TD>
-  </TR>
+  <tr>
+    <td align="right"><&|/l&>Split from</&>:</td>
+    <td><% $parentvalue %></td>
+  </tr>
 % }
-  <TR>
-    <TD class=label>
+  <tr>
+    <td class=label>
       <&|/l&>Owner</&>:
-    </TD>
-    <TD>
+    </td>
+    <td>
       <& /Elements/SelectOwner, 
           Name => "Owner", 
 	  QueueObj => $QueueObj, 
 	  Default => $ARGS{Owner}||$session{'CurrentUser'}->Id||undef &>
-    </TD>
-  </TR>
-  <TR>
-    <TD class=label>
+    </td>
+  </tr>
+  <tr>
+    <td class=label>
       <&|/l&>Subject</&>:
-    </TD>
-    <TD class=value COLSPAN=5>
-      <INPUT Name="Subject" SIZE=60 MAXSIZE=100 value="<% $Subject || ''%>">
-    </TD>
-  </TR>
-  <TR>
-      <TD ALIGN=RIGHT><&|/l&>Time Worked</&>:</TD>
+    </td>
+    <td class=value COLSPAN=5>
+      <input Name="Subject" SIZE=60 MAXSIZE=100 value="<% $Subject || ''%>">
+    </td>
+  </tr>
+  <tr>
+      <td align="right"><&|/l&>Time Worked</&>:</td>
     <td colspan=2>
       <table>
       <tr>
-	<TD><input size=3 name="TimeWorked"<% $ARGS{TimeWorked} && " VALUE=\"$ARGS{TimeWorked}\""  %>></TD>
-        <TD ALIGN=RIGHT><&|/l&>Time Left</&>:</TD>
-	<TD><input size=3 name="TimeLeft"<% $ARGS{TimeLeft} && " VALUE=\"$ARGS{TimeLeft}\"" %>></TD>
-      </TR>
+	<td><input size=3 name="TimeWorked"<% $ARGS{TimeWorked} && " value=\"$ARGS{TimeWorked}\""  %>></td>
+        <td align="right"><&|/l&>Time Left</&>:</td>
+	<td><input size=3 name="TimeLeft"<% $ARGS{TimeLeft} && " value=\"$ARGS{TimeLeft}\"" %>></td>
+      </tr>
       </table>
     </td>     
-  </TR>
-  <TR>
-    <TD class=label>
+  </tr>
+  <tr>
+    <td class=label>
       <&|/l&>Correspondents</&>:
-    </TD>
-    <TD COLSPAN=5>
-      <INPUT Name="Requestors" Value="<%$ARGS{Requestors}%>" SIZE=40>
-    </TD>
-  </TR>
-  <TR>
-    <TD class=label>
+    </td>
+    <td COLSPAN=5>
+      <input Name="Requestors" Value="<%$ARGS{Requestors}%>" SIZE=40>
+    </td>
+  </tr>
+  <tr>
+    <td class=label>
       <&|/l&>Cc</&>:
-    </TD>
-    <TD class=value COLSPAN=5>
-      <INPUT Name="Cc" Value="<%($ARGS{Cc})%>" SIZE=40>
+    </td>
+    <td class=value COLSPAN=5>
+      <input Name="Cc" Value="<%($ARGS{Cc})%>" SIZE=40>
       <i><font size=-2>
       <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)</&></font></i>
-    </TD>
-  </TR>
-  <TR>
-    <TD class=label>
+    </td>
+  </tr>
+  <tr>
+    <td class=label>
       <&|/l&>Admin Cc</&>:
-    </TD>
-    <TD class=value COLSPAN=5>
-      <INPUT Name="AdminCc" Value="<%($ARGS{AdminCc}) || ""%>" SIZE=40>
+    </td>
+    <td class=value COLSPAN=5>
+      <input Name="AdminCc" Value="<%($ARGS{AdminCc}) || ""%>" SIZE=40>
       <i><font size=-2>
       <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)</&></font></i>
-    </TD>
-  </TR>
+    </td>
+  </tr>
 
 % if ($QueueObj->Name eq 'Incident Reports') {
   <tr>
@@ -232,40 +235,40 @@
     </td>
   </tr>
 % }
-  <TR>
-    <TD colspan=2>
+  <tr>
+    <td colspan=2>
       <& /Ticket/Elements/EditCustomFields, 
         TicketObj => $TicketObj, 
 	QueueObj => $QueueObj &>
-    </TD>
-  </TR>
-<TR>
+    </td>
+  </tr>
+<tr>
 % if (exists $session{'Attachments'}) {
-<TD>
+<td>
 <&|/l&>Attached file</&>:
-</TD>
-<TD COLSPAN=5>
+</td>
+<td COLSPAN=5>
 <&|/l&>Check box to delete</&><BR>
 % foreach my $attach_name (keys %{$session{'Attachments'}}) {
 <input type="checkbox" name="DeleteAttach-<%$attach_name%>"><%$attach_name%><BR>
 % } # end of foreach
-</TD>
-</TR>
-<TR>
+</td>
+</tr>
+<tr>
 % } # end of if
-<TD class=label>
+<td class=label>
 <&|/l&>Attach file</&>:
-</TD>
-<TD class=value COLSPAN=5>
-<INPUT TYPE=FILE NAME="Attach">
-<INPUT TYPE=SUBMIT NAME="AddMoreAttach" VALUE="<&|/l&>Add More Files</&>">
-</TD>
-</TR>
-<TR>
-<TD class=labeltop>
+</td>
+<td class=value COLSPAN=5>
+<input TYPE=FILE NAME="Attach">
+<input TYPE=SUBMIT NAME="AddMoreAttach" value="<&|/l&>Add More Files</&>">
+</td>
+</tr>
+<tr>
+<td class=labeltop>
 <&|/l&>Message</&>:
-</TD>
-<TD COLSPAN=5>
+</td>
+<td COLSPAN=5>
 % if (!exists $ARGS{Content}) {
 %   my $Transactions;
 %   if ($TicketObj) {
@@ -290,35 +293,35 @@
 % }
 <& /Elements/MessageBox, Default => $ARGS{Content}, QuoteTransaction => $QuoteTransaction &>
   <BR>
-  </TD>
-</TR>
-<TR>
-  <TD ALIGN=RIGHT COLSPAN=2>
-  </TD>
-</TR>
-<TR>
-  <TD>
-  </TD>
-  <TD VALIGN=TOP>
+  </td>
+</tr>
+<tr>
+  <td align="right" COLSPAN=2>
+  </td>
+</tr>
+<tr>
+  <td>
+  </td>
+  <td VALIGN=TOP>
     <& /Widgets/TitleBoxStart, title => loc("Dates"),
 		title_class=> 'inverse',  
 		 color => "#663366" &>
 
-    <TABLE BORDER=0>
-      <TR>
-        <TD ALIGN=RIGHT><&|/l&>Starts</&>:</TD>
-	  <TD><input size=10 name="Starts"<% $ARGS{Starts} && " VALUE=\"$ARGS{Starts}\"" %>></TD>
-      </TR>
-      <TR>
-        <TD ALIGN=RIGHT><&|/l&>Due</&>:</TD>
-	<TD><input size=10 name="Due"<% $ARGS{Due} && " VALUE=\"$ARGS{Due}\"" %>></TD>
-      </TR>
-    </TABLE>
+    <table BORDER=0>
+      <tr>
+        <td align="right"><&|/l&>Starts</&>:</td>
+	  <td><input size=10 name="Starts" value="<% $ARGS{Starts} || '' %>" /></td>
+      </tr>
+      <tr>
+        <td align="right"><&|/l&>Due</&>:</td>
+	<td><input size=10 name="Due" value="<% $ARGS{Due} || '' %>" /></td>
+      </tr>
+    </table>
     <& /Widgets/TitleBoxEnd &>
-  </TD>
-</TR>
+  </td>
+</tr>
 
-</TABLE>
+</table>
 <& /Widgets/TitleBoxEnd &>
 
 % if ($Type eq 'Investigation') {
@@ -368,25 +371,25 @@ if ((!$Subject) and $IncidentObj) {
 
 my $name;
 if ($Type eq 'Report') {
-  $name = "Incident Report";
+    $name = "Incident Report";
 } else {
-  $name = $Type;
+    $name = $Type;
 }
 
 if ($Split) {
-  $Title = loc("Split [_1] #[_2]: [_3]", $name, $TicketObj->id, $TicketObj->Subject);
+    $Title = loc("Split [_1] #[_2]: [_3]", $name, $TicketObj->id, $TicketObj->Subject);
 } else {
-  if ($Type eq 'Investigation') {
-    $Title = loc("Launch a new [_1]", $name);
-  } else {
-    $Title = loc("Create a new [_1]", $name);
-  }
+    if ($Type eq 'Investigation') {
+        $Title = loc("Launch a new [_1]", $name);
+    } else {
+        $Title = loc("Create a new [_1]", $name);
+    }
 }
 
 # {{{ deal with deleting uploaded attachments
 foreach my $key (keys %ARGS) {
     if ($key =~ m/^DeleteAttach-(.+)$/) {
-	delete $session{'Attachments'}{$1};
+    	delete $session{'Attachments'}{$1};
     }
     $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
 }
@@ -395,9 +398,8 @@ foreach my $key (keys %ARGS) {
 if ($ARGS{'Attach'}) {			# attachment?
     $session{'Attachments'} = {} unless defined $session{'Attachments'};
 
-     # strip leading directories
-     $ARGS{'Attach'} =~ s#^.*[\\/]##;
-
+    # strip leading directories
+    $ARGS{'Attach'} =~ s#^.*[\\/]##;
 
     my $attachment = MakeMIMEEntity(
         Subject             => "$ARGS{'Attach'}",
@@ -442,3 +444,4 @@ $Split => 0
 $Subject => undef
 $QuoteTransaction => undef
 </%ARGS>
+
