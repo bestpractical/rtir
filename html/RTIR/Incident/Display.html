@@ -140,7 +140,7 @@
 % if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
     <table width="100%"><tr><td align="right"><font size="-1">
         | <a href="<%$RT::WebPath%>/RTIR/Create.html?Incident=<%$Ticket->Id%>&Queue=Investigations"><%loc('Launch')%></a> 
-        | <a href="<%$RT::WebPath%>/RTIR/Incident/LinkChildren.html?id=<%$Ticket->Id%>&Queue=Investigations%>"><%loc("Link")%></a> |
+        | <a href="<%$RT::WebPath%>/RTIR/Incident/LinkChildren.html?id=<%$Ticket->Id%>&Queue=Investigations"><%loc("Link")%></a> |
     </font></td></tr></table>
 % }
 
@@ -201,9 +201,8 @@
 <%INIT>
 my ($Ticket, $ChildObj);
 $Ticket = new RT::Ticket( $session{'CurrentUser'} );
-if ( $ARGS{'child'} ) {
-    $ChildObj = LoadTicket( $ARGS{'child'} );
-}
+$ChildObj = LoadTicket( $Child ) if $Child;
+
 
 if ($SelectedTicket) {
     $id = $SelectedTicket;
@@ -328,6 +327,6 @@ my $attachments = $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket
 <%ARGS>
 $id => undef
 $SelectedTicket => undef
-$child => undef
+$Child => undef
 @results => ()
 </%ARGS>

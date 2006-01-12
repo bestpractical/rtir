@@ -55,27 +55,27 @@
 %    $m->abort();
 % }
 
-<form action="<%$RT::WebPath%>/RTIR/Create.html" method="post" enctype="multipart/form-data">
+<form action="<% $RT::WebPath %>/RTIR/Create.html" method="post" enctype="multipart/form-data">
 <input type="hidden" name="id" value="new" />
 <input type="hidden" name="Queue" value="<% $QueueObj->Name %>" />
 <input type="hidden" name="Status" value="<% $Status || 'open' %>" />
 <input type="hidden" name="Incident" value="<% $ARGS{Incident} %>" />
 % my $parentvalue;
 % if ($IncidentObj) {
-% $parentvalue = $IncidentObj->Id;
+%   $parentvalue = $IncidentObj->Id;
 % } elsif ($TicketObj) {
 %   $parentvalue = $TicketObj->Id;
-%   my $query = "Queue = 'Incidents' AND HasMember = " . $TicketObj->Id;
-%   my $incidents = new RT::Tickets($session{'CurrentUser'});
-%   $incidents->FromSQL($query);
+%   my $incidents = new RT::Tickets( $session{'CurrentUser'} );
+%   $incidents->FromSQL( "Queue = 'Incidents' AND HasMember = " . $TicketObj->Id );
 %   while (my $incident = $incidents->Next) {
-%     $parentvalue = $parentvalue." ".$incident->Id;
+%     $parentvalue .= " ". $incident->Id;
 %   }
 % }
 % if (defined $parentvalue) {
 <input type="hidden" name="new-MemberOf" value="<% $parentvalue %>" />
 % }
-<a name="top">
+
+<a name="top"></a>
 
 <& /Widgets/TitleBoxStart, contentbg => "#cccccc", title => $Title &>
 <table border="0" cellpadding="0" cellspacing="2">
@@ -242,28 +242,9 @@
 	QueueObj => $QueueObj &>
     </td>
   </tr>
-<tr>
-% if (exists $session{'Attachments'}) {
-<td>
-<&|/l&>Attached file</&>:
-</td>
-<td colspan="5">
-<&|/l&>Check box to delete</&><br />
-% foreach my $attach_name (keys %{$session{'Attachments'}}) {
-<input type="checkbox" name="DeleteAttach-<%$attach_name%>" /><%$attach_name%><br />
-% } # end of foreach
-</td>
-</tr>
-<tr>
-% } # end of if
-<td class="label">
-<&|/l&>Attach file</&>:
-</td>
-<td class="value" colspan="5">
-<input type="file" name="Attach" />
-<input type="submit" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" />
-</td>
-</tr>
+
+<& SELF:AttachmentsForm &>
+
 <tr>
 <td class="labeltop">
 <&|/l&>Message</&>:
@@ -281,14 +262,14 @@
 %   # Investigations should quote their included text
 %   my $quote = 0;
 %   if ($Type eq 'Investigation') {
-%     $quote = 1;
+%       $quote = 1;
 %   }
 %   $ARGS{Content} = $m->scomp("/RTIR/Elements/TransactionData", 
 %      Transactions => $Transactions,
 %      Type => 'messages',
 %      Include => {'Create', 'Correspond'},
 %      QuoteText => $quote);
-%   $ARGS{Content} =~ s/\&gt;/>/g;
+%      $ARGS{Content} =~ s/\&gt;/>/g;
 %   }
 % }
 <& /Elements/MessageBox, Default => $ARGS{Content}, QuoteTransaction => $QuoteTransaction &>
@@ -332,84 +313,50 @@
 </form>
 
 <%INIT>
-my $QueueObj = new RT::Queue($session{'CurrentUser'});
-$QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
+my $QueueObj = new RT::Queue( $session{'CurrentUser'} );
+$QueueObj->Load( $Queue ) || Abort( loc("Queue could not be loaded.") );
 
-my ($Type, $Status);
-if ($Queue eq "Incidents") {
-  $Type = "Incident";
-  $Status = 'open';
-} elsif ($Queue eq "Incident Reports") {
-  $Type = "Report";
-  $Status = 'new';
-} elsif ($Queue eq "Investigations") {
-  $Type = "Investigation";
-  $Status = 'open';
-} elsif ($Queue eq "Blocks") {
-  $Type = "Block";
-  $Status = 'new';
+my ($Type) = $m->comp('/RTIR/Elements/Type', Queue => $Queue );
+if ($Type eq 'Incident') {
+    $m->comp("/RTIR/Incident/Create.html", %ARGS);
+    $m->abort;
 }
 
-# Incidents have their own Create.html
-if ($Type eq 'Incident') {
-  $m->comp("/RTIR/Incident/Create.html", %ARGS);
-  $m->abort;
+my $Status;
+if ($Queue eq "Incident Reports") {
+    $Status = 'new';
+} elsif ($Queue eq "Investigations") {
+    $Status = 'open';
+} elsif ($Queue eq "Blocks") {
+    $Status = 'new';
 }
 
 my ($Title, $IncidentObj);
-my $TicketObj = $ARGS{TicketObj};
+my $TicketObj = $ARGS{'TicketObj'};
 
-if ($Incident) {
-  $IncidentObj = new RT::Ticket($session{'CurrentUser'});
-  $IncidentObj = LoadTicket($Incident);
+if ( $Incident ) {
+    $IncidentObj = new RT::Ticket( $session{'CurrentUser'} );
+    $IncidentObj = LoadTicket( $Incident );
+    $Subject ||= $IncidentObj->Subject;
 }
 
-# if there isn't a subject, but there is an incident, use that one
-if ((!$Subject) and $IncidentObj) {
-  $Subject = $IncidentObj->Subject;
-}
 
 my $name;
-if ($Type eq 'Report') {
-    $name = "Incident Report";
+if ( $Type eq 'Report' ) {
+    $name = 'Incident Report';
 } else {
     $name = $Type;
 }
 
-if ($Split) {
+if ( $Split ) {
     $Title = loc("Split [_1] #[_2]: [_3]", $name, $TicketObj->id, $TicketObj->Subject);
 } else {
-    if ($Type eq 'Investigation') {
+    if ( $Type eq 'Investigation' ) {
         $Title = loc("Launch a new [_1]", $name);
     } else {
         $Title = loc("Create a new [_1]", $name);
     }
 }
-
-# {{{ deal with deleting uploaded attachments
-foreach my $key (keys %ARGS) {
-    if ($key =~ m/^DeleteAttach-(.+)$/) {
-    	delete $session{'Attachments'}{$1};
-    }
-    $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
-}
-
-# {{{ store the uploaded attachment in session
-if ($ARGS{'Attach'}) {			# attachment?
-    $session{'Attachments'} = {} unless defined $session{'Attachments'};
-
-    # strip leading directories
-    $ARGS{'Attach'} =~ s#^.*[\\/]##;
-
-    my $attachment = MakeMIMEEntity(
-        Subject             => "$ARGS{'Attach'}",
-        Body                => "",
-        AttachmentFieldName => 'Attach'
-    );
-    $session{'Attachments'} = { %{$session{'Attachments'} || {}},
-				$ARGS{'Attach'} => $attachment };
-}
-# }}}
 
 # delete temporary storage entry to make WebUI clean
 unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
@@ -417,17 +364,14 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
 }
 
 
-# }}}
-
 my @results;
-if ((!exists $ARGS{'AddMoreAttach'}) && ($ARGS{'id'} eq 'new')) { # new ticket?
-  if ($Type ne 'Investigation' ||
-      ($Type eq 'Investigation' &&  $ARGS{'Requestors'})) {
-    $m->comp('Display.html', %ARGS);
-    $m->abort();
-  } else {
-    push @results, loc( "Investigation launch failed: You must enter a correspondent.");
-  }
+if ( !$ARGS{'AddMoreAttach'} && $ARGS{'id'} eq 'new' ) {
+    if ( $Type ne 'Investigation' || $ARGS{'Requestors'} ) {
+        $m->comp( 'Display.html', %ARGS );
+        $m->abort;
+    } else {
+        push @results, loc( "Investigation launch failed: You must enter a correspondent.");
+    }
 }
 
 my $sla;
@@ -445,3 +389,60 @@ $Subject => undef
 $QuoteTransaction => undef
 </%ARGS>
 
+<%METHOD ProcessAttachments>
+<%ARGS>
+@DeleteAttachments => ()
+$Attachment => '';
+</%ARGS>
+<%INIT>
+
+$session{'Attachments'} ||= {};
+
+# deal with deleting uploaded attachments
+foreach ( @DeleteAttachments ) {
+    next unless exists $session{'Attachments'}{ $_ };
+    delete $session{'Attachments'}{ $_ };
+    $session{'i'}++;
+}
+
+# store the uploaded attachment in session
+if ( $Attachment ) {
+    # strip leading directories
+    $Attachment =~ s{^.*[\\/]}{};
+
+    my $entity = MakeMIMEEntity(
+        Subject             => $Attachment,
+        Body                => '',
+        AttachmentFieldName => 'Attachment'
+    );
+    $session{'Attachments'}{ $Attachment } = $entity;
+    $session{'i'}++;
+}
+</%INIT>
+</%METHOD>
+
+<%METHOD AttachmentsForm>
+
+<table>
+
+% if ( exists $session{'Attachments'} && keys %{ $session{'Attachments'} } ) {
+<tr><td><&|/l&>Attached file</&>:</td>
+<td>
+<&|/l&>Check box to delete</&><br />
+<ul class="files">
+% foreach my $name (keys %{$session{'Attachments'}}) {
+<li><input type="checkbox" name="DeleteAttachments" value="<% $name %>" /><% $name %></li>
+% }
+</ul>
+</td></tr>
+% }
+
+<tr><td class="label"><&|/l&>Attach file</&>:</td>
+<td class="value">
+<input type="file" name="Attachment" />
+<input type="submit" name="AddAttachment" value="<&|/l&>Add More Files</&>" />
+</td></tr>
+
+</table>
+
+</%METHOD>

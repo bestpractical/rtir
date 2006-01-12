@@ -22,22 +22,23 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& Create.html, 'new-MemberOf' => $TicketObj->Id,
+<& /RTIR/Create.html,
+    'new-MemberOf'   => $TicketObj->Id,
     QuoteTransaction => $QuoteTransaction,
-    Queue => 'Incidents',
-    Subject => $TicketObj->Subject,
-    Requestors => $TicketObj->RequestorAddresses,
-    Cc => $TicketObj->CcAddresses,
-    AdminCc => $TicketObj->AdminCcAddresses,
-    TicketObj => $TicketObj,
-    Status => $TicketObj->Status,
-    Owner => $TicketObj->Owner,
-    InitialPriority => $TicketObj->InitialPriority,
-    FinalPriority => $TicketObj->FinalPriority,
-    Title => loc("Split Incident #[_1]: [_2]", $TicketObj->id, $TicketObj->Subject),
-    current_tab => "RTIR/Display.html?id=".$Ticket,
-    current_subtab => "RTIR/Split.html?Ticket=".$Ticket,
- &>
+    Queue            => $TicketObj->QueueObj->Name,
+    Subject          => $TicketObj->Subject,
+    Requestors       => $TicketObj->RequestorAddresses,
+    Cc               => $TicketObj->CcAddresses,
+    AdminCc          => $TicketObj->AdminCcAddresses,
+    TicketObj        => $TicketObj,
+    Status           => $TicketObj->Status,
+    Owner            => $TicketObj->Owner,
+    InitialPriority  => $TicketObj->InitialPriority,
+    FinalPriority    => $TicketObj->FinalPriority,
+    Title            => loc("Split Incident #[_1]: [_2]", $TicketObj->id, $TicketObj->Subject),
+    current_tab      => "RTIR/Display.html?id=".$Ticket,
+    current_subtab   => "RTIR/Split.html?Ticket=".$Ticket,
+&>
 
 <%INIT>
 my $TicketObj = LoadTicket($Ticket);

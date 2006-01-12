@@ -22,85 +22,58 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-  <tr>
-    <td class="label">
-      <&|/l&>Subject</&>:
-    </td>
-    <td class="value" colspan="5">
-      <input name="Subject" size="60" maxsize="100" value="<% $ARGS{'Subject'} %>" />
-    </td>
-  </tr>
-  <tr>
-    <td class="labeltop"><&|/l&>Description</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/EditRTIRField, 
-         QueueObj => $QueueObj, 
-	 Name => 'Description',
-	 Default => $RT::_RTIR_Description_default,
-	 Cols => 40 &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Constituency</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/EditRTIRField, 
-         QueueObj => $QueueObj, 
-	 Name => 'Constituency',
-	 Default => $RT::_RTIR_Constituency_default,
-	 Rows => 1 &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Function</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/EditRTIRField, 
-         QueueObj => $QueueObj, 
-	 Name => 'Function',
-	 Default => $RT::_RTIR_Function_default,
-	 Rows => 1 &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Classification</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/EditRTIRField, 
-         QueueObj => $QueueObj, 
-	 Name => 'Classification',
-	 Default => $RT::_RTIR_Classification_default,
-	 Rows => 1 &>
-    </td>
-  </tr>
-  <tr>
-    <td colspan="2">
-      <& /Ticket/Elements/EditCustomFields, 
-        TicketObj => $TicketObj, QueueObj => $QueueObj &>
-    </td>
-  </tr>
-<tr>
-% if (exists $session{'Attachments'}) {
-<td>
-<&|/l&>Attached file</&>:
-</td>
-<td colspan="5">
-<&|/l&>Check box to delete</&><br />
-% foreach my $attach_name (keys %{$session{'Attachments'}}) {
-<input type="checkbox" name="DeleteAttach-<%$attach_name%>" /><%$attach_name%><br />
-% } # end of foreach
-</td>
-</tr>
-<tr>
-% } # end of if
-<td class="label">
-<&|/l&>Attach file</&>:
-</td>
-<td class="value" colspan="5">
-<input type="file" name="Attach" />
-<input type="submit" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" />
-</td>
-</tr>
+
+<tr><td class="label"><&|/l&>Subject</&>:</td>
+<td class="value">
+<input name="Subject" size="60" maxsize="100" value="<% $ARGS{'Subject'} %>" />
+</td></tr>
+
+<tr><td class="labeltop"><&|/l&>Description</&>:</td>
+<td class="value">
+<& /RTIR/Elements/EditRTIRField,
+    QueueObj => $QueueObj,
+	Name => 'Description',
+	Default => $RT::_RTIR_Description_default,
+	Cols => 40,
+&></td></tr>
+
+<tr><td class="label"><&|/l&>Constituency</&>:</td>
+<td class="value">
+<& /RTIR/Elements/EditRTIRField,
+    QueueObj => $QueueObj,
+	Name => 'Constituency',
+	Default => $RT::_RTIR_Constituency_default,
+	Rows => 1,
+&></td></tr>
+
+<tr><td class="label"><&|/l&>Function</&>:</td>
+<td class="value">
+<& /RTIR/Elements/EditRTIRField, 
+    QueueObj => $QueueObj, 
+	Name => 'Function',
+	Default => $RT::_RTIR_Function_default,
+	Rows => 1,
+&></td></tr>
+
+<tr><td class="label"><&|/l&>Classification</&>:</td>
+<td class="value">
+<& /RTIR/Elements/EditRTIRField, 
+    QueueObj => $QueueObj, 
+    Name => 'Classification',
+    Default => $RT::_RTIR_Classification_default,
+    Rows => 1,
+&></td></tr>
+
+<tr><td colspan="2">
+<& /Ticket/Elements/EditCustomFields,
+    TicketObj => $TicketObj,
+    QueueObj => $QueueObj,
+&></td></tr>
+
+<tr><td colspan="2"><& /RTIR/Create.html:AttachmentsForm &></td></tr>
 
 <%ARGS>
-$Title => undef
+$NamePrefix => ''
 $QueueObj => undef
 $TicketObj => undef
 </%ARGS>

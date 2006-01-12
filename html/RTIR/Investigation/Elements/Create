@@ -1,0 +1,156 @@
+% foreach my $field( qw(Queue Status) ) {
+<input type="hidden" name="<% $NamePrefix . $field %>" value="<% $value_cb->( $field ) %>" />
+% }
+
+<table border="0" cellpadding="0" cellspacing="2">
+
+% unless ( $SkipField{'Owner'} || $HideField{'Owner'} ) {
+<tr><td class="label"><&|/l&>Owner</&>:</td>
+<td class="value"><& /Elements/SelectOwner,
+    Name     => $NamePrefix ."Owner",
+	QueueObj => $QueueObj,
+	Default  => $value_cb->('Owner') || $session{'CurrentUser'}->Id,
+&></td></tr>
+% }
+
+% unless ( $SkipField{'Subject'} || $HideField{'Subject'} ) {
+<tr><td class="label"><&|/l&>Subject</&>:</td>
+<td class="value">
+<input name="<% $NamePrefix %>Subject" size="60" maxsize="100" value="<% $value_cb->('Subject') %>" />
+</td></tr>
+% }
+
+% unless ( $SkipField{'TimeFields'} ) {
+<tr><td colspan="2"><table><tr>
+    <td align="right"><&|/l&>Time Worked</&>:</td>
+    <td><input size="3" name="<% $NamePrefix %>TimeWorked" value="<% $value_cb->('TimeWorked') %>" /></td>
+    <td align="right"><&|/l&>Time Left</&>:</td>
+	<td><input size="3" name="<% $NamePrefix %>TimeLeft" value="<% $value_cb->('TimeLeft') %>" /></td>
+</tr></table></td></tr>
+% }
+
+% unless ( $SkipField{'Requestors'} || $HideField{'Requestors'} ) {
+<tr><td class="label"><&|/l&>Correspondents</&>:</td>
+<td class="value"><input name="<% $NamePrefix %>Requestors" value="<% $value_cb->('Requestors') %>" size="40" /></td></tr>
+% }
+
+% unless ( $SkipField{'Cc'} || $HideField{'Cc'} ) {
+<tr><td class="label"><&|/l&>Cc</&>:</td>
+<td class="value"><input name="<% $NamePrefix %>Cc" value="<% $value_cb->('Cc') %>" size="40" /><br />
+<i><font size="-2"><&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of
+email addresses. These people <b>will</b> receive future updates.)</&></font></i>
+</td></tr>
+% }
+
+% unless ( $SkipField{'AdminCc'} && $HideField{'AdminCc'} ) {
+<tr><td class="label"><&|/l&>Admin Cc</&>:</td>
+<td class="value"><input name="<% $NamePrefix %>AdminCc" value="<% $value_cb->('AdminCc') %>" size="40" />
+<i><font size="-2"><&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative
+email addresses. These people <b>will</b> receive future updates.)</&></font></i>
+</td></tr>
+% }
+
+% if ( $QueueObj || $ARGS{'TicketObj'} ) {
+% unless ( $SkipField{'CustomFields'} ) {
+<tr><td colspan="2"><& /Ticket/Elements/EditCustomFields,
+    TicketObj => $ARGS{'TicketObj'},
+	QueueObj  => $QueueObj,
+&></td></tr>
+% } }
+
+% unless ( $SkipField{'Attachments'} ) {
+<& /RTIR/Create.html:AttachmentsForm &>
+% }
+
+% unless ( $SkipField{'Content'} || $HideField{'Content'} ) {
+<tr><td class="labeltop"><&|/l&>Message</&>:</td>
+<td><& /Elements/MessageBox,
+    Name             => $NamePrefix .'Content',
+    Default          => $value_cb->('Content'),
+    QuoteTransaction => $value_cb->('QuoteTransaction'),
+&></td></tr>
+% }
+
+% unless ( $SkipField{'DateFields'} ) {
+<tr><td>&nbsp;</td><td valign="top"><&| /Widgets/TitleBox,
+    title => loc("Dates"),
+    title_class=> 'inverse',
+&><table>
+
+<tr><td class="label"><&|/l&>Starts</&>:</td>
+<td class="value"><input size="10" name="<% $NamePrefix %>Starts" value="<% $value_cb->('Starts') %>" /></td></tr>
+
+<tr><td class="label"><&|/l&>Due</&>:</td>
+<td class="value"><input size="10" name="<% $NamePrefix %>Due" value="<% $value_cb->('Due') %>" /></td></tr>
+
+</table></&></td></tr>
+% }
+
+</table>
+
+<%ARGS>
+$NamePrefix => ''
+$QueueObj => undef,
+%HideField => ()
+%SkipField => ()
+</%ARGS>
+<%INIT>
+my %DEFAULTS = (
+    Status => 'new',
+);
+my $value_cb = sub {
+    my $name = shift;
+    my $full_name = $NamePrefix . $name;
+    my $value;
+    $value = $ARGS{     $full_name };
+    $value = $ARGS{     $name } unless defined $value;
+    $value = $DEFAULTS{ $name } unless defined $value;
+    $value = ''                 unless defined $value;
+    return $value;
+};
+
+if ( !$QueueObj ) {
+    if ( my $queue = $value_cb->('Queue') ) {
+        my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
+        $QueueObj->Load( $queue );
+#        Abort( loc("Couldn't load queue '[_1]'.", $queue) );
+    }
+}
+</%INIT>
+
+<%METHOD Process>
+<%ARGS>
+$NamePrefix => '',
+$DefaultsNamePrefix => undef
+</%ARGS>
+<%INIT>
+if ( $NamePrefix ) {
+    foreach my $k( keys %ARGS ) {
+        next unless $k =~ /^\Q$NamePrefix\E(.*)$/;
+        $ARGS{ $1 } = delete $ARGS{ $k };
+    }
+}
+if ( $DefaultsNamePrefix && $DefaultsNamePrefix ne $NamePrefix ) {
+    foreach my $k( keys %ARGS ) {
+        next unless $k =~ /^\Q$DefaultsNamePrefix\E(.*)$/;
+        next if exists $ARGS{ $1 };
+        $ARGS{ $1 } = delete $ARGS{ $k };
+    }
+}
+delete $ARGS{'DefaultsNamePrefix'};
+delete $ARGS{'NamePrefix'};
+
+use Data::Dumper; $RT::Logger->crit(Dumper(\%ARGS));
+
+#unless ($QueueObj->CurrentUserHasRight('CreateTicket')) {
+#    Abort('You have no permission to create tickets in that queue.');
+#}
+my ($Ticket, @results) = CreateTicket(
+    Attachments => $session{'Attachments'},
+    %ARGS,
+);
+
+delete $session{'Attachments'} if $Ticket;
+return ($Ticket, @results);
+</%INIT>
+</%METHOD>

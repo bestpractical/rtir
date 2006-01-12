@@ -33,19 +33,19 @@
 
 <%PERL>
 if ( $link && !$link->CurrentUserHasRight('ModifyTicket') ) {
-    $m->out( loc('You are not allowed to edit this Incident.') );
-    $m->abort();
+    $m->out( loc('You are not allowed to [_1] #[_2].', lc( $label ), $link->id ) );
+    return;
 }
 </%PERL>
 
 <form action="Create.html" method="post" enctype="multipart/form-data">
 
-<input type="hidden" name="id" value="new" />
-<input type="hidden" name="Queue" value="<% $QueueObj->Name %>" />
-<input type="hidden" name="Status" value="<% $ARGS{'Status'} || 'open' %>" />
-<input type="hidden" name="child" value="<% $ARGS{'child'} %>" />
-<input type="hidden" name="new-MemberOf" value="<% $ARGS{'new-MemberOf'} %>" />
-<input type="hidden" name="MemberOf-new" value="<% $ARGS{'MemberOf-new'} %>" />
+<input type="hidden" name="id"           value="new" />
+<input type="hidden" name="Queue"        value="<% $QueueObj->Name       || '' %>" />
+<input type="hidden" name="Status"       value="<% $ARGS{'Status'}       || 'open' %>" />
+<input type="hidden" name="Child"        value="<% $ARGS{'Child'}        || '' %>" />
+<input type="hidden" name="new-MemberOf" value="<% $ARGS{'new-MemberOf'} || '' %>" />
+<input type="hidden" name="MemberOf-new" value="<% $ARGS{'MemberOf-new'} || '' %>" />
 <a name="top">
 
 <&| /Widgets/TitleBox, title => $Title &>
@@ -54,23 +54,23 @@ if ( $link && !$link->CurrentUserHasRight('ModifyTicket') ) {
 % if ($link) {
 % my ($Type) = $m->comp("/RTIR/Elements/Type", TicketObj => $link );
 <tr><td class="label"><% $label %>:</td>
-<td><% loc("[_1] #[_2]: [_3]", $Type, $link->Id, $link->Subject) %></td></tr>
+<td class="value"><% loc("[_1] #[_2]: [_3]", $Type, $link->Id, $link->Subject) %></td></tr>
 % }
 
 <tr>
 % if ($ChildObj) {
     <td class="label"><&|/l&>Owner</&>:</td>
-    <td class="value"><% $ChildObj->OwnerObj->Name %></td>
+    <td class="value">
+    <% $ChildObj->OwnerObj->Name %>
     <input type="hidden" name="Owner" value="<% $ChildObj->Owner %>" />
+    </td>
 % } else {
     <td class="label"><&|/l&>Owner</&>:</td>
-    <td>
-      <& /Elements/SelectOwner, 
-          Name     => 'Owner',
-          QueueObj => $QueueObj,
-          Default  => $ARGS{Owner} || $session{'CurrentUser'}->Id
-      &>
-    </td>
+    <td><& /Elements/SelectOwner, 
+        Name     => 'Owner',
+        QueueObj => $QueueObj,
+        Default  => $ARGS{Owner} || $session{'CurrentUser'}->Id
+    &></td>
 % }
 </tr>
 
@@ -81,27 +81,26 @@ if ( $link && !$link->CurrentUserHasRight('ModifyTicket') ) {
 <%PERL>
 unless ( exists $ARGS{Content} ) {
     my $Transactions;
-    if ($TicketObj) {
+    if ( $TicketObj ) {
         $Transactions = $TicketObj->Transactions;
     } elsif ( $ChildObj ) {
         $Transactions = $ChildObj->Transactions;
     }
     if ( $Transactions ) {
-        $ARGS{Content} = $m->scomp("/RTIR/Elements/TransactionData", 
+        $ARGS{Content} = $m->scomp("/RTIR/Elements/TransactionData",
             Transactions => $Transactions,
-            Type => 'messages',
-            Include => {'Create', 'Correspond'}
-         );
-         $ARGS{Content} =~ s/\&gt;/>/g;
+            Type         => 'messages',
+            Include      => {'Create', 'Correspond'},
+        );
+        $ARGS{Content} =~ s/\&gt;/>/g;
     }
 }
 </%PERL>
 <& /Elements/MessageBox, Default => $ARGS{Content} &>
-</td></tr>
-</table>
 
-<table border="0" cellpadding="0" cellspacing="2">
-<tr><td width="50%" valign="top">
+</td></tr>
+
+<tr><td>&nbsp;</td><td colspan="2">
 
 <&| /Widgets/TitleBox,
     title => loc('The Basics'),
@@ -123,8 +122,6 @@ unless ( exists $ARGS{Content} ) {
 </table>
 </&>
 
-</td><td valign="top">
-
 <&| /Widgets/TitleBox,
     title => loc("Dates"),
     title_class=> 'inverse',  
@@ -142,21 +139,42 @@ unless ( exists $ARGS{Content} ) {
 </&>
 
 </td></tr>
+
 </table>
 
 </&>
 
-<& /Elements/Submit, Label => loc("Create") &>
+<& /Elements/Submit, Name => 'CreateIncident', Label => loc("Create") &>
+
+<&| /Widgets/TitleBox,
+    title => loc("Run Investigation"),
+    title_class=> 'inverse',
+    color => "#663366",
+&>
+<& /RTIR/Investigation/Elements/Create,
+    %ARGS,
+    NamePrefix => 'Investigation',
+    Queue => 'Investigations',
+    Status => 'new',
+    SkipField => { Owner => 1, Attachments => 1, DateFields => 1 },
+&>
+<& /Elements/Submit,
+    Name => 'CreateWithInvestigation',
+    Label => loc("Create Incident and run Investigation"),
+&>
+</&>
+
 </form>
 
 
 <%INIT>
+my @results;
+
 # if there isn't a subject, but there is a child, use that one
 my $ChildObj;
-
-if ( !$ARGS{'Subject'} && $child ) {
-    $ChildObj = LoadTicket( $child );
-    $ARGS{'Subject'} = $ChildObj->Subject;
+if ( $Child ) {
+    $ChildObj = LoadTicket( $Child );
+    $ARGS{'Subject'} ||= $ChildObj->Subject;
 }
 
 my ($link, $label);
@@ -166,8 +184,8 @@ if ($ARGS{'new-MemberOf'}) {
 } elsif ($ARGS{'MemberOf-new'}) {
     $link = LoadTicket($ARGS{'MemberOf-new'});
     $label = loc("Link with");
-} elsif ($child) {
-    $link = LoadTicket($child);
+} elsif ($Child) {
+    $link = LoadTicket($Child);
     $label = loc("Link with");
 }
 
@@ -176,49 +194,56 @@ $QueueObj->Load( 'Incidents' ) || Abort( loc("Queue could not be loaded.") );
 
 my $TicketObj = $ARGS{TicketObj};
 
-# {{{ deal with deleting uploaded attachments
-foreach my $key (keys %ARGS) {
-    if ($key =~ m/^DeleteAttach-(.+)$/) {
-        delete $session{'Attachments'}{$1};
-    }
-    $session{'i'}++;
-}
-
-# {{{ store the uploaded attachment in session
-if ( $ARGS{'Attach'} ) { # attachment?
-    $session{'Attachments'} ||= {};
-
-    # strip leading directories
-    $ARGS{'Attach'} =~ s#^.*[\\/]##;
-
-    my $attachment = MakeMIMEEntity(
-        Subject             => "$ARGS{'Attach'}",
-        Body                => "",
-        AttachmentFieldName => 'Attach'
-    );
-    $session{'Attachments'}->{ $ARGS{'Attach'} } = $attachment;
-    $session{'i'}++;
-}
-# }}}
+$m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 
 # delete temporary storage entry to make WebUI clean
 unless ( keys %{ $session{'Attachments'} } && $ARGS{'id'} eq 'new' ) {
     delete $session{'Attachments'};
 }
 
-# }}}
+if ( $CreateIncident ) {
+    my ($inc_obj, @tmp);
+    ($inc_obj, @tmp) = $m->comp(
+        '/RTIR/Investigation/Elements/Create:Process',
+        %ARGS,
+        NamePrefix => '',
+        DefualtsNamePrefix => '',
+    );
+    push @results, @tmp;
 
-my @results;
-if ( !exists $ARGS{'AddMoreAttach'} && $ARGS{'id'} eq 'new' ) { # new ticket?
-    $m->comp('Display.html', %ARGS);
-    return;
+    my $inv_obj;
+    if ( $inc_obj && $CreateWithInvestigation ) {
+        my (@tmp);
+        ($inv_obj, @tmp) = $m->comp(
+            '/RTIR/Investigation/Elements/Create:Process',
+            %ARGS,
+            NamePrefix => 'Investigation',
+            DefualtsNamePrefix => '',
+        );
+        push @results, @tmp;
+        if ( $inv_obj ) {
+            my($id, $msg) = $inv_obj->AddLink(
+                Type => 'MemberOf',
+                Target => $inc_obj->id
+            );
+            #XXX: correct message on success
+            push @results, $msg if !$id || $msg;
+        }
+    }
+    if( $inc_obj ) {
+        $m->comp('Display.html', id => $inc_obj->id, results => \@results );
+        return;
+    }
 }
+
 </%INIT>
 
 <%ARGS>
-$QuoteTransaction => undef
-$Title            => loc("Create a new Incident")
-$current_tab      => "RTIR/Create.html?Queue=Incidents"
-$current_subtab   => "RTIR/Create.html?Queue=Incidents"
-$child            => undef
+$QuoteTransaction        => undef
+$Title                   => loc("Create a new Incident")
+$Child                   => undef
+$CreateWithInvestigation => 0
+$CreateIncident          => $CreateWithInvestigation
+$current_tab             => "RTIR/Create.html?Queue=Incidents"
+$current_subtab          => "RTIR/Create.html?Queue=Incidents"
 </%ARGS>
