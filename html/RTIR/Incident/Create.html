@@ -31,213 +31,194 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-% if ($link &&
-%      !$link->CurrentUserHasRight('ModifyTicket')) {
-<&|/l&>You are not allowed to edit this Incident.</&>
-%    $m->abort();
-% }
+<%PERL>
+if ( $link && !$link->CurrentUserHasRight('ModifyTicket') ) {
+    $m->out( loc('You are not allowed to edit this Incident.') );
+    $m->abort();
+}
+</%PERL>
 
-<FORM action="Create.html" METHOD="POST" ENCTYPE="multipart/form-data">
+<form action="Create.html" method="POST" enctype="multipart/form-data">
 
-<INPUT TYPE=HIDDEN Name="id" VALUE="new">
-<INPUT TYPE=HIDDEN NAME=Queue Value="<%$QueueObj->Name%>">
-<INPUT TYPE=HIDDEN NAME=Status Value="<%$ARGS{Status}||'open'%>">
-<INPUT TYPE=HIDDEN NAME=child Value="<%$ARGS{child}%>">
-<input type=hidden name="new-MemberOf"<% $ARGS{'new-MemberOf'} && " VALUE=$ARGS{'new-MemberOf'}" %>>
-<input type=hidden name="MemberOf-new"<% $ARGS{'MemberOf-new'} && " VALUE=$ARGS{'MemberOf-new'}" %>>
-<A NAME="top">
-	
-<& /Widgets/TitleBoxStart, contentbg => "#cccccc", title => $Title &>
-<TABLE border=0 cellpadding=0 cellspacing=2>
+<input type="hidden" name="id" value="new" />
+<input type="hidden" name="Queue" value="<% $QueueObj->Name %>" />
+<input type="hidden" name="Status" value="<% $ARGS{'Status'} || 'open' %>" />
+<input type="hidden" name="child" value="<% $ARGS{'child'} %>" />
+<input type="hidden" name="new-MemberOf" value="<% $ARGS{'new-MemberOf'} %>" />
+<input type="hidden" name="MemberOf-new" value="<% $ARGS{'MemberOf-new'} %>" />
+<A name="top">
+
+<&| /Widgets/TitleBox, title => $Title &>
+<table border="0" cellpadding="0" cellspacing="2">
+
 % if ($link) {
-%   my ($Type) = $m->comp("/RTIR/Elements/Type", Ticket => $link->Id);
-  <TR>
-    <TD class="label"><%$label%>:</TD>
-    <TD><% loc("[_1] #[_2]: [_3]", $Type, $link->Id, $link->Subject) %></TD>
-  </TR>
+% my ($Type) = $m->comp("/RTIR/Elements/Type", TicketObj => $link );
+<tr><td class="label"><% $label %>:</td>
+<td><% loc("[_1] #[_2]: [_3]", $Type, $link->Id, $link->Subject) %></td></tr>
 % }
 
-  <TR>
+<tr>
 % if ($ChildObj) {
     <td class="label"><&|/l&>Owner</&>:</td>
-    <td class="value"><%$ChildObj->OwnerObj->Name%></td>
-    <input type=hidden name="Owner" value=<%$ChildObj->Owner%>>
+    <td class="value"><% $ChildObj->OwnerObj->Name %></td>
+    <input type="hidden" name="Owner" value=<% $ChildObj->Owner %> />
 % } else {
-    <TD class=label>
-      <&|/l&>Owner</&>:
-    </TD>
-    <TD>
+    <td class="label"><&|/l&>Owner</&>:</td>
+    <td>
       <& /Elements/SelectOwner, 
-          Name => "Owner", 
-	  QueueObj => $QueueObj, 
-	  Default => $ARGS{Owner}||$session{'CurrentUser'}->Id||undef &>
-    </TD>
+          Name     => 'Owner',
+          QueueObj => $QueueObj,
+          Default  => $ARGS{Owner} || $session{'CurrentUser'}->Id
+      &>
+    </td>
 % }
-  </TR>
+</tr>
 
 <& Elements/Create, Title => $Title, TicketObj => $TicketObj, QueueObj => $QueueObj, %ARGS &>
 
-<TR>
-<TD class=labeltop>
-<&|/l&>Message</&>:
-</TD>
-<TD COLSPAN=5>
-% if (!exists $ARGS{Content}) {
-%   my $Transactions;
-%   if ($TicketObj) {
-%   $Transactions = $TicketObj->Transactions;
-%   } elsif ($ChildObj) {
-%   $Transactions = $ChildObj->Transactions;
-%   }
-%   if ($Transactions) {
-%     $ARGS{Content} = $m->scomp("/RTIR/Elements/TransactionData", 
-%        Transactions => $Transactions,
-%        Type => 'messages',
-%        Include => {'Create', 'Correspond'});
-%     $ARGS{Content} =~ s/\&gt;/>/g;
-%   }
-% }
+<tr><td class=labeltop><&|/l&>Message</&>:</td>
+<td>
+<%PERL>
+unless ( exists $ARGS{Content} ) {
+    my $Transactions;
+    if ($TicketObj) {
+        $Transactions = $TicketObj->Transactions;
+    } elsif ( $ChildObj ) {
+        $Transactions = $ChildObj->Transactions;
+    }
+    if ( $Transactions ) {
+        $ARGS{Content} = $m->scomp("/RTIR/Elements/TransactionData", 
+            Transactions => $Transactions,
+            Type => 'messages',
+            Include => {'Create', 'Correspond'}
+         );
+         $ARGS{Content} =~ s/\&gt;/>/g;
+    }
+}
+</%PERL>
 <& /Elements/MessageBox, Default => $ARGS{Content} &>
-  <BR>
-  </TD>
-</TR>
-<TR>
-  <TD ALIGN=RIGHT COLSPAN=2>
-  </TD>
-</TR>
-<TR>
-  <TD>
-  </TD>
-  <TD WIDTH="50%" VALIGN=TOP>
-    <& /Widgets/TitleBoxStart, title => loc('The Basics'), 
-	title_class=> 'inverse',  
-	color => "#993333" &>
-    <TABLE BORDER=0>
-      <TR>
-        <TD ALIGN=RIGHT><&|/l&>Priority</&>:</TD>
-	<TD><input size=3 name="InitialPriority" value="<% $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->InitialPriority %>"></TD>
-      </TR>
-      <TR>
-        <TD ALIGN=RIGHT><&|/l&>Final Priority</&>:</TD>
-	<TD><input size=3 name="FinalPriority" value="<% $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->FinalPriority %>"></TD>
-      </TR>
-      <TR>
-        <TD ALIGN=RIGHT><&|/l&>Time Worked</&>:</TD>
-	<TD><input size=3 name="TimeWorked" value="<% $ARGS{TimeWorked} || "0" %>"></TD>
-      </TR>
-      <TR>
-        <TD ALIGN=RIGHT><&|/l&>Time Left</&>:</TD>
-	<TD><input size=3 name="TimeLeft" value="<% $ARGS{TimeLeft}||"0" %>"></TD>
-      </TR>
-    </TABLE>
-    <& /Widgets/TitleBoxEnd &>
-  </TD>
+</td></tr>
+</table>
 
-  <TD VALIGN=TOP>
-    <& /Widgets/TitleBoxStart, title => loc("Dates"),
-		title_class=> 'inverse',  
-		 color => "#663366" &>
+<table border="0" cellpadding="0" cellspacing="2">
+<tr><td width="50%" valign="top">
 
-    <TABLE BORDER=0>
-      <TR>
-        <TD ALIGN=RIGHT><&|/l&>Starts</&>:</TD>
-% if ($ARGS{Starts}) {
-          <TD><input size=10 name="Starts" VALUE="<%$ARGS{Starts}%>"></TD>
-% } else {
-          <TD><input size=10 name="Starts"></TD>
-% }
-      </TR>
-      <TR>
-        <TD ALIGN=RIGHT><&|/l&>Due</&>:</TD>
-	<TD><input size=10 name="Due" value="<% $ARGS{Due} %>"></TD>
-      </TR>
-    </TABLE>
-    <& /Widgets/TitleBoxEnd &>
-  </TD>
-</TR>
-</TABLE>
-<& /Widgets/TitleBoxEnd &>
+<&| /Widgets/TitleBox,
+    title => loc('The Basics'),
+    title_class => 'inverse',
+    color => "#993333",
+&>
+<table border="0">
+    <tr><td align="right"><&|/l&>Priority</&>:</td>
+    <td><input size=3 name="InitialPriority" value="<% $ARGS{InitialPriority} || $QueueObj->InitialPriority %>"></td></tr>
 
-<& /Elements/Submit, Label => loc("Create")&>
-</FORM>
+    <tr><td align="right"><&|/l&>Final Priority</&>:</td>
+    <td><input size=3 name="FinalPriority" value="<% $ARGS{FinalPriority} || $QueueObj->FinalPriority %>"></td></tr>
+
+    <tr><td align="right"><&|/l&>Time Worked</&>:</td>
+    <td><input size=3 name="TimeWorked" value="<% $ARGS{TimeWorked} || '0' %>"></td></tr>
+
+    <tr><td align="right"><&|/l&>Time Left</&>:</td>
+    <td><input size=3 name="TimeLeft" value="<% $ARGS{TimeLeft} || '0' %>"></td></tr>
+</table>
+</&>
+
+</td><td valign="top">
+
+<&| /Widgets/TitleBox,
+    title => loc("Dates"),
+    title_class=> 'inverse',  
+    color => "#663366",
+&>
+<table border="0">
+
+    <tr><td align="right"><&|/l&>Starts</&>:</td>
+    <td><input size=10 name="Starts" value="<% $ARGS{'Starts'} || '' %>"></td></tr>
+    
+    <tr><td align="right"><&|/l&>Due</&>:</td>
+	<td><input size=10 name="Due" value="<% $ARGS{'Due'} || '' %>"></td></tr>
+
+</table>
+</&>
+
+</td></tr>
+</table>
+
+</&>
+
+<& /Elements/Submit, Label => loc("Create") &>
+</form>
 
 
 <%INIT>
 # if there isn't a subject, but there is a child, use that one
 my $ChildObj;
 
-if ((!$ARGS{'Subject'}) and $child) {
-  $ChildObj = LoadTicket($child);
-  $ARGS{'Subject'} = $ChildObj->Subject;
+if ( !$ARGS{'Subject'} && $child ) {
+    $ChildObj = LoadTicket( $child );
+    $ARGS{'Subject'} = $ChildObj->Subject;
 }
 
 my ($link, $label);
 if ($ARGS{'new-MemberOf'}) {
-  $link = LoadTicket($ARGS{'new-MemberOf'});
-  $label = loc("Split from");
+    $link = LoadTicket($ARGS{'new-MemberOf'});
+    $label = loc("Split from");
 } elsif ($ARGS{'MemberOf-new'}) {
-  $link = LoadTicket($ARGS{'MemberOf-new'});
-  $label = loc("Link with");
+    $link = LoadTicket($ARGS{'MemberOf-new'});
+    $label = loc("Link with");
 } elsif ($child) {
-  $link = LoadTicket($child);
-  $label = loc("Link with");
+    $link = LoadTicket($child);
+    $label = loc("Link with");
 }
 
-my $QueueObj = new RT::Queue($session{'CurrentUser'});
-$QueueObj->Load("Incidents") || Abort(loc("Queue could not be loaded."));
+my $QueueObj = new RT::Queue( $session{'CurrentUser'} );
+$QueueObj->Load( 'Incidents' ) || Abort( loc("Queue could not be loaded.") );
 
 my $TicketObj = $ARGS{TicketObj};
 
 # {{{ deal with deleting uploaded attachments
 foreach my $key (keys %ARGS) {
     if ($key =~ m/^DeleteAttach-(.+)$/) {
-	delete $session{'Attachments'}{$1};
+        delete $session{'Attachments'}{$1};
     }
-    $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
+    $session{'i'}++;
 }
 
 # {{{ store the uploaded attachment in session
-if ($ARGS{'Attach'}) {			# attachment?
-    $session{'Attachments'} = {} unless defined $session{'Attachments'};
+if ( $ARGS{'Attach'} ) { # attachment?
+    $session{'Attachments'} ||= {};
 
-     # strip leading directories
-     $ARGS{'Attach'} =~ s#^.*[\\/]##;
-
+    # strip leading directories
+    $ARGS{'Attach'} =~ s#^.*[\\/]##;
 
     my $attachment = MakeMIMEEntity(
         Subject             => "$ARGS{'Attach'}",
         Body                => "",
         AttachmentFieldName => 'Attach'
     );
-    $session{'Attachments'} = { %{$session{'Attachments'} || {}},
-				$ARGS{'Attach'} => $attachment };
+    $session{'Attachments'}->{ $ARGS{'Attach'} } = $attachment;
+    $session{'i'}++;
 }
 # }}}
 
 # delete temporary storage entry to make WebUI clean
-unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
+unless ( keys %{ $session{'Attachments'} } && $ARGS{'id'} eq 'new' ) {
     delete $session{'Attachments'};
 }
-
 
 # }}}
 
 my @results;
-if ((!exists $ARGS{'AddMoreAttach'}) && ($ARGS{'id'} eq 'new')) { # new ticket?
-#  if ($ARGS{'Function'} and $ARGS{$ARGS{'Function'}}) {
-# commented out because the implementation was not forward compatible with 3.4
+if ( !exists $ARGS{'AddMoreAttach'} && $ARGS{'id'} eq 'new' ) { # new ticket?
     $m->comp('Display.html', %ARGS);
-  return();
-#  } else {
-#    push @results, loc("Incident creation failed: Function must be set.");
-#  }
+    return;
 }
 </%INIT>
 
 <%ARGS>
 $QuoteTransaction => undef
-$Title => loc("Create a new Incident")
-$current_tab => "RTIR/Create.html?Queue=Incidents"
-$current_subtab => "RTIR/Create.html?Queue=Incidents"
-$child => undef
+$Title            => loc("Create a new Incident")
+$current_tab      => "RTIR/Create.html?Queue=Incidents"
+$current_subtab   => "RTIR/Create.html?Queue=Incidents"
+$child            => undef
 </%ARGS>
