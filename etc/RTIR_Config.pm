@@ -237,6 +237,8 @@ Set($RTIRSearchResultFormats, {
 # on the edit screen.
 Set($DisplayAfterEdit, 1);
 
+Set($TracerouteCommand, '/usr/bin/traceroute');
+
 # Components that available to add on the first page of the RTIR
 Set($RTIR_HomepageComponents, [qw(
     /RTIR/Elements/NewReports
