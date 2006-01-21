@@ -32,7 +32,7 @@
 </&>
 
 <%INIT>
-$ARGS{'Format'} ||= $RT::RTIRSearchResultFormats->{'DueIncidents'};
+$ARGS{'Format'} ||= RT->Config->Get('RTIRSearchResultFormats')->{'DueIncidents'};
 $ARGS{'Rows'}   ||= 10;
 
 my $Query  = "Queue = 'Incidents'";

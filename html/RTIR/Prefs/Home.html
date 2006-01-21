@@ -28,7 +28,7 @@ my $portlets = $session{'my_rtir_portlets'};
 my %seen;
 
 my @items;
-foreach my $comp ( grep !$seen{$_}++, @$RT::RTIR_HomepageComponents ) {
+foreach my $comp ( grep !$seen{$_}++, @RT->Config->Get('RTIR_HomepageComponents') ) {
     use Data::Dumper;
     #$RT::Logger->error( Dumper($comp, $m->fetch_comp($comp)) );
     my $desc;

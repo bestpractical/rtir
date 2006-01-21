@@ -82,8 +82,8 @@ sub Commit {
     my $SLAObj = RT::IR::SLAInit();
 
     # Set the defaults from the RTIR_Config.pm file
-    $SLAObj->SetInHoursDefault($RT::SLA_Response_InHours);
-    $SLAObj->SetOutOfHoursDefault($RT::SLA_Response_OutOfHours);
+    $SLAObj->SetInHoursDefault(RT->Config->Get('SLA_Response_InHours'));
+    $SLAObj->SetOutOfHoursDefault(RT->Config->Get('SLA_Response_OutOfHours'));
 
     # set the Business::Hours
     my $bh = RT::IR::BusinessHours();

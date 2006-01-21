@@ -55,7 +55,7 @@
 %    $m->abort();
 % }
 
-<form action="<% $RT::WebPath %>/RTIR/Create.html" method="post" enctype="multipart/form-data">
+<form action="<% RT->Config->Get('WebPath') %>/RTIR/Create.html" method="post" enctype="multipart/form-data">
 <input type="hidden" name="id" value="new" />
 <input type="hidden" name="Queue" value="<% $QueueObj->Name %>" />
 <input type="hidden" name="Status" value="<% $Status || 'open' %>" />
@@ -172,7 +172,7 @@
 	      TicketObj => $TicketObj,
               QueueObj => $QueueObj, 
 	      Name => 'HowReported',
-	      Default => $ARGS{'HowReported-Value'} || $RT::_RTIR_HowReported_default &>
+	      Default => $ARGS{'HowReported-Value'} || RT->Config->Get('_RTIR_HowReported_default') &>
           </td>
     <td class="labeltop">
       <%loc("Reporter Type")%>:
@@ -182,7 +182,7 @@
 	TicketObj => $TicketObj,
         QueueObj => $QueueObj, 
 	Name => 'ReporterType',
-	Default => $ARGS{'ReporterType-Value'} || $RT::_RTIR_ReporterType_default, &>
+	Default => $ARGS{'ReporterType-Value'} || RT->Config->Get('_RTIR_ReporterType_default'), &>
     </td>
         </tr>
       </table>
@@ -198,7 +198,7 @@
 	TicketObj => $TicketObj,
         QueueObj => $QueueObj, 
 	Name => 'IP',
-	Default => $ARGS{'IP-Value'} || $RT::_RTIR_IP_default, &>
+	Default => $ARGS{'IP-Value'} || RT->Config->Get('_RTIR_IP_default'), &>
     </td>
   </tr>
   <tr>
@@ -209,7 +209,7 @@
       <& /RTIR/Elements/EditRTIRField, 
 	TicketObj => $TicketObj,
         QueueObj => $QueueObj, Name => 'Netmask',
-	Default => $ARGS{'Netmask-Value'} || $RT::_RTIR_Netmask_default, &>
+	Default => $ARGS{'Netmask-Value'} || RT->Config->Get('_RTIR_Netmask_default'), &>
     </td>
   </tr>
   <tr>
@@ -220,7 +220,7 @@
       <& /RTIR/Elements/EditRTIRField, 
 	TicketObj => $TicketObj,
         QueueObj => $QueueObj, Name => 'Port',
-	Default => $ARGS{'Port-Value'} || $RT::_RTIR_Netmask_default, &>
+	Default => $ARGS{'Port-Value'} || RT->Config->Get('_RTIR_Netmask_default'), &>
     </td>
   </tr>
   <tr>
@@ -231,7 +231,7 @@
       <& /RTIR/Elements/EditRTIRField, 
 	TicketObj => $TicketObj,
         QueueObj => $QueueObj, Name => 'WhereBlocked',
-	Default => $ARGS{'WhereBlocked-Value'} || $RT::_RTIR_WhereBlocked_default, &>
+	Default => $ARGS{'WhereBlocked-Value'} || RT->Config->Get('_RTIR_WhereBlocked_default'), &>
     </td>
   </tr>
 % }

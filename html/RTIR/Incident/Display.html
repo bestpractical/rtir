@@ -39,7 +39,7 @@
 <table border="0" cellpadding="0" cellspacing="2" width="100%"><tr><td valign="top" width="50%">
 
 <& /Widgets/TitleBoxStart, title => loc('Incident #[_1]', $Ticket->Id), 
-        title_href =>"$RT::WebPath/RTIR/Edit.html?id=".$Ticket->Id, 
+        title_href => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=".$Ticket->Id, 
         title_class=> 'inverse' &>
 
 <table>
@@ -110,15 +110,15 @@
 
 <& /Widgets/TitleBoxStart,
     title => loc('Incident Reports'),
-    title_href => "$RT::WebPath/RTIR/Incident/ShowChildren.html?Queue=Incident%20Reports&id=".$Ticket->Id,
+    title_href => RT->Config->Get('WebPath') ."/RTIR/Incident/ShowChildren.html?Queue=Incident%20Reports&id=".$Ticket->Id,
     titleright => '',
     title_class=> 'inverse', color=> "#336633",
 &>
 
 % if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
     <table width="100%"><tr><td align="right"><font size="-1">
-        | <a href="<%$RT::WebPath%>/RTIR/Create.html?Incident=<%$Ticket->Id%>&Queue=Incident%20Reports"><%loc('New')%></a>
-        | <a href="<%$RT::WebPath%>/RTIR/Incident/LinkChildren.html?id=<%$Ticket->Id%>&Queue=Incident%20Reports"><%loc("Link")%></a> |
+        | <a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Incident=<%$Ticket->Id%>&Queue=Incident%20Reports"><%loc('New')%></a>
+        | <a href="<%RT->Config->Get('WebPath')%>/RTIR/Incident/LinkChildren.html?id=<%$Ticket->Id%>&Queue=Incident%20Reports"><%loc("Link")%></a> |
     </font></td></tr></table>
 % }
 
@@ -126,21 +126,21 @@
             Ticket    => $Ticket, 
             Queue     => 'Incident Reports',
             Rows      => 8,
-            FullList  => $RT::WebPath."/RTIR/Incident/ShowChildren.html?Queue=Incident%20Reports&id=".$Ticket->id,
+            FullList  => RT->Config->Get('WebPath')."/RTIR/Incident/ShowChildren.html?Queue=Incident%20Reports&id=".$Ticket->id,
     &>
 <& /Widgets/TitleBoxEnd &>
 
 </td></tr><tr><td valign="top" width="50%">
 
 <& /Widgets/TitleBoxStart, title => loc('Investigations'), 
-    title_href => "$RT::WebPath/RTIR/Incident/ShowChildren.html?Queue=Investigations&id=".$Ticket->Id, 
+    title_href => RT->Config->Get('WebPath') ."/RTIR/Incident/ShowChildren.html?Queue=Investigations&id=".$Ticket->Id, 
     title_class=> 'inverse',  
     titleright => '', color=> "#336633" &>
 
 % if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
     <table width="100%"><tr><td align="right"><font size="-1">
-        | <a href="<%$RT::WebPath%>/RTIR/Create.html?Incident=<%$Ticket->Id%>&Queue=Investigations"><%loc('Launch')%></a> 
-        | <a href="<%$RT::WebPath%>/RTIR/Incident/LinkChildren.html?id=<%$Ticket->Id%>&Queue=Investigations"><%loc("Link")%></a> |
+        | <a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Incident=<%$Ticket->Id%>&Queue=Investigations"><%loc('Launch')%></a> 
+        | <a href="<%RT->Config->Get('WebPath')%>/RTIR/Incident/LinkChildren.html?id=<%$Ticket->Id%>&Queue=Investigations"><%loc("Link")%></a> |
     </font></td></tr></table>
 % }
 
@@ -148,20 +148,20 @@
     Ticket => $Ticket, 
     Queue => 'Investigations',
     Rows => 8,
-    FullList => $RT::WebPath."/RTIR/Incident/ShowChildren.html?Queue=Investigations&id=".$Ticket->id,
+    FullList => RT->Config->Get('WebPath')."/RTIR/Incident/ShowChildren.html?Queue=Investigations&id=".$Ticket->id,
 &>
 
 </td><td valign="top" width="50%">
 
 <& /Widgets/TitleBoxStart, title => loc('Blocks'), 
-    title_href => "$RT::WebPath/RTIR/Incident/ShowChildren.html?Queue=Blocks&id=".$Ticket->Id, 
+    title_href => RT->Config->Get('WebPath') ."/RTIR/Incident/ShowChildren.html?Queue=Blocks&id=".$Ticket->Id, 
     title_class=> 'inverse',  
     titleright => '', color=> "#336633" &>
 
 % if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
     <table width="100%"><tr><td align="right"><font size="-1">
-        | <a href="<%$RT::WebPath%>/RTIR/Create.html?Incident=<%$Ticket->Id%>&Queue=Blocks"><%loc('New')%></a> 
-        | <a href="<%$RT::WebPath%>/RTIR/Incident/LinkChildren.html?id=<%$Ticket->Id%>&Queue=Blocks>"><%loc("Link")%></a> |
+        | <a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Incident=<%$Ticket->Id%>&Queue=Blocks"><%loc('New')%></a> 
+        | <a href="<%RT->Config->Get('WebPath')%>/RTIR/Incident/LinkChildren.html?id=<%$Ticket->Id%>&Queue=Blocks>"><%loc("Link")%></a> |
     </font></td></tr></table>
 % }
 
@@ -169,7 +169,7 @@
     Ticket   => $Ticket, 
     Queue    => 'Blocks',
     Rows     => 8,
-    FullList => $RT::WebPath."/RTIR/Incident/ShowChildren.html?Queue=Blocks&id=".$Ticket->id,
+    FullList => RT->Config->Get('WebPath')."/RTIR/Incident/ShowChildren.html?Queue=Blocks&id=".$Ticket->id,
 &>
 
 <& /Widgets/TitleBoxEnd &>
@@ -177,7 +177,7 @@
 </td></tr><tr><td colspan="2">
 
 <& /Widgets/TitleBoxStart, title => loc("Dates"),
-    title_href =>"$RT::WebPath/RTIR/Edit.html?id=".$Ticket->Id, 
+    title_href => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=".$Ticket->Id, 
     title_class=> 'inverse',  
     color => "#663366" &>
 <& /RTIR/Elements/ShowDates, Ticket => $Ticket &>
@@ -194,7 +194,7 @@
     Ticket => $Ticket, 
     Collapsed => $ARGS{'Collapsed'}, 
     ShowHeaders => $ARGS{'ShowHeaders'},
-    UpdatePath => "$RT::WebPath/RTIR/Update.html",
+    UpdatePath => RT->Config->Get('WebPath') ."RTIR/Update.html",
 &> 
 
   

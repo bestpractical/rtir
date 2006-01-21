@@ -15,4 +15,4 @@
 %#  GNU General Public License for more details.
 %# 
 %# END LICENSE BLOCK
-<link rel="stylesheet" href="<%$RT::WebPath%>/RTIR/NoAuth/webrtir.css" type="text/css">
+<link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/RTIR/NoAuth/webrtir.css" type="text/css">

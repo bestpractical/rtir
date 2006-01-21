@@ -14,7 +14,7 @@
 %# this would do well as a Callback
 
 <div align="right">
-<a href="<%$RT::WebPath%>/RTIR/Report/BulkReject.html?Queue=<%$Queue|u%>&<% $QueryString %>"><&|/l&>Bulk Reject</&></a><br />
+<a href="<%RT->Config->Get('WebPath')%>/RTIR/Report/BulkReject.html?Queue=<%$Queue|u%>&<% $QueryString %>"><&|/l&>Bulk Reject</&></a><br />
 </div>
 
 % }
@@ -46,7 +46,7 @@ $Rows           => undef
 $Page           => 1
 $OrderBy        => $session{'CurrentSearchHash'}->{'OrderBy'} || 'id'
 $Order          => $session{'CurrentSearchHash'}->{'Order'} || 'ASC'
-$BaseURL        => $RT::WebPath."/Search/Results.html?"
+$BaseURL        => RT->Config->Get('WebPath')."/Search/Results.html?"
 $ShowNavigation => 0
 $AllowSorting   => 1
 $ShowEmpty      => 0

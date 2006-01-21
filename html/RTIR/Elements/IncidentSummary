@@ -36,20 +36,20 @@
 % $i++;
 % my ($t) = $m->comp("/RTIR/Elements/Type", Ticket => $Ticket->Id);
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
-<td><b><a href="<%$RT::WebPath%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%></a></b></td>
-<td><b><a href="<%$RT::WebPath%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Subject%></a></b></td>
+<td><b><a href="<%RT->Config->Get('WebPath')%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%></a></b></td>
+<td><b><a href="<%RT->Config->Get('WebPath')%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Subject%></a></b></td>
 <td><& "/RTIR/Elements/ShowRTIRField", Ticket => $Ticket, Name => 'State' &>
 </td>
 <td><%$Ticket->Priority%></td>
 <td align="right">
 % if ($Type eq 'Report' or $Type eq 'Investigation' or $Type eq 'Block') {
-<a href="<%$RT::WebPath%>/RTIR/Display.html?Child=<%$ticket%>&id=<%$Ticket->Id%>">[<%loc("Link")%>]</a>
+<a href="<%RT->Config->Get('WebPath')%>/RTIR/Display.html?Child=<%$ticket%>&id=<%$Ticket->Id%>">[<%loc("Link")%>]</a>
 % } elsif ($ticket and $Type eq $t) {
 %   if ($ticket ne $Ticket->Id) {
-<a href="<%$RT::WebPath%>/RTIR/Merge.html?id=<%$ticket%>&SelectedTicket=<%$Ticket->Id%>">[<%loc("Merge")%>]</a>
+<a href="<%RT->Config->Get('WebPath')%>/RTIR/Merge.html?id=<%$ticket%>&SelectedTicket=<%$Ticket->Id%>">[<%loc("Merge")%>]</a>
 %   }
 % }
-<a href="<%$RT::WebPath%>/RTIR/Create.html?Incident=<%$Ticket->Id%>&Queue=Investigations">[<%loc("Investigate")%>]</a>
+<a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Incident=<%$Ticket->Id%>&Queue=Investigations">[<%loc("Investigate")%>]</a>
 </td>
 </tr>
 % }
@@ -60,9 +60,9 @@
 <tr>
 <td colspan="5">
 % if ($Type eq 'Report' or $Type eq 'Investigation' or $Type eq 'Block') {
-[<a href="<%$RT::WebPath%>/RTIR/Create.html?Child=<%$ticket%>&Queue=Incidents"><b>New</b></a>]
+[<a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Child=<%$ticket%>&Queue=Incidents"><b>New</b></a>]
 % }
-[<a href="<%$RT::WebPath%>/RTIR/Search/Results.html?Queue=Incidents<%$QueryString%>"><%loc("Refine Search")%></a>]
+[<a href="<%RT->Config->Get('WebPath')%>/RTIR/Search/Results.html?Queue=Incidents<%$QueryString%>"><%loc("Refine Search")%></a>]
 </td>
 </tr>
 </table>

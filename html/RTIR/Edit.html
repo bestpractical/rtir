@@ -225,7 +225,7 @@ if ($newstate ne $oldstate) {
   push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
 }
  
-if( $ARGS{'SaveChanges'} && $RT::DisplayAfterEdit ) {
+if( $ARGS{'SaveChanges'} && RT->Config->Get('DisplayAfterEdit') ) {
     $m->comp("/RTIR/Display.html", results => [@results], %ARGS);
     $m->abort;
 }

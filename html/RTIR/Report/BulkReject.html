@@ -38,7 +38,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%$RT::WebPath%>/RTIR/Report/BulkReject.html" method="post">
+<form action="<%RT->Config->Get('WebPath')%>/RTIR/Report/BulkReject.html" method="post">
 <input type="hidden" name="Status" value="<% $Status %>" />
 
 <& /RTIR/Search/Elements/ShowResults,
@@ -172,12 +172,12 @@ $Queue               => 'Incident Reports'
 $BaseQuery           => $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue )
 $Query               => $m->comp( '/RTIR/Elements/NewQuery',  Queue => $Queue )
 $Status              => 'rejected'
-$Format              => $RT::RTIRSearchResultFormats->{'RejectReports'};
+$Format              => RT->Config->Get('RTIRSearchResultFormats')->{'RejectReports'};
 $Rows                => 50
 $Page                => 1
 $OrderBy             => 'id'
 $Order               => 'ASC'
-$BaseURL             => $RT::WebPath . "/RTIR/Report/BulkReject.html?"
+$BaseURL             => RT->Config->Get('WebPath') . "/RTIR/Report/BulkReject.html?"
 $current_tab         => 'RTIR/Report/BulkReject.html'
 @SelectedTickets     => ()
 $BulkRejectAndReturn => 0

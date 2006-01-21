@@ -33,7 +33,7 @@
     current_tab => $current_tab,
     current_subtab => $current_subtab,
     title => $Title,
-    AppName => $RT::rtirname,
+    AppName => RT->Config->Get('rtirname'),
 &>
 
 <%INIT>

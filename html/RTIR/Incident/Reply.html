@@ -153,10 +153,10 @@ $MyTickets->FromSQL( $Query );
 <%ARGS>
 $id => undef
 $All => 0
-$BaseURL => $RT::WebPath . "/RTIR/Incident/Reply.html?DefaultStatus=stalled&id=$id"
+$BaseURL => RT->Config->Get('WebPath') . "/RTIR/Incident/Reply.html?DefaultStatus=stalled&id=$id"
 $BaseQuery => undef
 $Query => "CF.{_RTIR_State} = 'open' AND MemberOf = $id";
-$Format => $RT::RTIRSearchResultFormats->{'BulkReply'};
+$Format => RT->Config->Get('RTIRSearchResultFormats')->{'BulkReply'};
 $HideResults => 0
 $Rows => 50
 $Page => 1

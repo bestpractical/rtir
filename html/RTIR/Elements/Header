@@ -21,4 +21,4 @@
 %# inclusion in the work.
 %# 
 %# 
-<& /Elements/Header, URL => $RT::WebPath."/RTIR/index.html", %ARGS &>
+<& /Elements/Header, URL => RT->Config->Get('WebPath')."/RTIR/index.html", %ARGS &>

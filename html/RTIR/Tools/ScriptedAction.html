@@ -481,7 +481,7 @@ sub parse_csv {
 $incidentid => undef
 $TemplateName => 'Correspondence'
 $Requestors => undef
-$servers => $RT::whois
+$servers => RT->Config->Get('whois')
 $server => undef
 $Title => loc("Scripted Action: Create Incidents and Investigations")
 $current_tab => "RTIR/Tools/ScriptedAction.html"; 

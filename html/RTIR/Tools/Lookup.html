@@ -225,8 +225,8 @@ if ($query) {
 # }}}
 
     my $max_age; 
-    if ($RT::RTIR_OldestRelatedTickets) {
-        $max_age = 0 - $RT::RTIR_OldestRelatedTickets;
+    if (RT->Config->Get('RTIR_OldestRelatedTickets')) {
+        $max_age = 0 - RT->Config->Get('RTIR_OldestRelatedTickets');
     } else {
         $max_age = -60;
     }
@@ -258,11 +258,11 @@ if ($ticket) {
   $TicketObj = LoadTicket($ticket);
 }
 
-my $Format = $RT::RTIRSearchResultFormats->{$TicketType . 'Default'};
+my $Format = RT->Config->Get('RTIRSearchResultFormats')->{$TicketType . 'Default'};
 
 </%init>
 <%args>
-$servers => $RT::whois
+$servers => RT->Config->Get('whois')
 $server => undef
 $handparse => 1
 $q => undef

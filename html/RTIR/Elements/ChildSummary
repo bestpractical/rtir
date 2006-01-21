@@ -36,15 +36,15 @@
 % $i++;
 % my ($t) = $m->comp("/RTIR/Elements/Type", Ticket => $Ticket->Id);
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
-<td><b><a href="<%$RT::WebPath%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%></a></b></td>
-<td><b><a href="<%$RT::WebPath%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Subject%></a></b></td>
+<td><b><a href="<%RT->Config->Get('WebPath')%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%></a></b></td>
+<td><b><a href="<%RT->Config->Get('WebPath')%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Subject%></a></b></td>
 <td><& "/RTIR/Elements/ShowRTIRField", Ticket => $Ticket, Name => 'State' &>
 <td><%$Ticket->Priority%></td>
 % if ($Type eq 'Incident') {
-<td align="right"><a href="<%$RT::WebPath%>/RTIR/Display.html?Child=<%$Ticket->Id%>&id=<%$ticket%>">[<%loc("Link")%>]</a></td>
+<td align="right"><a href="<%RT->Config->Get('WebPath')%>/RTIR/Display.html?Child=<%$Ticket->Id%>&id=<%$ticket%>">[<%loc("Link")%>]</a></td>
 % } elsif ($Type eq $t) {
 % if ($ticket ne $Ticket->Id) {
-<td align="right"><a href="<%$RT::WebPath%>/RTIR/Merge.html?id=<%$ticket%>&SelectedTicket=<%$Ticket->Id%>">[<%loc("Merge")%>]</a></td>
+<td align="right"><a href="<%RT->Config->Get('WebPath')%>/RTIR/Merge.html?id=<%$ticket%>&SelectedTicket=<%$Ticket->Id%>">[<%loc("Merge")%>]</a></td>
 % } else {
 <td>&nbsp;</td>
 % }
@@ -58,15 +58,15 @@
 % }
 <tr>
 <td colspan="5">
-[<a href="<%$RT::WebPath%>/RTIR/Search/Refine.html?Queue=<%$Queue%><%$QueryString%>"><%loc("Refine Search")%></a>]
+[<a href="<%RT->Config->Get('WebPath')%>/RTIR/Search/Refine.html?Queue=<%$Queue%><%$QueryString%>"><%loc("Refine Search")%></a>]
 % if ($Type eq 'Incident') {
 % if ($Queue) {
-[<a href="<%$RT::WebPath%>/RTIR/Incident/LinkChildren.html?Queue=<%$Queue%>&Query=Content LIKE '<%$q%>'&id=<%$ticket%>"><%loc("Bulk Link")%></a>]
+[<a href="<%RT->Config->Get('WebPath')%>/RTIR/Incident/LinkChildren.html?Queue=<%$Queue%>&Query=Content LIKE '<%$q%>'&id=<%$ticket%>"><%loc("Bulk Link")%></a>]
 % }
 %   if ($Queue eq 'Investigations' and $lookuptype eq 'email') {
-<br />[<a href="<%$RT::WebPath%>/RTIR/Create.html?Incident=<%$ticket%>&Requestors=<%$q%>&Queue=Investigations"><%loc("Launch new: [_1]", $q)%></a>]
+<br />[<a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Incident=<%$ticket%>&Requestors=<%$q%>&Queue=Investigations"><%loc("Launch new: [_1]", $q)%></a>]
 %   } elsif ($Queue eq 'Blocks' and $lookuptype eq 'ip') {
-<br />[<a href="<%$RT::WebPath%>/RTIR/Create.html?Incident=<%$ticket%>&Queue=Blocks&IP-Value=<%$q%>"><%loc("New Block: [_1]", $q)%></a>]
+<br />[<a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Incident=<%$ticket%>&Queue=Blocks&IP-Value=<%$q%>"><%loc("New Block: [_1]", $q)%></a>]
 %   }
 % }
 </td>

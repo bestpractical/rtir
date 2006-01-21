@@ -23,7 +23,7 @@
 %# 
 %# END LICENSE BLOCK
 <& /Widgets/TitleBoxStart, 
-	title_href =>"$RT::WebPath/RTIR/Search/Results.html?Queue=$Queue$QueryString",
+	title_href => RT->Config->Get('WebPath') ."/RTIR/Search/Results.html?Queue=$Queue$QueryString",
 	title_class=> 'inverse',  
 	title => $title, 
 	bodyclass=> '' &>
@@ -35,13 +35,13 @@
    Rows => 10,
 &>
 
-<a href="<%$RT::WebPath%>/RTIR/Report/BulkReject.html">[<%loc("Bulk Reject")%>]</a>
+<a href="<%RT->Config->Get('WebPath')%>/RTIR/Report/BulkReject.html">[<%loc("Bulk Reject")%>]</a>
 
 <& /Widgets/TitleBoxEnd &>
 
 
 <%INIT>
-$Format = $RT::RTIRSearchResultFormats->{'NewReports'};
+$Format = RT->Config->Get('RTIRSearchResultFormats')->{'NewReports'};
 
 $Query = $m->comp('/RTIR/Elements/NewQuery', 
              Queue => $Queue,	

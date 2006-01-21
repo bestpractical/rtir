@@ -74,7 +74,7 @@
 my $title = loc("Results");
 
 my ($Type)   = $m->comp( '/RTIR/Elements/Type', Queue => $Queue );
-$Format    ||= $RT::RTIRSearchResultFormats->{ $Type . 'Default' };
+$Format    ||= RT->Config->Get('RTIRSearchResultFormats')->{ $Type . 'Default' };
 
 my $QueryString = $m->comp( '/Elements/QueryString',
                             BaseQuery => $BaseQuery,

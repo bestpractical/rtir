@@ -46,7 +46,7 @@
 %    $m->abort();
 % }
 
-<form action="<%$RT::WebPath%>/RTIR/Merge.html" method="post">
+<form action="<%RT->Config->Get('WebPath')%>/RTIR/Merge.html" method="post">
 <input type="hidden" name="id" value="<%$Ticket->id%>" />
 <input type="hidden" name="<%$Ticket->Id%>-MergeInto" />
 
@@ -54,7 +54,7 @@
     Queue => $Queue,
     Query => $Query,
     QueryString => $QueryString, 
-    BaseURL => $RT::WebPath."/RTIR/Merge.html?id=$id&",
+    BaseURL => RT->Config->Get('WebPath')."/RTIR/Merge.html?id=$id&",
     Format => $Format,
     &>
 
@@ -64,7 +64,7 @@
 </form>
 
 <%INIT>
-$Format = $RT::RTIRSearchResultFormats->{'Merge'};
+$Format = RT->Config->Get('RTIRSearchResultFormats')->{'Merge'};
 
 my $Ticket = LoadTicket($id);
 my $Queue = $Ticket->QueueObj->Name;
@@ -119,6 +119,6 @@ $Page => 1
 $OrderBy => 'id'
 $Order => 'ASC'
 $id => undef
-$BaseURL => $RT::WebPath . '/RTIR/Merge.html'
+$BaseURL => RT->Config->Get('WebPath') . '/RTIR/Merge.html'
 $current_tab => 'RTIR/Merge.html'
 </%ARGS>

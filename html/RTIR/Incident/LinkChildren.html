@@ -53,7 +53,7 @@
 my $IncidentObj = LoadTicket($id);
 my $SubmitCaption = loc("Link selected with Incident #[_1]", $IncidentObj->id);
 
-$Format = $RT::RTIRSearchResultFormats->{'LinkChildren'};
+$Format = RT->Config->Get('RTIRSearchResultFormats')->{'LinkChildren'};
 
 my $TicketObj = new RT::Ticket($session{'CurrentUser'});
 $TicketObj->Load($id);
@@ -104,7 +104,7 @@ $Query = "$BaseQuery AND ( $Query )";
 <%ARGS>
 $id => undef
 $Queue => undef
-$BaseURL => $RT::WebPath . "/RTIR/Incident/LinkChildren.html"
+$BaseURL => RT->Config->Get('WebPath') . "/RTIR/Incident/LinkChildren.html"
 $Status => 'open',
 $BaseQuery => undef
 $Query => undef

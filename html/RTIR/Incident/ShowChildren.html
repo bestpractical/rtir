@@ -46,7 +46,7 @@
     Ticket             => $Incident,
     Queue              => $Queue,
     States             => [@States],
-    FullList           => $RT::WebPath."/RTIR/Incident/ShowChildren.html?Queue=$Queue&id=".$Incident->id,
+    FullList           => RT->Config->Get('WebPath')."/RTIR/Incident/ShowChildren.html?Queue=$Queue&id=".$Incident->id,
     Delete             => $delete,
     ShowHeader         => 1,
     ShowStatesSelector => 1,

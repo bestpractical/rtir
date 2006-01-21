@@ -25,7 +25,7 @@
 %  while (my $incident = $incidents->Next) {
 %   $count++;
 % my $State = $m->scomp("/RTIR/Elements/ShowRTIRField", Ticket => $incident, Name => 'State');
-<a href="<%$RT::WebPath%>/RTIR/Display.html?id=<%$incident->Id%>"><%$incident->Id%>: <%$incident->Subject%></a> <i>(<%$State%>)</i>
+<a href="<%RT->Config->Get('WebPath')%>/RTIR/Display.html?id=<%$incident->Id%>"><%$incident->Id%>: <%$incident->Subject%></a> <i>(<%$State%>)</i>
 % if ($depth < 8) {
 <& /RTIR/Elements/ShowIncidents, Ticket => $incident, depth => ($depth+1) &> 
 % }
@@ -36,8 +36,8 @@
 
 % if ($depth == 1) {
 %   if ($Ticket->Owner == $session{'CurrentUser'}->id) {
-<b><a href="<%$RT::WebPath%>/RTIR/Incident/LinkToIncident.html?id=<% $Ticket->Id %>">[Link]</a></b>
-<b><a href="<%$RT::WebPath%>/RTIR/Create.html?Child=<%$Ticket->Id%>&Queue=Incidents">[New]</a></b>
+<b><a href="<%RT->Config->Get('WebPath')%>/RTIR/Incident/LinkToIncident.html?id=<% $Ticket->Id %>">[Link]</a></b>
+<b><a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Child=<%$Ticket->Id%>&Queue=Incidents">[New]</a></b>
 %   }
 % }
 

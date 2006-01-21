@@ -155,11 +155,11 @@ if ($ARGS{'UpdateSubject'}) {
   $Subject = $Ticket->Subject;
 }
 
-my $replystring = lc($RT::ReplyString);
+my $replystring = lc(RT->Config->Get('ReplyString'));
 if ( $Action eq 'Respond' &&
      $replystring &&
      lc(substr($Subject, 0, length($replystring))) ne $replystring) {
-  $Subject = $RT::ReplyString . " " . $Subject;
+  $Subject = RT->Config->Get('ReplyString') . " " . $Subject;
 }
 
 $CanRespond = 1 if ( $Ticket->CurrentUserHasRight('ReplyToTicket') or

@@ -40,7 +40,7 @@
    QueryString => $QueryString,
 &>
 
-<form action="<%$RT::WebPath%>/RTIR/Incident/Display.html" method="post">
+<form action="<%RT->Config->Get('WebPath')%>/RTIR/Incident/Display.html" method="post">
 <input type="hidden" name="Child" value="<%$id%>" />
 
 <& /RTIR/Search/Elements/ShowResults, 
@@ -57,7 +57,7 @@
 <hr>
 
 <%INIT>
-$Format = $RT::RTIRSearchResultFormats->{'LinkIncident'};
+$Format = RT->Config->Get('RTIRSearchResultFormats')->{'LinkIncident'};
 
 my ($Type) = $m->comp('/RTIR/Elements/Type', Queue => 'Incidents');
 
@@ -98,7 +98,7 @@ my $path = "RTIR/Search/Refine.html?ResultPage=$BaseURL&Queue=Incidents&id=$id&c
 
 <%ARGS>
 $id => undef
-$BaseURL => $RT::WebPath . "/RTIR/Incident/LinkToIncident.html"
+$BaseURL => RT->Config->Get('WebPath') . "/RTIR/Incident/LinkToIncident.html"
 $BaseQuery => undef
 $Query => undef
 $Format => undef 

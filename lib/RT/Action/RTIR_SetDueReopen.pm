@@ -79,8 +79,8 @@ sub Commit {
     my $bh = RT::IR::BusinessHours();
 
     # Set the defaults from the RTIR_Config.pm file
-    $SLAObj->SetInHoursDefault( $RT::SLA_Reopen_InHours );
-    $SLAObj->SetOutOfHoursDefault( $RT::SLA_Reopen_OutOfHours );
+    $SLAObj->SetInHoursDefault( RT->Config->Get('SLA_Reopen_InHours') );
+    $SLAObj->SetOutOfHoursDefault( RT->Config->Get('SLA_Reopen_OutOfHours') );
 
     $SLAObj->SetBusinessHours( $bh );
 

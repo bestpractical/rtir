@@ -69,7 +69,7 @@ $resolved_count = 0;
 $unresolved_count = 0;
 	
 # get the number of seconds for the service level
-my $sla = $RT::SLA->{$service_level} * 60;
+my $sla = RT->Config->Get('SLA')->{$service_level} * 60;
 
 foreach my $key ( keys %$class_tix ) {
     my $t = $class_tix->{$key};

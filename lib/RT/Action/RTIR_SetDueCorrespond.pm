@@ -80,7 +80,7 @@ sub Commit {
     my $date = RT::Date->new($RT::SystemUser);
     $date->SetToNow;
 
-    $date->AddDays($RT::OverdueAfter);
+    $date->AddDays(RT->Config->Get('OverdueAfter'));
 
     my $due = $bizhours->first_after($date->Unix);
     $date->Set(Format => 'unix', Value => $due);

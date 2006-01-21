@@ -62,7 +62,7 @@ unless( @States ) {
 my @possible_states = $m->comp("/RTIR/Elements/States", Queue => $Queue, Inactive => 1 );
 my ($Type) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
 
-$Format ||= $RT::RTIRSearchResultFormats->{'Child' . $Type};
+$Format ||= RT->Config->Get('RTIRSearchResultFormats')->{'Child' . $Type};
 if ($Delete) {
     $Format = "___RTIR_Check__, " . $Format;
 }
