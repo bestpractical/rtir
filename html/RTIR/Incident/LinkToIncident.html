@@ -41,39 +41,37 @@
 &>
 
 <form action="<%RT->Config->Get('WebPath')%>/RTIR/Incident/Display.html" method="post">
-<input type="hidden" name="Child" value="<%$id%>" />
+<input type="hidden" name="Child" value="<% $id %>" />
 
 <& /RTIR/Search/Elements/ShowResults, 
-    Queue => $Queue,
-    Query => $Query,
-    QueryString => $QueryString, 
-    BaseURL => $BaseURL,
-    Format => $Format,
-    &>
+    Queue     => $Queue,
+    BaseQuery => $BaseQuery,
+    Query     => $Query,
+    BaseURL   => $BaseURL,
+    Format    => $Format,
+    Rows      => $Rows,
+    Page      => $Page,
+    OrderBy   => $OrderBy,
+    Order     => $Order,
+&>
 
-<& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => loc("Link") &>
+<& /Elements/Submit,
+    Name => "LinkChild",
+    Caption => $title,
+    Label => loc("Link"),
+&>
 </form>
 
-<hr>
-
 <%INIT>
-$Format = RT->Config->Get('RTIRSearchResultFormats')->{'LinkIncident'};
-
-my ($Type) = $m->comp('/RTIR/Elements/Type', Queue => 'Incidents');
-
 my $ChildObj = LoadTicket($id);
-my $Queue = $ChildObj->QueueObj->Name;
 
-my $SubmitCaption = loc("Link #[_1] with selected Incident", $ChildObj->id);
+my ($Type) = $m->comp( '/RTIR/Elements/Type', TicketObj => $ChildObj );
+my $title = loc( "Link [_1] #[_2] to selected Incident", $Type, $id );
 
-my $QueueObj = new RT::Queue($session{'CurrentUser'});
-$QueueObj->Load('Incidents') || Abort(loc("Queue could not be loaded."));
+my $BaseQuery = $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue );
 
-my $title = loc("Link [_1] #[_2] to selected Incident", $Type, $id);
-
-if (!$Query) {
-    $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => 'Incidents');
-}
+my $current_tab = "RTIR/Incident/LinkToIncident.html?id=9"; #XXX: WTF id=9 does here?
+my $tab = $m->interp->apply_escapes($current_tab,'u');
 
 my $QueryString = "&".$m->comp('/Elements/QueryString',
                                Query => $Query,
@@ -83,28 +81,23 @@ my $QueryString = "&".$m->comp('/Elements/QueryString',
                                Order => $Order,
                                Page => $Page);
 
-if (!$BaseQuery) {
-    $BaseQuery = $m->comp('/RTIR/Elements/BaseQuery', Queue => 'Incidents');
-}
-
-$Query = "$BaseQuery AND ( $Query )";
-
-my $current_tab = "RTIR/Incident/LinkToIncident.html?id=9";
-my $tab = $m->interp->apply_escapes($current_tab,'u');
-
-my $path = "RTIR/Search/Refine.html?ResultPage=$BaseURL&Queue=Incidents&id=$id&current_tab=$tab$QueryString",
+my $path = "RTIR/Search/Refine.html?"
+    . $m->comp( '/Elements/QueryString',
+                ResultPage  => $BaseURL,
+                Queue       => $Queue,
+                id          => $id,
+                current_tab => $tab,
+    ) ."&$QueryString";
 
 </%INIT>
-
 <%ARGS>
-$id => undef
+$id      => undef
+$Queue   => 'Incidents'
 $BaseURL => RT->Config->Get('WebPath') . "/RTIR/Incident/LinkToIncident.html"
-$BaseQuery => undef
-$Query => undef
-$Format => undef 
-$HideResults => 0
-$Rows => 50
-$Page => 1
+$Query   => $m->comp( '/RTIR/Elements/NewQuery', Queue => $Queue )
+$Format  => RT->Config->Get('RTIRSearchResultFormats')->{'LinkIncident'}
+$Rows    => 50
+$Page    => 1
 $OrderBy => 'id'
-$Order => 'ASC'
+$Order   => 'ASC'
 </%ARGS>
