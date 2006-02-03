@@ -13,8 +13,8 @@
 % if ( $Queue eq 'Incident Reports' && $ShowNavigation ) {
 <%PERL>
 # this would do well as a Callback
-my $QueryString = $m->comp('/Elements/QueryString'
-                            Queue     => $Queue
+my $QueryString = $m->comp('/Elements/QueryString',
+                            Queue     => $Queue,
                             Query     => $Query,
                             Format    => $Format,
                             Rows      => $Rows,
@@ -51,6 +51,7 @@ return '' if !$ShowEmpty && !$collection->CountAll;
 <%ARGS>
 $Queue          => ''
 $BaseQuery      => ''
+$Format         => ''
 $Query          => ''
 $Rows           => undef
 $Page           => 1
