@@ -172,24 +172,26 @@
 &> 
 
 <%INIT>
-my ($Type, $name);
+my ($name);
 my $Ticket = new RT::Ticket( $session{'CurrentUser'} );
-my $QueueObj = new RT::Queue( $session{'CurrentUser'} );
 
+my $QueueObj;
 unless ( $id eq 'new' ) {
     $Ticket = LoadTicket( $id );
     unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
         Abort("No permission to view ticket");
     }
-    $QueueObj->Load($Ticket->QueueObj->Name) || Abort(loc("Queue could not be loaded."));
+    $QueueObj = $Ticket->QueueObj;
 } else {
+    $QueueObj = new RT::Queue( $session{'CurrentUser'} );
     $QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
 }
 
-# Incidents have their own Create.html
-if (($QueueObj->Name || '') eq 'Incidents') {
-    $m->comp("/RTIR/Incident/Display.html", %ARGS);
-    $m->abort;
+my ($Type) = $m->comp('Elements/Type', Queue => $QueueObj->Name);
+return $m->comp( '/Ticket/Display.html', %ARGS ) unless $Type;
+
+if ( $m->comp_exists("/RTIR/$Type/Display.html") ) {
+    return $m->comp("/RTIR/$Type/Display.html", %ARGS);
 }
 
 if ( $id eq 'new' ) {
@@ -239,8 +241,6 @@ unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
 }
 # update id argument in the case we took merged or created new
 $ARGS{'id'} = $id = $Ticket->Id;
-
-($Type) = $m->comp('Elements/Type', Ticket => $Ticket->Id);
 
 if ($Type eq 'Report') {
     $name = "Incident Report";
