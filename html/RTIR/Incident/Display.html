@@ -227,7 +227,7 @@ my $DoLinks = sub {
     {
         my $obj;
         $obj = $TicketObj unless $TicketObj->Owner == $session{'CurrentUser'}->id;
-        $obj = $TargetObj unless $TargetObj->Owner == $session{'CurrentUser'}->id;
+        $obj = $Target unless $Target->Owner == $session{'CurrentUser'}->id;
         my $action = 'Steal';
         $action = 'Take' if $obj->Owner == $RT::Nobody->id;
         my ($res, $msg) = $obj->$action();
