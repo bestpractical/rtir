@@ -1,6 +1,6 @@
 # Set the name of the RTIR application.
 
-Set($rtirname , "RTIR for " . $rtname);
+Set($rtirname , "RTIR for " . RT->Config->Get('rtname') );
 
 
 # Set the number of days a message awaiting an external response
