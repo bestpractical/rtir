@@ -69,6 +69,7 @@ my ($Type) = $m->comp( '/RTIR/Elements/Type', TicketObj => $ChildObj );
 my $title = loc( "Link [_1] #[_2] to selected Incident", $Type, $id );
 
 my $BaseQuery = $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue );
+$BaseQuery = join ' AND ', map "( $_ )", $BaseQuery, "HasMember != ". $ChildObj->id;
 
 my $current_tab = "RTIR/Incident/LinkToIncident.html?id=9"; #XXX: WTF id=9 does here?
 my $tab = $m->interp->apply_escapes($current_tab,'u');

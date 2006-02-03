@@ -57,15 +57,16 @@ $ARGS{'id'} = $id = $IncidentObj->id;
 my ($Type) = $m->comp('/RTIR/Elements/Type', Queue => $Queue);
 my $title = loc("Link selected [_1] to Incident #[_2]", $Type, $id);
 
-my $QueryString = "&".$m->comp('/Elements/QueryString',
+my $QueryString = $m->comp('/Elements/QueryString',
                                Query   => $Query,
                                Format  => $Format,
                                Rows    => $Rows,
                                OrderBy => $OrderBy,
                                Order   => $Order,
-                               Page    => $Page);
+                               Page    => $Page,
+                          );
 
-$BaseQuery = join ' AND ', map "( $_ )", $BaseQuery, "MemberOf IS NULL OR MemberOf != $id";
+$BaseQuery = join ' AND ', map "( $_ )", $BaseQuery, "MemberOf != $id";
 
 </%INIT>
 
