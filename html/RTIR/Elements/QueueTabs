@@ -22,15 +22,15 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Callback, Page => '/Ticket/Elements/Tabs', Ticket => $Ticket, actions=> $actions, tabs => $tabs, %ARGS &>
-<& /RTIR/Elements/Tabs, 
+<& /Elements/Callback, %ARGS, Page => '/Ticket/Elements/Tabs', Ticket => $Ticket, actions=> $actions, tabs => $tabs &>
+<& /RTIR/Elements/Tabs,
+    %ARGS,
     tabs => $tabs, 
     actions => $actions, 
     current_toptab => $current_toptab,
     current_tab => $mytab,
     current_subtab => $current_subtab,
     Title => $Title,
-    QueryString => $QueryString,
 &> 
 
 <%INIT>

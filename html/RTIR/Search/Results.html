@@ -43,7 +43,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# }}} END BPS TAGGED BLOCK
-<& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
+<& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} || 0 &>
 <& '/RTIR/'.$Type.'/Elements/Tabs',
     current_tab => "RTIR/Search/Results.html?$EscapedQueue&$QueryString",
     Title       => $title,
@@ -67,7 +67,6 @@
     Page        => $Page,
     OrderBy     => $OrderBy,
     Order       => $Order,
-    QueryString => $QueryString,
 &>
 
 <%INIT>

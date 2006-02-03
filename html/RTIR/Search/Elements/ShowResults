@@ -11,10 +11,21 @@
 &>
 
 % if ( $Queue eq 'Incident Reports' && $ShowNavigation ) {
-%# this would do well as a Callback
+<%PERL>
+# this would do well as a Callback
+my $QueryString = $m->comp('/Elements/QueryString'
+                            Queue     => $Queue
+                            Query     => $Query,
+                            Format    => $Format,
+                            Rows      => $Rows,
+                            OrderBy   => $OrderBy,
+                            Order     => $Order,
+                            Page      => $Page,
+                          );
+</%PERL>
 
 <div align="right">
-<a href="<%RT->Config->Get('WebPath')%>/RTIR/Report/BulkReject.html?Queue=<%$Queue|u%>&<% $QueryString %>"><&|/l&>Bulk Reject</&></a><br />
+<a href="<%RT->Config->Get('WebPath')%>/RTIR/Report/BulkReject.html?<% $QueryString %>"><&|/l&>Bulk Reject</&></a>
 </div>
 
 % }
@@ -41,7 +52,6 @@ return '' if !$ShowEmpty && !$collection->CountAll;
 $Queue          => ''
 $BaseQuery      => ''
 $Query          => ''
-$QueryString    => ''
 $Rows           => undef
 $Page           => 1
 $OrderBy        => $session{'CurrentSearchHash'}->{'OrderBy'} || 'id'
