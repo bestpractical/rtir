@@ -1,0 +1,54 @@
+<& /RTIR/Elements/Header, Title => $Title &>
+<& '/RTIR/'.$Type.'/Elements/Tabs', 
+    Ticket         => $Ticket,
+    current_tab    => "RTIR/Advanced.html?id=".$Ticket->Id,
+    current_subtab => "RTIR/Advanced.html?id=".$Ticket->Id,
+    Title          => $Title,
+&>
+
+<& /Elements/ListActions, actions => \@results &>
+
+<form method="post" action="Advanced.html" enctype="multipart/form-data">
+<input type="hidden" name="id" value="<% $Ticket->Id %>" />
+
+<&| /Widgets/TitleBox, title => loc('Edit basics') &>
+<& /Ticket/Elements/EditBasics, TicketObj => $Ticket &>
+</&>
+
+<&| /Widgets/TitleBox, title => loc('Edit Links') &>
+<& /Elements/EditLinks, Object => $Ticket, Merge => 1 &>
+</&>
+
+<& /Elements/Submit,
+    Name => 'SaveChanges',
+    Label => loc('Save Changes'),
+    Caption => loc("If you've updated anything above, be sure to"),
+&>
+</form>
+
+<%INIT>
+my $Ticket = LoadTicket($id);
+$id = $Ticket->id;
+
+my @results;
+if ( $ARGS{'SaveChanges'} ) {
+    push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
+    push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
+
+    if ( RT->Config->Get('DisplayAfterEdit') ) {
+        $m->comp("/RTIR/Display.html", results => [@results], %ARGS);
+        return;;
+    }
+}
+
+unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
+   Abort("No permission to view ticket");
+}
+
+my ($Type) = $m->comp('Elements/Type', Ticket => $Ticket->Id);
+my $Title = loc("Advanced edit $Type #[_1]", $id);
+
+</%INIT>
+<%ARGS>
+$id => undef
+</%ARGS>

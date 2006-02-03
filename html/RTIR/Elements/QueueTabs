@@ -96,8 +96,12 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
                 path  => "RTIR/Split.html?Ticket=$id" };
 
         $ticket_page_tabs->{'_G'} = { title => loc('Merge'),
-                path  => "RTIR/Merge.html?id=$id&$QueryString",
-                separator => 1  };
+                path  => "RTIR/Merge.html?id=$id&$QueryString" };
+
+        $ticket_page_tabs->{'_H'} = { title => loc('Advanced'),
+                path  => "RTIR/Advanced.html?id=$id",
+                separator => 1,
+        };
 
         foreach my $key (keys %$appendtabs) {
             $ticket_page_tabs->{ $key }->{'title'} = $appendtabs->{ $key }->{'title'};
