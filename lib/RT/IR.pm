@@ -55,7 +55,7 @@ sub BusinessHours {
 
     my $bizhours = new Business::Hours;
     if (RT->Config->Get('BusinessHours')) {
-	$bizhours->business_hours(%RT->Config->Get('BusinessHours'));
+        $bizhours->business_hours( RT->Config->Get('BusinessHours') );
     }
 
     return $bizhours;
@@ -84,11 +84,11 @@ sub SLAInit {
     $SLAObj->SetBusinessHours($bh);
 
     foreach my $key (keys %RT->Config->Get('SLA')) {
-	if (RT->Config->Get('SLA')->{$key} =~ /^\d+$/) {
-	    $SLAObj->Add($key, ( BusinessMinutes =>  RT->Config->Get('SLA')->{$key} ));
-	} else {
-	    $SLAObj->Add($key, %{RT->Config->Get('SLA')->{$key}} );
-	}
+        if (RT->Config->Get('SLA')->{$key} =~ /^\d+$/) {
+            $SLAObj->Add($key, ( BusinessMinutes =>  RT->Config->Get('SLA')->{$key} ));
+        } else {
+            $SLAObj->Add($key, %{RT->Config->Get('SLA')->{$key}} );
+        }
     }
 
     return $SLAObj;
