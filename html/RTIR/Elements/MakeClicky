@@ -13,11 +13,11 @@ my $incident;
 
 my %cb = (
     default => sub {
-        my ($type,$value) = @_;
+        my ($value) = @_;
         return qq{<a href="$web_path/RTIR/Tools/Lookup.html?${url_params_once}q=${value}">$value</a>};
     },
     ip => sub {
-        my ($type,$value) = @_;
+        my ($value) = @_;
         my $result = qq[<a href="$web_path/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=ip&q=${value}">$value</a>];
         if ($incident) {
             $result .= qq[[<a href="$web_path/RTIR/Create.html?Incident=$incident&Queue=Blocks&IP-Value=$value">Block</a>]];
@@ -25,7 +25,7 @@ my %cb = (
         return $result;
     },
     ipdecimal => sub {
-        my ($type,$value) = @_;
+        my ($value) = @_;
         my $i = unpack "L",$value;
         return $value unless $value > 33554432;
 
@@ -44,7 +44,7 @@ my %cb = (
         return $result;
     },
     email => sub {
-        my ($type,$value) = @_;
+        my ($value) = @_;
         my ($pre,$post) = split /@/,$value,2;
         my $result = qq[<a href="$web_path/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=email&q=$value">$value</a>];
         if ( $incident ) {
@@ -56,18 +56,18 @@ my %cb = (
         return $result .qq[<a href="$web_path/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=host&q=$post">($post)</a>];
     },
     url => sub {
-        my ($type,$value) = @_;
+        my ($value) = @_;
         my $uri  = URI::URL->new($value);
         my $host = $uri->host;
         return qq[<a target="new" href="$value">$value</a>]
             .qq[<a href="$web_path/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=host&q=$host">($host)</a>];
     },
     noc => sub {
-        my ($type,$value) = @_;
+        my ($value) = @_;
         return qq[<a href="$web_path/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=handle&q=$value">$value</a>];
     },
     host => sub {
-        my ($type,$value) = @_;
+        my ($value) = @_;
         return qq[<a href="$web_path/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=host&q=$value">$value</a>];
     },
 );
@@ -89,13 +89,13 @@ foreach ( values %types ) {
 }
 
 my $regexp = join "|",
-             map '\b'. $types{$_}->[0] .'\b',
-             @types;
+             map '\b'. $_->[0] .'\b',
+             @types{ @types };
 
 my $handle = sub {
     my $what = $_[0];
     for my $rec( @types{ @types } ) {
-        return $rec->[1]->( $type, $what ) if $what =~ $rec->[2];
+        return $rec->[1]->( $what ) if $what =~ $rec->[2];
     }
 }
 
