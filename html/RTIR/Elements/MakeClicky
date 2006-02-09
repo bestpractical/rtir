@@ -74,10 +74,10 @@ my %cb = (
 
 # key -> [ regexp, callback, _recache ]
 my %types = (
-    A_httpurl   => [ $RE{URI}{HTTP}{-keep}{-scheme => 'https?'},   $cb{url}],
+    A_httpurl   => [ $RE{URI}{HTTP}{-keep}{-scheme => 'https?'},   $cb{url} ],
     B_ip        => [ q[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}],        $cb{ip} ],
     C_ipdecimal => [ q[\d{8,13}(?!=)],                             $cb{ipdecimal} ],
-    D_email     => [ q[(?:mailto:)?[\w\.\+-]+\@[\w\.-]+\.\w{2,3}], $cb{email}],
+    D_email     => [ q[(?:mailto:)?[\w\.\+-]+\@[\w\.-]+\.\w{2,3}], $cb{email} ],
     F_domain    => [ q[(?:[\w-]+\.)+[A-Za-z]{2,3}],                $cb{host} ],
     G_RIPE      => [ q[(?-i:[A-Z][A-Z0-9-]+)],                     $cb{noc} ],
 );
@@ -97,7 +97,7 @@ my $handle = sub {
     for my $rec( @types{ @types } ) {
         return $rec->[1]->( $what ) if $what =~ $rec->[2];
     }
-}
+};
 
 </%ONCE>
 <%INIT>
@@ -111,8 +111,7 @@ if ( $ticket && $ticket->QueueObj->Name eq 'Incidents' ) {
 if ( $url_params_once && $url_params_once !~ /&$/ ) {
     $url_params_once .= "&";
 }
-while ( $$content =~ s/($regexp)/$handle->( $1 || '' )/gsieo ) {1}
-return;
+$$content =~ s/($regexp)/$handle->( $1 || '' )/gsieo;
 
 </%INIT>
 <%DOC>
