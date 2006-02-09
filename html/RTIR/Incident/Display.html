@@ -148,10 +148,12 @@
 
 </td><td valign="top" width="50%">
 
-<& /Widgets/TitleBoxStart, title => loc('Blocks'), 
-    title_href => RT->Config->Get('WebPath') ."/RTIR/Incident/ShowChildren.html?Queue=Blocks&id=".$id, 
-    title_class=> 'inverse',  
-    titleright => '', color=> "#336633" &>
+% unless ( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
+<& /Widgets/TitleBoxStart, title => loc('Blocks'),
+    title_href => RT->Config->Get('WebPath') ."/RTIR/Incident/ShowChildren.html?Queue=Blocks&id=".$id,
+    title_class=> 'inverse',
+    titleright => '', color=> "#336633",
+&>
 
 % if ($TicketObj->CurrentUserHasRight('ModifyTicket')) {
     <table width="100%"><tr><td align="right"><font size="-1">
@@ -168,6 +170,7 @@
 &>
 
 <& /Widgets/TitleBoxEnd &>
+% }
 
 </td></tr><tr><td colspan="2">
 
@@ -249,9 +252,8 @@ if ( $id eq 'new' ) {
         $m->comp('/RTIR/Display.html', %ARGS );
         return;
     }
-
     ($TicketObj, @results) = CreateTicket( %ARGS, Attachments => delete $session{'Attachments'} );
-    my $new_ticket = 1;
+    $new_ticket = 1;
 } else {
     $TicketObj = LoadTicket( $id );
 }

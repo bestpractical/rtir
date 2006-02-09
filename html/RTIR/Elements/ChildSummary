@@ -24,6 +24,7 @@
 %# END LICENSE BLOCK
 <table width="100%" border="0" cellpadding="2" cellspacing="0">
 <tr>
+%# XXX: why we don't use TicketList component here?
 <th><b><&|/l&>id<b></&></th>
 <th><b><&|/l&>Subject<b></&></th>
 <th><b><&|/l&>State<b></&></th>
@@ -63,9 +64,9 @@
 % if ($Queue) {
 [<a href="<%RT->Config->Get('WebPath')%>/RTIR/Incident/LinkChildren.html?Queue=<%$Queue%>&Query=Content LIKE '<%$q%>'&id=<%$ticket%>"><%loc("Bulk Link")%></a>]
 % }
-%   if ($Queue eq 'Investigations' and $lookuptype eq 'email') {
+%   if ($Queue eq 'Investigations' && $lookuptype eq 'email') {
 <br />[<a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Incident=<%$ticket%>&Requestors=<%$q%>&Queue=Investigations"><%loc("Launch new: [_1]", $q)%></a>]
-%   } elsif ($Queue eq 'Blocks' and $lookuptype eq 'ip') {
+%   } elsif ( $Queue eq 'Blocks' && $lookuptype eq 'ip' && !RT->Config->Get('RTIR_DisableBlocksQueue') ) {
 <br />[<a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Incident=<%$ticket%>&Queue=Blocks&IP-Value=<%$q%>"><%loc("New Block: [_1]", $q)%></a>]
 %   }
 % }
@@ -74,19 +75,18 @@
 </table>
 
 <%INIT>
-my $Query;
-if (!$Query) {
-    $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
-    $Query .= " AND Content LIKE '$q'" if $q;
-}
+my $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
+$Query = join ' AND ', $Query, "Content LIKE '$q'" if $q;
 
-my $QueryString = "&".$m->comp('/Elements/QueryString',
-                               Query => $Query,
-                               Format => $Format,
-                               Rows => $Rows,
-                               OrderBy => $OrderBy,
-                               Order => $Order,
-                               Page => $Page);
+my $QueryString = $m->comp(
+    '/Elements/QueryString',
+    Query   => $Query,
+    Format  => $Format,
+    Rows    => $Rows,
+    OrderBy => $OrderBy,
+    Order   => $Order,
+    Page    => $Page,
+);
 
 </%INIT>
 

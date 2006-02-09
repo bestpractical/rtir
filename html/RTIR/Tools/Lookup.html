@@ -29,78 +29,85 @@
     current_subtab => $current_subtab, 
     Title => $title &>
 
-% if ($ticket) {
+% if ( $ticket ) {
 <& /Widgets/TitleBoxStart, title => loc("Current [_1]: #[_2]", $TicketType, $ticket), color=> "#993333" &>
-
 <table width="100%" border="0" cellpadding="2" cellspacing="0">
 <& /Elements/TicketList, 
     Query  => "id = ".$TicketObj->id,
     Format => $Format,
-    &>
-</table>
+&>
+</table><hr />
 <& /Widgets/TitleBoxEnd &>
-<hr>
 % }
 
-% unless ( $ARGS{'HideResults'}) {
+% unless ( $ARGS{'HideResults'} ) {
 <table width="100%" border="0" cellpadding="2" cellspacing="0">
 <tr><td valign="top" width="50%">
 
-<& /Widgets/TitleBoxStart, 
-    title => loc('Incidents: [_1]', $q) &>
+<&| /Widgets/TitleBox, title => loc('Incidents: [_1]', $q) &>
 <& /RTIR/Elements/IncidentSummary, 
-    Type => $TicketType, 
+    Type   => $TicketType, 
     ticket => $ticket, 
-    q => $q &>
-<& /Widgets/TitleBoxEnd &>
+    q      => $q,
+&>
+</&>
 
 <br />
 
-<& /Widgets/TitleBoxStart, 
+<&| /Widgets/TitleBox,
     title => loc('Incident Reports: [_1]', $q), 
-    color=> "#336633"&>
+    color => "#336633",
+&>
 <& /RTIR/Elements/ChildSummary, 
-    Queue => 'Incident Reports', 
-    Type => $TicketType, 
-    ticket => $ticket, 
+    Queue      => 'Incident Reports', 
+    Type       => $TicketType, 
+    ticket     => $ticket, 
     lookuptype => $type, 
-    q => $q &>
-<& /Widgets/TitleBoxEnd&>
+    q          => $q,
+&>
+</&>
 
 </td><td width="50%" valign="top">
 
-<& /Widgets/TitleBoxStart, 
+<& /Widgets/TitleBox,
     title => loc('Investigations: [_1]', $q), 
-    color=> "#336633" &>
+    color=> "#336633",
+&>
 <& /RTIR/Elements/ChildSummary, 
-    Queue => 'Investigations', 
-    Type => $TicketType, 
-    ticket => $ticket, 
+    Queue      => 'Investigations', 
+    Type       => $TicketType, 
+    ticket     => $ticket, 
     lookuptype => $type, 
-    q => $q &>
-<& /Widgets/TitleBoxEnd &>
+    q          => $q,
+&>
+</&>
 
 <br />
 
-<& /Widgets/TitleBoxStart, 
+% unless ( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
+<& /Widgets/TitleBox,
     title => loc('Blocks: [_1]', $q), 
-    color=> "#336633" &>
-<& /RTIR/Elements/ChildSummary, 
-    Queue => 'Blocks', 
-    Type => $TicketType, 
-    ticket => $ticket, 
-    lookuptype => $type, 
-    q => $q &>
-<& /Widgets/TitleBoxEnd &>
+    color => "#336633",
+&>
+<& /RTIR/Elements/ChildSummary,
+    Queue      => 'Blocks',
+    Type       => $TicketType,
+    ticket     => $ticket,
+    lookuptype => $type,
+    q          => $q,
+&>
+</&>
+% }
+
 </table>
 % }
 
 <hr>
 
 <h2>Look Up Information</h2>
-<table>
 <form action="Lookup.html" method="get">
-<input type="hidden" name="ticket" value="<%$ARGS{'ticket'}%>" />
+<input type="hidden" name="ticket" value="<% $ARGS{'ticket'} %>" />
+<table>
   <tr>
     <td class="label">WHOIS:</td>
     <td class="input">
@@ -119,9 +126,9 @@
 % next unless $srv;
 % my $selected = "";
 % if ($servers->{$s} eq $server) {
-%   $selected = " SELECTED";
+%   $selected = " selected";
 % }
-        <option value="<%$host%>"<%$selected%>><%$name || $host%></option>
+        <option value="<% $host %>"<% $selected %>><% $name || $host %></option>
 % }
       </select>
     </td>
@@ -132,7 +139,7 @@
 <form action="Traceroute.html" method="get" target="_blank">
   <tr>
     <td class="label">Traceroute to:</td>
-    <td class="input"><input size="30" name="q" value="<%$q%>" /></td>
+    <td class="input"><input size="30" name="q" value="<% $q %>" /></td>
     <td align="left"><input type="submit" value="Go" /></td>
   </tr>
 </form>
@@ -189,7 +196,7 @@ parse this data.
 
 </form>
 
-<%init>
+<%INIT>
 my $current_subtab;
 my $TicketType;
 my $TicketObj;
@@ -254,18 +261,18 @@ if ($q) {
 }
 
 if ($ticket) {
-  ($TicketType, undef) = $m->comp("/RTIR/Elements/Type", Ticket => $ticket);
+  ($TicketType, undef) = $m->comp('/RTIR/Elements/Type', Ticket => $ticket);
   $TicketObj = LoadTicket($ticket);
 }
 
 my $Format = RT->Config->Get('RTIRSearchResultFormats')->{$TicketType . 'Default'};
 
-</%init>
-<%args>
+</%INIT>
+<%ARGS>
 $servers => RT->Config->Get('whois')
 $server => undef
 $handparse => 1
 $q => undef
 $type => undef
 $ticket => undef
-</%args>
+</%ARGS>

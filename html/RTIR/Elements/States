@@ -3,7 +3,10 @@ my %meta = (
     'Incidents'        => { Active => ['new', 'open', 'stalled'], Inactive => [] },
     'Incident Reports' => { Active => ['new', 'open'], Inactive => ['rejected', 'resolved'] },
     'Investigations'   => { Active => ['new', 'open'], Inactive => ['stalled'] },
-    'Blocks'        => { Active => ['pending activation', 'active', 'pending removal'], Inactive => [] },
+    'Blocks'           => {
+        Active => ['pending activation', 'active', 'pending removal'],
+        Inactive => ['removed'],
+    },
 );
 </%ONCE>
 <%INIT>

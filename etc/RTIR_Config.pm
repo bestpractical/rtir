@@ -165,13 +165,13 @@ Set($RTIRSearchResultFormats, {
 			  __TimeLeft__},
     
     Merge => qq{___RTIR_Radio__,
-		'<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-		'<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+		'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
+		'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
 		__Requestors__,
 		__OwnerName__,
 		__CreatedRelative__,
 		__DueRelative__},
-    
+
     LinkChildren => qq{___RTIR_Check__,
 		       '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
 		       '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
@@ -179,13 +179,12 @@ Set($RTIRSearchResultFormats, {
 		       __OwnerName__,
 		       __CreatedRelative__,
 		       __DueRelative__},
-    
+
     LinkIncident => qq{___RTIR_Radio__,
 		       '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
 		       '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
 		       __OwnerName__,
-		       __CreatedRelative__
-		       },
+		       __CreatedRelative__},
     
     RejectReports, qq{___RTIR_Check__,
 		      '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
@@ -212,10 +211,10 @@ Set($RTIRSearchResultFormats, {
 		   },
 
     ChildReport => qq{'<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-			'<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
-	'<I>__CustomField.{_RTIR_State}__</I>/TITLE:State',
-	__DueRelative__,
-		  },
+                '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+                '<I>__CustomField.{_RTIR_State}__</I>/TITLE:State',
+                __DueRelative__,
+            },
 
     ChildInvestigation => qq{'<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
 			     '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
@@ -237,6 +236,7 @@ Set($RTIRSearchResultFormats, {
 # on the edit screen.
 Set($DisplayAfterEdit, 1);
 
+# path to traceroute command
 Set($TracerouteCommand, '/usr/bin/traceroute');
 
 # Components that available to add on the first page of the RTIR
@@ -246,5 +246,8 @@ Set($RTIR_HomepageComponents, [qw(
     /RTIR/Elements/DueIncidents
     RefreshHomepage
 )]);
+
+# if true then Blocks queue functionality inactive and disabled
+Set($RTIR_DisableBlocksQueue, 0);
 
 1;

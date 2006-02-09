@@ -49,13 +49,18 @@ my $toptabs = {
            path => 'RTIR/Search/Results.html?Queue=Incident%20Reports' },
     E => { title => loc('Investigations'),
            path => 'RTIR/Search/Results.html?Queue=Investigations' },
-    F => { title => loc('Blocks'),
-           path => 'RTIR/Search/Results.html?Queue=Blocks' },
     G => { title => loc('Tools'),
            path => 'RTIR/Tools/Lookup.html' },
     H => { title => loc('Preferences'),
            path => 'RTIR/Prefs/Home.html' },
 };
+
+unless ( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
+    $toptabs->{'F'} = {
+        title => loc('Blocks'),
+        path => 'RTIR/Search/Results.html?Queue=Blocks',
+    };
+}
 
 my $topactions = {
     A => { html => $m->scomp('/RTIR/Elements/SimpleSearch') }

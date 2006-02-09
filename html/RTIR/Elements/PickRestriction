@@ -99,7 +99,7 @@
 <li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
 	Name => 'State' &>
 
-% } elsif ($QueueObj->Name eq 'Blocks') {
+% } elsif ($QueueObj->Name eq 'Blocks' && !RT->Config->Get('RTIR_DisableBlocksQueue') ) {
 <li><& /RTIR/Elements/SearchRTIRField, QueueObj => $QueueObj, 
 	Name => 'State' &>
 

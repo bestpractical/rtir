@@ -71,7 +71,7 @@
 my $Queue = 'Incidents';
 my $incidents;
 
-while (my $Ticket = $session{'tickets'}->Next) {
+while ( my $Ticket = $session{'tickets'}->Next ) {
   if ($Ticket->QueueObj->Name eq "Incidents") {
     $incidents->{$Ticket->Id} = { Ticket => $Ticket };
   } elsif ($Ticket->QueueObj->Name eq "Incident Reports") {
@@ -92,7 +92,7 @@ if (!$Query) {
     $Query .= " AND Content LIKE '$q'" if $q;
 }
 
-my $QueryString = "&".$m->comp('/Elements/QueryString',
+my $QueryString = $m->comp('/Elements/QueryString',
                                Query => $Query,
                                Format => $Format,
                                Rows => $Rows,

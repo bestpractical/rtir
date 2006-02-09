@@ -321,6 +321,9 @@ if ($Type eq 'Incident') {
     $m->comp("/RTIR/Incident/Create.html", %ARGS);
     $m->abort;
 }
+if ($Type eq 'Block' && RT->Config->Get('RTIR_DisableBlocksQueue') ) {
+    Abort(loc("Blocks queue is disabled via config file"));
+}
 
 my $Status;
 if ($Queue eq "Incident Reports") {
