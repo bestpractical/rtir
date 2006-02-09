@@ -57,12 +57,10 @@ Check if the Incident is being closed.
 
 sub Prepare {
     my $self = shift;
+    my @inactive = $self->TicketObj->QueueObj->InactiveStatusArray;
+    my $new_status = $self->TransactionObj->NewValue;
 
-    unless ( $self->TransactionObj->NewValue eq 'resolved' ||
-             $self->TransactionObj->NewValue eq 'rejected' )
-    {
-        return 0;
-    }
+    return 0 unless grep $_ eq $new_status, @inactive;
     return 1;
 }
 
