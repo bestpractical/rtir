@@ -74,13 +74,14 @@ $BaseQuery = join ' AND ', map "( $_ )", $BaseQuery, "HasMember != ". $ChildObj-
 my $current_tab = "RTIR/Incident/LinkToIncident.html?id=9"; #XXX: WTF id=9 does here?
 my $tab = $m->interp->apply_escapes($current_tab,'u');
 
-my $QueryString = "&".$m->comp('/Elements/QueryString',
+my $QueryString = $m->comp('/Elements/QueryString',
                                Query => $Query,
                                Format => $Format,
                                Rows => $Rows,
                                OrderBy => $OrderBy,
                                Order => $Order,
-                               Page => $Page);
+                               Page => $Page,
+                          );
 
 my $path = "RTIR/Search/Refine.html?"
     . $m->comp( '/Elements/QueryString',
