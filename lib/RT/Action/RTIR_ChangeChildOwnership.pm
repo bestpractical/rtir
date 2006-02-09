@@ -71,29 +71,29 @@ Change the ownership of children.
 
 sub Commit {
     my $self = shift;
+    my $transaction = $self->TransactionObj;
 
-    my $transaction = $transaction;
-
-    my $query =  "(Queue = 'Incident Reports'"
-                ." OR Queue = 'Investigations'"
-                ." OR Queue = 'Blocks'"
-                .") AND MemberOf = " . $self->TicketObj->Id
-                ." AND Owner != ". $transaction->NewValue;
-    my $members = new RT::Tickets( $self->CreatorCurrentUser );
-    $members->FromSQL($query);
+    my $actor = $self->CreatorCurrentUser;
 
     my $action_cb;
-    if ( $transaction->NewValue == $transaction->Creator ) {
-        if ( $transaction->CurrentUser->id == $RT::Nobody->id ) {
-            $action_cb = sub { return $_[0]->Take }
-        } else {
-            $action_cb = sub { return $_[0]->Steal }
-        }
+    if ( $transaction->NewValue == $actor->id ) {
+        $action_cb = sub {
+            return $_[0]->Steal if $_[0]->Owner != $RT::Nobody->id;
+            return $_[0]->Take;
+        };
     } else {
         $action_cb = sub { return $_[0]->SetOwner( $transaction->NewValue ) }
     }
 
     # change owner of child Incident Reports, Investigations, Blocks
+    my $query =  "(Queue = 'Incident Reports'"
+                ." OR Queue = 'Investigations'"
+                ." OR Queue = 'Blocks'"
+                .") AND MemberOf = ". $self->TicketObj->Id
+                ." AND Owner != ". $transaction->NewValue;
+    my $members = new RT::Tickets( $actor );
+    $members->FromSQL( $query );
+
     while ( my $member = $members->Next ) {
         my ($res, $msg) = $action_cb->( $member );
         $RT::Logger->info( "Couldn't change owner: $msg" ) unless $res;
