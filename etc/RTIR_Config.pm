@@ -240,12 +240,12 @@ Set($DisplayAfterEdit, 1);
 Set($TracerouteCommand, '/usr/bin/traceroute');
 
 # Components that available to add on the first page of the RTIR
-Set($RTIR_HomepageComponents, [qw(
+Set(@RTIR_HomepageComponents, qw(
     /RTIR/Elements/NewReports
     /RTIR/Elements/UserDueIncidents
     /RTIR/Elements/DueIncidents
     RefreshHomepage
-)]);
+));
 
 # if true then Blocks queue functionality inactive and disabled
 Set($RTIR_DisableBlocksQueue, 0);
