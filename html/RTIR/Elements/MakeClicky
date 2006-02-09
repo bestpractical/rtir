@@ -14,13 +14,15 @@ my $incident;
 my %cb = (
     default => sub {
         my ($value) = @_;
-        return qq{<a href="$web_path/RTIR/Tools/Lookup.html?${url_params_once}q=${value}">$value</a>};
+        return qq{$value [<a href="$web_path/RTIR/Tools/Lookup.html?${url_params_once}q=${value}">}
+               .loc('lookup') .qq{</a>]};
     },
     ip => sub {
         my ($value) = @_;
-        my $result = qq[<a href="$web_path/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=ip&q=${value}">$value</a>];
-        if ($incident) {
-            $result .= qq[[<a href="$web_path/RTIR/Create.html?Incident=$incident&Queue=Blocks&IP-Value=$value">Block</a>]];
+        my $result .= qq{$value [<a href="$web_path/RTIR/Tools/Lookup.html?${url_params_once}type=ip&q=${value}">}
+                      .loc('lookup IP') .q{</a>]};
+        if ( $incident && !RT->Config->Get('RTIR_DisableBlocksQueue') ) {
+            $result .= qq{[<a href="$web_path/RTIR/Create.html?Incident=$incident&Queue=Blocks&IP-Value=$value">block</a>]};
         }
         return $result;
     },
@@ -37,38 +39,45 @@ my %cb = (
             my $d = hex( substr( $hostnum, 6, 2 ) );
             "$a.$b.$c.$d";
         };
-        my $result = qq[$value <a href="$web_path/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=ip&q=$host">($host)</a>];
-        if ($incident) {
-            $result .= qq[[<a href="$web_path/RTIR/Create.html?Incident=$incident&Queue=Blocks&IP-Value=$host">Block</a>]];
+        my $result = qq{$value [<a href="$web_path/RTIR/Tools/Lookup.html?${url_params_once}type=ip&q=$host">}
+                     .loc('lookup [_1]', $host) .qq{</a>]};
+        if ( $incident && !RT->Config->Get('RTIR_DisableBlocksQueue') ) {
+            $result .= qq{[<a href="$web_path/RTIR/Create.html?Incident=$incident&Queue=Blocks&IP-Value=$host">block</a>]};
         }
         return $result;
     },
     email => sub {
         my ($value) = @_;
-        my ($pre,$post) = split /@/,$value,2;
-        my $result = qq[<a href="$web_path/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=email&q=$value">$value</a>];
+        my ($pre, $post) = split /@/, $value, 2;
+        my $result = qq{$value [<a href="$web_path/RTIR/Tools/Lookup.html?${url_params_once}type=email&q=$value">}
+                      .loc('lookup email') .q{</a>]};
         if ( $incident ) {
             if ( $r->uri =~ /Lookup.html$/ ) {
-                $result .= qq[<input type="checkbox" name="Requestorbox-$value" unchecked />];
+                $result .= qq{<input type="checkbox" name="Requestorbox-$value" unchecked />};
             }
-            $result .= qq[[<a href="$web_path/RTIR/Create.html?Incident=$incident&Queue=Investigations&Requestors=$value">Investigate to</a>]];
+            $result .= qq{[<a href="$web_path/RTIR/Create.html?Incident=$incident&Queue=Investigations&Requestors=$value">}
+                       .loc('Investigate to') .qq{</a>]};
         }
-        return $result .qq[<a href="$web_path/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=host&q=$post">($post)</a>];
+        return $result .qq{[<a href="$web_path/RTIR/Tools/Lookup.html?${url_params_once}type=host&q=$post">}
+               .loc('lookup "[_1]"', $post) .qq{</a>]};
     },
     url => sub {
         my ($value) = @_;
         my $uri  = URI::URL->new($value);
         my $host = $uri->host;
-        return qq[<a target="new" href="$value">$value</a>]
-            .qq[<a href="$web_path/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=host&q=$host">($host)</a>];
+        return qq{$value [<a target="new" href="$value">}. loc('open URL') .qq{</a>]}
+            .qq{[<a href="$web_path/RTIR/Tools/Lookup.html?${url_params_once}type=host&q=$host">}
+            .loc('lookup "[_1]"', $host) .qq{</a>]}
     },
     noc => sub {
         my ($value) = @_;
-        return qq[<a href="$web_path/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=handle&q=$value">$value</a>];
+        return qq{$value [<a href="$web_path/RTIR/Tools/Lookup.html?${url_params_once}type=handle&q=$value">}
+               .loc('lookup') .qq{</a>]};
     },
     host => sub {
         my ($value) = @_;
-        return qq[<a href="$web_path/RTIR/Tools/Lookup.html?@{[$url_params_once]}type=host&q=$value">$value</a>];
+        return qq{$value [<a href="$web_path/RTIR/Tools/Lookup.html?${url_params_once}type=host&q=$value">}
+               .loc('lookup host') .qq{</a>]};
     },
 );
 
