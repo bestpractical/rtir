@@ -69,7 +69,7 @@
 
 </td><td width="50%" valign="top">
 
-<& /Widgets/TitleBox,
+<&| /Widgets/TitleBox,
     title => loc('Investigations: [_1]', $q), 
     color=> "#336633",
 &>
@@ -85,7 +85,7 @@
 <br />
 
 % unless ( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
-<& /Widgets/TitleBox,
+<&| /Widgets/TitleBox,
     title => loc('Blocks: [_1]', $q), 
     color => "#336633",
 &>
