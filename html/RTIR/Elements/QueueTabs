@@ -49,7 +49,6 @@ my ($actions, $mytab);
 my $searchtabs = { } ;
 
 if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
-        
     my $id = $Ticket->id;
     $mytab = "RTIR/Display.html?id=$id";
 
@@ -79,16 +78,18 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
     
     $tabs->{'this'} = { class => "currentnav",
                         path  => "RTIR/Display.html?id=$id",
-                        title => loc("$Type #[_1]", $id),
-                        current_subtab => $current_subtab };
+                        title => loc("$Type #[_1]", $id) };
     
     my $ticket_page_tabs = {
         _A => { title => loc('Display'),
                 path  => "RTIR/Display.html?id=$id" }
     };
 
+    my %can = map { $_ => $Ticket->CurrentUserHasRight($_) }
+              qw(ModifyTicket ReplyToTicket OwnTicket CommentOnTicket);
+
     # only show edit option if they can do it
-    if ( $Ticket->CurrentUserHasRight( 'ModifyTicket' ) ) {
+    if ( $can{'ModifyTicket'} ) {
         $ticket_page_tabs->{'_E'} = { title => loc('Edit'),
                 path  => "RTIR/Edit.html?id=$id" };
 
@@ -108,18 +109,19 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
             $ticket_page_tabs->{ $key }->{'path'} = $appendtabs->{ $key }->{'path'};
         }
     }
-
-    foreach my $tab ( sort keys %$ticket_page_tabs ) {
-        next unless $ticket_page_tabs->{ $tab }->{'path'} eq $current_subtab;
-
-        $ticket_page_tabs->{ $tab }->{'subtabs'} = $subtabs;
-        $tabs->{'this'}->{'current_subtab'} = $ticket_page_tabs->{ $tab }->{'path'};
-    }
     $tabs->{'this'}->{'subtabs'} = $ticket_page_tabs;
 
+    if( $current_subtab ) {
+        foreach my $tab ( values %$ticket_page_tabs ) {
+            next unless $tab->{'path'} eq $current_subtab;
+
+            $tab->{'subtabs'} = $subtabs;
+            $tabs->{'this'}->{'current_subtab'} = $tab->{'path'};
+        }
+    }
+
     ### Reply ###
-    if (    $Ticket->CurrentUserHasRight('ModifyTicket')
-         or $Ticket->CurrentUserHasRight('ReplyToTicket') ) {
+    if ( $can{'ModifyTicket'} || $can{'ReplyToTicket'} ) {
 
         if ($Type eq 'Incident') {
             $actions->{'A'} = {
@@ -138,7 +140,7 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
         }
     }
 
-    if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
+    if ( $can{'ModifyTicket'} ) {
         if ( $Type eq 'Report' ) {
             if ( $Ticket->QueueObj->IsActiveStatus( $Ticket->Status ) ) {
                 my $state = $Ticket->FirstCustomFieldValue('_RTIR_State');
@@ -180,13 +182,13 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
         }
 
         ### Open ###
-        if ( $Ticket->Status eq 'resolved' or $Ticket->Status eq 'rejected' ) {
+        if ( $Ticket->QueueObj->IsInactiveStatus( $Ticket->Status ) ) {
             $actions->{'C'} = { path => "RTIR/Display.html?Status=open&id=$id",
                                 title => loc('Open') };
         }
     }
 
-    if ( $Ticket->CurrentUserHasRight('OwnTicket') ) {
+    if ( $can{'OwnTicket'} ) {
         if ( $Ticket->Owner == $RT::Nobody->id ) {
             $actions->{'D'} = { path => "RTIR/Display.html?Action=Take&id=$id",
                                 title => loc('Take') };
@@ -197,8 +199,7 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
         }
     }
 
-    if (    $Ticket->CurrentUserHasRight('ModifyTicket')
-         or $Ticket->CurrentUserHasRight('CommentOnTicket') ) {
+    if ( $can{'ModifyTicket'} || $can{'CommentOnTicket'} ) {
         $actions->{'F'} = { title => loc('Comment'),
                             path  => "RTIR/Update.html?Action=Comment&id=$id" };
     }
