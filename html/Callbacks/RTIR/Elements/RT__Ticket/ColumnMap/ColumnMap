@@ -1,3 +1,29 @@
+<%ONCE>
+my @CFs = qw(
+    Classification
+    Constituency
+    Description
+    Function
+    HowReported
+    IP
+    Netmask
+    Port
+    ReporterType
+    SLA
+    State
+    WhereBlocked
+);
+my $cf_values_cb = sub {
+    my $old_user = $_[0]->CurrentUser( $RT::SystemUser );
+    my $values = $_[0]->CustomFieldValues( $_[1] );
+    $values->{'find_disabled_rows'} = 1;
+    $RT::Logger->crit("field $_[1]");
+    $_[0]->CurrentUser( $old_user );
+    return map { $_->Content, \'<br />' }
+        @{ $values->ItemsArrayRef };
+};
+
+</%ONCE>
 <%INIT>
 
 my %selected;
@@ -31,6 +57,17 @@ $COLUMN_MAP->{'_RTIR_Radio'} = {
         return ( \qq{<input type="radio" name="SelectedTicket" value="$id" $selected />} );
     },
 };
+
+# XXX: map RTIR hidden custom fields staticaly because user has no rights
+# to see this CFs we need to hack over ACLs
+foreach my $field ( map "_RTIR_$_", @CFs ) {
+    my %h = (
+        title => $field,
+        value => sub { return $cf_values_cb->($_[0], $field) },
+    );
+    $COLUMN_MAP->{ "CF.{$field}" } =
+        $COLUMN_MAP->{ "CustomField.{$field}" } = \%h;
+}
 </%INIT>
 <%ARGS>
 $COLUMN_MAP => undef
