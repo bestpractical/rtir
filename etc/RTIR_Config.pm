@@ -56,14 +56,15 @@ Set ($SLA_Reopen_OutOfHours, 'Full service: out of hours');
 Set($_RTIR_SLA_inhours_default, "Full service");
 Set($_RTIR_SLA_outofhours_default, "Full service: out of hours");
 Set($_RTIR_HowReported_default, "Email");
-#Set($_RTIR_ReporterType_default, "");
-#Set($_RTIR_IP_default, "");
-#Set($_RTIR_NetMask_default, "");
-#Set($_RTIR_Port_default, "");
-#Set($_RTIR_WhereBlocked_default, "");
+Set($_RTIR_ReporterType_default, "");
+Set($_RTIR_IP_default, "");
+Set($_RTIR_NetMask_default, "");
+Set($_RTIR_Port_default, "");
+Set($_RTIR_WhereBlocked_default, "");
 Set($_RTIR_Constituency_default, "EDUNET");
-#Set($_RTIR_Function_default, "");
-#Set($_RTIR_Classification_default, "");
+Set($_RTIR_Function_default, "");
+Set($_RTIR_Classification_default, "");
+Set($_RTIR_Description_default, "");
 
 
 # Set the Business Hours for your organization

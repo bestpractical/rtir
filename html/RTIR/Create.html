@@ -218,9 +218,9 @@
     </td>
     <td class="value" colspan="2">
       <& /RTIR/Elements/EditRTIRField, 
-	TicketObj => $TicketObj,
+        TicketObj => $TicketObj,
         QueueObj => $QueueObj, Name => 'Port',
-	Default => $ARGS{'Port-Value'} || RT->Config->Get('_RTIR_Netmask_default'), &>
+        Default => $ARGS{'Port-Value'} || RT->Config->Get('_RTIR_Port_default') &>
     </td>
   </tr>
   <tr>
