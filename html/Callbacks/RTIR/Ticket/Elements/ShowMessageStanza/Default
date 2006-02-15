@@ -1,6 +1,11 @@
-<%init>
-$m->comp('/RTIR/Elements/MakeClicky', ticket => $Transaction->TicketObj, url_params => "ticket=".$Transaction->TicketObj->Id,  %ARGS);
-</%init>
+<%INIT>
+return unless $m->request_comp->path =~ m{^/RTIR/};
+return $m->comp( '/RTIR/Elements/MakeClicky',
+    %ARGS,
+    ticket => $Transaction->TicketObj,
+    url_params => "ticket=".$Transaction->TicketObj->Id,
+);
+</%INIT>
 <%ARGS>
 $Transaction => undef
 </%ARGS>
