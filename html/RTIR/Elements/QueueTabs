@@ -80,13 +80,13 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
                         path  => "RTIR/Display.html?id=$id",
                         title => loc("$Type #[_1]", $id) };
     
+    my %can = map { $_, $Ticket->CurrentUserHasRight($_) }
+              qw(ModifyTicket ReplyToTicket OwnTicket CommentOnTicket);
+
     my $ticket_page_tabs = {
         _A => { title => loc('Display'),
                 path  => "RTIR/Display.html?id=$id" }
     };
-
-    my %can = map { $_ => $Ticket->CurrentUserHasRight($_) }
-              qw(ModifyTicket ReplyToTicket OwnTicket CommentOnTicket);
 
     # only show edit option if they can do it
     if ( $can{'ModifyTicket'} ) {
@@ -110,14 +110,13 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
         }
     }
     $tabs->{'this'}->{'subtabs'} = $ticket_page_tabs;
+    $current_subtab ||= "RTIR/Display.html?id=$id";
 
-    if( $current_subtab ) {
-        foreach my $tab ( values %$ticket_page_tabs ) {
-            next unless $tab->{'path'} eq $current_subtab;
+    foreach my $tab ( values %$ticket_page_tabs ) {
+        next unless $tab->{'path'} eq $current_subtab;
 
-            $tab->{'subtabs'} = $subtabs;
-            $tabs->{'this'}->{'current_subtab'} = $tab->{'path'};
-        }
+        $tab->{'subtabs'} = $subtabs;
+        $tabs->{'this'}->{'current_subtab'} = $tab->{'path'};
     }
 
     ### Reply ###
@@ -143,7 +142,7 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
     if ( $can{'ModifyTicket'} ) {
         if ( $Type eq 'Report' ) {
             if ( $Ticket->QueueObj->IsActiveStatus( $Ticket->Status ) ) {
-                my $state = $Ticket->FirstCustomFieldValue('_RTIR_State');
+                my $state = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, '_RTIR_State');
                 if ($state ne 'new') {
                     $actions->{'Ac'} = {
                         path => "RTIR/Update.html?Action=Comment&DefaultStatus=resolved&id=$id",
@@ -244,9 +243,9 @@ elsif ( $Type eq 'Incident' ) {
                      separator => 1 };
 }
 
-foreach ( keys %{$tabs} ) {
-    if ( $tabs->{ $_ }->{'path'} eq $current_tab ) {
-        $tabs->{ $_ }->{'subtabs'} = { %{$tabs->{ $_ }->{'subtabs'} || {}}, %$subtabs };
+foreach my $tab ( values %{$tabs} ) {
+    if ( $tab->{'path'} eq $current_tab ) {
+        $tab->{'subtabs'} = { %{$tab->{'subtabs'} || {}}, %$subtabs };
     }
 }
 

@@ -107,7 +107,7 @@ if ( $BulkReject ) {
             next;
         }
 
-        my $oldstate = $t->FirstCustomFieldValue('_RTIR_State');
+        my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $t, '_RTIR_State' );
         
         if ( $t->Owner != $session{'CurrentUser'}->id &&
              $t->Owner == $RT::Nobody->id )
@@ -122,7 +122,7 @@ if ( $BulkReject ) {
 
         push @tempresults, ProcessTicketBasics( ARGSRef => \%ARGS, TicketObj => $t );
 
-        my $newstate = $t->FirstCustomFieldValue('_RTIR_State');
+        my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $t, '_RTIR_State' );
         if ( $newstate ne $oldstate ) {
             push @tempresults,
                  [ $id, loc("State changed from [_1] to [_2]", $oldstate, $newstate ) ];

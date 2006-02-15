@@ -22,13 +22,14 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-% if ($fieldvalue) {
-<%$fieldvalue%>
+% if ( $fieldvalue ) {
+<span class="cf-value"><% $fieldvalue %></span>
 % } else {
-<i><&|/l&>(no value)</&></i>
+<span class="cf-value novalue"><&|/l&>no value</&></class>
 % }
 <%INIT>
-my $fieldvalue = $Ticket->FirstCustomFieldValue("_RTIR_".$Name);
+use RT::IR::Ticket;
+my $fieldvalue = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, "_RTIR_".$Name );
 </%INIT>
 <%ARGS>
 $Ticket => undef

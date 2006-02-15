@@ -268,29 +268,17 @@ while ( my $t = $tix_unresolved->Next) {
 }
 
 sub get_incident_field {
-  my $t = shift;
-  my $field = shift;
+    my $t = shift;
+    my $field = shift;
 
-  # find the parent incident
-  my $query = "Queue = 'Incidents' AND HasMember = " . $t->Id;
+    # find the parent incident
+    my $query = "Queue = 'Incidents' AND HasMember = ". $t->Id;
+    my $incidents = new RT::Tickets( $session{'CurrentUser'} );
+    $incidents->FromSQL( $query );
 
-  my $incidents = new RT::Tickets($session{'CurrentUser'});
-  $incidents->FromSQL($query);
-
-  my $parent;
-  $incidents->GotoFirstItem();
-  while (my $incident = $incidents->Next) {
-    if ($incident->QueueObj->Name eq 'Incidents') {
-      $parent = $incident;
-      last;
-    }
-  }
-
-  if ( $parent ) {
-      return $parent->FirstCustomFieldValue($field);
-  } else {
-      return undef;
-  }
+    my $parent = $incidents->First;
+    return undef unless $parent;
+    return RT::IR::Ticket::FirstCustomFieldValue( $parent, $field );
 }
 
 if ($tabbed) {

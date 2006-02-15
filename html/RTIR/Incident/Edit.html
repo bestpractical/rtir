@@ -146,7 +146,7 @@ $CanRespond = 1 if ( $Ticket->CurrentUserHasRight('ReplyToTicket') or
 $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
                      $Ticket->CurrentUserHasRight('ModifyTicket') );
 
-my $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, '_RTIR_State' );
 unless ($OnlySearchForPeople) {
     push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
     push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
@@ -155,7 +155,7 @@ unless ($OnlySearchForPeople) {
     push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
    	push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef=>\%ARGS );
 }
-my $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, '_RTIR_State' );
 if ($newstate ne $oldstate) {
   push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
 }

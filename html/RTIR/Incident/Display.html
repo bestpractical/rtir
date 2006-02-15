@@ -265,16 +265,16 @@ unless( $TicketObj->QueueObj->Name eq 'Incidents' ) {
 $ARGS{'id'} = $id = $TicketObj->Id;
 
 if( 1 ) {
-    my $oldstate = $TicketObj->FirstCustomFieldValue('_RTIR_State');
+    my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $TicketObj, '_RTIR_State' );
 
-    if ( $ARGS{'Action'} && $ARGS{'Action'} =~ /^(?:Steal|Kill|Take|SetTold)$/ )
+    if ( $ARGS{'Action'} && $ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/ )
     {
         my ($res, $msg) = $TicketObj->$1();
         push @results, $msg;
     }
 
     unless( $new_ticket ) {
-        push @results, ProcessTicketBasics( ARGSRef => \%ARGS, TicketObj=>$TicketObj );
+        push @results, ProcessTicketBasics( ARGSRef => \%ARGS, TicketObj => $TicketObj );
     }
 
     if ( $ARGS{'BulkLink'} || $Child ) {
@@ -297,7 +297,7 @@ if( 1 ) {
         push @results, ProcessUpdateMessage( ARGSRef => \%ARGS, TicketObj => $TicketObj );
     }
 
-    my $newstate = $TicketObj->FirstCustomFieldValue('_RTIR_State');
+    my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $TicketObj, '_RTIR_State' );
     if ($newstate ne $oldstate) {
         push @results, loc("State changed from [_1] to [_2]", $oldstate, $newstate );
     }

@@ -126,13 +126,13 @@ if ( $SubmitTicket ) {
             next;
         }
         $id = $Ticket->id;
-        my $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+        my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, '_RTIR_State' );
 
         my @tempresults;
         push @tempresults, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS );
         push @tempresults, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
-        my $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+        my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, '_RTIR_State' );
 
         if ($newstate ne $oldstate) {
             push (@tempresults, loc("State changed from [_1] to [_2]", $oldstate, $newstate));

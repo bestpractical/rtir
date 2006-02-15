@@ -81,7 +81,7 @@ sub Commit {
     # now that we know the SLA, set the value of the CF
     unless ( $self->TicketObj->FirstCustomFieldValue('_RTIR_SLA') ) {
         my $cf = RT::CustomField->new( $self->CurrentUser );
-        $cf->LoadByNameAndQueue(Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_SLA');
+        $cf->LoadByNameAndQueue( Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_SLA' );
         return unless $cf->Id;
 
         my $SLAObj = RT::IR::SLAInit();

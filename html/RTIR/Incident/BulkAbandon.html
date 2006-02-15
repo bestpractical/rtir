@@ -135,11 +135,11 @@ if ( $ARGS{'BulkAbandon'} ) {
 
         push @tmp, $t;
         foreach my $t( @tmp ) {
-            my $oldstate = $t->FirstCustomFieldValue('_RTIR_State');
-            
+            my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $t, '_RTIR_State' );
+
             push @tempresults, ProcessTicketBasics( ARGSRef => \%ARGS, TicketObj => $t );
 
-            my $newstate = $t->FirstCustomFieldValue('_RTIR_State');
+            my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $t, '_RTIR_State' );
             if ( $newstate ne $oldstate ) {
                 push @tempresults,
                      [ $t->id, loc("State changed from [_1] to [_2]", $oldstate, $newstate ) ];

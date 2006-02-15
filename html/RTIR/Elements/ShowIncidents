@@ -25,7 +25,7 @@
 %  while (my $incident = $incidents->Next) {
 %   $count++;
 % my $State = $m->scomp("/RTIR/Elements/ShowRTIRField", Ticket => $incident, Name => 'State');
-<a href="<%RT->Config->Get('WebPath')%>/RTIR/Display.html?id=<%$incident->Id%>"><%$incident->Id%>: <%$incident->Subject%></a> <i>(<%$State%>)</i>
+<a href="<%RT->Config->Get('WebPath')%>/RTIR/Display.html?id=<%$incident->Id%>"><%$incident->Id%>: <%$incident->Subject%></a> <i>(<% $State |n %>)</i>
 % if ($depth < 8) {
 <& /RTIR/Elements/ShowIncidents, Ticket => $incident, depth => ($depth+1) &> 
 %   }
