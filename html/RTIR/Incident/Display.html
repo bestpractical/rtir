@@ -224,13 +224,8 @@ my $DoLinks = sub {
 
     my @results;
     # If we own one end than take or steal other end of the link
-    if ( $TicketObj->Owner != $Target->Owner && (
-         $TicketObj->Owner == $session{'CurrentUser'}->id ||
-         $Target->Owner == $session{'CurrentUser'}->id ) )
-    {
-        my $obj;
-        $obj = $TicketObj unless $TicketObj->Owner == $session{'CurrentUser'}->id;
-        $obj = $Target unless $Target->Owner == $session{'CurrentUser'}->id;
+    for my $obj( $Target, $TicketObj ) {
+        next if $obj->Owner == $session{'CurrentUser'}->id;
         my $action = 'Steal';
         $action = 'Take' if $obj->Owner == $RT::Nobody->id;
         my ($res, $msg) = $obj->$action();
@@ -283,7 +278,7 @@ if( 1 ) {
         push @link, $Child if $Child;
         foreach my $id ( grep $_, @link ) {
             my $child = RT::Ticket->new( $session{'CurrentUser'} );
-            $child->Load($id);
+            $child->Load( $id );
             unless( $child->id ) {
                 push @results, loc("Couldn't load ticket #[_1] for linking.", $id);
                 next;
