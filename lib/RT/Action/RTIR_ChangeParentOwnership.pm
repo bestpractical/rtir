@@ -74,8 +74,8 @@ sub Commit {
 
     # change owner of parent Incident(s)
     my $query =  "Queue = 'Incidents'"
-                ."AND HasMember = " . $self->TicketObj->Id
-                ."AND Owner != ". $self->TransactionObj->NewValue;
+                ." AND HasMember = " . $self->TicketObj->Id
+                ." AND Owner != ". $self->TransactionObj->NewValue;
     my $parents = new RT::Tickets( $self->CreatorCurrentUser );
     $parents->FromSQL($query);
 
