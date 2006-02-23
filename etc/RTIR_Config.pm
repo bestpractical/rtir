@@ -58,7 +58,7 @@ Set($_RTIR_SLA_outofhours_default, "Full service: out of hours");
 Set($_RTIR_HowReported_default, "Email");
 Set($_RTIR_ReporterType_default, "");
 Set($_RTIR_IP_default, "");
-Set($_RTIR_NetMask_default, "");
+Set($_RTIR_Netmask_default, "");
 Set($_RTIR_Port_default, "");
 Set($_RTIR_WhereBlocked_default, "");
 Set($_RTIR_Constituency_default, "EDUNET");
