@@ -79,8 +79,8 @@ sub Commit {
                 ." OR Queue = 'Investigations'"
                 ." OR Queue = 'Blocks'"
                 .") AND MemberOf = " . $self->TicketObj->Id
-                ."AND (".
-                . join " AND ", map "Status != '$_'", RT->Config->Get('InactiveStatus');
+                ."AND ("
+                . join " AND ", map "Status != '$_'", RT->Config->Get('InactiveStatus')
                 .")";
 
     my $members = new RT::Tickets( $self->TransactionObj->CurrentUser );
