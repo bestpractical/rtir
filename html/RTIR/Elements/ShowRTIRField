@@ -28,7 +28,6 @@
 <span class="cf-value novalue"><&|/l&>no value</&></class>
 % }
 <%INIT>
-use RT::IR::Ticket;
 my $fieldvalue = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, "_RTIR_".$Name );
 </%INIT>
 <%ARGS>

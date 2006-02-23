@@ -140,6 +140,7 @@ foreach my $arg ( keys %ARGS ) {
     if ( $arg =~ m/ValueOf(.+)/ && $ARGS{$arg} ne "") {
         # We're adding a $1 clause
         my $field = $1;
+        next if $field =~ /-TimeUnits$/;
         my ($keyword, $op, $value);
 
         #figure out if it's a grouping

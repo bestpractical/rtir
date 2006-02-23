@@ -1,3 +1,4 @@
 <%init>
 use RT::IR;
+use RT::IR::Ticket;
 </%init>

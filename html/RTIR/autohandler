@@ -1,6 +1,0 @@
-<%ONCE>
-use RT::IR::Ticket;
-</%ONCE>
-<%INIT>
-$m->call_next();
-</%INIT>

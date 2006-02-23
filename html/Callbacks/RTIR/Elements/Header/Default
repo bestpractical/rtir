@@ -1,2 +1,2 @@
 % return unless $m->request_comp->path =~ m{^/RTIR/};
-| <a href="http://www.bestpractical.com/rtir/about.html?version=1.0.0"><&|/l&>About RTIR</&></a>
+| <a href="http://www.bestpractical.com/rtir/"><&|/l&>About RTIR</&></a>
