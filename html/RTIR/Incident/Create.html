@@ -43,7 +43,6 @@ if ( $link && !$link->CurrentUserHasRight('ModifyTicket') ) {
 <input type="hidden" name="id"           value="new" />
 <input type="hidden" name="Queue"        value="<% $QueueObj->Name       || '' %>" />
 <input type="hidden" name="Status"       value="<% $ARGS{'Status'}       || 'open' %>" />
-<input type="hidden" name="Child"        value="<% $ARGS{'Child'}        || '' %>" />
 <input type="hidden" name="new-MemberOf" value="<% $ARGS{'new-MemberOf'} || '' %>" />
 <input type="hidden" name="MemberOf-new" value="<% $ARGS{'MemberOf-new'} || '' %>" />
 <a name="top">
@@ -187,6 +186,7 @@ if ($ARGS{'new-MemberOf'}) {
 } elsif ($Child) {
     $link = LoadTicket($Child);
     $label = loc("Link with");
+    $ARGS{'MemberOf-new'} = $Child;
 }
 
 my $QueueObj = new RT::Queue( $session{'CurrentUser'} );
