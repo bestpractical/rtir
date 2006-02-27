@@ -1,7 +1,10 @@
-#line 1 "inc/Module/Install/Base.pm - /usr/lib/perl5/vendor_perl/5.8.7/Module/Install/Base.pm"
+#line 1 "inc/Module/Install/Base.pm - /usr/local/share/perl/5.8.7/Module/Install/Base.pm"
 package Module::Install::Base;
 
-#line 28
+# Suspend handler for "redefined" warnings
+BEGIN { my $w = $SIG{__WARN__}; $SIG{__WARN__} = sub { $w } };
+
+#line 30
 
 sub new {
     my ($class, %args) = @_;
@@ -15,18 +18,21 @@ sub new {
     bless(\%args, $class);
 }
 
-#line 46
+#line 48
 
 sub AUTOLOAD {
     my $self = shift;
-    goto &{$self->_top->autoload};
+
+    local $@;
+    my $autoload = eval { $self->_top->autoload } or return;
+    goto &$autoload;
 }
 
-#line 57
+#line 62
 
 sub _top { $_[0]->{_top} }
 
-#line 68
+#line 73
 
 sub admin {
     my $self = shift;
@@ -49,6 +55,9 @@ sub DESTROY {}
 
 1;
 
+# Restore warning handler
+BEGIN { $SIG{__WARN__} = $SIG{__WARN__}->() };
+
 __END__
 
-#line 112
+#line 120

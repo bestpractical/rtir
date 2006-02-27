@@ -9,5 +9,5 @@ version('1.9.HEAD');
 requires('Business::Hours');
 requires('Business::SLA');
 requires('Net::Whois::RIPE');
-
+&auto_install;
 &WriteAll;
