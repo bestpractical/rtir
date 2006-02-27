@@ -60,12 +60,11 @@
 
 </td>
 <td valign="top" class="boxcontainer">
-<& /Widgets/TitleBoxStart, title => loc("Query") . ": " .$Description &>
+<&/Widgets/TitleBoxStart, title => loc("Query") . ": " .$Description &>
 <& /Search/Elements/NewListActions, actions => \@actions &>
 <select size="10" name="clauses" style="width: 100%">
 <%$optionlist|n%>
 </select>
-</td></tr><tr><td bgcolor="#dddddd" colspan="2">
 <center>
 <input type="submit" name="Up" value="^" />
 <input type="submit" name="Down" value="v" />
@@ -75,16 +74,14 @@
 <br />
 <input type="submit" name="Clear" value="Clear" />
 <input type="submit" name="Toggle" value="And/Or" />
-%#<input type="submit" name="EditQuery" value="Advanced" />
 </center>
-<& /Widgets/TitleBoxEnd &>
+</Widgets/TitleBoxEnd>
 <br />
 
 <& /Search/Elements/EditSearches, CurrentSearch => $search_hash, Dirty => $dirty, SearchId => $SearchId &>
 </td>
 </tr>
-<tr>
-<td colspan="2" class="boxcontainer">
+</table>
 
 <& /Search/Elements/DisplayOptions, %ARGS, 
     Format=> $Format,
@@ -93,9 +90,6 @@
     RowsPerPage => $RowsPerPage, 
     OrderBy => $OrderBy, 
     Order => $Order &>
-</td>
-</tr>
-</table>
 </form>
 
 <%ARGS>
