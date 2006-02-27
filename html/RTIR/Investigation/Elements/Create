@@ -140,7 +140,6 @@ if ( $DefaultsNamePrefix && $DefaultsNamePrefix ne $NamePrefix ) {
 delete $ARGS{'DefaultsNamePrefix'};
 delete $ARGS{'NamePrefix'};
 
-use Data::Dumper; $RT::Logger->crit(Dumper(\%ARGS));
 
 #unless ($QueueObj->CurrentUserHasRight('CreateTicket')) {
 #    Abort('You have no permission to create tickets in that queue.');

@@ -38,6 +38,12 @@
 
 <%INIT>
 
+unless ( RT->Config->Get('rtirname') ) {
+    die q{Couldn't get an "rtirname" configuration variable. This usually only happens if you haven't sourced RTIR's default configuration file. Check out RTIR's README for details
+    };
+
+}
+
 my $toptabs = { 
     A => { title => loc('RT'),
            path  => '' },

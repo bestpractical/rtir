@@ -23,11 +23,11 @@ staging environment to ensure that it meets your needs.
 Changes since RTIR 1.0.x
 ------------------------
 
-Full integration with RT 3.4.
+Full integration with RT 3.7.
 
 New Search UI
 
-	This includes a 3.4-style search UI, and menu changes to
+	This includes a 3.7-style search UI, and menu changes to
 	accomodate this.  Instead of search results and criteria being
 	displayed on a single page, you can now choose the 'Refine'
 	menu option to refine your search and re-run it after you've
@@ -59,7 +59,7 @@ Business::SLA
 REQUIRED PACKAGES:
 ------------------
 
-o   RT 3.4.0 or later, configured, installed and tested.
+o   RT 3.7.0 or later, configured, installed and tested.
 
 o   The Business::Hours module (version 0.05 or later)
 
@@ -80,7 +80,7 @@ information.
 Installation instructions:
 --------------------------
 
-1) Once RT 3.4 and other required package have been installed and
+1) Once RT 3.7 and other required package have been installed and
    appear to be working properly, cd to the directory into which you
    unpacked RTIR into.
 
