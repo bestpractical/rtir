@@ -29,8 +29,6 @@ my %seen;
 
 my @items;
 foreach my $comp ( grep !$seen{$_}++, (RT->Config->Get('RTIR_HomepageComponents')) ) {
-    use Data::Dumper;
-    #$RT::Logger->error( Dumper($comp, $m->fetch_comp($comp)) );
     my $desc;
     my $obj = $m->fetch_comp($comp);
     $desc = $obj->attr_if_exists('Description') if $obj;
@@ -58,8 +56,6 @@ foreach my $s( @searches ) {
     }
 }
 
-use Data::Dumper;
-$RT::Logger->error( Dumper( \@items ) );
 
 my @boxes;
 foreach my $pane ( sort keys %$portlets ) {
