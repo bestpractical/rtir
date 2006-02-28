@@ -203,6 +203,13 @@ Set($RTIRSearchResultFormats, {
 		       '__Priority__',
 		       '__DueRelative__',
 		   },
+    AbandonIncidents => qq{'<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+		       '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+		       '__OwnerName__',
+		       '__Priority__',
+		       '__DueRelative__',
+		   },
+
 
     NewReports => qq{'<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
 		       '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
