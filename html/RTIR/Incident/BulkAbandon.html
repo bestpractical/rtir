@@ -186,7 +186,7 @@ $Status    => 'rejected'
 $Queue     => 'Incidents'
 $BaseQuery => $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue );
 $Query     => $m->comp( '/RTIR/Elements/NewQuery', Queue => $Queue, Inactive => 1 );
-$Format    => RT->Config->Get('RTIRSearchResultFormats')->{'RejectReports'};
+$Format    => RT->Config->Get('RTIRSearchResultFormats')->{'AbandonIncidents'};
 $Rows      => 50
 $Page      => 1
 $OrderBy   => 'id'

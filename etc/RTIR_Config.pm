@@ -240,7 +240,6 @@ Set($DisplayAfterEdit, 1);
 # path to traceroute command
 Set($TracerouteCommand, '/usr/bin/traceroute');
 
-warn    RT->Config->Get('HomepageComponents');
 
 # Components that available to add on the first page of the RTIR
 Set(@RTIR_HomepageComponents, 
