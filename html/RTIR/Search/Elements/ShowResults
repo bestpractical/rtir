@@ -10,7 +10,8 @@
     AllowSorting => $AllowSorting,
 &>
 
-% if ( $Queue eq 'Incident Reports' && $ShowNavigation ) {
+<div align="right">
+% if ( $ShowNavigation ) {
 <%PERL>
 # this would do well as a Callback
 my $QueryString = $m->comp('/Elements/QueryString',
@@ -22,14 +23,35 @@ my $QueryString = $m->comp('/Elements/QueryString',
                             Order     => $Order,
                             Page      => $Page,
                           );
+my $ShortQueryString = $m->comp('/Elements/QueryString',
+                            Queue     => $Queue,
+                            Query     => $Query,
+                            Rows      => $Rows,
+                            OrderBy   => $OrderBy,
+                            Order     => $Order,
+                            Page      => $Page,
+                          );
 </%PERL>
+% if ( $Queue eq 'Incident Reports') {
 
-<div align="right">
+
 <a href="<%RT->Config->Get('WebPath')%>/RTIR/Report/BulkReject.html?<% $QueryString %>"><&|/l&>Bulk Reject</&></a>
-</div>
 
 % }
+<a href="<%RT->Config->Get('WebPath')%>/Search/Results.tsv?<%$ShortQueryString%>"><&|/l&>spreadsheet</&></a> |
+<a href="<% RT->Config->Get('WebPath')."/Search/Results.rdf?$ShortQueryString"%>"><&|/l&>RSS</&></a> |
+<form method="get" action="<%RT->Config->Get('WebPath')%>/Search/Chart.html"><&|/l&>chart</&>
+% my %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order);
+% foreach my $key (keys(%hiddens)) {
+<input type="hidden" class="hidden" name="<%$key%>" value="<%defined($hiddens{$key})?$hiddens{$key}:''%>" />
+% }
+<&|/l, $m->scomp('/Search/Elements/SelectGroupBy', Name => 'PrimaryGroupBy') &>grouped by [_1]</&>
+<&|/l, $m->scomp('/Search/Elements/SelectChartType', Name => 'ChartStyle') &>style: [_1]</&>
+<input type="submit" class="button" value="<%loc('Go')%>" />
+</form>
 
+</div>
+% }
 <%INIT>
 
 $Query = join ' AND ', map "( $_ )", grep $_, $BaseQuery, $Query;

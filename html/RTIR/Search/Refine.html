@@ -99,6 +99,9 @@ my $dirty;
 my $AvailableColumns;
 my $CurrentFormat;
 
+# Set up a queues so we can use it to find custom fields to sort on or display
+$queues{$Queue} = 1;
+
 $BaseQuery ||= $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
 
 if ($NewQuery) {

@@ -34,19 +34,20 @@
 &> 
 
 <%INIT>
-if( $QueryString =~ s/^&// ) {
+if ( $QueryString =~ s/^&// ) {
     $RT::Logger->warning("queue string has leading &");
 }
 
-my ($Type) = $m->comp('/RTIR/Elements/Type', Queue => $QueueName);
+my ($Type) = $m->comp( '/RTIR/Elements/Type', Queue => $QueueName );
 
-my $EscapedQueueName = $m->comp('/Elements/QueryString', Queue => $QueueName );
-my $current_toptab = 'RTIR/Search/Results.html?'. $EscapedQueueName;
+my $EscapedQueueName
+    = $m->comp( '/Elements/QueryString', Queue => $QueueName );
+my $current_toptab = 'RTIR/Search/Results.html?' . $EscapedQueueName;
 
 my $tabs = {};
 
-my ($actions, $mytab);
-my $searchtabs = { } ;
+my ( $actions, $mytab );
+my $searchtabs = {};
 
 if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
     my $id = $Ticket->id;
@@ -56,57 +57,78 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
         my $item_map = $session{'tickets'}->ItemMap;
 
         # Don't display prev links if we're on the first ticket
-        if ( $item_map->{ $id }->{'prev'} ) {
-            $searchtabs->{'_a'} = { class => "nav",
-                                    path => "RTIR/Display.html?id=" . $item_map->{'first'},
-                                    title => '<< ' . loc('First') };
-            $searchtabs->{"_b"} = { class => "nav",
-                                    path => "RTIR/Display.html?id=" . $item_map->{ $id }->{'prev'},
-                                    title => '< ' . loc('Prev') };
+        if ( $item_map->{$id}->{'prev'} ) {
+            $searchtabs->{'_a'} = {
+                class => "nav",
+                path  => "RTIR/Display.html?id=" . $item_map->{'first'},
+                title => '<< ' . loc('First')
+            };
+            $searchtabs->{"_b"} = {
+                class => "nav",
+                path  => "RTIR/Display.html?id=" . $item_map->{$id}->{'prev'},
+                title => '< ' . loc('Prev')
+            };
         }
 
         # Don't display next links if we're on the last ticket
-        if ( $item_map->{ $id }->{'next'} ) {
-            $searchtabs->{'d'} = { class => "nav",
-                                   path => "RTIR/Display.html?id=". $item_map->{ $id }->{'next'},
-                                   title => loc('Next') . ' >' };
-            $searchtabs->{'e'} = { class => "nav",
-                                   path => "RTIR/Display.html?id=" . $item_map->{'last'},
-                                   title => loc('Last') . ' >>' };
+        if ( $item_map->{$id}->{'next'} ) {
+            $searchtabs->{'d'} = {
+                class => "nav",
+                path  => "RTIR/Display.html?id=" . $item_map->{$id}->{'next'},
+                title => loc('Next') . ' >'
+            };
+            $searchtabs->{'e'} = {
+                class => "nav",
+                path  => "RTIR/Display.html?id=" . $item_map->{'last'},
+                title => loc('Last') . ' >>'
+            };
         }
     }
-    
-    $tabs->{'this'} = { class => "currentnav",
-                        path  => "RTIR/Display.html?id=$id",
-                        title => loc("$Type #[_1]", $id) };
-    
+
+    $tabs->{'this'} = {
+        class => "currentnav",
+        path  => "RTIR/Display.html?id=$id",
+        title => loc( "$Type #[_1]", $id )
+    };
+
     my %can = map { $_, $Ticket->CurrentUserHasRight($_) }
-              qw(ModifyTicket ReplyToTicket OwnTicket CommentOnTicket);
+        qw(ModifyTicket ReplyToTicket OwnTicket CommentOnTicket);
 
     my $ticket_page_tabs = {
-        _A => { title => loc('Display'),
-                path  => "RTIR/Display.html?id=$id" }
+        _A => {
+            title => loc('Display'),
+            path  => "RTIR/Display.html?id=$id"
+        }
     };
 
     # only show edit option if they can do it
     if ( $can{'ModifyTicket'} ) {
-        $ticket_page_tabs->{'_E'} = { title => loc('Edit'),
-                path  => "RTIR/Edit.html?id=$id" };
-
-        $ticket_page_tabs->{'_F'} = { title => loc('Split'),
-                path  => "RTIR/Split.html?Ticket=$id" };
-
-        $ticket_page_tabs->{'_G'} = { title => loc('Merge'),
-                path  => "RTIR/Merge.html?id=$id&$QueryString" };
-
-        $ticket_page_tabs->{'_H'} = { title => loc('Advanced'),
-                path  => "RTIR/Advanced.html?id=$id",
-                separator => 1,
+        $ticket_page_tabs->{'_E'} = {
+            title => loc('Edit'),
+            path  => "RTIR/Edit.html?id=$id"
         };
 
-        foreach my $key (keys %$appendtabs) {
-            $ticket_page_tabs->{ $key }->{'title'} = $appendtabs->{ $key }->{'title'};
-            $ticket_page_tabs->{ $key }->{'path'} = $appendtabs->{ $key }->{'path'};
+        $ticket_page_tabs->{'_F'} = {
+            title => loc('Split'),
+            path  => "RTIR/Split.html?Ticket=$id"
+        };
+
+        $ticket_page_tabs->{'_G'} = {
+            title => loc('Merge'),
+            path  => "RTIR/Merge.html?id=$id&$QueryString"
+        };
+
+        $ticket_page_tabs->{'_H'} = {
+            title     => loc('Advanced'),
+            path      => "RTIR/Advanced.html?id=$id",
+            separator => 1,
+        };
+
+        foreach my $key ( keys %$appendtabs ) {
+            $ticket_page_tabs->{$key}->{'title'}
+                = $appendtabs->{$key}->{'title'};
+            $ticket_page_tabs->{$key}->{'path'}
+                = $appendtabs->{$key}->{'path'};
         }
     }
     $tabs->{'this'}->{'subtabs'} = $ticket_page_tabs;
@@ -122,19 +144,22 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
     ### Reply ###
     if ( $can{'ModifyTicket'} || $can{'ReplyToTicket'} ) {
 
-        if ($Type eq 'Incident') {
+        if ( $Type eq 'Incident' ) {
             $actions->{'A'} = {
                 title => loc('Reply to Reporters'),
-                path  => "RTIR/Incident/Reply.html?DefaultStatus=stalled&id=$id",
+                path  =>
+                    "RTIR/Incident/Reply.html?DefaultStatus=stalled&id=$id",
             };
             $actions->{'Ab'} = {
                 title => loc('Reply to All'),
-                path  => "RTIR/Incident/Reply.html?DefaultStatus=stalled&id=$id&All=1",
+                path  =>
+                    "RTIR/Incident/Reply.html?DefaultStatus=stalled&id=$id&All=1",
             };
         } else {
             $actions->{'A'} = {
                 title => loc('Reply'),
-                path  => "RTIR/Update.html?Action=Respond&DefaultStatus=stalled&id=$id",
+                path  =>
+                    "RTIR/Update.html?Action=Respond&DefaultStatus=stalled&id=$id",
             };
         }
     }
@@ -142,39 +167,43 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
     if ( $can{'ModifyTicket'} ) {
         if ( $Type eq 'Report' ) {
             if ( $Ticket->QueueObj->IsActiveStatus( $Ticket->Status ) ) {
-                my $state = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, '_RTIR_State');
-                if ($state ne 'new') {
+                my $state = RT::IR::Ticket::FirstCustomFieldValue( $Ticket,
+                    '_RTIR_State' );
+                if ( $state ne 'new' ) {
                     $actions->{'Ac'} = {
-                        path => "RTIR/Update.html?Action=Comment&DefaultStatus=resolved&id=$id",
+                        path =>
+                            "RTIR/Update.html?Action=Comment&DefaultStatus=resolved&id=$id",
                         title => loc('Resolve'),
                     };
                     $actions->{'Acc'} = {
-                        path => "RTIR/Display.html?Status=resolved&id=$id",
+                        path  => "RTIR/Display.html?Status=resolved&id=$id",
                         title => loc('Quick Resolve'),
                     };
                 }
                 $actions->{'B'} = {
-                    path => "RTIR/Display.html?Status=rejected&id=$id",
+                    path  => "RTIR/Display.html?Status=rejected&id=$id",
                     title => loc('Quick Reject'),
                 };
                 $actions->{'Bb'} = {
-                    path => "RTIR/Update.html?Action=Comment&DefaultStatus=rejected&id=$id",
+                    path =>
+                        "RTIR/Update.html?Action=Comment&DefaultStatus=rejected&id=$id",
                     title => loc('Reject'),
                 };
             }
-        }
-        elsif ( $Type eq 'Incident' ) {
+        } elsif ( $Type eq 'Incident' ) {
             if ( $Ticket->QueueObj->IsActiveStatus( $Ticket->Status ) ) {
                 $actions->{'Ac'} = {
-                    path  => "RTIR/Incident/Reply.html?Action=Comment&DefaultStatus=resolved&id=$id&All=1",
+                    path =>
+                        "RTIR/Incident/Reply.html?Action=Comment&DefaultStatus=resolved&id=$id&All=1",
                     title => loc('Resolve'),
                 };
                 $actions->{'Acc'} = {
-                    path => "RTIR/Display.html?Status=resolved&id=$id",
+                    path  => "RTIR/Display.html?Status=resolved&id=$id",
                     title => loc('Quick Resolve'),
                 };
                 $actions->{'B'} = {
-                    path  => "RTIR/Incident/Reply.html?Action=Comment&DefaultStatus=rejected&id=$id&All=1",
+                    path =>
+                        "RTIR/Incident/Reply.html?Action=Comment&DefaultStatus=rejected&id=$id&All=1",
                     title => loc('Abandon'),
                 };
             }
@@ -182,70 +211,89 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
 
         ### Open ###
         if ( $Ticket->QueueObj->IsInactiveStatus( $Ticket->Status ) ) {
-            $actions->{'C'} = { path => "RTIR/Display.html?Status=open&id=$id",
-                                title => loc('Open') };
+            $actions->{'C'} = {
+                path  => "RTIR/Display.html?Status=open&id=$id",
+                title => loc('Open')
+            };
         }
     }
 
     if ( $can{'OwnTicket'} ) {
         if ( $Ticket->Owner == $RT::Nobody->id ) {
-            $actions->{'D'} = { path => "RTIR/Display.html?Action=Take&id=$id",
-                                title => loc('Take') };
-        }
-        elsif ( $Ticket->Owner != $session{CurrentUser}->id ) {
-            $actions->{'E'} = { path => "RTIR/Display.html?Action=Steal&id=$id",
-                                title => loc('Steal') };
+            $actions->{'D'} = {
+                path  => "RTIR/Display.html?Action=Take&id=$id",
+                title => loc('Take')
+            };
+        } elsif ( $Ticket->Owner != $session{CurrentUser}->id ) {
+            $actions->{'E'} = {
+                path  => "RTIR/Display.html?Action=Steal&id=$id",
+                title => loc('Steal')
+            };
         }
     }
 
     if ( $can{'ModifyTicket'} || $can{'CommentOnTicket'} ) {
-        $actions->{'F'} = { title => loc('Comment'),
-                            path  => "RTIR/Update.html?Action=Comment&id=$id" };
+        $actions->{'F'} = {
+            title => loc('Comment'),
+            path  => "RTIR/Update.html?Action=Comment&id=$id"
+        };
     }
 } else {
     $mytab = $current_tab;
 }
 
-my $refinetabs = { };
-$refinetabs->{'_a'} = {
-    class => "nav",
-    path => "RTIR/Search/Refine.html?$EscapedQueueName&$QueryString&".
-        $m->comp( '/Elements/QueryString',
-                  ResultPage => "/RTIR/Search/Results.html?$EscapedQueueName",
-                ),
-    title => loc('Refine'),
+my $refinetabs = {};
+
+# If we're looking at a specific item, dont' show the refine tab
+$tabs->{"A"} = {
+    path  => "RTIR/Create.html?$EscapedQueueName",
+    title => loc("New $Type")
 };
 
-$tabs->{"A"} = { path      => "RTIR/Create.html?$EscapedQueueName",
-                 title     => loc("New $Type") };
-
-$tabs->{"g"} = { path      => "RTIR/Search/Results.html?$EscapedQueueName&$QueryString",
-                 title     => loc('Results'),
-                 separator => 1,
-                 subtabs   => $refinetabs };
-
-if ($Type eq 'Report') {
-    $tabs->{"h"} = { path      => 'RTIR/Report/BulkReject.html',
-                     title     => loc('Bulk Reject'),
-                     separator => 1 };
+$tabs->{"g"} = {
+    path      => "RTIR/Search/Results.html?$EscapedQueueName&$QueryString",
+    title     => loc('Results'),
+};
+unless ( $Ticket and $Ticket->id ) {
+    $tabs->{'ga'} = {
+        class => "nav",
+        path  => "RTIR/Search/Refine.html?$EscapedQueueName&$QueryString&"
+            . $m->comp(
+            '/Elements/QueryString',
+            ResultPage => "/RTIR/Search/Results.html?$EscapedQueueName",
+            ),
+        title => loc('Refine'),
+    };
 }
-elsif ( $Type eq 'Incident' ) {
-    if( $Ticket && $Ticket->QueueObj->Name ne 'Incidents') {
+
+
+if ( $Type eq 'Report' ) {
+    $tabs->{"h"} = {
+        path      => 'RTIR/Report/BulkReject.html',
+        title     => loc('Bulk Reject'),
+        separator => 1
+    };
+} elsif ( $Type eq 'Incident' ) {
+    if ( $Ticket && $Ticket->QueueObj->Name ne 'Incidents' ) {
         my $childq = $Ticket->QueueObj->Name;
         my ($childtype) = $m->comp( '/RTIR/Elements/Type', Queue => $childq );
-        
-        $tabs->{'h'} = { title     => loc( 'Link [_1] #[_2]', $childtype, $Ticket->Id ),
-                         path      => "RTIR/Incident/LinkToIncident.html?id=". $Ticket->Id,
-                         separator => 1 };
+
+        $tabs->{'h'} = {
+            title => loc( 'Link [_1] #[_2]', $childtype, $Ticket->Id ),
+            path => "RTIR/Incident/LinkToIncident.html?id=" . $Ticket->Id,
+            separator => 1
+        };
     }
-    $tabs->{'k'} = { path      => 'RTIR/Incident/BulkAbandon.html',
-                     title     => loc('Bulk Abandon'),
-                     separator => 1 };
+    $tabs->{'k'} = {
+        path      => 'RTIR/Incident/BulkAbandon.html',
+        title     => loc('Bulk Abandon'),
+        separator => 1
+    };
 }
 
 foreach my $tab ( values %{$tabs} ) {
     if ( $tab->{'path'} eq $current_tab ) {
-        $tab->{'subtabs'} = { %{$tab->{'subtabs'} || {}}, %$subtabs };
+        $tab->{'subtabs'} = { %{ $tab->{'subtabs'} || {} }, %$subtabs };
     }
 }
 

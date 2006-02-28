@@ -1,20 +1,12 @@
 <& '/RTIR/'.$Type.'/Elements/Tabs', 
-    subtabs => $refinetabs,
+    current_tab => 'RTIR/Search/Refine.html',
     %ARGS
 &>
 
 <%INIT>
 my ($Type) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
 
-my $refinetabs = {
-    _a => {
-        class => "nav",
-        path  => delete $ARGS{'path'},
-        title => loc('Refine'),
-    },
-};
 </%INIT>
-
 <%ARGS>
 $Queue => ''
 </%ARGS>

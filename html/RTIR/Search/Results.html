@@ -67,7 +67,9 @@
     Page        => $Page,
     OrderBy     => $OrderBy,
     Order       => $Order,
+    ShowNavigation => 1
 &>
+<div align="right">
 
 <%INIT>
 my $title = loc("Results");
@@ -84,7 +86,7 @@ my $QueryString = $m->comp( '/Elements/QueryString',
                             Order     => $Order,
                             Page      => $Page,
                           );
-
+my $ShortQueryString = "?".$m->comp('/Elements/QueryString', Query => $Query);
 my $EscapedQueue = $m->comp( '/Elements/QueryString', Queue => $Queue );
 
 </%INIT>

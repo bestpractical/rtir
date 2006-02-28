@@ -89,9 +89,10 @@
     CurrentFormat => $CurrentFormat, 
     RowsPerPage => $RowsPerPage, 
     OrderBy => $OrderBy, 
-    Order => $Order &>
+    Order => $Order,
+    cfqueues => $queues
+    &>
 </form>
-
 <%ARGS>
 $id => undef
 $SearchId => undef
@@ -103,7 +104,7 @@ $Order => undef
 $OrderBy => undef
 $RowsPerPage => undef
 $HideResults => 0
-%queues => ()
+$queues => undef
 @actions => ()
 $optionlist => undef
 $search_hash => undef

@@ -127,10 +127,9 @@ if ( $actions[0] ) {
 
 my @options;
 $Query  = "";
-%queues = ();
 
 # Build the optionlist from the tree, so we can do additions and movements based on it
-$$optionlist = build_array( \$Query, $ARGS{clauses}, $tree, \@options, \%queues );
+$$optionlist = build_array( \$Query, $ARGS{clauses}, $tree, \@options, $queues );
 
 my $currentkey;
 $currentkey = $options[$ARGS{clauses}] if defined $ARGS{clauses};
@@ -304,8 +303,7 @@ elsif ( $ARGS{"Clear"} ) {
 # {{{ Rebuild $Query based on the additions / movements
 $Query   = "";
 @options = ();
-%queues  = ();
-$$optionlist = build_array( \$Query, $currentkey, $tree, \@options, \%queues );
+$$optionlist = build_array( \$Query, $currentkey, $tree, \@options, $queues );
 
 sub build_array {
     my $Query     = shift;
@@ -567,9 +565,9 @@ sub debug {
 # }}}
 
 # {{{ Deal with format changes
-($Format, $$AvailableColumns, $$CurrentFormat) = $m->comp('/Search/Elements/BuildFormatString', cfqueues => \%queues, %ARGS, Format => $Format);
+use YAML;
+($Format, $$AvailableColumns, $$CurrentFormat) = $m->comp('/Search/Elements/BuildFormatString', cfqueues => $queues, %ARGS, Format => $Format);
 # }}}
-
 
 # {{{ if we're asked to save the current search, save it
 if ( $ARGS{'Save'} ) {
@@ -680,7 +678,7 @@ $Order => undef
 $OrderBy => undef
 $RowsPerPage => undef
 $HideResults => 0
-%queues => ()
+$queues => undef
 $results => undef
 $optionlist => undef
 $search_hash => undef
