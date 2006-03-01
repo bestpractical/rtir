@@ -64,13 +64,9 @@ my @results;
 my $Incident = LoadTicket($id);
 
 if( $ARGS{'Unlink'} ) {
-      # translate the checkbox args to what ProcessTicketLinks expects
-      foreach my $arg (keys %ARGS) {
-          if ($arg =~ /^UpdateTicket(\d+)/) {
-              $ARGS{'DeleteLink-' . $1 . '-MemberOf-'} = 1;
-          }
-      }
-      push @results, ProcessTicketLinks( TicketObj => $Incident, ARGSRef => \%ARGS );
+    # translate the checkbox args to what ProcessTicketLinks expects
+    $ARGS{'DeleteLink-' . $_ . '-MemberOf-'} = 1 for @SelectedTickets;
+    push @results, ProcessTicketLinks( TicketObj => $Incident, ARGSRef => \%ARGS );
 }
 
 unless ($Incident->CurrentUserHasRight('ShowTicket')) {
@@ -101,5 +97,6 @@ $all_children->FromSQL( $m->comp( '/RTIR/Elements/ChildrenQuery',
 <%ARGS>
 $id => undef
 $Queue => 'Incident Reports'
+@SelectedTickets => ()
 @States => ()
 </%ARGS>

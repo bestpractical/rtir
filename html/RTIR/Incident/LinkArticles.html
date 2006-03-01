@@ -1,0 +1,88 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%# Copyright (c) 1996-2002 Jesse Vincent <jesse@bestpractical.com>
+%# 
+%# (Except where explictly superceded by other copyright notices)
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# 
+%# Unless otherwise specified, all modifications, corrections or
+%# extensions to this work which alter its source code become the
+%# property of Best Practical Solutions, LLC when submitted for
+%# inclusion in the work.
+%# 
+%# 
+%# END LICENSE BLOCK
+<& /RTIR/Elements/Header, 
+    Title => $title, 
+    Refresh => $session{'tickets_refresh_interval'} &>
+
+<& Elements/LinkTabs, 
+    Ticket => $IncidentObj, 
+    current_subtab => 'RTIR/Incident/LinkArticles.html?id='.$IncidentObj->id,
+    Tab => loc('Link article'),
+    Title => $title,
+&>
+
+<form action="LinkArticles.html" method="get">
+<input type="hidden" name="id" value="<%$id%>" />
+
+Search: <input type="text" name="search" value="<% $search %>" />
+<& /Elements/Submit, Name => "DoSearch", Label => loc("Search") &>
+</form>
+
+<form action="Display.html" method="post">
+<input type="hidden" name="id" value="<%$id%>" />
+<ul>
+% while (my $article = $articles->Next) {
+<li><input type="checkbox" name="SelectedTickets" value="<% $article->id %>" /> 
+<a href="/RTFM/Article/Display.html?id=<% $article->id %>"><%$article->Name|| loc('(no name)')%>: <%$article->Summary%></a>
+</li>
+% }
+</ul>
+% if ($search) {
+<& /Elements/Submit, Name => "BulkArticles", Caption => $title, Label => loc("Link") &>
+% }
+</form>
+
+<%INIT>
+my $IncidentObj = LoadTicket($id);
+$ARGS{'id'} = $id = $IncidentObj->id;
+my $title = loc("Link selected articles to Incident #[_1]", $id);
+
+use RT::FM::ArticleCollection;
+my $articles = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
+if ( $search ) {
+    $articles->LimitCustomField( VALUE => $search,
+                                 ENTRYAGGREGATOR => 'OR',
+                                 OPERATOR => 'LIKE',
+                                 CASESENSITIVE => 0,
+                                 SUBCLAUSE => 'SearchAll' );
+    $articles->Limit( SUBCLAUSE => 'SearchAll',
+                      FIELD => "Name",
+                      VALUE => $search,
+                      ENTRYAGGREGATOR => 'OR',
+                      CASESENSITIVE => 0,
+                      OPERATOR => 'LIKE' );
+    $articles->Limit( SUBCLAUSE => 'SearchAll',
+                      FIELD => "Summary",
+                      VALUE => $search,
+                      ENTRYAGGREGATOR => 'OR',
+                      CASESENSITIVE => 0,
+                      OPERATOR => 'LIKE' );
+}
+</%INIT>
+
+<%ARGS>
+$id          => undef
+$search      => ""
+</%ARGS>

@@ -172,7 +172,7 @@
 <& /Widgets/TitleBoxEnd &>
 % }
 
-</td></tr><tr><td colspan="2">
+</td></tr><tr><td valign="top" width="50%">
 
 <& /Widgets/TitleBoxStart, title => loc("Dates"),
     title_href => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=".$id, 
@@ -186,6 +186,31 @@
 <& /Ticket/Elements/ShowAttachments, Ticket => $TicketObj, Attachments => $attachments &>
 <& /Ticket/Elements/ShowRequestor, Ticket => $TicketObj, DisplayPath => "/RTIR/Display.html" &>
 
+</td><td valign="top" width="50%">
+
+% if ($RT::FM::VERSION) {
+<& /Widgets/TitleBoxStart, title => loc("Articles"),
+    title_href => RT->Config->Get('WebPath') ."/RTIR/Advanced.html?id=".$id, 
+    title_class=> 'inverse',
+    color => "#663366" &>
+
+% if ($TicketObj->CurrentUserHasRight('ModifyTicket')) {
+% my $qs = $m->comp("/Elements/QueryString", "RefersTo-new" => "t:$id", next => "/RTIR/Display.html?id=$id");
+    <table width="100%"><tr><td align="right"><font size="-1">
+        | <a href="<%RT->Config->Get('WebPath')%>/RTFM/Article/PreCreate.html?<% $qs |n%>"><%loc('New')%></a> 
+        | <a href="<%RT->Config->Get('WebPath')%>/RTIR/Incident/LinkArticles.html?id=<%$id%>"><%loc("Link")%></a> |
+    </font></td></tr></table>
+% }
+
+<ul>
+% while (my $Link = $TicketObj->RefersTo->Next) {
+% next unless UNIVERSAL::isa($Link->TargetURI->Object, "RT::FM::Article");
+<li><a href="<%$Link->TargetURI->Resolver->HREF%>"><% $Link->TargetURI->Object->Name %></a></li>
+% }
+</ul>
+
+<& /Widgets/TitleBoxEnd &>
+% }
 </td></tr></table>
 
 <& /Ticket/Elements/ShowHistory , 
@@ -213,6 +238,7 @@ my $DoLinks = sub {
     # Blocks or Incedent Reports can have multiple incidents
     my ($Type) = $m->comp( "/RTIR/Elements/Type", TicketObj => $TicketObj );
     unless( $Type eq 'Block' || $Type eq 'Report' ) {
+        # XXX: Can we ever get here?
         my $query = "Queue = 'Incidents' AND HasMember = ". $TicketObj->Id ." AND id != ". $Target->id;
         my $incidents = new RT::Tickets( $session{'CurrentUser'} );
         $incidents->FromSQL( $query );
@@ -286,6 +312,10 @@ if( 1 ) {
             push @results, $DoLinks->( $child, $TicketObj );
         }
     }
+    if ($ARGS{'BulkArticles'}) {
+        my $ref = join " ", map {"a:$_"} @SelectedTickets;
+        push @results, ProcessTicketLinks( TicketObj => $TicketObj, ARGSRef => {$TicketObj->Id."-RefersTo" => $ref} );
+    }
 
     unless( $new_ticket ) {
         $ARGS{UpdateAttachments} = delete $session{'Attachments'};
@@ -310,6 +340,7 @@ if ( $TicketObj->TimeLeft > 0 ) {
 
 # If we deleted any links, check if what we deleted from still has children
 if ( $deleted_links ) {
+    # XXX: Can we ever get here?
     my $children = new RT::Tickets( $session{'CurrentUser'} );
     $children->LimitQueue( VALUE => 'Incident Reports' );
     $children->LimitQueue( VALUE => 'Investigations' );

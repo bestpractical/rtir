@@ -32,7 +32,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-% if ($id != 'new' && $Ticket->QueueObj->Name ne $QueueObj->Name) {
+% if ($id ne 'new' && $Ticket->QueueObj->Name ne $QueueObj->Name) {
 <%loc("This ticket isn't a [_1].", $Type)%>
 %   $m->abort();
 % }
