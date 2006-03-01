@@ -2,6 +2,10 @@
 
 Set($rtirname , "RTIR for " . RT->Config->Get('rtname') );
 
+# By default, RT only displays text attachments inline up to the first 16k
+# RTIR will display them no matter how long they are
+#
+Set($MaxInlineBody,0);
 
 # Set the number of days a message awaiting an external response
 # may be inactive before the ticket becomes overdue
