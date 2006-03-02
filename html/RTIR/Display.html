@@ -32,11 +32,6 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-% if ($id ne 'new' && $Ticket->QueueObj->Name ne $QueueObj->Name) {
-<%loc("This ticket isn't a [_1].", $Type)%>
-%   $m->abort();
-% }
-
 <table border="0" cellpadding="0" cellspacing="2" width="100%">
 <tr>
 <td valign="top" colspan="2">
