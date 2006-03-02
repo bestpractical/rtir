@@ -140,10 +140,6 @@ if ( $DefaultsNamePrefix && $DefaultsNamePrefix ne $NamePrefix ) {
 delete $ARGS{'DefaultsNamePrefix'};
 delete $ARGS{'NamePrefix'};
 
-
-#unless ($QueueObj->CurrentUserHasRight('CreateTicket')) {
-#    Abort('You have no permission to create tickets in that queue.');
-#}
 my ($Ticket, @results) = CreateTicket(
     Attachments => $session{'Attachments'},
     %ARGS,
