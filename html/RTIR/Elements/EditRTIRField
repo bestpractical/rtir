@@ -38,22 +38,18 @@
 
 <%INIT>
 my $Values;
+
 my $NamePrefix;
-my $q;
-
-if (defined $TicketObj) {
-  $q = $TicketObj->QueueObj->Id;
-  $NamePrefix = "Ticket-".$TicketObj->Id."-CustomField-";
-} else {
-  $q = $QueueObj->Id;
-  $NamePrefix = "CustomField-";
-}
-
-my $cf = RT::CustomField->new($session{'CurrentUser'});
-$cf->LoadByNameAndQueue(Queue => $q, Name => "_RTIR_".$Name);
 if ($TicketObj) {
-    $Values = $TicketObj->CustomFieldValues($cf->id);
+    $QueueObj = $TicketObj->QueueObj;
+    $NamePrefix = "Ticket-".$TicketObj->Id."-CustomField-";
+} else {
+    $NamePrefix = "CustomField-";
 }
+
+# XXX: load as system user since, DutyTeam has no right on CFs
+my $cf = RT::CustomField->new( $RT::SystemUser );
+$cf->LoadByNameAndQueue( Queue => $QueueObj->id, Name => "_RTIR_".$Name );
 
 </%INIT>
 <%ARGS>
