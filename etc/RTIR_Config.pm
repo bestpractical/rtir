@@ -1,3 +1,11 @@
+# XXX: we push config metadata into RT, but we need
+# need interface to load config options metadata from
+# extensions in RT core
+
+use RT::IR::Config;
+RT::IR::Config::Init();
+
+
 # Set the name of the RTIR application.
 
 Set($rtirname , "RTIR for " . RT->Config->Get('rtname') );
