@@ -35,7 +35,7 @@ if ( $ARGS{'SaveChanges'} ) {
     push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
     push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
 
-    if ( RT->Config->Get('DisplayAfterEdit') ) {
+    if ( RT->Config->Get('DisplayAfterEdit', $session{'CurrentUser'}) ) {
         $m->comp("/RTIR/Display.html", results => [@results], %ARGS);
         return;;
     }
