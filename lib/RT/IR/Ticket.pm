@@ -21,7 +21,8 @@ sub FirstCustomFieldValue {
     return undef unless $ticket->CurrentUserHasRight('ShowTicket');
 
     my $field = shift;
-    my $old_user = $ticket->CurrentUser( $RT::SystemUser );
+    my $old_user = $ticket->CurrentUser;
+    $ticket->CurrentUser( $RT::SystemUser );
     my $value = $ticket->FirstCustomFieldValue( $field );
     $ticket->CurrentUser( $old_user );
     return $value;
