@@ -4,5 +4,5 @@ $CustomFields => undef
 </%args>
 <%init>
 # We never want to see the RTIR custom fields in the edity ui
-$CustomFields->Limit( FIELD => 'Name', OPERATOR => 'NOT LIKE', '_RTIR');
+$CustomFields->Limit( FIELD => 'Name', OPERATOR => 'NOT STARTSWITH', VALUE => '_RTIR');
 </%init>
