@@ -22,12 +22,13 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /RTIR/Elements/Header, Title => "RTIR at a glance" &>
-<& /RTIR/Tools/Elements/Tabs, 
-    current_toptab => 'RTIR/Tools/Lookup.html', 
-    current_tab => 'RTIR/Reporting/index.html', 
-    current_subtab => 'RTIR/Reporting/index.html', 
-    Title => $title &>
+<& /RTIR/Elements/Header, Title => $title &>
+<& /RTIR/Tools/Elements/Tabs,
+    current_toptab => 'RTIR/Tools/Lookup.html',
+    current_tab    => 'RTIR/Reporting/index.html',
+    current_subtab => 'RTIR/Reporting/index.html',
+    Title          => $title,
+&>
 
 <form action="Report.html" method="get">
 <table>
@@ -36,29 +37,35 @@
     <td class="value">
       <& /RTIR/Elements/EditRTIRField, 
          QueueObj => $QueueObj, 
-	 Name => 'Constituency',
-	 Default => RT->Config->Get('_RTIR_Constituency_default'),
-	 Rows => 1 &>
+	     Name     => 'Constituency',
+	     Default  => RT->Config->Get('_RTIR_Constituency_default'),
+	     Rows     => 1
+      &>
     </td>
   </tr>
   <tr>
-    <td class="label">Start Date:</td>
+    <td class="label"><&|/l&>Start Date:</&></td>
     <td class="input">
-      <input size="30" name="mystart" value="<%$start->AsString%>" /> 
+      <input type="text" size="30" name="mystart" value="<% $start->AsString %>" />
     </td>
   </tr>
   <tr>
-    <td class="label">End Date:</td>
+    <td class="label"><&|/l&>End Date:</&></td>
     <td class="input">
-      <input size="30" name="myend" value="<%$end->AsString%>" /> 
+      <input type="text" size="30" name="myend" value="<% $end->AsString %>" />
     </td>
   </tr>
 </table>
-<& /Elements/Submit, Caption => loc("Generate a delimited text report"), 
-    Name => "TextReport",
-    Label => loc("Text")&>
-<& /Elements/Submit, Caption => loc("Generate and HTML report"), 
-    Label => loc("HTML")&>
+<& /Elements/Submit,
+    Caption => loc("Generate a delimited text report"),
+    Name    => "TextReport",
+    Label   => loc("Text"),
+&>
+<& /Elements/Submit,
+    Name    => "HTMLReport",
+    Caption => loc("Generate a HTML report"),
+    Label   => loc("HTML"),
+&>
 </form>
 
 <%INIT>
