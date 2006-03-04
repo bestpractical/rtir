@@ -22,14 +22,14 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-At the start of the time period
-Outstanding Incident Reports;<% scalar %$outstanding %>
+<&|/l&>At the start of the time period</&>
+<&|/l&>Outstanding Incident Reports</&>;<% scalar keys %$outstanding %>
 
-During the time period
-Total <%$service_level%> Incident Reports created;<% $tix_count %>
-Incident Reports for which SLA time was met;<% $sla_count %>
-Resolved Incident Reports;<% $resolved_count%>
-Unresolved Incident Reports;<% $unresolved_count%>
+<&|/l&>During the time period</&>
+<&|/l, $service_level &>Total [_1] Incident Reports created</&>;<% $tix_count %>
+<&|/l&>Incident Reports for which SLA time was met</&>;<% $sla_count %>
+<&|/l&>Resolved Incident Reports</&>;<% $resolved_count%>
+<&|/l&>Unresolved Incident Reports</&>;<% $unresolved_count%>
 <%INIT>
 
 my ($tix_count, $sla_count, $resolved_count, $unresolved_count);
@@ -37,7 +37,7 @@ $tix_count = 0;
 $sla_count = 0;
 $resolved_count = 0;
 $unresolved_count = 0;
-	
+
 # get the number of seconds for the service level
 my $sla = RT->Config->Get('SLA')->{$service_level} * 60;
 

@@ -26,34 +26,32 @@
 <tr>
   <td valign="top" width="45%">
     <table width="100%">
-      <th colspan="2">At the start of the time period</th>
+      <th colspan="2"><&|/l&>At the start of the time period</&></th>
       <tr>
-        <td>Outstanding Incident Reports</td>
-        <td align="right"> <% scalar %$outstanding %></td>
+        <td><&|/l&>Outstanding Incident Reports</&></td>
+        <td align="right"><% scalar keys %$outstanding %></td>
       </tr>
     </table>
   </td>
   <td></td>
   <td valign="top" width="45%">
     <table width =100%>
-      <th colspan="2">During the time period</th>
+      <th colspan="2"><&|/l&>During the time period</&></th>
       <tr>
-       <td>Total <%$service_level%> Incident Reports created</td>
+       <td><&|/l, $service_level &>Total [_1] Incident Reports created</&></td>
        <td align="right"><% $tix_count %></td>
       </tr>
       <tr>
-        <td>
-          Incident Reports for which SLA time was met
-        </td>
-	<td align="right"><% $sla_count %></td>
+        <td><&|/l&>Incident Reports for which SLA time was met</&></td>
+        <td align="right"><% $sla_count %></td>
       </tr>
       <tr>
-        <td>Resolved Incident Reports</td>
-	<td align="right"><% $resolved_count%></td>
+        <td><&|/l&>Resolved Incident Reports</&></td>
+        <td align="right"><% $resolved_count %></td>
       </tr>
       <tr>
-        <td>Unresolved Incident Reports </td>
-	<td align="right"><% $unresolved_count%></td>
+        <td><&|/l&>Unresolved Incident Reports</&></td>
+        <td align="right"><% $unresolved_count %></td>
       </tr>
     </table>
   </td>
@@ -67,7 +65,7 @@ $tix_count = 0;
 $sla_count = 0;
 $resolved_count = 0;
 $unresolved_count = 0;
-	
+
 # get the number of seconds for the service level
 my $sla = RT->Config->Get('SLA')->{$service_level} * 60;
 
@@ -81,34 +79,33 @@ foreach my $key ( keys %$class_tix ) {
     # correspondence within the time specified by $sla.
     #
     if ($t->StartsObj->Unix > 0 && $t->StartedObj->Unix > 0) {
-	# Get a Business::Hours object for the period in question
-	my $bizhours = RT::IR::BusinessHours();
+        # Get a Business::Hours object for the period in question
+        my $bizhours = RT::IR::BusinessHours();
 
-	my $started_time;
-	if ($t->StartsObj->Unix < $t->StartedObj->Unix) {
-	    $bizhours->for_timespan( Start => $t->StartsObj->Unix, 
-				     End => $t->StartedObj->Unix );
-	
-	    $started_time = $bizhours->between( $t->StartsObj->Unix, 
-						   $t->StartedObj->Unix );
-	} else {
-	    $started_time = 0;
-	}
+        my $started_time;
+        if ($t->StartsObj->Unix < $t->StartedObj->Unix) {
+            $bizhours->for_timespan( Start => $t->StartsObj->Unix, 
+                         End => $t->StartedObj->Unix );
+        
+            $started_time = $bizhours->between( $t->StartsObj->Unix, 
+                               $t->StartedObj->Unix );
+        } else {
+            $started_time = 0;
+        }
 
-	if ( $started_time < $sla) {
-	    $sla_count++;
-	}
+        if ( $started_time < $sla) {
+            $sla_count++;
+        }
     }
-    
+
     if ( $t->ResolvedObj->Unix >= $start->Unix &&
-	 $t->ResolvedObj->Unix <= $end->Unix) {
-	$resolved_count++;
+        $t->ResolvedObj->Unix <= $end->Unix) {
+        $resolved_count++;
     }
     if ( $t->ResolvedObj->Unix <= 0 ||
-	 $t->ResolvedObj->Unix > $end->Unix) {
-	$unresolved_count++;
+        $t->ResolvedObj->Unix > $end->Unix) {
+        $unresolved_count++;
     }
-    
 }
 </%INIT>
 

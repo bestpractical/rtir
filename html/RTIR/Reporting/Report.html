@@ -22,145 +22,136 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-% if ($tabbed) {
-RTIR Periodic Report for <%$Constituency%>
+% if ($TextReport) {
+<&|/l, $Constituency &>RTIR Periodic Report for [_1]</&>
 
-Start date:;<%$rtstart->AsString%>
-End date:;<%$rtend->AsString%>
+<&|/l&>Start date:</&> <% $rtstart->AsString %>
+<&|/l&>End date:</&> <% $rtend->AsString %>
 
-Incident Report Summary (including unlinked Incident Reports)
-Outstanding reports at the beginning of this period;<% scalar keys %$outstanding_pruned %>
-Total new reports for this period;<% scalar keys %$tix_created_pruned %>
-Incident Reports resolved during this period;<% scalar keys %$tix_resolved_pruned %>
-Reports unresolved at the end of the period;<% scalar keys %$tix_unresolved_pruned %>
+<&|/l&>Incident Report Summary (including unlinked Incident Reports)</&>
+<&|/l&>Outstanding reports at the beginning of this period;</&><% scalar keys %$outstanding_pruned %>
+<&|/l&>Total new reports for this period</&>;<% scalar keys %$tix_created_pruned %>
+<&|/l&>Incident Reports resolved during this period</&>;<% scalar keys %$tix_resolved_pruned %>
+<&|/l&>Reports unresolved at the end of the period</&>;<% scalar keys %$tix_unresolved_pruned %>
 
 % } else {
-<h1>RTIR Periodic Report for <%$Constituency%></h1>
+<h1><&|/l, $Constituency &>RTIR Periodic Report for [_1]</&></h1>
 <table>
   <tr>
-    <td>Start date:</td>
-    <td> <%$rtstart->AsString%></td>
+    <td><&|/l&>Start date:</&></td>
+    <td><% $rtstart->AsString %></td>
   </tr>
   <tr>
-    <td>End date:</td>
-    <td><%$rtend->AsString%></td>
+    <td><&|/l&>End date:</&></td>
+    <td><% $rtend->AsString %></td>
   </tr>
 </table>
+
 <table>
-<tr><th align="left" colspan="2">Incident Report Summary (including unlinked Incident Reports)</th></tr>
+<tr><th align="left" colspan="2"><&|/l&>Incident Report Summary (including unlinked Incident Reports)</&></th></tr>
 <tr>
-  <td>Outstanding reports at the beginning of this period</td>
+  <td><&|/l&>Outstanding reports at the beginning of this period</&></td>
   <td class="value"> <% scalar keys %$outstanding_pruned %></td>
 </tr>
 <tr>
-  <td>Total new reports for this period</td>
+  <td><&|/l&>Total new reports for this period</&></td>
   <td><% scalar keys %$tix_created_pruned %></td>
 </tr>
 <tr>
-  <td>Incident Reports resolved during this period</td>
+  <td><&|/l&>Incident Reports resolved during this period</&></td>
   <td><% scalar keys %$tix_resolved_pruned %></td>
 </tr>
 <tr>
-  <td>Reports unresolved at the end of the period</td>
+  <td><&|/l&>Reports unresolved at the end of the period</&></td>
   <td><% scalar keys %$tix_unresolved_pruned %></td>
 </tr>
 </table>
 % }
-<%perl>
-foreach my $key (sort keys %$types) {
-    my $incident_type = $types->{$key};
-</%perl>
-% if ($tabbed) {
-<%$incident_type%>
-
+% foreach my $incident_type( @functions ) {
+% if ($TextReport) {
+<% $incident_type %>
 % } else {
-<h2><%$incident_type%></h2>
+<h2><% $incident_type %></h2>
 % }
-% if ($tabbed) {
-Incident reports received
 
+% if ($TextReport) {
+<&|/l&>Incident reports received</&>
 % } else {
 <table>
-<th align="left" colspan="2">Incident reports received</th>
+<th align="left" colspan="2"><&|/l&>Incident reports received</&></th>
 % }
-<%perl>
 
-foreach my $key (sort keys %$classifications) {
-    my $class = $classifications->{$key};
+<%PERL>
+
+foreach my $class (@classifications) {
     my $class_count = 0;
     $tix_created->GotoFirstItem();
-    while ( my $t = $tix_created->Next) {
-	my $value = get_incident_field( $t, '_RTIR_Constituency');
-	next if ($value ne $Constituency);
+    while ( my $t = $tix_created->Next ) {
+        my $value = $get_incident_field->( $t, '_RTIR_Constituency');
+        next if ($value ne $Constituency);
 
-	$value = get_incident_field( $t, '_RTIR_Classification');
-	next if ($class ne 'Unclassified' && $value ne $class);
-	next if ($class eq 'Unclassified' && $value ne "");
+        $value = $get_incident_field->( $t, '_RTIR_Classification');
+        next if ($class ne 'Unclassified' && $value ne $class);
+        next if ($class eq 'Unclassified' && $value ne "");
 
-	$value = get_incident_field( $t, '_RTIR_Function');
-	next if	($value ne $incident_type);
+        $value = $get_incident_field->( $t, '_RTIR_Function');
+        next if	($value ne $incident_type);
 
-	$class_count++;
+        $class_count++;
     }
 
 </%perl>
-% if ($tabbed) {
-<%$class%>;<%$class_count%>
+% if ($TextReport) {
+<% $class %>;<% $class_count %>
 % } else {
 <tr>
-  <td><%$class%></td>
-  <td class="value"><%$class_count%></td>
+  <td><% $class %></td>
+  <td class="value"><% $class_count %></td>
 </tr>
 % }
-<%perl>
-}
-</%perl>
-% if ($tabbed) {
+% }
+% if ($TextReport) {
 
 % } else {
 </table>
 % }
-<%perl>
-    foreach my $service_level (keys %$sla_levels) {
-	my $class_tix = RT::Tickets->new( $session{'CurrentUser'} );
-	$class_tix->LimitQueue(VALUE => 'Incident Reports');
-	$class_tix->LimitCreated(VALUE => $start, OPERATOR => ">");
-	$class_tix->LimitCreated(VALUE => $end, OPERATOR => "<");
-	$class_tix->LimitCustomField(CUSTOMFIELD => $fid, VALUE => $service_level);
-	my $mytix = {};
-	while ( my $t = $class_tix->Next) {
-	    my $value = get_incident_field( $t, '_RTIR_Constituency');
-	    next if ($value ne $Constituency);
+<%PERL>
+    foreach my $service_level( @sla_levels ) {
+        my $class_tix = RT::Tickets->new( $session{'CurrentUser'} );
+        $class_tix->FromSQL("Queue = 'Incident Reports' AND Created > '$start' AND Created < '$end' AND CustomField.{_RTIR_SLA} = '$service_level'");
+        my $mytix = $filter_by_incident_field->(
+            $filter_by_incident_field->(
+                $class_tix,
+                '_RTIR_Constituency',
+                $Constituency
+            ),
+            '_RTIR_Function',
+            $incident_type,
+        );
 
-	    $value = get_incident_field( $t, '_RTIR_Function');
-	    next unless ($value eq $incident_type);
-	    $mytix->{$t->Id} = $t;
-	}
-
-	my $myoutstanding = {};
-	while ( my $t = $outstanding->Next) {
-	    my $value = get_incident_field( $t, '_RTIR_Constituency');
-	    next if ($value ne $Constituency);
-
-	    $value = get_incident_field( $t, '_RTIR_Function');
-	    next unless ($value eq $incident_type);
-	    $myoutstanding->{$t->Id} = $t;
-	}
-    
-</%perl>
-% if ($tabbed) {
-<%$service_level%>
+        my $myoutstanding = $filter_by_incident_field->(
+            $filter_by_incident_field->(
+                $outstanding,
+                '_RTIR_Constituency',
+                $Constituency
+            ),
+            '_RTIR_Function',
+            $incident_type,
+        ); 
+</%PERL>
+% if ($TextReport) {
+<% $service_level %>
 % } else {
-<h3><%$service_level%></h3>
+<h3><% $service_level %></h3>
 % }
 
-% if ($tabbed) {
-<& Elements/SLASummaryText, 
+% if ($TextReport) {
+<& Elements/SLASummaryText,
     class_tix => $mytix, outstanding => $myoutstanding, 
     service_level => $service_level,
     start => $rtstart, end => $rtend &>
 % } else {
-<& Elements/SLASummary, 
+<& Elements/SLASummary,
     class_tix => $mytix, outstanding => $myoutstanding, 
     service_level => $service_level,
     start => $rtstart, end => $rtend &>
@@ -168,106 +159,15 @@ foreach my $key (sort keys %$classifications) {
 <%perl>
     }
 }
-if ($tabbed) {
+if ($TextReport) {
   $m->abort();
 }
 
-</%perl>
+</%PERL>
 
-<%init>
-my $tabbed = 0;
-if ($ARGS{TextReport}) {
-  $tabbed = 1;
-}
+<%INIT>
 
-my $start = ParseDateToISO($mystart);
-my $end = ParseDateToISO($myend);
-
-$Constituency = $ARGS{$Constituency} if $Constituency;
-
-# of new reports created during the period broken down by function
-my ($cf, $values, $fid, $types, $classifications, $sla_levels);
-my $i = 0;
-$cf = RT::CustomField->new($session{'CurrentUser'});
-$cf->LoadByNameAndQueue(Queue => 'Incidents', Name => '_RTIR_Function');
-$values = $cf->Values;
-while (my $value = $values->Next) {
-    $types->{$i} = $value->Name;
-    $i++;
-}
-
-# of new reports created during the period broken down by classification
-$i = 0;
-$cf = RT::CustomField->new($session{'CurrentUser'});
-$cf->LoadByNameAndQueue(Queue => 'Incidents', Name => '_RTIR_Classification');
-$values = $cf->Values;
-while (my $value = $values->Next) {
-    $classifications->{$i} = $value->Name;
-    $i++;
-}
-$classifications->{$i} = 'Unclassified';
-
-# of new reports created during the period broken down by SLA level
-$cf = RT::CustomField->new($session{'CurrentUser'});
-$cf->LoadByNameAndQueue(Queue => 'Incident Reports', Name => '_RTIR_SLA');
-$fid = $cf->Id;
-$values = $cf->Values;
-while (my $value = $values->Next) {
-    $sla_levels->{$value->Name} = $value->Description;
-}
-
-my $rtstart = new RT::Date($RT::SystemUser);
-$rtstart->Set( Format => 'ISO', Value => $start );
-my $rtend = new RT::Date($RT::SystemUser);
-$rtend->Set( Format => 'ISO', Value => $end );
-
-# of new reports outstanding at start of the period
-my $outstanding = RT::Tickets->new($session{'CurrentUser'});
-$outstanding->FromSQL("Queue = 'Incident Reports' AND Created < '$start' AND (Resolved='1970-01-01 00:00:00' OR Resolved > '$start')");
-my $outstanding_pruned = {};
-while ( my $t = $outstanding->Next) {
-    my $value = get_incident_field( $t, '_RTIR_Constituency');
-    next unless ($value eq $Constituency || !defined $value);
-    $outstanding_pruned->{$t->Id} = $t;
-}
-
-# of new reports created during the period
-my $tix_created = RT::Tickets->new($session{'CurrentUser'});
-$tix_created->FromSQL("Queue = 'Incident Reports' AND Created > '$start' AND Created < '$end'");
-my $tix_created_pruned = {};
-while ( my $t = $tix_created->Next) {
-    my $value = get_incident_field( $t, '_RTIR_Constituency');
-    next unless ($value eq $Constituency || !defined $value);
-    $tix_created_pruned->{$t->Id} = $t;
-}
-
-# of new reports resolved/closed/deleted during the period
-# this means "number of reports created during the period that were 
-# also closed during the period"
-
-my $tix_resolved = RT::Tickets->new($session{'CurrentUser'});
-$tix_resolved->FromSQL("Queue = 'Incident Reports' AND Created > '$start' AND Created < '$end' AND (Resolved > '1970-01-01 00:00:00' AND Resolved <'$end')");
-my $tix_resolved_pruned = {};
-while ( my $t = $tix_resolved->Next) {
-    my $value = get_incident_field( $t, '_RTIR_Constituency');
-    next unless ($value eq $Constituency || !defined $value);
-    $tix_resolved_pruned->{$t->Id} = $t;
-}
-
-# of new reports oustanding at end of the period
-# this is "number of reports created during the period that were also 
-# closed during the period"
-
-my $tix_unresolved = RT::Tickets->new($session{'CurrentUser'});
-$tix_unresolved->FromSQL("Queue = 'Incident Reports' AND Created > '$start' AND Created < '$end' AND (Resolved='1970-01-01 00:00:00' OR Resolved>'$end')");
-my $tix_unresolved_pruned = {};
-while ( my $t = $tix_unresolved->Next) {
-    my $value = get_incident_field( $t, '_RTIR_Constituency');
-    next unless ($value eq $Constituency || !defined $value);
-    $tix_unresolved_pruned->{$t->Id} = $t;
-}
-
-sub get_incident_field {
+my $get_incident_field = sub {
     my $t = shift;
     my $field = shift;
 
@@ -279,15 +179,103 @@ sub get_incident_field {
     my $parent = $incidents->First;
     return undef unless $parent;
     return RT::IR::Ticket::FirstCustomFieldValue( $parent, $field );
+};
+
+my $filter_by_incident_field = sub {
+    my ($tickets, $field, $condition) = (@_);
+    my $res = {};
+    unless ( ref $tickets eq 'HASH' ) {
+        while ( my $t = $tickets->Next ) { $res->{ $t->Id } = $t }
+    }
+    else {
+        %$res = %$tickets;
+    }
+
+    while( my($id, $t) = each %$res ) {
+        my $value = $get_incident_field->( $t, $field );
+        delete $res->{$id} if !$value || $value ne $condition;
+    }
+    return $res;
+};
+
+my $start = ParseDateToISO( $StartDate );
+my $end = ParseDateToISO( $EndDate );
+my $rtstart = new RT::Date($RT::SystemUser);
+$rtstart->Set( Format => 'ISO', Value => $start );
+my $rtend = new RT::Date($RT::SystemUser);
+$rtend->Set( Format => 'ISO', Value => $end );
+
+$Constituency = $ARGS{ 'Object-RT::Ticket--'. $Constituency } if $Constituency;
+
+# of new reports created during the period broken down by function
+my @functions;
+{
+    my $cf = RT::CustomField->new( $session{'CurrentUser'} );
+    $cf->LoadByNameAndQueue( Queue => 'Incidents', Name => '_RTIR_Function' );
+    my $values = $cf->Values;
+    while ( my $value = $values->Next ) {
+        push @functions, $value->Name;
+    }
 }
 
-if ($tabbed) {
+# of new reports created during the period broken down by classification
+my @classifications;
+{
+    my $cf = RT::CustomField->new( $session{'CurrentUser'} );
+    $cf->LoadByNameAndQueue( Queue => 'Incidents', Name => '_RTIR_Classification' );
+    my $values = $cf->Values;
+    while ( my $value = $values->Next ) {
+        push @classifications, $value->Name;
+    }
+    push @classifications, 'Unclassified';
+}
+
+# of new reports created during the period broken down by SLA level
+my @sla_levels;
+{
+    my $cf = RT::CustomField->new( $session{'CurrentUser'} );
+    $cf->LoadByNameAndQueue( Queue => 'Incidents', Name => '_RTIR_SLA' );
+    my $values = $cf->Values;
+    while ( my $value = $values->Next ) {
+        push @sla_levels, $value->Name;
+    }
+}
+
+# of new reports outstanding at start of the period
+my $outstanding = RT::Tickets->new( $session{'CurrentUser'} );
+$outstanding->FromSQL("Queue = 'Incident Reports' AND Created < '$start' AND (Resolved='1970-01-01 00:00:00' OR Resolved > '$start')");
+my $outstanding_pruned = $filter_by_incident_field->($outstanding, '_RTIR_Constituency', $Constituency);
+
+# of new reports created during the period
+my $tix_created = RT::Tickets->new( $session{'CurrentUser'} );
+$tix_created->FromSQL("Queue = 'Incident Reports' AND Created > '$start' AND Created < '$end'");
+my $tix_created_pruned = $filter_by_incident_field->($outstanding, '_RTIR_Constituency', $Constituency);
+
+# of new reports resolved/closed/deleted during the period
+# this means "number of reports created during the period that were 
+# also closed during the period"
+
+my $tix_resolved = RT::Tickets->new($session{'CurrentUser'});
+$tix_resolved->FromSQL("Queue = 'Incident Reports' AND Created > '$start' AND Created < '$end' AND (Resolved > '1970-01-01 00:00:00' AND Resolved <'$end')");
+my $tix_resolved_pruned = $filter_by_incident_field->($outstanding, '_RTIR_Constituency', $Constituency);
+
+# of new reports oustanding at end of the period
+# this is "number of reports created during the period that were also 
+# closed during the period"
+
+my $tix_unresolved = RT::Tickets->new( $session{'CurrentUser'} );
+$tix_unresolved->FromSQL("Queue = 'Incident Reports' AND Created > '$start' AND Created < '$end' AND (Resolved='1970-01-01 00:00:00' OR Resolved>'$end')");
+my $tix_unresolved_pruned = $filter_by_incident_field->($outstanding, '_RTIR_Constituency', $Constituency);
+
+if ($TextReport) {
     $r->content_type('text/plain');
 }
-</%init>
+</%INIT>
 
-<%args>
-$mystart => undef
-$myend => undef
+<%ARGS>
+$StartDate    => undef
+$EndDate      => undef
 $Constituency => undef
-</%args>
+$HTMLReport   => 1
+$TextReport   => !$HTMLReport
+</%ARGS>
