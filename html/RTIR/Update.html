@@ -68,7 +68,7 @@
 <table border="0">
 
 <tr><td align="right"><&|/l&>State</&>:</td>
-<td><%$State%></td></tr>
+<td><& /RTIR/Elements/ShowRTIRField, Ticket => $Ticket, Name => 'State' &></td></tr>
 <tr><td align="right"><&|/l&>Update Type</&>:</td>
 <td><select name="UpdateType">
 % if ($CanComment) {
@@ -205,7 +205,6 @@ if ( exists $ARGS{SubmitTicket} ) {
     $m->abort();
 }
 
-my $State = $m->scomp("/RTIR/Elements/ShowRTIRField", Ticket => $Ticket, Name => 'State');
 </%INIT>
 
 <%ARGS>
