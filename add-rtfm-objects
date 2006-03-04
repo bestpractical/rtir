@@ -1,0 +1,55 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use lib("/opt/rt3/local/lib", "/opt/rt3/lib");
+$| = 1;
+
+require RT;
+RT::LoadConfig();
+RT::Init();
+
+my $CurrentUser = RT::CurrentUser->new();
+$CurrentUser->LoadByName('RT_System');
+
+require RT::FM::Class;
+my $class = RT::FM::Class->new($CurrentUser);
+$class->Load('Templates');
+unless ($class->Id) {
+    print "Creating 'Templates' RTFM class..";
+    my ($id, $msg) = $class->Create(
+        Name => 'Templates',
+        Description => 'Response templates',
+        HotList => 1
+    );
+    die $msg unless $id;
+    print "Done\n";
+}
+
+my $response = RT::CustomField->new($CurrentUser);
+$response->Load('Response');
+unless ($response->Id) {
+    print "Creating 'Response' RTFM custom field..";
+    my ($id, $msg) = $response->Create(
+        Name => 'Response',
+        Type => 'Text',
+        Description => 'Response to be inserted into the ticket',
+        LookupType => RT::FM::Article->CustomFieldLookupType,
+    );
+    die $msg unless $id;
+    print "Done\n";
+}
+
+$response->AddToObject($class);
+$class->SetAttribute(Name => "Skip-$_", Content => 1)
+  for ("Name", "Summary", "CF-Title-".$response->Id);
+
+my $group = RT::Group->new($CurrentUser);
+$group->LoadUserDefinedGroup( "DutyTeam" );
+die "Can't load group" unless $group->Id;
+$group->PrincipalObj->GrantRight( Right => $_, Object => $response )
+  for qw/SeeCustomField ModifyCustomField/;
+$group->PrincipalObj->GrantRight( Right => $_, Object => $class )
+  for qw/AdminClass AdminTopics CreateArticle ModifyArticle ModifyArticleTopics SeeClass ShowArticle ShowArticleHistory/;
+  
+print "Done.\n";

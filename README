@@ -82,7 +82,8 @@ Installation instructions:
 
 1) Once RT 3.7 and other required package have been installed and
    appear to be working properly, cd to the directory into which you
-   unpacked RTIR into.
+   unpacked RTIR into.  If you plan on using RTFM with RTIR, please
+   install RTFM before installing RTIR.
 
 2) Run "perl Makefile.PL" to generate a makefile for RTIR. 
 
@@ -105,6 +106,8 @@ Installation instructions:
 
 6) Stop and start your web server.  
 
+7) If you are planning on using RTFM with RTIR, run the included
+   'add-rtfm-objects' script to set up a basic response template.
 
 
 
