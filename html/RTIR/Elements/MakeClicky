@@ -90,6 +90,13 @@ my %types = (
     F_domain    => [ q[(?:[\w-]+\.)+[A-Za-z]{2,3}],                $cb{host} ],
     G_RIPE      => [ q[(?-i:[A-Z][A-Z0-9-]+)],                     $cb{noc} ],
 );
+my @allowed_types = RT->Config->Get('RTIR_MakeClicky');
+if ( @allowed_types ) {
+    foreach my $t( keys %types ) {
+        delete $types{ $t } unless grep $t =~ /^[a-z]+_\Q$_\E$/i, @allowed_types;
+    }
+}
+
 my @types = sort keys %types;
 
 foreach ( values %types ) {

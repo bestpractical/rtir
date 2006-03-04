@@ -257,7 +257,7 @@ Set($RTIRSearchResultFormats, {
 Set($DisplayAfterEdit, 1);
 
 # path to traceroute command
-Set($TracerouteCommand, '/usr/bin/traceroute');
+Set($TracerouteCommand, '/usr/sbin/traceroute');
 
 
 # Components that available to add on the first page of the RTIR
@@ -276,5 +276,9 @@ Set(@RTIR_HomepageComponents,
 
 # if true then Blocks queue functionality inactive and disabled
 Set($RTIR_DisableBlocksQueue, 0);
+
+# Define list of enabled MakeClicky extensions, allowed values are
+# httpurl, ip, ipdecimal, email, domain and RIPE
+Set(@RTIR_MakeClicky, qw(httpurl ip email domain));
 
 1;
