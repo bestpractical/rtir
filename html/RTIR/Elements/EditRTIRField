@@ -28,7 +28,8 @@
 % } else {
 <input type="hidden" name="<%$Name%>" value="<%$NamePrefix%><%$cf->id%>-Values" />
 % }
-<& /Ticket/Elements/EditCustomField, TicketObj => $TicketObj, 
+<& /Elements/EditCustomField,
+    Object => $TicketObj, 
     CustomField => $cf, 
     NamePrefix => $NamePrefix,
     Default => $Default,
@@ -42,9 +43,9 @@ my $Values;
 my $NamePrefix;
 if ($TicketObj) {
     $QueueObj = $TicketObj->QueueObj;
-    $NamePrefix = "Ticket-".$TicketObj->Id."-CustomField-";
+    $NamePrefix = "Object-RT::Ticket-".$TicketObj->Id."-CustomField-";
 } else {
-    $NamePrefix = "CustomField-";
+    $NamePrefix = "Object-RT::Ticket--CustomField-";
 }
 
 # XXX: load as system user since, DutyTeam has no right on CFs
