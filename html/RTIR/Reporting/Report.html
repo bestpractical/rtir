@@ -22,103 +22,62 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-% if ($TextReport) {
-<&|/l, $Constituency &>RTIR Periodic Report for [_1]</&>
-
-<&|/l&>Start date:</&> <% $rtstart->AsString %>
-<&|/l&>End date:</&> <% $rtend->AsString %>
-
-<&|/l&>Incident Report Summary (including unlinked Incident Reports)</&>
-<&|/l&>Outstanding reports at the beginning of this period;</&><% scalar keys %$outstanding_pruned %>
-<&|/l&>Total new reports for this period</&>;<% scalar keys %$tix_created_pruned %>
-<&|/l&>Incident Reports resolved during this period</&>;<% scalar keys %$tix_resolved_pruned %>
-<&|/l&>Reports unresolved at the end of the period</&>;<% scalar keys %$tix_unresolved_pruned %>
-
-% } else {
-<h1><&|/l, $Constituency &>RTIR Periodic Report for [_1]</&></h1>
-<table>
-  <tr>
-    <td><&|/l&>Start date:</&></td>
-    <td><% $rtstart->AsString %></td>
-  </tr>
-  <tr>
-    <td><&|/l&>End date:</&></td>
-    <td><% $rtend->AsString %></td>
-  </tr>
-</table>
-
-<table>
-<tr><th align="left" colspan="2"><&|/l&>Incident Report Summary (including unlinked Incident Reports)</&></th></tr>
-<tr>
-  <td><&|/l&>Outstanding reports at the beginning of this period</&></td>
-  <td class="value"> <% scalar keys %$outstanding_pruned %></td>
-</tr>
-<tr>
-  <td><&|/l&>Total new reports for this period</&></td>
-  <td><% scalar keys %$tix_created_pruned %></td>
-</tr>
-<tr>
-  <td><&|/l&>Incident Reports resolved during this period</&></td>
-  <td><% scalar keys %$tix_resolved_pruned %></td>
-</tr>
-<tr>
-  <td><&|/l&>Reports unresolved at the end of the period</&></td>
-  <td><% scalar keys %$tix_unresolved_pruned %></td>
-</tr>
-</table>
-% }
-% foreach my $incident_type( @functions ) {
-% if ($TextReport) {
-<% $incident_type %>
-% } else {
-<h2><% $incident_type %></h2>
-% }
-
-% if ($TextReport) {
-<&|/l&>Incident reports received</&>
-% } else {
-<table>
-<th align="left" colspan="2"><&|/l&>Incident reports received</&></th>
-% }
-
 <%PERL>
+$m->comp("SELF:Heading$ReportAs", Text => loc('RTIR Periodic Report for [_1]', $Constituency) );
+$m->comp("SELF:TwoColumnsTable$ReportAs",
+    Body => [
+        [ loc('Start date'), $rtstart->AsString ],
+        [ loc('End date'), $rtend->AsString ],
+    ]
+);
+$m->comp("SELF:TwoColumnsTable$ReportAs",
+    Title => loc('Incident Report Summary (including unlinked Incident Reports)'),
+    Body  => [
+        [ loc('Outstanding reports at the beginning of this period'), scalar keys %$outstanding_pruned ],
+        [ loc('Total new reports for this period'), scalar keys %$tix_created_pruned ],
+        [ loc('Incident Reports resolved during this period'), scalar keys %$tix_resolved_pruned ],
+        [ loc('Reports unresolved at the end of the period'), scalar keys %$tix_unresolved_pruned ],
+    ],
+);
 
-foreach my $class (@classifications) {
-    my $class_count = 0;
-    $tix_created->GotoFirstItem();
-    while ( my $t = $tix_created->Next ) {
-        my $value = $get_incident_field->( $t, '_RTIR_Constituency');
-        next if ($value ne $Constituency);
+foreach my $incident_type( @functions ) {
+    $m->comp("SELF:Heading$ReportAs",
+        Level => 2,
+        Text  => $incident_type,
+    );
 
-        $value = $get_incident_field->( $t, '_RTIR_Classification');
-        next if ($class ne 'Unclassified' && $value ne $class);
-        next if ($class eq 'Unclassified' && $value ne "");
-
-        $value = $get_incident_field->( $t, '_RTIR_Function');
-        next if	($value ne $incident_type);
-
-        $class_count++;
+    my @table;
+    foreach my $class (@classifications) {
+        my $class_count = 0;
+        $tix_created->GotoFirstItem();
+        my $filtered = $filter_by_incident_field->(
+            $filter_by_incident_field->(
+                $filter_by_incident_field->(
+                    $tix_created,
+                    '_RTIR_Constituency',
+                    $Constituency
+                ),
+                '_RTIR_Function',
+                $incident_type,
+            ),
+            '_RTIR_Classification',
+            $class ne 'Unclassified'? $class: '',
+        );
+        push @table, [ $class, scalar keys %{$filtered} ];
     }
 
-</%perl>
-% if ($TextReport) {
-<% $class %>;<% $class_count %>
-% } else {
-<tr>
-  <td><% $class %></td>
-  <td class="value"><% $class_count %></td>
-</tr>
-% }
-% }
-% if ($TextReport) {
+    $m->comp("SELF:TwoColumnsTable$ReportAs",
+        Title => loc('Incident reports received'),
+        Body  => \@table,
+    );
 
-% } else {
-</table>
-% }
-<%PERL>
     foreach my $service_level( @sla_levels ) {
         my $class_tix = RT::Tickets->new( $session{'CurrentUser'} );
-        $class_tix->FromSQL("Queue = 'Incident Reports' AND Created > '$start' AND Created < '$end' AND CustomField.{_RTIR_SLA} = '$service_level'");
+        $class_tix->FromSQL(
+            "Queue = 'Incident Reports'"
+            ." AND Created > '$start' AND Created < '$end'"
+            ." AND CustomField.{_RTIR_SLA} = '$service_level'"
+        );
         my $mytix = $filter_by_incident_field->(
             $filter_by_incident_field->(
                 $class_tix,
@@ -138,30 +97,20 @@ foreach my $class (@classifications) {
             '_RTIR_Function',
             $incident_type,
         ); 
-</%PERL>
-% if ($TextReport) {
-<% $service_level %>
-% } else {
-<h3><% $service_level %></h3>
-% }
-
-% if ($TextReport) {
-<& Elements/SLASummaryText,
-    class_tix => $mytix, outstanding => $myoutstanding, 
-    service_level => $service_level,
-    start => $rtstart, end => $rtend &>
-% } else {
-<& Elements/SLASummary,
-    class_tix => $mytix, outstanding => $myoutstanding, 
-    service_level => $service_level,
-    start => $rtstart, end => $rtend &>
-% }
-<%perl>
+        $m->comp("SELF:Heading$ReportAs",
+            Level => 3,
+            Text  => $service_level,
+        );
+        $m->comp( 'Elements/SLASummary',
+            ReportAs => $ReportAs,
+            class_tix => $mytix, outstanding => $myoutstanding, 
+            service_level => $service_level,
+            start => $rtstart, end => $rtend,
+        );
     }
 }
-if ($TextReport) {
-  $m->abort();
-}
+
+$m->abort if $TextReport || $SpreadsheetReport;
 
 </%PERL>
 
@@ -193,19 +142,21 @@ my $filter_by_incident_field = sub {
 
     while( my($id, $t) = each %$res ) {
         my $value = $get_incident_field->( $t, $field );
-        delete $res->{$id} if !$value || $value ne $condition;
+        delete $res->{$id} if $value? $value ne $condition: $condition;
     }
     return $res;
 };
 
+my $ReportAs = 'HTML';
+$ReportAs = 'Text' if $TextReport;
+$ReportAs = 'TSV' if $SpreadsheetReport;
+
 my $start = ParseDateToISO( $StartDate );
 my $end = ParseDateToISO( $EndDate );
-my $rtstart = new RT::Date($RT::SystemUser);
+my $rtstart = new RT::Date( $session{'CurrentUser'} );
 $rtstart->Set( Format => 'ISO', Value => $start );
-my $rtend = new RT::Date($RT::SystemUser);
+my $rtend = new RT::Date( $session{'CurrentUser'} );
 $rtend->Set( Format => 'ISO', Value => $end );
-
-$Constituency = $ARGS{ 'Object-RT::Ticket--'. $Constituency } if $Constituency;
 
 # of new reports created during the period broken down by function
 my @functions;
@@ -243,39 +194,110 @@ my @sla_levels;
 
 # of new reports outstanding at start of the period
 my $outstanding = RT::Tickets->new( $session{'CurrentUser'} );
-$outstanding->FromSQL("Queue = 'Incident Reports' AND Created < '$start' AND (Resolved='1970-01-01 00:00:00' OR Resolved > '$start')");
+$outstanding->FromSQL("Queue = 'Incident Reports' AND Created < '$start' AND (Resolved = '1970-01-01 00:00:01' OR Resolved > '$start')");
 my $outstanding_pruned = $filter_by_incident_field->($outstanding, '_RTIR_Constituency', $Constituency);
 
 # of new reports created during the period
 my $tix_created = RT::Tickets->new( $session{'CurrentUser'} );
 $tix_created->FromSQL("Queue = 'Incident Reports' AND Created > '$start' AND Created < '$end'");
-my $tix_created_pruned = $filter_by_incident_field->($outstanding, '_RTIR_Constituency', $Constituency);
+my $tix_created_pruned = $filter_by_incident_field->( $tix_created, '_RTIR_Constituency', $Constituency );
 
 # of new reports resolved/closed/deleted during the period
 # this means "number of reports created during the period that were 
-# also closed during the period"
+# also closed during the period(or before which is insane but possible)"
 
-my $tix_resolved = RT::Tickets->new($session{'CurrentUser'});
-$tix_resolved->FromSQL("Queue = 'Incident Reports' AND Created > '$start' AND Created < '$end' AND (Resolved > '1970-01-01 00:00:00' AND Resolved <'$end')");
-my $tix_resolved_pruned = $filter_by_incident_field->($outstanding, '_RTIR_Constituency', $Constituency);
+my $tix_resolved = RT::Tickets->new( $session{'CurrentUser'} );
+$tix_resolved->FromSQL("Queue = 'Incident Reports' AND Created > '$start' AND Created < '$end' AND (Resolved > '1970-01-01 00:00:01' AND Resolved < '$end')");
+my $tix_resolved_pruned = $filter_by_incident_field->($tix_resolved, '_RTIR_Constituency', $Constituency);
 
 # of new reports oustanding at end of the period
 # this is "number of reports created during the period that were also 
 # closed during the period"
 
 my $tix_unresolved = RT::Tickets->new( $session{'CurrentUser'} );
-$tix_unresolved->FromSQL("Queue = 'Incident Reports' AND Created > '$start' AND Created < '$end' AND (Resolved='1970-01-01 00:00:00' OR Resolved>'$end')");
-my $tix_unresolved_pruned = $filter_by_incident_field->($outstanding, '_RTIR_Constituency', $Constituency);
+$tix_unresolved->FromSQL("Queue = 'Incident Reports' AND Created > '$start' AND Created < '$end' AND ( Resolved = '1970-01-01 00:00:01' OR Resolved > '$end' )");
+my $tix_unresolved_pruned = $filter_by_incident_field->($tix_unresolved, '_RTIR_Constituency', $Constituency);
 
-if ($TextReport) {
+if ( $TextReport ) {
     $r->content_type('text/plain');
+} elsif( $SpreadsheetReport ) {
+    $r->content_type('application/vnd.ms-excel');
 }
 </%INIT>
 
 <%ARGS>
-$StartDate    => undef
-$EndDate      => undef
-$Constituency => undef
-$HTMLReport   => 1
-$TextReport   => !$HTMLReport
+$StartDate         => undef
+$EndDate           => undef
+$Constituency      => undef
+$HTMLReport        => 1
+$TextReport        => !$HTMLReport
+$SpreadsheetReport => !($HTMLReport || $TextReport)
 </%ARGS>
+
+<%METHOD TwoColumnsTableText>
+<%ARGS>
+$Title => undef
+$Body  => []
+</%ARGS>
+% if ( $Title ) {
+<% $Title |n %>
+% }
+% foreach my $line( @$Body ) {
+<% sprintf "%-$max[0]s", $line->[0] |n %> <% $line->[1] |n %>
+% }
+<%INIT>
+my @max = (0, 0);
+foreach my $line( @$Body ) {
+    for( my $col = 0; $col < @$line; $col++ ) {
+        $max[$col] = length $line->[$col] if length $line->[$col] > $max[$col];
+    }
+}
+</%INIT>
+</%METHOD>
+<%METHOD TwoColumnsTableTSV>
+<%ARGS>
+$Title => undef
+$Body  => []
+</%ARGS>
+% if ( $Title ) {
+<% $Title |n %>
+% }
+% foreach my $line( @$Body ) {
+<% $line->[0] |n %>	<% $line->[1] |n %>
+% }
+
+</%METHOD>
+<%METHOD TwoColumnsTableHTML>
+<%ARGS>
+$Title => undef
+$Body  => []
+</%ARGS>
+<table>
+% if ( $Title ) {
+<tr><th colspan="2"><% $Title %></th></tr>
+% }
+% foreach my $line( @$Body ) {
+<tr><td><% $line->[0] %></td><td><% $line->[1] %></td></tr>
+% }
+</table>
+</%METHOD>
+
+<%METHOD HeadingText>
+<%ARGS>
+$Text => undef
+</%ARGS>
+<% $Text |n %>
+</%METHOD>
+<%METHOD HeadingTSV>
+<%ARGS>
+$Text => undef
+</%ARGS>
+<% $Text |n %>
+</%METHOD>
+<%METHOD HeadingHTML>
+<%ARGS>
+$Text  => undef
+$Level => 1
+</%ARGS>
+<h<% $Level %>><% $Text %></h<% $Level %>>
+</%METHOD>

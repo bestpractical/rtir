@@ -22,41 +22,22 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<table width="100%">
-<tr>
-  <td valign="top" width="45%">
-    <table width="100%">
-      <th colspan="2"><&|/l&>At the start of the time period</&></th>
-      <tr>
-        <td><&|/l&>Outstanding Incident Reports</&></td>
-        <td align="right"><% scalar keys %$outstanding %></td>
-      </tr>
-    </table>
-  </td>
-  <td></td>
-  <td valign="top" width="45%">
-    <table width =100%>
-      <th colspan="2"><&|/l&>During the time period</&></th>
-      <tr>
-       <td><&|/l, $service_level &>Total [_1] Incident Reports created</&></td>
-       <td align="right"><% $tix_count %></td>
-      </tr>
-      <tr>
-        <td><&|/l&>Incident Reports for which SLA time was met</&></td>
-        <td align="right"><% $sla_count %></td>
-      </tr>
-      <tr>
-        <td><&|/l&>Resolved Incident Reports</&></td>
-        <td align="right"><% $resolved_count %></td>
-      </tr>
-      <tr>
-        <td><&|/l&>Unresolved Incident Reports</&></td>
-        <td align="right"><% $unresolved_count %></td>
-      </tr>
-    </table>
-  </td>
-</tr>
-</table>
+$m->comp("/RTIR/Reporting/Report.html:TwoColumnsTable$ReportAs",
+    $Title => loc('At the start of the time period'),
+    Body => [
+        [ loc('Outstanding Incident Reports'), scalar keys %$outstanding ],
+    ]
+);
+
+$m->comp("/RTIR/Reporting/Report.html:TwoColumnsTable$ReportAs",
+    $Title => loc('During the time period'),
+    Body => [
+        [ loc('Total [_1] Incident Reports created', $service_level), $tix_count ],
+        [ loc('Incident Reports for which SLA time was met'), $sla_count ],
+        [ loc('Resolved Incident Reports'), $resolved_count ],
+        [ loc('Unresolved Incident Reports'), $unresolved_count ],
+    ]
+);
 
 <%INIT>
 
@@ -97,7 +78,7 @@ foreach my $key ( keys %$class_tix ) {
             $sla_count++;
         }
     }
-
+        
     if ( $t->ResolvedObj->Unix >= $start->Unix &&
         $t->ResolvedObj->Unix <= $end->Unix) {
         $resolved_count++;
@@ -106,13 +87,15 @@ foreach my $key ( keys %$class_tix ) {
         $t->ResolvedObj->Unix > $end->Unix) {
         $unresolved_count++;
     }
+    
 }
 </%INIT>
-
 <%ARGS>
+$ReportAs => 'HTML'
 $service_level => undef
 $class_tix => undef
 $outstanding => undef
 $start => undef
 $end => undef
 </%ARGS>
+

@@ -30,7 +30,7 @@
     Title          => $title,
 &>
 
-<form action="Report.html" method="get">
+<form action="index.html" method="post">
 <table>
   <tr>
     <td class="label"><&|/l&>Constituency</&>:</td>
@@ -66,9 +66,27 @@
     Caption => loc("Generate a HTML report"),
     Label   => loc("HTML"),
 &>
+<& /Elements/Submit,
+    Name    => "SpreadsheetReport",
+    Caption => loc("Generate a spreadsheet report"),
+    Label   => loc("Spreadsheet"),
+&>
 </form>
 
 <%INIT>
+if ( $ARGS{'HTMLReport'} || $ARGS{'TextReport'} || $ARGS{'SpreadsheetReport'} ) {
+    if ( $ARGS{'Constituency'} ) {
+        delete $ARGS{ 'Object-RT::Ticket--'. $ARGS{'Constituency'} .'-Magic' };
+        $ARGS{'Constituency'} = delete $ARGS{ 'Object-RT::Ticket--'. $ARGS{'Constituency'} };
+    }
+    my $ext = 'html';
+    $ext = 'txt' if $ARGS{'TextReport'};
+    $ext = 'tsv' if $ARGS{'SpreadsheetReport'};
+    my $url = RT->Config->Get('WebURL') .'RTIR/Reporting/Report.'. $ext;
+    $url   .= "?". $m->comp( '/Elements/QueryString', %ARGS );
+    $m->redirect($url);
+}
+
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load('Incidents');
 
