@@ -51,14 +51,14 @@ my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
 my $QueueObj = RT::Queue->new($session{'CurrentUser'});
 $QueueObj->Load($Queue);
 
-$CustomFields->{"find_disabled_rows"} = 1;
 $CustomFields->LimitToQueue( $QueueObj->Id );
 $CustomFields->LimitToGlobal;
+$CustomFields->Limit( FIELD => 'Name', OPERATOR => 'STARTSWITH', VALUE => '_RTIR_' );
 
 my @lines;
 while ( my $CustomField = $CustomFields->Next ) {
     my $label = $CustomField->Name;
-    next unless $label =~ s/^_RTIR_//;
+    $label =~ s/^_RTIR_//;
 
     my %line;
     $line{'Name'} = "'CF.{" . $CustomField->Name . "}'";
