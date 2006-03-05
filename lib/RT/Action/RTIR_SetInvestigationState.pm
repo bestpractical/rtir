@@ -58,9 +58,11 @@ Returns state of the C<Investigation>.
 sub GetState {
     my $self = shift;
     my %state = (
-        open => 'new',
-        new  => 'new',
+        new      => 'open',
+        open     => 'open',
+        stalled  => 'open',
         resolved => 'resolved',
+        rejected => 'resolved',
     );
     return $state{ $self->TicketObj->Status } || '';
 }

@@ -63,15 +63,15 @@ sub GetState {
     if ( $status =~ /^(?:new|open|stalled)$/ ) {
         $state = 'new';
 
-        my $parents = RT::Tickets->new($self->TransactionObj->CurrentUser);
-        $parents->LimitHasMember($self->TicketObj->id);
-        $parents->LimitQueue(VALUE => 'Incidents');
-        if ($parents->Count) {
+        my $parents = RT::Tickets->new( $self->TransactionObj->CurrentUser );
+        $parents->LimitHasMember( $self->TicketObj->id );
+        $parents->LimitQueue( VALUE => 'Incidents' );
+        if ( $parents->Count ) {
             $state = 'open';
         }
-    } elsif ($status eq 'resolved') {
+    } elsif ( $status eq 'resolved' ) {
         $state = 'resolved';
-    } elsif ($status eq 'rejected') {
+    } elsif ( $status eq 'rejected' ) {
         $state = 'rejected';
     }
     return $state || '';
