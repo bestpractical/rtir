@@ -1,1 +1,6 @@
-# RTIR-specific CSS goes here
+%# RTIR-specific CSS goes here
+
+% $m->abort;
+<%INIT>
+$r->content_type('text/css');
+</%INIT>
