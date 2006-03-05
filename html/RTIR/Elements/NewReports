@@ -23,56 +23,56 @@
 %# 
 %# END LICENSE BLOCK
 <& /Widgets/TitleBoxStart, 
-	title_href => RT->Config->Get('WebPath') ."/RTIR/Search/Results.html?Queue=$Queue$QueryString",
-	title_class=> 'inverse',  
-	title => $title, 
-	bodyclass=> '' &>
-
-<& /RTIR/Search/Elements/ShowResults, 
-   Query => $Query, 
-   QueryString => $QueryString, 
-   Format => $Format,
-   Rows => 10,
+	title_href  => RT->Config->Get('WebPath') ."/RTIR/Search/Results.html?$EscapedQueue\&$QueryString",
+	title_class => 'inverse',
+	title       => $title, 
+	bodyclass   => '',
 &>
 
-<a href="<%RT->Config->Get('WebPath')%>/RTIR/Report/BulkReject.html">[<%loc("Bulk Reject")%>]</a>
+<& /RTIR/Search/Elements/ShowResults,
+    Queue     => $Queue,
+    BaseQuery => $BaseQuery,
+    Query     => $Query,
+    Format    => $Format,
+    Rows      => $Rows,
+    Page      => $Page,
+    OrderBy   => $OrderBy,
+    Order     => $Order,
+&>
+
+<a href="<% RT->Config->Get('WebPath') %>/RTIR/Report/BulkReject.html?<% $EscapedQueue %>&<% $QueryString %>">[<%loc("Bulk Reject")%>]</a>
 
 <& /Widgets/TitleBoxEnd &>
 
 
 <%INIT>
-$Format = RT->Config->Get('RTIRSearchResultFormats')->{'NewReports'};
+my $title = loc("New unlinked Incident Reports...");
+my $EscapedQueue = $m->comp('/Elements/QueryString', Queue => $Queue);
 
-$Query = $m->comp('/RTIR/Elements/NewQuery', 
-             Queue => $Queue,	
-             states => [ 'new' ]);
-
-my $QueryString = "&".$m->comp('/Elements/QueryString',
-                               Query => $Query,
-                               Format => $Format,
-                               Rows => $Rows,
-                               OrderBy => $OrderBy,
-                               Order => $Order,
-                               Page => $Page);
-
-if (!$BaseQuery) {
-    $BaseQuery = $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
+unless( $Query ) {
+    $Query = $m->comp( '/RTIR/Elements/NewQuery',  Queue => $Queue, states => [ 'new' ] );
+    $Query = join ' AND ', $Query, 'MemberOf IS NULL';
 }
 
-$Query = "$BaseQuery AND ( $Query )";
+my $QueryString = $m->comp('/Elements/QueryString',
+    Query   => $Query,
+    Format  => $Format,
+    Rows    => $Rows,
+    Page    => $Page,
+    OrderBy => $OrderBy,
+    Order   => $Order,
+);
 
-my $title = loc("New unlinked Incident Reports...");
 
 </%INIT>
 
 <%ARGS>
-$Query => undef
-$BaseQuery => undef
-$Queue => 'Incident Reports'
-$Format => undef 
-$HideResults => 0
-$Rows => 50
-$Page => 1
-$OrderBy => 'Due'
-$Order => 'ASC'
+$Queue     => 'Incident Reports'
+$BaseQuery => $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue )
+$Query     => undef
+$Format    => RT->Config->Get('RTIRSearchResultFormats')->{'NewReports'} 
+$Rows      => 50
+$Page      => 1
+$OrderBy   => 'Due'
+$Order     => 'ASC'
 </%ARGS>
