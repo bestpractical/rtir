@@ -5,7 +5,7 @@
         Name              => 'Incidents',
         CorrespondAddress => "",
         CommentAddress    => "",
-	InitialPriority   => 50,
+        InitialPriority   => 50,
     },
     {
         Name              => 'Incident Reports',
@@ -29,7 +29,7 @@
         Name        => '_RTIR_State',
         Type        => 'SelectSingle',
         Queue       => 'Incidents',
-	Disabled    => 0,
+        Disabled    => 0,
         Values      => [
             {
                 Name      => "open",
@@ -49,7 +49,7 @@
         Name        => '_RTIR_Constituency',
         Type        => 'SelectSingle',
         Queue       => 'Incidents',
-	Disabled    => 0,
+        Disabled    => 0,
         Values      => [
             {
                 Name      => "EDUNET",
@@ -65,7 +65,7 @@
         Name        => '_RTIR_State',
         Type        => 'SelectSingle',
         Queue       => 'Incident Reports',
-	Disabled    => 0,
+        Disabled    => 0,
         Values      => [
             {
                 Name      => "new",
@@ -89,7 +89,7 @@
         Name        => '_RTIR_State',
         Type        => 'SelectSingle',
         Queue       => 'Investigations',
-	Disabled    => 0,
+        Disabled    => 0,
         Values      => [
             {
                 Name      => "open",
@@ -105,7 +105,7 @@
         Name        => '_RTIR_State',
         Type        => 'SelectSingle',
         Queue       => 'Blocks',
-	Disabled    => 0,
+        Disabled    => 0,
         Values      => [
             {
                 Name      => "pending activation",
@@ -128,31 +128,31 @@
     {
         Name        => '_RTIR_Description',
         Type        => 'FreeformSingle',
-	Disabled    => 0,
+        Disabled    => 0,
         Queue       => 'Incidents',
     },
     {
         Name        => '_RTIR_SLA',
         Type        => 'SelectSingle',
         Queue       => 'Incident Reports',
-	Disabled    => 0,
+        Disabled    => 0,
         Values      => [
             {   Name => 'Full service',
                 SortOrder => 1,
-	    },
+            },
             {   Name => 'Full service: out of hours',
                 SortOrder => 2,
-	    },
+            },
             {   Name => 'Reduced service',
                 SortOrder => 3,
-	    },
+            },
         ],
     },
     {
         Name        => '_RTIR_Function',
         Type        => 'SelectSingle',
         Queue       => 'Incidents',
-	Disabled    => 0,
+        Disabled    => 0,
         Values      => [
             {
                 Name      => "AbuseDesk",
@@ -168,7 +168,7 @@
         Name        => '_RTIR_Classification',
         Type        => 'SelectSingle',
         Queue       => 'Incidents',
-	Disabled    => 0,
+        Disabled    => 0,
         Values      => [
             {
                 Name      => "Spam",
@@ -200,7 +200,7 @@
         Name        => '_RTIR_HowReported',
         Type        => 'SelectSingle',
         Queue       => 'Incident Reports',
-	Disabled    => 0,
+        Disabled    => 0,
         Values => [
             {
                 Name      => "Email",
@@ -220,7 +220,7 @@
         Name        => '_RTIR_ReporterType',
         Type        => 'SelectSingle',
         Queue       => 'Incident Reports',
-	Disabled    => 0,
+        Disabled    => 0,
         Values      => [
             { Name => "customer",      SortOrder => 1 },
             { Name => "external individual", SortOrder => 2 },
@@ -243,25 +243,25 @@
         Name        => '_RTIR_IP',
         Type        => 'FreeformSingle',
         Queue       => 'Blocks',
-	Disabled    => 0,
+        Disabled    => 0,
     },
     {
         Name        => '_RTIR_Netmask',
         Type        => 'FreeformSingle',
         Queue       => 'Blocks',
-	Disabled    => 0,
+        Disabled    => 0,
     },
     {
         Name        => '_RTIR_Port',
         Type        => 'FreeformSingle',
         Queue       => 'Blocks',
-	Disabled    => 0,
+        Disabled    => 0,
     },
     {
         Name        => '_RTIR_WhereBlocked',
         Type        => 'FreeformSingle',
         Queue       => 'Blocks',
-	Disabled    => 0,
+        Disabled    => 0,
     },
 );
 
@@ -591,7 +591,7 @@ Subject: {$Ticket->Subject}
     my $Values = $Ticket->CustomFieldValues($CustomField->Id);
     while (my $Value = $Values->Next()) {
       for my $field (@mailfields) {
-	 if ($CustomField->Name eq $field) {
+        if ($CustomField->Name eq $field) {
           $output .= $CustomField->Name.": ".$Value->Content."\n";
         }
       }
@@ -733,7 +733,7 @@ for my $cf (@CustomFields) {
             { type => 'component',  name => '/RTIR/Elements/DueIncidents' },
         ],
         summary => [
-	        { type => 'component', name => 'RefreshHomepage' },
+            { type => 'component', name => 'RefreshHomepage' },
         ]
     },
 } );
