@@ -22,35 +22,34 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-% if ($cf->id) {
 % if ($cf->Type eq 'FreeformSingle') {
-<input type="hidden" name="<%$Name%>" value="<%$NamePrefix%><%$cf->id%>-Value" /> 
+<input type="hidden" name="<% $Name %>" value="<% $NamePrefix %><% $cf->id %>-Value" /> 
 % } else {
-<input type="hidden" name="<%$Name%>" value="<%$NamePrefix%><%$cf->id%>-Values" />
+<input type="hidden" name="<% $Name %>" value="<% $NamePrefix %><% $cf->id %>-Values" />
 % }
 <& /Elements/EditCustomField,
-    Object => $TicketObj, 
+    Object      => $TicketObj, 
     CustomField => $cf, 
-    NamePrefix => $NamePrefix,
-    Default => $Default,
-    Rows => $Rows,
-    Cols => $Cols &>
-% }
+    NamePrefix  => $NamePrefix,
+    Default     => $Default,
+    Rows        => $Rows,
+    Cols        => $Cols,
+&>
 
 <%INIT>
 my $Values;
 
 my $NamePrefix;
-if ($TicketObj) {
+if ( $TicketObj ) {
     $QueueObj = $TicketObj->QueueObj;
     $NamePrefix = "Object-RT::Ticket-".$TicketObj->Id."-CustomField-";
 } else {
     $NamePrefix = "Object-RT::Ticket--CustomField-";
 }
 
-# XXX: load as system user since, DutyTeam has no right on CFs
-my $cf = RT::CustomField->new( $RT::SystemUser );
+my $cf = RT::CustomField->new( $session{'CurrentUser'} );
 $cf->LoadByNameAndQueue( Queue => $QueueObj->id, Name => "_RTIR_".$Name );
+return unless $cf->id;
 
 </%INIT>
 <%ARGS>

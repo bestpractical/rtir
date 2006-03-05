@@ -22,14 +22,12 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-% if (defined $cf) {
 <& /Elements/SelectCustomFieldValue,
     CustomField => $cf, 
-    Name => $FieldName &>
-% }
-
+    Name        => $FieldName,
+&>
 <%INIT>
-my $cf = RT::CustomField->new($session{'CurrentUser'});
+my $cf = RT::CustomField->new( $session{'CurrentUser'} );
 $cf->LoadByNameAndQueue(Queue => $QueueObj->Id, Name => "_RTIR_".$Name);
 my $FieldName = "CustomField".$cf->id;
 </%INIT>

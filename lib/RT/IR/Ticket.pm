@@ -18,14 +18,10 @@ special custom fields like C<_RTIR_State> and other.
 
 sub FirstCustomFieldValue {
     my $ticket = shift;
+    my $field = shift;
     return undef unless $ticket->CurrentUserHasRight('ShowTicket');
 
-    my $field = shift;
-    my $old_user = $ticket->CurrentUser;
-    $ticket->CurrentUser( $RT::SystemUser );
-    my $value = $ticket->FirstCustomFieldValue( $field );
-    $ticket->CurrentUser( $old_user );
-    return $value;
+    return $ticket->FirstCustomFieldValue( $field );
 }
 
 1;
