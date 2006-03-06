@@ -285,7 +285,7 @@ if ( $Type eq 'Report' ) {
         };
     }
     $tabs->{'k'} = {
-        path      => 'RTIR/Incident/BulkAbandon.html',
+        path      => "RTIR/Incident/BulkAbandon.html?$EscapedQueueName&$QueryString",
         title     => loc('Bulk Abandon'),
         separator => 1
     };

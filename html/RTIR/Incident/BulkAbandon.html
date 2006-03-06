@@ -90,6 +90,7 @@ my @CheckBox = (
 );
 my $title = loc('Abandon Incidents');
 my $SubmitCaption = loc("Abandon selected incidents");
+$Format = "___RTIR_Check__,$Format" unless $Format =~ /___RTIR_Check__/;
 
 my ( @results );
 
@@ -171,7 +172,9 @@ my $QueryString = $m->comp(
     Order   => $Order,
     Page    => $Page
 );
-
+$current_tab ||= "RTIR/Incident/BulkAbandon.html?"
+    . $m->comp('/Elements/QueryString', Queue => $Queue)
+    . "&$QueryString";
 
 my $path = "RTIR/Search/Refine.html?$QueryString&";
 $path .= $m->comp( '/Elements/QueryString',
@@ -191,8 +194,8 @@ $Rows      => 50
 $Page      => 1
 $OrderBy   => 'id'
 $Order     => 'ASC'
-$BaseURL   => RT->Config->Get('WebPath') . "/RTIR/Report/BulkAbandon.html"
-$current_tab => 'RTIR/Incident/BulkAbandon.html'
+$BaseURL   => RT->Config->Get('WebPath') . "/RTIR/Incident/BulkAbandon.html"
+$current_tab => undef
 @SelectedTickets => ()
 @ReplyToAll => ()
 </%ARGS>

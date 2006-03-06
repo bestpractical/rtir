@@ -74,7 +74,7 @@
 my $title         = loc("Reject Incident Reports");
 my $SubmitCaption = loc("Reject selected incident reports");
 
-$Format = "__RTIR_Check__,$Format" unless $Format =~ /__RTIR_Check__/;
+$Format = "___RTIR_Check__,$Format" unless $Format =~ /___RTIR_Check__/;
 
 my ( @results );
 if ( $BulkReject ) {
