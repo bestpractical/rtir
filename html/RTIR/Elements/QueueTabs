@@ -269,7 +269,7 @@ unless ( $Ticket and $Ticket->id ) {
 
 if ( $Type eq 'Report' ) {
     $tabs->{"h"} = {
-        path      => 'RTIR/Report/BulkReject.html',
+        path      => "RTIR/Report/BulkReject.html?$EscapedQueueName&$QueryString",
         title     => loc('Bulk Reject'),
         separator => 1
     };

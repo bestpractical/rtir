@@ -47,11 +47,10 @@
     Query     => $Query,
     Format    => $Format,
     Rows      => $Rows,
+    Page      => $Page,
     OrderBy   => $OrderBy,
     Order     => $Order,
-    Page      => $Page,
     BaseURL   => $BaseURL,
-    Format    => $Format,
 &>
 
 % if( $session{'tickets'}->Count ) {
@@ -75,7 +74,7 @@
 my $title         = loc("Reject Incident Reports");
 my $SubmitCaption = loc("Reject selected incident reports");
 
-$Format = "___RTIR_Check__,$Format" unless $Format =~ /__RTIR_Check__/;
+$Format = "__RTIR_Check__,$Format" unless $Format =~ /__RTIR_Check__/;
 
 my ( @results );
 if ( $BulkReject ) {
@@ -83,9 +82,6 @@ if ( $BulkReject ) {
 
     #Iterate through each ticket we've been handed
     foreach my $id( @SelectedTickets ) {
-        $m->out('<!--  Processing <%$id%> -->');
-        $m->flush_buffer;
-
         my $t = RT::Ticket->new( $session{'CurrentUser'} );
         $t->Load( $id );
         unless( $t->id ) {
@@ -134,18 +130,18 @@ if ( $BulkReject ) {
     $session{'tickets'}->RedoSearch;
 
     if( $BulkRejectAndReturn ) {
-        $m->comp(
+        return $m->comp(
             '/RTIR/Search/Results.html',
             Queue     => $Queue,
             Query     => $Query,
-            Format    => $Format,
+            # Skip format, since it contains checkbox
+            # Format    => $Format,
             Rows      => $Rows,
             OrderBy   => $OrderBy,
             Order     => $Order,
             Page      => $Page,
             results   => \@results,
         );
-        return;
     }
 }
 
@@ -158,6 +154,9 @@ my $QueryString = $m->comp(
     Order     => $Order,
     Page      => $Page
 );
+$current_tab ||= "RTIR/Report/BulkReject.html?"
+    . $m->comp('/Elements/QueryString', Queue => $Queue)
+    . "&$QueryString";
 
 my $path = "RTIR/Search/Refine.html?$QueryString&";
 $path .= $m->comp( '/Elements/QueryString',
@@ -168,17 +167,17 @@ $path .= $m->comp( '/Elements/QueryString',
 
 </%INIT>
 <%ARGS>
+$Status              => 'rejected'
 $Queue               => 'Incident Reports'
 $BaseQuery           => $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue )
 $Query               => $m->comp( '/RTIR/Elements/NewQuery',  Queue => $Queue )
-$Status              => 'rejected'
 $Format              => RT->Config->Get('RTIRSearchResultFormats')->{'RejectReports'};
 $Rows                => 50
 $Page                => 1
 $OrderBy             => 'id'
 $Order               => 'ASC'
 $BaseURL             => RT->Config->Get('WebPath') . "/RTIR/Report/BulkReject.html?"
-$current_tab         => 'RTIR/Report/BulkReject.html'
+$current_tab         => undef
 @SelectedTickets     => ()
 $BulkRejectAndReturn => 0
 $BulkReject          => $BulkRejectAndReturn
