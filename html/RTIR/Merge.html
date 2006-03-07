@@ -55,7 +55,7 @@
     Query => $Query,
     QueryString => $QueryString, 
     BaseURL => RT->Config->Get('WebPath')."/RTIR/Merge.html?id=$id&",
-    Format => $Format,
+    Format => '___RTIR_Radio__,'. $Format,
     &>
 
 <hr>
@@ -113,7 +113,6 @@ my $path = "RTIR/Search/Refine.html?ResultPage=$BaseURL&current_tab=$current_tab
 $BaseQuery => undef
 $Query => undef
 $Format => undef 
-$HideResults => 0
 $Rows => 50
 $Page => 1
 $OrderBy => 'id'

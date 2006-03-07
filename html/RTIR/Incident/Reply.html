@@ -36,29 +36,37 @@
 <form action="Reply.html" method="get">
 <input type="hidden" name="id" value="<% $id %>" />
 <input type="hidden" name="Status" value="<% $ARGS{'DefaultStatus'} %>" />
-<input type="hidden" name="All" value="<% $ARGS{'All'} %>" />
+<input type="hidden" name="All" value="<% $All %>" />
 <input type="hidden" name="Query" value="<% $Query %>" />
 <input type="hidden" name="BaseQuery" value="<% $BaseQuery %>" />
 
 <h2><&|/l&>Reporters</&></h2>
 <& /RTIR/Search/Elements/ShowResults,
+    Queue       => 'Incident Reports',
     BaseQuery   => $BaseQuery,
     Query       => "($Query) AND Queue = 'Incident Reports'",
-    QueryString => $QueryString, 
+    Format      => '___RTIR_Check__,'. $Format,
+    Rows        => $Rows,
+    Page        => $Page,
+    OrderBy     => $OrderBy,
+    Order       => $Order,
+    QueryString => $QueryString,
     BaseURL     => $BaseURL,
-    Format      => $Format,
-    Rows        => 0,
 &>
 
 % if ( $All ) {
 <h2><&|/l&>Investigation Correspondents</&></h2>
 <& /RTIR/Search/Elements/ShowResults,
+    Queue       => 'Investigations',
     BaseQuery   => $BaseQuery,
     Query       => "($Query) AND Queue = 'Investigations'",
+    Format      => '___RTIR_Check__,'. $Format,
+    Rows        => $Rows,
+    Page        => $Page,
+    OrderBy     => $OrderBy,
+    Order       => $Order,
     QueryString => $QueryString, 
     BaseURL     => $BaseURL,
-    Format      => $Format,
-    Rows        => 0,
 &>
 
 % }
@@ -84,12 +92,10 @@ my $QueryString = $m->comp( '/Elements/QueryString',
                             Order => $Order,
                             Page => $Page);
 
-if (!$BaseQuery) {
+unless ( $BaseQuery ) {
     $BaseQuery = "Queue = 'Incident Reports'";
     $BaseQuery = "($BaseQuery OR Queue = 'Investigations')" if $All;
 }
-
-$Query = "$BaseQuery AND ( $Query )";
 
 my ($title, $SubmitCaption, $SubmitLabel);
 if ($ARGS{'DefaultStatus'} eq 'resolved') {
@@ -141,13 +147,10 @@ if ( $SubmitTicket ) {
         push @results, map { loc("Ticket [_1]: [_2]", $id, $_) } @tempresults;
     }
 
-    # shouldn't we record message into incident?
+    #XXX: shouldn't we record message into incident?
     push @results, ProcessTicketBasics( TicketObj => $IncidentObj, ARGSRef => \%ARGS );
 }
 
-#Iterate through each ticket we've been handed
-my $MyTickets = new RT::Tickets($session{'CurrentUser'});
-$MyTickets->FromSQL( $Query );
 </%INIT>
 
 <%ARGS>
@@ -157,8 +160,7 @@ $BaseURL => RT->Config->Get('WebPath') . "/RTIR/Incident/Reply.html?DefaultStatu
 $BaseQuery => undef
 $Query => "CF.{_RTIR_State} = 'open' AND MemberOf = $id";
 $Format => RT->Config->Get('RTIRSearchResultFormats')->{'BulkReply'};
-$HideResults => 0
-$Rows => 50
+$Rows => 0
 $Page => 1
 $OrderBy => 'id'
 $Order => 'ASC'

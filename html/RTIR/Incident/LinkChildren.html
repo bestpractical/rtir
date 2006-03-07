@@ -42,9 +42,13 @@
     Queue       => $Queue,
     BaseQuery   => $BaseQuery,
     Query       => $Query,
-    QueryString => $QueryString, 
+    Format      => "___RTIR_Check__,". $Format,
+    Rows        => $Rows,
+    Page        => $Page,
+    OrderBy     => $OrderBy,
+    Order       => $Order,
     BaseURL     => $BaseURL,
-    Format      => $Format,
+    QueryString => $QueryString, 
 &>
 
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $title, Label => loc("Link") &>

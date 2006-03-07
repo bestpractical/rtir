@@ -48,7 +48,7 @@ my $result_set = $m->scomp(
     Queue       => $Queue,
     BaseQuery   => $BaseQuery,
     Query       => $Query,
-    Format      => $Format,
+    Format      => '___RTIR_Check__,'. $Format,
     Rows        => $Rows,
     OrderBy     => $OrderBy,
     Order       => $Order,
@@ -90,7 +90,6 @@ my @CheckBox = (
 );
 my $title = loc('Abandon Incidents');
 my $SubmitCaption = loc("Abandon selected incidents");
-$Format = "___RTIR_Check__,$Format" unless $Format =~ /___RTIR_Check__/;
 
 my ( @results );
 

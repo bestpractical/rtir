@@ -45,7 +45,7 @@
     Queue     => $Queue,
     BaseQuery => $BaseQuery,
     Query     => $Query,
-    Format    => $Format,
+    Format    => '___RTIR_Check__,'. $Format,
     Rows      => $Rows,
     Page      => $Page,
     OrderBy   => $OrderBy,
@@ -73,8 +73,6 @@
 <%INIT>
 my $title         = loc("Reject Incident Reports");
 my $SubmitCaption = loc("Reject selected incident reports");
-
-$Format = "___RTIR_Check__,$Format" unless $Format =~ /___RTIR_Check__/;
 
 my ( @results );
 if ( $BulkReject ) {
@@ -134,8 +132,7 @@ if ( $BulkReject ) {
             '/RTIR/Search/Results.html',
             Queue     => $Queue,
             Query     => $Query,
-            # Skip format, since it contains checkbox
-            # Format    => $Format,
+            Format    => $Format,
             Rows      => $Rows,
             OrderBy   => $OrderBy,
             Order     => $Order,
