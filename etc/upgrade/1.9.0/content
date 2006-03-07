@@ -1,0 +1,120 @@
+@CustomFields = (
+    {
+        Name        => '_RTIR_Resolution',
+        Type        => 'SelectSingle',
+        Disabled    => 0,
+        Queue       => 'Incidents',
+        Values      => [
+            {   Name => 'successfully resolved',
+                SortOrder => 1,
+            },
+            {   Name => 'no resolution reached',
+                SortOrder => 2,
+            },
+            {   Name => 'no response from customer',
+                SortOrder => 3,
+            },
+            {   Name => 'no response from other ISP',
+                SortOrder => 4,
+            },
+        ],
+    },
+);
+
+# all CustomFields to update ACLs
+my @CustomFieldsList = (
+    {
+        Name        => '_RTIR_State',
+        Queue       => 'Incidents',
+    },
+    {
+        Name        => '_RTIR_Constituency',
+        Queue       => 'Incidents',
+    },
+    {
+        Name        => '_RTIR_State',
+        Queue       => 'Incident Reports',
+    },
+    {
+        Name        => '_RTIR_State',
+        Queue       => 'Investigations',
+    },
+    {
+        Name        => '_RTIR_State',
+        Queue       => 'Blocks',
+    },
+    {
+        Name        => '_RTIR_Description',
+        Queue       => 'Incidents',
+    },
+    {
+        Name        => '_RTIR_Resolution',
+        Queue       => 'Incidents',
+    },
+    {
+        Name        => '_RTIR_SLA',
+        Queue       => 'Incident Reports',
+    },
+    {
+        Name        => '_RTIR_Function',
+        Queue       => 'Incidents',
+    },
+    {
+        Name        => '_RTIR_Classification',
+        Queue       => 'Incidents',
+    },
+    {
+        Name        => '_RTIR_HowReported',
+        Queue       => 'Incident Reports',
+    },
+    {
+        Name        => '_RTIR_ReporterType',
+        Queue       => 'Incident Reports',
+    },
+    {
+        Name        => '_RTIR_IP',
+        Queue       => 'Blocks',
+    },
+    {
+        Name        => '_RTIR_Netmask',
+        Queue       => 'Blocks',
+    },
+    {
+        Name        => '_RTIR_Port',
+        Queue       => 'Blocks',
+    },
+    {
+        Name        => '_RTIR_WhereBlocked',
+        Queue       => 'Blocks',
+    },
+);
+for my $cf (@CustomFieldsList) {
+    push @ACL, (
+        { GroupId => 'DutyTeam',
+          GroupDomain => 'UserDefined',
+          CF => $cf->{Name},
+          Queue => $cf->{Queue},
+          Right => 'SeeCustomField', },
+        { GroupId => 'DutyTeam',
+          GroupDomain => 'UserDefined',
+          CF => $cf->{Name},
+          Queue => $cf->{Queue},
+          Right => 'ModifyCustomField', },
+    );
+}
+
+@Attributes = ( {
+    Name => 'RTIR_HomepageSettings',
+    Description => 'RTIR homepage settings',
+    Content => {
+        body => [
+            { type => 'component',  name => '/RTIR/Elements/NewReports' },
+            { type => 'component',  name => '/RTIR/Elements/UserDueIncidents' },
+            { type => 'component',  name => '/RTIR/Elements/DueIncidents' },
+        ],
+        summary => [
+            { type => 'component', name => 'RefreshHomepage' },
+        ]
+    },
+} );
+
