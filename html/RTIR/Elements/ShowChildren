@@ -64,7 +64,7 @@ my ($Type) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
 
 $Format ||= RT->Config->Get('RTIRSearchResultFormats')->{'Child' . $Type};
 if ($Delete) {
-    $Format = "___RTIR_Check__, " . $Format;
+    $Format = "__RTIR_Check__, " . $Format;
 }
 
 my $children = new RT::Tickets($session{'CurrentUser'});

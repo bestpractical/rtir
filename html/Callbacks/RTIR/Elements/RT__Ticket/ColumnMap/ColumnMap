@@ -35,7 +35,7 @@ my %selected;
 }
 
 # This is scary and should totally be refactored -- jesse
-$COLUMN_MAP->{'_RTIR_Check'} = {
+$COLUMN_MAP->{'RTIR_Check'} = {
     title => sub {
         return ( \qq{<input type="checkbox" name="AllSelectedTickets" value="1"
                             onclick="setCheckbox(this.form, 'SelectedTickets', this.checked)" />} );
@@ -48,7 +48,7 @@ $COLUMN_MAP->{'_RTIR_Check'} = {
     },
 };
 
-$COLUMN_MAP->{'_RTIR_Radio'} = {
+$COLUMN_MAP->{'RTIR_Radio'} = {
     title => '&nbsp;',
     value => sub {
         my $selected = '';
