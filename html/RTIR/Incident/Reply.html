@@ -26,8 +26,8 @@
 <& Elements/LinkTabs, 
     Queue => 'Incident Reports',
     Ticket => $IncidentObj, 
-    current_tab => 'RTIR/Incident/ShowChildren.html?Queue=Incident Reports&id='.$id,
-    current_subtab => 'RTIR/Incident/ReplyToReporters.html',
+    current_tab => "RTIR/Incident/ShowChildren.html?Queue=Incident%20Reports&id=$id",
+    current_subtab => "RTIR/Incident/Reply.html?id=$id&All=$All&$QueryString",
     Tab => 'Bulk Reply',
     Title => $title &>
 
@@ -43,8 +43,8 @@
 <h2><&|/l&>Reporters</&></h2>
 <& /RTIR/Search/Elements/ShowResults,
     Queue       => 'Incident Reports',
-    BaseQuery   => $BaseQuery,
-    Query       => "($Query) AND Queue = 'Incident Reports'",
+    BaseQuery   => $BaseQuery || $m->comp('/RTIR/Elements/BaseQuery', Queue => 'Incident Reports'),
+    Query       => $Query,
     Format      => '__RTIR_Check__,'. $Format,
     Rows        => $Rows,
     Page        => $Page,
@@ -58,8 +58,8 @@
 <h2><&|/l&>Investigation Correspondents</&></h2>
 <& /RTIR/Search/Elements/ShowResults,
     Queue       => 'Investigations',
-    BaseQuery   => $BaseQuery,
-    Query       => "($Query) AND Queue = 'Investigations'",
+    BaseQuery   => $BaseQuery || $m->comp('/RTIR/Elements/BaseQuery', Queue => 'Investigations'),
+    Query       => $Query,
     Format      => '__RTIR_Check__,'. $Format,
     Rows        => $Rows,
     Page        => $Page,
@@ -68,10 +68,7 @@
     QueryString => $QueryString, 
     BaseURL     => $BaseURL,
 &>
-
 % }
-
-<hr>
 
 <& Elements/ReplyForm, AllowResponse => ($ARGS{Status} !~ /^(?:resolved|rejected)$/) &>
 
@@ -91,11 +88,6 @@ my $QueryString = $m->comp( '/Elements/QueryString',
                             OrderBy => $OrderBy,
                             Order => $Order,
                             Page => $Page);
-
-unless ( $BaseQuery ) {
-    $BaseQuery = "Queue = 'Incident Reports'";
-    $BaseQuery = "($BaseQuery OR Queue = 'Investigations')" if $All;
-}
 
 my ($title, $SubmitCaption, $SubmitLabel);
 if ($ARGS{'DefaultStatus'} eq 'resolved') {
@@ -119,7 +111,7 @@ if ($ARGS{'DefaultStatus'} eq 'resolved') {
 
 
 # Iterate through the ARGS hash and remove anything with a null value.
-map ($ARGS{$_} =~ /^$/ && (delete $ARGS{$_}), keys %ARGS);
+map (!$ARGS{$_} && (delete $ARGS{$_}), keys %ARGS);
 
 Abort(loc("No search to operate on.")) unless ($session{'tickets'});
 
@@ -154,17 +146,17 @@ if ( $SubmitTicket ) {
 </%INIT>
 
 <%ARGS>
-$id => undef
-$All => 0
-$BaseURL => RT->Config->Get('WebPath') . "/RTIR/Incident/Reply.html?DefaultStatus=stalled&id=$id"
-$BaseQuery => undef
-$Query => "CF.{_RTIR_State} = 'open' AND MemberOf = $id";
-$Format => RT->Config->Get('RTIRSearchResultFormats')->{'BulkReply'};
-$Rows => 0
-$Page => 1
-$OrderBy => 'id'
-$Order => 'ASC'
-$Action => 'Correspond'
+$id              => undef
+$All             => 0
+$BaseURL         => RT->Config->Get('WebPath') . "/RTIR/Incident/Reply.html?DefaultStatus=stalled&id=$id"
+$BaseQuery       => undef
+$Query           => "CF.{_RTIR_State} = 'open' AND MemberOf = $id";
+$Format          => RT->Config->Get('RTIRSearchResultFormats')->{'BulkReply'};
+$Rows            => 0
+$Page            => 1
+$OrderBy         => 'id'
+$Order           => 'ASC'
+$Action          => 'Correspond'
 @SelectedTickets => ()
-$SubmitTicket => 1
+$SubmitTicket    => 1
 </%ARGS>
