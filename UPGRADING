@@ -15,6 +15,9 @@ General upgrade instructions
     your previously installed RT version, run:
     
         /opt/rt3/sbin/rt-setup-database --dba <dba> \
+            --prompt-for-dba-password --action schema \
+            --datadir etc/upgrade/<version>
+        /opt/rt3/sbin/rt-setup-database --dba <dba> \
             --prompt-for-dba-password --action insert \
             --datadir etc/upgrade/<version>
 

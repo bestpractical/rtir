@@ -1,0 +1,1 @@
+UPDATE CustomFields SET Disabled = 0 WHERE Name LIKE '_RTIR_%';
