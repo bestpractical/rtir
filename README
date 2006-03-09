@@ -27,46 +27,47 @@ Full integration with RT 3.7.
 
 New Search UI
 
-	This includes a 3.7-style search UI, and menu changes to
-	accomodate this.  Instead of search results and criteria being
-	displayed on a single page, you can now choose the 'Refine'
-	menu option to refine your search and re-run it after you've
-	added all of your criteria. This also include extracting results
-    in RSS and spreadsheet formats.
+    This includes a 3.7-style search UI, and menu changes to
+    accomodate this.  Instead of search results and criteria being
+    displayed on a single page, you can now choose the 'Refine' menu
+    option to refine your search and re-run it after you've added all
+    of your criteria. This also includes extracting results to RSS and
+    spreadsheet formats.
 
 Configurable Search Results
 
-	Search result formats are configurable in RTIR_Config.pm, so you
-	can easily choose which fields you would like to have displayed
-	for RTIR searches.
+    Search result formats are configurable in the RTIR configuration
+    file, so you can easily choose which fields you would like to have
+    displayed for RTIR searches.
 
 Configurable RTIR home page
 
-    You can choose which one components (portlets) you want to see
-    on the RTIR's main page from list. That could be portlets specific
-    for RTIR or from RT-3.7 core.
+    You can choose which components (portlets) you want to see on
+    RTIR's main page, including portlets from both RTIR and core RT.
 
 Per user interface configuration
     
-    Previouse and other configuration options can be configured for
-    each user separately.
+    Users can change RT's appearance through their preferences,
+    including adjusting portlets, default search results, and ticket
+    transaction order.
 
 Integration between RTIR and RTFM
 
-    Now RTIR is distributed with add-rtfm-objects script that adds default
-    RTFM classes, templates and rights for better integration with RTIR.
+    Now RTIR is distributed with add-rtfm-objects script that adds
+    default RTFM classes, templates and rights for better integration
+    with RTIR.
 
 Create Incident with Investigation
 
-    New interface allow to create Incident and run Investigation
-    from the same page at once.
+    New interface allows the user to create an Incident and run an
+    Investigation from the same page..
 
-Incident Report can be linked to multiple Incidents.
+Incident Reports can be linked to multiple Incidents.
 
 Quick states filter
 
-    While browsing children linked to incident you can filter list by
-    state field.
+    While browsing children linked to an incident you can filter the
+    list by the their state.
 
 Bulk Abandon
 
@@ -74,30 +75,30 @@ Bulk Abandon
 
 Disable Blocks queue
     
-    Blocks queue and its functionality can be disabled in RTIR config
-    file.
+    Blocks queue and its functionality can be disabled in the RTIR
+    configuration file.
 
 Advanced operations with RTIR tickets
 
-    New 'Advanced' ticket's subtab allow to move misplaced tickets,
-    merge responses without ticket number in subject and do other
+    New 'Advanced' ticket's subtab allows the user to move misplaced
+    tickets, merge wayward responses, and do other low-level
     maintainance tasks.
 
 Business::SLA
 
-	Service Level Agreement (SLA) calculations are now handled by
-	the Business::SLA module, which offers more flexibility.  You
-	can specify SLAs with business minutes, real minutes, or both.
+    Service Level Agreement (SLA) calculations are now handled by the
+    Business::SLA module, which offers more flexibility.  You can
+    specify SLAs with business minutes, real minutes, or both.
 
 Scrips
 
-	Scrip actions and conditions are now in perl modules, so that
-	they're easier to customize.
+    RTIR-specific scrip actions and conditions are now in perl
+    modules, so they're easier to customize.
 
 Standardized Components
 
-	RTIR 1.2 uses more of RT's core components, making it easier
-	to customize and maintain.
+    RTIR 1.2 uses more of RT's core components, making it easier to
+    customize and maintain.
 
 
 REQUIRED PACKAGES:
