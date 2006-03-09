@@ -161,6 +161,11 @@ $path .= $m->comp( '/Elements/QueryString',
                  );
 $path .= "&$QueryString";
 
+$current_tab ||= 'RTIR/Search/Refine.html?'
+                 . $m->comp( '/Elements/QueryString', Queue => $Queue )
+                 .'&'. $QueryString
+                 .'&'. $m->comp( '/Elements/QueryString', ResultPage => $ResultPage );
+
 </%INIT>
 
 <%ARGS>
