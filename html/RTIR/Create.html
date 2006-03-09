@@ -161,6 +161,14 @@
     </td>
   </tr>
   <tr>
+    <td class="labeltop"><&|/l&>Customer</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/EditRTIRField, 
+         QueueObj => $QueueObj, 
+         Name => 'Customer' &>
+    </td>
+  </tr>
+  <tr>
     <td class="labeltop">
       <%loc("How Reported")%>:
     </td>
@@ -232,6 +240,15 @@
 	TicketObj => $TicketObj,
         QueueObj => $QueueObj, Name => 'WhereBlocked',
 	Default => $ARGS{'WhereBlocked-Value'} || RT->Config->Get('_RTIR_WhereBlocked_default'), &>
+    </td>
+  </tr>
+% } elsif ($Type eq "Investigation") {
+  <tr>
+    <td class="labeltop"><&|/l&>Customer</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/EditRTIRField, 
+         QueueObj => $QueueObj, 
+         Name => 'Customer' &>
     </td>
   </tr>
 % }

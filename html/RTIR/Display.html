@@ -62,6 +62,20 @@
   </tr>
 % if ($Type eq 'Report') {
   <tr>
+    <td class="label"><&|/l&>SLA</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/ShowRTIRField, 
+         Ticket => $Ticket, Name => 'SLA' &>
+    </td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Customer</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/ShowRTIRField, 
+         Ticket => $Ticket, Name => 'Customer' &>
+    </td>
+  </tr>
+  <tr>
     <td class="label">
       <%loc("How Reported")%>:
     </td>
@@ -77,13 +91,6 @@
     <td class="value" colspan="2">
       <& /RTIR/Elements/ShowRTIRField, 
 	Ticket => $Ticket, Name => 'ReporterType' &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>SLA</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/ShowRTIRField, 
-         Ticket => $Ticket, Name => 'SLA' &>
     </td>
   </tr>
 % } elsif ($Type eq "Block") {
@@ -117,6 +124,14 @@
       <& /RTIR/Elements/ShowRTIRField, 
          Ticket => $Ticket, 
 	 Name => 'WhereBlocked' &>
+    </td>
+  </tr>
+% } elsif ($Type eq "Investigation") {
+  <tr>
+    <td class="label"><&|/l&>Customer</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/ShowRTIRField, 
+         Ticket => $Ticket, Name => 'Customer' &>
     </td>
   </tr>
 % }

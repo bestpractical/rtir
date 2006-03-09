@@ -91,6 +91,14 @@
     </td>
   </tr>
   <tr>
+    <td class="labeltop"><&|/l&>Customer</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/EditRTIRField, 
+         TicketObj => $Ticket, 
+         Name => 'Customer' &>
+    </td>
+  </tr>
+  <tr>
     <td class="labeltop">
       <%loc("How Reported")%>:
     </td>
@@ -145,6 +153,15 @@
       <& /RTIR/Elements/EditRTIRField, 
          TicketObj => $Ticket, 
          Name => 'WhereBlocked' &>
+    </td>
+  </tr>
+% } elsif ($Type eq 'Investigation') {
+  <tr>
+    <td class="labeltop"><&|/l&>Customer</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/EditRTIRField, 
+         TicketObj => $Ticket, 
+         Name => 'Customer' &>
     </td>
   </tr>
 % }

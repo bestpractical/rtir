@@ -19,6 +19,20 @@
             },
         ],
     },
+    {
+        Name        => '_RTIR_Customer',
+        Type        => 'SelectMultiple',
+        Queue       => 'Incident Reports',
+        Disabled    => 0,
+        Values      => [ ],
+    },
+    {
+        Name        => '_RTIR_Customer',
+        Type        => 'SelectSingle',
+        Queue       => 'Investigations',
+        Disabled    => 0,
+        Values      => [ ],
+    },
 );
 
 # all CustomFields to update ACLs
@@ -86,6 +100,14 @@ my @CustomFieldsList = (
     {
         Name        => '_RTIR_WhereBlocked',
         Queue       => 'Blocks',
+    },
+    {
+        Name        => '_RTIR_Customer',
+        Queue       => 'Incident Reports',
+    },
+    {
+        Name        => '_RTIR_Customer',
+        Queue       => 'Investigations',
     },
 );
 for my $cf (@CustomFieldsList) {

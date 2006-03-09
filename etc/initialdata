@@ -283,6 +283,20 @@
         Queue       => 'Blocks',
         Disabled    => 0,
     },
+    {
+        Name        => '_RTIR_Customer',
+        Type        => 'SelectMultiple',
+        Queue       => 'Incident Reports',
+        Disabled    => 0,
+        Values      => [ ],
+    },
+    {
+        Name        => '_RTIR_Customer',
+        Type        => 'SelectSingle',
+        Queue       => 'Investigations',
+        Disabled    => 0,
+        Values      => [ ],
+    },
 );
 
 @ScripActions = (

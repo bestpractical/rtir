@@ -50,6 +50,15 @@ email addresses. These people <b>will</b> receive future updates.)</&></font></i
 </td></tr>
 % }
 
+% unless ( $SkipField{'Customer'} ) {
+<tr><td class="label"><&|/l&>Customer</&>:</td>
+<td class="value"><& /RTIR/Elements/EditRTIRField, 
+         QueueObj => $QueueObj, 
+         Name => 'Customer' &>
+</td></tr>
+% }
+
+
 % if ( $QueueObj || $ARGS{'TicketObj'} ) {
 % unless ( $SkipField{'CustomFields'} ) {
 <tr><td colspan="2"><& /Ticket/Elements/EditCustomFields,
@@ -111,9 +120,8 @@ my $value_cb = sub {
 
 if ( !$QueueObj ) {
     if ( my $queue = $value_cb->('Queue') ) {
-        my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
+        $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
         $QueueObj->Load( $queue );
-#        Abort( loc("Couldn't load queue '[_1]'.", $queue) );
     }
 }
 </%INIT>
