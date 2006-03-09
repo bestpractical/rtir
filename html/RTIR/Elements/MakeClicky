@@ -14,17 +14,16 @@ my $incident;
 my %cb = (
     default => sub {
         my ($value) = @_;
-        return qq{$value [<a href="$web_path/RTIR/Tools/Lookup.html?${url_params_once}q=${value}">}
-               .loc('lookup') .qq{</a>]};
+        return qq{<a href="$web_path/RTIR/Tools/Lookup.html?${url_params_once}q=${value}">$value</a>};
     },
     ip => sub {
         my ($value) = @_;
-        my $result .= qq{$value [<a href="$web_path/RTIR/Tools/Lookup.html?${url_params_once}type=ip&q=${value}">}
+        my $result .= qq{[<a href="$web_path/RTIR/Tools/Lookup.html?${url_params_once}type=ip&q=${value}">}
                       .loc('lookup IP') .q{</a>]};
         if ( $incident && !RT->Config->Get('RTIR_DisableBlocksQueue') ) {
             $result .= qq{[<a href="$web_path/RTIR/Create.html?Incident=$incident&Queue=Blocks&IP-Value=$value">block</a>]};
         }
-        return $result;
+        return $value . qq{ <span class="clickylink">$result</span>};
     },
     ipdecimal => sub {
         my ($value) = @_;
@@ -39,17 +38,17 @@ my %cb = (
             my $d = hex( substr( $hostnum, 6, 2 ) );
             "$a.$b.$c.$d";
         };
-        my $result = qq{$value [<a href="$web_path/RTIR/Tools/Lookup.html?${url_params_once}type=ip&q=$host">}
+        my $result = qq{[<a href="$web_path/RTIR/Tools/Lookup.html?${url_params_once}type=ip&q=$host">}
                      .loc('lookup [_1]', $host) .qq{</a>]};
         if ( $incident && !RT->Config->Get('RTIR_DisableBlocksQueue') ) {
-            $result .= qq{[<a href="$web_path/RTIR/Create.html?Incident=$incident&Queue=Blocks&IP-Value=$host">block</a>]};
+            $result .= qq{ [<a href="$web_path/RTIR/Create.html?Incident=$incident&Queue=Blocks&IP-Value=$host">block</a>]};
         }
-        return $result;
+        return $value . qq{ <span class="clickylink">$result</span>};
     },
     email => sub {
         my ($value) = @_;
         my ($pre, $post) = split /@/, $value, 2;
-        my $result = qq{$value [<a href="$web_path/RTIR/Tools/Lookup.html?${url_params_once}type=email&q=$value">}
+        my $result = qq{[<a href="$web_path/RTIR/Tools/Lookup.html?${url_params_once}type=email&q=$value">}
                       .loc('lookup email') .q{</a>]};
         if ( $incident ) {
             if ( $r->uri =~ /Lookup.html$/ ) {
@@ -58,26 +57,30 @@ my %cb = (
             $result .= qq{[<a href="$web_path/RTIR/Create.html?Incident=$incident&Queue=Investigations&Requestors=$value">}
                        .loc('Investigate to') .qq{</a>]};
         }
-        return $result .qq{[<a href="$web_path/RTIR/Tools/Lookup.html?${url_params_once}type=host&q=$post">}
+        $result .= qq{ [<a href="$web_path/RTIR/Tools/Lookup.html?${url_params_once}type=host&q=$post">}
                .loc('lookup "[_1]"', $post) .qq{</a>]};
+        return $value . qq{ <span class="clickylink">$result</span>};
     },
     url => sub {
         my ($value) = @_;
         my $uri  = URI::URL->new($value);
         my $host = $uri->host;
-        return qq{$value [<a target="new" href="$value">}. loc('open URL') .qq{</a>]}
+        my $result = qq{[<a target="new" href="$value">}. loc('open URL') .qq{</a>]}
             .qq{[<a href="$web_path/RTIR/Tools/Lookup.html?${url_params_once}type=host&q=$host">}
-            .loc('lookup "[_1]"', $host) .qq{</a>]}
+            .loc('lookup "[_1]"', $host) .qq{</a>]};
+        return $value . q{ <span class="clickylink">$result</span>};
     },
     noc => sub {
         my ($value) = @_;
-        return qq{$value [<a href="$web_path/RTIR/Tools/Lookup.html?${url_params_once}type=handle&q=$value">}
+        my $result = qq{[<a href="$web_path/RTIR/Tools/Lookup.html?${url_params_once}type=handle&q=$value">}
                .loc('lookup') .qq{</a>]};
+        return $value . qq{ <span class="clickylink">$result</span>};
     },
     host => sub {
         my ($value) = @_;
-        return qq{$value [<a href="$web_path/RTIR/Tools/Lookup.html?${url_params_once}type=host&q=$value">}
+        my $result = qq{[<a href="$web_path/RTIR/Tools/Lookup.html?${url_params_once}type=host&q=$value">}
                .loc('lookup host') .qq{</a>]};
+        return $value . qq{ <span class="clickylink">$result</span>};
     },
 );
 
