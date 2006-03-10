@@ -55,7 +55,7 @@ sub BusinessHours {
 
     my $bizhours = new Business::Hours;
     if ( RT->Config->Get('BusinessHours') ) {
-        $bizhours->business_hours( RT->Config->Get('BusinessHours') );
+        $bizhours->business_hours( %{ RT->Config->Get('BusinessHours') } );
     }
 
     return $bizhours;
