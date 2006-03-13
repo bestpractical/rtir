@@ -6,6 +6,7 @@ author('Best Practical Solutions <sales@bestpractical.com>');
 #description('RT extension for Incident Response');
 version('1.9.HEAD');
 
+requires('DBIx::SearchBuilder', 1.40);
 requires('Business::Hours');
 requires('Business::SLA');
 requires('Net::Whois::RIPE');
