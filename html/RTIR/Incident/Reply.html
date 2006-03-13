@@ -23,50 +23,51 @@
 %# 
 %# END LICENSE BLOCK
 <& /RTIR/Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
-<& Elements/LinkTabs, 
-    Queue => 'Incident Reports',
-    Ticket => $IncidentObj, 
-    current_tab => "RTIR/Incident/ShowChildren.html?Queue=Incident%20Reports&id=$id",
-    current_subtab => "RTIR/Incident/Reply.html?id=$id&All=$All&$QueryString",
-    Tab => 'Bulk Reply',
-    Title => $title &>
+<& /RTIR/Search/Elements/RefineTabs, 
+    Title          => $title,
+
+    Queue          => 'Incident Reports',
+    Ticket         => $IncidentObj,
+    BaseQuery      => $BaseQuery || "( $IRBaseQuery OR $InvBaseQuery )",
+    QueryString    => $QueryString,
+
+    current_tab    => $current_tab,
+    current_subtab => "RTIR/Search/Refine.html",
+&>
 
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="Reply.html" method="get">
 <input type="hidden" name="id" value="<% $id %>" />
-<input type="hidden" name="Status" value="<% $ARGS{'DefaultStatus'} %>" />
+<input type="hidden" name="Status" value="<% $DefaultStatus %>" />
 <input type="hidden" name="All" value="<% $All %>" />
 <input type="hidden" name="Query" value="<% $Query %>" />
-<input type="hidden" name="BaseQuery" value="<% $BaseQuery %>" />
 
 <h2><&|/l&>Reporters</&></h2>
 <& /RTIR/Search/Elements/ShowResults,
-    Queue       => 'Incident Reports',
-    BaseQuery   => $BaseQuery || $m->comp('/RTIR/Elements/BaseQuery', Queue => 'Incident Reports'),
-    Query       => $Query,
-    Format      => '__RTIR_Check__,'. $Format,
-    Rows        => $Rows,
-    Page        => $Page,
-    OrderBy     => $OrderBy,
-    Order       => $Order,
-    QueryString => $QueryString,
-    BaseURL     => $BaseURL,
+    Queue     => 'Incident Reports',
+    BaseURL   => $current_tab,
+    BaseQuery => $BaseQuery || $IRBaseQuery,
+    Query     => $Query,
+    Format    => '__RTIR_Check__,'. $Format,
+    Rows      => $Rows,
+    Page      => $Page,
+    OrderBy   => $OrderBy,
+    Order     => $Order,
 &>
 
 % if ( $All ) {
 <h2><&|/l&>Investigation Correspondents</&></h2>
 <& /RTIR/Search/Elements/ShowResults,
-    Queue       => 'Investigations',
-    BaseQuery   => $BaseQuery || $m->comp('/RTIR/Elements/BaseQuery', Queue => 'Investigations'),
-    Query       => $Query,
-    Format      => '__RTIR_Check__,'. $Format,
-    Rows        => $Rows,
-    Page        => $Page,
-    OrderBy     => $OrderBy,
-    Order       => $Order,
-    QueryString => $QueryString, 
-    BaseURL     => $BaseURL,
+    Queue     => 'Investigations',
+    BaseURL   => $current_tab,
+    BaseQuery => $BaseQuery || $InvBaseQuery,
+    Query     => $Query,
+    Format    => '__RTIR_Check__,'. $Format,
+    Rows      => $Rows,
+    Page      => $Page,
+    OrderBy   => $OrderBy,
+    Order     => $Order,
 &>
 % }
 
@@ -81,6 +82,9 @@ my (@results);
 my $IncidentObj = LoadTicket( $id );
 $id = $ARGS{'id'} = $IncidentObj->id;
 
+# XXX: clear radio, checkboxes from format
+$Format =~ s/__RTIR_(?:Radio|Check)__,//;
+
 my $QueryString = $m->comp( '/Elements/QueryString',
                             Query => $Query,
                             Format => $Format,
@@ -90,11 +94,11 @@ my $QueryString = $m->comp( '/Elements/QueryString',
                             Page => $Page);
 
 my ($title, $SubmitCaption, $SubmitLabel);
-if ($ARGS{'DefaultStatus'} eq 'resolved') {
+if ($DefaultStatus eq 'resolved') {
     $title = loc("Resolve Incident #[_1] (including children)", $id);
     $SubmitCaption = loc("Resolve Incident");
     $SubmitLabel = loc("Resolve");
-} elsif ($ARGS{'DefaultStatus'} eq 'rejected') {
+} elsif ($DefaultStatus eq 'rejected') {
     $title = loc("Abandon Incident #[_1] (including children)", $id);
     $SubmitCaption = loc("Abandon Incident");
     $SubmitLabel = loc("Abandon");
@@ -107,13 +111,6 @@ if ($ARGS{'DefaultStatus'} eq 'resolved') {
         $title = loc("Incident #[_1]: Reply to Reporters", $id);
     }
 }
-
-
-
-# Iterate through the ARGS hash and remove anything with a null value.
-map (!$ARGS{$_} && (delete $ARGS{$_}), keys %ARGS);
-
-Abort(loc("No search to operate on.")) unless ($session{'tickets'});
 
 if ( $SubmitTicket ) {
     foreach my $id( @SelectedTickets ) {
@@ -143,20 +140,38 @@ if ( $SubmitTicket ) {
     push @results, ProcessTicketBasics( TicketObj => $IncidentObj, ARGSRef => \%ARGS );
 }
 
+my ($InvBaseQuery, $IRBaseQuery );
+unless ( $BaseQuery ) {
+    $InvBaseQuery = join ' AND ', map "( $_ )", grep $_,
+        $m->comp('/RTIR/Elements/BaseQuery', Queue => 'Investigations'), "MemberOf = $id";
+    $IRBaseQuery = join ' AND ', map "( $_ )", grep $_,
+        $m->comp('/RTIR/Elements/BaseQuery', Queue => 'Incident Reports'), "MemberOf = $id";
+}
+
+my $current_tab = "RTIR/Incident/Reply.html?".
+    $m->comp('/Elements/QueryString',
+        id            => $id,
+        All           => $All,
+        DefaultStatus => $DefaultStatus,
+        Action        => $Action,
+    );
+
 </%INIT>
 
 <%ARGS>
 $id              => undef
 $All             => 0
-$BaseURL         => RT->Config->Get('WebPath') . "/RTIR/Incident/Reply.html?DefaultStatus=stalled&id=$id"
+$DefaultStatus   => ''
+$Action          => 'Correspond'
+
 $BaseQuery       => undef
-$Query           => "CF.{_RTIR_State} = 'open' AND MemberOf = $id";
-$Format          => RT->Config->Get('RTIRSearchResultFormats')->{'BulkReply'};
+$Query           => "CF.{_RTIR_State} = 'open'"
+$Format          => RT->Config->Get('RTIRSearchResultFormats')->{'BulkReply'}
 $Rows            => 0
 $Page            => 1
 $OrderBy         => 'id'
 $Order           => 'ASC'
-$Action          => 'Correspond'
+
 @SelectedTickets => ()
-$SubmitTicket    => 1
+$SubmitTicket    => 0
 </%ARGS>

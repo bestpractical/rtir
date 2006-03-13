@@ -32,12 +32,11 @@
     current_subtab => "RTIR/Split.html?Ticket=".$TicketObj->Id,
 &>
 % } elsif ( $Incident ) {
-<& "/RTIR/Incident/Elements/LinkTabs",
+<& "/RTIR/Search/Elements/RefineTabs",
     Title          => $Title,
     Ticket         => $IncidentObj,
     Queue          => $Queue,
     current_tab    => "RTIR/Create.html?Incident=$Incident&$EscapedQueue",
-    current_subtab => "RTIR/Create.html?Incident=$Incident&$EscapedQueue",
 &>
 % } else {
 <& "/RTIR/".$Type."/Elements/Tabs",
@@ -97,8 +96,8 @@
     <td>
       <& /Elements/SelectOwner, 
           Name => "Owner", 
-	  QueueObj => $QueueObj, 
-	  Default => $ARGS{Owner}||$session{'CurrentUser'}->Id||undef &>
+          QueueObj => $QueueObj, 
+          Default => $ARGS{Owner}||$session{'CurrentUser'}->Id||undef &>
     </td>
   </tr>
   <tr>
@@ -114,9 +113,9 @@
     <td colspan="2">
       <table>
       <tr>
-	<td><input size="3" name="TimeWorked"<% $ARGS{TimeWorked} && " value=\"$ARGS{TimeWorked}\""  %> /></td>
+        <td><input size="3" name="TimeWorked"<% $ARGS{TimeWorked} && " value=\"$ARGS{TimeWorked}\""  %> /></td>
         <td align="right"><&|/l&>Time Left</&>:</td>
-	<td><input size="3" name="TimeLeft"<% $ARGS{TimeLeft} && " value=\"$ARGS{TimeLeft}\"" %> /></td>
+        <td><input size="3" name="TimeLeft"<% $ARGS{TimeLeft} && " value=\"$ARGS{TimeLeft}\"" %> /></td>
       </tr>
       </table>
     </td>     
@@ -177,20 +176,20 @@
         <tr>
           <td>
             <& /RTIR/Elements/EditRTIRField, 
-	      TicketObj => $TicketObj,
+              TicketObj => $TicketObj,
               QueueObj => $QueueObj, 
-	      Name => 'HowReported',
-	      Default => $ARGS{'HowReported-Value'} || RT->Config->Get('_RTIR_HowReported_default') &>
+              Name => 'HowReported',
+              Default => $ARGS{'HowReported-Value'} || RT->Config->Get('_RTIR_HowReported_default') &>
           </td>
     <td class="labeltop">
       <%loc("Reporter Type")%>:
     </td>
     <td class="value" colspan="2">
       <& /RTIR/Elements/EditRTIRField, 
-	TicketObj => $TicketObj,
+        TicketObj => $TicketObj,
         QueueObj => $QueueObj, 
-	Name => 'ReporterType',
-	Default => $ARGS{'ReporterType-Value'} || RT->Config->Get('_RTIR_ReporterType_default'), &>
+        Name => 'ReporterType',
+        Default => $ARGS{'ReporterType-Value'} || RT->Config->Get('_RTIR_ReporterType_default'), &>
     </td>
         </tr>
       </table>
@@ -203,10 +202,10 @@
     </td>
     <td class="value">
       <& /RTIR/Elements/EditRTIRField, 
-	TicketObj => $TicketObj,
+        TicketObj => $TicketObj,
         QueueObj => $QueueObj, 
-	Name => 'IP',
-	Default => $ARGS{'IP-Value'} || RT->Config->Get('_RTIR_IP_default'), &>
+        Name => 'IP',
+        Default => $ARGS{'IP-Value'} || RT->Config->Get('_RTIR_IP_default'), &>
     </td>
   </tr>
   <tr>
@@ -215,9 +214,9 @@
     </td>
     <td class="value" colspan="2">
       <& /RTIR/Elements/EditRTIRField, 
-	TicketObj => $TicketObj,
+        TicketObj => $TicketObj,
         QueueObj => $QueueObj, Name => 'Netmask',
-	Default => $ARGS{'Netmask-Value'} || RT->Config->Get('_RTIR_Netmask_default'), &>
+        Default => $ARGS{'Netmask-Value'} || RT->Config->Get('_RTIR_Netmask_default'), &>
     </td>
   </tr>
   <tr>
@@ -237,9 +236,9 @@
     </td>
     <td class="value" colspan="2">
       <& /RTIR/Elements/EditRTIRField, 
-	TicketObj => $TicketObj,
+        TicketObj => $TicketObj,
         QueueObj => $QueueObj, Name => 'WhereBlocked',
-	Default => $ARGS{'WhereBlocked-Value'} || RT->Config->Get('_RTIR_WhereBlocked_default'), &>
+        Default => $ARGS{'WhereBlocked-Value'} || RT->Config->Get('_RTIR_WhereBlocked_default'), &>
     </td>
   </tr>
 % } elsif ($Type eq "Investigation") {
@@ -256,7 +255,7 @@
     <td colspan="2">
       <& /Ticket/Elements/EditCustomFields, 
         TicketObj => $TicketObj, 
-	QueueObj => $QueueObj &>
+        QueueObj => $QueueObj &>
     </td>
   </tr>
 
@@ -302,17 +301,17 @@
   </td>
   <td valign="top">
     <& /Widgets/TitleBoxStart, title => loc("Dates"),
-		title_class=> 'inverse',  
-		 color => "#663366" &>
+                title_class=> 'inverse',  
+                 color => "#663366" &>
 
     <table border="0">
       <tr>
         <td align="right"><&|/l&>Starts</&>:</td>
-	  <td><input size="10" name="Starts" value="<% $ARGS{Starts} || '' %>" /></td>
+          <td><input size="10" name="Starts" value="<% $ARGS{Starts} || '' %>" /></td>
       </tr>
       <tr>
         <td align="right"><&|/l&>Due</&>:</td>
-	<td><input size="10" name="Due" value="<% $ARGS{Due} || '' %>" /></td>
+        <td><input size="10" name="Due" value="<% $ARGS{Due} || '' %>" /></td>
       </tr>
     </table>
     <& /Widgets/TitleBoxEnd &>
@@ -335,8 +334,7 @@ $QueueObj->Load( $Queue ) || Abort( loc("Queue could not be loaded.") );
 
 my ($Type) = $m->comp('/RTIR/Elements/Type', Queue => $Queue );
 if ($Type eq 'Incident') {
-    $m->comp("/RTIR/Incident/Create.html", %ARGS);
-    $m->abort;
+    return $m->comp("/RTIR/Incident/Create.html", %ARGS);
 }
 if ($Type eq 'Block' && RT->Config->Get('RTIR_DisableBlocksQueue') ) {
     Abort(loc("Blocks queue is disabled via config file"));
@@ -355,7 +353,6 @@ my ($Title, $IncidentObj);
 my $TicketObj = $ARGS{'TicketObj'};
 
 if ( $Incident ) {
-    $IncidentObj = new RT::Ticket( $session{'CurrentUser'} );
     $IncidentObj = LoadTicket( $Incident );
     $Subject ||= $IncidentObj->Subject;
 }

@@ -24,16 +24,11 @@
 %# END LICENSE BLOCK
 <& '/RTIR/Elements/Header', Title => $title &>
 <& '/RTIR/Search/Elements/RefineTabs',
-   path => $path,
-   Queue => $Queue,
-   current_tab => $current_tab, 
-   Title => $title,
-   Format => $Format,
-   Query => $Query,
-   Rows => $Rows,
-   OrderBy => $OrderBy,
-   Order => $Order,
+   Title       => $title,
+   Queue       => $Queue,
+   BaseQuery   => $BaseQuery,
    QueryString => $QueryString,
+   current_tab => $current_tab,
 &>
 
 <& /Elements/ListActions, actions => \@results &>
@@ -43,6 +38,7 @@
 
 <& /RTIR/Search/Elements/ShowResults,
     Queue     => $Queue,
+    BaseURL   => $BaseURL,
     BaseQuery => $BaseQuery,
     Query     => $Query,
     Format    => '__RTIR_Check__,'. $Format,
@@ -50,7 +46,6 @@
     Page      => $Page,
     OrderBy   => $OrderBy,
     Order     => $Order,
-    BaseURL   => $BaseURL,
 &>
 
 % if( $session{'tickets'}->Count ) {
@@ -71,8 +66,10 @@
 </form>
 
 <%INIT>
-my $title         = loc("Reject Incident Reports");
-my $SubmitCaption = loc("Reject selected incident reports");
+my $title = loc("Reject Incident Reports");
+
+# XXX: clear radio, checkboxes from format
+$Format =~ s/__RTIR_(?:Radio|Check)__,//;
 
 my ( @results );
 if ( $BulkReject ) {
@@ -142,30 +139,23 @@ if ( $BulkReject ) {
     }
 }
 
-my $QueryString = $m->comp(
-    '/Elements/QueryString',
+my $QueryString = $m->comp('/Elements/QueryString',
     Query     => $Query,
     Format    => $Format,
     Rows      => $Rows,
+    Page      => $Page,
     OrderBy   => $OrderBy,
     Order     => $Order,
-    Page      => $Page
 );
-$current_tab ||= "RTIR/Report/BulkReject.html?"
-    . $m->comp('/Elements/QueryString', Queue => $Queue)
-    . "&$QueryString";
-
-my $path = "RTIR/Search/Refine.html?$QueryString&";
-$path .= $m->comp( '/Elements/QueryString',
-                   ResultPage  => $BaseURL,
-                   current_tab => $current_tab,
-                   Queue       => $Queue,
-                 );
+my $BaseURL = "RTIR/Report/BulkReject.html?"
+    . $m->comp('/Elements/QueryString', Queue => $Queue, Status => $Status);
+my $current_tab = "$BaseURL&$QueryString";
 
 </%INIT>
 <%ARGS>
 $Status              => 'rejected'
 $Queue               => 'Incident Reports'
+
 $BaseQuery           => $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue )
 $Query               => $m->comp( '/RTIR/Elements/NewQuery',  Queue => $Queue )
 $Format              => RT->Config->Get('RTIRSearchResultFormats')->{'RejectReports'};
@@ -173,9 +163,8 @@ $Rows                => 50
 $Page                => 1
 $OrderBy             => 'id'
 $Order               => 'ASC'
-$BaseURL             => RT->Config->Get('WebPath') . "/RTIR/Report/BulkReject.html?"
-$current_tab         => undef
+
 @SelectedTickets     => ()
 $BulkRejectAndReturn => 0
-$BulkReject          => $BulkRejectAndReturn
+$BulkReject          => $BulkRejectAndReturn? 1: 0
 </%ARGS>

@@ -23,11 +23,11 @@
 %# 
 %# END LICENSE BLOCK
 <& /RTIR/Elements/Header, Title => $Title &>
-<& /RTIR/Incident/Elements/LinkTabs, 
-    Queue => $Queue,
-    Ticket => $Incident,
-    current_tab => "RTIR/Incident/ShowChildren.html?Queue=$Queue&id=". $Incident->id,
-    Title => $Title,
+<& /RTIR/Search/Elements/RefineTabs, 
+    Title             => $Title,
+    Ticket            => $Incident,
+    Queue             => $Queue,
+    current_tab       => $current_tab,
 &>
 
 <& /Elements/ListActions, actions => \@results &>
@@ -39,14 +39,14 @@
 % }
 
 <form action="ShowChildren.html" method="post">
-<input type="hidden" name="id" value="<%$Incident->id%>" />
-<input type="hidden" name="Queue" value="<%$Queue%>" />
+<input type="hidden" name="id" value="<% $id %>" />
+<input type="hidden" name="Queue" value="<% $Queue %>" />
 
 <& /RTIR/Elements/ShowChildren,
     Ticket             => $Incident,
     Queue              => $Queue,
     States             => [@States],
-    FullList           => RT->Config->Get('WebPath')."/RTIR/Incident/ShowChildren.html?Queue=$Queue&id=".$Incident->id,
+    FullList           => RT->Config->Get('WebPath')."/RTIR/Incident/ShowChildren.html?Queue=$Queue&id=$id",
     Delete             => $delete,
     ShowHeader         => 1,
     ShowStatesSelector => 1,
@@ -56,28 +56,25 @@
 </form>
 
 <%INIT>
-unless ($id) {
-    Abort('No incident specified');
-}
-
 my @results;
 my $Incident = LoadTicket($id);
+$id = $ARGS{'id'} = $Incident->Id;
 
 if( $ARGS{'Unlink'} ) {
     # translate the checkbox args to what ProcessTicketLinks expects
-    $ARGS{'DeleteLink-' . $_ . '-MemberOf-'} = 1 for @SelectedTickets;
+    $ARGS{'DeleteLink-'. $_ .'-MemberOf-'} = 1 for @SelectedTickets;
     push @results, ProcessTicketLinks( TicketObj => $Incident, ARGSRef => \%ARGS );
 }
 
-unless ($Incident->CurrentUserHasRight('ShowTicket')) {
+unless ( $Incident->CurrentUserHasRight('ShowTicket') ) {
     Abort("No permission to view ticket");
 }
 
-my $Title = loc("$Queue for Incident #[_1]: [_2]", $Incident->Id, $Incident->Subject);
+my $Title = loc("$Queue for Incident #[_1]: [_2]", $id, $Incident->Subject);
 
 my $delete = $Incident->CurrentUserHasRight('ModifyTicket') ? 1: 0;
 
-my $children = new RT::Tickets($session{'CurrentUser'});
+my $children = RT::Tickets->new( $session{'CurrentUser'} );
 $children->FromSQL( $m->comp( '/RTIR/Elements/ChildrenQuery',
                               Queue  => $Queue,
                               Ticket => $Incident,
@@ -86,17 +83,20 @@ $children->FromSQL( $m->comp( '/RTIR/Elements/ChildrenQuery',
                   );
 
 my @possible_states = $m->comp("/RTIR/Elements/States", Queue => $Queue, Inactive => 1 );
-my $all_children = new RT::Tickets($session{'CurrentUser'});
+my $all_children = RT::Tickets->new( $session{'CurrentUser'} );
 $all_children->FromSQL( $m->comp( '/RTIR/Elements/ChildrenQuery',
                                   Queue  => $Queue,
                                   Ticket => $Incident,
                                   States => [@possible_states],
                                 )
                       );
+my $current_tab = 'RTIR/Incident/ShowChildren.html?'
+    . $m->comp( '/Elements/QueryString', id => $id, Queue => $Queue );
 </%INIT>
 <%ARGS>
-$id => undef
-$Queue => 'Incident Reports'
+$id              => undef
+$Queue           => 'Incident Reports'
+
 @SelectedTickets => ()
-@States => ()
+@States          => ()
 </%ARGS>

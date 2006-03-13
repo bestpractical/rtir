@@ -23,14 +23,14 @@
 %# 
 %# END LICENSE BLOCK
 <& /RTIR/Elements/Header, 
-    Title => $title, 
-    Refresh => $session{'tickets_refresh_interval'} &>
-
-<& Elements/LinkTabs, 
-    Ticket => $IncidentObj, 
-    current_subtab => 'RTIR/Incident/LinkArticles.html?id='.$IncidentObj->id,
-    Tab => loc('Link article'),
     Title => $title,
+    Refresh => $session{'tickets_refresh_interval'},
+&>
+
+<& /RTIR/Search/Elements/RefineTabs, 
+    Title       => $title,
+    Ticket      => $IncidentObj,
+    current_tab => "RTIR/Incident/LinkArticles.html?id=$id",
 &>
 
 <form action="LinkArticles.html" method="get">

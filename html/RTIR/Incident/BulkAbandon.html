@@ -24,16 +24,11 @@
 %# END LICENSE BLOCK
 <& '/RTIR/Elements/Header', Title => $title &>
 <& '/RTIR/Search/Elements/RefineTabs',
-    path        => $path,
-    Queue       => $Queue,
-    current_tab => $current_tab, 
     Title       => $title,
-    Format      => $Format,
-    Query       => $Query,
-    Rows        => $Rows,
-    OrderBy     => $OrderBy,
-    Order       => $Order,
+    Queue       => $Queue,
     QueryString => $QueryString,
+    BaseQuery   => $BaseQuery,
+    current_tab => $current_tab, 
 &>
 
 <& /Elements/ListActions, actions => \@results &>
@@ -41,11 +36,11 @@
 <form action="<%RT->Config->Get('WebPath')%>/RTIR/Incident/BulkAbandon.html" method="post">
 <input type="hidden" name="Status" value="<% $Status %>" />
 
-<%perl>
+<%PERL>
 # XXX: cache result set to check if get empty results
-my $result_set = $m->scomp(
-    '/RTIR/Search/Elements/ShowResults',
+my $result_set = $m->scomp('/RTIR/Search/Elements/ShowResults',
     Queue       => $Queue,
+    BaseURL     => $BaseURL,
     BaseQuery   => $BaseQuery,
     Query       => $Query,
     Format      => '__RTIR_Check__,'. $Format,
@@ -53,9 +48,8 @@ my $result_set = $m->scomp(
     OrderBy     => $OrderBy,
     Order       => $Order,
     Page        => $Page,
-    BaseURL     => $BaseURL,
 );
-</%perl>
+</%PERL>
 
 % if( $session{'tickets'}->Count ) {
 % $m->out( $result_set );
@@ -97,7 +91,7 @@ if ( $ARGS{'BulkAbandon'} ) {
     my @tempresults;
 
     foreach my $id ( @SelectedTickets ) {
-        $m->out('<!--  Processing <%$t->id%> -->'); $m->flush_buffer;
+        $m->out('<!--  Processing <% $t->id %> -->'); $m->flush_buffer;
 
         my $t = RT::Ticket->new( $session{'CurrentUser'} );
         $t->Load( $id );
@@ -123,7 +117,7 @@ if ( $ARGS{'BulkAbandon'} ) {
                 push @tempresults, ProcessUpdateMessage(TicketObj => $member, ARGSRef => \%ARGS );
             }
         }
-        
+
         # process status updates
         my @tmp;
         my $members = new RT::Tickets( $t->CurrentUser );
@@ -152,14 +146,8 @@ if ( $ARGS{'BulkAbandon'} ) {
          @tempresults;
 
     # force redo search if we changed tickets
-    $session{'tickets'}->RedoSearch;
+    $session{'tickets'}->RedoSearch if $session{'tickets'};
 }
-
-
-# FIXME: Doesn't work as expected with refined search.
-# also is not clear should it use Query from
-# /RTIR/Search/Results.html?Queue=Incident%20Reports or 
-# own? and can it be refined at all?
 
 # We can only reject new tickets, so set the states.
 my $QueryString = $m->comp(
@@ -171,30 +159,23 @@ my $QueryString = $m->comp(
     Order   => $Order,
     Page    => $Page
 );
-$current_tab ||= "RTIR/Incident/BulkAbandon.html?"
-    . $m->comp('/Elements/QueryString', Queue => $Queue)
-    . "&$QueryString";
-
-my $path = "RTIR/Search/Refine.html?$QueryString&";
-$path .= $m->comp( '/Elements/QueryString',
-                   ResultPage  => $BaseURL,
-                   current_tab => $current_tab,
-                   Queue       => $Queue,
-                 );
+my $BaseURL = "RTIR/Incident/BulkAbandon.html?"
+    . $m->comp('/Elements/QueryString', Queue => $Queue, Status => $Status);
+my $current_tab = $BaseURL ."&$QueryString";
 
 </%INIT>
 <%ARGS>
-$Status    => 'rejected'
-$Queue     => 'Incidents'
-$BaseQuery => $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue );
-$Query     => $m->comp( '/RTIR/Elements/NewQuery', Queue => $Queue, Inactive => 1 );
-$Format    => RT->Config->Get('RTIRSearchResultFormats')->{'AbandonIncidents'};
-$Rows      => 50
-$Page      => 1
-$OrderBy   => 'id'
-$Order     => 'ASC'
-$BaseURL   => RT->Config->Get('WebPath') . "/RTIR/Incident/BulkAbandon.html"
-$current_tab => undef
+$Status          => 'rejected'
+$Queue           => 'Incidents'
+
+$BaseQuery       => $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue );
+$Query           => $m->comp( '/RTIR/Elements/NewQuery', Queue => $Queue, Inactive => 1 );
+$Format          => RT->Config->Get('RTIRSearchResultFormats')->{'AbandonIncidents'};
+$Rows            => 50
+$Page            => 1
+$OrderBy         => 'id'
+$Order           => 'ASC'
+
 @SelectedTickets => ()
-@ReplyToAll => ()
+@ReplyToAll      => ()
 </%ARGS>

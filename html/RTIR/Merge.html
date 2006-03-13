@@ -25,99 +25,93 @@
 <& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
 
 <& '/RTIR/Search/Elements/RefineTabs',
-   path => $path,
-   Ticket => $Ticket,
-   id => $id, 
-   current_subtab => "RTIR/Merge.html?id=".$Ticket->Id. "$QueryString", 
-   Queue => $Queue,
-   Title => $title,
-   Format => $Format,
-   Query => $Query,
-   Rows => $Rows,
-   OrderBy => $OrderBy,
-   Order => $Order,
-   QueryString => $QueryString,
+    Title          => $title,
+    Ticket         => $Ticket,
+    Queue          => $Queue,
+    BaseQuery      => $BaseQuery,
+    QueryString    => $QueryString,
+
+    current_tab    => $current_tab,
+    current_subtab => 'RTIR/Search/Refine.html',
 &>
 
 <& /Elements/ListActions, actions => \@results &>
 
-% if (!$Ticket->CurrentUserHasRight('ModifyTicket')) {
-<%loc("You are not allowed to merge this [_1].", $Type)%>
+% unless ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
+<% loc("You are not allowed to merge this [_1].", $Type) %>
 %    $m->abort();
 % }
 
-<form action="<%RT->Config->Get('WebPath')%>/RTIR/Merge.html" method="post">
-<input type="hidden" name="id" value="<%$Ticket->id%>" />
-<input type="hidden" name="<%$Ticket->Id%>-MergeInto" />
+<form action="<% RT->Config->Get('WebPath') %>/RTIR/Merge.html" method="post">
+<input type="hidden" name="id" value="<% $id %>" />
+<input type="hidden" name="<% $id %>-MergeInto" />
 
 <& /RTIR/Search/Elements/ShowResults, 
-    Queue => $Queue,
-    Query => $Query,
-    QueryString => $QueryString, 
-    BaseURL => RT->Config->Get('WebPath')."/RTIR/Merge.html?id=$id&",
-    Format => '__RTIR_Radio__,'. $Format,
-    &>
-
-<hr>
+    Queue       => $Queue,
+    BaseQuery   => $BaseQuery,
+    Query       => $Query,
+    Format      => '__RTIR_Radio__,'. $Format,
+    Rows        => $Rows,
+    Page        => $Page,
+    OrderBy     => $OrderBy,
+    Order       => $Order,
+    BaseURL     => $current_tab,
+&>
 
 <& /Elements/Submit, Caption=> loc('Merge into selected Ticket'), Label => loc("Merge") &>
 </form>
 
 <%INIT>
-$Format = RT->Config->Get('RTIRSearchResultFormats')->{'Merge'};
-
 my $Ticket = LoadTicket($id);
+$id = $ARGS{'id'} = $Ticket->id;
+my ($Type) = $m->comp( 'Elements/Type', TicketObj => $Ticket );
 my $Queue = $Ticket->QueueObj->Name;
 
-my ($Type) = $m->comp('Elements/Type', Ticket => $Ticket->Id);
+# XXX: clear radio, checkboxes from format
+$Format =~ s/__RTIR_(?:Radio|Check)__,//;
 
-my $merge = $ARGS{'SelectedTicket'};
-my ($MergeTicket, @results);
-
-if ($merge) {
-  $ARGS{$id.'-MergeInto'} = $merge;
-  $MergeTicket = LoadTicket($merge);
-  if ($MergeTicket->QueueObj->id ne $Ticket->QueueObj->id) {
-    push @results, loc("Merge failed: Ticket #[_1] is not the right type", $MergeTicket->Id);
-  } else {
-    @results = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
-  }
+my (@results);
+if ( $SelectedTicket ) {
+    $ARGS{ $id .'-MergeInto' } = $SelectedTicket;
+    my $MergeTicket = LoadTicket( $SelectedTicket );
+    if ( $MergeTicket->QueueObj->id ne $Ticket->QueueObj->id ) {
+        push @results, loc("Merge failed: Ticket #[_1] is not the right type", $MergeTicket->Id );
+    } else {
+        push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
+    }
 }
 
 my $title = loc("Merge [_1] #[_2]: [_3]", $Type, $id, $Ticket->Subject);
 
-if (!$Query) {
-    $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
-}
-
-my $QueryString = "&".$m->comp('/Elements/QueryString',
-                               Query => $Query,
-                               Format => $Format,
-                               Rows => $Rows,
-                               OrderBy => $OrderBy,
-                               Order => $Order,
-                               Page => $Page);
-
-if (!$BaseQuery) {
+$Query ||= $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
+unless ( $BaseQuery ) {
     $BaseQuery = $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
-    $BaseQuery .= " AND id != $id"
+    $BaseQuery = join ' AND ', map "( $_ )", grep $_, $BaseQuery, " id != $id";
 }
 
-$Query = "$BaseQuery AND ( $Query )";
+my $QueryString = $m->comp('/Elements/QueryString',
+    Query   => $Query,
+    Format  => $Format,
+    Rows    => $Rows,
+    Page    => $Page,
+    OrderBy => $OrderBy,
+    Order   => $Order,
+);
 
-my $path = "RTIR/Search/Refine.html?ResultPage=$BaseURL&current_tab=$current_tab&Queue=" . $Ticket->QueueObj->Name . "&id=$id&$QueryString";
+my $current_tab = "RTIR/Merge.html?id=$id";
 
 </%INIT>
       
 <%ARGS>
-$BaseQuery => undef
-$Query => undef
-$Format => undef 
-$Rows => 50
-$Page => 1
-$OrderBy => 'id'
-$Order => 'ASC'
-$id => undef
-$BaseURL => RT->Config->Get('WebPath') . '/RTIR/Merge.html'
-$current_tab => 'RTIR/Merge.html'
+$id             => undef
+
+$BaseQuery      => undef
+$Query          => undef
+$Format         => RT->Config->Get('RTIRSearchResultFormats')->{'Merge'} 
+$Rows           => 50
+$Page           => 1
+$OrderBy        => 'id'
+$Order          => 'ASC'
+
+$SelectedTicket => undef
 </%ARGS>
