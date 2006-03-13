@@ -30,14 +30,15 @@
 &>
 
 <& /RTIR/Search/Elements/ShowResults,
-    Queue     => $Queue,
-    BaseQuery => $BaseQuery,
-    Query     => $Query,
-    Format    => $Format,
-    Rows      => $Rows,
-    Page      => $Page,
-    OrderBy   => $OrderBy,
-    Order     => $Order,
+    Queue        => $Queue,
+    BaseQuery    => $BaseQuery,
+    Query        => $Query,
+    Format       => $Format,
+    Rows         => $Rows,
+    Page         => $Page,
+    OrderBy      => $OrderBy,
+    Order        => $Order,
+    AllowSorting => 0,
 &>
 
 <a href="<% RT->Config->Get('WebPath') %>/RTIR/Report/BulkReject.html?<% $EscapedQueue %>&<% $QueryString %>">[<%loc("Bulk Reject")%>]</a>
@@ -70,8 +71,8 @@ my $QueryString = $m->comp('/Elements/QueryString',
 $Queue     => 'Incident Reports'
 $BaseQuery => $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue )
 $Query     => undef
-$Format    => RT->Config->Get('RTIRSearchResultFormats')->{'NewReports'} 
-$Rows      => 50
+$Format    => RT->Config->Get('RTIRSearchResultFormats')->{'NewReports'}
+$Rows      => RT->Config->Get('DefaultSummaryRows', $session{'CurrentUser'})
 $Page      => 1
 $OrderBy   => 'Due'
 $Order     => 'ASC'
