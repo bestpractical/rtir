@@ -1,12 +1,142 @@
-<& '/RTIR/'.$Type.'/Elements/Tabs', 
-    current_tab => 'RTIR/Search/Refine.html',
-    %ARGS
+<& '/RTIR/' . $Type . '/Elements/Tabs',
+    %ARGS,
+    current_tab    => $current_tab,
+    appendtabs     => $appendtabs,
+    subtabs        => $subtabs,
+    current_subtab => $current_subtab,
+    
 &>
 
 <%INIT>
-my ($Type) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
+my $split_uri = sub {
+    my $path = shift;
+    my @args;
+    ($path, @args) = split /[?&=]/, $path;
+    my %args;
+    while( my $k = shift @args ) {
+        my $v = shift @args;
+        s/%([0-9A-Z][0-9A-Z])/chr(hex($1))/gei for ($k, $v);
+        if ( exists $args{ $k } ) {
+            $args{ $k } = [ $args{ $k } ] unless ref $args{ $k };
+            push @{$args{ $k }}, $v;
+        }
+        else {
+            $args{ $k } = $v;
+        }
+    }
+    return $path, %args;
+};
+
+# if there is no args passed then parse them from URL
+unless( $id || $Ticket || $Queue ) {
+    my ($path, %args) = $split_uri->($current_tab);
+    ($id, $Queue) = @ARGS{'id', 'Queue'} = @args{'id', 'Queue'};
+}
+
+my ($QueueType) = $m->comp('/RTIR/Elements/Type', Queue => $Queue );
+my ($TicketType) = $m->comp('/RTIR/Elements/Type', Ticket => $id, TicketObj => $Ticket );
+my $Type = $TicketType || $QueueType;
+
+my %appendable_tab = (
+    'RTIR/Incident/ShowChildren.html' => {
+        title => loc('Children: [_1]', $Queue),
+    },
+    'RTIR/Incident/LinkChildren.html' => {
+        title => loc('Link [_1]', $QueueType),
+    },
+    'RTIR/Incident/LinkToIncident.html' => {
+        title => loc('Link to Incident'),
+    },
+    'RTIR/Incident/Reply.html' => {
+        title => loc('Bulk reply'),
+    },
+    'RTIR/Incident/LinkArticles.html' => {
+        title => loc('Link article'),
+    },
+    'RTIR/Create.html' => {
+        title => loc('Create linked [_1]', $QueueType),
+    },
+);
+
+my %with_subtab = (
+    'RTIR/Merge.html' => 1,
+);
+
+my $refine_path = '';
+if ( $current_subtab ) {
+    $refine_path = "$current_subtab?$QueryString&";
+    $refine_path .= $m->comp('/Elements/QueryString',
+        BaseQuery  => $BaseQuery,
+        ResultPage => $current_tab,
+    );
+}
+
+my ($current_tab_base, $current_tab_args) = split /\?/, $current_tab, 2;
+
+my ($appendtabs, $subtabs);
+if ( $appendable_tab{ $current_tab_base } ) {
+    # append tab and add refine subtab if needed
+    my $path = $current_tab;
+    if ( $QueryString ) {
+        $path .= ($path =~ /\?/)? '&': '?';
+        $path .= $QueryString;
+    }
+
+    $appendtabs->{'_I'} = {
+        path           => $path,
+        title          => $appendable_tab{ $current_tab_base }->{'title'},
+    };
+
+    if ( $current_subtab ) {
+        $appendtabs->{'_I'}->{'current_subtab'} = $refine_path if $current_subtab_active;
+        $appendtabs->{'_I'}->{'subtabs'} = {
+            _a => {
+                path => $refine_path,
+                title => loc('Refine'),
+            }
+        };
+    }
+    $current_subtab = $path;
+}
+elsif( $with_subtab{ $current_tab_base } ) {
+    # add refine subtab only
+    my $path = $current_tab;
+    if ( $QueryString ) {
+        $path .= ($path =~ /\?/)? '&': '?';
+        $path .= $QueryString;
+    }
+    if ( $current_subtab ) {
+# XXX: there is no way to mark refine subtab active
+#        $subtabs->{'current_subtab'} = $refine_path if $current_subtab_active;
+        $subtabs->{'_a'} = {
+            path => $refine_path,
+            title => loc('Refine'),
+        };
+    }
+    $current_subtab = $path;
+} else {
+    # don't add tabs or subtabs, but mark correct thing
+    if ( $current_subtab_active ) {
+        $current_tab_args ||= '';
+        my $refine_path = "$current_subtab?$current_tab_args&$QueryString";
+        $refine_path .= "&". $m->comp('/Elements/QueryString',
+            BaseQuery  => $BaseQuery,
+            ResultPage => $current_tab,
+        );
+        $current_tab = $refine_path;
+    }
+}
 
 </%INIT>
 <%ARGS>
-$Queue => ''
+$Ticket                => undef
+$id                    => $Ticket? $Ticket->Id: undef
+$Queue                 => undef
+
+$BaseQuery             => undef
+$QueryString           => undef
+
+$current_tab           => undef
+$current_subtab        => undef
+$current_subtab_active => 0
 </%ARGS>

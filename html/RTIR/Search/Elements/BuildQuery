@@ -44,18 +44,16 @@
 %# 
 %# }}} END BPS TAGGED BLOCK
 
-<form method="post" action="Refine.html" name="BuildQuery">
-<input type="hidden" name="SearchId" value="<%$SearchId%>" />
-<input type="hidden" name="Query" value="<%$Query%>" />
-<input type="hidden" name="Format" value="<%$Format%>" />
-<input type="hidden" name="BaseQuery" value="<%$BaseQuery%>" />
-<input type="hidden" name="Queue" value="<%$Queue%>" />
-<input type="hidden" name="id" value="<%$id%>" />
-<input type="hidden" name="ResultPage" value="<%$ResultPage%>" />
+<form method="post" action="<% RT->Config->Get('WebPath')%><% $m->request_comp->path %>" name="BuildQuery">
+<input type="hidden" name="SearchId" value="<% $SearchId %>" />
+<input type="hidden" name="BaseQuery" value="<% $BaseQuery %>" />
+<input type="hidden" name="Query" value="<% $Query %>" />
+<input type="hidden" name="Format" value="<% $Format %>" />
+<input type="hidden" name="ResultPage" value="<% $ResultPage %>" />
 <table width="100%">
 <tr>
 <td valign="top" class="boxcontainer">
-<& PickCriteria, query => $Query, Queue => $Queue &>
+<& PickCriteria, Queues => $queues &>
 <& /Elements/Submit, Caption => loc('Add additional criteria'), Label => loc('Add'), Name => 'AddClause'&>
 
 </td>
@@ -94,7 +92,6 @@
     &>
 </form>
 <%ARGS>
-$id => undef
 $SearchId => undef
 $BaseQuery => undef
 $Query => undef
@@ -103,7 +100,6 @@ $Description => undef
 $Order => undef
 $OrderBy => undef
 $RowsPerPage => undef
-$HideResults => 0
 $queues => undef
 @actions => ()
 $optionlist => undef

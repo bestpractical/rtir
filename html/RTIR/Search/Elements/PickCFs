@@ -48,17 +48,32 @@
 % }
 <%INIT>
 my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
-my $QueueObj = RT::Queue->new($session{'CurrentUser'});
-$QueueObj->Load($Queue);
-
-$CustomFields->LimitToQueue( $QueueObj->Id );
 $CustomFields->LimitToGlobal;
 $CustomFields->Limit( FIELD => 'Name', OPERATOR => 'STARTSWITH', VALUE => '_RTIR_' );
+
+if ( $Queues ) {
+    my @list;
+    if ( ref $Queues eq 'HASH' ) {
+        @list = grep $_ && $Queues->{$_}, keys %$Queues;
+    }
+    elsif ( ref $Queues eq 'ARRAY' ) {
+        @list = grep $_, @$Queues;
+    } else {
+        @list = ($Queues);
+    }
+    foreach my $queue( @list ) {
+        my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
+        $QueueObj->Load( $queue );
+        next unless $QueueObj->Id;
+
+        $CustomFields->LimitToQueue( $QueueObj->Id );
+    }
+}
 
 my @lines;
 while ( my $CustomField = $CustomFields->Next ) {
     my $label = $CustomField->Name;
-    $label =~ s/^_RTIR_//;
+    $label =~ s/^_RTIR_//; # XXX: add queue name to label
 
     my %line;
     $line{'Name'} = "'CF.{" . $CustomField->Name . "}'";
@@ -83,5 +98,5 @@ while ( my $CustomField = $CustomFields->Next ) {
 </%INIT>
 
 <%ARGS>
-$Queue => undef
+$Queues => undef
 </%ARGS>

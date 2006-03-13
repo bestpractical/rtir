@@ -58,22 +58,12 @@
 <tr class="separator"><td colspan="3"><hr /></td></tr>
 
 <& /Search/Elements/PickBasics &>
-<& PickCFs, Queue => $Queue &>
-<& /Search/Elements/PickCFs, cfqueues => $cfqueues &>
+<& PickCFs, Queues => $Queues &>
+<& /Search/Elements/PickCFs, cfqueues => $Queues &>
 
 </table>
 
 </&>
-
-<%INIT>
-my $cfqueues = ();
-my $QueueObj = new RT::Queue($session{'CurrentUser'});
-$QueueObj->Load($Queue);
-$cfqueues->{$QueueObj->Id} = 1;
-</%INIT>
-
 <%ARGS>
-$addquery => 0
-$query => undef
-$Queue => undef
+$Queues => {}
 </%ARGS>

@@ -35,7 +35,12 @@
 
 <%INIT>
 if ( $QueryString =~ s/^&// ) {
-    $RT::Logger->warning("queue string has leading &");
+    $RT::Logger->warning("query string has leading &");
+}
+
+if ( !$Ticket && $id ) {
+    $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
+    $Ticket->Load( $id );
 }
 
 my ($Type) = $m->comp( '/RTIR/Elements/Type', Queue => $QueueName );
@@ -125,19 +130,18 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
         };
 
         foreach my $key ( keys %$appendtabs ) {
-            $ticket_page_tabs->{$key}->{'title'}
-                = $appendtabs->{$key}->{'title'};
-            $ticket_page_tabs->{$key}->{'path'}
-                = $appendtabs->{$key}->{'path'};
+            foreach ( qw(title path subtabs current_subtab) ) {
+                $ticket_page_tabs->{ $key }->{ $_ } = $appendtabs->{ $key }->{ $_ };
+            }
         }
     }
-    $tabs->{'this'}->{'subtabs'} = $ticket_page_tabs;
     $current_subtab ||= "RTIR/Display.html?id=$id";
 
+    $tabs->{'this'}->{'subtabs'} = $ticket_page_tabs;
     foreach my $tab ( values %$ticket_page_tabs ) {
         next unless $tab->{'path'} eq $current_subtab;
-
-        $tab->{'subtabs'} = $subtabs;
+        
+        $tab->{'subtabs'} = { %{ $tab->{'subtabs'} || {} }, %$subtabs } if $subtabs;
         $tabs->{'this'}->{'current_subtab'} = $tab->{'path'};
     }
 
@@ -247,7 +251,7 @@ my $refinetabs = {};
 # If we're looking at a specific item, dont' show the refine tab
 $tabs->{"A"} = {
     path  => "RTIR/Create.html?$EscapedQueueName",
-    title => loc("New $Type")
+    title => loc("New $Type"),
 };
 
 $tabs->{"g"} = {
@@ -258,9 +262,9 @@ unless ( $Ticket and $Ticket->id ) {
     $tabs->{'ga'} = {
         class => "nav",
         path  => "RTIR/Search/Refine.html?$EscapedQueueName&$QueryString&"
-            . $m->comp(
-            '/Elements/QueryString',
-            ResultPage => "/RTIR/Search/Results.html?$EscapedQueueName",
+            . $m->comp('/Elements/QueryString',
+                BaseQuery  => $BaseQuery,
+                ResultPage => "/RTIR/Search/Results.html?$EscapedQueueName",
             ),
         title => loc('Refine'),
     };
@@ -291,20 +295,27 @@ if ( $Type eq 'Report' ) {
     };
 }
 
-foreach my $tab ( values %{$tabs} ) {
-    if ( $tab->{'path'} eq $current_tab ) {
+if ( $subtabs ) {
+    foreach my $tab ( values %{$tabs} ) {
+        next unless $tab->{'path'} eq $current_tab;
+
         $tab->{'subtabs'} = { %{ $tab->{'subtabs'} || {} }, %$subtabs };
     }
 }
 
 </%INIT>
 <%ARGS>
-$Ticket => undef
-$subtabs => {}
-$appendtabs => undef
-$current_tab => undef
+$Title          => ''
+$id             => undef
+$Ticket         => undef
+$QueueName      => 'Incident Reports'
+
+$BaseQuery      => ''
+$QueryString    => ''
+
+$appendtabs     => undef
+$current_tab    => undef
+
+$subtabs        => {}
 $current_subtab => undef
-$Title => ''
-$QueryString => ''
-$QueueName => 'Incident Reports'
 </%ARGS>

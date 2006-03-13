@@ -45,28 +45,26 @@
 %# }}} END BPS TAGGED BLOCK
 <& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} || 0 &>
 <& '/RTIR/'.$Type.'/Elements/Tabs',
-    current_tab => "RTIR/Search/Results.html?$EscapedQueue&$QueryString",
     Title       => $title,
-    Format      => $Format,
-    Query       => $Query,
-    Rows        => $Rows,
-    OrderBy     => $OrderBy,
-    Order       => $Order,
+    BaseQuery   => $BaseQuery,
     QueryString => $QueryString,
+
+    current_tab => $current_tab,
 &>
 
 <& /Elements/ListActions, actions => \@results &>
 
 <& Elements/ShowResults,
     %ARGS,
-    Queue       => $Queue,
-    BaseQuery   => $BaseQuery,
-    Query       => $Query,
-    Format      => $Format,
-    Rows        => $Rows,
-    Page        => $Page,
-    OrderBy     => $OrderBy,
-    Order       => $Order,
+    Queue          => $Queue,
+    BaseURL        => $BaseURL,
+    BaseQuery      => $BaseQuery,
+    Query          => $Query,
+    Format         => $Format,
+    Rows           => $Rows,
+    Page           => $Page,
+    OrderBy        => $OrderBy,
+    Order          => $Order,
     ShowNavigation => 1
 &>
 <div align="right">
@@ -78,20 +76,20 @@ my ($Type)   = $m->comp( '/RTIR/Elements/Type', Queue => $Queue );
 $Format    ||= RT->Config->Get('RTIRSearchResultFormats')->{ $Type . 'Default' };
 
 my $QueryString = $m->comp( '/Elements/QueryString',
-                            BaseQuery => $BaseQuery,
                             Query     => $Query,
                             Format    => $Format,
                             Rows      => $Rows,
+                            Page      => $Page,
                             OrderBy   => $OrderBy,
                             Order     => $Order,
-                            Page      => $Page,
                           );
-my $ShortQueryString = "?".$m->comp('/Elements/QueryString', Query => $Query);
-my $EscapedQueue = $m->comp( '/Elements/QueryString', Queue => $Queue );
+my $BaseURL = "RTIR/Search/Results.html?". $m->comp( '/Elements/QueryString', Queue => $Queue );
+my $current_tab = "$BaseURL&$QueryString";
 
 </%INIT>
 <%ARGS>
 $Queue     => ''
+
 $BaseQuery => $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue )
 $Query     => $m->comp( '/RTIR/Elements/NewQuery', Queue => $Queue )
 $Format    => undef
@@ -99,5 +97,6 @@ $Rows      => 50
 $Page      => 1
 $OrderBy   => 'id'
 $Order     => 'ASC'
+
 @results   => ()
 </%ARGS>
