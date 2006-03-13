@@ -27,22 +27,21 @@ my $ShortQueryString = $m->comp('/Elements/QueryString',
                             Queue     => $Queue,
                             Query     => $Query,
                             Rows      => $Rows,
+                            Page      => $Page,
                             OrderBy   => $OrderBy,
                             Order     => $Order,
-                            Page      => $Page,
                           );
 </%PERL>
 % if ( $Queue eq 'Incident Reports') {
-
-
-<a href="<%RT->Config->Get('WebPath')%>/RTIR/Report/BulkReject.html?<% $QueryString %>"><&|/l&>Bulk Reject</&></a>
-
+<a href="<%RT->Config->Get('WebPath')%>/RTIR/Report/BulkReject.html?<% $QueryString %>"><&|/l&>Bulk Reject</&></a> |
 % }
-<a href="<%RT->Config->Get('WebPath')%>/Search/Results.tsv?<%$ShortQueryString%>"><&|/l&>spreadsheet</&></a> |
-<a href="<% RT->Config->Get('WebPath')."/Search/Results.rdf?$ShortQueryString"%>"><&|/l&>RSS</&></a> |
-<form method="get" action="<%RT->Config->Get('WebPath')%>/Search/Chart.html"><&|/l&>chart</&>
+
+<a href="<% RT->Config->Get('WebPath') %>/Search/Results.tsv?<% $ShortQueryString %>"><&|/l&>spreadsheet</&></a> |
+<a href="<% RT->Config->Get('WebPath') %>/Search/Results.rdf?<% $ShortQueryString %>"><&|/l&>RSS</&></a> |
+
+<form method="get" action="<% RT->Config->Get('WebPath') %>/Search/Chart.html"><&|/l&>chart</&>
 % my %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order);
-% foreach my $key (keys(%hiddens)) {
+% foreach my $key ( keys %hiddens ) {
 <input type="hidden" class="hidden" name="<%$key%>" value="<%defined($hiddens{$key})?$hiddens{$key}:''%>" />
 % }
 <&|/l, $m->scomp('/Search/Elements/SelectGroupBy', Name => 'PrimaryGroupBy') &>grouped by [_1]</&>
@@ -56,13 +55,12 @@ my $ShortQueryString = $m->comp('/Elements/QueryString',
 
 $Query = join ' AND ', map "( $_ )", grep $_, $BaseQuery, $Query;
 
-$OrderBy = join "|", @{$OrderBy} if ref $OrderBy;
-$Order   = join "|", @{$Order}   if ref $Order;
-
 my $collection = $session{'tickets'} || RT::Tickets->new( $session{'CurrentUser'} );
 $collection->FromSQL( $Query ) if $Query;
 $session{'tickets'} = $collection;
 
+$OrderBy = join "|", @{$OrderBy} if ref $OrderBy;
+$Order   = join "|", @{$Order}   if ref $Order;
 if ( $OrderBy ne $session{'CurrentSearchHash'}->{'OrderBy'}
      || $Order ne $session{'CurrentSearchHash'}->{'Order'} )
 {
@@ -72,17 +70,23 @@ if ( $OrderBy ne $session{'CurrentSearchHash'}->{'OrderBy'}
 
 return '' if !$ShowEmpty && !$collection->CountAll;
 
+$BaseURL = RT->Config->Get('WebPath')."/$BaseURL" unless $BaseURL =~ m{^/};
+$BaseURL .= ( $BaseURL =~ /\?/ )? '&': '?' unless $BaseURL =~ m{[&?]$};
+
 </%INIT>
 <%ARGS>
 $Queue          => ''
+
 $BaseQuery      => ''
-$Format         => ''
 $Query          => ''
+$Format         => ''
 $Rows           => undef
 $Page           => 1
 $OrderBy        => $session{'CurrentSearchHash'}->{'OrderBy'} || 'id'
 $Order          => $session{'CurrentSearchHash'}->{'Order'} || 'ASC'
-$BaseURL        => RT->Config->Get('WebPath')."/Search/Results.html?"
+
+$BaseURL        => "RTIR/Search/Results.html?"
+
 $ShowNavigation => 0
 $AllowSorting   => 1
 $ShowEmpty      => 0
