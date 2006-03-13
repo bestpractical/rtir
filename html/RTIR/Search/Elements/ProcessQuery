@@ -128,6 +128,12 @@ if ( $actions[0] ) {
 my @options;
 $Query  = "";
 
+{ #XXX: Parser BaseQuery to get Queues
+    my $tree;
+    ParseQuery( $BaseQuery, \$tree, [] );
+    build_array( \$BaseQuery, -1, $tree, [], $queues );
+}
+
 # Build the optionlist from the tree, so we can do additions and movements based on it
 $$optionlist = build_array( \$Query, $ARGS{clauses}, $tree, \@options, $queues );
 
@@ -329,7 +335,9 @@ sub build_array {
             $str .= $clause->{Key} . " " . $clause->{Op} . " " . $clause->{Value};
         
             if ( $clause->{Key} eq "Queue" ) {
-                $queues->{ $clause->{Value} } = 1;
+                my $queue = $clause->{Value};
+                $queue =~ s/^['"]|['"]$//g;
+                $queues->{ $queue } = 1;
             }
         } else {
             $str = $ea if $_tree->getIndex() > 0;
@@ -656,7 +664,15 @@ $session{'CurrentSearchHash'} = $search_hash;
 
 # {{{ Show the results, if we were asked.
 if ( $ARGS{"DoSearch"} ) {
-    $m->comp($ResultPage, Query => $Query, Format => $Format, Order => $Order, OrderBy => $OrderBy, Rows => $RowsPerPage, BaseQuery => $BaseQuery, Queue => $ARGS{'Queue'}, id => $ARGS{'id'});
+    $ResultPage .= $ResultPage =~ /\?/? '&': '?';
+    $ResultPage .= $m->comp('/Elements/QueryString', 
+        Query   => $Query,
+        Format  => $Format,
+        Order   => $Order,
+        OrderBy => $OrderBy,
+        Rows    => $RowsPerPage,
+    );
+    $m->redirect( RT->Config->Get('WebURL') . $ResultPage );
     $m->abort();
 }
 # }}}
@@ -677,7 +693,6 @@ $Description => undef
 $Order => undef
 $OrderBy => undef
 $RowsPerPage => undef
-$HideResults => 0
 $queues => undef
 $results => undef
 $optionlist => undef
@@ -685,5 +700,5 @@ $search_hash => undef
 $dirty => 0
 $AvailableColumns => undef
 $CurrentFormat => undef
-$ResultPage => "../Results.html"
+$ResultPage => "RTIR/Search/Results.html"
 </%ARGS>
