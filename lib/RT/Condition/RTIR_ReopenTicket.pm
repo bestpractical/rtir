@@ -63,17 +63,11 @@ If the ticket was closed
 sub IsApplicable {
     my $self = shift;
 
-    if (($self->TransactionObj->Type eq "Status" or
-	 ($self->TransactionObj->Type eq "Set" and 
-	  $self->TransactionObj->Field eq "Status")) and
-	(( $self->TransactionObj->OldValue eq 'rejected' ||
-	   $self->TransactionObj->OldValue eq 'resolved') &&
-	 $self->TransactionObj->NewValue eq 'open')) {
-	return 1;
-    } else {
-	return 0;
-    }
+    return 0 unless $self->IsStatusChange;
+    return 0 unless $self->TicketObj->QueueObj->IsInactiveStatus( $self->TransactionObj->OldValue );
+    return 0 unless $self->TicketObj->QueueObj->IsActiveStatus( $self->TransactionObj->NewValue );
 
+    return 1;
 }
 
 eval "require RT::Condition::RTIR_ReopenTicket_Vendor";
