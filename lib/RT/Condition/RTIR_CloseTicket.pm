@@ -63,16 +63,11 @@ If the ticket was closed
 sub IsApplicable {
     my $self = shift;
 
-    if (($self->TransactionObj->Type eq "Status" or
-	 ($self->TransactionObj->Type eq "Set" and 
-	  $self->TransactionObj->Field eq "Status")) and
-	($self->TransactionObj->NewValue eq 'rejected' ||
-	 $self->TransactionObj->NewValue eq 'resolved')) {
-	return 1;
-    } else {
-	return 0;
-    }
+    return 0 unless $self->IsStatusChange;
+    return 0 unless $self->TicketObj->QueueObj->IsActiveStatus( $self->TransactionObj->OldValue );
+    return 0 unless $self->TicketObj->QueueObj->IsInactiveStatus( $self->TransactionObj->NewValue );
 
+    return 1;
 }
 
 eval "require RT::Condition::RTIR_CloseTicket_Vendor";
