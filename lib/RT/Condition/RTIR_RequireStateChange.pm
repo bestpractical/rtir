@@ -63,19 +63,16 @@ If the ticket was closed
 sub IsApplicable {
     my $self = shift;
 
-    if ($self->TransactionObj->Type eq "Status" or
-	($self->TransactionObj->Type eq "Set" and 
-	 $self->TransactionObj->Field eq "Status") or
-	($self->TransactionObj->Type eq "AddLink" and 
-	 $self->TransactionObj->Field eq "MemberOf") or
-	$self->TransactionObj->Type eq "Create" or
-	$self->TransactionObj->Type eq "CustomField" or
-	($self->TransactionObj->Type eq "Set" and
-	 $self->TransactionObj->Field eq "Queue")) {
-	return 1;
-    } else {
-	return 0;
-    }
+    my $type = $self->TransactionObj->Type;
+    return 1 if $type eq "Create" or $type eq "CustomField";
+    return 1 if $self->IsStatusChange;
+
+    my $field = $self->TransactionObj->Field;
+    return 1 if
+        ( $type eq "AddLink" and $field eq "MemberOf" ) or
+        ( $type eq "Set" and $field eq "Queue" );
+
+    return 0;
 }
 
 eval "require RT::Condition::RTIR_RequireStateChange_Vendor";
