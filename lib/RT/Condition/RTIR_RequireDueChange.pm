@@ -62,14 +62,11 @@ If a child had a Due Date change or changes parents.
 sub IsApplicable {
     my $self = shift;
 
-    if ($self->TransactionObj->Type eq 'DeleteLink' ||
-	$self->TransactionObj->Type eq "AddLink" ||
-	($self->TransactionObj->Type eq "Set" and
-	 $self->TransactionObj->Field eq "Due")) {
-	return 1;
-    } else {
-	return 0;
-    }
+    my $type = $self->TransactionObj->Type;
+    return 1 if $type eq 'DeleteLink' || $type eq "AddLink";
+    return 1 if $type eq "Set" && $self->TransactionObj->Field eq "Due";
+
+    return 0;
 }
 
 eval "require RT::Condition::RTIR_RequireDueChange_Vendor";

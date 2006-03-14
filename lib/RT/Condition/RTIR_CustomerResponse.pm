@@ -64,10 +64,10 @@ sub IsApplicable {
     my $self = shift;
 
     if ($self->TransactionObj->Type eq 'Correspond' && 
-	$self->TicketObj->Owner ne $self->TransactionObj->Creator) {
-	return 1;
+        $self->TicketObj->Owner ne $self->TransactionObj->Creator) {
+        return 1;
     } else {
-	return 0;
+        return 0;
     }
 
 }
