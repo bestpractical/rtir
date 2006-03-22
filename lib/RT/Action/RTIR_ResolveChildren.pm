@@ -74,22 +74,46 @@ Resolve all children.
 
 sub Commit {
     my $self = shift;
+    my $id = $self->TicketObj->Id;
 
     my $query =  "(Queue = 'Incident Reports'"
                 ." OR Queue = 'Investigations'"
                 ." OR Queue = 'Blocks'"
-                .") AND MemberOf = " . $self->TicketObj->Id
+                .") AND MemberOf = " . $id
                 ." AND ("
+                # TODO: move to per queue statuses lists
                 . join(" AND ", map "Status != '$_'", RT->Config->Get('InactiveStatus') )
                 .")";
 
     my $members = new RT::Tickets( $self->TransactionObj->CurrentUser );
     $members->FromSQL( $query );
     while ( my $member = $members->Next ) {
+        if ( $self->HasOtherUnresolvedParents( $member ) ) {
+            $member->Comment(Content => <<END);
+
+Linked Incident \#$id was resolved, but ticket still has unresolved linked Incidents.
+
+END
+            next;
+        }
         my ($res, $msg) = $member->Resolve;
         $RT::Logger->info( "Couldn't resolve ticket: $msg" ) unless $res;
     }
     return 1;
+}
+
+sub HasOtherUnresolvedParents {
+    my $self = shift;
+    my $child = shift;
+
+    my $query =  "Queue = 'Incidents'"
+                ." AND id != ". $self->TicketObj->Id
+                ." AND HasMember = ". $child->id
+                ." AND ( ". join(" OR ", map "Status = '$_'", RT->Config->Get('ActiveStatus') ) ." ) ";
+
+    my $tickets = new RT::Tickets( $self->TransactionObj->CurrentUser );
+    $tickets->FromSQL( $query );
+    return $tickets->Count;
 }
 
 # }}}
