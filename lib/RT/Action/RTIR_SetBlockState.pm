@@ -62,6 +62,7 @@ sub GetState {
         open     => 'active',
         stalled  => 'pending removal',
         resolved => 'removed',
+        rejected => 'removed',
     );
     return $state{ $self->TicketObj->Status } || '';
 }

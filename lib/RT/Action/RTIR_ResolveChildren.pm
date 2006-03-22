@@ -48,6 +48,8 @@ package RT::Action::RTIR_ResolveChildren;
 use strict;
 use base 'RT::Action::RTIR';
 
+use RT::IR::Ticket;
+
 =head2 Prepare
 
 Check if the Incident is being closed.
@@ -88,7 +90,7 @@ sub Commit {
     my $members = new RT::Tickets( $self->TransactionObj->CurrentUser );
     $members->FromSQL( $query );
     while ( my $member = $members->Next ) {
-        if ( $self->HasOtherUnresolvedParents( $member ) ) {
+        if ( RT::IR::Ticket::IsLinkedToActiveIncidents( $member, $self->TicketObj ) ) {
             $member->Comment(Content => <<END);
 
 Linked Incident \#$id was resolved, but ticket still has unresolved linked Incidents.
@@ -100,20 +102,6 @@ END
         $RT::Logger->info( "Couldn't resolve ticket: $msg" ) unless $res;
     }
     return 1;
-}
-
-sub HasOtherUnresolvedParents {
-    my $self = shift;
-    my $child = shift;
-
-    my $query =  "Queue = 'Incidents'"
-                ." AND id != ". $self->TicketObj->Id
-                ." AND HasMember = ". $child->id
-                ." AND ( ". join(" OR ", map "Status = '$_'", RT->Config->Get('ActiveStatus') ) ." ) ";
-
-    my $tickets = new RT::Tickets( $self->TransactionObj->CurrentUser );
-    $tickets->FromSQL( $query );
-    return $tickets->Count;
 }
 
 # }}}

@@ -125,7 +125,10 @@ if ( $SubmitTicket ) {
 
         my @tempresults;
         push @tempresults, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS );
-        push @tempresults, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
+
+        unless ( RT::IR::Ticket::IsLinkedToActiveIncidents( $Ticket, $IncidentObj ) ) {
+            push @tempresults, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
+        }
 
         my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, '_RTIR_State' );
 

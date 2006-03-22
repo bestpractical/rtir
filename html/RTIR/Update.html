@@ -109,28 +109,23 @@ my ($Type) = $m->comp('Elements/Type', Ticket => $Ticket->Id);
 
 my $name;
 if ($Type eq 'Report') {
-  $name = "Incident Report";
+    $name = "Incident Report";
 } else {
-  $name = $Type;
+    $name = $Type;
 }
 
 
-unless($DefaultStatus){
-    $DefaultStatus=($ARGS{'Status'} ||$Ticket->Status());
-}
+$DefaultStatus ||= $ARGS{'Status'} || $Ticket->Status;
+$DefaultStatus = 'open' if $DefaultStatus eq 'new';
 
-if ($DefaultStatus =~ '^new$'){
-        $DefaultStatus='open';
-}
-
-if ($DefaultStatus eq 'resolved') {
+if ( $DefaultStatus eq 'resolved' ) {
     $title = loc("Resolve [_1] #[_2] ([_3])", $name, $Ticket->id, $Ticket->Subject);
-} elsif ($DefaultStatus eq 'rejected') {
-  if ($Type eq 'Incident') {
-    $title = loc("Abandon [_1] #[_2] ([_3])", $name, $Ticket->id, $Ticket->Subject);
-  } else {
-    $title = loc("Reject [_1] #[_2] ([_3])", $name, $Ticket->id, $Ticket->Subject);
-  }
+} elsif ( $DefaultStatus eq 'rejected' ) {
+    if ( $Type eq 'Incident' ) {
+        $title = loc("Abandon [_1] #[_2] ([_3])", $name, $Ticket->id, $Ticket->Subject);
+    } else {
+        $title = loc("Reject [_1] #[_2] ([_3])", $name, $Ticket->id, $Ticket->Subject);
+    }
 } else {
     $title = loc("Update [_1] #[_2] ([_3])", $name, $Ticket->id, $Ticket->Subject);
 }
@@ -143,23 +138,24 @@ my $CanComment = 0;
 
 my ($CommentDefault, $ResponseDefault);
 if (($Action eq 'Comment') or ($ARGS{'UpdateType'} eq 'private')) {
-   $CommentDefault = "SELECTED"; 
+    $CommentDefault = "SELECTED"; 
 } else {
     $ResponseDefault = "SELECTED";
 }
 
 my $Subject;
 if ($ARGS{'UpdateSubject'}) {
-  $Subject = $ARGS{'UpdateSubject'};
+    $Subject = $ARGS{'UpdateSubject'};
 } elsif ($Ticket) {
-  $Subject = $Ticket->Subject;
+    $Subject = $Ticket->Subject;
 }
 
 my $replystring = lc(RT->Config->Get('ReplyString'));
 if ( $Action eq 'Respond' &&
      $replystring &&
-     lc(substr($Subject, 0, length($replystring))) ne $replystring) {
-  $Subject = RT->Config->Get('ReplyString') . " " . $Subject;
+     lc(substr($Subject, 0, length($replystring))) ne $replystring)
+{
+    $Subject = RT->Config->Get('ReplyString') . " " . $Subject;
 }
 
 $CanRespond = 1 if ( $Ticket->CurrentUserHasRight('ReplyToTicket') or
@@ -172,13 +168,13 @@ $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
 # {{{ deal with deleting uploaded attachments
 foreach my $key (keys %ARGS) {
     if ($key =~ m/^DeleteAttach-(.+)$/) {
-	delete $session{'Attachments'}{$1};
+        delete $session{'Attachments'}{$1};
     }
     $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
 }
 
 # {{{ store the uploaded attachment in session
-if ($ARGS{'Attach'}) {			# attachment?
+if ($ARGS{'Attach'}) { # attachment?
     $session{'Attachments'} = {} unless defined $session{'Attachments'};
 
     # strip leading directories
@@ -189,8 +185,10 @@ if ($ARGS{'Attach'}) {			# attachment?
         Body                => "",
         AttachmentFieldName => 'Attach'
     );
-    $session{'Attachments'} = { %{$session{'Attachments'} || {}},
-				$ARGS{'Attach'} => $attachment };
+    $session{'Attachments'} = {
+        %{$session{'Attachments'} || {}},
+        $ARGS{'Attach'} => $attachment,
+    };
 }
 # }}}
 
