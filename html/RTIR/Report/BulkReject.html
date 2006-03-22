@@ -46,6 +46,7 @@
     Page      => $Page,
     OrderBy   => $OrderBy,
     Order     => $Order,
+    ShowNavigation => 1,
 &>
 
 % if( $session{'tickets'}->Count ) {
@@ -148,7 +149,7 @@ my $QueryString = $m->comp('/Elements/QueryString',
     Order     => $Order,
 );
 my $BaseURL = "RTIR/Report/BulkReject.html?"
-    . $m->comp('/Elements/QueryString', Queue => $Queue, Status => $Status);
+    . $m->comp('/Elements/QueryString', Queue => $Queue);
 my $current_tab = "$BaseURL&$QueryString";
 
 </%INIT>
