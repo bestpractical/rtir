@@ -26,12 +26,16 @@ my $cf_values_cb = sub {
 </%ONCE>
 <%INIT>
 
-my %selected;
+my (%selected, $select_all);
 {
-    my $tmp = $m->request_args->{'SelectedTickets'};
-    $tmp = [$tmp] unless UNIVERSAL::isa( $tmp, 'ARRAY' );
-    push @$tmp, $m->request_args->{'SelectedTicket'};
-    %selected = map { $_ => 1 } grep $_, @$tmp;
+    if ( $m->request_args->{'SelectAllTickets'} ) {
+        $select_all = 1;
+    } else {
+        my $tmp = $m->request_args->{'SelectedTickets'};
+        $tmp = [$tmp] unless UNIVERSAL::isa( $tmp, 'ARRAY' );
+        push @$tmp, $m->request_args->{'SelectedTicket'};
+        %selected = map { $_ => 1 } grep $_, @$tmp;
+    }
 }
 
 # This is scary and should totally be refactored -- jesse
@@ -43,7 +47,7 @@ $COLUMN_MAP->{'RTIR_Check'} = {
     value => sub {
         my $selected = '';
         my $id = $_[0]->id;
-        $selected = 'checked' if $selected{ $id };
+        $selected = 'checked' if $select_all || $selected{ $id };
         return ( \qq{<input type="checkbox" name="SelectedTickets" value="$id" $selected />} );
     },
 };
