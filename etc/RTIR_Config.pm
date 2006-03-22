@@ -223,6 +223,7 @@ Set($RTIRSearchResultFormats, {
 		       '__Requestors__',
 		       '__OwnerName__',
 		       '__DueRelative__',
+               '__TakeOrSteal__',
 		   },
 
     ChildReport => qq{'<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',

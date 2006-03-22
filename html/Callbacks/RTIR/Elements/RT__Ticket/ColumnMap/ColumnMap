@@ -52,6 +52,19 @@ $COLUMN_MAP->{'RTIR_Check'} = {
     },
 };
 
+$COLUMN_MAP->{'TakeOrSteal'} = {
+    title => 'Take/Steal',
+    value => sub {
+        my $t = shift;
+        return '' if $t->Owner == $t->CurrentUser->id;
+        my $action = 'Take';
+        $action = 'Steal' if $t->Owner != $RT::Nobody->id;
+        my $link = RT->Config->Get('WebPath') ."/Ticket/Display.html?Action=$action&id=". $t->id;
+        $link = qq{<a href="$link">}. $t->loc($action) .qq{</a>};
+        return \$link;
+    },
+};
+
 $COLUMN_MAP->{'RTIR_Radio'} = {
     title => \'&nbsp;',
     value => sub {
