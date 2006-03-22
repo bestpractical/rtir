@@ -125,6 +125,13 @@ for my $cf (@CustomFieldsList) {
     );
 }
 
+push @ACL, (
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 0,
+      Right => 'ModifySelf', },
+);
+
 @Attributes = ( {
     Name => 'RTIR_HomepageSettings',
     Description => 'RTIR homepage settings',

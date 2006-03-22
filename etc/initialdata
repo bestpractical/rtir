@@ -742,6 +742,13 @@ push @ACL, (
       Right  => 'ReplyToTicket', },
 );
 
+push @ACL, (
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 0,
+      Right => 'ModifySelf', },
+);
+
 for my $cf (@CustomFields) {
     push @ACL, (
         { GroupId => 'DutyTeam',
