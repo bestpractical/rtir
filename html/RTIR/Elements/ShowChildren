@@ -32,7 +32,7 @@
 % }
 
 % if ($Delete) {
-<i><%loc("Check box to unlink")%></i><br />
+<i><% loc("Check box to unlink") %></i><br />
 % }
 <& /Elements/TicketList, 
    Collection => $children,
@@ -52,12 +52,12 @@
 <br />
 
 % if( $FullList && $Rows > 0 && $children->Count >= $Rows ) {
-<a href="<%$FullList%>"><i><%loc("More... ([_1] total)", $children->Count)%></i></a><br />
+<a href="<% $FullList %>"><i><% loc("More... ([_1] total)", $children->Count) %></i></a><br />
 % }
 
 <%INIT>
 unless( @States ) {
-    @States = $m->comp("/RTIR/Elements/States", Queue => $Queue);
+    @States = ( $m->comp("/RTIR/Elements/States", Queue => $Queue), 'resolved' );
 }
 my @possible_states = $m->comp("/RTIR/Elements/States", Queue => $Queue, Inactive => 1 );
 my ($Type) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
@@ -67,7 +67,7 @@ if ($Delete) {
     $Format = "__RTIR_Check__, " . $Format;
 }
 
-my $children = new RT::Tickets($session{'CurrentUser'});
+my $children = RT::Tickets->new( $session{'CurrentUser'} );
 $children->FromSQL( $m->comp( '/RTIR/Elements/ChildrenQuery',
                               Queue  => $Queue,
                               Ticket => $Ticket,
