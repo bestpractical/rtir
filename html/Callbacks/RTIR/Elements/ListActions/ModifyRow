@@ -3,21 +3,23 @@
 # $row is passed by reference
 
 # skip things that start with skiplist items
-foreach my $item (@skiplist) {
-  if ($item && substr($$row, 0, length($item)) eq $item) {
-    $$skip = 1;
-  }
+foreach my $item ( grep $_, @skiplist ) {
+    if ( substr( $$row, 0, length($item) ) eq $item ) {
+        return $$skip = 1;
+    }
+}
+
+# get out of here if we are not in RTIR space
+return unless $m->request_comp->path =~ m{^/RTIR/};
+
+# skip RT status updates
+# XXX: this doesn't work with localization
+if ( $$row =~ /^\s*(?:Ticket\s*#?\d+:\s*)?Status changed from/ ) {
+    return $$skip = 1;
 }
 
 # remove _RTIR_ from RTIR custom fields
-my $prefix = '_RTIR_';
-if (substr($$row, 0, length($prefix)) eq $prefix) {
-  $$row = substr($$row, length($prefix));
-}
-
-if ($$row =~ /Status: Status changed from/) {
-  $$skip = 1;
-}
+$$row =~ s/^_RTIR_//;
 
 </%INIT>
 
