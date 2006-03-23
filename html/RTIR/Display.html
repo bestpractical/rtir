@@ -34,10 +34,10 @@
 
 <table border="0" cellpadding="0" cellspacing="2" width="100%">
 <tr>
-<td valign="top" colspan="2">
-<& /Widgets/TitleBoxStart, title => loc("The Basics"), 
-	title_href  => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=".$Ticket->Id,
-	title_class => 'inverse' &>
+<td valign="top" width="50%">
+<& /Widgets/TitleBoxStart, title => loc("The Basics"),
+        title_href  => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=".$Ticket->Id,
+        title_class => 'inverse' &>
 
 <table>
   <tr>
@@ -90,7 +90,7 @@
     </td>
     <td class="value" colspan="2">
       <& /RTIR/Elements/ShowRTIRField, 
-	Ticket => $Ticket, Name => 'ReporterType' &>
+        Ticket => $Ticket, Name => 'ReporterType' &>
     </td>
   </tr>
 % } elsif ($Type eq "Block") {
@@ -99,7 +99,7 @@
     <td class="value">
       <& /RTIR/Elements/ShowRTIRField, 
          Ticket => $Ticket, 
-	 Name => 'IP' &>
+         Name => 'IP' &>
     </td>
   </tr>
   <tr>
@@ -107,7 +107,7 @@
     <td class="value">
       <& /RTIR/Elements/ShowRTIRField, 
          Ticket => $Ticket, 
-	 Name => 'Netmask' &>
+         Name => 'Netmask' &>
     </td>
   </tr>
   <tr>
@@ -115,7 +115,7 @@
     <td class="value">
       <& /RTIR/Elements/ShowRTIRField, 
          Ticket => $Ticket, 
-	 Name => 'Port' &>
+         Name => 'Port' &>
     </td>
   </tr>
   <tr>
@@ -123,7 +123,7 @@
     <td class="value">
       <& /RTIR/Elements/ShowRTIRField, 
          Ticket => $Ticket, 
-	 Name => 'WhereBlocked' &>
+         Name => 'WhereBlocked' &>
     </td>
   </tr>
 % } elsif ($Type eq "Investigation") {
@@ -142,26 +142,51 @@
 <& /Widgets/TitleBoxEnd &>
 
 </td>
+  <td valign="top" width="50%">
+% if ($RT::FM::VERSION) {
+<& /Widgets/TitleBoxStart, title => loc("Articles"),
+    title_href => RT->Config->Get('WebPath') ."/RTIR/Advanced.html?id=".$id, 
+    title_class=> 'inverse',
+    color => "#663366" &>
+
+% if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
+% my $qs = $m->comp("/Elements/QueryString", "RefersTo-new" => "t:$id", next => "/RTIR/Display.html?id=$id");
+    <table width="100%"><tr><td align="right"><font size="-1">
+        | <a href="<%RT->Config->Get('WebPath')%>/RTFM/Article/PreCreate.html?<% $qs |n%>"><%loc('New')%></a> 
+        | <a href="<%RT->Config->Get('WebPath')%>/RTIR/Incident/LinkArticles.html?id=<%$id%>"><%loc("Link")%></a> |
+    </font></td></tr></table>
+% }
+
+<ul>
+% while (my $Link = $Ticket->RefersTo->Next) {
+% next unless UNIVERSAL::isa($Link->TargetURI->Object, "RT::FM::Article");
+<li><a href="<%$Link->TargetURI->Resolver->HREF%>"><% $Link->TargetURI->Object->Name %></a></li>
+% }
+</ul>
+
+<& /Widgets/TitleBoxEnd &>
+% }
+  </td>
 </tr>
 <tr>
   <td valign="top" width="50%">
     <br />
     <& /Widgets/TitleBoxStart, title => loc('People'), 
-	title_href  => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=". $Ticket->Id,
-	title_class => 'inverse' &>
+        title_href  => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=". $Ticket->Id,
+        title_class => 'inverse' &>
     <& /RTIR/Elements/ShowPeople, Ticket => $Ticket &>
     <& /Widgets/TitleBoxEnd &>
     <br />
   </td>
   <td>
         <br />
-	  <& /Widgets/TitleBoxStart, title => loc("Dates"),
-	  	title_href  => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=". $Ticket->Id,
-		title_class => 'inverse',  
-		color => "#663366" &>
-	  <& /RTIR/Elements/ShowDates, Ticket => $Ticket &>
-	  <& /Widgets/TitleBoxEnd &>
-	<br />  
+          <& /Widgets/TitleBoxStart, title => loc("Dates"),
+                title_href  => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=". $Ticket->Id,
+                title_class => 'inverse',  
+                color => "#663366" &>
+          <& /RTIR/Elements/ShowDates, Ticket => $Ticket &>
+          <& /Widgets/TitleBoxEnd &>
+        <br />  
   </td>
 </tr>
 <tr>
