@@ -53,9 +53,8 @@ Per user interface configuration
 
 Integration between RTIR and RTFM
 
-    Now RTIR is distributed with add-rtfm-objects script that adds
-    default RTFM classes, templates and rights for better integration
-    with RTIR.
+    Now RTIR is detects if RTFM is installed, and adds default RTFM
+    classes, templates and rights for better integration with RTIR.
 
 Create Incident with Investigation
 
@@ -150,9 +149,6 @@ Installation instructions:
    upgrading.
 
 6) Stop and start your web server.  
-
-7) If you are planning on using RTFM with RTIR, run the included
-   'add-rtfm-objects' script to set up a basic response template.
 
 
 
