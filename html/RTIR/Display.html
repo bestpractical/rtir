@@ -248,10 +248,10 @@ if ( $id eq 'new' ) {
     }
 
     $ARGS{UpdateAttachments} = delete $session{'Attachments'};
-    push @results, ProcessUpdateMessage( ARGSRef=>\%ARGS, TicketObj => $Ticket );
-    push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
-    push @results, ProcessTicketLinks(  TicketObj => $Ticket, ARGSRef => \%ARGS );
-    push @results, ProcessTicketDates(  TicketObj => $Ticket, ARGSRef => \%ARGS );
+    push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS );
+    push @results, ProcessTicketBasics(  TicketObj => $Ticket, ARGSRef => \%ARGS );
+    push @results, ProcessTicketLinks(   TicketObj => $Ticket, ARGSRef => \%ARGS );
+    push @results, ProcessTicketDates(   TicketObj => $Ticket, ARGSRef => \%ARGS );
 
     my $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
     if ($newstate ne $oldstate) {
