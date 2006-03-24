@@ -169,8 +169,7 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
     }
 
     if ( $can{'ModifyTicket'} ) {
-        my $state = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, '_RTIR_State' );
-        if ( $state eq 'open') {
+        if ( $Ticket->QueueObj->IsActiveStatus( $Ticket->Status ) ) {
             if ( $Type =~ /^(Report|Investigation)$/ ) {
                 $actions->{'Ac'} = {
                     path  => "RTIR/Update.html?Action=Comment&DefaultStatus=resolved&id=$id",
@@ -190,8 +189,6 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
                     title => loc('Quick Resolve'),
                 };
             }
-        }
-        if ( $Ticket->QueueObj->IsActiveStatus( $Ticket->Status ) ) {
             if ( $Type eq 'Report' ) {
                 $actions->{'B'} = {
                     path =>
