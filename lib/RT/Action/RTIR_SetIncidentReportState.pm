@@ -58,23 +58,23 @@ Returns state of the C<Incident Report>.
 sub GetState {
     my $self = shift;
 
-    my $state;
     my $status = $self->TicketObj->Status;
+    return $status if $status eq 'resolved' || $status eq 'rejected';
+
     if ( $status =~ /^(?:new|open|stalled)$/ ) {
-        $state = 'new';
+        # TODO: check how do we set (control) Status of the IR
+        # may be we don't need to check this conditions and
+        # just use status value as in other RTIR_Set*State actions
+        return 'open' if $self->TicketObj->Owner != $RT::Nobody->Id;
 
         my $parents = RT::Tickets->new( $self->TransactionObj->CurrentUser );
         $parents->LimitHasMember( $self->TicketObj->id );
         $parents->LimitQueue( VALUE => 'Incidents' );
-        if ( $parents->Count ) {
-            $state = 'open';
-        }
-    } elsif ( $status eq 'resolved' ) {
-        $state = 'resolved';
-    } elsif ( $status eq 'rejected' ) {
-        $state = 'rejected';
+        return 'open' if $parents->Count;
+        return 'new';
     }
-    return $state || '';
+
+    return '';
 }
 
 eval "require RT::Action::RTIR_SetIncidentReportState_Vendor";

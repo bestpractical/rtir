@@ -216,10 +216,17 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
 
     if ( $can{'OwnTicket'} ) {
         if ( $Ticket->Owner == $RT::Nobody->id ) {
-            $actions->{'D'} = {
-                path  => "RTIR/Display.html?Action=Take&id=$id",
-                title => loc('Take')
-            };
+            if ( $Ticket->QueueObj->IsActiveStatus( $Ticket->Status ) ) {
+                $actions->{'D'} = {
+                    path  => "RTIR/Display.html?Action=Take&id=$id&Status=open",
+                    title => loc('Take')
+                };
+            } else {
+                $actions->{'D'} = {
+                    path  => "RTIR/Display.html?Action=Take&id=$id",
+                    title => loc('Take')
+                };
+            }
         } elsif ( $Ticket->Owner != $session{CurrentUser}->id ) {
             $actions->{'E'} = {
                 path  => "RTIR/Display.html?Action=Steal&id=$id",
