@@ -57,7 +57,7 @@
 
 <%INIT>
 unless( @States ) {
-    @States = ( $m->comp("/RTIR/Elements/States", Queue => $Queue), 'resolved' );
+    @States = ( $m->comp("/RTIR/Elements/States", Queue => $Queue), 'resolved', 'removed' );
 }
 my @possible_states = $m->comp("/RTIR/Elements/States", Queue => $Queue, Inactive => 1 );
 my ($Type) = $m->comp("/RTIR/Elements/Type", Queue => $Queue);
