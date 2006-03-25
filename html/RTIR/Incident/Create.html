@@ -192,14 +192,9 @@ if ($ARGS{'new-MemberOf'}) {
 my $QueueObj = new RT::Queue( $session{'CurrentUser'} );
 $QueueObj->Load( 'Incidents' ) || Abort( loc("Queue could not be loaded.") );
 
-my $TicketObj = $ARGS{TicketObj};
+my $TicketObj = $ARGS{TicketObj}; #XXX: .html(public) pages shouldn't take objects as argument
 
 $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
-
-# delete temporary storage entry to make WebUI clean
-unless ( keys %{ $session{'Attachments'} } && $ARGS{'id'} eq 'new' ) {
-    delete $session{'Attachments'};
-}
 
 if ( $CreateIncident ) {
     my ($inc_obj, @tmp);
@@ -231,8 +226,7 @@ if ( $CreateIncident ) {
         }
     }
     if( $inc_obj ) {
-        $m->comp('Display.html', id => $inc_obj->id, results => \@results );
-        return;
+        return $m->comp('Display.html', id => $inc_obj->id, results => \@results );
     }
 }
 

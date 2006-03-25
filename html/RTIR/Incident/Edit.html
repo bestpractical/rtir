@@ -155,6 +155,7 @@ unless ($OnlySearchForPeople) {
     push @results, ProcessTicketCustomFieldUpdates(ARGSRef => \%ARGS);
     push @results, ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
     push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
+    $ARGS{UpdateAttachments} = $session{'Attachments'};
    	push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef=>\%ARGS );
 }
 my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, '_RTIR_State' );

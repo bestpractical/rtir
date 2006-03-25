@@ -423,7 +423,7 @@ foreach my $key (keys %$addrhash) {
 
     # the content will be part of the template, if desired
     $ARGS{'UpdateContent'} = " ";
-    $ARGS{UpdateAttachments} = $session{'Attachments'};
+    $ARGS{UpdateAttachments} = delete $session{'Attachments'};
     push @updateresults, ProcessUpdateMessage( ARGSRef => \%ARGS,
                                                TicketObj=>$Ticket );
 

@@ -22,42 +22,44 @@
 %# 
 %# 
 %# END LICENSE BLOCK
+
 <& /RTIR/Create.html, 
-    Split            => 1,
-    Incident         => $Incident,
-    QuoteTransaction => $QuoteTransaction,
     Queue            => $TicketObj->QueueObj->Name,
     Subject          => $TicketObj->Subject,
     Requestors       => $TicketObj->RequestorAddresses,
     Cc               => $TicketObj->CcAddresses,
     AdminCc          => $TicketObj->AdminCcAddresses,
-    TicketObj        => $TicketObj,
     Status           => $TicketObj->Status,
     Owner            => $TicketObj->Owner,
     InitialPriority  => $TicketObj->InitialPriority,
     FinalPriority    => $TicketObj->FinalPriority,
+
+    %ARGS,
+
+    Split            => 1,
+    TicketObj        => $TicketObj,
+    Incident         => $Incident,
 &>
 
 <%INIT>
-my $TicketObj = LoadTicket($Ticket);
+my $TicketObj = LoadTicket( $Ticket );
 
-my ($Type) = $m->comp('Elements/Type', Ticket => $TicketObj->Id);
-if ($Type eq 'Incident') {
-    $m->comp("/RTIR/Incident/Split.html", %ARGS);
-    $m->abort;
+my ($Type) = $m->comp('Elements/Type', TicketObj => $TicketObj );
+if ( $m->comp_exists("/RTIR/$Type/Split.html") ) {
+    return $m->comp( "/RTIR/$Type/Split.html", %ARGS );
 }
 
 my $query = "Queue = 'Incidents' AND HasMember = " . $TicketObj->Id;
-my $incidents = new RT::Tickets($session{'CurrentUser'});
+my $incidents = new RT::Tickets( $session{'CurrentUser'} );
 $incidents->FromSQL( $query );
-my $obj = $incidents->First;
-my $Incident;
-$Incident = $obj->Id if $obj && $obj->Id;
 
+my $Incident;
+if ( my $obj = $incidents->First ) {
+    $Incident = $obj->Id;
+}
 
 </%INIT>
 <%ARGS>
-$MemberOf => undef
 $QuoteTransaction => undef
 $Ticket => undef
 </%ARGS>

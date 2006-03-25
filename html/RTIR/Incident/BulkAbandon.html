@@ -87,9 +87,10 @@ my $SubmitCaption = loc("Abandon selected incidents");
 
 my ( @results );
 
+$m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
+
 if ( $ARGS{'BulkAbandon'} ) {
     my @tempresults;
-
     foreach my $id ( @SelectedTickets ) {
         $m->out('<!--  Processing <% $t->id %> -->'); $m->flush_buffer;
 
@@ -114,6 +115,7 @@ if ( $ARGS{'BulkAbandon'} ) {
             my $members = new RT::Tickets( $t->CurrentUser );
             $members->FromSQL( $query );
             while( my $member = $members->Next ) {
+                $ARGS{'UpdateAttachments'} = delete $session{'Attachments'} if $session{'Attachments'};
                 push @tempresults, ProcessUpdateMessage(TicketObj => $member, ARGSRef => \%ARGS );
             }
         }

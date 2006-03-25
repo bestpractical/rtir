@@ -224,11 +224,9 @@ unless ( $id eq 'new' ) {
 
 my ($Type) = $m->comp('Elements/Type', Queue => $QueueObj->Name);
 return $m->comp( '/Ticket/Display.html', %ARGS ) unless $Type;
-
 if ($Type eq 'Block' && RT->Config->Get('RTIR_DisableBlocksQueue') ) {
     Abort(loc("Blocks queue is disabled via config file"));
 }
-
 if ( $m->comp_exists("/RTIR/$Type/Display.html") ) {
     return $m->comp("/RTIR/$Type/Display.html", %ARGS);
 }

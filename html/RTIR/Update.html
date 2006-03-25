@@ -114,7 +114,6 @@ if ($Type eq 'Report') {
     $name = $Type;
 }
 
-
 $DefaultStatus ||= $ARGS{'Status'} || $Ticket->Status;
 $DefaultStatus = 'open' if $DefaultStatus eq 'new';
 
@@ -165,38 +164,7 @@ $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
                      $Ticket->CurrentUserHasRight('ModifyTicket') ); 
 
 
-# {{{ deal with deleting uploaded attachments
-foreach my $key (keys %ARGS) {
-    if ($key =~ m/^DeleteAttach-(.+)$/) {
-        delete $session{'Attachments'}{$1};
-    }
-    $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
-}
-
-# {{{ store the uploaded attachment in session
-if ($ARGS{'Attach'}) { # attachment?
-    $session{'Attachments'} = {} unless defined $session{'Attachments'};
-
-    # strip leading directories
-    $ARGS{'Attach'} =~ s#^.*[\\/]##;
-
-    my $attachment = MakeMIMEEntity(
-        Subject             => "$ARGS{'Attach'}",
-        Body                => "",
-        AttachmentFieldName => 'Attach'
-    );
-    $session{'Attachments'} = {
-        %{$session{'Attachments'} || {}},
-        $ARGS{'Attach'} => $attachment,
-    };
-}
-# }}}
-
-# delete temporary storage entry to make WebUI clean
-unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
-    delete $session{'Attachments'};
-}
-# }}}
+$m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 
 if ( exists $ARGS{SubmitTicket} ) {
     $m->comp('/RTIR/Display.html', %ARGS);

@@ -112,6 +112,8 @@ if ($DefaultStatus eq 'resolved') {
     }
 }
 
+$m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
+
 if ( $SubmitTicket ) {
     foreach my $id( @SelectedTickets ) {
         my $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
@@ -124,6 +126,7 @@ if ( $SubmitTicket ) {
         my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, '_RTIR_State' );
 
         my @tempresults;
+        $ARGS{'UpdateAttachments'} = delete $session{'Attachments'} if $session{'Attachments'};
         push @tempresults, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
         unless ( RT::IR::Ticket::IsLinkedToActiveIncidents( $Ticket, $IncidentObj ) ) {

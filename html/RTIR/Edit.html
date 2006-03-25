@@ -238,6 +238,9 @@ unless ($OnlySearchForPeople) {
     push @results, ProcessTicketCustomFieldUpdates( ARGSRef => \%ARGS );
     push @results, ProcessTicketDates(    TicketObj => $Ticket, ARGSRef => \%ARGS );
     push @results, ProcessTicketLinks(    TicketObj => $Ticket, ARGSRef => \%ARGS );
+
+    # XXX: edit page has no message box or attachments form
+    $ARGS{UpdateAttachments} = delete $session{'Attachments'};
     push @results, ProcessUpdateMessage(  TicketObj => $Ticket, ARGSRef=>\%ARGS );
 }
 my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, '_RTIR_State' );
@@ -246,8 +249,7 @@ if ($newstate ne $oldstate) {
 }
  
 if( $ARGS{'SaveChanges'} && RT->Config->Get('DisplayAfterEdit', $session{'CurrentUser'}) ) {
-    $m->comp("/RTIR/Display.html", results => [@results], %ARGS);
-    $m->abort;
+    return $m->comp("/RTIR/Display.html", results => [@results], %ARGS);
 }
 
 # If they've gone and moved the ticket to somewhere they can't see, etc...

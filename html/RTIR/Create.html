@@ -54,11 +54,18 @@
 %    $m->abort();
 % }
 
+% unless ( $Split ) {
 <form action="<% RT->Config->Get('WebPath') %>/RTIR/Create.html" method="post" enctype="multipart/form-data">
+% } else {
+<form action="<% RT->Config->Get('WebPath') %>/RTIR/Split.html" method="post" enctype="multipart/form-data">
+% }
 <input type="hidden" name="id" value="new" />
 <input type="hidden" name="Queue" value="<% $QueueObj->Name %>" />
 <input type="hidden" name="Status" value="<% $Status || 'open' %>" />
 <input type="hidden" name="Incident" value="<% $ARGS{Incident} %>" />
+% if ( $Split ) {
+<input type="hidden" name="Ticket" value="<% $ARGS{'TicketObj'}->Id %>" />
+% }
 % my $parentvalue;
 % if ($IncidentObj) {
 %   $parentvalue = $IncidentObj->Id;
@@ -333,11 +340,11 @@ my $QueueObj = new RT::Queue( $session{'CurrentUser'} );
 $QueueObj->Load( $Queue ) || Abort( loc("Queue could not be loaded.") );
 
 my ($Type) = $m->comp('/RTIR/Elements/Type', Queue => $Queue );
-if ($Type eq 'Incident') {
-    return $m->comp("/RTIR/Incident/Create.html", %ARGS);
-}
 if ($Type eq 'Block' && RT->Config->Get('RTIR_DisableBlocksQueue') ) {
     Abort(loc("Blocks queue is disabled via config file"));
+}
+if ( $m->comp_exists("/RTIR/$Type/Create.html") ) {
+    return $m->comp( "/RTIR/$Type/Create.html", %ARGS );
 }
 
 my $Status;
@@ -375,17 +382,12 @@ if ( $Split ) {
     }
 }
 
-# delete temporary storage entry to make WebUI clean
-unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
-    delete $session{'Attachments'};
-}
-
+$m->comp( 'SELF:ProcessAttachments', %ARGS );
 
 my @results;
-if ( !$ARGS{'AddMoreAttach'} && $ARGS{'id'} eq 'new' ) {
+if ( !$ARGS{'AddAttachment'} && $ARGS{'id'} eq 'new' ) {
     if ( $Type ne 'Investigation' || $ARGS{'Requestors'} ) {
-        $m->comp( 'Display.html', %ARGS );
-        $m->abort;
+        return $m->comp( 'Display.html', %ARGS );
     } else {
         push @results, loc( "Investigation launch failed: You must enter a correspondent.");
     }
@@ -412,6 +414,7 @@ $QuoteTransaction => undef
 $Attachment => '';
 </%ARGS>
 <%INIT>
+use Data::Dumper; $RT::Logger->crit( Dumper( \%ARGS ) );
 
 $session{'Attachments'} ||= {};
 
@@ -424,15 +427,15 @@ foreach ( @DeleteAttachments ) {
 
 # store the uploaded attachment in session
 if ( $Attachment ) {
-    # strip leading directories
-    $Attachment =~ s{^.*[\\/]}{};
+    my $filename = "$Attachment";
+    $filename =~ s{^.*[\\/]}{};
 
     my $entity = MakeMIMEEntity(
-        Subject             => $Attachment,
+        Subject             => $filename,
         Body                => '',
         AttachmentFieldName => 'Attachment'
     );
-    $session{'Attachments'}{ $Attachment } = $entity;
+    $session{'Attachments'}{ $filename } = $entity;
     $session{'i'}++;
 }
 </%INIT>
