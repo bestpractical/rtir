@@ -37,14 +37,8 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-% unless ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
-<% loc("You are not allowed to merge this [_1].", $Type) %>
-%    $m->abort();
-% }
-
 <form action="<% RT->Config->Get('WebPath') %>/RTIR/Merge.html" method="post">
 <input type="hidden" name="id" value="<% $id %>" />
-<input type="hidden" name="<% $id %>-MergeInto" />
 
 <& /RTIR/Search/Elements/ShowResults, 
     Queue       => $Queue,
@@ -64,19 +58,33 @@
 <%INIT>
 my $Ticket = LoadTicket($id);
 $id = $ARGS{'id'} = $Ticket->id;
+
 my ($Type) = $m->comp( 'Elements/Type', TicketObj => $Ticket );
 my $Queue = $Ticket->QueueObj->Name;
 
 # XXX: clear radio, checkboxes from format
 $Format =~ s/__RTIR_(?:Radio|Check)__,//;
 
+my $take_or_steal = sub {
+    # XXX: we use such code all over the RTIR, we need one method
+    my $t = shift;
+    return 1 if $t->Owner == $t->CurrentUser->id;
+    return $t->Take if $t->Owner == $RT::Nobody->id;
+    return $t->Steal;
+};
+
 my (@results);
 if ( $SelectedTicket ) {
-    $ARGS{ $id .'-MergeInto' } = $SelectedTicket;
     my $MergeTicket = LoadTicket( $SelectedTicket );
+    $ARGS{ $id .'-MergeInto' } = $MergeTicket->id;
+
     if ( $MergeTicket->QueueObj->id ne $Ticket->QueueObj->id ) {
         push @results, loc("Merge failed: Ticket #[_1] is not the right type", $MergeTicket->Id );
     } else {
+        foreach ( $Ticket, $MergeTicket ) {
+            my ($status, $msg) = $take_or_steal->( $_ );
+            push @results, $msg if $msg;
+        }
         push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
     }
 }
