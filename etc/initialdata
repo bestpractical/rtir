@@ -30,6 +30,7 @@
         Type        => 'SelectSingle',
         Queue       => 'Incidents',
         Disabled    => 0,
+        Description => 'State for Incidents RTIR queue',
         Values      => [
             {
                 Name      => "open",
@@ -50,6 +51,7 @@
         Type        => 'SelectSingle',
         Queue       => 'Incidents',
         Disabled    => 0,
+        Description => 'Constituency for Incidents RTIR queue',
         Values      => [
             {
                 Name      => "EDUNET",
@@ -66,6 +68,7 @@
         Type        => 'SelectSingle',
         Queue       => 'Incident Reports',
         Disabled    => 0,
+        Description => 'State for Incident Reports RTIR queue',
         Values      => [
             {
                 Name      => "new",
@@ -90,6 +93,7 @@
         Type        => 'SelectSingle',
         Queue       => 'Investigations',
         Disabled    => 0,
+        Description => 'State for Investigations RTIR queue',
         Values      => [
             {
                 Name      => "open",
@@ -106,6 +110,7 @@
         Type        => 'SelectSingle',
         Queue       => 'Blocks',
         Disabled    => 0,
+        Description => 'State for Blocks RTIR queue',
         Values      => [
             {
                 Name      => "pending activation",
@@ -128,14 +133,16 @@
     {
         Name        => '_RTIR_Description',
         Type        => 'FreeformSingle',
-        Disabled    => 0,
         Queue       => 'Incidents',
+        Disabled    => 0,
+        Description => 'Description for Incidents RTIR queue',
     },
     {
         Name        => '_RTIR_Resolution',
         Type        => 'SelectSingle',
-        Disabled    => 0,
         Queue       => 'Incidents',
+        Disabled    => 0,
+        Description => 'Resolution for Incidents RTIR queue',
         Values      => [
             {   Name => 'successfully resolved',
                 SortOrder => 1,
@@ -156,6 +163,7 @@
         Type        => 'SelectSingle',
         Queue       => 'Incident Reports',
         Disabled    => 0,
+        Description => 'SLA for Incident Reports RTIR queue',
         Values      => [
             {   Name => 'Full service',
                 SortOrder => 1,
@@ -173,6 +181,7 @@
         Type        => 'SelectSingle',
         Queue       => 'Incidents',
         Disabled    => 0,
+        Description => 'Function for Incidents RTIR queue',
         Values      => [
             {
                 Name      => "AbuseDesk",
@@ -189,6 +198,7 @@
         Type        => 'SelectSingle',
         Queue       => 'Incidents',
         Disabled    => 0,
+        Description => 'Classification for Incidents RTIR queue',
         Values      => [
             {
                 Name      => "Spam",
@@ -221,6 +231,7 @@
         Type        => 'SelectSingle',
         Queue       => 'Incident Reports',
         Disabled    => 0,
+        Description => 'How the incident was reported for Incident Reports RTIR queue',
         Values => [
             {
                 Name      => "Email",
@@ -241,6 +252,7 @@
         Type        => 'SelectSingle',
         Queue       => 'Incident Reports',
         Disabled    => 0,
+        Description => 'Reporter type for Incident Reports RTIR queue',
         Values      => [
             { Name => "customer",      SortOrder => 1 },
             { Name => "external individual", SortOrder => 2 },
@@ -264,24 +276,28 @@
         Type        => 'FreeformSingle',
         Queue       => 'Blocks',
         Disabled    => 0,
+        Description => 'IP address for Blocks RTIR queue',
     },
     {
         Name        => '_RTIR_Netmask',
         Type        => 'FreeformSingle',
         Queue       => 'Blocks',
         Disabled    => 0,
+        Description => 'Network mask for Blocks RTIR queue',
     },
     {
         Name        => '_RTIR_Port',
         Type        => 'FreeformSingle',
         Queue       => 'Blocks',
         Disabled    => 0,
+        Description => 'Port for Blocks RTIR queue',
     },
     {
         Name        => '_RTIR_WhereBlocked',
         Type        => 'FreeformSingle',
         Queue       => 'Blocks',
         Disabled    => 0,
+        Description => 'Where the block is placed for Blocks RTIR queue',
     },
     {
         Name        => '_RTIR_Customer',
@@ -289,6 +305,7 @@
         Queue       => 'Incident Reports',
         Disabled    => 0,
         Values      => [ ],
+        Description => 'Customer for Incident Reports RTIR queue',
     },
     {
         Name        => '_RTIR_Customer',
@@ -296,6 +313,7 @@
         Queue       => 'Investigations',
         Disabled    => 0,
         Values      => [ ],
+        Description => 'Customer for Investigations RTIR queue',
     },
 );
 
@@ -546,21 +564,21 @@
        ScripAction      => 'RTIR Set Incident State',
        Template          => 'Blank', },
 
-   {  Description => "SetRTIRState",
-      Queue            => 'Incident Reports',
-      ScripCondition   => 'RTIR Require Due Change',
-      ScripAction      => 'RTIR Set Incident Due',
-      Template          => 'Blank', },
-   {  Description => "SetRTIRState",
-      Queue            => 'Investigations',
-      ScripCondition   => 'RTIR Require Due Change',
-      ScripAction      => 'RTIR Set Incident Due',
-      Template          => 'Blank', },
-   {  Description => "SetRTIRState",
-      Queue            => 'Blocks',
-      ScripCondition   => 'RTIR Require Due Change',
-      ScripAction      => 'RTIR Set Incident Due',
-      Template          => 'Blank', },
+    {  Description => "SetRTIRState",
+       Queue            => 'Incident Reports',
+       ScripCondition   => 'RTIR Require Due Change',
+       ScripAction      => 'RTIR Set Incident Due',
+       Template          => 'Blank', },
+    {  Description => "SetRTIRState",
+       Queue            => 'Investigations',
+       ScripCondition   => 'RTIR Require Due Change',
+       ScripAction      => 'RTIR Set Incident Due',
+       Template          => 'Blank', },
+    {  Description => "SetRTIRState",
+       Queue            => 'Blocks',
+       ScripCondition   => 'RTIR Require Due Change',
+       ScripAction      => 'RTIR Set Incident Due',
+       Template          => 'Blank', },
 
     {  Description => "ResolveAllChildren",
        Queue            => 'Incidents',
@@ -780,7 +798,7 @@ for my $cf (@CustomFields) {
 } );
 
 @Final = ( sub {
-    eval {use RT::FM;};
+    eval {require RT::FM;};
     unless ($@) {
     $| = 1;
         my $CurrentUser = RT::CurrentUser->new();
