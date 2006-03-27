@@ -59,12 +59,6 @@
 my $Ticket = LoadTicket($id);
 $id = $ARGS{'id'} = $Ticket->id;
 
-my ($Type) = $m->comp( 'Elements/Type', TicketObj => $Ticket );
-my $Queue = $Ticket->QueueObj->Name;
-
-# XXX: clear radio, checkboxes from format
-$Format =~ s/__RTIR_(?:Radio|Check)__,//;
-
 my $take_or_steal = sub {
     # XXX: we use such code all over the RTIR, we need one method
     my $t = shift;
@@ -86,8 +80,17 @@ if ( $SelectedTicket ) {
             push @results, $msg if $msg;
         }
         push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
+
+        $Ticket = LoadTicket($id);
+        $id = $ARGS{'id'} = $Ticket->id;
     }
 }
+
+my ($Type) = $m->comp( 'Elements/Type', TicketObj => $Ticket );
+my $Queue = $Ticket->QueueObj->Name;
+
+# XXX: clear radio, checkboxes from format
+$Format =~ s/__RTIR_(?:Radio|Check)__,//;
 
 my $title = loc("Merge [_1] #[_2]: [_3]", $Type, $id, $Ticket->Subject);
 
