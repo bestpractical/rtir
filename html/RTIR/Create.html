@@ -66,18 +66,27 @@
 % if ( $Split ) {
 <input type="hidden" name="Ticket" value="<% $ARGS{'TicketObj'}->Id %>" />
 % }
-% my $parentvalue;
-% if ($IncidentObj) {
-%   $parentvalue = $IncidentObj->Id;
-% } elsif ($TicketObj) {
-%   $parentvalue = $TicketObj->Id;
-%   my $incidents = new RT::Tickets( $session{'CurrentUser'} );
-%   $incidents->FromSQL( "Queue = 'Incidents' AND HasMember = " . $TicketObj->Id );
-%   while (my $incident = $incidents->Next) {
-%     $parentvalue .= " ". $incident->Id;
-%   }
-% }
-% if (defined $parentvalue) {
+<%PERL>
+my $parentvalue = '';
+if ( $IncidentObj ) {
+    $parentvalue = $IncidentObj->Id;
+} elsif ($TicketObj) {
+
+    # XXX: How do we want to link to the former ticket while split?
+    # MemberOf is buggy, for example IR(that was not linked to Inc) while split
+    # generate new IR, but linked to itself, this hides the IR from RTIR at glance.
+    # also we couldn't see "IR MeberOf IR" links.
+    # $parentvalue = $TicketObj->Id; # this string was commented out
+
+    my $incidents = new RT::Tickets( $session{'CurrentUser'} );
+    $incidents->FromSQL( "Queue = 'Incidents' AND HasMember = " . $TicketObj->Id );
+    while ( my $incident = $incidents->Next ) {
+        $parentvalue .= ' ' if $parentvalue;
+        $parentvalue .= $incident->Id;
+    }
+}
+</%PERL>
+% if ( $parentvalue ) {
 <input type="hidden" name="new-MemberOf" value="<% $parentvalue %>" />
 % }
 
