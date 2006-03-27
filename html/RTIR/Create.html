@@ -423,7 +423,6 @@ $QuoteTransaction => undef
 $Attachment => '';
 </%ARGS>
 <%INIT>
-use Data::Dumper; $RT::Logger->crit( Dumper( \%ARGS ) );
 
 $session{'Attachments'} ||= {};
 
