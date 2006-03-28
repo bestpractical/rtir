@@ -24,9 +24,12 @@
 %# END LICENSE BLOCK
 %  while (my $incident = $incidents->Next) {
 %   $count++;
-<a href="<%RT->Config->Get('WebPath')%>/RTIR/Display.html?id=<%$incident->Id%>"><%$incident->Id%>: <%$incident->Subject%></a> <i>(<& /RTIR/Elements/ShowRTIRField, Ticket => $incident, Name => 'State' &>)</i>
+% unless ( $action ) {
+<a href="<% RT->Config->Get('WebPath') %>/RTIR/Display.html?id=<% $Ticket->Id %>&DeleteLink--MemberOf-<% $incident->Id %>=1">[<% loc('Unlink') %>]</a>
+% }
+<a href="<% RT->Config->Get('WebPath') %>/RTIR/Display.html?id=<% $incident->Id %>"><% $incident->Id %>: <% $incident->Subject %></a> <i>(<& /RTIR/Elements/ShowRTIRField, Ticket => $incident, Name => 'State' &>)</i>
 % if ($depth < 8) {
-<& /RTIR/Elements/ShowIncidents, Ticket => $incident, depth => ($depth+1) &> 
+<& /RTIR/Elements/ShowIncidents, Ticket => $incident, depth => ($depth+1) &>
 %   }
 % }
 % if ($depth == 1 and $count == 0) {
@@ -34,19 +37,11 @@
 % }
 
 % if ($depth == 1) {
-%   if ( $Ticket->Owner == $session{'CurrentUser'}->id ) {
+%   unless ( $action ) {
 <b><a href="<%RT->Config->Get('WebPath')%>/RTIR/Incident/LinkToIncident.html?id=<% $Ticket->Id %>">[Link]</a></b>
 <b><a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Child=<% $Ticket->Id %>&Queue=Incidents">[New]</a></b>
-%   } else { #XXX: looks too complex, refactor it
-%       if ( $Ticket->Owner == $RT::Nobody->Id ) {
-%           if ( $Ticket->QueueObj->IsActiveStatus( $Ticket->Status ) ) {
-<a href="<% RT->Config->Get('WebPath') %>/RTIR/Display.html?Action=Take&id=<% $Ticket->Id %>&Status=open">[<% loc('Take') %>]</a>
-%           } else {
-<a href="<% RT->Config->Get('WebPath') %>/RTIR/Display.html?Action=Take&id=<% $Ticket->Id %>">[<% loc('Take') %>]</a>
-%           }
-%       } else {
-<a href="<% RT->Config->Get('WebPath') %>/RTIR/Display.html?Action=Steal&id=<% $Ticket->Id %>">[<% loc('Steal') %>]</a>
-%       }
+%   } else {
+<a href="<% RT->Config->Get('WebPath') %>/RTIR/Display.html?Action=<% $action %>&id=<% $Ticket->Id %>">[<% loc( $action ) %>]</a>
 %   }
 % }
 
@@ -57,6 +52,15 @@ my $count = 0;
 my $query = "Queue = 'Incidents' AND HasMember = " . $Ticket->Id;
 my $incidents = new RT::Tickets($session{'CurrentUser'});
 $incidents->FromSQL($query);
+
+my $action = '';
+if ( $Ticket->Owner != $session{'CurrentUser'}->Id ) {
+    if ( $Ticket->Owner == $RT::Nobody->Id ) {
+        $action = 'Take';
+    } else {
+        $action = 'Steal';
+    }
+}
 
 </%INIT>
 
