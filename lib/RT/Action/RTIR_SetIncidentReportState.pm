@@ -65,7 +65,6 @@ sub GetState {
         # TODO: check how do we set (control) Status of the IR
         # may be we don't need to check this conditions and
         # just use status value as in other RTIR_Set*State actions
-        return 'open' if $self->TicketObj->Owner != $RT::Nobody->Id;
 
         my $parents = RT::Tickets->new( $self->TransactionObj->CurrentUser );
         $parents->LimitHasMember( $self->TicketObj->id );
