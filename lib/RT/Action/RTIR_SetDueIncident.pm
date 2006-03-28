@@ -75,18 +75,27 @@ Set the Due date based on the most due child.
 sub Commit {
     my $self = shift;
 
-    my $incident;
-    if ( $self->TransactionObj->Type eq 'DeleteLink' ) {
+    my $type = $self->TransactionObj->Type;
+    if ( $type eq 'DeleteLink' ) {
         my $uri = new RT::URI( $self->CurrentUser );
         $uri->FromURI( $self->TransactionObj->OldValue );
-        $incident = $uri->Object;
-    } else {
-        my $incidents = new RT::Tickets($self->CurrentUser);
-        $incidents->FromSQL("Queue = 'Incidents' AND HasMember = " . $self->TicketObj->id);
-        $incidents->RowsPerPage(1);
-        $incident = $incidents->First;
+        return $self->UpdateDue( $uri->Object );
     }
+    
+    my $incidents = new RT::Tickets($self->CurrentUser);
+    $incidents->FromSQL( "Queue = 'Incidents' AND HasMember = " . $self->TicketObj->id );
+    while ( my $incident = $incidents->Next ) {
+        $self->UpdateDue( $incident );
+    }
+
+    return 1;
+}
+
+sub UpdateDue {
+    my $self = shift;
+    my $incident = shift;
     return 1 unless $incident;
+    return 1 unless $incident->QueueObj->Name eq 'Incidents';
 
     my $query =  "(Queue = 'Incident Reports'"
                 ." OR Queue = 'Investigations'"
@@ -100,14 +109,10 @@ sub Commit {
     $children->OrderBy( FIELD => 'Due', ORDER => 'ASC' );
     $children->RowsPerPage(1);
     my $mostdue = $children->First;
-    if ($mostdue) {
-        $incident->SetDue($mostdue->DueObj->ISO);
-    } else {
-        $incident->SetDue(0);
-    }
+
+    $incident->SetDue( $mostdue? $mostdue->DueObj->ISO: 0 );
 
     return 1;
-
 }
 
 # }}}
