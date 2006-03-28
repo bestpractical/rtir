@@ -69,7 +69,7 @@ sub IsApplicable {
 
     my $field = $self->TransactionObj->Field;
     return 1 if
-        ( $type eq "AddLink" and $field eq "MemberOf" ) or
+        ( $type =~ /^(Add|Delete)Link$/ and $field eq "MemberOf" ) or
         ( $type eq "Set" and $field eq "Queue" );
 
     return 0;
