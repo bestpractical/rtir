@@ -37,23 +37,15 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<% RT->Config->Get('WebPath') %>/RTIR/Merge.html" method="post">
-<input type="hidden" name="id" value="<% $id %>" />
+<& /RTIR/Elements/MergeWith, %defaults, %ARGS, Queue => $Ticket->QueueObj->Name, Ticket => $Ticket &>
 
-<& /RTIR/Search/Elements/ShowResults, 
-    Queue       => $Queue,
-    BaseQuery   => $BaseQuery,
-    Query       => $Query,
-    Format      => '__RTIR_Radio__,'. $Format,
-    Rows        => $Rows,
-    Page        => $Page,
-    OrderBy     => $OrderBy,
-    Order       => $Order,
-    BaseURL     => $current_tab,
-&>
+% if ($Ticket->QueueObj->Name eq "Incident Reports") {
+<& /RTIR/Elements/MergeWith, %defaults, %ARGS, Queue => "Investigations", Ticket => $Ticket &>
+% }
 
-<& /Elements/Submit, Caption=> loc('Merge into selected Ticket'), Label => loc("Merge") &>
-</form>
+% if ($Ticket->QueueObj->Name eq "Investigations") {
+<& /RTIR/Elements/MergeWith, %defaults, %ARGS, Queue => "Incident Reports", Ticket => $Ticket &>
+% }
 
 <%INIT>
 my $Ticket = LoadTicket($id);
@@ -70,11 +62,16 @@ my $take_or_steal = sub {
 my (@results);
 if ( $SelectedTicket ) {
     my $MergeTicket = LoadTicket( $SelectedTicket );
-    $ARGS{ $id .'-MergeInto' } = $MergeTicket->id;
 
-    if ( $MergeTicket->QueueObj->id ne $Ticket->QueueObj->id ) {
-        push @results, loc("Merge failed: Ticket #[_1] is not the right type", $MergeTicket->Id );
-    } else {
+    my @queues = sort map {$_->Name} $Ticket->QueueObj, $MergeTicket->QueueObj;
+    if ( $queues[0] eq $queues[1] or ($queues[0] eq "Incident Reports" and $queues[1] eq "Investigations")) {
+        if ($MergeTicket->QueueObj->Name eq "Incident Reports") {
+            # We always want to merge into the Investigation
+            ($Ticket, $MergeTicket) = ($MergeTicket, $Ticket);
+        }
+        
+        $ARGS{ $Ticket->id .'-MergeInto' } = $MergeTicket->id;            
+
         foreach ( $Ticket, $MergeTicket ) {
             my ($status, $msg) = $take_or_steal->( $_ );
             push @results, $msg if $msg;
@@ -83,10 +80,12 @@ if ( $SelectedTicket ) {
 
         $Ticket = LoadTicket($id);
         $id = $ARGS{'id'} = $Ticket->id;
+    } else {
+        push @results, loc("Merge failed: Ticket #[_1] is not the right type", $MergeTicket->Id );
     }
 }
 
-my ($Type) = $m->comp( 'Elements/Type', TicketObj => $Ticket );
+my ($Type) = $m->comp( '/RTIR/Elements/Type', TicketObj => $Ticket );
 my $Queue = $Ticket->QueueObj->Name;
 
 # XXX: clear radio, checkboxes from format
@@ -100,14 +99,16 @@ unless ( $BaseQuery ) {
     $BaseQuery = join ' AND ', map "( $_ )", grep $_, $BaseQuery, " id != $id";
 }
 
-my $QueryString = $m->comp('/Elements/QueryString',
-    Query   => $Query,
+
+my %defaults = (
     Format  => $Format,
     Rows    => $Rows,
     Page    => $Page,
     OrderBy => $OrderBy,
     Order   => $Order,
 );
+
+my $QueryString = $m->comp('/Elements/QueryString', Query => $Query, %defaults);
 
 my $current_tab = "RTIR/Merge.html?id=$id";
 

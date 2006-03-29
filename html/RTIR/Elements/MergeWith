@@ -1,0 +1,48 @@
+<form action="<% RT->Config->Get('WebPath') %>/RTIR/Merge.html" method="post">
+<input type="hidden" name="id" value="<% $id %>" />
+<h3><% $Type %>s</h3>
+<& /RTIR/Search/Elements/ShowResults, 
+    Queue       => $Queue,
+    BaseQuery   => $BaseQuery,
+    Query       => $Query,
+    Format      => '__RTIR_Radio__,'. $Format,
+    Rows        => $Rows,
+    Page        => $Page,
+    OrderBy     => $OrderBy,
+    Order       => $Order,
+    BaseURL     => "RTIR/Merge.html?id=$id",
+&>
+
+<& /Elements/Submit, Caption=> loc('Merge into selected Ticket'), Label => loc("Merge") &>
+</form>
+
+<%INIT>
+my ($Type) = $m->comp( '/RTIR/Elements/Type', Queue => $Queue );
+
+$Query ||= $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
+unless ( $BaseQuery ) {
+    $BaseQuery = $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
+    $BaseQuery = join ' AND ', map "( $_ )", grep $_, $BaseQuery, " id != $id";
+}
+
+# XXX: clear radio, checkboxes from format
+$Format =~ s/__RTIR_(?:Radio|Check)__,//;
+
+</%INIT>
+      
+<%ARGS>
+$id             => undef
+$Ticket         => undef
+$Queue          => undef
+
+$Format         => undef
+$Rows           => undef
+$Page           => undef
+$OrderBy        => undef
+$Order          => undef
+
+$SelectedTicket => undef
+
+$BaseQuery      => undef
+$Query          => undef
+</%ARGS>
