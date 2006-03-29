@@ -67,7 +67,7 @@
 <input type="hidden" name="Ticket" value="<% $ARGS{'TicketObj'}->Id %>" />
 % }
 <%PERL>
-my $parentvalue = '';
+my $parentvalue;
 if ( $IncidentObj ) {
     $parentvalue = $IncidentObj->Id;
 } elsif ($TicketObj) {
