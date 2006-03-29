@@ -126,12 +126,12 @@ for my $cf (@CustomFieldsList) {
 }
 
 @Scrips = (
-    {  Description       => "SetStartsDate",
+    {  Description       => "SetStartsDateOnQueueChange",
        Queue             => 'Incidents',
        ScripCondition    => 'On Queue Change',
        ScripAction       => 'RTIR Set Starts to Now',
        Template          => 'Blank' },
-    {  Description       => "SetStarts",
+    {  Description       => "SetStartsOnQueueChange",
        Queue             => [ 'Incident Reports', 'Investigations', 'Blocks' ],
        ScripCondition    => 'On Queue Change',
        ScripAction       => 'RTIR Set Starts by Business Hours',
