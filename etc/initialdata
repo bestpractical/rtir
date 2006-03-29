@@ -302,10 +302,18 @@
     {
         Name        => '_RTIR_Customer',
         Type        => 'SelectMultiple',
-        Queue       => ['Incident Reports', 'Investigations'],
+        Queue       => 'Incident Reports',
         Disabled    => 0,
         Values      => [ ],
-        Description => 'Customer for Incident Reports and Investigations RTIR queues',
+        Description => 'Customer for Incident Reports RTIR queue',
+    },
+    {
+        Name        => '_RTIR_Customer',
+        Type        => 'SelectSingle',
+        Queue       => 'Investigations',
+        Disabled    => 0,
+        Values      => [ ],
+        Description => 'Customer for Investigations RTIR queue',
     },
 );
 
