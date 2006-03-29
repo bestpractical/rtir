@@ -243,6 +243,11 @@ if ( $id eq 'new' ) {
         push @results, $msg;
     }
 
+    if ( $ARGS{'TakeOrStealFirst'} ) {
+        my ($status, $msg) = $Ticket->TakeOrSteal;
+	push @results, $msg if $msg;
+    }
+
     $ARGS{UpdateAttachments} = delete $session{'Attachments'};
     push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS );
     push @results, ProcessTicketBasics(  TicketObj => $Ticket, ARGSRef => \%ARGS );

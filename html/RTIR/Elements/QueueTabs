@@ -189,17 +189,7 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
                     title => loc('Quick Resolve'),
                 };
             }
-            if ( $Type eq 'Report' ) {
-                $actions->{'B'} = {
-                    path =>
-                        "RTIR/Update.html?Action=Comment&DefaultStatus=rejected&id=$id",
-                    title => loc('Reject'),
-                };
-                $actions->{'Bb'} = {
-                    path  => "RTIR/Display.html?Status=rejected&id=$id",
-                    title => loc('Quick Reject'),
-                };
-            } elsif ( $Type eq 'Incident' ) {
+	    if ( $Type eq 'Incident' ) {
                 $actions->{'B'} = {
                     path =>
                         "RTIR/Incident/Reply.html?id=$id&Action=Comment&All=1&DefaultStatus=rejected&SelectAllTickets=1",
@@ -226,6 +216,20 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
                 title => loc('Steal')
             };
         }
+    }	
+
+    if ( $can{'ModifyTicket'} || $can{'OwnTicket'} ) {
+	if ( $Type eq 'Report' ) {
+	  $actions->{'B'} = {
+			     path => "RTIR/Update.html?Action=Comment&TakeOrStealFirst=1&DefaultStatus=rejected&id=$id",
+			     title => loc('Reject'),
+			    };
+
+	  $actions->{'Bb'} = {
+			      path  => "RTIR/Display.html?Status=rejected&TakeOrStealFirst=1&id=$id",
+			      title => loc('Quick Reject'),
+			     };
+	}
     }
 
     if ( $can{'ModifyTicket'} || $can{'CommentOnTicket'} ) {
