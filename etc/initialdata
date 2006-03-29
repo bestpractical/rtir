@@ -521,11 +521,6 @@
        ScripCondition    => 'RTIR Close Ticket',
        ScripAction       => 'RTIR Unset Due',
        Template          => 'Blank' },
-    {  Description       => "UnsetDue",
-       Queue             => 'Blocks',
-       ScripCondition    => 'RTIR Close Ticket',
-       ScripAction       => 'RTIR Unset Due',
-       Template          => 'Blank' },
 
     {  Description       => "SetDueReopen",
        Queue             => 'Incident Reports',
