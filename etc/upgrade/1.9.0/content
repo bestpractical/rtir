@@ -125,6 +125,30 @@ for my $cf (@CustomFieldsList) {
     );
 }
 
+@Scrips = (
+    {  Description       => "SetStartsDate",
+       Queue             => 'Incidents',
+       ScripCondition    => 'On Queue Change',
+       ScripAction       => 'RTIR Set Starts to Now',
+       Template          => 'Blank' },
+    {  Description       => "SetStarts",
+       Queue             => [ 'Incident Reports', 'Investigations', 'Blocks' ],
+       ScripCondition    => 'On Queue Change',
+       ScripAction       => 'RTIR Set Starts by Business Hours',
+       Template          => 'Blank' },
+
+    {  Description       => "SetDueOnQueueChange",
+       Queue             => 'Incident Reports',
+       ScripCondition    => 'On Queue Change',
+       ScripAction       => 'RTIR Set Due by SLA',
+       Template          => 'Blank' },
+    {  Description       => "SetDueOnQueueChange",
+       Queue             => [ 'Investigations', 'Blocks' ],
+       ScripCondition    => 'On Queue Change',
+       ScripAction       => 'RTIR Set Due Correspond',
+       Template          => 'Blank' },
+);
+
 push @ACL, (
     { GroupId => 'DutyTeam',      # - principalId
       GroupDomain => 'UserDefined',
