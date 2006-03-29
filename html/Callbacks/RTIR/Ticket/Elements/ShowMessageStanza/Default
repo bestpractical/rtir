@@ -1,9 +1,10 @@
 <%INIT>
 return unless $m->request_comp->path =~ m{^/RTIR/};
+my $ticket = $Transaction->TicketObj;
 return $m->comp( '/RTIR/Elements/MakeClicky',
     %ARGS,
-    ticket => $Transaction->TicketObj,
-    url_params => "ticket=".$Transaction->TicketObj->Id,
+    ticket => $ticket,
+    url_params => "ticket=". $ticket->Id,
 );
 </%INIT>
 <%ARGS>
