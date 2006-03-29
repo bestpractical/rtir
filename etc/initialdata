@@ -704,6 +704,22 @@ push @ACL, (
       GroupDomain => 'UserDefined',
       Queue => 0,
       Right => 'ModifySelf', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 0,
+      Right => 'CreateSavedSearch', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 0,
+      Right => 'EditSavedSearches', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 0,
+      Right => 'LoadSavedSearch', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => 0,
+      Right => 'ShowSavedSearches', },
 );
 
 for my $cf (@CustomFields) {
