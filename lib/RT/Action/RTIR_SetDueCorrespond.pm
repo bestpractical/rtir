@@ -77,17 +77,15 @@ sub Commit {
 
     my $bizhours = RT::IR::BusinessHours();
 
-    my $date = RT::Date->new($RT::SystemUser);
+    my $date = RT::Date->new( $RT::SystemUser );
     $date->SetToNow;
+    $date->AddDays( RT->Config->Get('OverdueAfter') || 7 );
 
-    $date->AddDays(RT->Config->Get('OverdueAfter'));
-
-    my $due = $bizhours->first_after($date->Unix);
-    $date->Set(Format => 'unix', Value => $due);
-    $self->TicketObj->SetDue($date->ISO);
+    my $due = $bizhours->first_after( $date->Unix );
+    $date->Set( Format => 'unix', Value => $due );
+    $self->TicketObj->SetDue( $date->ISO );
 
     return 1;
-
 }
 
 # }}}

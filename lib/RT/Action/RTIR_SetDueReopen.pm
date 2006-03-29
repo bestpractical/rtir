@@ -75,13 +75,12 @@ sub Commit {
     # create a new SLA object
     my $SLAObj = RT::IR::SLAInit();
 
-    # set the Business::Hours
-    my $bh = RT::IR::BusinessHours();
-
     # Set the defaults from the RTIR_Config.pm file
     $SLAObj->SetInHoursDefault( RT->Config->Get('SLA_Reopen_InHours') );
     $SLAObj->SetOutOfHoursDefault( RT->Config->Get('SLA_Reopen_OutOfHours') );
 
+    # set the Business::Hours
+    my $bh = RT::IR::BusinessHours();
     $SLAObj->SetBusinessHours( $bh );
 
     # get the due date
