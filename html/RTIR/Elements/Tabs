@@ -72,6 +72,8 @@ my $topactions = {
     A => { html => $m->scomp('/RTIR/Elements/SimpleSearch') }
 };
 
+$m->comp('/Elements/Callback', toptabs => $toptabs, topactions => $topactions, %ARGS);
+
 </%INIT>
 <%ARGS>
 $current_toptab => undef
