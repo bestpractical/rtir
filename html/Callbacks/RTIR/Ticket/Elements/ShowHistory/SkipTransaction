@@ -3,20 +3,20 @@
 # Set $skip to 1 if transaction matches criteria
 # $skip is passed by reference
 
-my $obj = $Transaction->Object;
+# get out of here asap
+unless ( $Transaction->Field eq 'Status' && $Transaction->Type =~ /^(?:Status|Set)$/ ) {
+    return $$skip = 0;
+}
 
 # check only ticket's transactions
-return $$skip = 0 unless $obj->isa( 'RT::Ticket' );
+my $obj = $Transaction->Object;
+return $$skip = 0 unless $obj && $obj->isa( 'RT::Ticket' );
 
 # only check if it's an RTIR queue
 my $Queue = $obj->QueueObj->Name;
-return $$skip = 0 unless $Queue =~ /^(?:Incidents|Incident Reports|Investigations|Blocks)$/i;
+return $$skip = 1 if $Queue =~ /^(?:Incidents|Incident Reports|Investigations|Blocks)$/i;
 
-if ( $Transaction->Field eq 'Status' && $Transaction->Type =~ /^(?:Status|Set)$/ ) {
-    return $$skip = 1;
-}
-
-return 0;
+return $$skip = 0;
 
 </%INIT>
 
