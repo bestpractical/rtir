@@ -51,14 +51,6 @@
 my $Ticket = LoadTicket($id);
 $id = $ARGS{'id'} = $Ticket->id;
 
-my $take_or_steal = sub {
-    # XXX: we use such code all over the RTIR, we need one method
-    my $t = shift;
-    return 1 if $t->Owner == $t->CurrentUser->id;
-    return $t->Take if $t->Owner == $RT::Nobody->id;
-    return $t->Steal;
-};
-
 my (@results);
 if ( $SelectedTicket ) {
     my $MergeTicket = LoadTicket( $SelectedTicket );
@@ -73,7 +65,7 @@ if ( $SelectedTicket ) {
         $ARGS{ $Ticket->id .'-MergeInto' } = $MergeTicket->id;            
 
         foreach ( $Ticket, $MergeTicket ) {
-            my ($status, $msg) = $take_or_steal->( $_ );
+            my ($status, $msg) = $_->TakeOrSteal;
             push @results, $msg if $msg;
         }
         push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
