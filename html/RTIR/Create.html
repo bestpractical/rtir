@@ -94,12 +94,12 @@ if ( $IncidentObj ) {
 
 <& /Widgets/TitleBoxStart, contentbg => "#cccccc", title => $Title &>
 <table border="0" cellpadding="0" cellspacing="2">
-% if ($Incident) {
+% if ( $Incident ) {
   <tr>
     <td align="right"><&|/l&>Incident</&>:</td>
     <td><% $Incident %></td>
   </tr>
-% } elsif (defined $parentvalue) {
+% } elsif ( $parentvalue ) {
   <tr>
     <td align="right"><&|/l&>Split from</&>:</td>
     <td><% $parentvalue %></td>
