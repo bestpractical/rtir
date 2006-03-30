@@ -24,7 +24,8 @@ my $report = create_ir($agent, {Subject => $SUBJECT, Content => "bla" });
 
 
 # Create a new Incident from that report
-my $first_incident_id = NewIncidentFromChild(id => $report);
+my $first_incident_id = create_incident_for_ir($agent, $report, {Subject => "first incident"},
+                                               {Function => "IncidentCoord"});
 
 # TODO: make sure subject and content come from Report
 
@@ -40,35 +41,6 @@ LinkChildToIncident(id => $report, incident => $second_incident_id);
 
 # TODO: verify in DB that report has 1 parent, and the right parent
 
-sub NewIncidentFromChild {
-    my %args = ( @_ );
-
-    my $id = $args{'id'};
-    my $subject = $args{'Subject'};
-    my $content = $args{'Content'};
-
-    display_ir($agent, $id);
-
-    # Select the "New" link from the Display page
-    $agent->follow_link_ok({text => "[New]"}, "Followed 'New (Incident)' link");
-
-    $agent->form_number(2);
-
-    $agent->field("Subject", $subject) if $subject;
-    $agent->field("Content", $content) if $content;
-
-    set_custom_field($agent, Function => "IncidentCoord");
-    
-    $agent->click("CreateIncident");
-    
-    is ($agent->status, 200, "Attempting to create new incident linked to child $id");
-
-    ok ($agent->content =~ /.*Ticket (\d+) created in queue*/g, "Incident created from child $id.");
-    my $incident_id = $1;
-
-    diag("incident ID is $incident_id");
-    return $incident_id;
-}
 
 sub LinkChildToIncident {
     my %args = ( @_ );

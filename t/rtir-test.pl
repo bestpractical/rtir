@@ -140,4 +140,36 @@ sub create_ir {
     return $id;
 }
 
+sub create_incident_for_ir {
+    my $agent = shift;
+    my $ir_id = shift;
+    my $fields = shift || {};
+    my $cfs = shift || {};
+
+    display_ir($agent, $ir_id);
+
+    # Select the "New" link from the Display page
+    $agent->follow_link_ok({text => "[New]"}, "Followed 'New (Incident)' link");
+
+    $agent->form_number(2);
+
+    while (my ($f, $v) = each %$fields) {
+        $agent->field($f, $v);
+    }
+
+    while (my ($f, $v) = each %$cfs) {
+        set_custom_field($agent, $f, $v);
+    }
+
+    $agent->click("CreateIncident");
+    
+    is ($agent->status, 200, "Attempting to create new incident linked to child $ir_id");
+
+    ok ($agent->content =~ /.*Ticket (\d+) created in queue*/g, "Incident created from child $ir_id.");
+    my $incident_id = $1;
+
+    diag("incident ID is $incident_id");
+    return $incident_id;
+}
+
 1;
