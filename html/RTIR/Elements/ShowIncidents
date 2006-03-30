@@ -49,7 +49,7 @@
 
 my $count = 0;
 
-my $query = "Queue = 'Incidents' AND HasMember = " . $Ticket->Id;
+my $query = "Queue = 'Incidents' AND HasMember = " . $Ticket->Id . " AND CF.{_RTIR_State} != 'resolved'";
 my $incidents = new RT::Tickets($session{'CurrentUser'});
 $incidents->FromSQL($query);
 
