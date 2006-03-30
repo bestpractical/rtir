@@ -12,7 +12,4 @@ requires('Business::SLA');
 requires('Net::Whois::RIPE');
 &auto_install;
 
-# Test all of our sub-dist tests too
-tests('t/*.t t/*/t/*.t');
-
 &WriteAll;
