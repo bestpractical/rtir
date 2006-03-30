@@ -2,14 +2,26 @@
 
 use strict;
 use warnings;
-use Test::More tests => 19;
+use Test::More tests => 22;
 
 require "t/rtir-test.pl";
 
 my $agent = default_agent();
 
+my $SUBJECT = "foo " . rand;
+
 # Create a report
-my $report = CreateReport(Subject => "foo", Content => "bar baz");
+my $report = create_ir($agent, {Subject => $SUBJECT, Content => "bla" });
+
+{
+    my $ir_obj = RT::Ticket->new($RT::SystemUser);
+    my $stifle_warnings = $RT::SystemUser;
+
+    $ir_obj->Load($report);
+    is($ir_obj->Id, $report, "report has right ID");
+    is($ir_obj->Subject, $SUBJECT, "subject is right");
+}
+
 
 # Create a new Incident from that report
 my $first_incident_id = NewIncidentFromChild(id => $report);
@@ -81,39 +93,6 @@ sub LinkChildToIncident {
     ok ($agent->content =~ /Ticket $id: Link created/g, "Incident $incident linked successfully.");
 
     return;
-}
-
-sub CreateReport {
-    my %args = ( @_ );
-
-    $agent->follow_link_ok({text => "Incident Reports", n => "1"}, "Followed 'Incident Reports' link");
-    
-    $agent->follow_link_ok({text => "New Report", n => "1"}, "Followed 'New Report' link");
-    
-    # set the form
-    $agent->form_number(2);
-
-    # set the subject
-    $agent->field("Subject", $args{'Subject'});
-
-    # set the content
-    $agent->field("Content", $args{'Content'});
-
-    # Create it!
-    $agent->click("Create");
-    
-    is ($agent->status, 200, "Attempted to create the ticket");
-
-    # Now see if we succeeded
-    my $content = $agent->content();
-    my $id = -1;
-    if ($content =~ /.*Ticket (\d+) created.*/g) {
-	$id = $1;
-    }
-
-    ok ($id > 0, "Ticket $id created successfully.");
-
-    return $id;
 }
 
 sub CreateIncident {

@@ -73,8 +73,8 @@ sub display_ir {
 }
 
 sub create_user {
-    my $user_obj = RT::User->new($RT::SystemUser);
-    $user_obj->Load($RTIR_TEST_USER);
+    my $user_obj = rtir_user();
+
     if ($user_obj->Id) {
         $user_obj->SetPassword($RTIR_TEST_PASS);
     } else {
@@ -93,6 +93,51 @@ sub create_user {
 
     $group_obj->AddMember($user_obj->Id);
     ok($group_obj->HasMember($user_obj->PrincipalObj), "user is in the group");
+}
+
+sub rtir_user {
+    my $u = RT::User->new($RT::SystemUser);
+    $u->Load($RTIR_TEST_USER);
+    return $u;
+}
+
+sub create_ir {
+    my $agent = shift;
+    my $fields = shift || {};
+    my $cfs = shift || {};
+
+    go_home($agent);
+
+    $agent->follow_link_ok({text => "Incident Reports", n => "1"}, "Followed 'Incident Reports' link");
+
+    $agent->follow_link_ok({text => "New Report", n => "1"}, "Followed 'New Report' link");
+
+    # set the form
+    $agent->form_number(2);
+
+    while (my ($f, $v) = each %$fields) {
+        $agent->field($f, $v);
+    }
+
+    while (my ($f, $v) = each %$cfs) {
+        set_custom_field($agent, $f, $v);
+    }
+
+    # Create it!
+    $agent->click("Create");
+    
+    is ($agent->status, 200, "Attempted to create the ticket");
+
+    # Now see if we succeeded
+    my $content = $agent->content();
+    my $id = -1;
+    if ($content =~ /.*Ticket (\d+) created.*/g) {
+	$id = $1;
+    }
+
+    ok ($id > 0, "Ticket $id created successfully.");
+
+    return $id;
 }
 
 1;
