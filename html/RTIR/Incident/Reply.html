@@ -144,6 +144,8 @@ if ( $SubmitTicket ) {
 
     #XXX: shouldn't we record message into incident?
     push @results, ProcessTicketBasics( TicketObj => $IncidentObj, ARGSRef => \%ARGS );
+    $m->comp("Display.html", results => \@results, id => $id);
+    $m->abort;
 }
 
 my ($InvBaseQuery, $IRBaseQuery );
