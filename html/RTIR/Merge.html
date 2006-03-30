@@ -69,9 +69,11 @@ if ( $SelectedTicket ) {
         
         $ARGS{ $Ticket->id .'-MergeInto' } = $MergeTicket->id;            
 
-        foreach ( $Ticket, $MergeTicket ) {
-            my ($status, $msg) = $_->TakeOrSteal;
-            push @results, $msg if $msg;
+        for my $t ( $Ticket, $MergeTicket ) {
+            if ($t->Owner != $t->CurrentUser->Id) {
+                my ($status, $msg) = $t->SetOwner($t->CurrentUser->Id, 'Force');
+                push @results, $msg if $msg;
+            }
         }
         push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
 
