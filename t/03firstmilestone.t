@@ -1,5 +1,8 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
 
+use Test::More qw/no_plan/;
+
+ok(1);
 # 
 # sometimes &nbsp; is printable. Ex. http://{BASE_URL}/RTIR/Merge.html?id=18&
 # 
@@ -227,3 +230,5 @@
 # bash-2.05b
 # 
 # MOST IMPORTATNT: More documentation about the new requirements.
+
+1;
