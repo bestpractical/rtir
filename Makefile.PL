@@ -11,4 +11,8 @@ requires('Business::Hours');
 requires('Business::SLA');
 requires('Net::Whois::RIPE');
 &auto_install;
+
+# Test all of our sub-dist tests too
+tests('lib/t/*.t lib/t/*/t/*.t');
+
 &WriteAll;
