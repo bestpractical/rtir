@@ -37,6 +37,9 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
+<form action="<% RT->Config->Get('WebPath') %>/RTIR/Merge.html" method="post">
+<input type="hidden" name="id" value="<% $id %>" />
+
 <& /RTIR/Elements/MergeWith, %defaults, %ARGS, Queue => $Ticket->QueueObj->Name, Ticket => $Ticket &>
 
 % if ($Ticket->QueueObj->Name eq "Incident Reports") {
@@ -46,6 +49,8 @@
 % if ($Ticket->QueueObj->Name eq "Investigations") {
 <& /RTIR/Elements/MergeWith, %defaults, %ARGS, Queue => "Incident Reports", Ticket => $Ticket &>
 % }
+<& /Elements/Submit, Caption=> loc('Merge into selected Ticket'), Label => loc("Merge") &>
+</form>
 
 <%INIT>
 my $Ticket = LoadTicket($id);

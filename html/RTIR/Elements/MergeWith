@@ -1,5 +1,3 @@
-<form action="<% RT->Config->Get('WebPath') %>/RTIR/Merge.html" method="post">
-<input type="hidden" name="id" value="<% $id %>" />
 <h3><% $Type %>s</h3>
 <& /RTIR/Search/Elements/ShowResults, 
     Queue       => $Queue,
@@ -12,9 +10,6 @@
     Order       => $Order,
     BaseURL     => "RTIR/Merge.html?id=$id",
 &>
-
-<& /Elements/Submit, Caption=> loc('Merge into selected Ticket'), Label => loc("Merge") &>
-</form>
 
 <%INIT>
 my ($Type) = $m->comp( '/RTIR/Elements/Type', Queue => $Queue );

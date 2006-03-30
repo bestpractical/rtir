@@ -10,8 +10,8 @@
     AllowSorting => $AllowSorting,
 &>
 
-<div align="right">
 % if ( $ShowNavigation ) {
+<div align="right">
 <%PERL>
 # this would do well as a Callback
 my $QueryString = $m->comp('/Elements/QueryString',
