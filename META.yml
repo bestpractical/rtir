@@ -1,5 +1,5 @@
 abstract: RT IR Extension
-author: 'Best Practical Solutions <sales@bestpractical.com>'
+author: Best Practical Solutions <sales@bestpractical.com>
 distribution_type: module
 generated_by: Module::Install version 0.52
 license: GPL Version 2
@@ -13,5 +13,7 @@ no_index:
 requires:
   Business::Hours: 0
   Business::SLA: 0
+  DBIx::SearchBuilder: 1.4
   Net::Whois::RIPE: 0
+tests: t/*.t t/*/t/*.t
 version: 1.9.HEAD
