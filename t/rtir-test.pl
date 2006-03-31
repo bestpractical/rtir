@@ -66,7 +66,7 @@ sub log_in {
     }
 }
 
-sub display_ir {
+sub display_ticket {
     my $agent = shift;
     my $id = shift;
 
@@ -141,13 +141,55 @@ sub create_ir {
     return $id;
 }
 
+sub create_investigation {
+    my $agent = shift;
+    my $fields = shift || {};
+    my $cfs = shift || {};
+
+    # Must specify a correspondant.
+    $fields->{'Requestors'} ||= $RTIR_TEST_USER;
+
+    go_home($agent);
+
+    $agent->follow_link_ok({text => "Investigations", n => "1"}, "Followed 'Investigations' link");
+
+    $agent->follow_link_ok({text => "New Investigation", n => "1"}, "Followed 'New Investigation' link");
+
+    # set the form
+    $agent->form_number(2);
+
+    while (my ($f, $v) = each %$fields) {
+        $agent->field($f, $v);
+    }
+
+    while (my ($f, $v) = each %$cfs) {
+        set_custom_field($agent, $f, $v);
+    }
+
+    # Create it!
+    $agent->click("Create");
+    
+    is ($agent->status, 200, "Attempted to create the ticket");
+
+    # Now see if we succeeded
+    my $content = $agent->content();
+    my $id = -1;
+    if ($content =~ /.*Ticket (\d+) created.*/g) {
+	$id = $1;
+    }
+
+    ok ($id > 0, "Ticket $id created successfully.");
+
+    return $id;
+}
+
 sub create_incident_for_ir {
     my $agent = shift;
     my $ir_id = shift;
     my $fields = shift || {};
     my $cfs = shift || {};
 
-    display_ir($agent, $ir_id);
+    display_ticket($agent, $ir_id);
 
     # Select the "New" link from the Display page
     $agent->follow_link_ok({text => "[New]"}, "Followed 'New (Incident)' link");

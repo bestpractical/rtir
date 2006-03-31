@@ -36,14 +36,14 @@ for my $id ($me_slow, $me_quick) {
 }
 
 for my $id ($nobody_quick, $me_quick) {
-    display_ir($agent, $id);
+    display_ticket($agent, $id);
     $agent->follow_link_ok({text => "Quick Reject"}, "Followed 'Quick Reject' link");
 
     like($agent->content, qr/State changed from new to rejected/, "site says ticket got rejected");
 }
 
 for my $id ($nobody_slow, $me_slow) {
-    display_ir($agent, $id);
+    display_ticket($agent, $id);
 
     $agent->follow_link_ok({text => "Reject"}, "Followed 'Reject' link");
 

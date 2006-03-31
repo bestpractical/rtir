@@ -47,7 +47,7 @@ sub LinkChildToIncident {
     my $id = $args{'id'};
     my $incident = $args{'incident'};
 
-    display_ir($agent, $id);
+    display_ticket($agent, $id);
 
     # Select the "Link" link from the Display page
     $agent->follow_link_ok({text => "[Link]", n => "1"}, "Followed 'Link(to Incident)' link");

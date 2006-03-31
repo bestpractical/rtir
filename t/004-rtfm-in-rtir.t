@@ -10,7 +10,7 @@ my $agent = default_agent();
 
 my $ir_id  = create_ir($agent, {Subject => "looking for rtfm"});
 
-display_ir($agent, $ir_id);
+display_ticket($agent, $ir_id);
 
 $agent->follow_link_ok({text => "RTFM"}, "followed 'RTFM' overview link");
 $agent->title_like(qr/Overview/);
