@@ -69,6 +69,18 @@
     OrderBy   => $OrderBy,
     Order     => $Order,
 &>
+<h2><&|/l&>Blocks Correspondents</&></h2>
+<& /RTIR/Search/Elements/ShowResults,
+    Queue     => 'Investigations',
+    BaseURL   => $current_tab,
+    BaseQuery => $BaseQuery || $BlockBaseQuery,
+    Query     => $Query,
+    Format    => '__RTIR_Check__,'. $Format,
+    Rows      => $Rows,
+    Page      => $Page,
+    OrderBy   => $OrderBy,
+    Order     => $Order,
+&>
 % }
 
 <& Elements/ReplyForm, AllowResponse => ($ARGS{Status} !~ /^(?:resolved|rejected)$/) &>
@@ -126,7 +138,7 @@ if ( $SubmitTicket ) {
         my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, '_RTIR_State' );
 
         my @tempresults;
-        $ARGS{'UpdateAttachments'} = delete $session{'Attachments'} if $session{'Attachments'};
+        $ARGS{'UpdateAttachments'} = delete $session{'Attachments'};
         push @tempresults, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
         unless ( RT::IR::Ticket::IsLinkedToActiveIncidents( $Ticket, $IncidentObj ) ) {
@@ -144,16 +156,17 @@ if ( $SubmitTicket ) {
 
     #XXX: shouldn't we record message into incident?
     push @results, ProcessTicketBasics( TicketObj => $IncidentObj, ARGSRef => \%ARGS );
-    $m->comp("Display.html", results => \@results, id => $id);
-    $m->abort;
+    return $m->comp("Display.html", results => \@results, id => $id);
 }
 
-my ($InvBaseQuery, $IRBaseQuery );
+my ($InvBaseQuery, $IRBaseQuery, $BlockBaseQuery);
 unless ( $BaseQuery ) {
     $InvBaseQuery = join ' AND ', map "( $_ )", grep $_,
         $m->comp('/RTIR/Elements/BaseQuery', Queue => 'Investigations'), "MemberOf = $id";
     $IRBaseQuery = join ' AND ', map "( $_ )", grep $_,
         $m->comp('/RTIR/Elements/BaseQuery', Queue => 'Incident Reports'), "MemberOf = $id";
+    $BlockBaseQuery = join ' AND ', map "( $_ )", grep $_,
+        $m->comp('/RTIR/Elements/BaseQuery', Queue => 'Blocks'), "MemberOf = $id";
 }
 
 my $current_tab = "RTIR/Incident/Reply.html?".
