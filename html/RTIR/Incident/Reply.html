@@ -28,7 +28,7 @@
 
     Queue          => 'Incident Reports',
     Ticket         => $IncidentObj,
-    BaseQuery      => $BaseQuery || "( $IRBaseQuery OR $InvBaseQuery )",
+    BaseQuery      => "( $IRBaseQuery ) OR ( $InvBaseQuery ) OR ( $BlockBaseQuery )",
     QueryString    => $QueryString,
 
     current_tab    => $current_tab,
@@ -39,6 +39,7 @@
 
 <form action="Reply.html" method="get">
 <input type="hidden" name="id" value="<% $id %>" />
+<input type="hidden" name="DefaultStatus" value="<% $DefaultStatus %>" />
 <input type="hidden" name="Status" value="<% $DefaultStatus %>" />
 <input type="hidden" name="All" value="<% $All %>" />
 <input type="hidden" name="Query" value="<% $Query %>" />
@@ -47,7 +48,7 @@
 <& /RTIR/Search/Elements/ShowResults,
     Queue     => 'Incident Reports',
     BaseURL   => $current_tab,
-    BaseQuery => $BaseQuery || $IRBaseQuery,
+    BaseQuery => $IRBaseQuery,
     Query     => $Query,
     Format    => '__RTIR_Check__,'. $Format,
     Rows      => $Rows,
@@ -61,7 +62,7 @@
 <& /RTIR/Search/Elements/ShowResults,
     Queue     => 'Investigations',
     BaseURL   => $current_tab,
-    BaseQuery => $BaseQuery || $InvBaseQuery,
+    BaseQuery => $InvBaseQuery,
     Query     => $Query,
     Format    => '__RTIR_Check__,'. $Format,
     Rows      => $Rows,
@@ -73,7 +74,7 @@
 <& /RTIR/Search/Elements/ShowResults,
     Queue     => 'Investigations',
     BaseURL   => $current_tab,
-    BaseQuery => $BaseQuery || $BlockBaseQuery,
+    BaseQuery => $BlockBaseQuery,
     Query     => $Query,
     Format    => '__RTIR_Check__,'. $Format,
     Rows      => $Rows,
@@ -124,6 +125,30 @@ if ($DefaultStatus eq 'resolved') {
     }
 }
 
+my $ActiveStatesQuery;
+{
+    my @active_states;
+    foreach my $q( 'Incident Reports', 'Investigations', 'Blocks' ) {
+        push @active_states, $m->comp('/RTIR/Elements/States', Queue => $q);
+    }
+    my %seen;
+    $ActiveStatesQuery = join ' OR ',
+        map "CF.{_RTIR_State} = '$_'",
+        grep !$seen{ $_ },
+        @active_states;
+}
+
+unless ( $Query ) {
+    $Query = "( $ActiveStatesQuery )";
+}
+
+my $ActiveChildrenQuery = join ' AND ', map "( $_ )", grep $_,
+    "MemberOf = $id",
+    $ActiveStatesQuery,
+    join ' OR ',
+        map "Queue = '$_'",
+        'Incident Reports', 'Investigations', 'Blocks';
+
 $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 
 if ( $SubmitTicket ) {
@@ -135,6 +160,7 @@ if ( $SubmitTicket ) {
             next;
         }
         $id = $Ticket->id;
+
         my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, '_RTIR_State' );
 
         my @tempresults;
@@ -142,7 +168,9 @@ if ( $SubmitTicket ) {
         push @tempresults, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
         unless ( RT::IR::Ticket::IsLinkedToActiveIncidents( $Ticket, $IncidentObj ) ) {
-            push @tempresults, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
+            # XXX: we push into results directly cuz ProcessTicketBasics returns results
+            # with leading 'Ticket XX:' string
+            push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
         }
 
         my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, '_RTIR_State' );
@@ -154,20 +182,42 @@ if ( $SubmitTicket ) {
         push @results, map { loc("Ticket [_1]: [_2]", $id, $_) } @tempresults;
     }
 
-    #XXX: shouldn't we record message into incident?
-    push @results, ProcessTicketBasics( TicketObj => $IncidentObj, ARGSRef => \%ARGS );
+    my $update_incident_state = 1;
+    if ( $DefaultStatus =~ /^(rejected|resolved)$/) {
+        # if we are going to resolve/reject incident then do it only when we've
+        # rejected all children that are not linked to another active incident(s)
+        my $children = RT::Tickets->new( $session{'CurrentUser'} );
+        $children->FromSQL( $ActiveChildrenQuery );
+        while ( my $child = $children->Next ) {
+            next if RT::IR::Ticket::IsLinkedToActiveIncidents( $child, $IncidentObj );
+            $update_incident_state = 0;
+            last;
+        }
+    }
+
+    if ( $update_incident_state ) {
+        my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $IncidentObj, '_RTIR_State' );
+        push @results, ProcessTicketBasics( TicketObj => $IncidentObj, ARGSRef => \%ARGS );
+        my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $IncidentObj, '_RTIR_State' );
+
+        if ($newstate ne $oldstate) {
+            push @results, loc("State changed from [_1] to [_2]", $oldstate, $newstate);
+        }
+    } else {
+        push @results, loc("State of the Incident wasn't changed, not all children were updated");
+    }
+
     return $m->comp("Display.html", results => \@results, id => $id);
 }
 
-my ($InvBaseQuery, $IRBaseQuery, $BlockBaseQuery);
-unless ( $BaseQuery ) {
-    $InvBaseQuery = join ' AND ', map "( $_ )", grep $_,
-        $m->comp('/RTIR/Elements/BaseQuery', Queue => 'Investigations'), "MemberOf = $id";
-    $IRBaseQuery = join ' AND ', map "( $_ )", grep $_,
-        $m->comp('/RTIR/Elements/BaseQuery', Queue => 'Incident Reports'), "MemberOf = $id";
-    $BlockBaseQuery = join ' AND ', map "( $_ )", grep $_,
-        $m->comp('/RTIR/Elements/BaseQuery', Queue => 'Blocks'), "MemberOf = $id";
-}
+my $IRBaseQuery = join ' AND ', map "( $_ )", grep $_,
+    $m->comp('/RTIR/Elements/BaseQuery', Queue => 'Incident Reports'), "MemberOf = $id";
+my $InvBaseQuery = join ' AND ', map "( $_ )", grep $_,
+    $m->comp('/RTIR/Elements/BaseQuery', Queue => 'Investigations'), "MemberOf = $id";
+my $BlockBaseQuery = join ' AND ', map "( $_ )", grep $_,
+    $m->comp('/RTIR/Elements/BaseQuery', Queue => 'Blocks'), "MemberOf = $id";
+
+
 
 my $current_tab = "RTIR/Incident/Reply.html?".
     $m->comp('/Elements/QueryString',
@@ -185,8 +235,7 @@ $All             => 0
 $DefaultStatus   => ''
 $Action          => 'Correspond'
 
-$BaseQuery       => undef
-$Query           => "CF.{_RTIR_State} = 'open'"
+$Query           => ''
 $Format          => RT->Config->Get('RTIRSearchResultFormats')->{'BulkReply'}
 $Rows            => 0
 $Page            => 1
