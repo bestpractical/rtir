@@ -312,8 +312,8 @@ if( 1 ) {
             push @results, $DoLinks->( $child, $TicketObj );
         }
     }
-    if ($ARGS{'BulkArticles'}) {
-        my $ref = join " ", map {"a:$_"} @SelectedTickets;
+    if ( $ARGS{'BulkArticles'} && @SelectedTickets ) {
+        my $ref = join " ", map "a:$_", @SelectedTickets;
         push @results, ProcessTicketLinks( TicketObj => $TicketObj, ARGSRef => {$TicketObj->Id."-RefersTo" => $ref} );
     }
 

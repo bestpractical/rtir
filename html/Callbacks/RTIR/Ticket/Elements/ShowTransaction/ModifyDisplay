@@ -4,9 +4,10 @@
 # useful for removing _RTIR_ from RTIR custom fields
 # $text is passed by reference
 
-if ($Transaction->Type eq 'CustomField' && 
-    substr($$text, 0, length($prefix)) eq $prefix) {
-  $$text = substr($$text, length($prefix));
+if ( $Transaction->Type eq 'CustomField' && 
+     substr($$text, 0, length($prefix)) eq $prefix )
+{
+    substr($$text, 0, length($prefix)) = '';
 }
 
 </%INIT>

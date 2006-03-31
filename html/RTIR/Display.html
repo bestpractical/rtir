@@ -245,7 +245,7 @@ if ( $id eq 'new' ) {
 
     if ( $ARGS{'TakeOrStealFirst'} and $Ticket->Owner != $Ticket->CurrentUser->Id) {
         my ($status, $msg) = $Ticket->SetOwner($Ticket->CurrentUser->Id, 'Force');
-	push @results, $msg if $msg;
+        push @results, $msg if $msg;
     }
 
     $ARGS{UpdateAttachments} = delete $session{'Attachments'};
@@ -267,6 +267,11 @@ if ( $id eq 'new' ) {
             $m->abort;
         }
     }
+}
+
+if ( $ARGS{'BulkArticles'} && @SelectedTickets ) {
+    my $ref = join " ", map "a:$_", @SelectedTickets;
+    push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => {$Ticket->Id."-RefersTo" => $ref} );
 }
 
 unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
@@ -299,4 +304,5 @@ my $attachments = $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket
 $id => 0
 $Queue => undef
 @results => undef
+@SelectedTickets => ()
 </%ARGS>
