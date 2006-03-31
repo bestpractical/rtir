@@ -42,8 +42,7 @@ sub ir_status {
     use DBIx::SearchBuilder::Record::Cachable;
     DBIx::SearchBuilder::Record::Cachable::FlushCache();
 
-    my $avoid_warnings = $RT::SystemUser;
-    my $ir = RT::Ticket->new($RT::SystemUser);
+    my $ir = RT::Ticket->new(RT::SystemUser());
     $ir->Load($ir_id);
     is($ir->Id, $ir_id, "loaded ticket $ir_id OK");
     is($ir->Status, $status, "ticket $ir_id has status $status");

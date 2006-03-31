@@ -44,20 +44,21 @@ sub set_custom_field {
     my $val = shift;
 
     my $field_name = $agent->value($cf_name);
-    diag("found $cf_name at $field_name");
+#    diag("found $cf_name at $field_name");
     $agent->field($field_name, $val);
 }
 
 sub go_home {
     my $agent = shift;
-    $agent->get_ok("$RT::WebURL/RTIR/index.html", "Loaded home page");
+    my $weburl = RT->Config->Get('WebURL');
+    $agent->get_ok("$weburl/RTIR/index.html", "Loaded home page");
 }
 
 sub log_in {
     my $agent = shift;
 
     if ($agent->title eq 'Login') {
-        diag("logging in");
+#        diag("logging in");
         $agent->form_number(1);
         $agent->field("user", $RTIR_TEST_USER);
         $agent->field("pass", $RTIR_TEST_PASS);
@@ -87,7 +88,7 @@ sub create_user {
 
     ok($user_obj->Id > 0, "Successfully found the user");
     
-    my $group_obj = RT::Group->new($RT::SystemUser);
+    my $group_obj = RT::Group->new(RT::SystemUser());
     $group_obj->LoadUserDefinedGroup("DutyTeam");
     ok($group_obj->Id > 0, "Successfully found the DutyTeam group");
 
@@ -96,7 +97,7 @@ sub create_user {
 }
 
 sub rtir_user {
-    my $u = RT::User->new($RT::SystemUser);
+    my $u = RT::User->new(RT::SystemUser());
     $u->Load($RTIR_TEST_USER);
     return $u;
 }
@@ -168,7 +169,7 @@ sub create_incident_for_ir {
     ok ($agent->content =~ /.*Ticket (\d+) created in queue*/g, "Incident created from child $ir_id.");
     my $incident_id = $1;
 
-    diag("incident ID is $incident_id");
+#    diag("incident ID is $incident_id");
     return $incident_id;
 }
 

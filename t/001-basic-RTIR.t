@@ -14,8 +14,7 @@ my $SUBJECT = "foo " . rand;
 my $report = create_ir($agent, {Subject => $SUBJECT, Content => "bla" });
 
 {
-    my $ir_obj = RT::Ticket->new($RT::SystemUser);
-    my $stifle_warnings = $RT::SystemUser;
+    my $ir_obj = RT::Ticket->new(RT::SystemUser());
 
     $ir_obj->Load($report);
     is($ir_obj->Id, $report, "report has right ID");
