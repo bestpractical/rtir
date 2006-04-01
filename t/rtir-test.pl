@@ -215,4 +215,13 @@ sub create_incident_for_ir {
     return $incident_id;
 }
 
+sub ok_and_content_like {
+    my $agent = shift;
+    my $re = shift;
+    my $desc = shift || "looks good";
+    
+    is($agent->status, 200, "request successful");
+    like($agent->content, $re, $desc);
+}
+
 1;
