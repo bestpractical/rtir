@@ -10,6 +10,15 @@ requires('DBIx::SearchBuilder', 1.40);
 requires('Business::Hours');
 requires('Business::SLA');
 requires('Net::Whois::RIPE');
-&auto_install;
+auto_install();
 
-&WriteAll;
+my ($lp) = $INC{'RT.pm'} =~ /^(.*)[\\\/]/;
+my $lib_path = join( ' ', "$RT::LocalPath/lib", $lp );
+
+substitute( {
+        RT_LIB_PATH => $lib_path,
+    },
+    't/rtir-test.pl'
+);
+
+WriteAll();

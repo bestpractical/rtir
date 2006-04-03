@@ -12,14 +12,8 @@ use warnings;
 use Test::WWW::Mechanize;
 use HTTP::Cookies;
 
-BEGIN {
-  unless ($ENV{RTHOME}) {
-    die "\n\nYou must set the RTHOME environment variable to the root of your RT install.\n\n";
-  }
-}
-
-use lib "$ENV{RTHOME}/lib";
-use lib "$ENV{RTHOME}/local/lib";
+### after: use lib qw(@RT_LIB_PATH@);
+use lib qw(/opt/rt3/local/lib /opt/rt3/lib);
 
 use RT;
 ok(RT::LoadConfig);
