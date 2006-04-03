@@ -52,7 +52,7 @@ while (my $Transaction = $Transactions->Next) {
 
         my $inline = RT->Config->Get( 'MaxInlineBody', $session{'CurrentUser'} );
         if ($message->ContentType =~ m{^(text/plain|message|text$)}i and 
-            ($inline == 0 or length($message->Content) < $inline) ) {
+            (!$inline or length($message->Content) < $inline) ) {
             $content = $message->Content;
         } else {
             $content = "";
