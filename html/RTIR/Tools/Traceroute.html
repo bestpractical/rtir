@@ -27,7 +27,7 @@
 <pre>
 <%PERL>
 while (my $content = <$tr>) {
-    $m->comp('/RTIR/Elements/MakeClicky', content => \$content);
+    $m->comp('/Elements/MakeClicky', content => \$content);
     $m->out( $content );
     $m->out('<br />');
     $m->flush_buffer;
