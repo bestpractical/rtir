@@ -1,5 +1,12 @@
 # Initial data for a fresh RTIR Installation.
 
+@Initial = ( sub {
+    eval { require RT::FM; };
+    if ($@) {
+        die "RTIR is built on top of RTFM; please install RTFM before continuing.\n";
+    }
+} );
+
 @Queues = (
     {
         Name              => 'Incidents',
@@ -764,9 +771,6 @@ for my $cf (@CustomFields) {
 } );
 
 @Final = ( sub {
-    eval { require RT::FM; };
-    die "You must install RTFM!" if $@;
-
     $| = 1;
     my $CurrentUser = RT::CurrentUser->new();
     $CurrentUser->LoadByName('RT_System');
