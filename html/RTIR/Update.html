@@ -142,12 +142,7 @@ if (($Action eq 'Comment') or ($ARGS{'UpdateType'} eq 'private')) {
     $ResponseDefault = "SELECTED";
 }
 
-my $Subject;
-if ($ARGS{'UpdateSubject'}) {
-    $Subject = $ARGS{'UpdateSubject'};
-} elsif ($Ticket) {
-    $Subject = $Ticket->Subject;
-}
+my $Subject = $ARGS{'UpdateSubject'} || $Ticket->Subject;
 
 my $replystring = lc(RT->Config->Get('ReplyString'));
 if ( $Action eq 'Respond' &&
@@ -167,8 +162,7 @@ $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
 $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 
 if ( exists $ARGS{SubmitTicket} ) {
-    $m->comp('/RTIR/Display.html', %ARGS);
-    $m->abort();
+    return $m->comp('/RTIR/Display.html', %ARGS);
 }
 
 </%INIT>
