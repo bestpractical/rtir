@@ -394,11 +394,11 @@ if ( $Split ) {
 $m->comp( 'SELF:ProcessAttachments', %ARGS );
 
 my @results;
-if ( !$ARGS{'AddAttachment'} && $ARGS{'id'} eq 'new' ) {
+if ( !$ARGS{'AddAttachment'} && ($ARGS{'id'} || '') eq 'new' ) {
     if ( $Type ne 'Investigation' || $ARGS{'Requestors'} ) {
         return $m->comp( 'Display.html', %ARGS );
     } else {
-        push @results, loc( "Investigation launch failed: You must enter a correspondent.");
+        push @results, loc( "Investigation launch failed: You must enter a correspondent." );
     }
 }
 

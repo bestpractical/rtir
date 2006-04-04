@@ -61,8 +61,8 @@ $session{'tickets'} = $collection;
 
 $OrderBy = join "|", @{$OrderBy} if ref $OrderBy;
 $Order   = join "|", @{$Order}   if ref $Order;
-if ( $OrderBy ne $session{'CurrentSearchHash'}->{'OrderBy'}
-     || $Order ne $session{'CurrentSearchHash'}->{'Order'} )
+if ( ( $OrderBy || '' ) ne ( $session{'CurrentSearchHash'}->{'OrderBy'} || '' )
+     || ( $Order || '') ne ( $session{'CurrentSearchHash'}->{'Order'}   || '' ) )
 {
     $session{'CurrentSearchHash'}->{'OrderBy'} = $OrderBy;
     $session{'CurrentSearchHash'}->{'Order'}   = $Order;
@@ -83,7 +83,7 @@ $Format         => ''
 $Rows           => undef
 $Page           => 1
 $OrderBy        => $session{'CurrentSearchHash'}->{'OrderBy'} || 'id'
-$Order          => $session{'CurrentSearchHash'}->{'Order'} || 'ASC'
+$Order          => $session{'CurrentSearchHash'}->{'Order'}   || 'ASC'
 
 $BaseURL        => "RTIR/Search/Results.html?"
 
