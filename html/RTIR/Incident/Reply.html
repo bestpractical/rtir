@@ -204,7 +204,7 @@ if ( $SubmitTicket ) {
             push @results, loc("State changed from [_1] to [_2]", $oldstate, $newstate);
         }
     } else {
-        push @results, loc("State of the Incident wasn't changed, not all children were updated");
+        push @results, loc("State of the Incident left unchanged; not all children were updated");
     }
 
     return $m->comp("Display.html", results => \@results, id => $id);
