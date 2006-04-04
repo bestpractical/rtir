@@ -25,7 +25,7 @@
 
 <tr><td class="label"><&|/l&>Subject</&>:</td>
 <td class="value">
-<input name="Subject" size="60" maxsize="100" value="<% $ARGS{'Subject'} %>" />
+<input name="Subject" size="60" maxsize="100" value="<% $Subject %>" />
 </td></tr>
 
 <tr><td class="labeltop"><&|/l&>Description</&>:</td>
@@ -74,6 +74,7 @@
 
 <%ARGS>
 $NamePrefix => ''
-$QueueObj => undef
-$TicketObj => undef
+$QueueObj   => undef
+$TicketObj  => undef
+$Subject    => ''
 </%ARGS>

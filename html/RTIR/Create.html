@@ -60,11 +60,11 @@
 <form action="<% RT->Config->Get('WebPath') %>/RTIR/Split.html" method="post" enctype="multipart/form-data">
 % }
 <input type="hidden" name="id" value="new" />
-<input type="hidden" name="Queue" value="<% $QueueObj->Name %>" />
-<input type="hidden" name="Status" value="<% $Status || 'open' %>" />
-<input type="hidden" name="Incident" value="<% $ARGS{Incident} %>" />
+<input type="hidden" name="Queue" value="<% $Queue %>" />
+<input type="hidden" name="Status" value="<% $Status || 'new' %>" />
+<input type="hidden" name="Incident" value="<% $Incident || '' %>" />
 % if ( $Split ) {
-<input type="hidden" name="Ticket" value="<% $ARGS{'TicketObj'}->Id %>" />
+<input type="hidden" name="Ticket" value="<% $TicketObj->Id %>" />
 % }
 <%PERL>
 my $parentvalue;
@@ -129,9 +129,9 @@ if ( $IncidentObj ) {
     <td colspan="2">
       <table>
       <tr>
-        <td><input size="3" name="TimeWorked"<% $ARGS{TimeWorked} && " value=\"$ARGS{TimeWorked}\""  %> /></td>
+        <td><input size="3" name="TimeWorked" value="<% $ARGS{'TimeWorked'} || '' %>" /></td>
         <td align="right"><&|/l&>Time Left</&>:</td>
-        <td><input size="3" name="TimeLeft"<% $ARGS{TimeLeft} && " value=\"$ARGS{TimeLeft}\"" %> /></td>
+        <td><input size="3" name="TimeLeft" value="<% $ARGS{'TimeLeft'} || '' %>" /></td>
       </tr>
       </table>
     </td>     
@@ -141,7 +141,7 @@ if ( $IncidentObj ) {
       <&|/l&>Correspondents</&>:
     </td>
     <td colspan="5">
-      <input name="Requestors" value="<%$ARGS{Requestors}%>" size="40" />
+      <input name="Requestors" value="<% $ARGS{'Requestors'} || '' %>" size="40" />
     </td>
   </tr>
   <tr>
@@ -149,7 +149,7 @@ if ( $IncidentObj ) {
       <&|/l&>Cc</&>:
     </td>
     <td class="value" colspan="5">
-      <input name="Cc" value="<%($ARGS{Cc})%>" size="40" />
+      <input name="Cc" value="<% $ARGS{'Cc'} || '' %>" size="40" />
       <i><font size="-2">
       <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)</&></font></i>
     </td>
@@ -159,20 +159,20 @@ if ( $IncidentObj ) {
       <&|/l&>Admin Cc</&>:
     </td>
     <td class="value" colspan="5">
-      <input name="AdminCc" value="<%($ARGS{AdminCc}) || ""%>" size="40" />
+      <input name="AdminCc" value="<% $ARGS{'AdminCc'} || '' %>" size="40" />
       <i><font size="-2">
       <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)</&></font></i>
     </td>
   </tr>
 
-% if ($QueueObj->Name eq 'Incident Reports') {
+% if ( $Type eq 'Report' ) {
   <tr>
     <td class="labeltop"><&|/l&>SLA</&>:</td>
     <td class="value">
       <& /RTIR/Elements/EditRTIRField, 
          QueueObj => $QueueObj, 
          Name => 'SLA',
-         Default => $sla &>
+         Default => RT::IR::DefaultSLA() &>
     </td>
   </tr>
   <tr>
@@ -400,11 +400,6 @@ if ( !$ARGS{'AddAttachment'} && $ARGS{'id'} eq 'new' ) {
     } else {
         push @results, loc( "Investigation launch failed: You must enter a correspondent.");
     }
-}
-
-my $sla;
-if ($Queue eq 'Incident Reports') {
-    $sla = RT::IR::DefaultSLA();
 }
 
 </%INIT>
