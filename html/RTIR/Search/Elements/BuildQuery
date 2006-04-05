@@ -45,11 +45,12 @@
 %# }}} END BPS TAGGED BLOCK
 
 <form method="post" action="<% RT->Config->Get('WebPath')%><% $m->request_comp->path %>" name="BuildQuery">
-<input type="hidden" name="SearchId" value="<% $SearchId %>" />
-<input type="hidden" name="BaseQuery" value="<% $BaseQuery %>" />
-<input type="hidden" name="Query" value="<% $Query %>" />
-<input type="hidden" name="Format" value="<% $Format %>" />
-<input type="hidden" name="ResultPage" value="<% $ResultPage %>" />
+<input type="hidden" class="hidden" name="SavedSearchId" value="<% $saved_search{'Id'} %>" />
+<input type="hidden" class="hidden" name="ResultPage" value="<% $ResultPage %>" />
+<input type="hidden" class="hidden" name="BaseQuery" value="<% $BaseQuery %>" />
+
+<input type="hidden" class="hidden" name="Query" value="<% $query{'Query'} %>" />
+<input type="hidden" class="hidden" name="Format" value="<% $query{'Format'} %>" />
 <table width="100%">
 <tr>
 <td valign="top" class="boxcontainer">
@@ -58,55 +59,31 @@
 
 </td>
 <td valign="top" class="boxcontainer">
-<&/Widgets/TitleBoxStart, title => loc("Query") . ": " .$Description &>
-<& /Search/Elements/NewListActions, actions => \@actions &>
-<select size="10" name="clauses" style="width: 100%">
-<%$optionlist|n%>
-</select>
-<center>
-<input type="submit" name="Up" value="^" />
-<input type="submit" name="Down" value="v" />
-<input type="submit" name="Left" value="<" />
-<input type="submit" name="Right" value=">" />
-<input type="submit" name="DeleteClause" value="Delete" />
-<br />
-<input type="submit" name="Clear" value="Clear" />
-<input type="submit" name="Toggle" value="And/Or" />
-</center>
-</Widgets/TitleBoxEnd>
+<& /Search/Elements/EditQuery,
+    %ARGS,
+    actions => \@actions,
+    optionlist => $optionlist,
+    Description => $saved_search{'Description'},
+&>
 <br />
 
-<& /Search/Elements/EditSearches, CurrentSearch => $search_hash, Dirty => $dirty, SearchId => $SearchId &>
+<& /Search/Elements/EditSearches, %saved_search, CurrentSearch => \%query &>
 </td>
 </tr>
 </table>
 
-<& /Search/Elements/DisplayOptions, %ARGS, 
-    Format=> $Format,
-    AvailableColumns => $AvailableColumns,  
-    CurrentFormat => $CurrentFormat, 
-    RowsPerPage => $RowsPerPage, 
-    OrderBy => $OrderBy, 
-    Order => $Order,
-    cfqueues => $queues
-    &>
+<& /Search/Elements/DisplayOptions, %ARGS, cfqueues => $queues &>
 </form>
 <%ARGS>
-$SearchId => undef
-$BaseQuery => undef
-$Query => undef
-$Format => undef 
-$Description => undef
-$Order => undef
-$OrderBy => undef
-$RowsPerPage => undef
+$BaseQuery    => ''
+%query        => ()
+%saved_search => ()
+
 $queues => undef
 @actions => ()
 $optionlist => undef
-$search_hash => undef
 $dirty => undef
 $AvailableColumns => undef
 $CurrentFormat => undef
-$Queue => undef
 $ResultPage => undef
 </%ARGS>

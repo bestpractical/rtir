@@ -1,174 +1,146 @@
 <%INIT>
-use Tree::Simple;
+# XXX: This is almost complete copy&paste of the /Search/Build.html INIT section
 
-my $search;
 
-# {{{ Clear out unwanted data
-if ($NewQuery or $ARGS{'Delete'}) {
-    # Wipe all data-carrying variables clear if we want a new
-    # search, or we're deleting an old one..
+use RT::Interface::Web::QueryBuilder;
+use RT::Interface::Web::QueryBuilder::Tree;
+use RT::SQL;
 
-    $Query = '';
-    $Format = '';
-    $Description = '';
-    $SearchId = '';
-    $Order = '';
-    $OrderBy = '';
-    $RowsPerPage = '';
-    # ($search hasn't been set yet; no need to clear)
+my @actions;
 
-    $m->comp('ClearQuery', %ARGS);
+my %query;
+for( qw(Query Format OrderBy Order RowsPerPage) ) {
+    $query{$_} = $ARGS{$_};
 }
-# }}}
 
+my %saved_search;
+push @actions, $m->comp( '/Search/Elements/EditSearches:Init', %ARGS, Query => \%query, SavedSearch => \%saved_search );
 
-# {{{ Attempt to load what we can from the session, set defaults
-
-# We don't read or write to the session again until the end
-$search_hash = $session{'CurrentSearchHash'};
-
-# These variables are what define a search_hash; this is also
-# where we give sane defaults.
-$Query       ||= $search_hash->{'Query'}        || '';
-$Format      ||= $search_hash->{'Format'}       || '';
-$Description ||= $search_hash->{'Description'}  || '';
-$SearchId    ||= $search_hash->{'SearchId'}     || 'new';
-$Order       ||= $search_hash->{'Order'}        || 'ASC';
-$OrderBy     ||= $search_hash->{'OrderBy'}      || 'id';
-$RowsPerPage   = $search_hash->{'RowsPerPage'}  || 50 unless defined $RowsPerPage;
-$search      ||= $search_hash->{'Object'}       || undef;
-# }}}
-
-# Clean unwanted junk from the format
-$Format = $m->comp('/Elements/ScrubHTML', Content => $Format) if $Format;
-
-# {{{ If we're asked to delete the current search, make it go away and reset the search parameters
-if ( $ARGS{'Delete'} ) {
-    # We set $SearchId to 'new' above already, so peek into the %ARGS
-    if ( $ARGS{'SearchId'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
-        my $obj_type  = $1;
-        my $obj_id    = $2;
-        my $search_id = $3;
-        
-        my $container_object;
-        if ( $obj_type eq 'RT::User' && $obj_id == $session{'CurrentUser'}->Id)  {
-            $container_object =    $session{'CurrentUser'}->UserObj;
-        }
-        elsif ($obj_type eq 'RT::Group') {
-            $container_object = RT::Group->new($session{'CurrentUser'});
-            $container_object->Load($obj_id);
-        }
-
-        if ($container_object->id ) { 
-            # We have the object the entry is an attribute on; delete
-            # the entry..
-            $container_object->Attributes->DeleteEntry( Name => 'SavedSearch', id   => $search_id);
-        }
-
-    }
+if ( $NewQuery ) {
+    %query = (); %saved_search = ( Id => 'new' );
+    delete $session{'CurrentSearchHash'};
+    $session{'tickets'}->CleanSlate if defined $session{'tickets'};
 }
-# }}}
 
-# {{{ If the user wants to copy a search, uncouple from the one that this was based on, but don't erase the $Query or $Format
-if ( $ARGS{'CopySearch'} ) {
-    $SearchId = 'new';
-    $search = undef;
-    $Description = loc("[_1] copy", $Description);
-}
-# }}}
+{ # Attempt to load what we can from the session and preferences, set defaults
 
-# {{{ if we're asked to revert the current search, we just want to load it
-if ( $ARGS{'Revert'} ) {
-    $ARGS{'LoadSavedSearch'} = $SearchId;
-}
-# }}}
+    my $current = $session{'CurrentSearchHash'};
+    my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
+    my $default = { Query => '', Format => '', OrderBy => 'id', Order => 'ASC', RowsPerPage => 50 };
 
-# {{{ if we're asked to load a search, load it.
-
-if ( $ARGS{'LoadSavedSearch'} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
-    my $obj_type  = $1;
-    my $obj_id    = $2;
-    my $search_id = $3;
-    
-    # We explicitly list out the available types (user and group) and
-    # don't trust user input here
-    if (   ( $obj_type eq 'RT::User' ) && ( $obj_id == $session{'CurrentUser'}->id ) ) {
-        $search = $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
-        
-    }
-    elsif ($obj_type eq 'RT::Group')  {
-        my $group = RT::Group->new($session{'CurrentUser'});
-        $group->Load($obj_id);
-        $search = $group->Attributes->WithId($search_id);
+    for( qw(Query Format OrderBy Order RowsPerPage) ) {
+        $query{$_} = $current->{$_} unless defined $query{$_};
+        $query{$_} = $prefs->{$_} unless defined $query{$_};
+        $query{$_} = $default->{$_} unless defined $query{$_};
     }
 
-    # We have a $search and now; import the others
-    $SearchId    = $ARGS{'LoadSavedSearch'};
-    $Description = $search->Description;
-    $Format      = $search->SubValue('Format');
-    $Query       = $search->SubValue('Query');
-    $Order       = $search->SubValue('Order');
-    $OrderBy     = $search->SubValue('OrderBy');
-    $RowsPerPage = $search->SubValue('RowsPerPage');
+    for( qw(Order OrderBy) ) {
+        if (ref $query{$_} eq "ARRAY") {
+            $query{$_} = join( '|', @{ $query{$_} } );
+        }
+    }
+    if ( $query{'Format'} ) {
+        # Clean unwanted junk from the format
+        $query{'Format'} = $m->comp( '/Elements/ScrubHTML', Content => $query{'Format'} );
+    }
 }
-
-# }}}
 
 # {{{ Parse the query
-my $tree;
-my @actions;
-ParseQuery( $Query, \$tree, \@actions );
+my $ParseQuery = sub {
+    my ($string, $results) = shift;
+
+    my %field = %{ RT::Tickets->new( $session{'CurrentUser'} )->FIELDS };
+    my %lcfield = map { ( lc($_) => $_ ) } keys %field;
+
+    my ($tree, $node);
+    $node = $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
+
+    my %callback;
+    $callback{'OpenParen'} = sub {
+        $node = RT::Interface::Web::QueryBuilder::Tree->new( 'AND', $node );
+    };
+    $callback{'CloseParen'} = sub { $node = $node->getParent };
+    $callback{'EntryAggregator'} = sub { $node->setNodeValue( $_[0] ) };
+    $callback{'Condition'} = sub {
+        my ($key, $op, $value) = @_;
+
+        my $class;
+        if ( exists $lcfield{ lc $key } ) {
+            $key   = $lcfield{ lc $key };
+            $class = $field{$key}->[0];
+        }
+        unless( $class ) {
+            push @$results, [ loc("Unknown field: $key"), -1 ]
+        }
+
+        $value = "'$value'" if $value =~ /[^0-9]/;
+        $key = "'$key'" if $key =~ /^CF./;
+
+        my $clause = { Key => $key, Op => $op, Value => $value };
+        $node->addChild( RT::Interface::Web::QueryBuilder::Tree->new( $clause ) );
+    };
+
+    RT::SQL::Parse($string, \%callback);
+    return $tree;
+};
+
+my $tree = $ParseQuery->( $query{'Query'}, \@actions );
 
 # if parsing went poorly, send them to the edit page to fix it
 if ( $actions[0] ) {
-    $m->comp( "Edit.html", Query => $Query, actions => \@actions );
-    $m->abort();
+    return $m->comp( "Edit.html", Query => $query{'Query'}, actions => \@actions );
 }
 
-my @options;
-$Query  = "";
-
-{ #XXX: Parser BaseQuery to get Queues
-    my $tree;
-    ParseQuery( $BaseQuery, \$tree, [] );
-    build_array( \$BaseQuery, -1, $tree, [], $queues );
-}
-
-# Build the optionlist from the tree, so we can do additions and movements based on it
-$$optionlist = build_array( \$Query, $ARGS{clauses}, $tree, \@options, $queues );
-
-my $currentkey;
-$currentkey = $options[$ARGS{clauses}] if defined $ARGS{clauses};
+my @options = $tree->GetDisplayedNodes;
+my @current_values = grep defined, @options[@clauses];
+my @new_values = ();
 
 # {{{ Try to find if we're adding a clause
 foreach my $arg ( keys %ARGS ) {
-    if ( $arg =~ m/ValueOf(.+)/ && $ARGS{$arg} ne "") {
-        # We're adding a $1 clause
-        my $field = $1;
-        next if $field =~ /-TimeUnits$/;
-        my ($keyword, $op, $value);
+    next unless $arg =~ m/^ValueOf(\w+|'CF.{.*?}')$/
+                && ( ref $ARGS{$arg} eq "ARRAY"
+                     ? grep $_ ne '', @{ $ARGS{$arg} }
+                     : $ARGS{$arg} ne '' );
 
-        #figure out if it's a grouping
-        if ( $ARGS{ $field . "Field" } ) {
-            $keyword = $ARGS{ $field . "Field" };
-        }
-        else {
-            $keyword = $field;
-        }
+    # We're adding a $1 clause
+    my $field = $1;
 
-        $value = $ARGS{'ValueOf' . $field};
-        $op = $ARGS{ $field . 'Op' };
-        if ( $value eq 'NULL' && $op =~ /=/) {
-            if ($op eq '=') {
+    my ($op, $value);
+
+    #figure out if it's a grouping
+    my $keyword = $ARGS{ $field . "Field" } || $field;
+
+    my ( @ops, @values );
+    if ( ref $ARGS{ 'ValueOf' . $field } eq "ARRAY" ) {
+        # we have many keys/values to iterate over, because there is
+        # more than one CF with the same name.
+        @ops    = @{ $ARGS{ $field . 'Op' } };
+        @values = @{ $ARGS{ 'ValueOf' . $field } };
+    }
+    else {
+        @ops    = ( $ARGS{ $field . 'Op' } );
+        @values = ( $ARGS{ 'ValueOf' . $field } );
+    }
+    $RT::Logger->error("Bad Parameters passed into Query Builder")
+        unless @ops == @values;
+
+    for ( my $i = 0; $i < @ops; $i++ ) {
+        my ( $op, $value ) = ( $ops[$i], $values[$i] );
+        next if !defined $value || $value eq '';
+
+        if ( $value eq 'NULL' && $op =~ /=/ ) {
+            if ( $op eq '=' ) {
                 $op = "IS";
-            } elsif ($op eq '!=') {
+            }
+            elsif ( $op eq '!=' ) {
                 $op = "IS NOT";
             }
 
             # This isn't "right", but...
             # It has to be this way until #5182 is fixed
             $value = "'NULL'";
-        } else {
+        }
+        else {
             $value = "'$value'";
         }
 
@@ -177,528 +149,111 @@ foreach my $arg ( keys %ARGS ) {
             Op    => $op,
             Value => $value
         };
-            
-        my $newnode = Tree::Simple->new($clause);
-        if ($currentkey) {
-            my $newindex = $currentkey->getIndex() + 1;
-            if (!$currentkey->getParent->getParent()->isRoot()) {
+
+        my $newnode = RT::Interface::Web::QueryBuilder::Tree->new($clause);
+        if (@current_values) {
+            foreach my $value (@current_values) {
+                my $newindex = $value->getIndex + 1;
+                $value->insertSibling( $newindex, $newnode );
+                $value = $newnode;
+                push @new_values, $newnode;
             }
-            $currentkey->insertSibling($newindex, $newnode);
-            $currentkey = $newnode;
         }
         else {
-            $tree->getChild(0)->addChild($newnode);
-            $currentkey = $newnode;
+            $tree->addChild($newnode);
+            push @new_values, $newnode;
         }
-        $newnode->getParent()->setNodeValue($ARGS{'AndOr'});
+        $newnode->getParent->setNodeValue( $ARGS{'AndOr'} );
     }
 }
+
 # }}}
 
-# {{{ Move things around
-if ( $ARGS{"Up"} ) {
-    if ($currentkey) {
-        my $index = $currentkey->getIndex();
-        if ( $currentkey->getIndex() > 0 ) {
-            my $parent = $currentkey->getParent();
-            $parent->removeChild($index);
-            $parent->insertChild($index - 1, $currentkey);
-            $currentkey = $parent->getChild($index - 1);
-        }
-        else {
-            push( @actions, [ "error: can't move up", -1 ] );
-        }
-    }
-    else {
-        push( @actions, [ "error: nothing to move", -1 ] );
-    }
-}
-elsif ( $ARGS{"Down"} ) {
-    if ($currentkey) {
-        my $index = $currentkey->getIndex();
-        my $parent = $currentkey->getParent();
-        if ( $currentkey->getIndex() < ($parent->getChildCount - 1) ) {
-            $parent->removeChild($index);
-            $parent->insertChild($index + 1, $currentkey);
-            $currentkey = $parent->getChild($index + 1);
-        }
-        else {
-            push( @actions, [ "error: can't move down", -1 ] );
-        }
-    }
-    else {
-        push( @actions, [ "error: nothing to move", -1 ] );
-    }
-}
-elsif ( $ARGS{"Left"} ) {
-    if ($currentkey) {
-        my $parent = $currentkey->getParent();
-        my $grandparent = $parent->getParent();
-        if (!$grandparent->isRoot) {
-            my $index = $parent->getIndex();
-            $parent->removeChild($currentkey);
-            $grandparent->insertChild($index, $currentkey);
-            if ($parent->isLeaf()) {
-                $grandparent->removeChild($parent);
-            }
-        }
-        else {
-            push( @actions, [ "error: can't move left", -1 ] );
-        }
-    }
-    else {
-        push( @actions, [ "error: nothing to move", -1 ] );
-    }
-}
-elsif ( $ARGS{"Right"} ) {
-    if ($currentkey) {
-        my $parent = $currentkey->getParent();
-        my $index = $currentkey->getIndex();
-        my $newparent;
-        if ($index > 0 ) {
-            my $sibling = $parent->getChild($index - 1);
-            if (ref($sibling->getNodeValue)) {
-                $parent->removeChild($currentkey);
-                my $newtree = Tree::Simple->new('AND', $parent);
-                $newtree->addChild($currentkey);
-            } else {
-                $parent->removeChild($index);
-                $sibling->addChild($currentkey);
-            }
-        }
-        else {
-            $parent->removeChild($currentkey);
-            $newparent = Tree::Simple->new('AND', $parent);
-            $newparent->addChild($currentkey);
-        }
-    } else {
-        push( @actions, [ "error: nothing to move", -1 ] );
-    }
-}
-elsif ( $ARGS{"DeleteClause"} ) {
-    if ($currentkey) {
-        $currentkey->getParent()->removeChild($currentkey);
-    }
-    else {
-        push( @actions, [ "error: nothing to delete", -1 ] );
-    }
-}
-elsif ( $ARGS{"Toggle"} ) {
-    my $ea;
-    if ($currentkey) {
-        my $value = $currentkey->getNodeValue();
-        my $parent = $currentkey->getParent();
-        my $parentvalue = $parent->getNodeValue();
+push @actions, $m->comp('/Search/Elements/EditQuery:Process',
+    %ARGS,
+    Tree => $tree,
+    Selected => \@current_values,
+);
 
-        if ( $parentvalue eq 'AND') {
-            $parent->setNodeValue('OR');
-        }
-        else {
-            $parent->setNodeValue('AND');
-        }
-    }
-    else {
-        push( @actions, [ "error: nothing to toggle", -1 ] );
-    }
-}
-elsif ( $ARGS{"Clear"} ) {
-    $tree = Tree::Simple->new(Tree::Simple->ROOT);
-}
-# }}}
+push @current_values, @new_values;
 
 # {{{ Rebuild $Query based on the additions / movements
-$Query   = "";
-@options = ();
-$$optionlist = build_array( \$Query, $currentkey, $tree, \@options, $queues );
 
-sub build_array {
-    my $Query     = shift;
-    my $currentkey = shift;
-    my $tree = shift;
-    my ($keys, $queues)    = @_;
-    my $i = 0;
-    my $optionlist;
-    my $depth = 0;
-    my %parens;
+my $optionlist_arrayref;
+($query{'Query'}, $optionlist_arrayref) = $tree->GetQueryAndOptionList(\@current_values);
 
-    $tree->traverse( sub {
-        my ($_tree) = @_;
-
-        return if $_tree->getParent->isRoot();
-
-        push @$keys, $_tree;
-        my $clause = $_tree->getNodeValue();
-        my $str;
-        my $ea = $_tree->getParent()->getNodeValue();
-        if (ref($clause)) {
-            $str .= $ea . " " if $_tree->getIndex() > 0;
-            $str .= $clause->{Key} . " " . $clause->{Op} . " " . $clause->{Value};
-        
-            if ( $clause->{Key} eq "Queue" ) {
-                my $queue = $clause->{Value};
-                $queue =~ s/^['"]|['"]$//g;
-                $queues->{ $queue } = 1;
-            }
-        } else {
-            $str = $ea if $_tree->getIndex() > 0;
-        }
-
-        my $selected;
-        if ($_tree == $currentkey) {
-            $selected = "SELECTED";
-        }
-        else {
-            $selected = "";
-        }
-
-        foreach my $p (keys %parens) {
-            if ($p > $_tree->getDepth) {
-                $$Query .= ')' x $parens{$p};
-                $parens{$p}--;
-            }
-        }
-
-        $optionlist .= "<option value=$i $selected>" .
-          ("&nbsp;" x 5 x ($_tree->getDepth() - 1)) . "$str</option>\n";
-        my $parent = $_tree->getParent();
-        if (!($parent->isRoot || $parent->getParent()->isRoot) &&
-            !ref($parent->getNodeValue())) {
-            if ( $_tree->getIndex() == 0) {
-                $$Query .= '(';
-                $parens{$_tree->getDepth}++;
-            }
-        }
-        $$Query .= " " . $str . " ";
-
-        if ($_tree->getDepth < $depth) {
-            $$Query .= ')';
-            $parens{$depth}--;
-        }
-
-        $i++;
-    });
-
-    foreach my $p (keys %parens) {
-        $$Query .= ") " x $parens{$p};
-    }
-
-    return $optionlist;
-
-}
-
-use Regexp::Common qw /delimited/;
-
-# States
-use constant VALUE   => 1;
-use constant AGGREG  => 2;
-use constant OP      => 4;
-use constant PAREN   => 8;
-use constant KEYWORD => 16;
-
-sub ParseQuery {
-    my $string = shift;
-    my $tree = shift;
-    my @actions = shift;
-    my $want   = KEYWORD | PAREN;
-    my $last   = undef;
-
-    my $depth = 1;
-
-    # make a tree root
-    $$tree = Tree::Simple->new(Tree::Simple->ROOT);
-    my $root = Tree::Simple->new('AND', $$tree);
-    my $lastnode = $root;
-    my $parentnode = $root;
-
-    # get the FIELDS from Tickets_Overlay
-    my $tickets = new RT::Tickets( $session{'CurrentUser'} );
-    my %FIELDS  = %{ $tickets->FIELDS };
-
-    # Lower Case version of FIELDS, for case insensitivity
-    my %lcfields = map { ( lc($_) => $_ ) } ( keys %FIELDS );
-
-    my @tokens     = qw[VALUE AGGREG OP PAREN KEYWORD];
-    my $re_aggreg  = qr[(?i:AND|OR)];
-    my $re_value   = qr[$RE{delimited}{-delim=>qq{\'\"}}|\d+];
-    my $re_keyword = qr[$RE{delimited}{-delim=>qq{\'\"}}|(?:\{|\}|\w|\.)+];
-    my $re_op      = qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIKE)] ;    # long to short
-    my $re_paren = qr'\(|\)';
-
-    # assume that $ea is AND if it's not set
-    my ( $ea, $key, $op, $value ) = ( "AND", "", "", "" );
-
-    # order of matches in the RE is important.. op should come early,
-    # because it has spaces in it.  otherwise "NOT LIKE" might be parsed
-    # as a keyword or value.
-
-    while ( $string =~ /(
-                      $re_aggreg
-                      |$re_op
-                      |$re_keyword
-                      |$re_value
-                      |$re_paren
-                     )/igx
-      )
-    {
-        my $val     = $1;
-        my $current = 0;
-
-        # Highest priority is last
-        $current = OP    if _match( $re_op,    $val );
-        $current = VALUE if _match( $re_value, $val );
-        $current = KEYWORD
-          if _match( $re_keyword, $val ) && ( $want & KEYWORD );
-        $current = AGGREG if _match( $re_aggreg, $val );
-        $current = PAREN  if _match( $re_paren,  $val );
-
-        unless ( $current && $want & $current ) {
-
-            # Error
-            # FIXME: I will only print out the highest $want value
-            my $token = $tokens[ ( ( log $want ) / ( log 2 ) ) ];
-            push @actions, [ "current: $current, want $want, Error near ->$val<- expecting a " . $token . " in '$string'\n", -1 ];
-        }
-
-        # State Machine:
-        # Parens are highest priority
-        if ( $current & PAREN ) {
-            if ( $val eq "(" ) {
-                $depth++;
-                # make a new node that the clauses can be children of
-                $parentnode = Tree::Simple->new($ea, $parentnode);
-            }
-            else {
-                $depth--;
-                $parentnode = $parentnode->getParent();
-                $lastnode = $parentnode;
-            }
-
-            $want = KEYWORD | PAREN | AGGREG;
-        }
-        elsif ( $current & AGGREG ) {
-            $ea = $val;
-            $want = KEYWORD | PAREN;
-        }
-        elsif ( $current & KEYWORD ) {
-            $key  = $val;
-            $want = OP;
-        }
-        elsif ( $current & OP ) {
-            $op   = $val;
-            $want = VALUE;
-        }
-        elsif ( $current & VALUE ) {
-            $value = $val;
-
-            # Remove surrounding quotes from $key, $val
-            # (in future, simplify as for($key,$val) { action on $_ })
-            if ( $key =~ /$RE{delimited}{-delim=>qq{\'\"}}/ ) {
-                substr( $key, 0,  1 ) = "";
-                substr( $key, -1, 1 ) = "";
-            }
-            if ( $val =~ /$RE{delimited}{-delim=>qq{\'\"}}/ ) {
-                substr( $val, 0,  1 ) = "";
-                substr( $val, -1, 1 ) = "";
-            }
-
-            # Unescape escaped characters
-            $key =~ s!\\(.)!$1!g;
-            $val =~ s!\\(.)!$1!g;
-
-            my $class;
-            if ( exists $lcfields{ lc $key } ) {
-                $key   = $lcfields{ lc $key };
-                $class = $FIELDS{$key}->[0];
-            }
-            if ( $class ne 'INT' ) {
-                $val = "'$val'";
-            }
-
-            push @actions, [ "Unknown field: $key", -1 ] unless $class;
-
-            $want = PAREN | AGGREG;
-        }
-        else {
-            push @actions, [ "I'm lost", -1 ];
-        }
-
-        if ( $current & VALUE ) {
-            if ( $key =~ /^CF./ ) {
-                $key = "'" . $key . "'";
-            }
-            my $clause = {
-                Key   => $key,
-                Op    => $op,
-                Value => $val
-            };
-
-            # explicity add a child to it
-            $lastnode = Tree::Simple->new($clause, $parentnode);
-            $lastnode->getParent()->setNodeValue($ea);
-
-            ( $ea, $key, $op, $value ) = ( "", "", "", "" );
-        }
-
-        $last = $current;
-    }    # while
-
-    push @actions, [ "Incomplete query", -1 ]
-      unless ( ( $want | PAREN ) || ( $want | KEYWORD ) );
-
-    push @actions, [ "Incomplete Query", -1 ]
-      unless ( $last && ( $last | PAREN ) || ( $last || VALUE ) );
-
-    # This will never happen, because the parser will complain
-    push @actions, [ "Mismatched parentheses", -1 ]
-      unless $depth == 1;
-}
-
-sub _match {
-
-    # Case insensitive equality
-    my ( $y, $x ) = @_;
-    return 1 if $x =~ /^$y$/i;
-
-    #  return 1 if ((lc $x) eq (lc $y)); # Why isnt this equiv?
-    return 0;
-}
-
-sub debug {
-    my $message = shift;
-    $m->print($message . "<br />");
-}
+my $optionlist = join "\n", map { qq(<option value="$_->{INDEX}" $_->{SELECTED}>) 
+                                  . ("&nbsp;" x (5 * $_->{DEPTH}))
+                                  . $m->interp->apply_escapes($_->{TEXT}, 'h') . qq(</option>) } @$optionlist_arrayref;
 
 # }}}
 
-# }}}
+my $queues = $tree->GetReferencedQueues;
+
+# Parse queues from BaseQuery
+if ( $BaseQuery ) {
+    my @temp_results;
+    my $tree = $ParseQuery->( $BaseQuery, \@temp_results );
+    $queues = { %$queues, %{ $tree->GetReferencedQueues } };
+}
+
+# XXX: dequote queues hash
+# why we should do this? may be it's bug.
+foreach my $q ( keys %$queues ) {
+    next unless $q =~ /^['"](.*)['"]$/;
+    $queues->{ $1 } = delete $queues->{ $q };
+}
 
 # {{{ Deal with format changes
-use YAML;
-($Format, $$AvailableColumns, $$CurrentFormat) = $m->comp('/Search/Elements/BuildFormatString', cfqueues => $queues, %ARGS, Format => $Format);
+my ( $AvailableColumns, $CurrentFormat );
+( $query{'Format'}, $AvailableColumns, $CurrentFormat ) = $m->comp(
+    '/Search/Elements/BuildFormatString',
+    %ARGS,
+    cfqueues => $queues,
+    Format => $query{'Format'},
+);
+
 # }}}
 
-# {{{ if we're asked to save the current search, save it
-if ( $ARGS{'Save'} ) {
-
-    if ($search && $search->id) {
-        # This search is based on a previously loaded search -- so
-        # just update the current search object with new values
-        $search->SetSubValues(
-            Format      => $Format,
-            Query       => $Query,
-            Order       => $Order,
-            OrderBy     => $OrderBy,
-            RowsPerPage => $RowsPerPage,
-        );
-        $search->SetDescription( $Description );
-
-    }
-    elsif ( $SearchId eq 'new' && $ARGS{'Owner'} =~ /^(.*?)-(\d+)$/ ) {
-        # We're saving a new search
-        my $obj_type  = $1;
-        my $obj_id    = $2;
- 
-
-        # Find out if we're saving on the user, or a group
-        my $container_object;
-        if ( $obj_type eq 'RT::User' && $obj_id == $session{'CurrentUser'}->Id)  {
-            $container_object = $session{'CurrentUser'}->UserObj;
-        }
-        elsif ($obj_type eq 'RT::Group') {
-            $container_object = RT::Group->new($session{'CurrentUser'});
-            $container_object->Load($obj_id);
-        }
-
-        if ($container_object->id ) { 
-            # If we got one or the other, add the search
-            my ( $search_id, $search_msg ) = $container_object->AddAttribute(
-                                                                             Name        => 'SavedSearch',
-                                                                             Description => $Description,
-                                                                             Content     => {
-                                                                                             Format      => $Format,
-                                                                                             Query       => $Query,
-                                                                                             Order       => $Order,
-                                                                                             OrderBy     => $OrderBy,
-                                                                                             RowsPerPage => $RowsPerPage,
-                                                                                            }
-                                                                            );
-            $search = $session{'CurrentUser'}->UserObj->Attributes->WithId($search_id);
-            # Build new SearchId
-            $SearchId = ref( $session{'CurrentUser'}->UserObj ) . '-'
-              . $session{'CurrentUser'}->UserObj->Id . '-SavedSearch-' . $search->Id;
-        }
-        unless ($search->id) {
-            push @actions, [loc("Can't find a saved search to work with"), 0];
-        }
-
-    }
-    else {
-        push @actions, [loc("Can't save this search"), 0];
-    }
-
-}
-# }}}
-
-# {{{ If we're modifying an old query, check if it has changed
-$$dirty = 1 if defined $search and 
-  ($search->SubValue('Format')      ne $Format      or
-   $search->SubValue('Query')       ne $Query       or 
-   $search->SubValue('Order')       ne $Order       or
-   $search->SubValue('OrderBy')     ne $OrderBy     or
-   $search->SubValue('RowsPerPage') ne $RowsPerPage);
-# }}}
-
+# if we're asked to save the current search, save it
+push @actions, $m->comp( '/Search/Elements/EditSearches:Save', %ARGS, Query => \%query, SavedSearch => \%saved_search );
 
 # {{{ Push the updates into the session so we don't loose 'em
-$search_hash->{'SearchId'} = $SearchId;
-$search_hash->{'Format'} = $Format;
-$search_hash->{'Query'} = $Query;
-$search_hash->{'Description'} = $Description;
-$search_hash->{'Object'} = $search;
-$search_hash->{'Order'} = $Order;
-$search_hash->{'OrderBy'} = $OrderBy;
-$search_hash->{'RowsPerPage'} = $RowsPerPage;
 
-$session{'CurrentSearchHash'} = $search_hash;
+$session{'CurrentSearchHash'} = {
+    %query,
+    SearchId    => $saved_search{'Id'},
+    Object      => $saved_search{'Object'},
+    Description => $saved_search{'Description'},
+};
+
 # }}}
 
 # {{{ Show the results, if we were asked.
 if ( $ARGS{"DoSearch"} ) {
     $ResultPage .= $ResultPage =~ /\?/? '&': '?';
-    $ResultPage .= $m->comp('/Elements/QueryString', 
-        Query   => $Query,
-        Format  => $Format,
-        Order   => $Order,
-        OrderBy => $OrderBy,
-        Rows    => $RowsPerPage,
-    );
+    $ResultPage .= $m->comp('/Elements/QueryString', %query );
     $m->redirect( RT->Config->Get('WebURL') . $ResultPage );
     $m->abort();
 }
 # }}}
 
-$$results = \@actions;
-
-return ( $Query, $Format, $Order, $OrderBy, $RowsPerPage, $SearchId );
+return (
+    query            => \%query,
+    saved_search     => \%saved_search,
+    results          => \@actions,
+    optionlist       => $optionlist,
+    queues           => $queues,
+    AvailableColumns => $AvailableColumns,
+    CurrentFormat    => $CurrentFormat,
+);
 
 </%INIT>
 
 <%ARGS>
-$NewQuery => 0
-$SearchId => undef
-$BaseQuery => undef
-$Query => undef
-$Format => undef 
-$Description => undef
-$Order => undef
-$OrderBy => undef
-$RowsPerPage => undef
-$queues => undef
-$results => undef
-$optionlist => undef
-$search_hash => undef
-$dirty => 0
-$AvailableColumns => undef
-$CurrentFormat => undef
+$NewQuery  => 0
+@clauses   => ()
+
+$BaseQuery => ''
 $ResultPage => "RTIR/Search/Results.html"
 </%ARGS>
