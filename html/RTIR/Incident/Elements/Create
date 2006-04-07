@@ -64,6 +64,14 @@
     Rows     => 1,
 &></td></tr>
 
+<tr><td class="label"><&|/l&>Resolution</&>:</td>
+<td class="value">
+<& /RTIR/Elements/EditRTIRField,
+    QueueObj => $QueueObj,
+    Name     => 'Resolution',
+    Rows     => 1,
+&></td></tr>
+
 <tr><td colspan="2">
 <& /Ticket/Elements/EditCustomFields,
     TicketObj => $TicketObj,

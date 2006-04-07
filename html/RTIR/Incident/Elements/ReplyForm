@@ -1,23 +1,10 @@
 <& /Widgets/TitleBoxStart, title => $Title &>
 
 <table>
-<tr><td class="label"><&|/l&>Owner</&>:</td><td>
+<tr><td align="right"><&|/l&>Subject</&>:</td>
+<td><i>(<&|/l&>uses subjects from tickets</&>)</i></td></tr>
 
-<& /Elements/SelectOwner,
-    Name => "Owner",
-    Default => ( $ARGS{'Owner'} || $session{'CurrentUser'}->Id || undef ),
-&>
-
-<&|/l&>Worked</&>:
-<input size="4" name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked} %>" />
-<& /Elements/SelectTimeUnits, Name => 'UpdateTimeWorked-TimeUnits' &>
-
-</td></tr><tr><td align="right">
-
-<&|/l&>Update Type</&>:
-
-</td><td>
-
+<tr><td align="right"><&|/l&>Update Type</&>:</td><td>
 <select name="UpdateType">
 % if( $AllowComment ) {
   <option value="private" <%$CommentDefault%>><&|/l&>Comments (Not sent to requestors)</&></option>
@@ -26,9 +13,29 @@
   <option value="response" <%$ResponseDefault%>><&|/l&>Response to requestors</&></option>
 % }
 </select>
+</td></tr>
 
-</td></tr><tr><td align="right"><&|/l&>Subject</&>:</td>
-<td><i>(<&|/l&>uses subjects from tickets</&>)</i></td></tr>
+% if ( $Status =~ /^(?:resolved|rejected)$/ ) {
+<tr><td class="label"><&|/l&>Resolution</&>:</td>
+<td class="value">
+<& /RTIR/Elements/EditRTIRField,
+    TicketObj => $TicketObj,
+    QueueObj  => $QueueObj,
+    Name      => 'Resolution',
+    Default   => RT->Config->Get("_RTIR_Resolution_". $Status ."_default"),
+    Rows      => 1,
+&></td></tr>
+% }
+
+<tr><td class="label"><&|/l&>Owner</&>:</td><td>
+<& /Elements/SelectOwner,
+    Name => "Owner",
+    Default => ( $ARGS{'Owner'} || $session{'CurrentUser'}->Id || undef ),
+&>
+<&|/l&>Worked</&>:
+<input size="4" name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked} %>" />
+<& /Elements/SelectTimeUnits, Name => 'UpdateTimeWorked-TimeUnits' &>
+</td></tr>
 
 <& /RTIR/Elements/UpdateData, %ARGS &>
 
@@ -45,9 +52,14 @@ if ( $ARGS{'Action'} eq 'Comment' || $ARGS{'UpdateType'} eq 'private' ) {
 } else {
     $ResponseDefault = "selected";
 }
+
+my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
+$QueueObj->Load('Incidents');
 </%INIT>
 <%ARGS>
-$Title         => loc('Reply to selected tickets')
-$AllowComment  => 1
-$AllowResponse => 1
+$Title         => loc('Reply to selected tickets'),
+$TicketObj     => undef,
+$AllowComment  => 1,
+$AllowResponse => 1,
+$Status        => 'open',
 </%ARGS>

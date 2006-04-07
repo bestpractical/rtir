@@ -97,6 +97,14 @@
          Name => 'Classification' &>
     </td>
   </tr>
+  <tr>
+    <td class="label"><&|/l&>Resolution</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/ShowRTIRField, 
+         Ticket => $TicketObj, 
+         Name => 'Resolution' &>
+    </td>
+  </tr>
 </table>
 
 <& /Widgets/TitleBoxEnd &>
@@ -270,8 +278,7 @@ if ( $id eq 'new' ) {
     my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
     $QueueObj->Load( $Queue ) || Abort(loc("Couldn't load queue."));
     unless( $QueueObj->Name eq 'Incidents' ) {
-        $m->comp('/RTIR/Display.html', %ARGS );
-        return;
+        return $m->comp('/RTIR/Display.html', %ARGS );
     }
     ($TicketObj, @results) = CreateTicket( %ARGS, Attachments => delete $session{'Attachments'} );
     $new_ticket = 1;
@@ -280,8 +287,7 @@ if ( $id eq 'new' ) {
 }
 
 unless( $TicketObj->QueueObj->Name eq 'Incidents' ) {
-    $m->comp('/RTIR/Display.html', %ARGS );
-    return;
+    return $m->comp('/RTIR/Display.html', %ARGS );
 }
 $ARGS{'id'} = $id = $TicketObj->Id;
 

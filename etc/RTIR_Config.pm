@@ -77,6 +77,8 @@ Set($_RTIR_Constituency_default, "EDUNET");
 Set($_RTIR_Function_default, "");
 Set($_RTIR_Classification_default, "");
 Set($_RTIR_Description_default, "");
+Set($_RTIR_Resolution_resolved_default, "successfuly resolved");
+Set($_RTIR_Resolution_rejected_default, "no resolution reached");
 
 
 # Set the Business Hours for your organization

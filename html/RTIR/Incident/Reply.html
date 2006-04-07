@@ -40,7 +40,7 @@
 <form action="Reply.html" method="get">
 <input type="hidden" name="id" value="<% $id %>" />
 <input type="hidden" name="DefaultStatus" value="<% $DefaultStatus %>" />
-<input type="hidden" name="Status" value="<% $DefaultStatus %>" />
+<input type="hidden" name="Status" value="<% $Status %>" />
 <input type="hidden" name="All" value="<% $All %>" />
 <input type="hidden" name="Query" value="<% $Query %>" />
 
@@ -86,7 +86,7 @@
 % }
 % }
 
-<& Elements/ReplyForm, AllowResponse => ($ARGS{Status} !~ /^(?:resolved|rejected)$/) &>
+<& Elements/ReplyForm, TicketObj => $IncidentObj, Status => $Status &>
 
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => $SubmitLabel &>
 </form>
@@ -99,6 +99,9 @@ $id = $ARGS{'id'} = $IncidentObj->id;
 
 # XXX: clear radio, checkboxes from format
 $Format =~ s/__RTIR_(?:Radio|Check)__,//;
+
+# XXX: we should get rid of DefaultStatus argument at all. use Status
+$Status ||= $DefaultStatus; $DefaultStatus ||= $Status;
 
 my ($title, $SubmitCaption, $SubmitLabel);
 if ($DefaultStatus eq 'resolved') {
@@ -192,6 +195,7 @@ if ( $SubmitTicket ) {
 
     if ( $update_incident_state ) {
         my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $IncidentObj, '_RTIR_State' );
+        push @results, ProcessObjectCustomFieldUpdates( Object => $IncidentObj, ARGSRef => \%ARGS);
         push @results, ProcessTicketBasics( TicketObj => $IncidentObj, ARGSRef => \%ARGS );
         my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $IncidentObj, '_RTIR_State' );
 
@@ -238,6 +242,7 @@ my $current_tab = "RTIR/Incident/Reply.html?".
 $id              => undef
 $All             => 0
 $DefaultStatus   => ''
+$Status          => $DefaultStatus,
 $Action          => 'Correspond'
 
 $Query           => ''
