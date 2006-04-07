@@ -1,9 +1,0 @@
-<%INIT>
-# ..then wipe the session out..
-undef $session{'CurrentSearchHash'};
-
-# ..and the search results.
-$session{'tickets'}->CleanSlate() if defined $session{'tickets'};
-
-</%INIT>
-
