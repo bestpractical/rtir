@@ -125,12 +125,21 @@ for my $cf (@CustomFieldsList) {
     );
 }
 
+@ScripActions = (
+    {  Name        => 'RTIR Set Incident Resolution',    # loc
+       Description => 'Set the default resolution of an Incident' ,                                            # loc
+       ExecModule => 'RTIR_SetIncidentResolution',
+    },
+);
+
+);
+
 @Scrips = (
     {  Description       => "SetStartsDateOnQueueChange",
        Queue             => 'Incidents',
        ScripCondition    => 'On Queue Change',
        ScripAction       => 'RTIR Set Starts to Now',
-       Template          => 'Blank' },
+       Teemplate          => 'Blank' },
     {  Description       => "SetStartsOnQueueChange",
        Queue             => [ 'Incident Reports', 'Investigations', 'Blocks' ],
        ScripCondition    => 'On Queue Change',
@@ -147,6 +156,11 @@ for my $cf (@CustomFieldsList) {
        ScripCondition    => 'On Queue Change',
        ScripAction       => 'RTIR Set Due Correspond',
        Template          => 'Blank' },
+    {  Description       => "SetDefaultIncidentResolution",
+       Queue             => 'Incidents',
+       ScripCondition    => 'On Status Change',
+       ScripAction       => 'RTIR Set Incident Resolution',
+       Template          => 'Blank', },
 );
 
 push @ACL, (
