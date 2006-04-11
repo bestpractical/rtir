@@ -139,7 +139,7 @@ for my $cf (@CustomFieldsList) {
        Queue             => 'Incidents',
        ScripCondition    => 'On Queue Change',
        ScripAction       => 'RTIR Set Starts to Now',
-       Teemplate          => 'Blank' },
+       Template          => 'Blank' },
     {  Description       => "SetStartsOnQueueChange",
        Queue             => [ 'Incident Reports', 'Investigations', 'Blocks' ],
        ScripCondition    => 'On Queue Change',
