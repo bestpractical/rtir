@@ -3,7 +3,7 @@
 # Load this in test scripts with: require "t/rtir-test.pl";
 # *AFTER* loading in Test::More.
 
-# RTHOME must be set to run this.  Note that this runs on an
+# Note that this runs on an
 # *INSTALLED* copy of RTIR, with a running server.
 
 use strict;
@@ -96,62 +96,43 @@ sub rtir_user {
     return $u;
 }
 
+sub create_incident {
+    return create_rtir_ticket( shift, 'Incidents', @_ );
+}
 sub create_ir {
-    my $agent = shift;
-    my $fields = shift || {};
-    my $cfs = shift || {};
-
-    go_home($agent);
-
-    $agent->follow_link_ok({text => "Incident Reports", n => "1"}, "Followed 'Incident Reports' link");
-
-    $agent->follow_link_ok({text => "New Report", n => "1"}, "Followed 'New Report' link");
-
-    # set the form
-    $agent->form_number(2);
-
-    while (my ($f, $v) = each %$fields) {
-        $agent->field($f, $v);
-    }
-
-    while (my ($f, $v) = each %$cfs) {
-        set_custom_field($agent, $f, $v);
-    }
-
-    # Create it!
-    $agent->click("Create");
-    
-    is ($agent->status, 200, "Attempted to create the ticket");
-
-    # Now see if we succeeded
-    my $content = $agent->content();
-    my $id = -1;
-    if ($content =~ /.*Ticket (\d+) created.*/g) {
-	$id = $1;
-    }
-
-    ok ($id > 0, "Ticket $id created successfully.");
-
-    return $id;
+    return create_rtir_ticket( shift, 'Incident Reports', @_ );
 }
-
 sub create_investigation {
+    return create_rtir_ticket( shift, 'Investigations', @_ );
+}
+sub create_block {
+    return create_rtir_ticket( shift, 'Blocks', @_ );
+}
+
+sub create_rtir_ticket
+{
     my $agent = shift;
+    my $queue = shift;
     my $fields = shift || {};
     my $cfs = shift || {};
 
-    # Must specify a correspondant.
-    $fields->{'Requestors'} ||= $RTIR_TEST_USER;
+    my %type = (
+        'Incident Reports' => 'Report',
+        'Investigations'   => 'Investigation',
+        'Blocks'           => 'Block',
+        'Incidents'        => 'Incident',
+    );
 
     go_home($agent);
 
-    $agent->follow_link_ok({text => "Investigations", n => "1"}, "Followed 'Investigations' link");
-
-    $agent->follow_link_ok({text => "New Investigation", n => "1"}, "Followed 'New Investigation' link");
+    $agent->follow_link_ok({text => $queue, n => "1"}, "Followed '$queue' link");
+    $agent->follow_link_ok({text => "New ". $type{ $queue }, n => "1"}, "Followed 'New $type{$queue}' link");
 
     # set the form
     $agent->form_number(2);
 
+
+    $fields->{'Requestors'} ||= $RTIR_TEST_USER if $queue eq 'Investigations';
     while (my ($f, $v) = each %$fields) {
         $agent->field($f, $v);
     }
@@ -169,13 +150,14 @@ sub create_investigation {
     my $content = $agent->content();
     my $id = -1;
     if ($content =~ /.*Ticket (\d+) created.*/g) {
-	$id = $1;
+        $id = $1;
     }
 
     ok ($id > 0, "Ticket $id created successfully.");
 
     return $id;
 }
+
 
 sub create_incident_for_ir {
     my $agent = shift;
