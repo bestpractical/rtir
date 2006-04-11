@@ -25,7 +25,7 @@
 <& /RTIR/Elements/Header, Title => $title &>
 <& '/RTIR/'.$Type.'/Elements/Tabs', 
     Ticket => $Ticket, 
-    current_subtab => "RTIR/Edit.html?id=".$Ticket->Id, 
+    current_subtab => "RTIR/Edit.html?id=$id",
     Title => $title &>
 
 <form action="Update.html" name="TicketUpdate" 
@@ -36,7 +36,7 @@
 <input type="hidden" name="Action" value="<% $Action || '' %>" />
 <input type="hidden" name="TakeOrStealFirst" value="<% $ARGS{TakeOrStealFirst} || '' %>" />
 % if ($Type eq 'Report' and $ARGS{'DefaultStatus'} eq 'rejected') {
-%   my $query = "Queue = 'Incidents' AND HasMember = " . $Ticket->Id;
+%   my $query = "Queue = 'Incidents' AND HasMember = $id";
 %   my $incidents = new RT::Tickets($session{'CurrentUser'});
 %   $incidents->FromSQL($query);
 %   while (my $member = $incidents->Next) {
@@ -47,7 +47,7 @@
 
 <table>
 <tr><td>
-<a href="Edit.html?id=<%$Ticket->Id%>"><&|/l&>Correspondents</&></a></td><td align="right">
+<a href="Edit.html?id=<% $id %>"><&|/l&>Correspondents</&></a></td><td align="right">
 <&|/l&>Requestor</&>:
 </td><td>
 <b><% $Ticket->RequestorAddresses %></b>
@@ -94,7 +94,7 @@
 
 <& /RTIR/Elements/UpdateData, Ticket => $Ticket, Type => 'Incident', %ARGS &>
 
-<input type="hidden" name="id" value="<%$Ticket->Id%>" /><br />
+<input type="hidden" name="id" value="<% $id %>" /><br />
 </table>
 
 <& /Elements/Submit, Name => 'SubmitTicket' &>
@@ -104,8 +104,9 @@
 
 my $title;
 my $Ticket = LoadTicket($id);
+$id = $ARGS{'id'} = $Ticket->Id;
 
-my ($Type) = $m->comp('Elements/Type', Ticket => $Ticket->Id);
+my ($Type) = $m->comp( 'Elements/Type', TicketObj => $Ticket );
 
 my $name;
 if ($Type eq 'Report') {
@@ -118,15 +119,15 @@ $DefaultStatus ||= $ARGS{'Status'} || $Ticket->Status;
 $DefaultStatus = 'open' if $DefaultStatus eq 'new';
 
 if ( $DefaultStatus eq 'resolved' ) {
-    $title = loc("Resolve [_1] #[_2] ([_3])", $name, $Ticket->id, $Ticket->Subject);
+    $title = loc("Resolve [_1] #[_2] ([_3])", $name, $id, $Ticket->Subject);
 } elsif ( $DefaultStatus eq 'rejected' ) {
     if ( $Type eq 'Incident' ) {
-        $title = loc("Abandon [_1] #[_2] ([_3])", $name, $Ticket->id, $Ticket->Subject);
+        $title = loc("Abandon [_1] #[_2] ([_3])", $name, $id, $Ticket->Subject);
     } else {
-        $title = loc("Reject [_1] #[_2] ([_3])", $name, $Ticket->id, $Ticket->Subject);
+        $title = loc("Reject [_1] #[_2] ([_3])", $name, $id, $Ticket->Subject);
     }
 } else {
-    $title = loc("Update [_1] #[_2] ([_3])", $name, $Ticket->id, $Ticket->Subject);
+    $title = loc("Update [_1] #[_2] ([_3])", $name, $id, $Ticket->Subject);
 }
 
 my $CanRespond = 0;
