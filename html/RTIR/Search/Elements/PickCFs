@@ -74,6 +74,11 @@ my @lines;
 while ( my $CustomField = $CustomFields->Next ) {
     my $label = $CustomField->Name;
     $label =~ s/^_RTIR_//; # XXX: add queue name to label
+    $label = $m->interp->apply_escapes($label, 'h');
+    if ( my $desc = $CustomField->Description ) {
+        $desc = $m->interp->apply_escapes($desc, 'h');
+        $label .= qq{<br><span class="label-comment">($desc)</span>};
+    }
 
     my %line;
     $line{'Name'} = "'CF.{" . $CustomField->Name . "}'";
