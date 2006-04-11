@@ -35,7 +35,7 @@
 %while (my $Ticket = $session{'tickets'}->Next) {
 % next unless ($Ticket->QueueObj->Name eq $Queue);
 % $i++;
-% my ($t) = $m->comp("/RTIR/Elements/Type", Ticket => $Ticket->Id);
+% my ($t) = $m->comp("/RTIR/Elements/Type", TicketObj => $Ticket);
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
 <td><b><a href="<%RT->Config->Get('WebPath')%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%></a></b></td>
 <td><b><a href="<%RT->Config->Get('WebPath')%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Subject%></a></b></td>

@@ -28,7 +28,7 @@
 
 <%INIT>
 my $Ticket = LoadTicket($id);
-$id = $Ticket->id;
+$id = $ARGS{'id'} = $Ticket->id;
 
 my @results;
 if ( $ARGS{'SaveChanges'} ) {
@@ -45,7 +45,7 @@ unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
    Abort("No permission to view ticket");
 }
 
-my ($Type) = $m->comp('Elements/Type', Ticket => $Ticket->Id);
+my ($Type) = $m->comp('Elements/Type', TicketObj => $Ticket);
 my $Title = loc("Advanced edit $Type #[_1]", $id);
 
 </%INIT>
