@@ -42,6 +42,7 @@ if ( !$Ticket && $id ) {
     $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
     $Ticket->Load( $id );
 }
+$id = $Ticket->id if $Ticket;
 
 my ($Type) = $m->comp( '/RTIR/Elements/Type', Queue => $QueueName );
 
@@ -55,7 +56,6 @@ my ( $actions, $mytab );
 my $searchtabs = {};
 
 if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
-    my $id = $Ticket->id;
     $mytab = "RTIR/Display.html?id=$id";
 
     if ( $session{'tickets'} ) {
@@ -135,12 +135,12 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
             }
         }
     }
-    $current_subtab ||= "RTIR/Display.html?id=$id";
 
+    $current_subtab ||= "RTIR/Display.html?id=$id";
     $tabs->{'this'}->{'subtabs'} = $ticket_page_tabs;
     foreach my $tab ( values %$ticket_page_tabs ) {
         next unless $tab->{'path'} eq $current_subtab;
-        
+
         $tab->{'subtabs'} = { %{ $tab->{'subtabs'} || {} }, %$subtabs } if $subtabs;
         $tabs->{'this'}->{'current_subtab'} = $tab->{'path'};
     }
@@ -159,11 +159,17 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
                 path  =>
                     "RTIR/Incident/Reply.html?id=$id&DefaultStatus=stalled&SelectAllTickets=1&All=1",
             };
+        } elsif ( $Type eq 'Block' ) {
+            $actions->{'A'} = {
+                title => loc('Reply'),
+                path  =>
+                    "RTIR/Update.html?id=$id&Action=Respond",
+            };
         } else {
             $actions->{'A'} = {
                 title => loc('Reply'),
                 path  =>
-                    "RTIR/Update.html?Action=Respond&DefaultStatus=stalled&id=$id",
+                    "RTIR/Update.html?id=$id&Action=Respond&DefaultStatus=stalled",
             };
         }
     }
@@ -244,9 +250,6 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
     $mytab = $current_tab;
 }
 
-my $refinetabs = {};
-
-# If we're looking at a specific item, dont' show the refine tab
 $tabs->{"A"} = {
     path  => "RTIR/Create.html?$EscapedQueueName",
     title => loc("New $Type"),
@@ -256,7 +259,7 @@ $tabs->{"g"} = {
     path      => "RTIR/Search/Results.html?$EscapedQueueName&$QueryString",
     title     => loc('Results'),
 };
-unless ( $Ticket and $Ticket->id ) {
+unless ( $id ) {
     $tabs->{'ga'} = {
         class => "nav",
         path  => "RTIR/Search/Refine.html?$EscapedQueueName&$QueryString&"
