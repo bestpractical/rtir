@@ -1,0 +1,17 @@
+<& /Widgets/Form/Select,
+    NamePrefix  => '',
+    Name        => 'Status',
+    Empty => 0,
+    Values => [qw(new open stalled resolved)],
+    ValuesLabel => {
+        new      => loc('pending activation'),
+        open     => loc('active'),
+        stalled  => loc('pending removal'),
+        resolved => loc('removed'),
+    },
+    CurrentValue => $Default,
+&>
+<%ARGS>
+$TicketObj => undef
+$Default   => undef
+</%ARGS>
