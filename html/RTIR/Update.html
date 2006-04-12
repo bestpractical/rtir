@@ -31,8 +31,10 @@
 <form action="Update.html" name="TicketUpdate" 
 	method="post" enctype="multipart/form-data">
 <input type="hidden" name="QuoteTransaction" value="<% $ARGS{'QuoteTransaction'} || '' %>" />
-<input type="hidden" name="DefaultStatus" value="<% $DefaultStatus || '' %>" />
-<input type="hidden" name="Status" value="<% $DefaultStatus || '' %>" />
+% if ( $ARGS{'Status'} ) {
+<input type="hidden" name="DefaultStatus" value="<% $DefaultStatus %>" />
+<input type="hidden" name="Status" value="<% $DefaultStatus %>" />
+% }
 <input type="hidden" name="Action" value="<% $Action || '' %>" />
 <input type="hidden" name="TakeOrStealFirst" value="<% $ARGS{TakeOrStealFirst} || '' %>" />
 % if ($Type eq 'Report' and $ARGS{'DefaultStatus'} eq 'rejected') {
@@ -115,7 +117,8 @@ if ($Type eq 'Report') {
     $name = $Type;
 }
 
-$DefaultStatus ||= $ARGS{'Status'} || $Ticket->Status;
+$DefaultStatus ||= $ARGS{'Status'} || '';
+$ARGS{'Status'} ||= $DefaultStatus; # XXX: we should get rid of the DefaultStatus
 $DefaultStatus = 'open' if $DefaultStatus eq 'new';
 
 if ( $DefaultStatus eq 'resolved' ) {

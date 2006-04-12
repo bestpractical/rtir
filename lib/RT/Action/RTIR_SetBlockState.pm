@@ -59,12 +59,37 @@ sub GetState {
     my $self = shift;
     my %state = (
         new      => 'pending activation',
-        open     => 'active',
+#        open     => 'active',
         stalled  => 'pending removal',
         resolved => 'removed',
         rejected => 'removed',
     );
-    return $state{ $self->TicketObj->Status } || '';
+    my $t = $self->TicketObj;
+    my $status = $t->Status;
+    return $state{ $status } if $state{ $status };
+
+    my $old_state = $t->FirstCustomFieldValue('_RTIR_State');
+
+    if ( $old_state eq 'pending activation' ) {
+        # switch to active state if it is reply from requestor(s)
+        my $txn = $self->TransactionObj;
+        return '' unless $txn->Type eq 'Correspond';
+        return '' unless $t->Requestors->HasMember( $txn->CreatorObj->PrincipalObj );
+        return 'active';
+    } elsif ( $old_state eq 'pending removal' ) {
+        # switch to removed state when requestor(s) replies
+        # but do it via changing status!
+        my $txn = $self->TransactionObj;
+        return '' unless $txn->Type eq 'Correspond';
+        return '' unless $t->Requestors->HasMember( $txn->CreatorObj->PrincipalObj );
+        my ($val, $msg) = $t->SetStatus( 'resolved' );
+        $RT::Logger->error("Couldn't change status: $msg") unless $val;
+        return '';
+    } elsif ( $status eq 'open' && $old_state eq 'removed' ) {
+        return 'active';
+    }
+
+    return '';
 }
 
 eval "require RT::Action::RTIR_SetBlockState_Vendor";

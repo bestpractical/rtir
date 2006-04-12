@@ -72,6 +72,8 @@ sub IsApplicable {
         ( $type =~ /^(Add|Delete)Link$/ and $field eq "MemberOf" ) or
         ( $type eq "Set" and $field eq "Queue" );
 
+    return 1 if $type eq 'Correspond' && $self->TicketObj->QueueObj->Name eq 'Blocks';
+
     return 0;
 }
 
