@@ -428,11 +428,10 @@
        ExecModule => 'RTIR_RequireStateChange',
     },
     {  Name        => 'RTIR Require Due Change',    # loc
-       Description => 'The due date of the parent incident must be changed' ,                                            # loc
+       Description => 'The due date of the parent incident must be changed',                                            # loc
        ApplicableTransTypes => 'Any',
        ExecModule => 'RTIR_RequireDueChange',
     },
-
 );
 
 @Scrips = (
@@ -587,6 +586,12 @@
        ScripCondition    => 'On Status Change',
        ScripAction       => 'RTIR Set Incident Resolution',
        Template          => 'Blank', },
+
+    {  Description       => "NotifyOnClose",
+       Queue             => 'Blocks',
+       ScripCondition    => 'RTIR Close Ticket',
+       ScripAction       => 'Notify Requestors',
+       Template          => 'BlockRemoved' },
 );
 
 @Templates = (
@@ -597,6 +602,43 @@
 Subject: {$Ticket->Subject}
 
 {$Transaction->Content()}
+
+{
+  my $output = "";
+  my $CustomFields = $Ticket->QueueObj->CustomFields();
+  $CustomFields->{"find_disabled_rows"} = 1;
+  while (my $CustomField = $CustomFields->Next()) {
+    my @mailfields = ("_RTIR_IP", 
+        "_RTIR_Netmask", 
+        "_RTIR_Port",
+        "_RTIR_WhereBlocked");
+    my $Values = $Ticket->CustomFieldValues($CustomField->Id);
+    while (my $Value = $Values->Next()) {
+      for my $field (@mailfields) {
+        if ($CustomField->Name eq $field) {
+          $output .= $CustomField->Name.": ".$Value->Content."\n";
+        }
+      }
+    }
+  }
+  return $output;
+}
+-------------------------------------------------------------------------
+Please include the string:
+
+         [{$rtname} #{$Ticket->id}]
+
+in the subject line of all future correspondence about this issue. To do so, 
+you may reply to this message.
+
+                        Thank you,
+                        {$Ticket->QueueObj->CorrespondAddress()}', },
+    { Queue       => 'Blocks',
+      Name        => 'BlockRemoved',
+      Description => 'Sent when a block is removed',
+      Content     => 'Subject: {$Ticket->Subject}
+
+Block #{$Ticket->id} was removed.
 
 {
   my $output = "";
