@@ -141,8 +141,14 @@ sub create_rtir_ticket
         set_custom_field($agent, $f, $v);
     }
 
+    my %create = (
+        'Incident Reports' => 'Create',
+        'Investigations'   => 'Create',
+        'Blocks'           => 'Create',
+        'Incidents'        => 'CreateIncident',
+    );
     # Create it!
-    $agent->click("Create");
+    $agent->click( $create{ $queue } );
     
     is ($agent->status, 200, "Attempted to create the ticket");
 
