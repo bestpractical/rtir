@@ -68,25 +68,37 @@ sub GetState {
     my $status = $t->Status;
     return $state{ $status } if $state{ $status };
 
+    # all code below is related to open status
+
     my $old_state = $t->FirstCustomFieldValue('_RTIR_State');
 
+    # if block was removed (resolved/rejected) we reactivate it
+    return 'active' if $old_state eq 'removed';
+
+    my $txn = $self->TransactionObj;
+    if ( $txn->Creator != $RT::System ) {
+        # if a duty team member changes Status directly then we want to do it
+        my $group = RT::Group->new( $self->CurrentUser );
+        $group->LoadUserDefinedGroup('DutyTeam');
+        $RT::Logger->error("Couldn't load 'DutyTeam' group") unless $group->id;
+        if ( $group->HasMember( $txn->CreatorObj->PrincipalObj ) ) {
+            return 'active';
+        }
+    }
     if ( $old_state eq 'pending activation' ) {
+
         # switch to active state if it is reply from requestor(s)
-        my $txn = $self->TransactionObj;
-        return '' unless $txn->Type eq 'Correspond';
-        return '' unless $t->Requestors->HasMember( $txn->CreatorObj->PrincipalObj );
-        return 'active';
+        return 'active' if $txn->Type eq 'Correspond'
+                           && $t->Requestors->HasMember( $txn->CreatorObj->PrincipalObj );
+        return '';
     } elsif ( $old_state eq 'pending removal' ) {
         # switch to removed state when requestor(s) replies
         # but do it via changing status!
-        my $txn = $self->TransactionObj;
         return '' unless $txn->Type eq 'Correspond';
         return '' unless $t->Requestors->HasMember( $txn->CreatorObj->PrincipalObj );
         my ($val, $msg) = $t->SetStatus( 'resolved' );
         $RT::Logger->error("Couldn't change status: $msg") unless $val;
         return '';
-    } elsif ( $status eq 'open' && $old_state eq 'removed' ) {
-        return 'active';
     }
 
     return '';
