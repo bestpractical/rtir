@@ -391,9 +391,9 @@ if ( $Split ) {
     }
 }
 
-$m->comp( 'SELF:ProcessAttachments', %ARGS );
-
 my @results;
+push @results, $m->comp( 'SELF:ProcessAttachments', %ARGS );
+
 if ( !$ARGS{'AddAttachment'} && ($ARGS{'id'} || '') eq 'new' ) {
     if ( $Type ne 'Investigation' || $ARGS{'Requestors'} ) {
         return $m->comp( 'Display.html', %ARGS );
@@ -419,12 +419,14 @@ $Attachment => '';
 </%ARGS>
 <%INIT>
 
+my @results;
+
 $session{'Attachments'} ||= {};
 
 # deal with deleting uploaded attachments
-foreach ( @DeleteAttachments ) {
-    next unless exists $session{'Attachments'}{ $_ };
+foreach ( grep $_ && exists $session{'Attachments'}{ $_ }, @DeleteAttachments ) {
     delete $session{'Attachments'}{ $_ };
+    push @results, loc("Deleted attachment '[_1]'", $_ );
     $session{'i'}++;
 }
 
@@ -439,21 +441,24 @@ if ( $Attachment ) {
         AttachmentFieldName => 'Attachment'
     );
     $session{'Attachments'}{ $filename } = $entity;
+    push @results, loc("Added attachment '[_1]'", $filename );
     $session{'i'}++;
 }
+
+return @results;
 </%INIT>
 </%METHOD>
 
 <%METHOD AttachmentsForm>
 
 <table>
-
-% if ( exists $session{'Attachments'} && keys %{ $session{'Attachments'} } ) {
+% my $has_files = exists $session{'Attachments'} && keys %{ $session{'Attachments'} };
+% if ( $has_files ) {
 <tr><td><&|/l&>Attached file</&>:</td>
 <td>
 <&|/l&>Check box to delete</&><br />
 <ul class="files">
-% foreach my $name (keys %{$session{'Attachments'}}) {
+% foreach my $name ( keys %{$session{'Attachments'}} ) {
 <li><input type="checkbox" name="DeleteAttachments" value="<% $name %>" /><% $name %></li>
 % }
 </ul>
@@ -463,7 +468,7 @@ if ( $Attachment ) {
 <tr><td class="label"><&|/l&>Attach file</&>:</td>
 <td class="value">
 <input type="file" name="Attachment" />
-<input type="submit" name="AddAttachment" value="<&|/l&>Add More Files</&>" />
+<input type="submit" name="AddAttachment" value="<% $has_files? loc('Add/Delete Files'): loc('Add More Files') %>" />
 </td></tr>
 
 </table>
