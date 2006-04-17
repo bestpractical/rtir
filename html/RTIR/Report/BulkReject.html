@@ -126,17 +126,7 @@ if ( $BulkReject ) {
     $session{'tickets'}->RedoSearch;
 
     if( $BulkRejectAndReturn ) {
-        return $m->comp(
-            '/RTIR/Search/Results.html',
-            Queue     => $Queue,
-            Query     => $Query,
-            Format    => $Format,
-            Rows      => $Rows,
-            OrderBy   => $OrderBy,
-            Order     => $Order,
-            Page      => $Page,
-            results   => \@results,
-        );
+        return $m->comp( '/RTIR/index.html', results   => \@results );
     }
 }
 
