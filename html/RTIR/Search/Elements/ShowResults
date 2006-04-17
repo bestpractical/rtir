@@ -10,7 +10,7 @@
     AllowSorting => $AllowSorting,
 &>
 
-% if ( $ShowNavigation ) {
+% if ( $ShowListActions ) {
 <div align="right">
 <%PERL>
 # this would do well as a Callback
@@ -46,7 +46,7 @@ my $ShortQueryString = $m->comp('/Elements/QueryString',
 % }
 <&|/l, $m->scomp('/Search/Elements/SelectGroupBy', Name => 'PrimaryGroupBy') &>grouped by [_1]</&>
 <&|/l, $m->scomp('/Search/Elements/SelectChartType', Name => 'ChartStyle') &>style: [_1]</&>
-<input type="submit" class="button" value="<%loc('Go')%>" />
+<input type="submit" class="button" value="<% loc('Go') %>" />
 </form>
 
 </div>
@@ -75,19 +75,20 @@ $BaseURL .= ( $BaseURL =~ /\?/ )? '&': '?' unless $BaseURL =~ m{[&?]$};
 
 </%INIT>
 <%ARGS>
-$Queue          => ''
+$Queue           => ''
 
-$BaseQuery      => ''
-$Query          => ''
-$Format         => ''
-$Rows           => undef
-$Page           => 1
-$OrderBy        => $session{'CurrentSearchHash'}->{'OrderBy'} || 'id'
-$Order          => $session{'CurrentSearchHash'}->{'Order'}   || 'ASC'
+$BaseQuery       => ''
+$Query           => ''
+$Format          => ''
+$Rows            => undef
+$Page            => 1
+$OrderBy         => $session{'CurrentSearchHash'}->{'OrderBy'} || 'id'
+$Order           => $session{'CurrentSearchHash'}->{'Order'}   || 'ASC'
 
-$BaseURL        => "RTIR/Search/Results.html?"
+$BaseURL         => "RTIR/Search/Results.html?"
 
-$ShowNavigation => 0
-$AllowSorting   => 1
-$ShowEmpty      => 0
+$ShowEmpty       => 0
+$ShowNavigation  => 0
+$ShowListActions => $ShowNavigation
+$AllowSorting    => 1
 </%ARGS>
