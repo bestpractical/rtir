@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More no_plan => 1;
+use Test::More plan => 45;
 
 require "t/rtir-test.pl";
 
@@ -47,3 +47,6 @@ go_home($agent);
     ok_and_content_like($agent, qr{New unlinked Incident Reports}, 'we on the main page');
 }
 
+foreach( @irs ) {
+    ticket_state_is( $agent, $_, 'rejected', "Ticket #$_ is rejected" );
+}

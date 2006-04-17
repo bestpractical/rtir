@@ -67,6 +67,15 @@ sub display_ticket {
     $agent->get_ok("$RT::WebURL/RTIR/Display.html?id=$id", "Loaded Display page");
 }
 
+sub ticket_state_is {
+    my $agent = shift;
+    my $id = shift;
+    my $state = shift;
+    my $desc = shift;
+    display_ticket( $agent, $id );
+    return $agent->content_like(qr{State:.*?\Q$state}ism, $desc );
+}
+
 sub create_user {
     my $user_obj = rtir_user();
 
