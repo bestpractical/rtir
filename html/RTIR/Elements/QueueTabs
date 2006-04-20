@@ -281,6 +281,10 @@ $tabs->{"g"} = {
     path      => "RTIR/Search/Results.html?$EscapedQueueName&$QueryString",
     title     => loc('Results'),
 };
+$tabs->{"j"} = {
+    path      => "RTIR/Search/Reporting.html?$EscapedQueueName&$QueryString",
+    title     => loc('Report'),
+};
 unless ( $id ) {
     $tabs->{'ga'} = {
         class => "nav",

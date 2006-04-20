@@ -1,0 +1,66 @@
+<& /Elements/Header, Title => $title &>
+<& '/RTIR/'.$Type.'/Elements/Tabs',
+    Title       => $title,
+    BaseQuery   => $BaseQuery,
+    QueryString => $QueryString,
+
+    current_tab => $current_tab,
+&>
+<& /Elements/ListActions, actions => \@results &>
+
+<form method="get" action="<% RT->Config->Get('WebPath') %>/RTIR/Search/Reporting.html">
+% my %hiddens = (Queue => $Queue, Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order);
+% while ( my ($key, $val) = each %hiddens ) {
+% next unless defined $val;
+<input type="hidden" class="hidden" name="<% $key %>" value="<% $val %>" />
+% }
+<&|/l&>Show chart</&>
+<&|/l, $m->scomp('/Search/Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $FullQuery) &>grouped by [_1]</&>
+<&|/l, $m->scomp('/Search/Elements/SelectChartType', Name => 'ChartStyle') &>style: [_1]</&>
+<input type="submit" class="button" name="ShowChart" value="<% loc('Go')%>" />
+</form>
+
+<br />
+
+% if ( $ShowChart ) {
+<& /Search/Elements/Chart, Query => $FullQuery, PrimaryGroupBy => $PrimaryGroupBy, ChartStyle => $ChartStyle &>
+% }
+
+
+<%INIT>
+my $title = loc('Reporting');
+
+my ($Type) = $m->comp( '/RTIR/Elements/Type', Queue => $Queue );
+
+my $FullQuery = join ' AND ', map "( $_ )", grep $_, $BaseQuery, $Query;
+
+my $QueryString = $m->comp( '/Elements/QueryString',
+                            Query     => $Query,
+                            Format    => $Format,
+                            Rows      => $Rows,
+                            Page      => $Page,
+                            OrderBy   => $OrderBy,
+                            Order     => $Order,
+                          );
+my $BaseURL = "RTIR/Search/Reporting.html?". $m->comp( '/Elements/QueryString', Queue => $Queue );
+my $current_tab = "$BaseURL&$QueryString";
+</%INIT>
+
+<%ARGS>
+$PrimaryGroupBy => 'CF.{__RTIR_State}'
+$ChartStyle     => 'bar'
+$ShowChart      => 0
+
+$Queue     => ''
+
+$BaseQuery => $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue )
+$Query     => $m->comp( '/RTIR/Elements/NewQuery', Queue => $Queue )
+$Format    => undef
+$Rows      => 50
+$Page      => 1
+$OrderBy   => 'id'
+$Order     => 'ASC'
+
+@results   => ()
+
+</%ARGS>
