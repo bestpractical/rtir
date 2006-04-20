@@ -280,6 +280,8 @@ Set($RTIR_DisableBlocksQueue, 0);
 # 'email', 'domain' and 'RIPE'.  It is possible to add your own types
 # of clicky links using callbacks; see
 # html/Callbacks/RTIR/Elements/MakeClicky/Default for an example.
-Set(@Active_MakeClicky, qw(httpurl ip email domain));
+# NOTE that list is order-sensetive, when one action matches text
+# other actions don't apply to the same matched text
+Set(@Active_MakeClicky, qw(httpurl_overwrite ip email domain));
 
 1;
