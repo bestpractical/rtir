@@ -1,4 +1,7 @@
 %# RTIR-specific CSS goes here
+.overdue {
+    color: red;
+}
 
 % $m->abort;
 <%INIT>
