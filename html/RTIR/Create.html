@@ -62,32 +62,8 @@
 <input type="hidden" name="id" value="new" />
 <input type="hidden" name="Queue" value="<% $Queue %>" />
 <input type="hidden" name="Status" value="<% $Status || 'new' %>" />
-<input type="hidden" name="Incident" value="<% $Incident || '' %>" />
 % if ( $Split ) {
 <input type="hidden" name="Ticket" value="<% $TicketObj->Id %>" />
-% }
-<%PERL>
-my $parentvalue;
-if ( $IncidentObj ) {
-    $parentvalue = $IncidentObj->Id;
-} elsif ($TicketObj) {
-
-    # XXX: How do we want to link to the former ticket while split?
-    # MemberOf is buggy, for example IR(that was not linked to Inc) while split
-    # generate new IR, but linked to itself, this hides the IR from RTIR at glance.
-    # also we couldn't see "IR MeberOf IR" links.
-    # $parentvalue = $TicketObj->Id; # this string was commented out
-
-    my $incidents = new RT::Tickets( $session{'CurrentUser'} );
-    $incidents->FromSQL( "Queue = 'Incidents' AND HasMember = " . $TicketObj->Id );
-    while ( my $incident = $incidents->Next ) {
-        $parentvalue .= ' ' if $parentvalue;
-        $parentvalue .= $incident->Id;
-    }
-}
-</%PERL>
-% if ( $parentvalue ) {
-<input type="hidden" name="new-MemberOf" value="<% $parentvalue %>" />
 % }
 
 <a name="top"></a>
@@ -97,12 +73,17 @@ if ( $IncidentObj ) {
 % if ( $Incident ) {
   <tr>
     <td align="right"><&|/l&>Incident</&>:</td>
-    <td><% $Incident %></td>
+    <td><% $Incident %><input type="hidden" name="Incident" value="<% $Incident || '' %>" /></td>
   </tr>
-% } elsif ( $parentvalue ) {
+% } elsif ( $TicketObj ) {
   <tr>
     <td align="right"><&|/l&>Split from</&>:</td>
-    <td><% $parentvalue %></td>
+    <td><% $TicketObj->id %><&|/l&>New ticket would be linked to Incident(s):</&><% $parentvalue %></td>
+  </tr>
+% } else {
+  <tr>
+    <td class="label"><&|/l&>Incident</&><% $Type eq 'Block'? loc('(required)'): '' %>:</td>
+    <td class="value"><input name="Incident" size="16" maxsize="16" value="<% $Incident || '' %>" /></td>
   </tr>
 % }
   <tr>
@@ -125,7 +106,7 @@ if ( $IncidentObj ) {
     </td>
   </tr>
   <tr>
-      <td align="right"><&|/l&>Time Worked</&>:</td>
+    <td align="right"><&|/l&>Time Worked</&>:</td>
     <td colspan="2">
       <table>
       <tr>
@@ -134,7 +115,7 @@ if ( $IncidentObj ) {
         <td><input size="3" name="TimeLeft" value="<% $ARGS{'TimeLeft'} || '' %>" /></td>
       </tr>
       </table>
-    </td>     
+    </td>
   </tr>
   <tr>
     <td class="label">
@@ -356,31 +337,55 @@ if ( $m->comp_exists("/RTIR/$Type/Create.html") ) {
     return $m->comp( "/RTIR/$Type/Create.html", %ARGS );
 }
 
-my $Status;
-if ($Queue eq "Incident Reports") {
+my ($Status, $name);
+if ( $Type eq 'Report' ) {
+    $name = 'Incident Report';
     $Status = 'new';
-} elsif ($Queue eq "Investigations") {
+} elsif ( $Type eq 'Investigation' ) {
     $Status = 'open';
-} elsif ($Queue eq "Blocks") {
+} elsif ( $Type eq 'Block' ) {
     $Status = 'new';
 }
+$name ||= $Type;
 
-my ($Title, $IncidentObj);
-my $TicketObj = $ARGS{'TicketObj'};
-
+my $IncidentObj;
 if ( $Incident ) {
     $IncidentObj = LoadTicket( $Incident );
+    $Incident = $ARGS{'Incident'} = $IncidentObj->id;
+
+    unless ( $IncidentObj->QueueObj->Name eq 'Incidents' ) {
+        Abort( loc('Ticket #[_1] is not an Incident', $Incident ));
+    }
     $Subject ||= $IncidentObj->Subject;
 }
 
-
-my $name;
-if ( $Type eq 'Report' ) {
-    $name = 'Incident Report';
-} else {
-    $name = $Type;
+my $parentvalue = '';
+if ( $IncidentObj ) {
+    $parentvalue = $IncidentObj->Id;
+} elsif ( $TicketObj ) {
+    my $incidents = new RT::Tickets( $session{'CurrentUser'} );
+    $incidents->FromSQL( "Queue = 'Incidents' AND HasMember = " . $TicketObj->Id );
+    while ( my $incident = $incidents->Next ) {
+        $parentvalue .= ' ' if $parentvalue;
+        $parentvalue .= $incident->Id;
+    }
 }
 
+my @results;
+push @results, $m->comp( 'SELF:ProcessAttachments', %ARGS );
+
+if ( $ARGS{'Create'} ) {
+    if ( $Type eq 'Investigation' && !$ARGS{'Requestors'} ) {
+        push @results, loc( "Investigation launch failed: You must enter a correspondent." );
+    } elsif ( $Type eq 'Block' || !$IncidentObj ) {
+        push @results, loc( "Block creation failed: You must enter an Incident ID" );
+    } else {
+        $ARGS{'new-MemberOf'} = $parentvalue if $parentvalue;
+        return $m->comp( 'Display.html', %ARGS, results => \@results );
+    }
+}
+
+my $Title;
 if ( $Split ) {
     $Title = loc("Split [_1] #[_2]: [_3]", $name, $TicketObj->id, $TicketObj->Subject);
 } else {
@@ -391,25 +396,21 @@ if ( $Split ) {
     }
 }
 
-my @results;
-push @results, $m->comp( 'SELF:ProcessAttachments', %ARGS );
-
-if ( !$ARGS{'AddAttachment'} && ($ARGS{'id'} || '') eq 'new' ) {
-    if ( $Type ne 'Investigation' || $ARGS{'Requestors'} ) {
-        return $m->comp( 'Display.html', %ARGS );
-    } else {
-        push @results, loc( "Investigation launch failed: You must enter a correspondent." );
-    }
-}
 
 </%INIT>
 
 <%ARGS>
-$Queue => undef
-$Incident => undef
-$Split => 0
-$Subject => undef
+$Queue            => undef
+
+$Subject          => undef
 $QuoteTransaction => undef
+
+# Parent Incident
+$Incident         => undef
+
+$Split            => 0
+# Split source
+$TicketObj        => undef
 </%ARGS>
 
 <%METHOD ProcessAttachments>
