@@ -78,8 +78,14 @@
 % } elsif ( $TicketObj ) {
   <tr>
     <td align="right"><&|/l&>Split from</&>:</td>
-    <td><% $TicketObj->id %><&|/l&>New ticket would be linked to Incident(s):</&><% $parentvalue %></td>
+    <td><% $TicketObj->id %></td>
   </tr>
+% if ($parentvalue) {
+  <tr>
+    <td align="right"><&|/l&>Will be linked to Incident(s):</&></td>
+    <td><% $parentvalue %></td>
+  </tr>
+% }
 % } else {
   <tr>
     <td class="label"><&|/l&>Incident</&><% $Type eq 'Block'? loc('(required)'): '' %>:</td>
