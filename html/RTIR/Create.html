@@ -375,9 +375,9 @@ my @results;
 push @results, $m->comp( 'SELF:ProcessAttachments', %ARGS );
 
 if ( $ARGS{'Create'} ) {
-    if ( $Type eq 'Investigation' && !$ARGS{'Requestors'} ) {
+    if ( $Type eq 'Investigation' and not $ARGS{'Requestors'} ) {
         push @results, loc( "Investigation launch failed: You must enter a correspondent." );
-    } elsif ( $Type eq 'Block' || !$IncidentObj ) {
+    } elsif ( $Type eq 'Block' and not $IncidentObj ) {
         push @results, loc( "Block creation failed: You must enter an Incident ID" );
     } else {
         $ARGS{'new-MemberOf'} = $parentvalue if $parentvalue;
