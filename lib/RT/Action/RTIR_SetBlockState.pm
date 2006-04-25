@@ -76,12 +76,13 @@ sub GetState {
     return 'active' if $old_state eq 'removed';
 
     my $txn = $self->TransactionObj;
-    if ( $txn->Creator != $RT::System ) {
-        # if a duty team member changes Status directly then we want to do it
-        my $group = RT::Group->new( $self->CurrentUser );
-        $group->LoadUserDefinedGroup('DutyTeam');
-        $RT::Logger->error("Couldn't load 'DutyTeam' group") unless $group->id;
-        if ( $group->HasMember( $txn->CreatorObj->PrincipalObj ) ) {
+    if ( $txn->Creator != $RT::SystemUser->id ) {
+        # if a duty team member changes Status directly then we want to activate
+        if ( ($txn->Type eq 'Status' || ($txn->Type eq 'Set' && $txn->Field eq 'Status')) &&
+                $self->CreatorCurrentUser->PrincipalObj->HasRight(
+                    Right => 'ModifyTicket', Object => $t
+                )
+        ) {
             return 'active';
         }
     }
