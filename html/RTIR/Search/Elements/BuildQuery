@@ -72,7 +72,7 @@
 </tr>
 </table>
 
-<& /Search/Elements/DisplayOptions, %ARGS, cfqueues => $queues &>
+<& /Search/Elements/DisplayOptions, %ARGS, %query, cfqueues => $queues &>
 </form>
 <%ARGS>
 $BaseQuery    => ''
