@@ -36,6 +36,8 @@ unless( $Queue ) {
     $TicketObj = LoadTicket($Ticket) if $Ticket && !$TicketObj;
     if( $TicketObj ) {
         $Queue = $TicketObj->QueueObj->Name;
+    } else {
+        return ('');
     }
 }
 
