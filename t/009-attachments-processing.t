@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More qw(no_plan);
+use Test::More tests => 52;
 
 sub tempfile {
     require File::Temp;

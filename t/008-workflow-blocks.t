@@ -2,26 +2,29 @@
 
 use strict;
 use warnings;
-use Test::More qw(no_plan);
+use Test::More tests => 52;
 
 require "t/rtir-test.pl";
 
 my $agent = default_agent();
 
 my $inc_id   = create_incident($agent, {Subject => "incident with block"});
-my $block_id = create_block($agent, {Subject => "block"});
+my $block_id = create_block($agent, {Subject => "block", Incident => $inc_id});
 
 display_ticket($agent, $block_id);
 ok_and_content_like($agent, qr{State.*?pending activation}, 'checked state of the new block');
 
-$agent->follow_link_ok({ text => "[Link]" }, "Followed '[Link]' link");
-$agent->form_number(2);
-$agent->field('SelectedTicket', $inc_id);
-$agent->click('LinkChild');
-ok_and_content_like($agent, qr{$block_id.*block.*?pending activation}, 'have child link');
+# XXX: Comment this tests as we don't allow to create blocks without an incident
+# XXX: we need test for this fact
+#$agent->follow_link_ok({ text => "[Link]" }, "Followed '[Link]' link");
+#$agent->form_number(2);
+#$agent->field('SelectedTicket', $inc_id);
+#$agent->click('LinkChild');
+#ok_and_content_like($agent, qr{$block_id.*block.*?pending activation}, 'have child link');
+#
+#$agent->follow_link_ok({ text => $block_id }, "Followed link back to block");
+#ok_and_content_like($agent, qr{State.*?pending activation}, 'checked state of the new block');
 
-$agent->follow_link_ok({ text => $block_id }, "Followed link back to block");
-ok_and_content_like($agent, qr{State.*?pending activation}, 'checked state of the new block');
 $agent->has_tag('a', 'Remove', 'we have Remove action');
 $agent->has_tag('a', 'Quick Remove', 'we have Quick Remove action');
 
