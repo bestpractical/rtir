@@ -1,1 +1,3 @@
 UPDATE CustomFields SET Disabled = 0 WHERE Name LIKE '_RTIR_%';
+UPDATE Templates SET Name = 'Autoreply' WHERE (Name LIKE 'NewMessage' AND Description LIKE 'Sent when a block is created')
+    OR (Name LIKE 'LaunchMessage' AND Description LIKE 'Sent when an investigation is launched');
