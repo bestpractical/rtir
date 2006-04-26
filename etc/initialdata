@@ -435,17 +435,6 @@
 );
 
 @Scrips = (
-    {  Description       => 'NotifyOnLaunch',
-       Queue             => 'Investigations',
-       ScripCondition    => 'On Create',
-       ScripAction       => 'Notify Requestors',
-       Template          => 'LaunchMessage' },
-    {  Description       => 'NotifyOnCreate',
-       Queue             => 'Blocks',
-       ScripCondition    => 'On Create',
-       ScripAction       => 'Notify Requestors',
-       Template          => 'NewMessage' },
-
     {  Description       => "DetectUserResponse",
        Queue             => [ 'Incident Reports', 'Investigations', 'Blocks' ],
        ScripCondition    => 'RTIR Customer Response',
@@ -596,7 +585,7 @@
 
 @Templates = (
     { Queue       => 'Blocks',
-      Name        => 'NewMessage',
+      Name        => 'Autoreply',
       Description => 'Sent when a block is created',
       Content     => 'RT-Attach-Message: yes
 Subject: {$Ticket->Subject}
@@ -671,7 +660,7 @@ you may reply to this message.
                         Thank you,
                         {$Ticket->QueueObj->CorrespondAddress()}', },
     { Queue       => 'Investigations',
-      Name        => 'LaunchMessage',
+      Name        => 'Autoreply',
       Description => 'Sent when an investigation is launched',
       Content     => 'RT-Attach-Message: yes
 Subject: {$Ticket->Subject}
