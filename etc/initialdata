@@ -583,31 +583,36 @@
        Template          => 'BlockRemoved' },
 );
 
+# WARNING: If you change content of the templates, don't forget to
+# mention it in the UPGRADING file
+
 @Templates = (
     { Queue       => 'Blocks',
       Name        => 'Autoreply',
       Description => 'Sent when a block is created',
       Content     => 'RT-Attach-Message: yes
-Subject: {$Ticket->Subject}
+Subject: { $Ticket->Subject }
 
-{$Transaction->Content()}
+{ $Transaction->Content }
 
-{
-  my $output = "";
-  my $CustomFields = $Ticket->QueueObj->CustomFields();
-  $CustomFields->{"find_disabled_rows"} = 1;
-  while (my $CustomField = $CustomFields->Next()) {
-    my @mailfields = ("_RTIR_IP", 
-        "_RTIR_Netmask", 
-        "_RTIR_Port",
-        "_RTIR_WhereBlocked");
-    my $Values = $Ticket->CustomFieldValues($CustomField->Id);
-    while (my $Value = $Values->Next()) {
-      for my $field (@mailfields) {
-        if ($CustomField->Name eq $field) {
-          $output .= $CustomField->Name.": ".$Value->Content."\n";
-        }
-      }
+{ my $output = "";
+  my @mailfields = qw(
+      _RTIR_IP
+      _RTIR_Netmask
+      _RTIR_Port
+      _RTIR_WhereBlocked
+  );
+
+  my $CustomFields = $Ticket->QueueObj->TicketCustomFields;
+  while ( my $CustomField = $CustomFields->Next ) {
+    my $name = $CustomField->Name;
+    next unless grep $_ eq $name, @mailfields;
+
+    my $Values = $Ticket->CustomFieldValues( $CustomField->Id );
+    while ( my $Value = $Values->Next ) {
+      $name =~ /^_RTIR_(.*)/;
+      $output .= ($1 || $name) .": "
+              .  $Value->Content ."\n";
     }
   }
   return $output;
@@ -615,13 +620,13 @@ Subject: {$Ticket->Subject}
 -------------------------------------------------------------------------
 Please include the string:
 
-         [{$rtname} #{$Ticket->id}]
+         [{ $rtname } #{ $Ticket->id }]
 
 in the subject line of all future correspondence about this issue. To do so, 
 you may reply to this message.
 
                         Thank you,
-                        {$Ticket->QueueObj->CorrespondAddress()}', },
+                        { $Ticket->QueueObj->CorrespondAddress }', },
     { Queue       => 'Blocks',
       Name        => 'BlockRemoved',
       Description => 'Sent when a block is removed',
@@ -629,22 +634,23 @@ you may reply to this message.
 
 Block #{$Ticket->id} was removed.
 
-{
-  my $output = "";
-  my $CustomFields = $Ticket->QueueObj->CustomFields();
-  $CustomFields->{"find_disabled_rows"} = 1;
-  while (my $CustomField = $CustomFields->Next()) {
-    my @mailfields = ("_RTIR_IP", 
-        "_RTIR_Netmask", 
-        "_RTIR_Port",
-        "_RTIR_WhereBlocked");
-    my $Values = $Ticket->CustomFieldValues($CustomField->Id);
-    while (my $Value = $Values->Next()) {
-      for my $field (@mailfields) {
-        if ($CustomField->Name eq $field) {
-          $output .= $CustomField->Name.": ".$Value->Content."\n";
-        }
-      }
+{ my $output = "";
+  my @mailfields = qw(
+    _RTIR_IP
+    _RTIR_Netmask
+    _RTIR_Port
+    _RTIR_WhereBlocked
+  );
+  my $CustomFields = $Ticket->QueueObj->TicketCustomFields;
+  while ( my $CustomField = $CustomFields->Next ) {
+    my $name = $CustomField->Name;
+    next unless grep $_ eq $name, @mailfields;
+
+    my $Values = $Ticket->CustomFieldValues( $CustomField->Id );
+    while ( my $Value = $Values->Next ) {
+      $name =~ /^_RTIR_(.*)/;
+      $output .= ($1 || $name) .": "
+              .  $Value->Content ."\n";
     }
   }
   return $output;

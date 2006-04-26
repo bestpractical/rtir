@@ -22,15 +22,99 @@ General upgrade instructions
             --datadir etc/upgrade/<version>
 
 
+Follow instructions from previous "upgrading from" sections at
+the end of this document if they apply to your installation.
+
+Upgrading from RTIR 1.1.5
+-------------------------
+
+1) NewMessage template in Blocks and LaunchMessage in Investigations
+queues were renamed into 'Autoreply', but also content of
+the 'NewMessage' template was changed, new content is below. Update
+content of the template in Blocks queue manually.
+<<<<<<<<<<< start <<<<<<<<<<<<<<<
+RT-Attach-Message: yes
+Subject: { $Ticket->Subject }
+
+{ $Transaction->Content }
+
+{ my $output = "";
+  my @mailfields = qw(
+      _RTIR_IP
+      _RTIR_Netmask
+      _RTIR_Port
+      _RTIR_WhereBlocked
+  );
+
+  my $CustomFields = $Ticket->QueueObj->TicketCustomFields;
+  while ( my $CustomField = $CustomFields->Next ) {
+    my $name = $CustomField->Name;
+    next unless grep $_ eq $name, @mailfields;
+
+    my $Values = $Ticket->CustomFieldValues( $CustomField->Id );
+    while ( my $Value = $Values->Next ) {
+      $name =~ /^_RTIR_(.*)/;
+      $output .= ($1 || $name) .": "
+              .  $Value->Content ."\n";
+    }
+  }
+  return $output;
+}
+-------------------------------------------------------------------------
+Please include the string:
+
+         [{ $rtname } #{ $Ticket->id }]
+
+in the subject line of all future correspondence about this issue. To do so, 
+you may reply to this message.
+
+                        Thank you,
+                        { $Ticket->QueueObj->CorrespondAddress }
+>>>>>>>>>>>  end  >>>>>>>>>>>>>>>
+
+2) Content of the template 'BlockRemoved' was also changed:
+
+<<<<<<<<<< start <<<<<<<<<<<<<<<<
+Subject: {$Ticket->Subject}
+
+Block #{$Ticket->id} was removed.
+
+{ my $output = "";
+  my @mailfields = qw(
+    _RTIR_IP
+    _RTIR_Netmask
+    _RTIR_Port
+    _RTIR_WhereBlocked
+  );
+  my $CustomFields = $Ticket->QueueObj->TicketCustomFields;
+  while ( my $CustomField = $CustomFields->Next ) {
+    my $name = $CustomField->Name;
+    next unless grep $_ eq $name, @mailfields;
+
+    my $Values = $Ticket->CustomFieldValues( $CustomField->Id );
+    while ( my $Value = $Values->Next ) {
+      $name =~ /^_RTIR_(.*)/;
+      $output .= ($1 || $name) .": "
+              .  $Value->Content ."\n";
+    }
+  }
+  return $output;
+}
+-------------------------------------------------------------------------
+Please include the string:
+
+         [{$rtname} #{$Ticket->id}]
+
+in the subject line of all future correspondence about this issue. To do so, 
+you may reply to this message.
+
+                        Thank you,
+                        {$Ticket->QueueObj->CorrespondAddress()}
+>>>>>>>>>>>  end  >>>>>>>>>>>>>>>
 
 
-Upgrading from RTIR 1.13
-========================
-
-
-NOTE: Follow instructions from previous "upgrading from" sections at
-the end of this document if they apply to your installation, then
-follow the instructions below.
+Upgrading from RTIR 1.1.3
+-------------------------
 
 1) Delete the following Scrips (go to Configuration / Queues / <Queue
 Name> / Scrips):
@@ -76,6 +160,12 @@ In the Blocks Queue:
   ReopenIncident
 
 2) Run the etc/upgrade/upgrade.pl script.
+
+This script updates Due Dates on all incidents and set to the most
+recent due date of the children. 
+
+NOTE that script use hardcoded path '/opt/rt3', if your RT server installed
+into different location you should change it.
 
 
 Upgrading from RTIR 1.1.2:
