@@ -24,7 +24,7 @@
 %# END LICENSE BLOCK
 %  while (my $incident = $incidents->Next) {
 %   $count++;
-% unless ( $action ) {
+% if ( $show_unlink ) {
 <a href="<% RT->Config->Get('WebPath') %>/RTIR/Display.html?id=<% $Ticket->Id %>&DeleteLink--MemberOf-<% $incident->Id %>=1">[<% loc('Unlink') %>]</a>
 % }
 <a href="<% RT->Config->Get('WebPath') %>/RTIR/Display.html?id=<% $incident->Id %>"><% $incident->Id %>: <% $incident->Subject %></a> <i>(<& /RTIR/Elements/ShowRTIRField, Ticket => $incident, Name => 'State' &>)</i>
@@ -60,6 +60,14 @@ if ( $Ticket->Owner != $session{'CurrentUser'}->Id ) {
     } else {
         $action = 'Steal';
     }
+}
+
+my $show_unlink = !$action;
+if ( $show_unlink && $Ticket->QueueObj->Name eq 'Blocks' ) {
+    my $query = "Queue = 'Incidents' AND HasMember = " . $Ticket->Id;
+    my $incidents = new RT::Tickets( $session{'CurrentUser'} );
+    $incidents->FromSQL( $query );
+    $show_unlink = 0 unless $incidents->Count > 1;
 }
 
 </%INIT>
