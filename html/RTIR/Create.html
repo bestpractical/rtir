@@ -73,30 +73,28 @@
 % if ( $Incident ) {
   <tr>
     <td align="right"><&|/l&>Incident</&>:</td>
-    <td><% $Incident %><input type="hidden" name="Incident" value="<% $Incident || '' %>" /></td>
+    <td colspan="2"><% $Incident %><input type="hidden" name="Incident" value="<% $Incident || '' %>" /></td>
   </tr>
 % } elsif ( $TicketObj ) {
   <tr>
     <td align="right"><&|/l&>Split from</&>:</td>
-    <td><% $TicketObj->id %></td>
+    <td colspan="2"><% $TicketObj->id %></td>
   </tr>
 % if ($parentvalue) {
   <tr>
     <td align="right"><&|/l&>Will be linked to Incident(s):</&></td>
-    <td><% $parentvalue %></td>
+    <td colspan="2"><% $parentvalue %></td>
   </tr>
 % }
 % } else {
   <tr>
     <td class="label"><&|/l&>Incident</&><% $Type eq 'Block'? loc('(required)'): '' %>:</td>
-    <td class="value"><input name="Incident" size="16" maxsize="16" value="<% $Incident || '' %>" /></td>
+    <td class="value" colspan="2"><input name="Incident" size="16" maxsize="16" value="<% $Incident || '' %>" /></td>
   </tr>
 % }
   <tr>
-    <td class="label">
-      <&|/l&>Owner</&>:
-    </td>
-    <td>
+    <td class="label"><&|/l&>Owner</&>:</td>
+    <td colspan="2">
       <& /Elements/SelectOwner, 
           Name => "Owner", 
           QueueObj => $QueueObj, 
@@ -104,10 +102,8 @@
     </td>
   </tr>
   <tr>
-    <td class="label">
-      <&|/l&>Subject</&>:
-    </td>
-    <td class="value" colspan="5">
+    <td class="label"><&|/l&>Subject</&>:</td>
+    <td class="value" colspan="2">
       <input name="Subject" size="60" maxsize="100" value="<% $Subject || ''%>" />
     </td>
   </tr>
@@ -124,38 +120,32 @@
     </td>
   </tr>
   <tr>
-    <td class="label">
-      <&|/l&>Correspondents</&>:
-    </td>
-    <td colspan="5">
-      <input name="Requestors" value="<% $ARGS{'Requestors'} || '' %>" size="40" />
-    </td>
-  </tr>
-  <tr>
-    <td class="label">
-      <&|/l&>Cc</&>:
-    </td>
-    <td class="value" colspan="5">
-      <input name="Cc" value="<% $ARGS{'Cc'} || '' %>" size="40" />
-      <i><font size="-2">
-      <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)</&></font></i>
+    <td class="label"><&|/l&>Correspondents</&>:</td>
+    <td><input name="Requestors" value="<% $ARGS{'Requestors'} || '' %>" size="40" /></td>
+    <td>
+      <input type="checkbox" name="SkipNotification" value="Requestors" <% (grep $_ eq 'Requestors', @SkipNotification)? 'checked': '' %> />
+      <&|/l&>Don't send any emails to correspondents.</&>
     </td>
   </tr>
   <tr>
-    <td class="label">
-      <&|/l&>Admin Cc</&>:
-    </td>
-    <td class="value" colspan="5">
-      <input name="AdminCc" value="<% $ARGS{'AdminCc'} || '' %>" size="40" />
-      <i><font size="-2">
-      <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)</&></font></i>
-    </td>
+    <td class="label"><&|/l&>Cc</&>:</td>
+    <td class="value"><input name="Cc" value="<% $ARGS{'Cc'} || '' %>" size="40" /></td>
+    <td><i><font size="-2">
+        <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)</&>
+    </font></i></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Admin Cc</&>:</td>
+    <td class="value"><input name="AdminCc" value="<% $ARGS{'AdminCc'} || '' %>" size="40" /></td>
+    <td><i><font size="-2">
+        <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)</&>
+    </font></i></td>
   </tr>
 
 % if ( $Type eq 'Report' ) {
   <tr>
     <td class="labeltop"><&|/l&>SLA</&>:</td>
-    <td class="value">
+    <td class="value" colspan="2">
       <& /RTIR/Elements/EditRTIRField, 
          QueueObj => $QueueObj, 
          Name => 'SLA',
@@ -164,16 +154,14 @@
   </tr>
   <tr>
     <td class="labeltop"><&|/l&>Customer</&>:</td>
-    <td class="value">
+    <td class="value" colspan="2">
       <& /RTIR/Elements/EditRTIRField, 
          QueueObj => $QueueObj, 
          Name => 'Customer' &>
     </td>
   </tr>
   <tr>
-    <td class="labeltop">
-      <%loc("How Reported")%>:
-    </td>
+    <td class="labeltop"><%loc("How Reported")%>:</td>
     <td class="value" colspan="2">
       <table>
         <tr>
@@ -200,10 +188,8 @@
   </tr>
 % } elsif ($Type eq "Block") {
   <tr>
-    <td class="label">
-      <%loc("IP address")%>:
-    </td>
-    <td class="value">
+    <td class="label"><%loc("IP address")%>:</td>
+    <td class="value" colspan="2">
       <& /RTIR/Elements/EditRTIRField, 
         TicketObj => $TicketObj,
         QueueObj => $QueueObj, 
@@ -212,9 +198,7 @@
     </td>
   </tr>
   <tr>
-    <td class="label">
-      <%loc("Netmask")%>:
-    </td>
+    <td class="label"><%loc("Netmask")%>:</td>
     <td class="value" colspan="2">
       <& /RTIR/Elements/EditRTIRField, 
         TicketObj => $TicketObj,
@@ -223,9 +207,7 @@
     </td>
   </tr>
   <tr>
-    <td class="label">
-      <%loc("Port")%>:
-    </td>
+    <td class="label"><%loc("Port")%>:</td>
     <td class="value" colspan="2">
       <& /RTIR/Elements/EditRTIRField, 
         TicketObj => $TicketObj,
@@ -234,9 +216,7 @@
     </td>
   </tr>
   <tr>
-    <td class="label">
-      <%loc("Where Blocked")%>:
-    </td>
+    <td class="label"><%loc("Where Blocked")%>:</td>
     <td class="value" colspan="2">
       <& /RTIR/Elements/EditRTIRField, 
         TicketObj => $TicketObj,
@@ -247,7 +227,7 @@
 % } elsif ($Type eq "Investigation") {
   <tr>
     <td class="labeltop"><&|/l&>Customer</&>:</td>
-    <td class="value">
+    <td class="value" colspan="2">
       <& /RTIR/Elements/EditRTIRField, 
          QueueObj => $QueueObj, 
          Name => 'Customer' &>
@@ -255,20 +235,16 @@
   </tr>
 % }
   <tr>
-    <td colspan="2">
+    <td colspan="3">
       <& /Ticket/Elements/EditCustomFields, 
         TicketObj => $TicketObj, 
         QueueObj => $QueueObj &>
     </td>
   </tr>
-
-<& SELF:AttachmentsForm &>
-
-<tr>
-<td class="labeltop">
-<&|/l&>Message</&>:
-</td>
-<td colspan="5">
+  <tr><td colspan="3"><& SELF:AttachmentsForm &></td><tr>
+  <tr>
+    <td class="labeltop"><&|/l&>Message</&>:</td>
+    <td colspan="2">
 % if (!exists $ARGS{Content}) {
 %   my $Transactions;
 %   if ($TicketObj) {
@@ -292,35 +268,27 @@
 %   }
 % }
 <& /Elements/MessageBox, Default => $ARGS{Content}, QuoteTransaction => $QuoteTransaction &>
-  <br />
-  </td>
-</tr>
-<tr>
-  <td align="right" colspan="2">
-  </td>
-</tr>
-<tr>
-  <td>
-  </td>
-  <td valign="top">
-    <& /Widgets/TitleBoxStart, title => loc("Dates"),
-                title_class=> 'inverse',  
-                 color => "#663366" &>
-
-    <table border="0">
-      <tr>
+    </td>
+  </tr>
+  <tr>
+    <td valign="top" colspan="3">
+      <& /Widgets/TitleBoxStart, title => loc("Dates"),
+          title_class=> 'inverse',  
+          color => "#663366",
+      &>
+      <table border="0">
+        <tr>
         <td align="right"><&|/l&>Starts</&>:</td>
           <td><input size="10" name="Starts" value="<% $ARGS{Starts} || '' %>" /></td>
-      </tr>
-      <tr>
+        </tr>
+        <tr>
         <td align="right"><&|/l&>Due</&>:</td>
         <td><input size="10" name="Due" value="<% $ARGS{Due} || '' %>" /></td>
-      </tr>
-    </table>
+        </tr>
+      </table>
     <& /Widgets/TitleBoxEnd &>
-  </td>
-</tr>
-
+    </td>
+  </tr>
 </table>
 <& /Widgets/TitleBoxEnd &>
 
@@ -387,7 +355,7 @@ if ( $ARGS{'Create'} ) {
         push @results, loc( "Block creation failed: You must enter an Incident ID" );
     } else {
         $ARGS{'new-MemberOf'} = $parentvalue if $parentvalue;
-        return $m->comp( 'Display.html', %ARGS, results => \@results );
+        return $m->comp( 'Display.html', %ARGS, SkipNotification => \@SkipNotification, results => \@results );
     }
 }
 
@@ -407,6 +375,7 @@ if ( $Split ) {
 
 <%ARGS>
 $Queue            => undef
+@SkipNotification => ()
 
 $Subject          => undef
 $QuoteTransaction => undef
@@ -459,6 +428,7 @@ return @results;
 <%METHOD AttachmentsForm>
 
 <table>
+
 % my $has_files = exists $session{'Attachments'} && keys %{ $session{'Attachments'} };
 % if ( $has_files ) {
 <tr><td><&|/l&>Attached file</&>:</td>
