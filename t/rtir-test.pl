@@ -73,7 +73,7 @@ sub ticket_state_is {
     my $state = shift;
     my $desc = shift || "State of the ticket #$id is '$state'";
     display_ticket( $agent, $id );
-    $agent->content =~ qr{State:\s*</td>\s*<td[^>]*?>\s*<span class="cf-value">(\w+)</span>}ism;
+    $agent->content =~ qr{State:\s*</td>\s*<td[^>]*?>\s*<span class="cf-value">([\w ]+)</span>}ism;
     return is($1, $state, $desc);
 }
 
