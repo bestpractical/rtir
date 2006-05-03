@@ -71,9 +71,10 @@ sub ticket_state_is {
     my $agent = shift;
     my $id = shift;
     my $state = shift;
-    my $desc = shift;
+    my $desc = shift || "State of the ticket #$id is '$state'";
     display_ticket( $agent, $id );
-    return $agent->content_like(qr{State:.*?\Q$state}ism, $desc );
+    $agent->content =~ qr{State:\s*</td>\s*<td[^>]*?>\s*<span class="cf-value">(\w+)</span>}ism;
+    return is($1, $state, $desc);
 }
 
 sub create_user {
