@@ -41,7 +41,7 @@
     <td class="labeltop"><&|/l&>Due</&>:</td>
     <td class="value">
 % my $due = $Ticket->DueObj;
-% if ( $due->Diff > 0 ) {
+% if ( $due->Diff < 0 ) {
         <span class="overdue"><% $due->AsString %></span>
 % } else {
         <% $due->AsString %>
