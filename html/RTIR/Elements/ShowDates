@@ -31,26 +31,26 @@
     <td class="label"><&|/l&>Starts</&>:</td>
     <td class="value"><% $Ticket->StartsObj->AsString %></td>
   </tr>
-% if ($Ticket->QueueObj->Name eq 'Incident Reports' ||
-%     $Ticket->QueueObj->Name eq 'Investigations' ||
-%     $Ticket->QueueObj->Name eq 'Blocks') {
+% if ( $Type =~ /^(Report|Investigation|Block)$/i ) {
   <tr>
     <td class="label"><&|/l&>Started</&>:</td>
     <td class="value"><% $Ticket->StartedObj->AsString %></td>
   </tr>
 % }
-% if ($Ticket->QueueObj->Name ne 'Incidents') {
   <tr>
     <td class="labeltop"><&|/l&>Due</&>:</td>
     <td class="value">
-        <% $Ticket->DueObj->AsString %>
-% if (RT->Config->Get('OverdueAfter')) {
-        <br />
-        [<a href="Display.html?Due_Date=now%20%2B%20<% RT->Config->Get('OverdueAfter') |u %>%20days&id=<% $Ticket->Id %>"><%loc("Set to [_1] days from now", RT->Config->Get('OverdueAfter'))%></a>]
+% my $due = $Ticket->DueObj;
+% if ( $due->Diff > 0 ) {
+        <span class="overdue"><% $due->AsString %></span>
+% } else {
+        <% $due->AsString %>
+% }
+% if ( $Type ne 'Incident' && RT->Config->Get('OverdueAfter') ) {
+        [<a href="Display.html?Due_Date=now%20%2B%20<% RT->Config->Get('OverdueAfter') |u %>%20days&id=<% $Ticket->Id %>"><% loc("Set to [_1] days from now", RT->Config->Get('OverdueAfter') ) %></a>]
 % }
     </td>
   </tr>
-% }
   <tr>
     <td class="label"><&|/l&>Updated</&>:</td>
     <td class="value"><a href="#lasttrans"><% $Ticket->LastUpdated ? (loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)) : loc("Never") | h %></a></td>
@@ -59,3 +59,6 @@
 <%ARGS>
 $Ticket => undef
 </%ARGS>
+<%INIT>
+my ($Type) = $m->comp( '/RTIR/Elements/Type', TicketObj => $Ticket );
+</%INIT>
