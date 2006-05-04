@@ -257,15 +257,6 @@ if ( $id eq 'new' ) {
     my $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
     if ($newstate ne $oldstate) {
         push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
-
-        if( $newstate eq 'rejected' ) {
-            $m->comp( "/RTIR/Search/Results.html",
-                       %ARGS,
-                       Queue => $QueueObj->Name,
-                       results => [@results],
-                    );
-            $m->abort;
-        }
     }
 }
 
@@ -283,7 +274,7 @@ unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
 # update id argument in the case we took merged or created new
 $ARGS{'id'} = $id = $Ticket->Id;
 
-if ($Type eq 'Report') {
+if ( $Type eq 'Report' ) {
     $name = "Incident Report";
 } else {
     $name = $Type;
