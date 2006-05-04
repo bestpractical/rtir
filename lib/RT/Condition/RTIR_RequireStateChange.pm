@@ -69,7 +69,7 @@ sub IsApplicable {
 
     my $field = $self->TransactionObj->Field;
     return 1 if
-        ( $type =~ /^(Add|Delete)Link$/ and $field eq "MemberOf" ) or
+        ( $type =~ /^(Add|Delete)Link$/ and $field =~ /^(MemberOf|MergedInto)$/ ) or
         ( $type eq "Set" and $field eq "Queue" );
 
     return 1 if $type eq 'Correspond' && $self->TicketObj->QueueObj->Name eq 'Blocks';
