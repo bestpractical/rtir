@@ -57,8 +57,6 @@ my $toptabs = {
            path => 'RTIR/Search/Results.html?Queue=Investigations' },
     G => { title => loc('Tools'),
            path => 'RTIR/Tools/Lookup.html' },
-    H => { title => loc('Preferences'),
-           path => 'RTIR/Prefs/Home.html' },
 };
 
 unless ( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
