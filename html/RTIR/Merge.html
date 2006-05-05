@@ -40,13 +40,22 @@
 <form action="<% RT->Config->Get('WebPath') %>/RTIR/Merge.html" method="post">
 <input type="hidden" name="id" value="<% $id %>" />
 
-<& /RTIR/Elements/MergeWith, %defaults, %ARGS, Queue => $Ticket->QueueObj->Name, Ticket => $Ticket &>
-
-% if ($Ticket->QueueObj->Name eq "Incident Reports") {
-<& /RTIR/Elements/MergeWith, %defaults, %ARGS, Queue => "Investigations", Ticket => $Ticket &>
+% if ( $siblings_query ) {
+<& /RTIR/Elements/MergeWith,
+    %defaults,
+    %ARGS,
+    Title     => loc('Other children of the parent incident(s) of #[_1]', $id),
+    Ticket    => $Ticket,
+    BaseQuery => "id != $id",
+    Query     => $siblings_query,
+&>
 % }
 
-% if ($Ticket->QueueObj->Name eq "Investigations") {
+<& /RTIR/Elements/MergeWith, %defaults, %ARGS, Queue => $Ticket->QueueObj->Name, Ticket => $Ticket &>
+
+% if ( $Type eq 'Report' ) {
+<& /RTIR/Elements/MergeWith, %defaults, %ARGS, Queue => "Investigations", Ticket => $Ticket &>
+% } elsif ( $Type eq 'Investigation' ) {
 <& /RTIR/Elements/MergeWith, %defaults, %ARGS, Queue => "Incident Reports", Ticket => $Ticket &>
 % }
 <& /Elements/Submit, Caption=> loc('Merge into selected Ticket'), Label => loc("Merge") &>
@@ -106,6 +115,26 @@ my %defaults = (
     OrderBy => $OrderBy,
     Order   => $Order,
 );
+
+my $siblings_query = '';
+if ( $Type ne 'Incident' ) {
+    my $parents = RT::Tickets->new( $session{'CurrentUser'} );
+    $parents->FromSQL( "Queue = 'Incidents' AND HasMember = $id" );
+    if ( $parents->Count ) {
+        my $parents_query = '';
+        while ( my $parent = $parents->Next ) {
+            $parents_query .= ' OR ' if $parents_query;
+            $parents_query .= "MemberOf = ". $parent->id;
+        }
+        if ( $parents_query ) {
+            $siblings_query .= "( $parents_query )";
+            my $queue_query = "Queue = '$Queue'";
+            $queue_query .= " OR Queue = 'Investigations'" if $Type eq 'Report';
+            $queue_query .= " OR Queue = 'Incident Reports'" if $Type eq 'Investigation';
+            $siblings_query .= " AND ( $queue_query )";
+        }
+    }
+}
 
 my $QueryString = $m->comp('/Elements/QueryString', Query => $Query, %defaults);
 

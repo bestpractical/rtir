@@ -1,5 +1,5 @@
-<h3><% $Type %>s</h3>
-<& /RTIR/Search/Elements/ShowResults, 
+<h3><% $Title %></h3>
+<& /RTIR/Search/Elements/ShowResults,
     Queue       => $Queue,
     BaseQuery   => $BaseQuery,
     Query       => $Query,
@@ -13,6 +13,7 @@
 
 <%INIT>
 my ($Type) = $m->comp( '/RTIR/Elements/Type', Queue => $Queue );
+$Title ||= $Type .'s';
 
 $Query ||= $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
 unless ( $BaseQuery ) {
@@ -29,6 +30,7 @@ $Format =~ s/__RTIR_(?:Radio|Check)__,//;
 $id             => undef
 $Ticket         => undef
 $Queue          => undef
+$Title          => ''
 
 $Format         => undef
 $Rows           => undef
