@@ -113,6 +113,9 @@ ${$ARGS{handle}} = sub {
     $args{incident} = $args{ticket}->id
       if $args{ticket} and $args{ticket}->QueueObj->Name eq 'Incidents';
 
+    $args{lookup_params} = "ticket=".$args{ticket}->id
+        if $args{ticket} && !$args{lookup_params};
+
     $args{lookup_params} .= "&"
       if $args{lookup_params} and $args{lookup_params} !~ /&$/;
 
