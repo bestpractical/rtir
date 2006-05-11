@@ -33,7 +33,7 @@
 <& /Widgets/TitleBoxStart, title => loc("Current [_1]: #[_2]", $TicketType, $ticket), color=> "#993333" &>
 <table width="100%" border="0" cellpadding="2" cellspacing="0">
 <& /Elements/TicketList, 
-    Query  => "id = ".$TicketObj->id,
+    Query  => "id = $ticket",
     Format => $Format,
 &>
 </table><hr />
@@ -149,10 +149,10 @@
 
 % if ($q) {
 <h2>WHOIS Results</h2>
-% if ($TicketObj && $TicketObj->QueueObj->Name eq 'Incidents') {
-<form method="post" action="/RTIR/Tools/ScriptedAction.html">
-<input type="hidden" name="incidentid" value="<%$TicketObj->Id%>" />
-<input type="hidden" name="Subject" value="<%$TicketObj->Subject%>" />
+% if ( $TicketObj && $TicketType eq 'Incident' ) {
+<form method="post" action="<% RT->Config->Get('WebPath') %>/RTIR/Tools/ScriptedAction.html">
+<input type="hidden" name="incidentid" value="<% $ticket %>" />
+<input type="hidden" name="Subject" value="<% $TicketObj->Subject %>" />
 
 % }
 % }
@@ -260,9 +260,11 @@ if ($q) {
     $RT::Logger->warning( $msg ) unless $val;
 }
 
-if ($ticket) {
-  ($TicketType, undef) = $m->comp('/RTIR/Elements/Type', Ticket => $ticket);
-  $TicketObj = LoadTicket($ticket);
+if ( $ticket ) {
+    $TicketObj = LoadTicket($ticket);
+    $ticket = $ARGS{'ticket'} = $TicketObj->id;
+
+    ($TicketType) = $m->comp('/RTIR/Elements/Type', TicketObj => $TicketObj);
 }
 
 my $Format = RT->Config->Get('RTIRSearchResultFormats')->{$TicketType . 'Default'};
