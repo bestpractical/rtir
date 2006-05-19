@@ -33,7 +33,7 @@
 <& /RTIR/Elements/EditRTIRField,
     QueueObj => $QueueObj,
 	Name     => 'Description',
-	Default  => RT->Config->Get('_RTIR_Description_default'),
+	Default  => scalar RT->Config->Get('_RTIR_Description_default'),
 	Cols     => 40,
 &></td></tr>
 
@@ -42,7 +42,7 @@
 <& /RTIR/Elements/EditRTIRField,
     QueueObj => $QueueObj,
 	Name     => 'Constituency',
-	Default  => RT->Config->Get('_RTIR_Constituency_default'),
+	Default  => scalar RT->Config->Get('_RTIR_Constituency_default'),
 	Rows     => 1,
 &></td></tr>
 
@@ -51,7 +51,7 @@
 <& /RTIR/Elements/EditRTIRField, 
     QueueObj => $QueueObj, 
 	Name     => 'Function',
-	Default  => RT->Config->Get('_RTIR_Function_default'),
+	Default  => scalar RT->Config->Get('_RTIR_Function_default'),
 	Rows     => 1,
 &></td></tr>
 
@@ -60,7 +60,7 @@
 <& /RTIR/Elements/EditRTIRField, 
     QueueObj => $QueueObj, 
     Name     => 'Classification',
-    Default  => RT->Config->Get('_RTIR_Classification_default'),
+    Default  => scalar RT->Config->Get('_RTIR_Classification_default'),
     Rows     => 1,
 &></td></tr>
 
