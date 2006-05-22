@@ -93,6 +93,22 @@ sub ticket_is_linked_to_inc {
     return 1;
 }
 
+sub ticket_is_not_linked_to_inc {
+    my $agent = shift;
+    my $id = shift;
+    my $incs = shift;
+    my $desc = shift;
+    display_ticket( $agent, $id );
+    foreach my $inc( @$incs ) {
+        my $desc = shift || "Ticket #$id is linked to the Incident #$inc";
+        $agent->content_unlike(
+            qr{Incident:\s*</td>\s*<td[^>]*?>.*?\Q$inc:}ism,
+            $desc || "Ticket #$id is not linked to the Incident #$inc"
+        ) or return 0;
+    }
+    return 1;
+}
+
 sub create_user {
     my $user_obj = rtir_user();
 
