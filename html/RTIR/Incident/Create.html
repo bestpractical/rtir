@@ -32,43 +32,62 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <%PERL>
-if ( $link && !$link->CurrentUserHasRight('ModifyTicket') ) {
-    $m->out( loc('You are not allowed to [_1] #[_2].', lc( $label ), $link->id ) );
+if ( $TicketObj && !$TicketObj->CurrentUserHasRight('ModifyTicket') ) {
+    $m->out( loc('You are not allowed to split from #[_2].', $TicketObj->id ) );
+    return;
+}
+if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
+    $m->out( loc('You are not allowed to link with #[_2].', $ChildObj->id ) );
     return;
 }
 </%PERL>
 
+% if ( $TicketObj ) {
+<form action="Split.html" method="post" enctype="multipart/form-data">
+% } else {
 <form action="Create.html" method="post" enctype="multipart/form-data">
+% }
 
 <input type="hidden" name="id"           value="new" />
 <input type="hidden" name="Queue"        value="<% $QueueObj->Name       || '' %>" />
 <input type="hidden" name="Status"       value="<% $ARGS{'Status'}       || 'open' %>" />
-<input type="hidden" name="new-MemberOf" value="<% $ARGS{'new-MemberOf'} || '' %>" />
-<input type="hidden" name="MemberOf-new" value="<% $ARGS{'MemberOf-new'} || '' %>" />
-<a name="top">
+% if ( $ChildObj ) {
+<input type="hidden" name="Child"        value="<% $Child %>" />
+<input type="hidden" name="MemberOf-new" value="<% $Child %>" />
+% }
+% if ( $TicketObj ) {
+<input type="hidden" name="Split"        value="<% $Split %>" />
+<input type="hidden" name="Ticket"       value="<% $TicketObj->Id %>" />
+% }
+<a name="top" />
 
 <&| /Widgets/TitleBox, title => $Title &>
 <table border="0" cellpadding="0" cellspacing="2">
 
-% if ($link) {
-% my ($Type) = $m->comp("/RTIR/Elements/Type", TicketObj => $link );
-<tr><td class="label"><% $label %>:</td>
-<td class="value"><% loc("[_1] #[_2]: [_3]", $Type, $link->Id, $link->Subject) %></td></tr>
+% if ( $TicketObj ) {
+% my ($Type) = $m->comp("/RTIR/Elements/Type", TicketObj => $TicketObj );
+<tr><td class="label"><% loc('Split from') %>:</td>
+<td class="value"><% loc("[_1] #[_2]: [_3]", $Type, $TicketObj->Id, $TicketObj->Subject) %></td></tr>
+% }
+
+% if ( $ChildObj ) {
+% my ($Type) = $m->comp("/RTIR/Elements/Type", TicketObj => $ChildObj );
+<tr><td class="label"><% loc('Link with') %>:</td>
+<td class="value"><% loc("[_1] #[_2]: [_3]", $Type, $ChildObj->Id, $ChildObj->Subject) %></td></tr>
 % }
 
 <tr>
-% if ($ChildObj) {
     <td class="label"><&|/l&>Owner</&>:</td>
+% if ( $ChildObj ) {
     <td class="value">
-    <% $ChildObj->OwnerObj->Name %>
-    <input type="hidden" name="Owner" value="<% $ChildObj->Owner %>" />
+      <% $ChildObj->OwnerObj->Name %>
+      <input type="hidden" name="Owner" value="<% $ChildObj->Owner %>" />
     </td>
 % } else {
-    <td class="label"><&|/l&>Owner</&>:</td>
-    <td><& /Elements/SelectOwner, 
+    <td class="value"><& /Elements/SelectOwner, 
         Name     => 'Owner',
         QueueObj => $QueueObj,
-        Default  => $ARGS{Owner} || $session{'CurrentUser'}->Id
+        Default  => $ARGS{'Owner'} || $session{'CurrentUser'}->Id
     &></td>
 % }
 </tr>
@@ -78,7 +97,7 @@ if ( $link && !$link->CurrentUserHasRight('ModifyTicket') ) {
 <tr><td class="labeltop"><&|/l&>Message</&>:</td>
 <td>
 <%PERL>
-unless ( exists $ARGS{Content} ) {
+unless ( exists $ARGS{'Content'} ) {
     my $Transactions;
     if ( $TicketObj ) {
         $Transactions = $TicketObj->Transactions;
@@ -86,16 +105,16 @@ unless ( exists $ARGS{Content} ) {
         $Transactions = $ChildObj->Transactions;
     }
     if ( $Transactions ) {
-        $ARGS{Content} = $m->scomp("/RTIR/Elements/TransactionData",
+        $ARGS{'Content'} = $m->scomp("/RTIR/Elements/TransactionData",
             Transactions => $Transactions,
             Type         => 'messages',
-            Include      => {'Create', 'Correspond'},
+            Include      => ['Create', 'Correspond'],
         );
-        $ARGS{Content} =~ s/\&gt;/>/g;
+        $ARGS{'Content'} =~ s/\&gt;/>/g;
     }
 }
 </%PERL>
-<& /Elements/MessageBox, Default => $ARGS{Content} &>
+<& /Elements/MessageBox, Default => $ARGS{'Content'} &>
 
 </td></tr>
 
@@ -173,26 +192,12 @@ my @results;
 my $ChildObj;
 if ( $Child ) {
     $ChildObj = LoadTicket( $Child );
+    $Child = $ARGS{'Child'} = $ChildObj->id;
     $ARGS{'Subject'} ||= $ChildObj->Subject;
-}
-
-my ($link, $label);
-if ($ARGS{'new-MemberOf'}) {
-    $link = LoadTicket($ARGS{'new-MemberOf'});
-    $label = loc("Split from");
-} elsif ($ARGS{'MemberOf-new'}) {
-    $link = LoadTicket($ARGS{'MemberOf-new'});
-    $label = loc("Link with");
-} elsif ($Child) {
-    $link = LoadTicket($Child);
-    $label = loc("Link with");
-    $ARGS{'MemberOf-new'} = $Child;
 }
 
 my $QueueObj = new RT::Queue( $session{'CurrentUser'} );
 $QueueObj->Load( 'Incidents' ) || Abort( loc("Queue could not be loaded.") );
-
-my $TicketObj = $ARGS{TicketObj}; #XXX: .html(public) pages shouldn't take objects as argument
 
 $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 
@@ -201,8 +206,10 @@ if ( $CreateIncident ) {
     ($inc_obj, @tmp) = $m->comp(
         '/RTIR/Investigation/Elements/Create:Process',
         %ARGS,
-        NamePrefix => '',
-        DefualtsNamePrefix => '',
+        $Child? ('MemberOf-new' => $Child): (),
+
+        NamePrefix         => '',
+        DefaultsNamePrefix => '',
     );
     push @results, @tmp;
 
@@ -233,11 +240,18 @@ if ( $CreateIncident ) {
 </%INIT>
 
 <%ARGS>
-$QuoteTransaction        => undef
 $Title                   => loc("Create a new Incident")
-$Child                   => undef
+$QuoteTransaction        => undef
+
 $CreateWithInvestigation => 0
 $CreateIncident          => $CreateWithInvestigation
+
+$Split                   => 0
+# Split source
+$TicketObj               => undef
+
+$Child                   => undef
+
 $current_tab             => "RTIR/Create.html?Queue=Incidents"
 $current_subtab          => "RTIR/Create.html?Queue=Incidents"
 </%ARGS>

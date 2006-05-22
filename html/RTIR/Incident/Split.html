@@ -23,19 +23,24 @@
 %# 
 %# END LICENSE BLOCK
 <& /RTIR/Create.html,
-    'new-MemberOf'   => $TicketObj->Id,
-    QuoteTransaction => $QuoteTransaction,
     Queue            => $TicketObj->QueueObj->Name,
+    Status           => $TicketObj->Status,
     Subject          => $TicketObj->Subject,
+
+    Owner            => $TicketObj->Owner,
     Requestors       => $TicketObj->RequestorAddresses,
     Cc               => $TicketObj->CcAddresses,
     AdminCc          => $TicketObj->AdminCcAddresses,
-    TicketObj        => $TicketObj,
-    Status           => $TicketObj->Status,
-    Owner            => $TicketObj->Owner,
+
     InitialPriority  => $TicketObj->InitialPriority,
     FinalPriority    => $TicketObj->FinalPriority,
+
+    %ARGS,
+
     Title            => loc("Split Incident #[_1]: [_2]", $TicketObj->id, $TicketObj->Subject),
+    Split            => 1,
+    TicketObj        => $TicketObj,
+
     current_tab      => "RTIR/Display.html?id=".$Ticket,
     current_subtab   => "RTIR/Split.html?Ticket=".$Ticket,
 &>
@@ -45,7 +50,6 @@ my $TicketObj = LoadTicket($Ticket);
 </%INIT>
 
 <%ARGS>
-$MemberOf => undef
 $QuoteTransaction => undef
 $Ticket => undef
 </%ARGS>
