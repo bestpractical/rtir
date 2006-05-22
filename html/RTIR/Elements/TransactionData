@@ -23,21 +23,17 @@
 %# 
 %# END LICENSE BLOCK
 <%PERL>
-while (my $Transaction = $Transactions->Next) {
+while ( my $Transaction = $Transactions->Next ) {
     my $type = $Transaction->Type;
+    next if keys %Include && !$Include{ lc $type };
     next if ( $type eq 'CustomField' and substr($Transaction->BriefDescription, 0, 6) eq '_RTIR_');
 
-    if (@Include) {
-        my $found = 0;
-        foreach my $inc (@Include) {
-            $found = 1 if ($inc eq $type);
-        }
-        next unless ($found);
-    }
+    # BUG: If original ticket has a file attachment in create transaction
+    # we return empty content
+
     my $attachments = $Transaction->Attachments;
     my ($headers, $content);
-    $attachments->GotoFirstItem;
-    while (my $message = $attachments->Next) {
+    while ( my $message = $attachments->Next ) {
         #we don't want to show any empty transactions, unless they have kids
         next unless ($message->Content || $message->Children->Count);
 
@@ -60,15 +56,8 @@ while (my $Transaction = $Transactions->Next) {
     }
 
     # quote the included text
-    if ($QuoteText) {
-        if ($headers) {
-            $headers =~ s/^/> /g;
-            $headers =~ s/\n/\n> /g;
-        }
-        if ($content) {
-            $content =~ s/^/> /g;
-            $content =~ s/\n/\n> /g;
-        }
+    if ( $QuoteText ) {
+        s/^/> /mg foreach ($headers, $content);
     }
 </%PERL>
 %   if ($headers) {
@@ -78,10 +67,12 @@ while (my $Transaction = $Transactions->Next) {
 <%      $content |n %>
 %   }
 % }
+<%INIT>
+my %Include = map { lc( $_ ) => 1 } grep $_, @Include;
+</%INIT>
 <%ARGS>
 $Transactions => undef
-$Show => 'all'
-$ShowHeaders => 0
-@Include => undef
-$QuoteText => undef
+$ShowHeaders  => 0
+@Include      => ()
+$QuoteText    => undef
 </%ARGS>
