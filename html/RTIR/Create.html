@@ -80,7 +80,7 @@
     <td align="right"><&|/l&>Split from</&>:</td>
     <td colspan="2"><% $TicketObj->id %></td>
   </tr>
-% if ($parentvalue) {
+% if ( $parentvalue ) {
   <tr>
     <td align="right"><&|/l&>Will be linked to Incident(s):</&></td>
     <td colspan="2"><% $parentvalue %></td>
@@ -322,15 +322,26 @@ if ( $Type eq 'Report' ) {
 }
 $name ||= $Type;
 
+my (@results, $checks_failure);
+
 my $IncidentObj;
 if ( $Incident ) {
-    $IncidentObj = LoadTicket( $Incident );
-    $Incident = $ARGS{'Incident'} = $IncidentObj->id;
-
-    unless ( $IncidentObj->QueueObj->Name eq 'Incidents' ) {
-        Abort( loc('Ticket #[_1] is not an Incident', $Incident ));
+    $IncidentObj = RT::Ticket->new( $session{'CurrentUser'} );
+    $IncidentObj->Load( $Incident );
+    unless ( $IncidentObj->id ) {
+        push @results, loc("Couldn't load incident #[_1]", $Incident );
+        $Incident = undef;
+        $checks_failure = 1;
+    } else {
+        $Incident = $ARGS{'Incident'} = $IncidentObj->id;
+        unless ( $IncidentObj->QueueObj->Name eq 'Incidents' ) {
+            push @results, loc('Ticket #[_1] is not an Incident', $Incident );
+            ($IncidentObj, $Incident) = (undef, undef);
+            $checks_failure = 1;
+        } else {
+            $Subject ||= $IncidentObj->Subject;
+        }
     }
-    $Subject ||= $IncidentObj->Subject;
 }
 
 my $parentvalue = '';
@@ -345,18 +356,25 @@ if ( $IncidentObj ) {
     }
 }
 
-my @results;
 push @results, $m->comp( 'SELF:ProcessAttachments', %ARGS );
 
+# checks
 if ( $ARGS{'Create'} ) {
-    if ( $Type eq 'Investigation' and not $ARGS{'Requestors'} ) {
-        push @results, loc( "Investigation launch failed: You must enter a correspondent." );
+    if ( $Type eq 'Investigation' && !$ARGS{'Requestors'} ) {
+        push @results, loc( "You must enter a correspondent." );
+        $checks_failure = 1;
     } elsif ( $Type eq 'Block' and not $IncidentObj ) {
-        push @results, loc( "Block creation failed: You must enter an Incident ID" );
-    } else {
+        push @results, loc( "You must enter an Incident ID" );
+        $checks_failure = 1;
+    }
+}
+
+if ( $ARGS{'Create'} ) {
+    if ( !$checks_failure ) {
         $ARGS{'new-MemberOf'} = $parentvalue if $parentvalue;
         return $m->comp( 'Display.html', %ARGS, SkipNotification => \@SkipNotification, results => \@results );
     }
+    unshift @results, loc("Creation failed:");
 }
 
 my $Title;
