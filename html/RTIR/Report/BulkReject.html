@@ -34,7 +34,13 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="<%RT->Config->Get('WebPath')%>/RTIR/Report/BulkReject.html" method="post">
-<input type="hidden" name="Status" value="<% $Status %>" />
+<input type="hidden" name="Status"  value="<% $Status %>" />
+
+<input type="hidden" name="Query"   value="<% $Query %>" />
+<input type="hidden" name="Format"  value="<% $Format %>" />
+<input type="hidden" name="Rows"    value="<% $Rows %>" />
+<input type="hidden" name="OrderBy" value="<% $OrderBy %>" />
+<input type="hidden" name="Order"   value="<% $Order %>" />
 
 <& /RTIR/Search/Elements/ShowResults,
     Queue     => $Queue,
