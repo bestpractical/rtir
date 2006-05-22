@@ -25,12 +25,14 @@
 
 <& /RTIR/Create.html, 
     Queue            => $TicketObj->QueueObj->Name,
+    Status           => $TicketObj->Status,
     Subject          => $TicketObj->Subject,
+
+    Owner            => $TicketObj->Owner,
     Requestors       => $TicketObj->RequestorAddresses,
     Cc               => $TicketObj->CcAddresses,
     AdminCc          => $TicketObj->AdminCcAddresses,
-    Status           => $TicketObj->Status,
-    Owner            => $TicketObj->Owner,
+
     InitialPriority  => $TicketObj->InitialPriority,
     FinalPriority    => $TicketObj->FinalPriority,
 
