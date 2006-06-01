@@ -1,15 +1,22 @@
-#line 1 "inc/Module/Install/Fetch.pm - /sw/lib/perl5/site_perl/5.8.6//Module/Install/Fetch.pm"
+#line 1
 package Module::Install::Fetch;
-use Module::Install::Base; @ISA = qw(Module::Install::Base);
 
-$VERSION = '0.01';
+use strict;
+use Module::Install::Base;
+
+use vars qw{$VERSION $ISCORE @ISA};
+BEGIN {
+	$VERSION = '0.62';
+	$ISCORE  = 1;
+	@ISA     = qw{Module::Install::Base};
+}
 
 sub get_file {
     my ($self, %args) = @_;
     my ($scheme, $host, $path, $file) = 
         $args{url} =~ m|^(\w+)://([^/]+)(.+)/(.+)| or return;
 
-    if ($scheme eq 'http' and !eval { require LWP::Simple; 1 }) {
+    if ( $scheme eq 'http' and ! eval { require LWP::Simple; 1 } ) {
         $args{url} = $args{ftp_url}
             or (warn("LWP support unavailable!\n"), return);
         ($scheme, $host, $path, $file) = 
@@ -53,14 +60,14 @@ sub get_file {
             chdir $dir; return;
         }
 
-        my @dialog = split(/\n/, << ".");
+        my @dialog = split(/\n/, <<"END_FTP");
 open $host
 user anonymous anonymous\@example.com
 cd $path
 binary
 get $file $file
 quit
-.
+END_FTP
         foreach (@dialog) { $fh->print("$_\n") }
         $fh->close;
     } }

@@ -1,13 +1,14 @@
-#line 1 "inc/Module/Install/Metadata.pm - /sw/lib/perl5/site_perl/5.8.6//Module/Install/Metadata.pm"
+#line 1
 package Module::Install::Metadata;
 
 use strict 'vars';
 use Module::Install::Base;
 
-use vars qw($VERSION @ISA);
+use vars qw{$VERSION $ISCORE @ISA};
 BEGIN {
-    $VERSION = '0.06';
-    @ISA     = 'Module::Install::Base';
+	$VERSION = '0.62';
+	$ISCORE  = 1;
+	@ISA     = qw{Module::Install::Base};
 }
 
 my @scalar_keys = qw{
@@ -60,6 +61,16 @@ sub sign {
     return $self->{'values'}{'sign'} if defined wantarray and !@_;
     $self->{'values'}{'sign'} = ( @_ ? $_[0] : 1 );
     return $self;
+}
+
+sub dynamic_config {
+	my $self = shift;
+	unless ( @_ ) {
+		warn "You MUST provide an explicit true/false value to dynamic_config, skipping\n";
+		return $self;
+	}
+	$self->{'values'}{'dynamic_config'} = $_[0] ? 1 : 0;
+	return $self;
 }
 
 sub all_from {
@@ -130,8 +141,7 @@ sub feature {
         # The user used ->feature like ->features by passing in the second
         # argument as a reference.  Accomodate for that.
         $mods = $_[0];
-    }
-    else {
+    } else {
         $mods = \@_;
     }
 
@@ -154,7 +164,9 @@ sub features {
     while ( my ( $name, $mods ) = splice( @_, 0, 2 ) ) {
         $self->feature( $name, @$mods );
     }
-    return @{ $self->{values}{features} };
+    return $self->{values}->{features}
+    	? @{ $self->{values}->{features} }
+    	: ();
 }
 
 sub no_index {
@@ -226,11 +238,13 @@ sub perl_version_from {
         ^
         use \s*
         v?
-        ([\d\.]+)
+        ([\d_\.]+)
         \s* ;
     /ixms
       )
     {
+        my $v = $1;
+        $v =~ s{_}{}g;
         $self->perl_version($1);
     }
     else {
