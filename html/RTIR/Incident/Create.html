@@ -162,7 +162,11 @@ unless ( exists $ARGS{'Content'} ) {
 
 </&>
 
+% if ( $Split ) {
+<& /Elements/Submit, Name => 'CreateIncident', Label => loc("Split") &>
+% } else {
 <& /Elements/Submit, Name => 'CreateIncident', Label => loc("Create") &>
+% }
 
 <&| /Widgets/TitleBox,
     title => loc("Run Investigation"),

@@ -292,11 +292,7 @@
 </table>
 <& /Widgets/TitleBoxEnd &>
 
-% if ($Type eq 'Investigation') {
-<& /Elements/Submit, Name => "Create", Label => loc("Launch")&>
-% } else {
-<& /Elements/Submit, Name => "Create", Label => loc("Create")&>
-% }
+<& /Elements/Submit, Name => "Create", Label => $SubmitCaption &>
 </form>
 
 <%INIT>
@@ -377,14 +373,17 @@ if ( $ARGS{'Create'} ) {
     unshift @results, loc("Creation failed:");
 }
 
-my $Title;
+my ($Title, $SubmitCaption);
 if ( $Split ) {
     $Title = loc("Split [_1] #[_2]: [_3]", $name, $TicketObj->id, $TicketObj->Subject);
+    $SubmitCaption = loc("Split");
 } else {
     if ( $Type eq 'Investigation' ) {
         $Title = loc("Launch a new [_1]", $name);
+        $SubmitCaption = loc("Launch");
     } else {
         $Title = loc("Create a new [_1]", $name);
+        $SubmitCaption = loc("Create");
     }
 }
 
