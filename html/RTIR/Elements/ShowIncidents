@@ -22,21 +22,26 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-%  while (my $incident = $incidents->Next) {
-%   $count++;
+% while ( my $incident = $incidents->Next ) {
+% $m->out('<ul>') unless $count;
+<li>
 % if ( $show_unlink ) {
 <a href="<% RT->Config->Get('WebPath') %>/RTIR/Display.html?id=<% $Ticket->Id %>&DeleteLink--MemberOf-<% $incident->Id %>=1">[<% loc('Unlink') %>]</a>
 % }
-<a href="<% RT->Config->Get('WebPath') %>/RTIR/Display.html?id=<% $incident->Id %>"><% $incident->Id %>: <% $incident->Subject %></a> <i>(<& /RTIR/Elements/ShowRTIRField, Ticket => $incident, Name => 'State' &>)</i>
-% if ($depth < 8) {
+<a href="<% RT->Config->Get('WebPath') %>/RTIR/Display.html?id=<% $incident->Id %>"><% $incident->Id %>: <% $incident->Subject %></a><i>(<& /RTIR/Elements/ShowRTIRField, Ticket => $incident, Name => 'State' &>)</i>
+% if ( $depth < 8 ) {
 <& /RTIR/Elements/ShowIncidents, Ticket => $incident, depth => ($depth+1) &>
-%   }
 % }
-% if ($depth == 1 and $count == 0) {
+% $count++;
+</li>
+% }
+% $m->out('</ul>') if $count;
+
+% if ( $depth == 1 and $count == 0 ) {
 <i><% loc('(no Incidents)') %></i>
 % }
 
-% if ($depth == 1) {
+% if ( $depth == 1 ) {
 %   unless ( $action ) {
 <b><a href="<%RT->Config->Get('WebPath')%>/RTIR/Incident/LinkToIncident.html?id=<% $Ticket->Id %>">[Link]</a></b>
 <b><a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Child=<% $Ticket->Id %>&Queue=Incidents">[New]</a></b>
