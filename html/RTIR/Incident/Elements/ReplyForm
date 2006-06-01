@@ -22,7 +22,10 @@
     TicketObj => $TicketObj,
     QueueObj  => $QueueObj,
     Name      => 'Resolution',
-    Default   => scalar RT->Config->Get("_RTIR_Resolution_". $Status ."_default"),
+    Default   => (
+        $TicketObj->FirstCustomFieldValue('_RTIR_Resolution') ||
+        scalar RT->Config->Get("_RTIR_Resolution_". $Status ."_default")
+    ),
     Rows      => 1,
 &></td></tr>
 % }
