@@ -1,0 +1,10 @@
+<%INIT>
+return unless $QueueObj && $QueueObj->id;
+return unless $QueueObj->Name =~ /^(Incidents|Incident Reports|Investigations|Blocks)$/i;
+$m->subexec( '/RTIR/Create.html', %$ARGSRef, Queue => $QueueObj->Name );
+$m->abort;
+</%INIT>
+<%ARGS>
+$QueueObj => undef
+$ARGSRef  => {}
+</%ARGS>
