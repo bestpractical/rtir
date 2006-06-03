@@ -269,6 +269,7 @@ Set(@RTIR_HomepageComponents,
     /RTIR/Elements/NewReports
     /RTIR/Elements/UserDueIncidents
     /RTIR/Elements/DueIncidents
+    /RTIR/Elements/QueueSummary
     RefreshHomepage
 ));
 
