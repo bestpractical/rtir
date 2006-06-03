@@ -1,0 +1,9 @@
+<%INIT>
+foreach my $q ( splice @$Queues ) {
+    next if $q->Name =~ /^(Incidents|Incident Reports|Investigations|Blocks)$/i;
+    push @$Queues, $q;
+}
+</%INIT>
+<%ARGS>
+$Queues => []
+</%ARGS>
