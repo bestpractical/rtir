@@ -86,17 +86,22 @@ sub GetState {
             return 'active';
         }
     }
-    if ( $old_state eq 'pending activation' ) {
 
+    # next code related to requestor's correspondents
+    return '' unless $txn->Type eq 'Correspond';
+    return '' unless $t->Requestors->HasMember( $txn->CreatorObj->PrincipalObj );
+
+    if ( my $re = RT->Config->Get('RTIR_BlockAproveActionRegexp') ) {
+        my $content = $txn->Content;
+        return '' if !$content || $content !~ /$re/;
+    }
+
+    if ( $old_state eq 'pending activation' ) {
         # switch to active state if it is reply from requestor(s)
-        return 'active' if $txn->Type eq 'Correspond'
-                           && $t->Requestors->HasMember( $txn->CreatorObj->PrincipalObj );
-        return '';
+        return 'active';
     } elsif ( $old_state eq 'pending removal' ) {
         # switch to removed state when requestor(s) replies
         # but do it via changing status!
-        return '' unless $txn->Type eq 'Correspond';
-        return '' unless $t->Requestors->HasMember( $txn->CreatorObj->PrincipalObj );
         my ($val, $msg) = $t->SetStatus( 'resolved' );
         $RT::Logger->error("Couldn't change status: $msg") unless $val;
         return '';

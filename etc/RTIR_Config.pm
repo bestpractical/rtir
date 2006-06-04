@@ -276,6 +276,11 @@ Set(@RTIR_HomepageComponents,
 # if true then Blocks queue functionality inactive and disabled
 Set($RTIR_DisableBlocksQueue, 0);
 
+# When requestor replies on the block in pending state RTIR
+# changes state, you can set regular expresion so state would
+# be changed only when it matches
+Set($RTIR_BlockAproveActionRegexp, undef);
+
 # Define list of enabled MakeClicky extensions; RTIR extends the
 # default 'httpurl', and additionally provides 'ip', 'ipdecimal',
 # 'email', 'domain' and 'RIPE'.  It is possible to add your own types
