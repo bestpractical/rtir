@@ -15,7 +15,6 @@
 </select>
 </td></tr>
 
-% if ( $Status =~ /^(?:resolved|rejected)$/ ) {
 <tr><td class="label"><&|/l&>Resolution</&>:</td>
 <td class="value">
 <& /RTIR/Elements/EditRTIRField,
@@ -28,7 +27,6 @@
     ),
     Rows      => 1,
 &></td></tr>
-% }
 
 <tr><td class="label"><&|/l&>Owner</&>:</td><td>
 <& /Elements/SelectOwner,
