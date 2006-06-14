@@ -12,7 +12,47 @@
 <input type="hidden" name="id" value="<% $Ticket->Id %>" />
 
 <&| /Widgets/TitleBox, title => loc('Edit basics') &>
-<& /Ticket/Elements/EditBasics, TicketObj => $Ticket &>
+<table>
+  <tr>
+    <td class="label"><&|/l&>Subject</&>:</td>
+    <td class="value"><input name="Subject" value="<% $Ticket->Subject %>" size="50" /></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Queue</&>:</td>
+    <td class="value"><& /Elements/SelectQueue, Name => 'Queue', Default => $Ticket->Queue &></td>
+  </tr>
+
+  <tr>
+    <td class="label"><&|/l&>Time Estimated</&>:</td>
+    <td class="value">
+      <input name="TimeEstimated" value="<% $Ticket->TimeEstimated %>" size="5" />
+      <& /Elements/SelectTimeUnits, Name =>'TimeEstimated' &>
+    </td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Time Worked</&>:</td>
+    <td class="value">
+      <input name="TimeWorked" value="<% $Ticket->TimeWorked %>" size="5" />
+      <& /Elements/SelectTimeUnits, Name =>'TimeWorked' &>
+    </td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Time Left</&>:</td>
+    <td class="value">
+      <input name="TimeLeft" value="<% $Ticket->TimeLeft %>" size="5" />
+      <& /Elements/SelectTimeUnits, Name =>'TimeLeft' &>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="label"><&|/l&>Priority</&>:</td>
+    <td class="value"><input name="Priority" value="<% $Ticket->Priority %>" size="5" /></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Final Priority</&>:</td>
+    <td class="value"><input name="FinalPriority" value="<% $Ticket->FinalPriority %>" size="5" /></td>
+  </tr>
+</table>
 </&>
 
 <&| /Widgets/TitleBox, title => loc('Edit Links') &>
