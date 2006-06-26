@@ -251,7 +251,11 @@ if ( $id eq 'new' ) {
     $ARGS{UpdateAttachments} = delete $session{'Attachments'};
     push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS );
     push @results, ProcessTicketBasics(  TicketObj => $Ticket, ARGSRef => \%ARGS );
+
+    my $strict_acl = RT->Config->Set( StrictLinkACL => 0 );
     push @results, ProcessTicketLinks(   TicketObj => $Ticket, ARGSRef => \%ARGS );
+    RT->Config->Set( StrictLinkACL => $strict_acl );
+
     push @results, ProcessTicketDates(   TicketObj => $Ticket, ARGSRef => \%ARGS );
 
     my $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');

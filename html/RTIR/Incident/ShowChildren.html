@@ -63,7 +63,10 @@ $id = $ARGS{'id'} = $Incident->Id;
 if( $ARGS{'Unlink'} ) {
     # translate the checkbox args to what ProcessTicketLinks expects
     $ARGS{'DeleteLink-'. $_ .'-MemberOf-'} = 1 for @SelectedTickets;
+
+    my $strict_acl = RT->Config->Set( StrictLinkACL => 0 );
     push @results, ProcessTicketLinks( TicketObj => $Incident, ARGSRef => \%ARGS );
+    RT->Config->Set( StrictLinkACL => $strict_acl );
 }
 
 unless ( $Incident->CurrentUserHasRight('ShowTicket') ) {

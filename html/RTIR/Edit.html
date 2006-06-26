@@ -236,7 +236,11 @@ $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
 if ( $SaveChanges && !$OnlySearchForPeople ) {
     my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, '_RTIR_State' );
     push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS );
+
+    my $strict_acl = RT->Config->Set( StrictLinkACL => 0 );
     push @results, ProcessTicketLinks(    TicketObj => $Ticket, ARGSRef => \%ARGS );
+    RT->Config->Set( StrictLinkACL => $strict_acl );
+
     push @results, ProcessTicketDates(    TicketObj => $Ticket, ARGSRef => \%ARGS );
 
     # XXX: edit page has no message box or attachments form
