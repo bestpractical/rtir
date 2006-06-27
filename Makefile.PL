@@ -3,7 +3,14 @@ use inc::Module::Install;
 RTx('RT-IR');
 license('GPL Version 2');
 author('Best Practical Solutions <sales@bestpractical.com>');
-version('1.9.HEAD');
+version('2.0.0');
+
+{ # check RT version
+    my @v = split /\./, "$RT::VERSION";
+    unless ($v[0]>=3 && $v[1]>=7) {
+        die "RTIR 2.0 needs RT 3.7.0 at least, you have $RT::VERSION";
+    }
+}
 
 # XXX: This should be reported by M::I::RTx
 my ($lib_path) = $INC{'RT.pm'} =~ /^(.*)[\\\/]/;

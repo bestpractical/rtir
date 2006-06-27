@@ -16,4 +16,4 @@ requires:
   DBIx::SearchBuilder: 1.4
   Net::Whois::RIPE: 0
   RT::FM: 0
-version: 1.9.HEAD
+version: 2.0.0
