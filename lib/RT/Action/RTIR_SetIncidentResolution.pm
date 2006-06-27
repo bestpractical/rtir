@@ -21,16 +21,25 @@ sub Commit {
     my $self = shift;
 
     my $t = $self->TicketObj;
-
-    my $status = $t->Status;
-    return 1 unless $t->QueueObj->IsInactiveStatus( $t->Status );
-
-    my $value = RT->Config->Get("_RTIR_Resolution_${status}_default");
-    return 1 unless $value;
-
     my $cf = RT::CustomField->new( $self->TransactionObj->CurrentUser );
     $cf->LoadByNameAndQueue( Queue => $t->QueueObj->Id, Name => '_RTIR_Resolution' );
     return 1 unless $cf->Id;
+
+    my $status = $t->Status;
+    if ( $t->QueueObj->IsActiveStatus( $status ) ) {
+        # on re-open, drop resolution
+        my $txn = $self->TransactionObj; my $type = $txn->Type;
+        return 1 unless $type eq "Status" || ( $type eq "Set" && $txn->Field eq "Status" );
+        return 1 unless $t->QueueObj->IsInactiveStatus( $txn->OldValue );
+        return 1 unless my $value = $t->FirstCustomFieldValue( $cf->id );
+        $t->DeleteCustomFieldValue( Field => $cf->id, Value => $value );
+        return 1;
+    }
+
+    return 1 unless $t->QueueObj->IsInactiveStatus( $status );
+
+    my $value = RT->Config->Get("_RTIR_Resolution_${status}_default");
+    return 1 unless $value;
 
     return 1 if $t->FirstCustomFieldValue( $cf->id );
 

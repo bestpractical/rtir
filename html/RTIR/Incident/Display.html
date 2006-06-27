@@ -236,40 +236,49 @@ if ($SelectedTicket) {
 }
 Abort('No incident specified') unless $id;
 
+my $take_or_steal = sub {
+    my $owner = $_[0]->Owner;
+    return () if $owner == $session{'CurrentUser'}->id;
+    my $action = 'Steal';
+    $action = 'Take' if $owner == $RT::Nobody->id;
+    my ($res, $msg) = $_[0]->$action();
+    return $msg || ();
+};
+
 my $deleted_links = 0;
 my $DoLinks = sub {
-    my $TicketObj = shift;
-    my $Target = shift;
+    my ($child, $parent) = @_;
 
     my %args = ();
 
     # Blocks or Incedent Reports can have multiple incidents
-    my ($Type) = $m->comp( "/RTIR/Elements/Type", TicketObj => $TicketObj );
+    my ($Type) = $m->comp( '/RTIR/Elements/Type', TicketObj => $child );
     unless( $Type eq 'Block' || $Type eq 'Report' ) {
-        # XXX: Can we ever get here?
-        my $query = "Queue = 'Incidents' AND HasMember = ". $TicketObj->Id ." AND id != ". $Target->id;
-        my $incidents = new RT::Tickets( $session{'CurrentUser'} );
+        my $query = "Queue = 'Incidents' AND HasMember = ". $child->Id ." AND id != ". $parent->id;
+        my $incidents = RT::Tickets->new( $session{'CurrentUser'} );
         $incidents->FromSQL( $query );
         while ( my $incident = $incidents->Next ) {
             $deleted_links = 1;
-            $args{'DeleteLink-'. $TicketObj->id .'-MemberOf-'. $incident->id } = '';
+            $args{'DeleteLink-'. $child->id .'-MemberOf-'. $incident->id } = '';
         }
     }
 
     my @results;
-    # If we own one end than take or steal other end of the link
-    for my $obj( $Target, $TicketObj ) {
-        next if $obj->Owner == $session{'CurrentUser'}->id;
-        my $action = 'Steal';
-        $action = 'Take' if $obj->Owner == $RT::Nobody->id;
-        my ($res, $msg) = $obj->$action();
-        push @results, $msg;
+
+    # if we don't own any of ends, take or steal parent
+    unless ( $parent->Owner == $session{'CurrentUser'}->id
+             || $child->Owner == $session{'CurrentUser'}->id )
+    {
+        push @results, $take_or_steal->( $parent );
     }
 
-    $args{ $TicketObj->Id .'-MemberOf' } = $Target->Id;
-    push @results, ProcessTicketLinks( TicketObj => $TicketObj, ARGSRef => \%args );
+    # turn off strict check localy
+    my $strict_acl = RT->Config->Set( StrictLinkACL => 0 );
+    $args{ $child->Id .'-MemberOf' } = $parent->Id;
+    push @results, ProcessTicketLinks( TicketObj => $child, ARGSRef => \%args );
+    RT->Config->Set( StrictLinkACL => $strict_acl );
 
-    return map { loc("Ticket [_1]: [_2]", $TicketObj->Id, $_) } @results;
+    return map { loc("Ticket [_1]: [_2]", $child->Id, $_) } @results;
 };
 
 my $TicketObj;

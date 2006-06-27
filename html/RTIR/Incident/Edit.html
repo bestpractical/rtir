@@ -112,6 +112,15 @@
 	 Rows => 1 &>
     </td>
   </tr>
+  <tr>
+    <td class="label"><&|/l&>Resolution</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/EditRTIRField,
+         TicketObj => $Ticket,
+	     Name => 'Resolution',
+	     Rows => 1 &>
+    </td>
+  </tr>
 </table>
 
 <& /Widgets/TitleBoxEnd &>
@@ -154,7 +163,11 @@ unless ($OnlySearchForPeople) {
     push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
     push @results, ProcessTicketCustomFieldUpdates(ARGSRef => \%ARGS);
     push @results, ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
+
+    my $strict_acl = RT->Config->Set( StrictLinkACL => 0 );
     push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
+    RT->Config->Set( StrictLinkACL => $strict_acl );
+
     $ARGS{UpdateAttachments} = $session{'Attachments'};
    	push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef=>\%ARGS );
 }

@@ -22,7 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Widgets/TitleBoxStart, 
+<&| /Widgets/TitleBox, 
 	title_href  => RT->Config->Get('WebPath') ."/RTIR/Search/Results.html?$EscapedQueue\&$QueryString",
 	title_class => 'inverse',
 	title       => $title, 
@@ -43,8 +43,7 @@
 
 <a href="<% RT->Config->Get('WebPath') %>/RTIR/Report/BulkReject.html?<% $EscapedQueue %>&<% $QueryString %>">[<%loc("Bulk Reject")%>]</a>
 
-<& /Widgets/TitleBoxEnd &>
-
+</&>
 
 <%INIT>
 my $title = loc("New unlinked Incident Reports...");
