@@ -96,6 +96,60 @@ sub SLAInit {
 
 }
 
+
+# IPs processing hooks
+# in order too implement searches by IP ranges we
+# store IPs in "%03d.%03d.%03d.%03d" format so ops
+# like > and < make sense.
+use Hook::LexWrap;
+use Regexp::Common qw(net);
+
+# limit formatting "%03d.%03d.%03d.%03d"
+require RT::Tickets;
+wrap 'RT::Tickets::_CustomFieldLimit',
+    pre => sub {
+        return unless $_[3] =~ /^\s*($RE{net}{IPv4})\s*$/o;
+        $_[3] = sprintf "%03d.%03d.%03d.%03d", split /\./, $1;
+    };
+
+# "= 'sIP-eIP'" => "( >=sIP AND <=eIP)"
+# "! 'sIP-eIP'" => "( <sIP AND >eIP)"
+wrap 'RT::Tickets::_CustomFieldLimit',
+    pre => sub {
+        return unless $_[3] =~ /^\s*($RE{net}{IPv4})\s*-\s*($RE{net}{IPv4})\s*$/o;
+        my ($start_ip, $end_ip) = ($1, $2);
+        my ($tickets, $field, $op, $value, @rest) = @_[0..($#_-1)];
+        my $negative = ($op =~ /NOT|!=|<>/i)? 1 : 0;
+        $tickets->_CustomFieldLimit($field, ($negative? '<': '>='), $start_ip, @rest);
+        @_[2, 3] = ( ( $negative? '>': '<=' ), $end_ip );
+    };
+$RT::Tickets::dispatch{'CUSTOMFIELD'} = \&RT::Tickets::_CustomFieldLimit;
+
+# on OCFV create format storage
+require RT::ObjectCustomFieldValue;
+wrap 'RT::ObjectCustomFieldValue::Create',
+    pre => sub {
+        for ( my $i = 1; $i < @_; $i += 2 ) {
+            next unless $_[$i] && $_[$i] eq 'Content';
+            return unless $_[++$i] =~ /^\s*($RE{net}{IPv4})\s*$/o;
+            $_[$i] = sprintf "%03d.%03d.%03d.%03d", split /\./, $1;
+            return;
+        }
+    };
+
+# strip nulls(deserialize)
+wrap 'RT::ObjectCustomFieldValue::Content',
+    post => sub {
+        return unless $_[-1];
+        if ( ref $_[-1] ) {
+            return unless $_[-1][0] =~ /^\s*($RE{net}{IPv4})\s*$/;
+            $_[-1][0] = sprintf "%d.%d.%d.%d", split /\./, $1;
+        } else {
+            return unless $_[-1] =~ /^\s*($RE{net}{IPv4})\s*$/;
+            $_[-1] = sprintf "%d.%d.%d.%d", split /\./, $1;
+        }
+    };
+
 eval "require RT::IR_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/IR_Vendor.pm});
 eval "require RT::IR_Local";
