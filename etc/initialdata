@@ -280,8 +280,8 @@
     },
     {
         Name        => '_RTIR_IP',
-        Type        => 'FreeformSingle',
-        Queue       => 'Blocks',
+        Type        => 'FreeformMultiple',
+        Queue       => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
         Disabled    => 0,
         Description => 'IP address for Blocks RTIR queue',
     },
@@ -397,6 +397,10 @@
     {  Name        => 'RTIR Set Incident Resolution',    # loc
        Description => 'Set the default resolution of an Incident' ,                                            # loc
        ExecModule => 'RTIR_SetIncidentResolution',
+    },
+    {  Name        => 'RTIR parse message for IPs',    # loc
+       Description => 'Set IP custom field from message content' ,                                            # loc
+       ExecModule  => 'RTIR_FindIP',
     },
 );
 
@@ -581,6 +585,17 @@
        ScripCondition    => 'RTIR Close Ticket',
        ScripAction       => 'Notify Requestors',
        Template          => 'BlockRemoved' },
+
+    {  Description       => "SetIPFromContent",
+       Queue             => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
+       ScripCondition    => 'On Correspond',
+       ScripAction       => 'RTIR parse message for IPs',
+       Template          => 'Blank' },
+    {  Description       => "SetIPFromContent",
+       Queue             => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
+       ScripCondition    => 'On Create',
+       ScripAction       => 'RTIR parse message for IPs',
+       Template          => 'Blank' },
 );
 
 # WARNING: If you change content of the templates, don't forget to
