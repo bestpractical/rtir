@@ -70,8 +70,9 @@
   </tr>
   <tr>
     <td class="label"><&|/l&>Customer</&>:</td>
-% my $values = $Ticket->CustomFieldValues("_RTIR_Customer");
-    <td class="value"><span class="cf-value"><% join(", ", map {$_->Content} @{$values->ItemsArrayRef}) %></span>
+    <td class="value">
+      <& /RTIR/Elements/ShowRTIRField, 
+         Ticket => $Ticket, Name => 'Customer' &>
     </td>
   </tr>
   <tr>
@@ -128,8 +129,10 @@
 % } elsif ($Type eq "Investigation") {
   <tr>
     <td class="label"><&|/l&>Customer</&>:</td>
-% my $values = $Ticket->CustomFieldValues("_RTIR_Customer");
-    <td class="value"><span class="cf-value"><% join(", ", map {$_->Content} @{$values->ItemsArrayRef}) %></span>
+    <td class="value">
+      <& /RTIR/Elements/ShowRTIRField, 
+         Ticket => $Ticket, 
+         Name => 'Customer' &>
     </td>
   </tr>
 % }
