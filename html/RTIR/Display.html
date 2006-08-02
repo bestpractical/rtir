@@ -93,7 +93,6 @@
         Ticket => $Ticket, Name => 'ReporterType' &>
     </td>
   </tr>
-% } elsif ($Type eq "Block") {
   <tr>
     <td class="label"><&|/l&>IP Address</&>:</td>
     <td class="value">
@@ -102,6 +101,7 @@
          Name => 'IP' &>
     </td>
   </tr>
+% } elsif ($Type eq "Block") {
   <tr>
     <td class="label"><&|/l&>Netmask</&>:</td>
     <td class="value">
