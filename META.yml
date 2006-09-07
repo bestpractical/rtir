@@ -1,7 +1,7 @@
 abstract: RT IR Extension
 author: Best Practical Solutions <sales@bestpractical.com>
 distribution_type: module
-generated_by: Module::Install version 0.620
+generated_by: Module::Install version 0.640
 license: GPL Version 2
 name: RT-IR
 no_index: 
@@ -16,4 +16,4 @@ requires:
   DBIx::SearchBuilder: 1.4
   Net::Whois::RIPE: 0
   RT::FM: 0
-version: 2.0.0
+version: 2.1.HEAD

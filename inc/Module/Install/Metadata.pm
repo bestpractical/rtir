@@ -6,7 +6,7 @@ use Module::Install::Base;
 
 use vars qw{$VERSION $ISCORE @ISA};
 BEGIN {
-	$VERSION = '0.62';
+	$VERSION = '0.64';
 	$ISCORE  = 1;
 	@ISA     = qw{Module::Install::Base};
 }
@@ -123,9 +123,9 @@ sub auto_provides {
 
     require Module::Build;
     my $build = Module::Build->new(
-        dist_name    => $self->{name},
-        dist_version => $self->{version},
-        license      => $self->{license},
+        dist_name    => $self->name,
+        dist_version => $self->version,
+        license      => $self->license,
     );
     $self->provides(%{ $build->find_dist_packages || {} });
 }

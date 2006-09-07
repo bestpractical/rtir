@@ -28,7 +28,7 @@ BEGIN {
     # This is not enforced yet, but will be some time in the next few
     # releases once we can make sure it won't clash with custom
     # Module::Install extensions.
-    $VERSION = '0.62';
+    $VERSION = '0.64';
 }
 
 # Whether or not inc::Module::Install is actually loaded, the
@@ -47,6 +47,22 @@ Please invoke ${\__PACKAGE__} with:
 not:
 
     use ${\__PACKAGE__};
+
+END_DIE
+}
+
+# If the script that is loading Module::Install is from the future,
+# then make will detect this and cause it to re-run over and over
+# again. This is bad. Rather than taking action to touch it (which
+# is unreliable on some platforms and requires write permissions)
+# for now we should catch this and refuse to run.
+if ( -f $0 and (stat($0))[9] > time ) {
+	die << "END_DIE";
+Your installer $0 has a modification time in the future.
+
+This is known to create infinite loops in make.
+
+Please correct this, then run $0 again.
 
 END_DIE
 }
