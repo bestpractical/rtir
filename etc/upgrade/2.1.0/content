@@ -1,2 +1,60 @@
-# XXX: apply _RTIR_IP field to all RTIR's queues
-# and convert it from FreeformSingle to Multiple
+
+sub get_cf {
+    my $name = shift;
+    my $obj = RT::CustomField->new( $RT::SystemUser );
+    $obj->Load( $name );
+    unless ( $obj->id ) {
+        print STDERR "Error: Couldn't load custom field '$name'\n";
+        return undef;
+    }
+    return $obj;
+}
+
+sub apply_cf_to_queues {
+    my ($name, @queues) = @_;
+    my $cf = get_cf( $name ) or return;
+    foreach my $queue( @queues ) {
+        my $obj = RT::Queue->new( $RT::SystemUser );
+        $obj->Load( $queue );
+        unless ( $obj->id ) {
+            print STDERR "Error: Couldn't load queue '$queue'\n";
+            next;
+        }
+        my $OCF = RT::ObjectCustomField->new( $RT::SystemUser );
+        my ($id, $msg) = $OCF->Create(
+            CustomField => $cf->Id,
+            ObjectId    => $obj->Id,
+        );
+        unless ( $id ) {
+            print STDERR "Couldn't apply CF to '$queue'. Error: $msg\n";
+            next;
+        }
+        print "Applied CF '$name' to queue '$queue'\n";
+    }
+}
+
+sub set_cf_max_values {
+    my ($name, $max) = @_;
+    my $cf = get_cf( $name ) or return;
+    my ($status, $msg) = $cf->SetMaxValues( $max );
+    unless ( $status ) {
+        print STDERR "Couldn't set CF's MaxValues property. Error: $msg\n";
+        return;
+    }
+    unless ( $max ) {
+        print "Changed type of the '$name' CF to multiple\n";
+    }
+    elsif ( $max == 1 ) {
+        print "Changed type of the '$name' CF to single\n";
+    }
+    else {
+        print "Limitted number of values of the '$name' CF to $max values\n";
+    }
+}
+
+@Initial = (
+    sub { apply_cf_to_queues( '_RTIR_IP', 'Incidents', 'Incident Reports', 'Investigations' ) },
+    sub { set_cf_max_values( '_RTIR_IP', 0 ) },
+    sub { apply_cf_to_queues( '_RTIR_Constituency', 'Incident Reports', 'Investigations', 'Blocks' ) },
+);
+
