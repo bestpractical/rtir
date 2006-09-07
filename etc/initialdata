@@ -707,6 +707,20 @@ you may reply to this message.
       Instance    => '',
       Description => 'Duty Team Members',    # loc
     },
+    { Name        => 'DutyTeam EDUNET',
+      MemberOf    => 'DutyTeam',
+      Type        => 'Privileged',
+      Domain      => 'UserDefined',
+      Instance    => '',
+      Description => 'Duty Team responsible for EDUNET constituency',    # loc
+    },
+    { Name        => 'DutyTeam GOVNET',
+      MemberOf    => 'DutyTeam',
+      Type        => 'Privileged',
+      Domain      => 'UserDefined',
+      Instance    => '',
+      Description => 'Duty Team responsible for GOVNET constituency',    # loc
+    },
 );
 
 @ACL = ();
