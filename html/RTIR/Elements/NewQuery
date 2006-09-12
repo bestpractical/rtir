@@ -3,10 +3,9 @@
 unless( @states ) {
     @states = $m->comp("/RTIR/Elements/States", %ARGS );
 }
-push @states, @add_states;
 
 my %seen = ();
-@states =  grep !$seen{$_}++, map lc, @states;
+@states =  grep !$seen{$_}++, map lc, grep $_, @states, @add_states;
 
 my $query = join " OR ",
             map "'CF.{_RTIR_State}' = '$_'",
