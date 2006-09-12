@@ -49,6 +49,8 @@ my $toptabs = {
            path  => '' },
     B => { title => loc('RTIR Home'),
            path => 'RTIR/index.html' },
+    BA => { title => loc('Search'),
+           path => 'RTIR/Search/index.html' },
     C => { title => loc('Incidents'),
            path => 'RTIR/Search/Results.html?Queue=Incidents' },
     D => { title => loc('Incident Reports'),

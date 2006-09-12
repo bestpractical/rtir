@@ -44,6 +44,7 @@
 %# 
 %# }}} END BPS TAGGED BLOCK
 <& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} || 0 &>
+% if ( $Type ) {
 <& '/RTIR/'.$Type.'/Elements/Tabs',
     Title       => $title,
     BaseQuery   => $BaseQuery,
@@ -51,6 +52,16 @@
 
     current_tab => $current_tab,
 &>
+% } else {
+<& '/RTIR/Search/Elements/Tabs',
+    Title       => $title,
+
+    BaseQuery   => $BaseQuery,
+    QueryString => $QueryString,
+
+    current_tab => 'RTIR/Search/Results.html',
+&>
+% }
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -72,8 +83,12 @@
 <%INIT>
 my $title = loc("Results");
 
-my ($Type)   = $m->comp( '/RTIR/Elements/Type', Queue => $Queue );
-$Format    ||= RT->Config->Get('RTIRSearchResultFormats')->{ $Type . 'Default' };
+my $Type = ($m->comp( '/RTIR/Elements/Type', Queue => $Queue ))[0] || '';
+$Format  ||= RT->Config->Get('RTIRSearchResultFormats')->{ $Type . 'Default' };
+if ( $Type ) {
+    $BaseQuery ||= $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue );
+    $Query     ||= $m->comp( '/RTIR/Elements/NewQuery', Queue => $Queue );
+}
 
 my $QueryString = $m->comp( '/Elements/QueryString',
                             Query     => $Query,
@@ -90,8 +105,8 @@ my $current_tab = "$BaseURL&$QueryString";
 <%ARGS>
 $Queue     => ''
 
-$BaseQuery => $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue )
-$Query     => $m->comp( '/RTIR/Elements/NewQuery', Queue => $Queue )
+$BaseQuery => ''
+$Query     => undef
 $Format    => undef
 $Rows      => 50
 $Page      => 1
