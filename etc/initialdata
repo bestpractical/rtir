@@ -56,7 +56,7 @@
     {
         Name        => '_RTIR_Constituency',
         Type        => 'SelectSingle',
-        Queue       => ['Incidents', 'Incident Reports', 'Implementations', 'Blocks'],
+        Queue       => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
         Disabled    => 0,
         Description => 'Constituency for Incidents RTIR queue',
         Values      => [
