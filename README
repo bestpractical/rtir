@@ -160,9 +160,7 @@ Configuring RTIR
    activating and removing Blocks) as AdminCC on the Blocks queue.
 
 2) You may want to modify the email messages that are automatically
-   sent on the creation of Investigations and Blocks.  The templates
-   are "LaunchMessage" in the Investigations queue and "NewMessage" in
-   the Blocks queue.
+   sent on the creation of Investigations and Blocks.
 
 3) By default, RT ships with a number of global Scrips.  You should use 
    RT's configuration interface to look through them, and disable any 
