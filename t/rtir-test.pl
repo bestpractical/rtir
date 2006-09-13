@@ -113,6 +113,8 @@ sub create_user {
     my $user_obj = rtir_user();
 
     if ($user_obj->Id) {
+        $user_obj->SetDisabled(0);
+        $user_obj->SetPrivileged(1);
         $user_obj->SetPassword($RTIR_TEST_PASS);
     } else {
         $user_obj->Create(Name => $RTIR_TEST_USER,
