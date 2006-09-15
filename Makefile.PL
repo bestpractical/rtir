@@ -19,10 +19,20 @@ my $local_lib_path = "$RT::LocalPath/lib";
 unshift @INC, $local_lib_path, $lib_path;
 requires('RT::FM');
 
+# RTIR needs this version of SB due lack
+# of features in priviouse
 requires('DBIx::SearchBuilder', 1.40);
+
+# work hours
 requires('Business::Hours');
+# service level agreement
 requires('Business::SLA');
+# whois tool
 requires('Net::Whois::RIPE');
+# CIDR parsing and converting
+requires('Net::CIDR');
+requires('Regexp::Common::net::CIDR');
+
 auto_install();
 
 substitute( {

@@ -102,7 +102,9 @@ sub SLAInit {
 # store IPs in "%03d.%03d.%03d.%03d" format so ops
 # like > and < make sense.
 use Hook::LexWrap;
-use Regexp::Common qw(net);
+use Regexp::Common qw(RE_net_IPv4);
+use Regexp::Common::net::CIDR;
+require Net::CIDR;
 
 # limit formatting "%03d.%03d.%03d.%03d"
 require RT::Tickets;
@@ -113,7 +115,7 @@ wrap 'RT::Tickets::_CustomFieldLimit',
     };
 
 # "= 'sIP-eIP'" => "( >=sIP AND <=eIP)"
-# "! 'sIP-eIP'" => "( <sIP AND >eIP)"
+# "!= 'sIP-eIP'" => "( <sIP AND >eIP)"
 wrap 'RT::Tickets::_CustomFieldLimit',
     pre => sub {
         return unless $_[3] =~ /^\s*($RE{net}{IPv4})\s*-\s*($RE{net}{IPv4})\s*$/o;
@@ -122,6 +124,14 @@ wrap 'RT::Tickets::_CustomFieldLimit',
         my $negative = ($op =~ /NOT|!=|<>/i)? 1 : 0;
         $tickets->_CustomFieldLimit($field, ($negative? '<': '>='), $start_ip, @rest);
         @_[2, 3] = ( ( $negative? '>': '<=' ), $end_ip );
+    };
+
+# "[!]= 'CIDR'" => "op 'sIP-eIP'"
+wrap 'RT::Tickets::_CustomFieldLimit',
+    pre => sub {
+        return unless $_[3] =~ /^\s*$RE{net}{CIDR}{IPv4}{-keep}\s*$/o;
+        my $cidr = join( '.', map $_||0, (split /\./, $1)[0..3] ) ."/$2";
+        $_[3] = (Net::CIDR::cidr2range( $cidr ))[0] || $_[3];
     };
 $RT::Tickets::dispatch{'CUSTOMFIELD'} = \&RT::Tickets::_CustomFieldLimit;
 
@@ -137,7 +147,7 @@ wrap 'RT::ObjectCustomFieldValue::Create',
         }
     };
 
-# strip nulls(deserialize)
+# strip zero chars(deserialize)
 wrap 'RT::ObjectCustomFieldValue::Content',
     post => sub {
         return unless $_[-1];
