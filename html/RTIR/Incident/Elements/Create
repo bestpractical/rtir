@@ -72,6 +72,14 @@
     Rows     => 1,
 &></td></tr>
 
+<tr><td class="label"><&|/l&>IP</&>:</td>
+<td class="value">
+<& /RTIR/Elements/EditRTIRField,
+    QueueObj => $QueueObj,
+    Name     => 'IP',
+    Cols     => 40,
+&></td></tr>
+
 <tr><td colspan="2">
 <& /Ticket/Elements/EditCustomFields,
     TicketObj => $TicketObj,

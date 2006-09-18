@@ -188,16 +188,6 @@
   </tr>
 % } elsif ($Type eq "Block") {
   <tr>
-    <td class="label"><%loc("IP address")%>:</td>
-    <td class="value" colspan="2">
-      <& /RTIR/Elements/EditRTIRField, 
-        TicketObj => $TicketObj,
-        QueueObj => $QueueObj, 
-        Name => 'IP',
-        Default => $ARGS{'IP-Value'} || RT->Config->Get('_RTIR_IP_default'), &>
-    </td>
-  </tr>
-  <tr>
     <td class="label"><%loc("Netmask")%>:</td>
     <td class="value" colspan="2">
       <& /RTIR/Elements/EditRTIRField, 
@@ -234,6 +224,16 @@
     </td>
   </tr>
 % }
+  <tr>
+    <td class="label"><%loc("IP address")%>:</td>
+    <td class="value" colspan="2">
+      <& /RTIR/Elements/EditRTIRField, 
+        TicketObj => $TicketObj,
+        QueueObj => $QueueObj, 
+        Name => 'IP',
+        Default => $ARGS{'IP-Value'} || RT->Config->Get('_RTIR_IP_default'), &>
+    </td>
+  </tr>
   <tr>
     <td colspan="3">
       <& /Ticket/Elements/EditCustomFields, 
