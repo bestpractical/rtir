@@ -41,19 +41,22 @@
 
 <table>
   <tr>
-    <td class="label">
-      <%loc("State")%>:
-    </td>
+    <td class="label"><% loc("State") %>:</td>
     <td class="value" colspan="2">
       <& /RTIR/Elements/ShowRTIRField, Ticket => $Ticket, Name => 'State' &>
     </td>
   </tr>
   <tr>
-    <td class="label">
-      <%loc("Incident")%>:
-    </td>
+    <td class="label"><% loc("Incident") %>:</td>
     <td class="value" colspan="2">
       <& /RTIR/Elements/ShowIncidents, Ticket => $Ticket &>
+    </td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Constituency</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/ShowRTIRField, 
+         Ticket => $Ticket, Name => 'Constituency' &>
     </td>
   </tr>
   <tr>
