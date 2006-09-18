@@ -93,14 +93,6 @@
         Ticket => $Ticket, Name => 'ReporterType' &>
     </td>
   </tr>
-  <tr>
-    <td class="label"><&|/l&>IP Address</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/ShowRTIRField, 
-         Ticket => $Ticket, 
-         Name => 'IP' &>
-    </td>
-  </tr>
 % } elsif ($Type eq "Block") {
   <tr>
     <td class="label"><&|/l&>Netmask</&>:</td>
@@ -136,6 +128,14 @@
     </td>
   </tr>
 % }
+  <tr>
+    <td class="label"><&|/l&>IP Address</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/ShowRTIRField, 
+         Ticket => $Ticket, 
+         Name => 'IP' &>
+    </td>
+  </tr>
 </table>
 
 <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket &>
