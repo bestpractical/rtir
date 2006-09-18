@@ -101,6 +101,8 @@ html/RTIR/Search/Elements/PickCriteria
 html/RTIR/Search/Elements/ProcessQuery
 html/RTIR/Search/Elements/RefineTabs
 html/RTIR/Search/Elements/ShowResults
+html/RTIR/Search/Elements/Tabs
+html/RTIR/Search/index.html
 html/RTIR/Search/Refine.html
 html/RTIR/Search/Reporting.html
 html/RTIR/Search/Results.html
@@ -173,6 +175,7 @@ t/009-attachments-processing.t
 t/010-bulk-reject.t
 t/011-merge.t
 t/012-split-incident.t
+t/013-custom-field-ip.t
 t/03firstmilestone.t
 t/rtir-test.pl
 UPGRADING
