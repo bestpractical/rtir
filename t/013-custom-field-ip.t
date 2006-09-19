@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 134;
+use Test::More tests => 138;
 
 require "t/rtir-test.pl";
 
@@ -127,4 +127,27 @@ diag "create a ticket via web with CIDR in message" if $ENV{'TEST_VERBOSE'};
         ok( $has{ "172.16.$i.1" }, "has value" ) or diag "but has values ". join ", ", keys %has;
         ok( $has{ "172.16.$i.2" }, "has value" ) or diag "but has values ". join ", ", keys %has;
     }
+}
+
+diag "search tickets by IP" if $ENV{'TEST_VERBOSE'};
+{
+    my $tickets = RT::Tickets->new( $rtir_user );
+    $tickets->FromSQL("CF.{_RTIR_IP} = '172.16.1.1'");
+    ok( $tickets->Count, "found tickets" );
+}
+
+diag "search tickets by IP range" if $ENV{'TEST_VERBOSE'};
+{
+    my $tickets = RT::Tickets->new( $rtir_user );
+    $tickets->FromSQL("CF.{_RTIR_IP} = '172.16.2.0-172.16.2.255'");
+    ok( $tickets->Count, "found tickets" );
+}
+
+diag "search tickets within CIDR block" if $ENV{'TEST_VERBOSE'};
+{
+    my $tickets = RT::Tickets->new( $rtir_user );
+    $tickets->FromSQL("CF.{_RTIR_IP} = '172.16.2/24'");
+    ok( $tickets->Count, "found tickets" );
+    $tickets->FromSQL("CF.{_RTIR_IP} = '172.16/16'");
+    ok( $tickets->Count, "found tickets" );
 }
