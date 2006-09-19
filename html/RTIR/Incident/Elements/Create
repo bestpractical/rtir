@@ -32,27 +32,29 @@
 <td class="value">
 <& /RTIR/Elements/EditRTIRField,
     QueueObj => $QueueObj,
-	Name     => 'Description',
-	Default  => scalar RT->Config->Get('_RTIR_Description_default'),
-	Cols     => 40,
+    Name     => 'Description',
+    Default  => scalar RT->Config->Get('_RTIR_Description_default'),
+    Cols     => 40,
 &></td></tr>
 
 <tr><td class="label"><&|/l&>Constituency</&>:</td>
 <td class="value">
 <& /RTIR/Elements/EditRTIRField,
     QueueObj => $QueueObj,
-	Name     => 'Constituency',
-	Default  => scalar RT->Config->Get('_RTIR_Constituency_default'),
-	Rows     => 1,
+    Name     => 'Constituency',
+    Default  => $ChildObj?
+        $ChildObj->FirstCustomFieldValue('_RTIR_Constituency'):
+        scalar RT->Config->Get('_RTIR_Constituency_default'),
+    Rows     => 1,
 &></td></tr>
 
 <tr><td class="label"><&|/l&>Function</&>:</td>
 <td class="value">
 <& /RTIR/Elements/EditRTIRField, 
     QueueObj => $QueueObj, 
-	Name     => 'Function',
-	Default  => scalar RT->Config->Get('_RTIR_Function_default'),
-	Rows     => 1,
+    Name     => 'Function',
+    Default  => scalar RT->Config->Get('_RTIR_Function_default'),
+    Rows     => 1,
 &></td></tr>
 
 <tr><td class="label"><&|/l&>Classification</&>:</td>
@@ -92,5 +94,6 @@
 $NamePrefix => ''
 $QueueObj   => undef
 $TicketObj  => undef
+$ChildObj   => undef
 $Subject    => ''
 </%ARGS>

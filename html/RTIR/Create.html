@@ -141,6 +141,17 @@
         <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)</&>
     </font></i></td>
   </tr>
+  <tr>
+    <td class="labeltop"><&|/l&>Constituency</&>:</td>
+    <td class="value" colspan="2">
+      <& /RTIR/Elements/EditRTIRField, 
+         QueueObj => $QueueObj, 
+         Name     => 'Constituency',
+         Default  => $Incident?
+            $Incident->FirstCustomFieldValue('_RTIR_Constituency'):
+            scalar RT->Config->Get('_RTIR_Constituency_default') &>
+    </td>
+  </tr>
 
 % if ( $Type eq 'Report' ) {
   <tr>

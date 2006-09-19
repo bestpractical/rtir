@@ -92,7 +92,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 % }
 </tr>
 
-<& Elements/Create, Title => $Title, TicketObj => $TicketObj, QueueObj => $QueueObj, %ARGS &>
+<& Elements/Create, Title => $Title, TicketObj => $TicketObj, QueueObj => $QueueObj, ChildObj => $ChildObj, %ARGS &>
 
 <tr><td class="labeltop"><&|/l&>Message</&>:</td>
 <td>
