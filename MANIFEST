@@ -134,6 +134,7 @@ lib/RT/Action/RTIR_FindIP.pm
 lib/RT/Action/RTIR_OpenParent.pm
 lib/RT/Action/RTIR_ResolveChildren.pm
 lib/RT/Action/RTIR_SetBlockState.pm
+lib/RT/Action/RTIR_SetConstituency.pm
 lib/RT/Action/RTIR_SetDueBySLA.pm
 lib/RT/Action/RTIR_SetDueCorrespond.pm
 lib/RT/Action/RTIR_SetDueIncident.pm
@@ -152,6 +153,7 @@ lib/RT/Condition/RTIR.pm
 lib/RT/Condition/RTIR_CloseTicket.pm
 lib/RT/Condition/RTIR_CustomerResponse.pm
 lib/RT/Condition/RTIR_ReopenTicket.pm
+lib/RT/Condition/RTIR_RequireConstituencyChange.pm
 lib/RT/Condition/RTIR_RequireDueChange.pm
 lib/RT/Condition/RTIR_RequireStateChange.pm
 lib/RT/Condition/RTIR_StaffResponse.pm
@@ -176,6 +178,7 @@ t/010-bulk-reject.t
 t/011-merge.t
 t/012-split-incident.t
 t/013-custom-field-ip.t
+t/014-custom-field-constituency.t
 t/03firstmilestone.t
 t/rtir-test.pl
 UPGRADING
