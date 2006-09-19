@@ -45,7 +45,6 @@ sub Commit {
     while ( my ($addr, $bits) = splice @CIDRs, 0, 2 ) {
         my $cidr = join( '.', map $_||0, (split /\./, $addr)[0..3] ) ."/$bits";
         my ($sip, $eip) = split /-/, ( (Net::CIDR::cidr2range( $cidr ))[0] or next );
-        $RT::Logger->crit("$sip - $eip");
         my $snum = unpack( 'N', pack( 'C4', split /\./, $sip ) );
         my $enum = unpack( 'N', pack( 'C4', split /\./, $eip ) );
         while ( $snum++ <= $enum ) {
