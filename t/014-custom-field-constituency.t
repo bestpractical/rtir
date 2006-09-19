@@ -101,10 +101,8 @@ EOF
     }
 }
 
-diag "create a ticket via web and set field" if $ENV{'TEST_VERBOSE'};
+diag "create an IR under EDUNET and create new incident from it" if $ENV{'TEST_VERBOSE'};
 {
-    my $i = 0;
-
     my $val = 'EDUNET';
     my $ir_id = create_ir(
         $agent, { Subject => "test" }, { Constituency => $val }
@@ -124,3 +122,27 @@ diag "create a ticket via web and set field" if $ENV{'TEST_VERBOSE'};
     is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), $val, 'correct value' );
 }
 
+diag "create an incident under GOVNET and create a new IR linked to the incident" if $ENV{'TEST_VERBOSE'};
+{
+    diag "ferst of all create incident" if $ENV{'TEST_VERBOSE'};
+    my $val = 'GOVNET';
+    my $inc_id = create_incident(
+        $agent, { Subject => "test" }, { Constituency => $val }
+    );
+    ok( $inc_id, "created ticket #$inc_id" );
+    display_ticket($agent, $inc_id);
+    $agent->content_like( qr/\Q$val/, "value on the page" );
+    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    $ticket->Load( $inc_id );
+    ok( $ticket->id, 'loaded ticket' );
+    is( $ticket->QueueObj->Name, 'Incidents', 'correct value' );
+    is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), $val, 'correct value' );
+
+    my $id = create_ir( $agent, { Subject => "test", Incident => $inc_id } );
+    ticket_is_linked_to_inc( $agent, $id => $inc_id );
+    $ticket = RT::Ticket->new( $RT::SystemUser );
+    $ticket->Load( $id );
+    ok( $ticket->id, 'loaded ticket' );
+    is( $ticket->QueueObj->Name, 'Incident Reports', 'correct value' );
+    is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), $val, 'correct value' );
+}
