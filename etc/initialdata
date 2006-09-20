@@ -402,9 +402,13 @@
        Description => 'Set IP custom field from message content' ,                                            # loc
        ExecModule  => 'RTIR_FindIP',
     },
-    {  Name        => 'RTIR Constituency',    # loc
+    {  Name        => 'RTIR Set Constituency',    # loc
        Description => 'Set and cascade Constituency custom field' ,                                            # loc
        ExecModule  => 'RTIR_SetConstituency',
+    },
+    {  Name        => 'RTIR Set Constituency Group',    # loc
+       Description => 'Set group responsible for constituency' ,                                            # loc
+       ExecModule  => 'RTIR_SetConstituencyGroup',
     },
 );
 
@@ -444,6 +448,11 @@
        Description => 'The constituency must be changed',                                            # loc
        ApplicableTransTypes => 'Any',
        ExecModule => 'RTIR_RequireConstituencyChange',
+    },
+    {  Name        => 'RTIR Require Constituency Group Change',    # loc
+       Description => 'A group responsible for constituency must be changed',                                            # loc
+       ApplicableTransTypes => 'Any',
+       ExecModule => 'RTIR_RequireConstituencyGroupChange',
     },
 );
 
@@ -609,7 +618,12 @@
     {  Description       => "SetConstituency",
        Queue             => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
        ScripCondition    => 'RTIR Require Constituency Change',
-       ScripAction       => 'RTIR Constituency',
+       ScripAction       => 'RTIR Set Constituency',
+       Template          => 'Blank' },
+    {  Description       => "SetConstituencyGroup",
+       Queue             => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
+       ScripCondition    => 'RTIR Require Constituency Group Change',
+       ScripAction       => 'RTIR Set Constituency Group',
        Template          => 'Blank' },
 );
 
