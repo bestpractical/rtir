@@ -84,6 +84,14 @@
     <td class="label"><&|/l&>Time Worked</&>:</td>
     <td class="value"><input name="TimeWorked" value="<%$Ticket->TimeWorked|h%>" size="5" /></td>
   </tr>
+  <tr>
+    <td class="labeltop"><&|/l&>Constituency</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/EditRTIRField, 
+         TicketObj => $Ticket,
+         Name => 'Constituency' &>
+    </td>
+  </tr>
 
 % if ($Type eq 'Report') {
   <tr>
@@ -169,6 +177,14 @@
     </td>
   </tr>
 % }
+  <tr>
+    <td class="labeltop"><&|/l&>IP</&>:</td>
+    <td class="value">
+      <& /RTIR/Elements/EditRTIRField, 
+         TicketObj => $Ticket, 
+         Name => 'IP', Cols => 40 &>
+    </td>
+  </tr>
 
   <tr>
     <td colspan="2">
