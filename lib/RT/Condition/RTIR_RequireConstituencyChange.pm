@@ -1,9 +1,9 @@
 package RT::Condition::RTIR_RequireConstituencyChange;
 
-
 use strict;
-use base 'RT::Condition::RTIR';
+use warnings;
 
+use base 'RT::Condition::RTIR';
 
 =head2 IsApplicable
 

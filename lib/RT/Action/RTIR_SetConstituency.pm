@@ -101,4 +101,3 @@ eval "require RT::Action::RTIR_SetConstituency_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_SetConstituency_Local.pm});
 
 1;
-

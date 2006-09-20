@@ -85,7 +85,7 @@ sub ticket_is_linked_to_inc {
     my $incs = shift;
     my $desc = shift;
     display_ticket( $agent, $id );
-    foreach my $inc( @$incs ) {
+    foreach my $inc( ref $incs? @$incs : ($incs) ) {
         my $desc = shift || "Ticket #$id is linked to the Incident #$inc";
         $agent->content_like(
             qr{Incident:\s*</td>\s*<td[^>]*?>.*?\Q$inc:}ism,
