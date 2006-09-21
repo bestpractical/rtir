@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 97;
+use Test::More tests => 130;
 
 require "t/rtir-test.pl";
 
@@ -35,6 +35,18 @@ diag "check that CF applies to all RTIR's queues" if $ENV{'TEST_VERBOSE'};
         my $cfs = $queue->TicketCustomFields;
         $cfs->Limit( FIELD => 'id', VALUE => $cf->id, ENTRYAGGREGATOR => 'AND' );
         is( $cfs->Count, 1, 'field applies to queue' );
+    }
+}
+
+my @constituencies;
+diag "fetch list of constituencies and check that groups exist" if $ENV{'TEST_VERBOSE'};
+{
+    @constituencies = map $_->Name, @{ $cf->Values->ItemsArrayRef };
+    ok( scalar @constituencies, "field has some predefined values" );
+    foreach ( @constituencies ) {
+        my $group = RT::Group->new( $RT::SystemUser );
+        $group->LoadUserDefinedGroup( 'DutyTeam '. $_ );
+        ok( $group->id, "loaded group for $_ constituency" );
     }
 }
 
@@ -120,6 +132,30 @@ diag "create an IR under EDUNET and create new incident from it" if $ENV{'TEST_V
     ok( $ticket->id, 'loaded ticket' );
     is( $ticket->QueueObj->Name, 'Incidents', 'correct value' );
     is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), $val, 'correct value' );
+
+diag "edit constituency on the IR and check that change is cascading" if $ENV{'TEST_VERBOSE'};
+
+    display_ticket($agent, $ir_id);
+    $agent->follow_link_ok({text => 'Edit'}, "go to Edit page");
+    $agent->form_number(2);
+    ok(set_custom_field( $agent, Constituency => 'GOVNET' ), "fill value in the form");
+    $agent->click('SaveChanges');
+    is( $agent->status, 200, "Attempting to edit ticket #$ir_id" );
+    $agent->content_like( qr/GOVNET/, "value on the page" );
+
+    DBIx::SearchBuilder::Record::Cachable::FlushCache();
+
+    $ticket = RT::Ticket->new( $RT::SystemUser );
+    $ticket->Load( $inc_id );
+    ok( $ticket->id, 'loaded ticket' );
+    is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value' );
+
+    $ticket = RT::Ticket->new( $RT::SystemUser );
+    $ticket->Load( $ir_id );
+    ok( $ticket->id, 'loaded ticket' );
+    is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value' );
+
+    
 }
 
 diag "create an incident under GOVNET and create a new IR linked to the incident" if $ENV{'TEST_VERBOSE'};
