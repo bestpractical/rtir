@@ -109,7 +109,7 @@ unless ( exists $ARGS{'Content'} ) {
             Transactions => $Transactions,
             Type         => 'messages',
             Include      => ['Create', 'Correspond'],
-        );
+        ) || '';
         $ARGS{'Content'} =~ s/\&gt;/>/g;
     }
 }

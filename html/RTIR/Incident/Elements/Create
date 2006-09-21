@@ -79,7 +79,7 @@
 <& /RTIR/Elements/EditRTIRField,
     QueueObj => $QueueObj,
     Name     => 'IP',
-    Cols     => 40,
+    Cols     => 40, Rows => 5,
 &></td></tr>
 
 <tr><td colspan="2">
