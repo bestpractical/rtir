@@ -17,8 +17,15 @@ sub IsApplicable {
     my $type = $self->TransactionObj->Type;
     return 1 if $type eq 'Create';
     return 1 if $type eq 'AddLink';
-#    return 1 if $type eq "Set" && $self->TransactionObj->Field eq "Due";
-
+    if ( $type eq 'CustomField' ) {
+        my $cf = RT::CustomField->new( $RT::SystemUser );
+        $cf->Load('_RTIR_Constituency');
+        unless ( $cf->id ) {
+            $RT::Logger->error("Couldn't load the 'Costituency' field");
+            return 0;
+        }
+        return 1 if $cf->id == $self->TransactionObj->Field;
+    }
     return 0;
 }
 
