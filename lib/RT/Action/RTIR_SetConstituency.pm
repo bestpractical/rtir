@@ -26,25 +26,7 @@ sub Commit {
 
     my $transaction = $self->TransactionObj;
     if ( $transaction->Type eq 'Create' ) {
-        # on create fetch value from X-RT-Mail-Extension field
-        my $attachments = $transaction->Attachments;
-        $attachments->OrderByCols(
-            { FIELD => 'Created', ORDER => 'ASC' },
-            { FIELD => 'id', ORDER => 'ASC' },
-        );
-        $attachments->Columns( qw(id Parent TransactionId ContentType ContentEncoding Headers Subject Created) );
-        my $attachment = $attachments->First;
-        return 1 unless $attachment;
-
-        my $value = $attachment->GetHeader('X-RT-Mail-Extension');
-        return 1 unless $self->IsValidConstituency( $value );
-
-        my ($status, $msg) = $ticket->AddCustomFieldValue(
-            Field => '_RTIR_Constituency',
-            Value => $value,
-        );
-        return ($status, $msg) unless $status;
-        return 1;
+        return $self->SetConstituencyOnCreate;
     }
 
     my $constituency = $ticket->FirstCustomFieldValue('_RTIR_Constituency');
@@ -74,6 +56,51 @@ sub Commit {
         $RT::Logger->info( "Couldn't set CF: $msg" ) unless $res;
     }
     return 1;
+}
+
+sub SetConstituencyOnCreate {
+    my $self = shift;
+    my $ticket = $self->TicketObj;
+    my ($current, $value);
+    $current = $value = $ticket->FirstCustomFieldValue('_RTIR_Constituency');
+    if ( my $tmp = $self->GetConstituencyFromParent ) {
+        $value = $tmp;
+    }
+    $value ||= $self->GetConstituencyFromAttachment;
+    return 1 if ($current||'') eq ($value||'');
+
+    my ($status, $msg) = $ticket->AddCustomFieldValue(
+        Field => '_RTIR_Constituency',
+        Value => $value,
+    );
+    return ($status, $msg) unless $status;
+    return 1;
+}
+
+sub GetConstituencyFromAttachment {
+    my $self = shift;
+
+    # fetch value from X-RT-Mail-Extension field
+    my $attachments = $self->TransactionObj->Attachments;
+    $attachments->OrderByCols(
+        { FIELD => 'Created', ORDER => 'ASC' },
+        { FIELD => 'id',      ORDER => 'ASC' },
+    );
+    $attachments->Columns( qw(id Parent TransactionId ContentType ContentEncoding Headers Subject Created) );
+    my $attachment = $attachments->First;
+    return undef unless $attachment;
+
+    my $value = $attachment->GetHeader('X-RT-Mail-Extension');
+    return undef unless $self->IsValidConstituency( $value );
+    return $value;
+}
+
+sub GetConstituencyFromParent {
+    my $self = shift;
+    my $parents = RT::Tickets->new( $RT::SystemUser );
+    $parents->FromSQL( "HasMember = ". $self->TicketObj->id );
+    return unless my $parent = $parents->First;
+    return $parent->FirstCustomFieldValue('_RTIR_Constituency');
 }
 
 { my %constituency;
