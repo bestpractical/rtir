@@ -148,7 +148,7 @@
          QueueObj => $QueueObj, 
          Name     => 'Constituency',
          Default  => $Incident?
-            $Incident->FirstCustomFieldValue('_RTIR_Constituency'):
+            $IncidentObj->FirstCustomFieldValue('_RTIR_Constituency'):
             scalar RT->Config->Get('_RTIR_Constituency_default') &>
     </td>
   </tr>
