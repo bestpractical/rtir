@@ -39,9 +39,9 @@ sub set_custom_field {
     my $cf_name = shift;
     my $val = shift;
 
-    my $field_name = $agent->value($cf_name);
-#    diag("found $cf_name at $field_name");
+    my $field_name = $agent->value($cf_name) or return 0;
     $agent->field($field_name, $val);
+    return 1;
 }
 
 sub go_home {
