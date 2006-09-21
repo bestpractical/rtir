@@ -242,7 +242,8 @@
         TicketObj => $TicketObj,
         QueueObj => $QueueObj, 
         Name => 'IP',
-        Default => $ARGS{'IP-Value'} || RT->Config->Get('_RTIR_IP_default'), &>
+        Cols => 40, Rows => 5,
+        Default => $ARGS{'IP-Value'} || RT->Config->Get('_RTIR_IP_default') || '', &>
     </td>
   </tr>
   <tr>
