@@ -61,14 +61,12 @@ sub set_cf_max_values {
 
 @Groups = (
     { Name        => 'DutyTeam EDUNET',
-      MemberOf    => 'DutyTeam',
       Type        => 'Privileged',
       Domain      => 'UserDefined',
       Instance    => '',
       Description => 'Duty Team responsible for EDUNET constituency',    # loc
     },
     { Name        => 'DutyTeam GOVNET',
-      MemberOf    => 'DutyTeam',
       Type        => 'Privileged',
       Domain      => 'UserDefined',
       Instance    => '',
