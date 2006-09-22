@@ -144,12 +144,14 @@
   <tr>
     <td class="labeltop"><&|/l&>Constituency</&>:</td>
     <td class="value" colspan="2">
+% unless ( $Incident ) {
       <& /RTIR/Elements/EditRTIRField, 
          QueueObj => $QueueObj, 
          Name     => 'Constituency',
-         Default  => $Incident?
-            $IncidentObj->FirstCustomFieldValue('_RTIR_Constituency'):
-            scalar RT->Config->Get('_RTIR_Constituency_default') &>
+         Default  => scalar RT->Config->Get('_RTIR_Constituency_default') &>
+% } else {
+      <& /RTIR/Elements/ShowRTIRField, Ticket => $IncidentObj, Name => 'Constituency' &>
+% }
     </td>
   </tr>
 

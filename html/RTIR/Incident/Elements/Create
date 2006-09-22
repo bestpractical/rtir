@@ -39,14 +39,17 @@
 
 <tr><td class="label"><&|/l&>Constituency</&>:</td>
 <td class="value">
+% unless ( $ChildObj ) {
 <& /RTIR/Elements/EditRTIRField,
     QueueObj => $QueueObj,
     Name     => 'Constituency',
-    Default  => $ChildObj?
-        $ChildObj->FirstCustomFieldValue('_RTIR_Constituency'):
-        scalar RT->Config->Get('_RTIR_Constituency_default'),
+    Default  => scalar RT->Config->Get('_RTIR_Constituency_default'),
     Rows     => 1,
-&></td></tr>
+&>
+% } else {
+<& /RTIR/Elements/ShowRTIRField, Ticket => $ChildObj, Name => 'Constituency' &>
+% }
+</td></tr>
 
 <tr><td class="label"><&|/l&>Function</&>:</td>
 <td class="value">
