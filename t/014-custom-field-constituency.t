@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 130;
+use Test::More tests => 153;
 
 require "t/rtir-test.pl";
 
@@ -161,24 +161,75 @@ diag "edit constituency on the IR and check that change is cascading" if $ENV{'T
 diag "create an incident under GOVNET and create a new IR linked to the incident" if $ENV{'TEST_VERBOSE'};
 {
     diag "ferst of all create incident" if $ENV{'TEST_VERBOSE'};
-    my $val = 'GOVNET';
     my $inc_id = create_incident(
-        $agent, { Subject => "test" }, { Constituency => $val }
+        $agent, { Subject => "test" }, { Constituency => 'GOVNET' }
     );
     ok( $inc_id, "created ticket #$inc_id" );
-    display_ticket($agent, $inc_id);
-    $agent->content_like( qr/\Q$val/, "value on the page" );
+    display_ticket( $agent, $inc_id );
+    $agent->content_like( qr/GOVNET/, "value on the page" );
     my $ticket = RT::Ticket->new( $RT::SystemUser );
     $ticket->Load( $inc_id );
     ok( $ticket->id, 'loaded ticket' );
     is( $ticket->QueueObj->Name, 'Incidents', 'correct value' );
-    is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), $val, 'correct value' );
+    is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value' );
 
-    my $id = create_ir( $agent, { Subject => "test", Incident => $inc_id } );
-    ticket_is_linked_to_inc( $agent, $id => $inc_id );
+    my $ir_id = create_ir(
+        $agent, { Subject => "test", Incident => $inc_id }, { Constituency => 'EDUNET' },
+    );
+    ticket_is_linked_to_inc( $agent, $ir_id => $inc_id );
+
+    DBIx::SearchBuilder::Record::Cachable::FlushCache();
+
     $ticket = RT::Ticket->new( $RT::SystemUser );
-    $ticket->Load( $id );
+    $ticket->Load( $ir_id );
     ok( $ticket->id, 'loaded ticket' );
     is( $ticket->QueueObj->Name, 'Incident Reports', 'correct value' );
-    is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), $val, 'correct value' );
+    is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value' );
+
+    $ticket = RT::Ticket->new( $RT::SystemUser );
+    $ticket->Load( $inc_id );
+    ok( $ticket->id, 'loaded ticket' );
+    is( $ticket->QueueObj->Name, 'Incidents', 'correct value' );
+    is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value' );
 }
+
+diag "create an IR and check that we couldn't change value during creation of new linked incident" if $ENV{'TEST_VERBOSE'};
+{
+    # create an IR
+    my $ir_id = create_ir(
+        $agent, { Subject => "test" }, { Constituency => 'GOVNET' }
+    );
+    ok( $ir_id, "created ticket #$ir_id" );
+    display_ticket($agent, $ir_id);
+    $agent->content_like( qr/GOVNET/, "value on the page" );
+    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    $ticket->Load( $ir_id );
+    ok( $ticket->id, 'loaded ticket' );
+    is( $ticket->QueueObj->Name, 'Incident Reports', 'correct value' );
+    is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value' );
+
+    # click [new] near 'incident', set another constituency and create
+    $agent->follow_link_ok({text => '[New]'}, "go to 'New Incident' page");
+    $agent->form_number(2);
+    ok(!eval{ set_custom_field( $agent, Constituency => 'EDUNET' ) }, "couldn't change value in the form");
+    $agent->click('CreateIncident');
+    is ($agent->status, 200, "Attempted to create the ticket");
+
+    DBIx::SearchBuilder::Record::Cachable::FlushCache();
+
+    # Incident has the new value 
+    my $inc_id = get_ticket_id( $agent );
+    $ticket = RT::Ticket->new( $RT::SystemUser );
+    $ticket->Load( $inc_id );
+    ok( $ticket->id, 'loaded ticket' );
+    is( $ticket->QueueObj->Name, 'Incidents', 'correct value' );
+    is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value' );
+
+    # Incident's value is prefered and was inhertied by the IR
+    $ticket = RT::Ticket->new( $RT::SystemUser );
+    $ticket->Load( $ir_id );
+    ok( $ticket->id, 'loaded ticket' );
+    is( $ticket->QueueObj->Name, 'Incident Reports', 'correct value' );
+    is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value' );
+}
+
