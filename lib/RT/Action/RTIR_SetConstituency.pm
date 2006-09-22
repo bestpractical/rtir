@@ -26,11 +26,11 @@ sub Commit {
 
     my $transaction = $self->TransactionObj;
     if ( $transaction->Type eq 'Create' ) {
-        return $self->SetConstituencyOnCreate;
+        my $status = $self->SetConstituencyOnCreate;
+        return $status if defined $status;
     }
 
     my $constituency = $ticket->FirstCustomFieldValue('_RTIR_Constituency');
-    my $actor = $self->CreatorCurrentUser;
 
     # change owner of child Incident Reports, Investigations, Blocks
     my $query =  "( Queue = 'Incidents'"
@@ -45,15 +45,16 @@ sub Commit {
     } else {
         $query .= " AND ( CF.{_RTIR_Constituency} IS NOT NULL )";
     }
-    my $tickets = new RT::Tickets( $actor );
-    $tickets->FromSQL( $query );
 
+    my $tickets = RT::Tickets->new( $RT::SystemUser );
+    $tickets->FromSQL( $query );
     while ( my $t = $tickets->Next ) {
+        $RT::Logger->debug( "Ticket #". $t->id ." inherits constituency from ticket #". $ticket->id );
         my ($res, $msg) = $t->AddCustomFieldValue(
             Field => '_RTIR_Constituency',
             Value => $constituency,
         );
-        $RT::Logger->info( "Couldn't set CF: $msg" ) unless $res;
+        $RT::Logger->warning( "Couldn't set CF: $msg" ) unless $res;
     }
     return 1;
 }
@@ -67,14 +68,14 @@ sub SetConstituencyOnCreate {
         $value = $tmp;
     }
     $value ||= $self->GetConstituencyFromAttachment;
-    return 1 if ($current||'') eq ($value||'');
+    return undef if ($current||'') eq ($value||'');
 
     my ($status, $msg) = $ticket->AddCustomFieldValue(
         Field => '_RTIR_Constituency',
         Value => $value,
     );
-    return ($status, $msg) unless $status;
-    return 1;
+    $RT::Logger->warning( "Couldn't set CF: $msg" ) unless $status;
+    return $status || 0;
 }
 
 sub GetConstituencyFromAttachment {
@@ -92,6 +93,7 @@ sub GetConstituencyFromAttachment {
 
     my $value = $attachment->GetHeader('X-RT-Mail-Extension');
     return undef unless $self->IsValidConstituency( $value );
+    $RT::Logger->debug( "Got constituency from attachment". ($value||'(no value)') );
     return $value;
 }
 
@@ -99,8 +101,12 @@ sub GetConstituencyFromParent {
     my $self = shift;
     my $parents = RT::Tickets->new( $RT::SystemUser );
     $parents->FromSQL( "HasMember = ". $self->TicketObj->id );
+    $parents->OrderByCols( { FIELD => 'LastUpdated', ORDER => 'DESC' } );
+    $parents->RowsPerPage(1);
     return unless my $parent = $parents->First;
-    return $parent->FirstCustomFieldValue('_RTIR_Constituency');
+    my $value = $parent->FirstCustomFieldValue('_RTIR_Constituency');
+    $RT::Logger->debug( "Got constituency from parent: ". ($value||'(no value)') );
+    return $value;
 }
 
 { my %constituency;
