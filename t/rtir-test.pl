@@ -199,14 +199,19 @@ sub create_rtir_ticket
     is ($agent->status, 200, "Attempted to create the ticket");
 
     # Now see if we succeeded
+    my $id = get_ticket_id($agent);
+    ok ($id, "Ticket $id created successfully.");
+
+    return $id;
+}
+
+sub get_ticket_id {
+    my $agent = shift;
     my $content = $agent->content();
-    my $id = -1;
+    my $id = 0;
     if ($content =~ /.*Ticket (\d+) created.*/g) {
         $id = $1;
     }
-
-    ok ($id > 0, "Ticket $id created successfully.");
-
     return $id;
 }
 
