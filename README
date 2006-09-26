@@ -4,7 +4,7 @@ workflow for members of CERT and CSIRT teams. It allows team members
 to track, respond to and deal with reported incidents and features a
 number of tools to make common operations quick and easy.  RTIR is
 built on top of "RT," which is also available for free from Best
-Practical Solution at http://www.bestpractical.com/rt/.
+Practical Solutions at http://www.bestpractical.com/rt/.
 
 To purchase commercials support, training or custom development for RT
 or RTIR, please contact Best Practical at sales@bestpractical.com.
@@ -105,11 +105,15 @@ REQUIRED PACKAGES:
 
 o   RT 3.7.0 or later, configured, installed and tested.
 
+o   RTFM 2.1 or later, configured, installed and tested.
+
 o   The Business::Hours module (version 0.05 or later)
 
 o   The Business::SLA module
 
 o   The Net::Whois::RIPE module
+
+o   The Net::CIDR module
 
 
 
@@ -127,7 +131,8 @@ Installation instructions:
 1) Once RT 3.7 and other required package have been installed and
    appear to be working properly, cd to the directory into which you
    unpacked RTIR into.  If you plan on using RTFM with RTIR, please
-   install RTFM before installing RTIR.
+   install RTFM before installing RTIR.  Please also make sure RTFM
+   database is initalized with "make initdb".
 
 2) Run "perl Makefile.PL" to generate a makefile for RTIR. 
 
