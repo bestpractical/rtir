@@ -71,23 +71,23 @@ if ( $SelectedTicket ) {
 
     my @queues = sort map {$_->Name} $Ticket->QueueObj, $MergeTicket->QueueObj;
     if ( $queues[0] eq $queues[1] or ($queues[0] eq "Incident Reports" and $queues[1] eq "Investigations")) {
-        if ($MergeTicket->QueueObj->Name eq "Incident Reports") {
+        if ( $MergeTicket->QueueObj->Name eq "Incident Reports" ) {
             # We always want to merge into the Investigation
             ($Ticket, $MergeTicket) = ($MergeTicket, $Ticket);
         }
-        
-        $ARGS{ $Ticket->id .'-MergeInto' } = $MergeTicket->id;            
+
+        $ARGS{ $Ticket->id .'-MergeInto' } = $MergeTicket->id;
 
         for my $t ( $Ticket, $MergeTicket ) {
-            if ($t->Owner != $t->CurrentUser->Id) {
-                my ($status, $msg) = $t->SetOwner($t->CurrentUser->Id, 'Force');
-                push @results, $msg if $msg;
-            }
+            next if $t->Owner == $t->CurrentUser->Id;
+
+            my ($status, $msg) = $t->SetOwner($t->CurrentUser->Id, 'Force');
+            push @results, $msg if $msg;
         }
         push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
 
         $Ticket = LoadTicket($id);
-        $id = $ARGS{'id'} = $Ticket->id;
+        return $m->comp('/RTIR/Display.html', id => $Ticket->id, results => \@results );
     } else {
         push @results, loc("Merge failed: Ticket #[_1] is not the right type", $MergeTicket->Id );
     }
