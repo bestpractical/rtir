@@ -127,7 +127,7 @@ wrap 'RT::Tickets::_CustomFieldLimit',
         $tickets->_CustomFieldLimit($field, ($negative? '>': '<='), $end_ip, @rest, ENTRYAGGREGATOR => 'AND');
         $tickets->_CloseParen;
         # return right now as we did everything
-        $_[-1] = ref @_[-1]? [1]: 1;
+        $_[-1] = ref $_[-1]? [1]: 1;
     };
 
 # "[!]= 'CIDR'" => "op 'sIP-eIP'"
