@@ -122,15 +122,21 @@ wrap 'RT::Tickets::_CustomFieldLimit',
         my ($start_ip, $end_ip) = ($1, $2);
         my ($tickets, $field, $op, $value, @rest) = @_[0..($#_-1)];
         my $negative = ($op =~ /NOT|!=|<>/i)? 1 : 0;
+        $tickets->_OpenParen;
         $tickets->_CustomFieldLimit($field, ($negative? '<': '>='), $start_ip, @rest);
-        @_[2, 3] = ( ( $negative? '>': '<=' ), $end_ip );
+        $tickets->_CustomFieldLimit($field, ($negative? '>': '<='), $end_ip, @rest, ENTRYAGGREGATOR => 'AND');
+        $tickets->_CloseParen;
+        # return right now as we did everything
+        $_[-1] = ref @_[-1]? [1]: 1;
     };
 
 # "[!]= 'CIDR'" => "op 'sIP-eIP'"
 wrap 'RT::Tickets::_CustomFieldLimit',
     pre => sub {
         return unless $_[3] =~ /^\s*$RE{net}{CIDR}{IPv4}{-keep}\s*$/o;
+        # convert incomplete 192.168/24 to 192.168.0.0/24 format
         my $cidr = join( '.', map $_||0, (split /\./, $1)[0..3] ) ."/$2";
+        # convert to range and continue, it will be catched by next wrapper
         $_[3] = (Net::CIDR::cidr2range( $cidr ))[0] || $_[3];
     };
 $RT::Tickets::dispatch{'CUSTOMFIELD'} = \&RT::Tickets::_CustomFieldLimit;
