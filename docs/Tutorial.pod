@@ -1,46 +1,52 @@
 
 =head2 Merge
 
-Merge operation allows users to merge two tickets into one.
+RT's C<merge> operation allows users to merge two tickets into one.
 This operation is pretty straight forward, everything that
-could be joined is joined otherwise value of the target is
-used.
+RT can merge from the source ticket is added to the target ticket. When only one value can be selected, RT prefers the value from the target ticket.
 
-Results of the action depends on direction, "merge the ticket #1
-into #2" is not the same as "merge the ticket #2 into #1".
+
+The result of the action depends on the direction of the merge:
+"merge ticket #1 into #2" is not the same as "merge ticket #2 
+into #1".
+
 When you merge ticket #1 into #2 some properties of
-the ticket #1 are joined with respective properties of
-the ticket #2: TimeEstimated, TimeWorked, TimeLeft,
-Requestors, Cc and AdminCc watchers and links. Other fields
-are ignored. Duplicated links or watchers would be ignored,
-also if there were links between #1 and #2 tickets then
-it would be dropped.
+ticket #1 are joined with respective properties of
+ticket #2: TimeEstimated, TimeWorked, TimeLeft, Requestors, 
+Cc and AdminCc and links. Other fields from ticket #1 are 
+ignored . Duplicated links or watchers will be condensed.,
+also if there were links between tickets #1 and #2 then
+RT will drop them
 
-Merge operation couldn't be reverted and should be applied with
+The merge operation can't be reversed and should be used with
 caution.
 
-User could merge tickets only he has right 'ModifyTicket' on
-both tickets.
+Users can merge tickets only of they have the right 'ModifyTicket' 
+on both tickets.
 
-The RTIR's merge operation allows user to merge tickets within
-tickets in the same queue. IRs and Investigations could be
-merged too. When user opens ticket's display page there is 
-'Merge' link on the page in the tabs. The Merge page is splitted
+RTIR's merge operation allows a user to merge tickets with
+tickets in the same queue. Within RTIR, IRs and Investigations 
+can be merged. When a user opens a ticket's display page there is 
+a 'Merge' option in the page's tabs. The Merge page is split
 into two blocks. The first one is a list of other children of
 the parent incident(s) of the current ticket. It's empty if
-the ticket is not linked to incident(s) or if there is no
-candidates to merge into. The second box contains other tickets
-you can merge into, tickets are groupped by type if it's possible
-to merge into different types(fro example an IR into an Investigation).
+the ticket is not linked to any incidents or if there is no
+candidate to merge into. 
 
-Use have to select one ticket from the list and submit form.
-If everything is fine he is redirected to the ticket's main page
-then.
+The second box contains other tickets you can merge into, 
+tickets are grouped by type, if it's possible to merge the
+ticket into a ticket of another type. (for example, you can
+merge an IR into an Investigation).
 
-When page has no ticket you're looking for you can click 'Refine'
-and adjust search conditions then return back to merge window
-by clicking 'Merge' tab.
+You have to select one ticket from the list and submit form the.
+If the merge completes succesfully, you'll be redirected to the 
+target ticket's main page.
 
-Pure RT's merge action could be invoked from Advanced tab.
+When the merge page doesn't have the ticket you're looking for,
+you can click 'Refine' to adjust the search conditions before
+returning to the merge page by clicking the 'Merge' tab.
+
+You can access RT's generic merge from an RTIR ticket's 'Advanced'
+tab.
 
 =cut
