@@ -29,6 +29,9 @@ requires('Business::Hours');
 requires('Business::SLA');
 # whois tool
 requires('Net::Whois::RIPE');
+# IP searching
+requires('Hook::LexWrap');
+requires('Regexp::Common');
 # CIDR parsing and converting
 requires('Net::CIDR');
 requires('Regexp::Common::net::CIDR');
