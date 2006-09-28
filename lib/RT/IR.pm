@@ -115,7 +115,7 @@ wrap 'RT::Tickets::_CustomFieldLimit',
     };
 
 # "= 'sIP-eIP'" => "( >=sIP AND <=eIP)"
-# "!= 'sIP-eIP'" => "( <sIP AND >eIP)"
+# "!= 'sIP-eIP'" => "( <sIP OR >eIP)"
 wrap 'RT::Tickets::_CustomFieldLimit',
     pre => sub {
         return unless $_[3] =~ /^\s*($RE{net}{IPv4})\s*-\s*($RE{net}{IPv4})\s*$/o;
@@ -124,7 +124,10 @@ wrap 'RT::Tickets::_CustomFieldLimit',
         my $negative = ($op =~ /NOT|!=|<>/i)? 1 : 0;
         $tickets->_OpenParen;
         $tickets->_CustomFieldLimit($field, ($negative? '<': '>='), $start_ip, @rest);
-        $tickets->_CustomFieldLimit($field, ($negative? '>': '<='), $end_ip, @rest, ENTRYAGGREGATOR => 'AND');
+        $tickets->_CustomFieldLimit(
+            $field, ($negative? '>': '<='), $end_ip,
+            @rest, ENTRYAGGREGATOR => ($negative? 'OR': 'AND'),
+        );
         $tickets->_CloseParen;
         # return right now as we did everything
         $_[-1] = ref $_[-1]? [1]: 1;
