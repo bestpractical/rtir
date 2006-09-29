@@ -58,7 +58,7 @@
         Type        => 'SelectSingle',
         Queue       => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
         Disabled    => 0,
-        Description => 'Constituency for Incidents RTIR queue',
+        Description => 'Constituency for RTIR queues',
         Values      => [
             {
                 Name      => "EDUNET",
@@ -283,7 +283,7 @@
         Type        => 'FreeformMultiple',
         Queue       => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
         Disabled    => 0,
-        Description => 'IP address for Blocks RTIR queue',
+        Description => 'IP address for RTIR queues',
     },
     {
         Name        => '_RTIR_Netmask',
