@@ -47,6 +47,11 @@
     Rows     => 1,
 &>
 % } else {
+% #TODO: hacks, we need way to define CF value on Create, but don't allow user to change it
+% my $cf = RT::CustomField->new( $RT::SystemUser );
+% $cf->LoadByNameAndQueue( Name => '_RTIR_Constituency', Queue => 'Incidents' );
+<input type="hidden" class="hidden" name="Object-RT::Ticket--CustomField-<% $cf->id %>-Values-Magic" value="1" />
+<input type="hidden" class="hidden" name="Object-RT::Ticket--CustomField-<% $cf->id %>-Values" value="<% $ChildObj->FirstCustomFieldValue('_RTIR_Constituency') %>" />
 <& /RTIR/Elements/ShowRTIRField, Ticket => $ChildObj, Name => 'Constituency' &>
 % }
 </td></tr>

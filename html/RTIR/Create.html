@@ -150,6 +150,11 @@
          Name     => 'Constituency',
          Default  => scalar RT->Config->Get('_RTIR_Constituency_default') &>
 % } else {
+% #TODO: hacks, we need way to define CF value on Create, but don't allow user to change it
+%   my $cf = RT::CustomField->new( $RT::SystemUser );
+%   $cf->LoadByNameAndQueue( Name => '_RTIR_Constituency', Queue => $Queue );
+      <input type="hidden" class="hidden" name="Object-RT::Ticket--CustomField-<% $cf->id %>-Values-Magic" value="1" />
+      <input type="hidden" class="hidden" name="Object-RT::Ticket--CustomField-<% $cf->id %>-Values" value="<% $IncidentObj->FirstCustomFieldValue('_RTIR_Constituency') %>" />
       <& /RTIR/Elements/ShowRTIRField, Ticket => $IncidentObj, Name => 'Constituency' &>
 % }
     </td>
