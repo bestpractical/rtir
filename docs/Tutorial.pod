@@ -55,24 +55,25 @@ tab.
 
 =head2 Split
 
-Split operation allows user to create new ticket from the existant one.
-When a user selects 'Split' tab he sees new ticket creation form with
-information prefilled from the former ticket, for example Subject, Owner,
-Correspondents(Requestors), Ccs, AdminCs and joined ticket's text history
-in the message box. User can change all values and then create new ticket.
+Split operation allows user to create new ticket from the existing one.
+When a user selects the 'Split' tab he will see a new ticket creation form 
+with information prefilled from the original ticket, for example Subject, 
+Owner, Correspondents(Requestors), Ccs, AdminCs, as well as the original ticket's
+history, formatted as text in the message box. The user can change any and all
+values before creating a new ticket.
 
-New ticket could be created only in the same queue as a former ticket.
+"Split" tickets cand only be created in the same queue as the ticket they're
+split from.
 
 =head2 Abandon and Reject
 
 These operations are quite similar to each other. A rejected ticket is not
-availble for many operations and this state is threated as inactive one.
-Ticket is still available for searches and could be reopened, but default
-interfaces are that way to hide such tickets, so people could concentrate
-on new and open tickets.
+availble for many operations and this state is treated as inactive.
 
-Abandon action allows user to reject incedent and all its children.
+Rejected tickets are still available for searches and can be reopened, 
+but RTIR's default interfaces hide are designed to hide such tickets, 
+so people can concentrate on new and open tickets.
 
-...
+The abandon action allows a user to reject an incident and all its children.
 
 =cut
