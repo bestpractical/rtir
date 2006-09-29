@@ -1,0 +1,78 @@
+CHANGES SINCE RTIR 1.0
+----------------------
+
+Full integration with RT 3.7.
+
+New Search UI
+
+    This includes a 3.7-style search UI, and menu changes to
+    accomodate this.  Instead of search results and criteria being
+    displayed on a single page, you can now choose the 'Refine' menu
+    option to refine your search and re-run it after you've added all
+    of your criteria. This also includes extracting results to RSS and
+    spreadsheet formats.
+
+Configurable Search Results
+
+    Search result formats are configurable in the RTIR configuration
+    file, so you can easily choose which fields you would like to have
+    displayed for RTIR searches.
+
+Configurable RTIR home page
+
+    You can choose which components (portlets) you want to see on
+    RTIR's main page, including portlets from both RTIR and core RT.
+
+Per user interface configuration
+    
+    Users can change RT's appearance through their preferences,
+    including adjusting portlets, default search results, and ticket
+    transaction order.
+
+Integration between RTIR and RTFM
+
+    Now RTIR is detects if RTFM is installed, and adds default RTFM
+    classes, templates and rights for better integration with RTIR.
+
+Create Incident with Investigation
+
+    New interface allows the user to create an Incident and run an
+    Investigation from the same page..
+
+Incident Reports can be linked to multiple Incidents.
+
+Quick states filter
+
+    While browsing children linked to an incident you can filter the
+    list by the their state.
+
+Bulk Abandon
+
+    Multiple Incidents can be abandoned from a single form.
+
+Disable Blocks queue
+    
+    Blocks queue and its functionality can be disabled in the RTIR
+    configuration file.
+
+Advanced operations with RTIR tickets
+
+    New 'Advanced' ticket's subtab allows the user to move misplaced
+    tickets, merge wayward responses, and do other low-level
+    maintainance tasks.
+
+Business::SLA
+
+    Service Level Agreement (SLA) calculations are now handled by the
+    Business::SLA module, which offers more flexibility.  You can
+    specify SLAs with business minutes, real minutes, or both.
+
+Scrips
+
+    RTIR-specific scrip actions and conditions are now in perl
+    modules, so they're easier to customize.
+
+Standardized Components
+
+    RTIR 1.2 uses more of RT's core components, making it easier to
+    customize and maintain.

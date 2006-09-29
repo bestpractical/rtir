@@ -1,0 +1,99 @@
+=head1 REQUIREMENTS for Multiple Constituency functionality
+
+ SWITCHCERT, and several other CSIRT’s provide services for more than one constituency.
+For a variety of reasons, it makes sense to separate these constituencies, particularly when handling
+incidents. However, it also makes sense to use the same tools when working on these separate sources
+of data. Depending on the constituency different users may wish to work on incidents within different
+queues or have access to incident data held within different queues. Therefore, access is required,
+which allows user privileges depending on the constituency. RTIR does not support this out of the
+box. Of course it would be possible to install one separate instance of RTIR per constituency. But this
+is somewhat cumbersome, as a lot of the configuration is identical on all instances, hence errorprone.
+A better solution would be to integrate the facility of handling several constituencies within the same
+instances of RTIR.
+
+D.3.5.1. We MUST be able to define more than one constituency.
+D.3.5.2. We MUST be able to define Access Control Lists according to the constituency.
+D.3.5.3. We MUST preset the constituency according to mail traffic.
+D.3.5.4. RTIR MUST allow constituency inheritance of newly created tickets in any RTIR
+queue (incident report, incident, blocks, investigation)
+
+=head2 Definitions 
+
+  A constituency is defined by:
+  * By it’s name.
+  * Its correspondence email address.
+  * Associated ACLs.
+  * Assigning a constituency to a ticket:
+  ** On new incoming incident report, the constituency is preset
+     automatically according the email address the email is sent to.
+  ** Any new incidents created from incident reports, or blocks and
+     investigations, created from incidents inherit the constituency
+     from the launching ticket.
+  ** Manually assign the constituency to any new tickets created from
+     within RTIR, not yet related to any other ticket.
+ ** Manually change the constituency of a ticket and all its related
+    tickets.
+
+Of course the last two points require that the user has the right to do so,
+according to the ACLs. All tickets must belong to a constituency.
+
+=head1 IMPLEMENTATION DETAILS 
+
+=head2 Constituency values
+
+Constituency is a custom field that applies to all RTIR's queues. Administrator
+can manage the field and its values via the web interface: RT -> Configuration ->
+Custom Fields -> click on '_RTIR_Constituency' record in the list. At the bottom
+of the page there is control elements to add, delete and rename values of
+the constituency field(D.3.5.1).
+
+=head2 ACLs
+
+To implement requirement D.3.5.2 we've associated one group with each value of
+the constituency field. Name of a group should match 'DutyTeam <constituency>'.
+When people define or change value of a ticket we add a group to the ticket's
+AdminCc role, so all people in the group inherit rights granted to AdminCc role.
+You can control list of rights through the web interface. Open page RT ->
+Configuration -> Queues -> select a RTIR queue -> Group Rights, change
+rights of the AdminCc role to control access of the constituency groups.
+You can also control access of other groups to the queue.
+
+=head2 Presetting constituency according to mail traffic
+
+Many mail transfer agents (MTAs) allow you to specify a flag on any incoming
+email message by appending "+flag" after an email address. (This option
+is supported by postfix, sendmail, qmail, exim and others, though the "+" delimiter
+has different defaults on some systems and can be customized by a site's systems
+administrator)
+
+RTIR's multiple constituency support uses this extension mechanism to allow
+a single queue to receive mail for multiple constituencies. If you have two
+constituencies, EDUNET and GOVNET, you might set up RTIR's "incident report"
+address as follows in /etc/aliases:
+
+    edu: abuse+edunet
+    gov: abuse+govnet
+    abuse: "|/path/to/rt-mailgate ...mailgate options..."
+
+rt-mailgate script expect that MTA sets the EXTENSION environment variable
+with value of "flag". Script adds this value to the incoming message in
+the 'X-RT-Mail-Extension' header's field.
+
+=head2 Constituency inheritance
+
+* If incoming mail has 'X-RT-Mail-Extension: <valid constituency value>'
+  header field then new ticket is created and constituency set according
+  to field value. See 'Presetting constituency according to mail traffic'
+  above.
+* If user uses 'New' or 'Launch' links on the main view of an incident,
+  investigation, incident report or block to create new linked ticket
+  then creation page contains predefined value for constituency and couldn't
+  be changed at this step.
+* Changing constituency value is possible through the 'Edit' page. RTIR
+  updates all related tickets too during this action.
+
+Note that during linking tickets together list of possible candidates
+is not restricted by constituency of the former ticket, so user may
+choose targets with different constituencies. In the latter case new
+constituency value is not defined as it wasn't defined in requirements.
+We hope to get some feedback from you on this subject during testing.

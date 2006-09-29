@@ -10,109 +10,15 @@ To purchase commercials support, training or custom development for RT
 or RTIR, please contact Best Practical at sales@bestpractical.com.
 
 
-WARNING!
---------
-
-This is a development version of RTIR.  Before using this version of
-RTIR, back up your database and any local modifications.
-
-If you intend to deploy RTIR, or any other software, in a production
-environment, we recommend that you first install and test it in a
-staging environment to ensure that it meets your needs.
-
-Changes since RTIR 1.0.x
-------------------------
-
-Full integration with RT 3.7.
-
-New Search UI
-
-    This includes a 3.7-style search UI, and menu changes to
-    accomodate this.  Instead of search results and criteria being
-    displayed on a single page, you can now choose the 'Refine' menu
-    option to refine your search and re-run it after you've added all
-    of your criteria. This also includes extracting results to RSS and
-    spreadsheet formats.
-
-Configurable Search Results
-
-    Search result formats are configurable in the RTIR configuration
-    file, so you can easily choose which fields you would like to have
-    displayed for RTIR searches.
-
-Configurable RTIR home page
-
-    You can choose which components (portlets) you want to see on
-    RTIR's main page, including portlets from both RTIR and core RT.
-
-Per user interface configuration
-    
-    Users can change RT's appearance through their preferences,
-    including adjusting portlets, default search results, and ticket
-    transaction order.
-
-Integration between RTIR and RTFM
-
-    Now RTIR is detects if RTFM is installed, and adds default RTFM
-    classes, templates and rights for better integration with RTIR.
-
-Create Incident with Investigation
-
-    New interface allows the user to create an Incident and run an
-    Investigation from the same page..
-
-Incident Reports can be linked to multiple Incidents.
-
-Quick states filter
-
-    While browsing children linked to an incident you can filter the
-    list by the their state.
-
-Bulk Abandon
-
-    Multiple Incidents can be abandoned from a single form.
-
-Disable Blocks queue
-    
-    Blocks queue and its functionality can be disabled in the RTIR
-    configuration file.
-
-Advanced operations with RTIR tickets
-
-    New 'Advanced' ticket's subtab allows the user to move misplaced
-    tickets, merge wayward responses, and do other low-level
-    maintainance tasks.
-
-Business::SLA
-
-    Service Level Agreement (SLA) calculations are now handled by the
-    Business::SLA module, which offers more flexibility.  You can
-    specify SLAs with business minutes, real minutes, or both.
-
-Scrips
-
-    RTIR-specific scrip actions and conditions are now in perl
-    modules, so they're easier to customize.
-
-Standardized Components
-
-    RTIR 1.2 uses more of RT's core components, making it easier to
-    customize and maintain.
-
 
 REQUIRED PACKAGES:
 ------------------
 
 o   RT 3.7.0 or later, configured, installed and tested.
-
-o   RTFM 2.1 or later, configured, installed and tested.
-
+o   RTFM 2.2.0RC4 or later, configured, installed and tested.
 o   The Business::Hours module (version 0.05 or later)
-
 o   The Business::SLA module
-
 o   The Net::Whois::RIPE module
-
 o   The Net::CIDR module
 
 
@@ -191,8 +97,29 @@ rtir:         "|/opt/rt3/bin/rt-mailgate --queue 'Incident Reports' --action cor
 
 You should substitute the URL for RT's web interface for "http://localhost/".
 
+** If you're configuring RTIR with support for multiple constituencies, please
+refer to the instructions in the file  docs/Constituencies.pod
 
-BUGS
-----
+
+Additional resources
+--------------------
+
+
+  RT 3.7 (or newer) RTFM 2.2.0rc4 (or newer), RTIR 2.1.0 (or newer), and then which other RT::Extensions?
+  Subsection RTIR:
+   * This README file
+   * UPGRADING (for users upgrading from 1.0 or 2.0)
+   (Upgrading needs work re carlos comments last night)
+   * docs/Tutorial.pod (currently contains extended information about ticket merging)
+   * etc/RTIR_Config.pm  (Contains a number of RTIR-specific configuration options and their instructions for use)
+  Subsection Getting help with RTIR:
+   * RTIR mailing list (subscription details go here)
+   * The RTIR section of the community-developed RT wiki is still in its infantcy.  wiki.bestpractical.com?RTIR
+  ruz: can you fill this out for all the packages?
+
+
+
+REPORTING BUGS
+--------------
 
 To report a bug, send email to rtir-bugs@fsck.com.
