@@ -55,7 +55,10 @@ sub set_cf_max_values {
 @Initial = (
     sub { apply_cf_to_queues( '_RTIR_IP', 'Incidents', 'Incident Reports', 'Investigations' ) },
     sub { set_cf_max_values( '_RTIR_IP', 0 ) },
+    sub { get_cf( '_RTIR_IP' )->SetDescription('IP address for RTIR queues') },
+
     sub { apply_cf_to_queues( '_RTIR_Constituency', 'Incident Reports', 'Investigations', 'Blocks' ) },
+    sub { get_cf( '_RTIR_Constituency' )->SetDescription('Constituency for RTIR queues') },
 );
 
 @Groups = (
