@@ -38,7 +38,9 @@ candidate to merge into.
 The second box contains other tickets you can merge into, 
 tickets are grouped by type, if it's possible to merge the
 ticket into a ticket of another type. (for example, you can
-merge an IR into an Investigation).
+merge an IR into an Investigation). Note that if a user
+merges an IR into an Investigation then investigation is always
+used as the target ticket.
 
 You have to select one ticket from the list and submit form the.
 If the merge completes succesfully, you'll be redirected to the 
