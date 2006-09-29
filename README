@@ -33,7 +33,7 @@ Installation instructions:
 1) Install RT 3.7 following RT's regular installation instructions
 
 2) Install RTFM 2.2.0RC4 or nerwer, following the installation instructions
-   in RTFM's README file. (Don't forget to run "make initdb to set up the 
+   in RTFM's README file. (Don't forget to run "make initdb" to set up the 
    database for RTFM);
 
 3) Install RT::Extension::TicketAging following the installation instructions
@@ -102,6 +102,7 @@ You should substitute the URL for RT's web interface for "http://localhost/".
 ** If you're configuring RTIR with support for multiple constituencies, please
 refer to the instructions in the file  docs/Constituencies.pod
 
+** Use "perldoc /opt/rt3/bin/rt-mailgate" to get more info about mailgate script.
 
 Documentation for RTIR
 ----------------------
