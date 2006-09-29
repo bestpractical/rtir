@@ -61,7 +61,15 @@ in the message box. User can change all values and then create new ticket.
 
 New ticket could be created only in the same queue as a former ticket.
 
-=head2 Abandon
+=head2 Abandon and Reject
+
+These operations are quite similar to each other. A rejected ticket is not
+availble for many operations and this state is threated as inactive one.
+Ticket is still available for searches and could be reopened, but default
+interfaces are that way to hide such tickets, so people could concentrate
+on new and open tickets.
+
+Abandon action allows user to reject incedent and all its children.
 
 ...
 
