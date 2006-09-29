@@ -16,10 +16,6 @@ REQUIRED PACKAGES:
 
 o   RT 3.7.0 or later, configured, installed and tested.
 o   RTFM 2.2.0RC4 or later, configured, installed and tested.
-o   The Business::Hours module (version 0.05 or later)
-o   The Business::SLA module
-o   The Net::Whois::RIPE module
-o   The Net::CIDR module
 
 
 
@@ -34,17 +30,23 @@ information.
 Installation instructions:
 --------------------------
 
-1) Once RT 3.7 and other required package have been installed and
-   appear to be working properly, cd to the directory into which you
-   unpacked RTIR into.  If you plan on using RTFM with RTIR, please
-   install RTFM before installing RTIR.  Please also make sure RTFM
-   database is initalized with "make initdb".
+1) Install RT 3.7 following RT's regular installation instructions
 
-2) Run "perl Makefile.PL" to generate a makefile for RTIR. 
+2) Install RTFM 2.2.0RC4 or nerwer, following the installation instructions
+   in RTFM's README file. (Don't forget to run "make initdb to set up the 
+   database for RTFM);
 
-3) Type "make install".
+3) Install RT::Extension::TicketAging following the installation instructions
+   in that extension's README file.
 
-4) Add the following lines to your RT_SiteConfig.pm file:
+4) Run "perl Makefile.PL" to generate a makefile for RTIR. 
+
+5) Install any extra Perl modules RTIR needs that aren't already
+   installed.
+
+6) Type "make install".
+
+7) Add the following lines to your RT_SiteConfig.pm file:
 
    # The RTIR config file
 
@@ -53,13 +55,13 @@ Installation instructions:
    require $RTIR_CONFIG_FILE
      || die ("Couldn't load RTIR config file '$RTIR_CONFIG_FILE'\n$@");
 
-5) If you are installing RTIR for the first time, initialize the RTIR
+8) If you are installing RTIR for the first time, initialize the RTIR
    database by typing "make initdb".
 
    WARNING: Do not attempt to re-initialize the database if you are
    upgrading.
 
-6) Stop and start your web server.  
+9) Stop and start your web server.  
 
 
 
@@ -101,21 +103,34 @@ You should substitute the URL for RT's web interface for "http://localhost/".
 refer to the instructions in the file  docs/Constituencies.pod
 
 
-Additional resources
---------------------
+Documentation for RTIR
+----------------------
 
-
-  RT 3.7 (or newer) RTFM 2.2.0rc4 (or newer), RTIR 2.1.0 (or newer), and then which other RT::Extensions?
-  Subsection RTIR:
    * This README file
-   * UPGRADING (for users upgrading from 1.0 or 2.0)
-   (Upgrading needs work re carlos comments last night)
-   * docs/Tutorial.pod (currently contains extended information about ticket merging)
-   * etc/RTIR_Config.pm  (Contains a number of RTIR-specific configuration options and their instructions for use)
-  Subsection Getting help with RTIR:
-   * RTIR mailing list (subscription details go here)
-   * The RTIR section of the community-developed RT wiki is still in its infantcy.  wiki.bestpractical.com?RTIR
-  ruz: can you fill this out for all the packages?
+
+   * UPGRADING 
+        Instructions for users upgrading from 1.0 or 2.0
+
+   * perldoc docs/Tutorial.pod 
+        ( also at http://svn.bestpractical.com/cgi-bin/index.cgi/bps/view/rtir/branches/2.1-EXPERIMENTAL/docs/Tutorial.pod )
+        Extended information about ticket merging
+
+   * perldoc docs/Constituencies.pod 
+        ( also at http://svn.bestpractical.com/cgi-bin/index.cgi/bps/view/rtir/branches/2.1-EXPERIMENTAL/docs/Constituencies.pod )
+        Information about setting up RTIR with multiple user constituencies
+
+   * perldoc RT::Extension::TicketAging
+        (also at http://svn.bestpractical.com/cgi-bin/index.cgi/bps/view/RT-Extension-TicketAging/lib/RT/Extension/TicketAging.pm )
+        Information about configuring and using RT and RTIR Ticket Aging.
+
+   * etc/RTIR_Config.pm  
+        (Contains a number of RTIR-specific configuration options and instructions for their use)
+
+   * RTIR mailing list 
+        Subscribe by sending mail to rtir-request@lists.bestpractical.com
+
+   * wiki.bestpractical.com?RTIR
+        The RTIR section of the community-developed RT wiki is still in its infantcy.  
 
 
 
