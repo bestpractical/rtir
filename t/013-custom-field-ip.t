@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 176;
+use Test::More tests => 185;
 
 require "t/rtir-test.pl";
 
@@ -95,6 +95,25 @@ diag "create a ticket via web with IP in message" if $ENV{'TEST_VERBOSE'};
         ok( $ticket->id, 'loaded ticket' );
         is( $ticket->FirstCustomFieldValue('_RTIR_IP'), $val, 'correct value' );
     }
+}
+
+diag "check that IPs in messages don't add duplicates" if $ENV{'TEST_VERBOSE'};
+{
+    my $id = create_ir( $agent, {
+        Subject => "test ip",
+        Content => '192.168.20.2 192.168.20.2 192.168.20/30'
+    } );
+    ok($id, "created first ticket");
+
+    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    $ticket->Load( $id );
+    ok( $ticket->id, 'loaded ticket' );
+
+    my $values = $ticket->CustomFieldValues('_RTIR_IP');
+    my %has;
+    $has{ $_->Content }++ foreach @{ $values->ItemsArrayRef };
+    is(scalar values %has, 4, "four IPs were added");
+    ok(!grep( $_ != 1, values %has), "no duplicated values");
 }
 
 diag "create a ticket via web with CIDR in message" if $ENV{'TEST_VERBOSE'};

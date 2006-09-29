@@ -29,23 +29,21 @@ sub Commit {
     my $cf = $ticket->LoadCustomFieldByIdentifier('_RTIR_IP');
     return 1 unless $cf && $cf->id;
 
-    my %existing;
-    for( @{$cf->ValuesForObject($ticket)->ItemsArrayRef} ) {
-        $existing{$_->Content} =  1;
-
-    }
     my $attach = $self->TransactionObj->ContentObj;
     return 1 unless $attach && $attach->id;
 
+    my %existing;
+    for( @{$cf->ValuesForObject( $ticket )->ItemsArrayRef} ) {
+        $existing{ $_->Content } =  1;
+    }
+
     my @IPs = ( $attach->Content =~ /($RE{net}{IPv4})/go );
     foreach my $ip ( @IPs ) {
-        next if ($existing{$ip}); # skip any IP we already had.
-        my ($status, $msg) = $ticket->AddCustomFieldValue(
-            Value => $ip,
-            Field => $cf,
+        $self->AddIP(
+            IP          => $ip,
+            CustomField => $cf,
+            Skip        => \%existing,
         );
-        $RT::Logger->error("Couldn't add CF value: $msg") unless $status;
-        $existing{$ip} = 1;
     }
 
     my @CIDRs = ( $attach->Content =~ /$RE{net}{CIDR}{IPv4}{-keep}/go );
@@ -55,15 +53,29 @@ sub Commit {
         my $snum = unpack( 'N', pack( 'C4', split /\./, $sip ) );
         my $enum = unpack( 'N', pack( 'C4', split /\./, $eip ) );
         while ( $snum++ <= $enum ) {
-            my ($status, $msg) = $ticket->AddCustomFieldValue(
-                Value => join( '.', unpack( 'C4', pack( 'N', $snum ) ) ),
-                Field => $cf,
+            $self->AddIP(
+                IP          => join( '.', unpack( 'C4', pack( 'N', $snum ) ) ),
+                CustomField => $cf,
+                Skip        => \%existing,
             );
-            $RT::Logger->error("Couldn't add CF value: $msg") unless $status;
         }
     }
 
     return 1;
+}
+
+sub AddIP {
+    my $self = shift;
+    my %arg = ( CustomField => undef, IP => undef, Skip => {}, @_ );
+    return if !$arg{'IP'} || $arg{'Skip'}->{ $arg{'IP'} }++;
+
+    my ($status, $msg) = $self->TicketObj->AddCustomFieldValue(
+        Value => $arg{'IP'},
+        Field => $arg{'CustomField'},
+    );
+    $RT::Logger->error("Couldn't add IP address: $msg") unless $status;
+
+    return;
 }
 
 1;
