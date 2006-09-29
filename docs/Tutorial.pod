@@ -3,7 +3,9 @@
 
 RT's C<merge> operation allows users to merge two tickets into one.
 This operation is pretty straight forward, everything that
-RT can merge from the source ticket is added to the target ticket. When only one value can be selected, RT prefers the value from the target ticket.
+RT can merge from the source ticket is added to the target ticket.
+When only one value can be selected, RT prefers the value from
+the target ticket.
 
 
 The result of the action depends on the direction of the merge:
@@ -21,7 +23,7 @@ RT will drop them
 The merge operation can't be reversed and should be used with
 caution.
 
-Users can merge tickets only of they have the right 'ModifyTicket' 
+Users can merge tickets only if they have the right 'ModifyTicket' 
 on both tickets.
 
 RTIR's merge operation allows a user to merge tickets with
@@ -48,5 +50,19 @@ returning to the merge page by clicking the 'Merge' tab.
 
 You can access RT's generic merge from an RTIR ticket's 'Advanced'
 tab.
+
+=head2 Split
+
+Split operation allows user to create new ticket from the existant one.
+When a user selects 'Split' tab he sees new ticket creation form with
+information prefilled from the former ticket, for example Subject, Owner,
+Correspondents(Requestors), Ccs, AdminCs and joined ticket's text history
+in the message box. User can change all values and then create new ticket.
+
+New ticket could be created only in the same queue as a former ticket.
+
+=head2 Abandon
+
+...
 
 =cut
