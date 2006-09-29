@@ -1,3 +1,6 @@
+CHANGES
+docs/Constituencies.pod
+docs/Tutorial.pod
 etc/initialdata
 etc/RTIR_Config.pm
 etc/upgrade/1.0.3/content
