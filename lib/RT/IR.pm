@@ -45,6 +45,9 @@
 # }}} END BPS TAGGED BLOCK
 #
 package RT::IR;
+
+our $VERSION = '2.1.060929';
+
 use warnings;
 use strict;
 
