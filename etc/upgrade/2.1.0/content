@@ -1,4 +1,3 @@
-# XXX: Add constituency scrips/conditions/actions
 
 sub get_cf {
     my $name = shift;
@@ -74,3 +73,54 @@ sub set_cf_max_values {
     },
 );
 
+@ScripActions = (
+    {  Name        => 'RTIR parse message for IPs',    # loc
+       Description => 'Set IP custom field from message content' ,                                            # loc
+       ExecModule  => 'RTIR_FindIP',
+    },
+    {  Name        => 'RTIR Set Constituency',    # loc
+       Description => 'Set and cascade Constituency custom field' ,                                            # loc
+       ExecModule  => 'RTIR_SetConstituency',
+    },
+    {  Name        => 'RTIR Set Constituency Group',    # loc
+       Description => 'Set group responsible for constituency' ,                                            # loc
+       ExecModule  => 'RTIR_SetConstituencyGroup',
+    },
+);
+
+@ScripConditions = (
+    {  Name        => 'RTIR Require Constituency Change',    # loc
+       Description => 'The constituency must be changed',                                            # loc
+       ApplicableTransTypes => 'Any',
+       ExecModule => 'RTIR_RequireConstituencyChange',
+    },
+    {  Name        => 'RTIR Require Constituency Group Change',    # loc
+       Description => 'A group responsible for constituency must be changed',                                            # loc
+       ApplicableTransTypes => 'Any',
+       ExecModule => 'RTIR_RequireConstituencyGroupChange',
+    },
+
+);
+@Scrips = (
+    {  Description       => "SetIPFromContent",
+       Queue             => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
+       ScripCondition    => 'On Correspond',
+       ScripAction       => 'RTIR parse message for IPs',
+       Template          => 'Blank' },
+    {  Description       => "SetIPFromContent",
+       Queue             => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
+       ScripCondition    => 'On Create',
+       ScripAction       => 'RTIR parse message for IPs',
+       Template          => 'Blank' },
+
+    {  Description       => "SetConstituency",
+       Queue             => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
+       ScripCondition    => 'RTIR Require Constituency Change',
+       ScripAction       => 'RTIR Set Constituency',
+       Template          => 'Blank' },
+    {  Description       => "SetConstituencyGroup",
+       Queue             => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
+       ScripCondition    => 'RTIR Require Constituency Group Change',
+       ScripAction       => 'RTIR Set Constituency Group',
+       Template          => 'Blank' },
+);
