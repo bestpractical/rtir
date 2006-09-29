@@ -28,12 +28,10 @@
 <input type="hidden" name="<% $Name %>" value="<% $NamePrefix %><% $cf->id %>-Values" />
 % }
 <& /Elements/EditCustomField,
+    %ARGS,
     Object      => $TicketObj, 
     CustomField => $cf, 
     NamePrefix  => $NamePrefix,
-    Default     => $Default,
-    Rows        => $Rows,
-    Cols        => $Cols,
 &>
 
 <%INIT>
@@ -56,7 +54,6 @@ return unless $cf->id;
 $TicketObj => undef
 $QueueObj => undef
 $Name => undef
-$Cols => undef
-$Rows => undef
-$Default => undef
+# Other args
+# $Default, $Cols, $Rows
 </%ARGS>
