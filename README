@@ -36,8 +36,8 @@ Installation instructions:
    in RTFM's README file. (Don't forget to run "make initdb" to set up the 
    database for RTFM);
 
-3) Install RT::Extension::TicketAging following the installation instructions
-   in that extension's README file.
+3) If you want to enable ticket/incident aging, install RT::Extension::TicketAging
+   following the installation instructions in that extension's README file.
 
 4) Run "perl Makefile.PL" to generate a makefile for RTIR. 
 
@@ -71,15 +71,23 @@ Configuring RTIR
 1) Using RT's configuration interface, add the email address
    of the Network Operations Team (the people who will handle
    activating and removing Blocks) as AdminCC on the Blocks queue.
+   RT -> Queues -> Blocks -> Watchers
 
 2) You may want to modify the email messages that are automatically
    sent on the creation of Investigations and Blocks.
+   RT -> Queues -> <Select RTIR's Queue> -> Templates.
+   RT -> Global -> Templates.
+
 
 3) By default, RT ships with a number of global Scrips.  You should use 
    RT's configuration interface to look through them, and disable any 
    that aren't apropriate in your environment.
+   RT -> Queues -> <Select RTIR's Queue> -> Scrips.
+   RT -> Global -> Scrips.
+
 
 4) Add staff members who handle incidents to the DutyTeam group.
+   RT -> Configuration -> Groups -> DutyTeam -> Members.
 
 5) You can override values in the RTIR_Config.pm in your
    RT_SiteConfig.pm file. Just add your customizations after the "require" 
