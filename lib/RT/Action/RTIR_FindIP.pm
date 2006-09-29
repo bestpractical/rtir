@@ -29,16 +29,23 @@ sub Commit {
     my $cf = $ticket->LoadCustomFieldByIdentifier('_RTIR_IP');
     return 1 unless $cf && $cf->id;
 
+    my %existing;
+    for( @{$cf->ValuesForObject($ticket)->ItemsArrayRef} ) {
+        $existing{$_->Content} =  1;
+
+    }
     my $attach = $self->TransactionObj->ContentObj;
     return 1 unless $attach && $attach->id;
 
     my @IPs = ( $attach->Content =~ /($RE{net}{IPv4})/go );
-    foreach ( @IPs ) {
+    foreach my $ip ( @IPs ) {
+        next if ($existing{$ip}); # skip any IP we already had.
         my ($status, $msg) = $ticket->AddCustomFieldValue(
-            Value => $_,
+            Value => $ip,
             Field => $cf,
         );
         $RT::Logger->error("Couldn't add CF value: $msg") unless $status;
+        $existing{$ip} = 1;
     }
 
     my @CIDRs = ( $attach->Content =~ /$RE{net}{CIDR}{IPv4}{-keep}/go );
