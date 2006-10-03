@@ -179,8 +179,6 @@ you may reply to this message.
     },
 );
 
-);
-
 @Scrips = (
     {  Description       => "SetStartsDateOnQueueChange",
        Queue             => 'Incidents',
@@ -219,8 +217,29 @@ you may reply to this message.
 push @ACL, (
     { GroupId => 'DutyTeam',      # - principalId
       GroupDomain => 'UserDefined',
-      Queue => 0,
-      Right => 'ModifySelf', },
+      Queue       => 0,
+      Right       => 'ModifySelf',
+    },
+    { GroupId     => 'DutyTeam',
+      GroupDomain => 'UserDefined',
+      Queue       => 0,
+      Right       => 'ShowSavedSearches',
+    },
+    { GroupId     => 'DutyTeam',
+      GroupDomain => 'UserDefined',
+      Queue       => 0,
+      Right       => 'LoadSavedSearch',
+    },
+    { GroupId     => 'DutyTeam',
+      GroupDomain => 'UserDefined',
+      Queue       => 0,
+      Right       => 'EditSavedSearches',
+    },
+    { GroupId     => 'DutyTeam',
+      GroupDomain => 'UserDefined',
+      Queue       => 0,
+      Right       => 'CreateSavedSearch',
+    },
 );
 
 @Attributes = ( {
