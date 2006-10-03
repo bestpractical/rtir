@@ -1,3 +1,10 @@
+@Initial = ( sub {
+    eval { require RT::FM; };
+    if ($@) {
+        die "RTIR is built on top of RTFM; please install RTFM before continuing.\n";
+    }
+} );
+
 @CustomFields = (
     {
         Name        => '_RTIR_Resolution',
