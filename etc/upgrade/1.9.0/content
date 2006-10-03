@@ -42,94 +42,251 @@
     },
 );
 
-# all CustomFields to update ACLs
+# all CustomFields to update ACLs, Descriptions, Disabled and other fields
+# XXX: this is copy from etc/initialdata
 my @CustomFieldsList = (
     {
         Name        => '_RTIR_State',
+        Type        => 'SelectSingle',
         Queue       => 'Incidents',
+        Disabled    => 0,
+        Description => 'State for Incidents RTIR queue',
+        Values      => [
+            { Name      => "open",      SortOrder => 1 },
+            { Name      => "resolved",  SortOrder => 2 },
+            { Name      => "abandoned", SortOrder => 3 },
+        ],
     },
     {
         Name        => '_RTIR_Constituency',
+        Type        => 'SelectSingle',
         Queue       => 'Incidents',
+        Disabled    => 0,
+        Description => 'Constituency for Incidents RTIR queue',
+        Values      => [
+            { Name      => "EDUNET", SortOrder => 1 },
+            { Name      => "GOVNET", SortOrder => 2 },
+        ],
     },
     {
         Name        => '_RTIR_State',
+        Type        => 'SelectSingle',
         Queue       => 'Incident Reports',
+        Disabled    => 0,
+        Description => 'State for Incident Reports RTIR queue',
+        Values      => [
+            { Name      => "new",      SortOrder => 1 },
+            { Name      => "open",     SortOrder => 2 },
+            { Name      => "resolved", SortOrder => 3 },
+            { Name      => "rejected", SortOrder => 4 },
+        ],
     },
     {
         Name        => '_RTIR_State',
+        Type        => 'SelectSingle',
         Queue       => 'Investigations',
+        Disabled    => 0,
+        Description => 'State for Investigations RTIR queue',
+        Values      => [
+            { Name      => "open",     SortOrder => 1 },
+            { Name      => "resolved", SortOrder => 2 },
+        ],
     },
     {
         Name        => '_RTIR_State',
+        Type        => 'SelectSingle',
         Queue       => 'Blocks',
+        Disabled    => 0,
+        Description => 'State for Blocks RTIR queue',
+        Values      => [
+            { Name      => "pending activation", SortOrder => 1 },
+            { Name      => "active", SortOrder => 2 },
+            { Name      => "pending removal", SortOrder => 3 },
+            { Name      => "removed", SortOrder => 4 }
+        ],
     },
     {
         Name        => '_RTIR_Description',
+        Type        => 'FreeformSingle',
         Queue       => 'Incidents',
+        Disabled    => 0,
+        Description => 'Description for Incidents RTIR queue',
     },
     {
         Name        => '_RTIR_Resolution',
+        Type        => 'SelectSingle',
         Queue       => 'Incidents',
+        Disabled    => 0,
+        Description => 'Resolution for Incidents RTIR queue',
+        Values      => [
+            { Name => 'successfully resolved',      SortOrder => 1 },
+            { Name => 'no resolution reached',      SortOrder => 2 },
+            { Name => 'no response from customer',  SortOrder => 3 },
+            { Name => 'no response from other ISP', SortOrder => 4 },
+        ],
     },
     {
         Name        => '_RTIR_SLA',
+        Type        => 'SelectSingle',
         Queue       => 'Incident Reports',
+        Disabled    => 0,
+        Description => 'SLA for Incident Reports RTIR queue',
+        Values      => [
+            { Name => 'Full service',               SortOrder => 1 },
+            { Name => 'Full service: out of hours', SortOrder => 2 },
+            { Name => 'Reduced service',            SortOrder => 3 },
+        ],
     },
     {
         Name        => '_RTIR_Function',
+        Type        => 'SelectSingle',
         Queue       => 'Incidents',
+        Disabled    => 0,
+        Description => 'Function for Incidents RTIR queue',
+        Values      => [
+            { Name      => "AbuseDesk",     SortOrder => 1 },
+            { Name      => "IncidentCoord", SortOrder => 2 },
+        ],
     },
     {
         Name        => '_RTIR_Classification',
+        Type        => 'SelectSingle',
         Queue       => 'Incidents',
+        Disabled    => 0,
+        Description => 'Classification for Incidents RTIR queue',
+        Values      => [
+            { Name      => "Spam",              SortOrder => 1 },
+            { Name      => "System Compromise", SortOrder => 2 },
+            { Name      => "Query",             SortOrder => 3 },
+            { Name      => "Scan",              SortOrder => 4 },
+            { Name      => "Denial of Service", SortOrder => 5 },
+            { Name      => "Piracy",            SortOrder => 6 },
+        ],
     },
     {
         Name        => '_RTIR_HowReported',
+        Type        => 'SelectSingle',
         Queue       => 'Incident Reports',
+        Disabled    => 0,
+        Description => 'How the incident was reported for Incident Reports RTIR queue',
+        Values => [
+            { Name      => "Email",      SortOrder => 1 },
+            { Name      => "Telephone", SortOrder => 2 },
+            { Name      => "Other",     SortOrder => 3 },
+        ]
     },
     {
         Name        => '_RTIR_ReporterType',
+        Type        => 'SelectSingle',
         Queue       => 'Incident Reports',
+        Disabled    => 0,
+        Description => 'Reporter type for Incident Reports RTIR queue',
+        Values      => [
+            { Name => "customer",            SortOrder => 1 },
+            { Name => "external individual", SortOrder => 2 },
+            { Name => "other ISP",           SortOrder => 3 },
+            { Name => "police",              SortOrder => 4 },
+            { Name => "other IRT",           SortOrder => 5 },
+            { Name => "other",               SortOrder => 6 },
+        ]
     },
     {
         Name        => '_RTIR_IP',
+        Type        => 'FreeformSingle',
         Queue       => 'Blocks',
+        Disabled    => 0,
+        Description => 'IP address for Blocks RTIR queue',
     },
     {
         Name        => '_RTIR_Netmask',
+        Type        => 'FreeformSingle',
         Queue       => 'Blocks',
+        Disabled    => 0,
+        Description => 'Network mask for Blocks RTIR queue',
     },
     {
         Name        => '_RTIR_Port',
+        Type        => 'FreeformSingle',
         Queue       => 'Blocks',
+        Disabled    => 0,
+        Description => 'Port for Blocks RTIR queue',
     },
     {
         Name        => '_RTIR_WhereBlocked',
+        Type        => 'FreeformSingle',
         Queue       => 'Blocks',
+        Disabled    => 0,
+        Description => 'Where the block is placed for Blocks RTIR queue',
     },
     {
         Name        => '_RTIR_Customer',
+        Type        => 'SelectMultiple',
         Queue       => 'Incident Reports',
+        Disabled    => 0,
+        Values      => [ ],
+        Description => 'Customer for Incident Reports RTIR queue',
     },
     {
         Name        => '_RTIR_Customer',
+        Type        => 'SelectSingle',
         Queue       => 'Investigations',
+        Disabled    => 0,
+        Values      => [ ],
+        Description => 'Customer for Investigations RTIR queue',
     },
 );
+
+sub get_cf {
+    my $name = shift;
+    my $obj = RT::CustomField->new( $RT::SystemUser );
+    if ( ref $name ) {
+        $obj->LoadByNameAndQueue( %$name );
+    } else {
+        $obj->Load( $name );
+    }
+    $name = $name->{'Name'} if ref $name;
+    unless ( $obj->id ) {
+        print STDERR "Error: Couldn't load custom field '$name'\n";
+        return undef;
+    }
+    return $obj;
+}
+
+sub set_cf_field {
+    my ($name, $field, $value) = @_;
+    my $cf = get_cf( $name ) or return;
+    my $method = 'Set'. $field;
+    my ($status, $msg) = $cf->$method( $value );
+    unless ( $status ) {
+        print STDERR "Couldn't set CF's $field property. Error: $msg\n";
+        return;
+    } else {
+        print "Changed $field for the custom field ". $cf->Name ." to '$value'\n";
+    }
+}
+
 for my $cf (@CustomFieldsList) {
     push @ACL, (
-        { GroupId => 'DutyTeam',
+        { GroupId     => 'DutyTeam',
           GroupDomain => 'UserDefined',
-          CF => $cf->{Name},
-          Queue => $cf->{Queue},
-          Right => 'SeeCustomField', },
-        { GroupId => 'DutyTeam',
+          CF          => $cf->{'Name'},
+          Queue       => $cf->{'Queue'},
+          Right       => 'SeeCustomField',
+        },
+        { GroupId     => 'DutyTeam',
           GroupDomain => 'UserDefined',
-          CF => $cf->{Name},
-          Queue => $cf->{Queue},
-          Right => 'ModifyCustomField', },
+          CF          => $cf->{'Name'},
+          Queue       => $cf->{'Queue'},
+          Right       => 'ModifyCustomField',
+        },
     );
+
+    # skip new CFs
+    next if $cf->{'Name'} =~ /^_RTIR_(Resolution|Customer)$/i;
+
+    set_cf_field( $cf, 'Description', $cf->{'Description'} );
+    # next step is done with schema update
+    # set_cf_field( $cf, 'Disabled', $cf->{'Disabled'} );
 }
 
 @Templates = (
@@ -215,7 +372,7 @@ you may reply to this message.
 );
 
 push @ACL, (
-    { GroupId => 'DutyTeam',      # - principalId
+    { GroupId     => 'DutyTeam',
       GroupDomain => 'UserDefined',
       Queue       => 0,
       Right       => 'ModifySelf',
