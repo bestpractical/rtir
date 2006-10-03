@@ -52,13 +52,26 @@ sub set_cf_max_values {
     }
 }
 
+sub set_cf_field {
+    my ($name, $field, $value) = @_;
+    my $cf = get_cf( $name ) or return;
+    my $method = 'Set'. $field;
+    my ($status, $msg) = $cf->$method( $value );
+    unless ( $status ) {
+        print STDERR "Couldn't set CF's $field property. Error: $msg\n";
+        return;
+    } else {
+        print "Changed $field for the custom field $name to '$value'\n";
+    }
+}
+
 @Initial = (
     sub { apply_cf_to_queues( '_RTIR_IP', 'Incidents', 'Incident Reports', 'Investigations' ) },
     sub { set_cf_max_values( '_RTIR_IP', 0 ) },
-    sub { get_cf( '_RTIR_IP' )->SetDescription('IP address for RTIR queues') },
+    sub { set_cf_field( '_RTIR_IP', 'Description', 'IP address for RTIR queues' ) },
 
     sub { apply_cf_to_queues( '_RTIR_Constituency', 'Incident Reports', 'Investigations', 'Blocks' ) },
-    sub { get_cf( '_RTIR_Constituency' )->SetDescription('Constituency for RTIR queues') },
+    sub { set_cf_field( '_RTIR_Constituency', 'Description', 'Constituency for RTIR queues' ) },
 );
 
 @Groups = (
