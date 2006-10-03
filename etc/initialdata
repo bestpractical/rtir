@@ -39,18 +39,9 @@
         Disabled    => 0,
         Description => 'State for Incidents RTIR queue',
         Values      => [
-            {
-                Name      => "open",
-                SortOrder => 1
-            },
-            {
-                Name      => "resolved",
-                SortOrder => 2
-            },
-            {
-                Name      => "abandoned",
-                SortOrder => 3
-            }
+            { Name      => "open",      SortOrder => 1 },
+            { Name      => "resolved",  SortOrder => 2 },
+            { Name      => "abandoned", SortOrder => 3 },
         ],
     },
     {
@@ -60,14 +51,8 @@
         Disabled    => 0,
         Description => 'Constituency for Incidents RTIR queue',
         Values      => [
-            {
-                Name      => "EDUNET",
-                SortOrder => 1
-            },
-            {
-                Name      => "GOVNET",
-                SortOrder => 2
-            }
+            { Name      => "EDUNET", SortOrder => 1 },
+            { Name      => "GOVNET", SortOrder => 2 },
         ],
     },
     {
@@ -77,22 +62,10 @@
         Disabled    => 0,
         Description => 'State for Incident Reports RTIR queue',
         Values      => [
-            {
-                Name      => "new",
-                SortOrder => 1
-            },
-            {
-                Name      => "open",
-                SortOrder => 2
-            },
-            {
-                Name      => "resolved",
-                SortOrder => 3
-            },
-            {
-                Name      => "rejected",
-                SortOrder => 4
-            }
+            { Name      => "new",      SortOrder => 1 },
+            { Name      => "open",     SortOrder => 2 },
+            { Name      => "resolved", SortOrder => 3 },
+            { Name      => "rejected", SortOrder => 4 },
         ],
     },
     {
@@ -102,14 +75,8 @@
         Disabled    => 0,
         Description => 'State for Investigations RTIR queue',
         Values      => [
-            {
-                Name      => "open",
-                SortOrder => 1
-            },
-            {
-                Name      => "resolved",
-                SortOrder => 2
-            },
+            { Name      => "open",     SortOrder => 1 },
+            { Name      => "resolved", SortOrder => 2 },
         ],
     },
     {
@@ -119,22 +86,10 @@
         Disabled    => 0,
         Description => 'State for Blocks RTIR queue',
         Values      => [
-            {
-                Name      => "pending activation",
-                SortOrder => 1
-            },
-            {
-                Name      => "active",
-                SortOrder => 2
-            },
-            {
-                Name      => "pending removal",
-                SortOrder => 3
-            },
-            {
-                Name      => "removed",
-                SortOrder => 4
-            }
+            { Name      => "pending activation", SortOrder => 1 },
+            { Name      => "active", SortOrder => 2 },
+            { Name      => "pending removal", SortOrder => 3 },
+            { Name      => "removed", SortOrder => 4 }
         ],
     },
     {
@@ -151,18 +106,10 @@
         Disabled    => 0,
         Description => 'Resolution for Incidents RTIR queue',
         Values      => [
-            {   Name => 'successfully resolved',
-                SortOrder => 1,
-            },
-            {   Name => 'no resolution reached',
-                SortOrder => 2,
-            },
-            {   Name => 'no response from customer',
-                SortOrder => 3,
-            },
-            {   Name => 'no response from other ISP',
-                SortOrder => 4,
-            },
+            { Name => 'successfully resolved',      SortOrder => 1 },
+            { Name => 'no resolution reached',      SortOrder => 2 },
+            { Name => 'no response from customer',  SortOrder => 3 },
+            { Name => 'no response from other ISP', SortOrder => 4 },
         ],
     },
     {
@@ -172,15 +119,9 @@
         Disabled    => 0,
         Description => 'SLA for Incident Reports RTIR queue',
         Values      => [
-            {   Name => 'Full service',
-                SortOrder => 1,
-            },
-            {   Name => 'Full service: out of hours',
-                SortOrder => 2,
-            },
-            {   Name => 'Reduced service',
-                SortOrder => 3,
-            },
+            { Name => 'Full service',               SortOrder => 1 },
+            { Name => 'Full service: out of hours', SortOrder => 2 },
+            { Name => 'Reduced service',            SortOrder => 3 },
         ],
     },
     {
@@ -190,14 +131,8 @@
         Disabled    => 0,
         Description => 'Function for Incidents RTIR queue',
         Values      => [
-            {
-                Name      => "AbuseDesk",
-                SortOrder => 1
-            },
-            {
-                Name      => "IncidentCoord",
-                SortOrder => 2
-            }
+            { Name      => "AbuseDesk",     SortOrder => 1 },
+            { Name      => "IncidentCoord", SortOrder => 2 },
         ],
     },
     {
@@ -207,30 +142,12 @@
         Disabled    => 0,
         Description => 'Classification for Incidents RTIR queue',
         Values      => [
-            {
-                Name      => "Spam",
-                SortOrder => 1
-            },
-            {
-                Name      => "System Compromise",
-                SortOrder => 2
-            },
-            {
-                Name      => "Query",
-                SortOrder => 3
-            },
-            {
-                Name      => "Scan",
-                SortOrder => 4
-            },
-            {
-                Name      => "Denial of Service",
-                SortOrder => 5
-            },
-            {
-                Name      => "Piracy",
-                SortOrder => 6
-            }
+            { Name      => "Spam",              SortOrder => 1 },
+            { Name      => "System Compromise", SortOrder => 2 },
+            { Name      => "Query",             SortOrder => 3 },
+            { Name      => "Scan",              SortOrder => 4 },
+            { Name      => "Denial of Service", SortOrder => 5 },
+            { Name      => "Piracy",            SortOrder => 6 },
         ],
     },
     {
@@ -240,18 +157,9 @@
         Disabled    => 0,
         Description => 'How the incident was reported for Incident Reports RTIR queue',
         Values => [
-            {
-                Name      => "Email",
-                SortOrder => 1
-            },
-            {
-                Name      => "Telephone",
-                SortOrder => 2
-            },
-            {
-                Name      => "Other",
-                SortOrder => 3
-            },
+            { Name      => "Email",      SortOrder => 1 },
+            { Name      => "Telephone", SortOrder => 2 },
+            { Name      => "Other",     SortOrder => 3 },
         ]
     },
     {
@@ -261,21 +169,12 @@
         Disabled    => 0,
         Description => 'Reporter type for Incident Reports RTIR queue',
         Values      => [
-            { Name => "customer",      SortOrder => 1 },
+            { Name => "customer",            SortOrder => 1 },
             { Name => "external individual", SortOrder => 2 },
-            {
-                Name      => "other ISP",
-                SortOrder => 3
-            },
-            {
-                Name      => "police",
-                SortOrder => 4
-            },
-            {
-                Name      => "other IRT",
-                SortOrder => 5
-            },
-            { Name => "other" => SortOrder => 6 },
+            { Name => "other ISP",           SortOrder => 3 },
+            { Name => "police",              SortOrder => 4 },
+            { Name => "other IRT",           SortOrder => 5 },
+            { Name => "other",               SortOrder => 6 },
         ]
     },
     {
