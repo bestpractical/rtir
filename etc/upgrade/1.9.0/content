@@ -1,8 +1,49 @@
+sub get_queue {
+    my $meta = shift;
+    my $obj = RT::Queue->new( $RT::SystemUser );
+    $obj->LoadByCols( ref $meta? %$meta: ( Name => $meta ) );
+    unless( $obj->id ) {
+        print STDERR "Couldn't load queue.";
+        return;
+    }
+    return $obj;
+
+}
+sub get_scrip {
+    my $meta = shift;
+    $meta = { Description => $meta } unless ref $meta;
+
+    if ( $meta->{'Queue'} && $meta->{'Queue'} !~ /^\d+$/ ) {
+        my $queue = get_queue( $meta->{'Queue'} ) or return;
+        $meta->{'Queue'} = $queue->id;
+    }
+
+    my $obj = RT::Scrip->new( $RT::SystemUser );
+    $obj->LoadByCols( %$meta );
+    unless( $obj->id ) {
+        print STDERR "Couldn't load scrip.";
+        return;
+    }
+    return $obj;
+}
+
+sub delete_scrip {
+    my $obj = get_scrip( @_ ) or return;
+    # Delete has no return value
+    my ($status, $msg) = $obj->Delete;
+    print "Deleted scrip #". $obj->id .": ". $obj->Description ."\n";
+}
+
 @Initial = ( sub {
     eval { require RT::FM; };
     if ($@) {
         die "RTIR is built on top of RTFM; please install RTFM before continuing.\n";
     }
+}, sub {
+    delete_scrip( { Description => 'NotifyOnLaunch', Queue => 'Investigations' } );
+    delete_scrip( { Description => 'NotifyOnCreate', Queue => 'Blocks' } );
+
+    
 } );
 
 @CustomFields = (

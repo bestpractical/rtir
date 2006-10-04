@@ -40,7 +40,12 @@ needs and may be copy customizations from the old one, then delete
 the NewMessage template.
 
 3) A new template has been added - 'BlockRemoved' in the Blocks
-queue.
+queue. Check its content.
+
+4) NotifyOnLaunch and NotifyOnCreate scrips have been deleted in
+the Implementations and the Blocks queues respectively. You have to
+use the default RT's Autoreply scrip instead or create autoreply
+scrips in these queues.
 
 Upgrading from RTIR 1.1.3
 -------------------------
