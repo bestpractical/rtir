@@ -98,10 +98,6 @@ In the Blocks Queue:
 This script updates Due Dates on all incidents and set to the most
 recent due date of the children. 
 
-NOTE that script use hardcoded path '/opt/rt3', if your RT server installed
-into different location you should change it.
-
-
 Upgrading from RTIR 1.1.2:
 --------------------------
 

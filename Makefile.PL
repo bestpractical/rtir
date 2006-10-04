@@ -28,7 +28,8 @@ auto_install();
 substitute( {
         RT_LIB_PATH => join( ' ', $local_lib_path, $lib_path ),
     },
-    't/rtir-test.pl'
+    't/rtir-test.pl',
+    'etc/upgrade/upgrade.pl'
 );
 
 WriteAll();

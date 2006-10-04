@@ -3,7 +3,8 @@
 use warnings;
 use strict;
 
-use lib ("/opt/rt3/lib", "/opt/rt3/local/lib");
+### after: use lib qw(@RT_LIB_PATH@);
+use lib qw(/opt/rt3/local/lib /opt/rt3/lib);
 
 use RT::Interface::CLI qw(CleanEnv GetCurrentUser GetMessageContent loc); 
 use RT::Tickets; 
