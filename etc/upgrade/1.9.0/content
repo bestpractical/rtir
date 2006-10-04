@@ -291,6 +291,46 @@ for my $cf (@CustomFieldsList) {
 
 @Templates = (
     { Queue       => 'Blocks',
+      Name        => 'Autoreply',
+      Description => 'Sent when a block is created',
+      Content     => 'RT-Attach-Message: yes
+Subject: { $Ticket->Subject }
+
+{ $Transaction->Content }
+
+{ my $output = "";
+  my @mailfields = qw(
+      _RTIR_IP
+      _RTIR_Netmask
+      _RTIR_Port
+      _RTIR_WhereBlocked
+  );
+
+  my $CustomFields = $Ticket->QueueObj->TicketCustomFields;
+  while ( my $CustomField = $CustomFields->Next ) {
+    my $name = $CustomField->Name;
+    next unless grep $_ eq $name, @mailfields;
+
+    my $Values = $Ticket->CustomFieldValues( $CustomField->Id );
+    while ( my $Value = $Values->Next ) {
+      $name =~ /^_RTIR_(.*)/;
+      $output .= ($1 || $name) .": "
+              .  $Value->Content ."\n";
+    }
+  }
+  return $output;
+}
+-------------------------------------------------------------------------
+Please include the string:
+
+         [{ $rtname } #{ $Ticket->id }]
+
+in the subject line of all future correspondence about this issue. To do so, 
+you may reply to this message.
+
+                        Thank you,
+                        { $Ticket->QueueObj->CorrespondAddress }', },
+    { Queue       => 'Blocks',
       Name        => 'BlockRemoved',
       Description => 'Sent when a block is removed',
       Content     => 'Subject: {$Ticket->Subject}
