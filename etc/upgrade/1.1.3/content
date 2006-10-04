@@ -45,9 +45,12 @@ sub get_queue {
 
     require RT::Queue;
     my $obj = RT::Queue->new( $RT::SystemUser );
-    $obj->LoadByCols( ref $meta? %$meta: ( Name => $meta ) );
+    $meta = { Name => $meta } unless ref $meta;
+    $obj->LoadByCols( %$meta );
     unless( $obj->id ) {
-        print STDERR "Couldn't load queue.";
+        print STDERR "Couldn't load queue by columns: "
+            . join( ', ', map "$_ = '". $meta->{$_} ."'", sort keys %$meta )
+            . ". ";
         return;
     }
     return $obj;
@@ -56,6 +59,10 @@ sub get_queue {
 
 sub get_scrip {
     my $meta = shift;
+    unless ( $meta ) {
+        require Carp;
+        Carp::cluck("No scrip's metadata provided");
+    }
     $meta = { Description => $meta } unless ref $meta;
 
     if ( $meta->{'Queue'} && $meta->{'Queue'} !~ /^\d+$/ ) {
@@ -67,7 +74,9 @@ sub get_scrip {
     my $obj = RT::Scrip->new( $RT::SystemUser );
     $obj->LoadByCols( %$meta );
     unless( $obj->id ) {
-        print STDERR "Couldn't load scrip.";
+        print STDERR "Couldn't load scrip by columns: "
+            . join( ', ', map "$_ = '". $meta->{$_} ."'", sort keys %$meta )
+            . ". ";
         return;
     }
     return $obj;
@@ -88,13 +97,19 @@ sub set_scrip_action {
         print STDERR "Couldn't load scrip action.";
         return;
     }
+
+    # current value
+    return if $scrip->ScripAction == $scrip_action->Id;
+
     my ($status, $msg) = $scrip->SetScripAction( $scrip_action->Id );
     unless ( $status ) {
-        print STDERR "Couldn't set action to ". $scrip_action->Name ." on scrip #". $scrip->id .".";
+        print STDERR "Couldn't set action to '". $scrip_action->Name ."'"
+            ." on scrip #". $scrip->id .": $msg.";
         return;
     }
-    print "Changed action of the scrip #". $scrip->id ."\n";
+    print "Changed action of the scrip #". $scrip->id ." to '". $scrip_action->Description ."'\n";
 }
+
 
 @Final = ( sub {
     set_scrip_action(
