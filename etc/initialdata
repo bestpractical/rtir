@@ -362,7 +362,7 @@
        ScripCondition    => 'On Queue Change',
        ScripAction       => 'RTIR Set Starts to Now',
        Template          => 'Blank' },
-    {  Description       => "SetStartsOnQueueChange",
+    {  Description       => "SetStartsDateOnQueueChange",
        Queue             => [ 'Incident Reports', 'Investigations', 'Blocks' ],
        ScripCondition    => 'On Queue Change',
        ScripAction       => 'RTIR Set Starts by Business Hours',

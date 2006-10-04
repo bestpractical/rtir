@@ -423,7 +423,7 @@ you may reply to this message.
        ScripCondition    => 'On Queue Change',
        ScripAction       => 'RTIR Set Starts to Now',
        Template          => 'Blank' },
-    {  Description       => "SetStartsOnQueueChange",
+    {  Description       => "SetStartsDateOnQueueChange",
        Queue             => [ 'Incident Reports', 'Investigations', 'Blocks' ],
        ScripCondition    => 'On Queue Change',
        ScripAction       => 'RTIR Set Starts by Business Hours',
@@ -439,6 +439,7 @@ you may reply to this message.
        ScripCondition    => 'On Queue Change',
        ScripAction       => 'RTIR Set Due Correspond',
        Template          => 'Blank' },
+
     {  Description       => "SetDefaultIncidentResolution",
        Queue             => 'Incidents',
        ScripCondition    => 'On Status Change',
