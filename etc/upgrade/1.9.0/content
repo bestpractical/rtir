@@ -49,6 +49,7 @@ sub delete_scrip {
 @CustomFields = (
     {
         Name        => '_RTIR_Resolution',
+        Description => 'Resolution for Incidents RTIR queue',
         Type        => 'SelectSingle',
         Disabled    => 0,
         Queue       => 'Incidents',
@@ -69,6 +70,7 @@ sub delete_scrip {
     },
     {
         Name        => '_RTIR_Customer',
+        Description => 'Customer for Incident Reports RTIR queue',
         Type        => 'SelectMultiple',
         Queue       => 'Incident Reports',
         Disabled    => 0,
@@ -76,6 +78,7 @@ sub delete_scrip {
     },
     {
         Name        => '_RTIR_Customer',
+        Description => 'Customer for Investigations RTIR queue',
         Type        => 'SelectSingle',
         Queue       => 'Investigations',
         Disabled    => 0,

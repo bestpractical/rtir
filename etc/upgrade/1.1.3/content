@@ -14,7 +14,7 @@
 @ScripConditions = (
 
     {  Name        => 'RTIR Require Due Change',    # loc
-       Description => 'A ticket requires a state change' ,                                            # loc
+       Description => 'The due date of the parent incident must be changed' ,                                            # loc
        ApplicableTransTypes => 'Any',
        ExecModule => 'RTIR_RequireDueChange',
     },
