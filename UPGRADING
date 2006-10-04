@@ -73,6 +73,13 @@ Applying changes from upgrade/1.1.1
    on active incidents and set to the most recent due date of the active
    children.
 
+Applying changes from upgrade/1.1.3
+-------------------------
+
+No special steps required, just run upgrade scripts. Everything
+is automated. At this step we grant the ShowTemplate right to
+the DutyTeam group.
+
 Upgrading from RTIR 1.0.0:
 --------------------------
 
