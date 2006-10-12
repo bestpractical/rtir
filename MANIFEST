@@ -14,6 +14,7 @@ etc/upgrade/1.9.0/schema.Pg
 etc/upgrade/1.9.0/schema.SQLite
 etc/upgrade/1.9.0/schema.Sybase
 etc/upgrade/2.1.0/content
+etc/upgrade/2.1.1/content
 etc/upgrade/upgrade.pl
 html/Callbacks/RTIR/autohandler/Default
 html/Callbacks/RTIR/Elements/Header/Default
@@ -149,13 +150,16 @@ lib/RT/Action/RTIR_SetIncidentReportState.pm
 lib/RT/Action/RTIR_SetIncidentResolution.pm
 lib/RT/Action/RTIR_SetIncidentState.pm
 lib/RT/Action/RTIR_SetInvestigationState.pm
+lib/RT/Action/RTIR_SetStartedToNow.pm
 lib/RT/Action/RTIR_SetStartsByBizHours.pm
 lib/RT/Action/RTIR_SetStartsToNow.pm
 lib/RT/Action/RTIR_SetState.pm
 lib/RT/Action/RTIR_UnsetDue.pm
 lib/RT/Condition/RTIR.pm
+lib/RT/Condition/RTIR_BlockActivation.pm
 lib/RT/Condition/RTIR_CloseTicket.pm
 lib/RT/Condition/RTIR_CustomerResponse.pm
+lib/RT/Condition/RTIR_LinkingToIncident.pm
 lib/RT/Condition/RTIR_ReopenTicket.pm
 lib/RT/Condition/RTIR_RequireConstituencyChange.pm
 lib/RT/Condition/RTIR_RequireConstituencyGroupChange.pm
@@ -167,6 +171,7 @@ lib/RT/IR/Config.pm
 lib/RT/IR/Ticket.pm
 Makefile.PL
 MANIFEST			This list of files
+MANIFEST.SKIP
 META.yml
 README
 reports/report.pl
