@@ -50,6 +50,7 @@ package RT::Condition::RTIR_RequireStateChange;
 
 
 use strict;
+use warnings;
 
 use base 'RT::Condition::RTIR';
 
