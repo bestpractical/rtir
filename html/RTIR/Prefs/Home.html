@@ -51,7 +51,7 @@ foreach my $s( @searches ) {
         my $oid = join '-', ref $s->{'Object'},
                             $s->{'Object'}->Id,
                             'SavedSearch',
-                            $s->{'Search'};
+                            $s->{'Search'}->Id;
         push @items, [ "saved-$oid", loc("Saved Search: [_1]", $s->{'Description'}) ];
     }
 }
@@ -68,7 +68,7 @@ foreach my $pane ( sort keys %$portlets ) {
             AutoSave  => 1,
             OnSubmit  => sub {
                 my $self = shift;
-                $portlets->{$pane} = [
+                $portlets->{ $pane } = [
                     map { m/(\w+)-(.*)$}/; { type => $1, name => $2, }}
                     @{$self->{Current}}
                 ];
