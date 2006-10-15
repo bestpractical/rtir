@@ -345,17 +345,13 @@ if ( $Incident ) {
     $IncidentObj->Load( $Incident );
     unless ( $IncidentObj->id ) {
         push @results, loc("Couldn't load incident #[_1]", $Incident );
-        $Incident = undef;
-        $checks_failure = 1;
+        ($checks_failure, $IncidentObj, $Incident) = (1, undef, undef);
+    } elsif ( $IncidentObj->QueueObj->Name eq 'Incidents' ) {
+        push @results, loc('Ticket #[_1] is not an Incident', $Incident );
+        ($checks_failure, $IncidentObj, $Incident) = (1, undef, undef);
     } else {
         $Incident = $ARGS{'Incident'} = $IncidentObj->id;
-        unless ( $IncidentObj->QueueObj->Name eq 'Incidents' ) {
-            push @results, loc('Ticket #[_1] is not an Incident', $Incident );
-            ($IncidentObj, $Incident) = (undef, undef);
-            $checks_failure = 1;
-        } else {
-            $Subject ||= $IncidentObj->Subject;
-        }
+        $Subject ||= $IncidentObj->Subject;
     }
 }
 
@@ -385,7 +381,7 @@ if ( $ARGS{'Create'} ) {
 }
 
 if ( $ARGS{'Create'} ) {
-    if ( !$checks_failure ) {
+    unless ( $checks_failure ) {
         $ARGS{'new-MemberOf'} = $parentvalue if $parentvalue;
         return $m->comp( 'Display.html', %ARGS, SkipNotification => \@SkipNotification, results => \@results );
     }
