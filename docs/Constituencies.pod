@@ -31,8 +31,8 @@ queue (incident report, incident, blocks, investigation)
      from the launching ticket.
   ** Manually assign the constituency to any new tickets created from
      within RTIR, not yet related to any other ticket.
- ** Manually change the constituency of a ticket and all its related
-    tickets.
+  ** Manually change the constituency of a ticket and all its related
+     tickets.
 
 Of course the last two points require that the user has the right to do so,
 according to the ACLs. All tickets must belong to a constituency.
