@@ -346,7 +346,7 @@ if ( $Incident ) {
     unless ( $IncidentObj->id ) {
         push @results, loc("Couldn't load incident #[_1]", $Incident );
         ($checks_failure, $IncidentObj, $Incident) = (1, undef, undef);
-    } elsif ( $IncidentObj->QueueObj->Name eq 'Incidents' ) {
+    } elsif ( $IncidentObj->QueueObj->Name ne 'Incidents' ) {
         push @results, loc('Ticket #[_1] is not an Incident', $Incident );
         ($checks_failure, $IncidentObj, $Incident) = (1, undef, undef);
     } else {
