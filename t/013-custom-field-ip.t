@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 185;
+use Test::More tests => 219;
 
 require "t/rtir-test.pl";
 
@@ -95,6 +95,49 @@ diag "create a ticket via web with IP in message" if $ENV{'TEST_VERBOSE'};
         ok( $ticket->id, 'loaded ticket' );
         is( $ticket->FirstCustomFieldValue('_RTIR_IP'), $val, 'correct value' );
     }
+}
+
+diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
+{
+    my $id = create_ir( $agent, { Subject => "test ip", Content => '1.0.0.0' } );
+    ok($id, "created a ticket");
+
+    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    $ticket->Load( $id );
+    is( $ticket->id, $id, 'loaded ticket' );
+
+    my %has = ();
+    $has{ $_->Content }++ foreach @{ $ticket->CustomFieldValues('_RTIR_IP')->ItemsArrayRef };
+    is(scalar values %has, 1, "one IP was added");
+    ok($has{'1.0.0.0'}, 'correct value');
+
+    $id = create_ir( $agent, { Subject => "test ip", Content => '255.255.255.255' } );
+    ok($id, "created a ticket");
+
+    $ticket = RT::Ticket->new( $RT::SystemUser );
+    $ticket->Load( $id );
+    is($ticket->id, $id, 'loaded ticket');
+
+    %has = ();
+    $has{ $_->Content }++ foreach @{ $ticket->CustomFieldValues('_RTIR_IP')->ItemsArrayRef };
+    is(scalar values %has, 1, "one IP was added");
+    ok($has{'255.255.255.255'}, 'correct value');
+
+    $id = create_ir( $agent, { Subject => "test ip", Content => '255.255.255.256' } );
+    ok($id, "created a ticket");
+
+    $ticket = RT::Ticket->new( $RT::SystemUser );
+    $ticket->Load( $id );
+    is($ticket->id, $id, 'loaded ticket');
+    is($ticket->CustomFieldValues('_RTIR_IP')->Count, 0, "IP wasn't added");
+
+    $id = create_ir( $agent, { Subject => "test ip", Content => '355.255.255.255' } );
+    ok($id, "created a ticket");
+
+    $ticket = RT::Ticket->new( $RT::SystemUser );
+    $ticket->Load( $id );
+    is($ticket->id, $id, 'loaded ticket');
+    is($ticket->CustomFieldValues('_RTIR_IP')->Count, 0, "IP wasn't added");
 }
 
 diag "check that IPs in messages don't add duplicates" if $ENV{'TEST_VERBOSE'};

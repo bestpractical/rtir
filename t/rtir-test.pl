@@ -175,7 +175,7 @@ sub create_rtir_ticket
     $agent->follow_link_ok({text => "New ". $type{ $queue }, n => "1"}, "Followed 'New $type{$queue}' link");
 
     # set the form
-    $agent->form_number(2);
+    $agent->form_number(3);
 
 
     $fields->{'Requestors'} ||= $RTIR_TEST_USER if $queue eq 'Investigations';
