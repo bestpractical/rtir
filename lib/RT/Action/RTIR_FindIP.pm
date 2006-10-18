@@ -37,7 +37,7 @@ sub Commit {
         $existing{ $_->Content } =  1;
     }
 
-    my @IPs = ( $attach->Content =~ /($RE{net}{IPv4})/go );
+    my @IPs = ( $attach->Content =~ /(?<!\d)($RE{net}{IPv4})(?!\d)(?!\/(3[0-2]|[1-2]?[0-9]))/go );
     foreach my $ip ( @IPs ) {
         $self->AddIP(
             IP          => $ip,
