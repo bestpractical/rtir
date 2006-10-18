@@ -25,5 +25,5 @@
 <input type="hidden" name="NewSearch" value="1" />
 <input type="hidden" name="Queue" value="Incidents" />
 <input size="12" name="q" accesskey="0" />
-<input type="submit" value="<&|/l&>Search Incidents</&>" />&nbsp;
+<input type="submit" class="button" value="<&|/l&>Search Incidents</&>" />&nbsp;
 </form>
