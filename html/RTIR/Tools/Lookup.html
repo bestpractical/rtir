@@ -24,20 +24,16 @@
 %# END LICENSE BLOCK
 <& /RTIR/Elements/Header, Title => $title &>
 <& /RTIR/Tools/Elements/Tabs, 
-    current_toptab => 'RTIR/Tools/Lookup.html', 
-    current_tab => 'RTIR/Tools/Lookup.html?NewSearch=1', 
-    current_subtab => $current_subtab, 
-    Title => $title &>
+    current_toptab => 'RTIR/Tools/Lookup.html',
+    current_tab    => 'RTIR/Tools/Lookup.html?NewSearch=1',
+    current_subtab => $current_subtab,
+    Title          => $title,
+&>
 
 % if ( $ticket ) {
-<& /Widgets/TitleBoxStart, title => loc("Current [_1]: #[_2]", $TicketType, $ticket), color=> "#993333" &>
-<table width="100%" border="0" cellpadding="2" cellspacing="0">
-<& /Elements/TicketList, 
-    Query  => "id = $ticket",
-    Format => $Format,
-&>
-</table><hr />
-<& /Widgets/TitleBoxEnd &>
+<&| /Widgets/TitleBox, title => loc("Current [_1]: #[_2]", $TicketType, $ticket), color=> "#993333" &>
+<& /Elements/TicketList, Query => "id = $ticket", Format => $Format, ShowNavigation => 0 &>
+</&>
 % }
 
 % unless ( $ARGS{'HideResults'} ) {
@@ -58,11 +54,11 @@
     title => loc('Incident Reports: [_1]', $q), 
     color => "#336633",
 &>
-<& /RTIR/Elements/ChildSummary, 
-    Queue      => 'Incident Reports', 
-    Type       => $TicketType, 
-    ticket     => $ticket, 
-    lookuptype => $type, 
+<& /RTIR/Elements/ChildSummary,
+    Queue      => 'Incident Reports',
+    Type       => $TicketType,
+    ticket     => $ticket,
+    lookuptype => $type,
     q          => $q,
 &>
 </&>
@@ -104,30 +100,30 @@
 
 <hr>
 
-<h2>Look Up Information</h2>
-<form action="Lookup.html" method="get">
-<input type="hidden" name="ticket" value="<% $ARGS{'ticket'} %>" />
+<h2><&|/l>Look Up Information</&></h2>
+
 <table>
+  <form action="Lookup.html" method="get">
+  <input type="hidden" name="ticket" value="<% $ticket %>" />
   <tr>
     <td class="label">WHOIS:</td>
     <td class="input">
-      <input size="30" name="q" value="<%$q%>" /> at 
+      <input size="30" name="q" value="<% $q %>" /> at 
       <select name="server">
-% foreach my $s (sort keys %{$servers}) {
-% my ($host, $name);
-% my $srv = $servers->{$s};
-% next unless $srv;
-% if (ref($srv) eq 'HASH') {
-% $host = $srv->{'Host'};
-% $name = $srv->{'FriendlyName'};
-% } else {
-% $host = $srv;
-% }
-% next unless $srv;
-% my $selected = "";
-% if ($servers->{$s} eq $server) {
-%   $selected = " selected";
-% }
+<%PERL>
+foreach my $s ( sort grep $servers->{ $_ }, keys %{ $servers } ) {
+    my $srv = $servers->{ $s };
+
+    my ($host, $name);
+    if ( ref($srv) eq 'HASH' ) {
+        $host = $srv->{'Host'};
+        $name = $srv->{'FriendlyName'};
+    } else {
+        $host = $srv;
+    }
+    my $selected = "";
+    $selected = " selected" if $servers->{$s} eq $server;
+</%PERL>
         <option value="<% $host %>"<% $selected %>><% $name || $host %></option>
 % }
       </select>
@@ -156,14 +152,14 @@
 
 % }
 % }
-% if ($error){
-<b><%$error%></b>
+% if ( $error ) {
+<b><% $error %></b>
 % }
-% if ($iterator) {
+% if ( $iterator ) {
 %   while (my $obj = $iterator->next) {
-%     my @lines_starting_with_space = grep ( /^(\s+)(\w+)/, $obj->content());
+%     my @lines_starting_with_space = grep /^(\s+)(\w+)/, $obj->content;
 %     if ($handparse || $#lines_starting_with_space >= 4) { #we couldn't parse that. suck
-%       my $content = join("", $obj->content());
+%       my $content = join "", $obj->content;
 %       $m->comp( '/Elements/MakeClicky', ticket => $TicketObj, lookup_params => "ticket=".$ticket."&server=$server", content => \$content);
 % if ($content =~ /Requestorbox/ig) {
 %    $DoInvestigate = 1;
