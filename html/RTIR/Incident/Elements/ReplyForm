@@ -1,4 +1,4 @@
-<& /Widgets/TitleBoxStart, title => $Title &>
+<&| /Widgets/TitleBox, title => $Title &>
 
 <table>
 <tr><td align="right"><&|/l&>Subject</&>:</td>
@@ -7,19 +7,20 @@
 <tr><td align="right"><&|/l&>Update Type</&>:</td><td>
 <select name="UpdateType">
 % if( $AllowComment ) {
-  <option value="private" <%$CommentDefault%>><&|/l&>Comments (Not sent to requestors)</&></option>
+  <option value="private" <% $CommentDefault %>><&|/l&>Comments (Not sent to requestors)</&></option>
 % }
 % if( $AllowResponse ) {
-  <option value="response" <%$ResponseDefault%>><&|/l&>Response to requestors</&></option>
+  <option value="response" <% $ResponseDefault %>><&|/l&>Response to requestors</&></option>
 % }
 </select>
 </td></tr>
 
+% if ( $TicketObj ) {
 <tr><td class="label"><&|/l&>Resolution</&>:</td>
 <td class="value">
 <& /RTIR/Elements/EditRTIRField,
     TicketObj => $TicketObj,
-    QueueObj  => $QueueObj,
+    QueueObj  => $TicketObj->QueueObj,
     Name      => 'Resolution',
     Default   => (
         $TicketObj->FirstCustomFieldValue('_RTIR_Resolution') ||
@@ -27,11 +28,12 @@
     ),
     Rows      => 1,
 &></td></tr>
+% }
 
 <tr><td class="label"><&|/l&>Owner</&>:</td><td>
 <& /Elements/SelectOwner,
-    Name => "Owner",
-    Default => ( $ARGS{'Owner'} || $session{'CurrentUser'}->Id || undef ),
+    Name    => "Owner",
+    Default => $Owner || $session{'CurrentUser'}->Id || undef,
 &>
 <&|/l&>Worked</&>:
 <input size="4" name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked} %>" />
@@ -42,25 +44,30 @@
 
 </table>
 
-<& /Widgets/TitleBoxEnd &>
+</&>
 <%INIT>
 
-$AllowComment = 1 unless $AllowComment && $AllowResponse;
+$AllowResponse = 1 unless $AllowComment && $AllowResponse;
 
-my ($CommentDefault, $ResponseDefault);
-if ( $ARGS{'Action'} eq 'Comment' || $ARGS{'UpdateType'} eq 'private' ) {
+my ($CommentDefault, $ResponseDefault) = ('', '');
+if ( $Action eq 'Comment' || $UpdateType eq 'private' ) {
     $CommentDefault = "selected";
 } else {
     $ResponseDefault = "selected";
 }
 
-my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
-$QueueObj->Load('Incidents');
 </%INIT>
 <%ARGS>
 $Title         => loc('Reply to selected tickets'),
-$TicketObj     => undef,
+
+$Action        => 'Respond',
+$UpdateType    => 'response',
+
 $AllowComment  => 1,
 $AllowResponse => 1,
+
+$Owner         => undef,
+
+$TicketObj     => undef,
 $Status        => 'open',
 </%ARGS>
