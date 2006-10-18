@@ -69,7 +69,8 @@ unless ( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
 }
 
 my $topactions = {
-    A => { html => $m->scomp('/RTIR/Elements/SimpleSearch') }
+    A => { html => $m->scomp('/Elements/CreateTicket') },
+    B => { html => $m->scomp('/RTIR/Elements/SimpleSearch') },
 };
 
 $m->comp('/Elements/Callback', toptabs => $toptabs, topactions => $topactions, %ARGS);
