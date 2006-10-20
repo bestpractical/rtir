@@ -16,7 +16,7 @@ ticket_state_is($agent, $block_id, 'pending activation');
 # XXX: Comment this tests as we don't allow to create blocks without an incident
 # XXX: we need test for this fact
 #$agent->follow_link_ok({ text => "[Link]" }, "Followed '[Link]' link");
-#$agent->form_number(2);
+#$agent->form_number(3);
 #$agent->field('SelectedTicket', $inc_id);
 #$agent->click('LinkChild');
 #ok_and_content_like($agent, qr{$block_id.*block.*?pending activation}, 'have child link');
@@ -37,7 +37,7 @@ my %state = (
 
 foreach my $status( qw(open stalled resolved) ) {
     $agent->follow_link_ok({ text => "Edit" }, "Goto edit page");
-    $agent->form_number(2);
+    $agent->form_number(3);
     $agent->field(Status => $status);
     $agent->click('SaveChanges');
     my $state = $state{ $status };
@@ -46,7 +46,7 @@ foreach my $status( qw(open stalled resolved) ) {
 
 
 $agent->follow_link_ok({ text => "Edit" }, "Goto edit page");
-$agent->form_number(2);
+$agent->form_number(3);
 $agent->field(Status => 'resolved');
 $agent->click('SaveChanges');
 ticket_state_is($agent, $block_id, 'removed');
@@ -57,7 +57,7 @@ ticket_state_is($agent, $block_id, 'active');
 $agent->has_tag('a', 'Pending Removal', 'we have Pending Removal action tab');
 
 $agent->follow_link_ok({ text => 'Pending Removal' }, "Prepare block for remove");
-$agent->form_number(2);
+$agent->form_number(3);
 $agent->click('SubmitTicket');
 ticket_state_is($agent, $block_id, 'pending removal');
 

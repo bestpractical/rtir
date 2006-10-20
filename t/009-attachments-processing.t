@@ -25,7 +25,7 @@ $agent->follow_link_ok({text => 'New Report'}, "go to 'New Report'");
 {
     my $content = "this is test";
     my $filename = tempfile($content);
-    $agent->form_number(2);
+    $agent->form_number(3);
     $agent->field('Subject', 'ticket with attachment');
     $agent->field('Attachment', $filename);
     $agent->click('Create');
@@ -57,13 +57,13 @@ $agent->follow_link_ok({text => 'New Report'}, "go to 'New Report'");
     my $fn1 = tempfile($content1);
     my $fn2 = tempfile($content2);
 
-    $agent->form_number(2);
+    $agent->form_number(3);
     $agent->field('Subject', 'ticket with attachments');
     $agent->field('Attachment', $fn1);
     $agent->click('AddAttachment');
     is($agent->status, 200, "request successful");
 
-    $agent->form_number(2);
+    $agent->form_number(3);
     is($agent->value('Subject'), 'ticket with attachments', "subject we put is there");
     $agent->field('Attachment', $fn2);
     $agent->click('Create');
@@ -91,19 +91,19 @@ $agent->follow_link_ok({text => 'New Report'}, "go to 'New Report'");
 {
     my $content = "this is test";
     my $filename = tempfile($content);
-    $agent->form_number(2);
+    $agent->form_number(3);
     $agent->field('Subject', 'ticket with attachment');
     $agent->field('Attachment', $filename);
     $agent->click('AddAttachment');
     is($agent->status, 200, "request successful");
     $agent->content_like( qr/\Q$filename/, "has file name on the page");
 
-    $agent->form_number(2);
+    $agent->form_number(3);
     $agent->field('DeleteAttachments', $filename);
     $agent->click('AddAttachment');
     is($agent->status, 200, "request successful");
 
-    $agent->form_number(2);
+    $agent->form_number(3);
     $agent->click('Create');
     is($agent->status, 200, "request successful");
 
@@ -124,12 +124,12 @@ $agent->follow_link_ok({text => 'New Incident'}, "go to 'New Incident'");
 {
     my $content = "this is test";
     my $filename = tempfile($content);
-    $agent->form_number(2);
+    $agent->form_number(3);
     $agent->field('Attachment', $filename);
     $agent->click('AddAttachment');
     is($agent->status, 200, "request successful");
     $agent->content_like( qr/\Q$filename/, "has file name on the page");
-    $agent->form_number(2);
+    $agent->form_number(3);
     ok($agent->value('CreateIncident'), "we still on the create page");
     unlink $filename or die "couldn't delete file '$filename': $!";
 }
@@ -141,12 +141,12 @@ $agent->follow_link_ok({text => 'New Investigation'}, "go to 'New Investigation'
 {
     my $content = "this is test";
     my $filename = tempfile($content);
-    $agent->form_number(2);
+    $agent->form_number(3);
     $agent->field('Attachment', $filename);
     $agent->click('AddAttachment');
     is($agent->status, 200, "request successful");
     $agent->content_like( qr/\Q$filename/, "has file name on the page");
-    $agent->form_number(2);
+    $agent->form_number(3);
     ok($agent->value('Create'), "we still on the create page");
     unlink $filename or die "couldn't delete file '$filename': $!";
 }
@@ -159,12 +159,12 @@ SKIP: {
 
     my $content = "this is test";
     my $filename = tempfile($content);
-    $agent->form_number(2);
+    $agent->form_number(3);
     $agent->field('Attachment', $filename);
     $agent->click('AddAttachment');
     is($agent->status, 200, "request successful");
     $agent->content_like( qr/\Q$filename/, "has file name on the page");
-    $agent->form_number(2);
+    $agent->form_number(3);
     ok($agent->value('Create'), "we still on the create page");
     unlink $filename or die "couldn't delete file '$filename': $!";
 }
@@ -177,13 +177,13 @@ SKIP: {
 
     my $content = "this is test";
     my $filename = tempfile($content);
-    $agent->form_number(2);
+    $agent->form_number(3);
     $agent->field('Attachment', $filename);
     $agent->click('AddAttachment');
     is($agent->status, 200, "request successful");
     $agent->content_like( qr/\Q$filename/, "has file name on the page");
 
-    $agent->form_number(2);
+    $agent->form_number(3);
     ok($agent->value('SubmitTicket'), "we still on the create page");
     
     # ok let's try put attachment with empty reply

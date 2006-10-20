@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 22;
+use Test::More tests => 23;
 
 require "t/rtir-test.pl";
 
@@ -33,7 +33,7 @@ my $first_incident_id = create_incident_for_ir($agent, $report, {Subject => "fir
 # TODO: make sure all fields are set properly in DB
 
 # create a new incident
-my $second_incident_id = CreateIncident(Subject => "foo Incident", Content => "bar baz quux");
+my $second_incident_id = create_incident( $agent, { Subject => "foo Incident", Content => "bar baz quux" } );
 
 # link our report to that incident
 LinkChildToIncident(id => $report, incident => $second_incident_id);
@@ -55,7 +55,7 @@ sub LinkChildToIncident {
     # TODO: Make sure desired incident appears on page
 
     # Choose the incident and submit
-    $agent->form_number(2);
+    $agent->form_number(3);
     $agent->field("SelectedTicket", $incident);
     $agent->click("LinkChild");
 
@@ -66,36 +66,3 @@ sub LinkChildToIncident {
     return;
 }
 
-sub CreateIncident {
-    my %args = ( @_ );
-
-    $agent->follow_link_ok({text => "Incidents", n => "1"}, "Followed 'Incidents' link");
-    
-    $agent->follow_link_ok({text => "New Incident", n => "1"}, "Followed 'New Incident' link");
-    
-    # set the form
-    $agent->form_number(2);
-
-    # set the subject
-    $agent->field("Subject", $args{'Subject'});
-
-    # set the content
-    $agent->field("Content", $args{'Content'});
-
-    set_custom_field($agent, Function => "IncidentCoord");
-
-    # Create it!
-    $agent->click("CreateIncident");
-    is ($agent->status, 200, "Attempted to create the Incident");
-
-    # Now see if we succeeded
-    my $content = $agent->content();
-    my $id = -1;
-    if ($content =~ /.*Ticket (\d+) created.*/g) {
-	$id = $1;
-    }
-
-    ok ($id > 1, "Incident $id created successfully.");
-
-    return $id;
-}

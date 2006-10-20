@@ -16,7 +16,7 @@ my $agent = default_agent();
     $agent->has_tag('a', 'Merge', 'we have Merge link');
     $agent->follow_link_ok({ text => 'Merge' }, "Followed merge link");
 
-    $agent->form_number(2);
+    $agent->form_number(3);
     $agent->field('SelectedTicket', $ir1_id);
     $agent->submit;
     ok_and_content_like($agent, qr{Merge Successful}, 'Merge Successful');
@@ -40,7 +40,7 @@ my $agent = default_agent();
     $agent->has_tag('a', 'Merge', 'we have Merge link');
     $agent->follow_link_ok({ text => 'Merge' }, "Followed merge link");
 
-    $agent->form_number(2);
+    $agent->form_number(3);
     $agent->field('SelectedTicket', $ir1_id);
     $agent->submit;
     ok_and_content_like($agent, qr{Merge Successful}, 'Merge Successful');
@@ -67,7 +67,7 @@ my $agent = default_agent();
     $agent->has_tag('a', 'Merge', 'we have Merge link');
     $agent->follow_link_ok({ text => 'Merge' }, "Followed merge link");
 
-    $agent->form_number(2);
+    $agent->form_number(3);
     $agent->field('SelectedTicket', $ir1_id);
     $agent->submit;
     ok_and_content_like($agent, qr{Merge Successful}, 'Merge Successful');
@@ -92,7 +92,7 @@ my $agent = default_agent();
     $agent->has_tag('a', 'Merge', 'we have Merge link');
     $agent->follow_link_ok({ text => 'Merge' }, "Followed merge link");
 
-    $agent->form_number(2);
+    $agent->form_number(3);
     $agent->field('SelectedTicket', $ir1_id);
     $agent->submit;
     ok_and_content_like($agent, qr{Merge Successful}, 'Merge Successful');

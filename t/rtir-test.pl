@@ -227,7 +227,7 @@ sub create_incident_for_ir {
     # Select the "New" link from the Display page
     $agent->follow_link_ok({text => "[New]"}, "Followed 'New (Incident)' link");
 
-    $agent->form_number(2);
+    $agent->form_number(3);
 
     while (my ($f, $v) = each %$fields) {
         $agent->field($f, $v);

@@ -137,7 +137,7 @@ diag "edit constituency on the IR and check that change is cascading" if $ENV{'T
 
     display_ticket($agent, $ir_id);
     $agent->follow_link_ok({text => 'Edit'}, "go to Edit page");
-    $agent->form_number(2);
+    $agent->form_number(3);
     ok(set_custom_field( $agent, Constituency => 'GOVNET' ), "fill value in the form");
     $agent->click('SaveChanges');
     is( $agent->status, 200, "Attempting to edit ticket #$ir_id" );
@@ -210,7 +210,7 @@ diag "create an IR and check that we couldn't change value during creation of ne
 
     # click [new] near 'incident', set another constituency and create
     $agent->follow_link_ok({text => '[New]'}, "go to 'New Incident' page");
-    $agent->form_number(2);
+    $agent->form_number(3);
     ok(!eval{ set_custom_field( $agent, Constituency => 'EDUNET' ) }, "couldn't change value in the form");
     $agent->click('CreateIncident');
     is ($agent->status, 200, "Attempted to create the ticket");

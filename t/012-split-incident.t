@@ -18,14 +18,14 @@ my $rtir_user = rtir_user();
     my $id = create_incident($agent, {Subject => "split incident"});
     display_ticket($agent, $id);
     $agent->follow_link_ok({text => "Split"}, "Followed link");
-    $agent->form_number(2);
+    $agent->form_number(3);
     $agent->click('CreateIncident');
     is ($agent->status, 200, "Attempted to create the ticket");
     my $new_id = ($agent->content =~ /.*Ticket (\d+) created.*/i )[0];
     ok ($new_id, "Ticket created successfully: #$new_id.");
 
     $agent->follow_link_ok({text => "Launch"}, "Followed link");
-    $agent->form_number(2);
+    $agent->form_number(3);
     $agent->field('Requestors', $rtir_user->EmailAddress);
     $agent->click('Create');
     

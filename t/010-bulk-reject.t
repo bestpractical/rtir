@@ -24,19 +24,19 @@ go_home($agent);
 {
     $agent->follow_link_ok({ text => '[Bulk Reject]' }, "Followed 'bulk reject' link");
 
-    $agent->form_number(2);
+    $agent->form_number(3);
     $agent->tick('SelectedTickets', $irs[0]);
     $agent->tick('SelectedTickets', $irs[2]);
     $agent->click('BulkReject');
     ok_and_content_like($agent, qr{Ticket $irs[0]: State changed from new to rejected}, 'reject notice');
     ok_and_content_like($agent, qr{Ticket $irs[2]: State changed from new to rejected}, 'reject notice');
 
-    $agent->form_number(2);
+    $agent->form_number(3);
     ok($agent->value('BulkReject'), 'still on reject page');
 }
 
 {
-    $agent->form_number(2);
+    $agent->form_number(3);
     ok($agent->value('BulkRejectAndReturn'), 'has reject and return button');
 
     $agent->tick('SelectedTickets', $irs[1]);
