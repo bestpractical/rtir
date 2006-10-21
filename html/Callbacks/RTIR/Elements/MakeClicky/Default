@@ -50,19 +50,23 @@ my %actions;
     },
     email => sub {
         my %args = @_;
-        my ($pre, $post) = split /@/, $args{value}, 2;
-        my $result = qq{[<a href="$web_path/RTIR/Tools/Lookup.html?$args{lookup_params}type=email&q=$args{value}">}
+        my $email = $args{'value'}; $email =~ s/^<|>$//g;
+        RT::Interface::Web::EscapeUTF8( \$args{'value'} ); 
+        my $domain = (split /@/, $email, 2)[1];
+
+        my $result = qq{[<a href="$web_path/RTIR/Tools/Lookup.html?$args{'lookup_params'}type=email&q=$email">}
                       .loc('lookup email') .q{</a>]};
-        if ( $args{incident} ) {
+        if ( $args{'incident'} ) {
             if ( $r->uri =~ /Lookup.html$/ ) {
-                $result .= qq{<input type="checkbox" name="Requestorbox-$args{value}" unchecked />};
+                $result .= qq{<input type="checkbox" name="Requestorbox-$email" unchecked />};
             }
-            $result .= qq{[<a href="$web_path/RTIR/Create.html?Incident=$args{incident}&Queue=Investigations&Requestors=$args{value}">}
-                       .loc('Investigate to') .qq{</a>]};
+            $result .= qq{[<a href="$web_path/RTIR/Create.html}
+                . qq{?Incident=$args{'incident'}&Queue=Investigations&Requestors=$email">}
+                . loc('Investigate to') .qq{</a>]};
         }
-        $result .= qq{ [<a href="$web_path/RTIR/Tools/Lookup.html?$args{lookup_params}type=host&q=$post">}
-               .loc('lookup "[_1]"', $post) .qq{</a>]};
-        return $args{value} . qq{ <span class="clickylink">$result</span>};
+        $result .= qq{ [<a href="$web_path/RTIR/Tools/Lookup.html?$args{'lookup_params'}type=host&q=$domain">}
+               .loc('lookup "[_1]"', $domain) .qq{</a>]};
+        return $args{'value'} . qq{ <span class="clickylink">$result</span>};
     },
     noc => sub {
         my %args = @_;
@@ -91,7 +95,7 @@ my @types = (
     },
     {
         name   => "email",
-        regex  => q[(?:mailto:)?[\w\.\+-]+\@[\w\.-]+\.\w{2,3}],
+        regex  => qr{(?:mailto:)?<?[\w\.\+-]+\@[\w\.-]+\.\w{2,3}>?},
         action => "email",
     },
     {
