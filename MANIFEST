@@ -189,6 +189,7 @@ t/011-merge.t
 t/012-split-incident.t
 t/013-custom-field-ip.t
 t/014-custom-field-constituency.t
+t/015-make-clicky.t
 t/03firstmilestone.t
 t/rtir-test.pl
 UPGRADING
