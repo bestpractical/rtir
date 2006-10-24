@@ -32,17 +32,31 @@ my $ShortQueryString = $m->comp('/Elements/QueryString',
                             Order     => $Order,
                           );
 </%PERL>
-% if ( $Queue eq 'Incident Reports') {
+
+%# XXX: this code is duplicated in html/Search/Elements/ResultViews (RT)
+% if ( $Queue eq 'Incident Reports' ) {
 <a href="<%RT->Config->Get('WebPath')%>/RTIR/Report/BulkReject.html?<% $QueryString %>"><&|/l&>Bulk Reject</&></a> |
 % }
 
 <a href="<% RT->Config->Get('WebPath') %>/Search/Results.tsv?<% $ShortQueryString %>"><&|/l&>spreadsheet</&></a> |
 <a href="<% RT->Config->Get('WebPath') %>/Search/Results.rdf?<% $ShortQueryString %>"><&|/l&>RSS</&></a> |
 
+<%PERL>
+if ( $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => $RT::System ) ) {
+    my $query_string = $m->comp('/Elements/QueryString',
+        Search => 1,
+        Plugin => 'Tickets',
+        'Tickets:query' => $Query,
+        'Tickets:limit' => $Rows || '',
+    );
+</%PERL>
+<a href="<% RT->Config->Get('WebPath') %>/Admin/Tools/Shredder/?<% $query_string |n %>"><&|/l&>Shredder...</&></a>
+% }
+
 <form method="get" action="<% RT->Config->Get('WebPath') %>/Search/Chart.html"><&|/l&>chart</&>
 % my %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order);
 % foreach my $key ( keys %hiddens ) {
-<input type="hidden" class="hidden" name="<%$key%>" value="<%defined($hiddens{$key})?$hiddens{$key}:''%>" />
+<input type="hidden" class="hidden" name="<% $key %>" value="<% defined $hiddens{$key}? $hiddens{$key}: '' %>" />
 % }
 <&|/l, $m->scomp('/Search/Elements/SelectGroupBy', Name => 'PrimaryGroupBy') &>grouped by [_1]</&>
 <&|/l, $m->scomp('/Search/Elements/SelectChartType', Name => 'ChartStyle') &>style: [_1]</&>
