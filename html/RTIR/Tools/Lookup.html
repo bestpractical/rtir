@@ -186,8 +186,12 @@ parse this data.
 % }
 
 %# Don't offer the option of Investigating to unless there are addresses
-% if ($DoInvestigate) {
-<& /Elements/Submit, Name => "InvestigateTo", Caption => loc("Investigate to selected addresses"), Label => loc("Investigate")&>
+% if ( $DoInvestigate ) {
+<& /Elements/Submit,
+    Name => "InvestigateTo",
+    Caption => loc("Investigate to selected addresses"),
+    Label => loc("Investigate"),
+&>
 % }
 
 </form>
