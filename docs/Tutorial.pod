@@ -26,18 +26,18 @@ caution.
 Users can merge tickets only if they have the right 'ModifyTicket' 
 on both tickets.
 
-RTIR's merge operation allows a user to merge tickets with
-tickets in the same queue. Within RTIR, IRs and Investigations 
-can be merged. When a user opens a ticket's display page there is 
-a 'Merge' option in the page's tabs. The Merge page is split
-into two blocks. The first one is a list of other children of
-the parent incident(s) of the current ticket. It's empty if
-the ticket is not linked to any incidents or if there is no
-candidate to merge into. 
+Within RTIR, IRs and Investigations can be merged, while other
+RTIR's tickets can be mereged with tickets in the same queue.
+When a user opens a ticket's display page there is a 'Merge'
+option in the page's tabs. The Merge page is split into two
+blocks. The first one is a list of other children of the parent
+incident(s) of the current ticket. It's empty if the ticket is
+not linked to any incidents or if there is no candidate to
+merge into. 
 
 The second box contains other tickets you can merge into, 
-tickets are grouped by type, if it's possible to merge the
-ticket into a ticket of another type. (for example, you can
+tickets are grouped by queue, if it's possible to merge the
+ticket into a ticket in another queue. (for example, you can
 merge an IR into an Investigation). Note that if a user
 merges an IR into an Investigation then investigation is always
 used as the target ticket.
@@ -62,8 +62,13 @@ Owner, Correspondents(Requestors), Ccs, AdminCs, as well as the original ticket'
 history, formatted as text in the message box. The user can change any and all
 values before creating a new ticket.
 
-"Split" tickets cand only be created in the same queue as the ticket they're
+"Split" tickets can only be created in the same queue as the ticket they're
 split from.
+
+Note that the split action is implemented over "create" function and if
+your RTIR configured to notify requestors (correspondents) then mail(s)
+would be send after split. However you can use "Don't send any emails to
+correspondents" checkbox from the split page.
 
 =head2 Abandon and Reject
 
@@ -71,7 +76,7 @@ These operations are quite similar to each other. A rejected ticket is not
 availble for many operations and this state is treated as inactive.
 
 Rejected tickets are still available for searches and can be reopened, 
-but RTIR's default interfaces hide are designed to hide such tickets, 
+but RTIR's default interfaces are designed to hide such tickets,
 so people can concentrate on new and open tickets.
 
 The abandon action allows a user to reject an incident and all its children.
