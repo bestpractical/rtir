@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 219;
+use Test::More tests => 212;
 
 require "t/rtir-test.pl";
 
@@ -144,7 +144,7 @@ diag "check that IPs in messages don't add duplicates" if $ENV{'TEST_VERBOSE'};
 {
     my $id = create_ir( $agent, {
         Subject => "test ip",
-        Content => '192.168.20.2 192.168.20.2 192.168.20/30'
+        Content => '192.168.20.2 192.168.20.2 192.168.20.2/32'
     } );
     ok($id, "created first ticket");
 
@@ -155,8 +155,9 @@ diag "check that IPs in messages don't add duplicates" if $ENV{'TEST_VERBOSE'};
     my $values = $ticket->CustomFieldValues('_RTIR_IP');
     my %has;
     $has{ $_->Content }++ foreach @{ $values->ItemsArrayRef };
-    is(scalar values %has, 4, "four IPs were added");
-    ok(!grep( $_ != 1, values %has), "no duplicated values");
+    is(scalar values %has, 1, "one IP were added");
+    ok(!grep( $_ != 1, values %has ), "no duplicated values");
+    ok($has{'192.168.20.2'}, "IP is there");
 }
 
 diag "create a ticket via web with CIDR in message" if $ENV{'TEST_VERBOSE'};
@@ -178,16 +179,14 @@ diag "create a ticket via web with CIDR in message" if $ENV{'TEST_VERBOSE'};
         $incident_id = $id if $queue eq 'Incidents';
 
         display_ticket($agent, $id);
-        $agent->content_like( qr/172\.16\.$i\.1/, "IP on the page" );
-        $agent->content_like( qr/172\.16\.$i\.2/, "IP on the page" );
+        $agent->content_like( qr/172\.16\.$i\.0-172\.16\.$i\.1/, "IP on the page" );
 
         my $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $id );
         ok( $ticket->id, 'loaded ticket' );
         my $values = $ticket->CustomFieldValues('_RTIR_IP');
         my %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
-        ok( $has{ "172.16.$i.1" }, "has value" ) or diag "but has values ". join ", ", keys %has;
-        ok( $has{ "172.16.$i.2" }, "has value" ) or diag "but has values ". join ", ", keys %has;
+        ok( $has{ "172.16.$i.0-172.16.$i.1" }, "has value" ) or diag "but has values ". join ", ", keys %has;
     }
 }
 
