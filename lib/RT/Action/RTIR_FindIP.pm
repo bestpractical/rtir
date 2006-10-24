@@ -7,6 +7,7 @@ use base qw(RT::Action::RTIR);
 
 use Regexp::Common qw(net);
 use Regexp::Common::net::CIDR ();
+use Net::CIDR ();
 
 =head2 Prepare
 
@@ -38,27 +39,17 @@ sub Commit {
     }
 
     my @IPs = ( $attach->Content =~ /(?<!\d)($RE{net}{IPv4})(?!\d)(?!\/(3[0-2]|[1-2]?[0-9]))/go );
-    foreach my $ip ( @IPs ) {
-        $self->AddIP(
-            IP          => $ip,
-            CustomField => $cf,
-            Skip        => \%existing,
-        );
-    }
+    $self->AddIP(
+        IP          => $_,
+        CustomField => $cf,
+        Skip        => \%existing,
+    ) foreach @IPs;
 
     my @CIDRs = ( $attach->Content =~ /$RE{net}{CIDR}{IPv4}{-keep}/go );
     while ( my ($addr, $bits) = splice @CIDRs, 0, 2 ) {
         my $cidr = join( '.', map $_||0, (split /\./, $addr)[0..3] ) ."/$bits";
-        my ($sip, $eip) = split /-/, ( (Net::CIDR::cidr2range( $cidr ))[0] or next );
-        my $snum = unpack( 'N', pack( 'C4', split /\./, $sip ) );
-        my $enum = unpack( 'N', pack( 'C4', split /\./, $eip ) );
-        while ( $snum++ <= $enum ) {
-            $self->AddIP(
-                IP          => join( '.', unpack( 'C4', pack( 'N', $snum ) ) ),
-                CustomField => $cf,
-                Skip        => \%existing,
-            );
-        }
+        my $range = (Net::CIDR::cidr2range( $cidr ))[0] or next;
+        $self->AddIP( IP => $range, CustomField => $cf, Skip => \%existing );
     }
 
     return 1;
@@ -67,7 +58,8 @@ sub Commit {
 sub AddIP {
     my $self = shift;
     my %arg = ( CustomField => undef, IP => undef, Skip => {}, @_ );
-    return if !$arg{'IP'} || $arg{'Skip'}->{ $arg{'IP'} }++;
+    return if !$arg{'IP'} || $arg{'Skip'}->{ $arg{'IP'} }++
+        || $arg{'Skip'}->{ $arg{'IP'} .'-'. $arg{'IP'} }++;
 
     my ($status, $msg) = $self->TicketObj->AddCustomFieldValue(
         Value => $arg{'IP'},
