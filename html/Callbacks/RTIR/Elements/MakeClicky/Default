@@ -1,5 +1,5 @@
 <%init>
-use Regexp::Common qw(URI net);
+use Regexp::Common qw(RE_net_IPv4);
 use URI::URL;
 
 my $web_path = RT->Config->Get('WebPath');
