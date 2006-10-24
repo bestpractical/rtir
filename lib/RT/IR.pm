@@ -121,21 +121,20 @@ use Regexp::Common qw(RE_net_IPv4);
 use Regexp::Common::net::CIDR;
 require Net::CIDR;
 
-# limit formatting "%03d.%03d.%03d.%03d"
 require RT::Tickets;
-wrap 'RT::Tickets::_CustomFieldLimit',
-    pre => sub {
-        return unless $_[3] =~ /^\s*($RE{net}{IPv4})\s*$/o;
-        $_[3] = sprintf "%03d.%03d.%03d.%03d", split /\./, $1;
-    };
 
+# limit formatting "%03d.%03d.%03d.%03d"
 # "= 'sIP-eIP'" => "( >=sIP AND <=eIP)"
 # "!= 'sIP-eIP'" => "( <sIP OR >eIP)"
 # two ranges intercect when ( eIP1 >= sIP2 AND sIP1 <= eIP2 )
 wrap 'RT::Tickets::_CustomFieldLimit',
     pre => sub {
-        return unless $_[3] =~ /^\s*($RE{net}{IPv4})\s*-\s*($RE{net}{IPv4})\s*$/o;
-        my ($start_ip, $end_ip) = ($1, $2);
+        return if $_[2] && $_[2] =~ /^[<>]=?$/;
+        return unless $_[3] =~ /^\s*($RE{net}{IPv4})\s*(?:-\s*($RE{net}{IPv4})\s*)?$/o;
+        my ($start_ip, $end_ip) = ($1, ($2 || $1));
+        $_ = sprintf "%03d.%03d.%03d.%03d", split /\./, $_
+            for $start_ip, $end_ip;
+        ($start_ip, $end_ip) = ($end_ip, $start_ip) if $start_ip gt $end_ip;
 
         my ($tickets, $field, $op, $value, %rest) = @_[0..($#_-1)];
         $tickets->_OpenParen;

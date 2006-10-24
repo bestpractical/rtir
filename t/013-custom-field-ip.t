@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 212;
+use Test::More tests => 252;
 
 require "t/rtir-test.pl";
 
@@ -199,7 +199,7 @@ diag "search tickets by IP" if $ENV{'TEST_VERBOSE'};
     my $flag = 1;
     while ( my $ticket = $tickets->Next ) {
         my %has = map { $_->Content => 1 } @{ $ticket->CustomFieldValues('_RTIR_IP')->ItemsArrayRef };
-        next if $has{'172.16.1.1'};
+        next if $has{'172.16.1.0-172.16.1.1'};
         $flag = 0;
         ok(0, "ticket #". $ticket->id ." has no IP 172.16.1.1, but should");
         last;
@@ -222,15 +222,6 @@ diag "search tickets by IP range" if $ENV{'TEST_VERBOSE'};
         last;
     }
     ok(1, "all tickets have at least one IP from 172.16.2.0-172.16.2.255") if $flag;
-}
-
-diag "search tickets within CIDR block" if $ENV{'TEST_VERBOSE'};
-{
-    my $tickets = RT::Tickets->new( $rtir_user );
-    $tickets->FromSQL("CF.{_RTIR_IP} = '172.16.2/24'");
-    ok( $tickets->Count, "found tickets" );
-    $tickets->FromSQL("CF.{_RTIR_IP} = '172.16/16'");
-    ok( $tickets->Count, "found tickets" );
 }
 
 diag "create two tickets with different IPs and check several searches" if $ENV{'TEST_VERBOSE'};
@@ -277,16 +268,12 @@ diag "create two tickets with different IPs and check several searches" if $ENV{
     # IP range, with start IP greater than end
     $tickets = RT::Tickets->new( $rtir_user );
     $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.255-192.168.21.0'");
-    TODO: { local $TODO = "not yet implemented";
-        is( $tickets->Count, 1, "found one ticket" );
-        #is( $tickets->First->FirstCustomFieldValue('_RTIR_IP'), '192.168.21.10', "correct value" );
-    }
+    is( $tickets->Count, 1, "found one ticket" );
+    is( $tickets->First->FirstCustomFieldValue('_RTIR_IP'), '192.168.21.10', "correct value" );
     $tickets = RT::Tickets->new( $rtir_user );
     $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.22.255-192.168.22.0'");
-    TODO: { local $TODO = "not yet implemented";
-        is( $tickets->Count, 1, "found one ticket" );
-        #is( $tickets->First->FirstCustomFieldValue('_RTIR_IP'), '192.168.22.10', "correct value" );
-    }
+    is( $tickets->Count, 1, "found one ticket" );
+    is( $tickets->First->FirstCustomFieldValue('_RTIR_IP'), '192.168.22.10', "correct value" );
 
     # CIDR/24
     $tickets = RT::Tickets->new( $rtir_user );
@@ -313,5 +300,84 @@ diag "create two tickets with different IPs and check several searches" if $ENV{
     $tickets->FromSQL("(id = $id1 OR id = $id2) AND "
         ."(CF.{_RTIR_IP} = '192.168.21.0/24' OR CF.{_RTIR_IP} = '192.168.22.0/24')");
     is( $tickets->Count, 2, "found both tickets" );
+}
+
+diag "create two tickets with different IP ranges and check several searches" if $ENV{'TEST_VERBOSE'};
+{
+    my $id1 = create_ir( $agent, { Subject => "test ip" }, { IP => '192.168.21.0-192.168.21.127' } );
+    ok($id1, "created first ticket");
+    my $id2 = create_ir( $agent, { Subject => "test ip" }, { IP => '192.168.21.128-192.168.21.255' } );
+    ok($id2, "created second ticket");
+
+    my $tickets = RT::Tickets->new( $rtir_user );
+    $tickets->FromSQL("id = $id1 OR id = $id2");
+    is( $tickets->Count, 2, "found both tickets by 'id = x OR y'" );
+
+    # IP
+    $tickets = RT::Tickets->new( $rtir_user );
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.0'");
+    is( $tickets->Count, 1, "found one ticket" );
+    is( $tickets->First->id, $id1, "correct value" );
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.64'");
+    is( $tickets->Count, 1, "found one ticket" );
+    is( $tickets->First->id, $id1, "correct value" );
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.127'");
+    is( $tickets->Count, 1, "found one ticket" );
+    is( $tickets->First->id, $id1, "correct value" );
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.128'");
+    is( $tickets->Count, 1, "found one ticket" );
+    is( $tickets->First->id, $id2, "correct value" );
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.191'");
+    is( $tickets->Count, 1, "found one ticket" );
+    is( $tickets->First->id, $id2, "correct value" );
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.255'");
+    is( $tickets->Count, 1, "found one ticket" );
+    is( $tickets->First->id, $id2, "correct value" );
+
+    # IP/32 - one address
+    $tickets = RT::Tickets->new( $rtir_user );
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.63/32'");
+    is( $tickets->Count, 1, "found one ticket" );
+    is( $tickets->First->id, $id1, "correct value" );
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.191/32'");
+    is( $tickets->Count, 1, "found one ticket" );
+    is( $tickets->First->id, $id2, "correct value" );
+
+    # IP range, lower than both
+    $tickets = RT::Tickets->new( $rtir_user );
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.20.0-192.168.20.255'");
+    is( $tickets->Count, 0, "didn't finnd ticket" ) or diag "but found ". $tickets->First->id;
+
+    # IP range, intersect with the first range
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.20.0-192.168.21.63'");
+    is( $tickets->Count, 1, "found one ticket" );
+    is( $tickets->First->id, $id1, "correct value" );
+
+    # IP range, equal to the first range
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.0-192.168.21.127'");
+    is( $tickets->Count, 1, "found one ticket" );
+    is( $tickets->First->id, $id1, "correct value" );
+
+    # IP range, lay inside the first range
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.31-192.168.21.63'");
+    is( $tickets->Count, 1, "found one ticket" );
+    is( $tickets->First->id, $id1, "correct value" );
+
+    # IP range, intersect with the ranges
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.31-192.168.21.191'");
+    is( $tickets->Count, 2, "found both tickets" );
+
+    # IP range, equal to range from the starting IP of the first ticket to the ending IP of the second
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.0-192.168.21.255'");
+    is( $tickets->Count, 2, "found both tickets" );
+
+    # IP range, has the both ranges inside it
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168/16'");
+    is( $tickets->Count, 2, "found both tickets" );
+
+    # IP range, greater than both
+    $tickets = RT::Tickets->new( $rtir_user );
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.22/24'");
+    is( $tickets->Count, 0, "didn't finnd ticket" ) or diag "but found ". $tickets->First->id;
 }
 
