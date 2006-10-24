@@ -99,6 +99,18 @@ sub SLAInit {
 
 }
 
+{
+my %cache;
+sub GetCustomField {
+    my $field = shift or return;
+    return $cache{ $field } if exists $cache{ $field };
+
+    my $cf = RT::CustomField->new( $RT::SystemUser );
+    $cf->Load( $field );
+    return $cache{ $field } = $cf;
+}
+}
+
 
 # IPs processing hooks
 # in order too implement searches by IP ranges we
@@ -119,18 +131,30 @@ wrap 'RT::Tickets::_CustomFieldLimit',
 
 # "= 'sIP-eIP'" => "( >=sIP AND <=eIP)"
 # "!= 'sIP-eIP'" => "( <sIP OR >eIP)"
+# two ranges intercect when ( eIP1 >= sIP2 AND sIP1 <= eIP2 )
 wrap 'RT::Tickets::_CustomFieldLimit',
     pre => sub {
         return unless $_[3] =~ /^\s*($RE{net}{IPv4})\s*-\s*($RE{net}{IPv4})\s*$/o;
         my ($start_ip, $end_ip) = ($1, $2);
-        my ($tickets, $field, $op, $value, @rest) = @_[0..($#_-1)];
-        my $negative = ($op =~ /NOT|!=|<>/i)? 1 : 0;
+
+        my ($tickets, $field, $op, $value, %rest) = @_[0..($#_-1)];
         $tickets->_OpenParen;
-        $tickets->_CustomFieldLimit($field, ($negative? '<': '>='), $start_ip, @rest);
-        $tickets->_CustomFieldLimit(
-            $field, ($negative? '>': '<='), $end_ip,
-            @rest, ENTRYAGGREGATOR => ($negative? 'OR': 'AND'),
-        );
+        unless ( $op =~ /NOT|!=|<>/i ) { # positive equation
+            $tickets->_CustomFieldLimit($field, '<=', $end_ip, %rest);
+            $tickets->_CustomFieldLimit(
+                $field, '>=', $start_ip, %rest,
+                SUBKEY          => $rest{'SUBKEY'}. '.LargeContent',
+                ENTRYAGGREGATOR => 'AND',
+            );
+        }
+        else { # negative equation
+            $tickets->_CustomFieldLimit($field, '>', $end_ip, %rest);
+            $tickets->_CustomFieldLimit(
+                $field, '<', $start_ip, %rest,
+                SUBKEY          => $rest{'SUBKEY'}. '.LargeContent',
+                ENTRYAGGREGATOR => 'OR',
+            );
+        }
         $tickets->_CloseParen;
         # return right now as we did everything
         $_[-1] = ref $_[-1]? [1]: 1;
@@ -151,26 +175,62 @@ $RT::Tickets::dispatch{'CUSTOMFIELD'} = \&RT::Tickets::_CustomFieldLimit;
 require RT::ObjectCustomFieldValue;
 wrap 'RT::ObjectCustomFieldValue::Create',
     pre => sub {
+        my %args = @_[1..@_-2];
+        my $cf = GetCustomField( '_RTIR_IP' );
+        unless ( $cf && $cf->id ) {
+            $RT::Logger->crit("Couldn't load IP CF");
+            return;
+        }
+        return unless $cf->id == $args{'CustomField'};
+
         for ( my $i = 1; $i < @_; $i += 2 ) {
             next unless $_[$i] && $_[$i] eq 'Content';
-            return unless $_[++$i] =~ /^\s*($RE{net}{IPv4})\s*$/o;
-            $_[$i] = sprintf "%03d.%03d.%03d.%03d", split /\./, $1;
+
+            my ($sIP, $eIP);
+            if ( $_[++$i] =~ /^\s*($RE{net}{IPv4})\s*$/o ) {
+                $sIP = $eIP = sprintf "%03d.%03d.%03d.%03d", split /\./, $1;
+            }
+            elsif ( $_[$i] =~ /^\s*($RE{net}{IPv4})-($RE{net}{IPv4})\s*$/o ) {
+                $sIP = sprintf "%03d.%03d.%03d.%03d", split /\./, $1;
+                $eIP = sprintf "%03d.%03d.%03d.%03d", split /\./, $2;
+            }
+            else {
+                $_[-1] = 0;
+                return;
+            }
+            ($sIP, $eIP) = ($eIP, $sIP) if $sIP gt $eIP;
+            $_[$i] = $sIP;
+
+            my $flag = 0;
+            for ( my $j = 1; $j < @_; $j += 2 ) {
+                next unless $_[$j] && $_[$j] eq 'LargeContent';
+                $flag = $_[++$j] = $eIP;
+                last;
+            }
+            splice @_, -1, 0, LargeContent => $eIP unless $flag;
             return;
         }
     };
 
 # strip zero chars(deserialize)
+{
+my $obj;
 wrap 'RT::ObjectCustomFieldValue::Content',
+    pre  => sub { $obj = $_[0] },
     post => sub {
         return unless $_[-1];
-        if ( ref $_[-1] ) {
-            return unless $_[-1][0] =~ /^\s*($RE{net}{IPv4})\s*$/;
-            $_[-1][0] = sprintf "%d.%d.%d.%d", split /\./, $1;
-        } else {
-            return unless $_[-1] =~ /^\s*($RE{net}{IPv4})\s*$/;
-            $_[-1] = sprintf "%d.%d.%d.%d", split /\./, $1;
-        }
+        my $val = ref $_[-1]? \$_[-1][0]: \$_[-1];
+        return unless $$val =~ /^\s*($RE{net}{IPv4})\s*$/;
+        $$val = sprintf "%d.%d.%d.%d", split /\./, $1;
+
+        my $large_content = $obj->__Value('LargeContent');
+        return if !$large_content
+            || $large_content !~ /^\s*($RE{net}{IPv4})\s*$/;
+        my $eIP = sprintf "%d.%d.%d.%d", split /\./, $1;
+        $$val .= '-'. $eIP unless $$val eq $eIP;
+        return;
     };
+}
 
 eval "require RT::IR_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/IR_Vendor.pm});
