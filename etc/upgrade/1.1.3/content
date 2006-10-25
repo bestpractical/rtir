@@ -14,7 +14,7 @@
 @ScripConditions = (
 
     {  Name        => 'RTIR Require Due Change',    # loc
-       Description => 'A ticket requires a state change' ,                                            # loc
+       Description => 'The due date of the parent incident must be changed' ,                                            # loc
        ApplicableTransTypes => 'Any',
        ExecModule => 'RTIR_RequireDueChange',
     },
@@ -27,49 +27,102 @@
 );
 
 @Scrips = (
-   {  Description => "SetRTIRState",
-      Queue            => 'Incident Reports',
-      ScripCondition   => 'RTIR Require Due Change',
-      ScripAction      => 'RTIR Set Incident Due',
-      Template          => 'Blank', },
-   {  Description => "SetRTIRState",
-      Queue            => 'Investigations',
-      ScripCondition   => 'RTIR Require Due Change',
-      ScripAction      => 'RTIR Set Incident Due',
-      Template          => 'Blank', },
-   {  Description => "SetRTIRState",
-      Queue            => 'Blocks',
-      ScripCondition   => 'RTIR Require Due Change',
-      ScripAction      => 'RTIR Set Incident Due',
-      Template          => 'Blank', },
-    {  Description => "SetDueReopen",
-       Queue            => 'Incident Reports',
-       ScripCondition => 'RTIR Reopen Ticket',
-       ScripAction      => 'RTIR Set Due Reopen',
-       Template       => 'Blank' },
-    {  Description => "SetDueReopen",
-       Queue            => 'Investigations',
-       ScripCondition => 'RTIR Reopen Ticket',
-       ScripAction      => 'RTIR Set Due Reopen',
-       Template       => 'Blank' },
-    {  Description => "SetDueReopen",
-       Queue            => 'Blocks',
-       ScripCondition => 'RTIR Reopen Ticket',
-       ScripAction      => 'RTIR Set Due Reopen',
-       Template       => 'Blank' },
-    {  Description => "DetectStaffResponse",
-       Queue          => 'Investigations',
+    {  Description => "SetRTIRState",
+       Queue            => [ 'Incident Reports', 'Investigations', 'Blocks' ],
+       ScripCondition   => 'RTIR Require Due Change',
+       ScripAction      => 'RTIR Set Incident Due',
+       Template          => 'Blank', },
+
+    {  Description    => "DetectStaffResponse",
+       Queue          => [ 'Investigations', 'Incident Reports', 'Blocks' ],
        ScripCondition => 'RTIR Staff Response',
-       ScripAction      => 'RTIR Set Due Correspond',
-       Template       => 'Blank' },
-    {  Description => "DetectStaffResponse",
-       Queue          => 'Incident Reports',
-       ScripCondition => 'RTIR Staff Response',
-       ScripAction      => 'RTIR Set Due Correspond',
-       Template       => 'Blank' },
-    {  Description => "DetectStaffResponse",
-       Queue          => 'Blocks',
-       ScripCondition => 'RTIR Staff Response',
-       ScripAction      => 'RTIR Set Due Correspond',
+       ScripAction    => 'RTIR Set Due Correspond',
        Template       => 'Blank' },
 );
+
+sub get_queue {
+    my $meta = shift;
+
+    require RT::Queue;
+    my $obj = RT::Queue->new( $RT::SystemUser );
+    $meta = { Name => $meta } unless ref $meta;
+    $obj->LoadByCols( %$meta );
+    unless( $obj->id ) {
+        print STDERR "Couldn't load queue by columns: "
+            . join( ', ', map "$_ = '". $meta->{$_} ."'", sort keys %$meta )
+            . ". ";
+        return;
+    }
+    return $obj;
+
+}
+
+sub get_scrip {
+    my $meta = shift;
+    unless ( $meta ) {
+        require Carp;
+        Carp::cluck("No scrip's metadata provided");
+    }
+    $meta = { Description => $meta } unless ref $meta;
+
+    if ( $meta->{'Queue'} && $meta->{'Queue'} !~ /^\d+$/ ) {
+        my $queue = get_queue( $meta->{'Queue'} ) or return;
+        $meta->{'Queue'} = $queue->id;
+    }
+
+    require RT::Scrip;
+    my $obj = RT::Scrip->new( $RT::SystemUser );
+    $obj->LoadByCols( %$meta );
+    unless( $obj->id ) {
+        print STDERR "Couldn't load scrip by columns: "
+            . join( ', ', map "$_ = '". $meta->{$_} ."'", sort keys %$meta )
+            . ". ";
+        return;
+    }
+    return $obj;
+}
+
+sub set_scrip_action {
+    my $scrip = get_scrip( shift ) or return;
+    my $new_action = shift;
+
+    require RT::ScripAction;
+    my $scrip_action = RT::ScripAction->new( $RT::SystemUser );
+    if ( ref $new_action ) {
+        $scrip_action->LoadByCols( %$new_action );
+    } else {
+        $scrip_action->Load( $new_action );
+    }
+    unless ( $scrip_action->Id ) {
+        print STDERR "Couldn't load scrip action.";
+        return;
+    }
+
+    # current value
+    return if $scrip->ScripAction == $scrip_action->Id;
+
+    my ($status, $msg) = $scrip->SetScripAction( $scrip_action->Id );
+    unless ( $status ) {
+        print STDERR "Couldn't set action to '". $scrip_action->Name ."'"
+            ." on scrip #". $scrip->id .": $msg.";
+        return;
+    }
+    print "Changed action of the scrip #". $scrip->id ." to '". $scrip_action->Description ."'\n";
+}
+
+
+@Final = ( sub {
+    set_scrip_action(
+        { Description => 'SetDueReopen', Queue => 'Incident Reports' },
+        'RTIR Set Due Reopen',
+    );
+    set_scrip_action(
+        { Description => 'SetDueReopen', Queue => 'Investigations' },
+        'RTIR Set Due Reopen',
+    );
+    set_scrip_action(
+        { Description => 'SetDueReopen', Queue => 'Blocks' },
+        'RTIR Set Due Reopen',
+    );
+} );
+

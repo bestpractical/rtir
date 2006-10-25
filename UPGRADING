@@ -8,18 +8,22 @@ Please contact customer-development@bestpractical.com.
 General upgrade instructions
 ============================
 
-1) Follow specialized upgrade instructions in the sections below
+0) Make a backup of the database.
 
-2) Install the new version of RTIR. (DO NOT RUN "make initdb")
+1) Upgrade to the RT 3.7 following its upgrade instructions.
 
-3) Update RTIR's database.
+2) Install or upgrade RTFM.
+
+3) Install the new version of RTIR. (DO NOT RUN "make initdb")
+
+4) Update RTIR's database.
     
-   Type:
+    Type:
 
         ls etc/upgrade
 
     For each item in that directory whose name is greater than
-    your previously installed RT version, run:
+    your previously installed RTIR version, run:
     
         /opt/rt3/sbin/rt-setup-database --dba <dba> \
             --prompt-for-dba-password --action schema \
@@ -28,158 +32,63 @@ General upgrade instructions
             --prompt-for-dba-password --action insert \
             --datadir etc/upgrade/<version>
 
+    After each step follow additional instructions below.
 
-Follow instructions from previous "upgrading from" sections at
-the end of this document if they apply to your installation.
+    For example if you had RTIR 1.1.1 then you should run
+    above commands for etc/upgrade/1.1.3 datadir, check
+    instructions under "Applying changes from etc/upgrade/1.1.3"
+    section below, then do the same with 1.9.0 dir and greater.
 
-Upgrading from RTIR 1.1.5
+Applying changes from upgrade/1.9.0
 -------------------------
 
-1) NewMessage template in Blocks and LaunchMessage in Investigations
-queues were renamed into 'Autoreply', but also content of
-the 'NewMessage' template was changed, new content is below. Update
-content of the template in Blocks queue manually.
-<<<<<<<<<<< start <<<<<<<<<<<<<<<
-RT-Attach-Message: yes
-Subject: { $Ticket->Subject }
+1) The LaunchMessage template in the Investigations queue
+has been renamed into Autoreply without any changes of the content.
+This upgrade step is automated, but may fail if you've changed
+the LaunchMessage template.
 
-{ $Transaction->Content }
+2) In the Blocks queue an Autoreply template has been added. This is
+replacement for the NewMessage template. Automated step doesn't delete
+old template, you have to check that the new template suites your
+needs and may be copy customizations from the old one, then delete
+the NewMessage template.
 
-{ my $output = "";
-  my @mailfields = qw(
-      _RTIR_IP
-      _RTIR_Netmask
-      _RTIR_Port
-      _RTIR_WhereBlocked
-  );
+3) The new 'BlockRemoved' template has been added in the Blocks
+queue. Check its content.
 
-  my $CustomFields = $Ticket->QueueObj->TicketCustomFields;
-  while ( my $CustomField = $CustomFields->Next ) {
-    my $name = $CustomField->Name;
-    next unless grep $_ eq $name, @mailfields;
+4) NotifyOnLaunch and NotifyOnCreate scrips have been deleted in
+the Implementations and the Blocks queues respectively. You have to
+use the default RT's Autoreply scrip instead or create autoreply
+scrips in these queues if global one is disabled or doesn't exist.
+You need the following scrip in the queues:
 
-    my $Values = $Ticket->CustomFieldValues( $CustomField->Id );
-    while ( my $Value = $Values->Next ) {
-      $name =~ /^_RTIR_(.*)/;
-      $output .= ($1 || $name) .": "
-              .  $Value->Content ."\n";
-    }
-  }
-  return $output;
-}
--------------------------------------------------------------------------
-Please include the string:
+  On Create AutoReply to Requestors with Template Autoreply
 
-         [{ $rtname } #{ $Ticket->id }]
-
-in the subject line of all future correspondence about this issue. To do so, 
-you may reply to this message.
-
-                        Thank you,
-                        { $Ticket->QueueObj->CorrespondAddress }
->>>>>>>>>>>  end  >>>>>>>>>>>>>>>
-
-2) Content of the template 'BlockRemoved' was also changed:
-
-<<<<<<<<<< start <<<<<<<<<<<<<<<<
-Subject: {$Ticket->Subject}
-
-Block #{$Ticket->id} was removed.
-
-{ my $output = "";
-  my @mailfields = qw(
-    _RTIR_IP
-    _RTIR_Netmask
-    _RTIR_Port
-    _RTIR_WhereBlocked
-  );
-  my $CustomFields = $Ticket->QueueObj->TicketCustomFields;
-  while ( my $CustomField = $CustomFields->Next ) {
-    my $name = $CustomField->Name;
-    next unless grep $_ eq $name, @mailfields;
-
-    my $Values = $Ticket->CustomFieldValues( $CustomField->Id );
-    while ( my $Value = $Values->Next ) {
-      $name =~ /^_RTIR_(.*)/;
-      $output .= ($1 || $name) .": "
-              .  $Value->Content ."\n";
-    }
-  }
-  return $output;
-}
--------------------------------------------------------------------------
-Please include the string:
-
-         [{$rtname} #{$Ticket->id}]
-
-in the subject line of all future correspondence about this issue. To do so, 
-you may reply to this message.
-
-                        Thank you,
-                        {$Ticket->QueueObj->CorrespondAddress()}
->>>>>>>>>>>  end  >>>>>>>>>>>>>>>
-
-
-Upgrading from RTIR 1.1.3
+Applying changes from upgrade/1.1.3
 -------------------------
 
-1) Delete the following Scrips (go to Configuration / Queues / <Queue
-Name> / Scrips):
+No special steps required, just run upgrade scripts. Everything
+is automated. At this step we install several new actions,
+conditions and scrips that had been introduced in the RTIR 1.1.3.
+Also, we change action of the 'SetDueReopen' scrips.
 
-In the Incidents Queue:
-  SetStartsDate
-  SetRTIRState
-  ResolveAllChildren
-  FixOwnership
+Applying changes from upgrade/1.1.1
+-------------------------
 
-In the Incident Reports Queue:
-  DetectUserResponse 
-  SetDue             
-  SetStarts          
-  UnsetDue           
-  SetDueReopen       
-  SetHowReported     
-  SetRTIRState       
-  FixOwnership       
-  ReopenIncident
+1) At these step we switch from 'UserDefined' actions and conditions
+   to modules, so all code would be in the lib directory. If you changed
+   the code of the scrips then you have to port changes.
 
-In the Investigations Queue:
-  NotifyOnLaunch
-  DetectUserResponse
-  SetStarts
-  SetDue
-  UnsetDue
-  SetDueReopen
-  SetRTIRState
-  FixOwnership
-  ReopenIncident
+2) Run the etc/upgrade/upgrade.pl script. This script updates Due Dates
+   on active incidents and set to the most recent due date of the active
+   children.
 
-In the Blocks Queue:
-  NotifyOnCreate
-  DetectUserResponse
-  SetStarts
-  SetDue
-  UnsetDue
-  UnsetDue
-  SetDueReopen
-  SetRTIRState
-  FixOwnership
-  ReopenIncident
+Applying changes from upgrade/1.0.3
+-------------------------
 
-2) Run the etc/upgrade/upgrade.pl script.
-
-This script updates Due Dates on all incidents and set to the most
-recent due date of the children. 
-
-NOTE that script use hardcoded path '/opt/rt3', if your RT server installed
-into different location you should change it.
-
-
-Upgrading from RTIR 1.1.2:
---------------------------
-
-1) Delete the "SetDueReopen" scrip from the Incident Reports,
-   Investigations, and Blocks queues.
+No special steps required, just run upgrade scripts. Everything
+is automated. At this step we grant the ShowTemplate right to
+the DutyTeam group.
 
 Upgrading from RTIR 1.0.0:
 --------------------------

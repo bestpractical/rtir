@@ -4,7 +4,7 @@ docs/Tutorial.pod
 etc/initialdata
 etc/RTIR_Config.pm
 etc/upgrade/1.0.3/content
-etc/upgrade/1.1.2/content
+etc/upgrade/1.1.1/content
 etc/upgrade/1.1.3/content
 etc/upgrade/1.9.0/content
 etc/upgrade/1.9.0/schema.Informix
@@ -172,6 +172,22 @@ lib/RT/IR/Ticket.pm
 Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP
+META.yml
+README
+releng.cnf
+reports/report.pl
+t/000-rtir-test-setup.t
+t/001-basic-RTIR.t
+t/002-test-reject.t
+t/003-resolve-IR-when-all-incidents-resolved.t
+t/004-rtfm-in-rtir.t
+t/005-resolve-investigations.t
+t/006-saved-searches.t
+t/008-workflow-blocks.t
+t/009-attachments-processing.t
+t/010-bulk-reject.t
+t/011-merge.t
+t/012-split-incident.t
 META.yml
 README
 reports/report.pl

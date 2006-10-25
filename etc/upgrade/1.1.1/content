@@ -1,3 +1,5 @@
+use warnings;
+
 @ScripActions = (
 
     {  Name        => 'RTIR Set Due to Now',    # loc
@@ -84,10 +86,44 @@
        ApplicableTransTypes => 'Any',
        ExecModule => 'RTIR_RequireStateChange',
     },
-
 );
 
 @Scrips = (
+    {  Description => "SetStarts",
+       Queue            => [ 'Incident Reports', 'Investigations', 'Blocks' ],
+       ScripCondition => 'On Create',
+       ScripAction      => 'RTIR Set Starts by Business Hours',
+       Template       => 'Blank' },
+
+    {  Description => "SetDue",
+       Queue            => 'Incident Reports',
+       ScripCondition => 'On Create',
+       ScripAction      => 'RTIR Set Due by SLA',
+       Template       => 'Blank' },
+    {  Description => "SetDue",
+       Queue            => [ 'Investigations', 'Blocks' ],
+       ScripCondition => 'On Create',
+       ScripAction      => 'RTIR Set Due Correspond',
+       Template       => 'Blank' },
+
+    {  Description => "SetDueReopen",
+       Queue            => 'Incident Reports',
+       ScripCondition => 'RTIR Reopen Ticket',
+       ScripAction      => 'RTIR Set Due by SLA',
+       Template       => 'Blank' },
+    {  Description => "SetDueReopen",
+       Queue            => 'Investigations',
+       ScripCondition => 'RTIR Reopen Ticket',
+       ScripAction      => 'RTIR Set Due by SLA',
+       Template       => 'Blank' },
+    {  Description => "SetDueReopen",
+       Queue            => 'Blocks',
+       ScripCondition => 'RTIR Reopen Ticket',
+       ScripAction      => 'RTIR Set Due by SLA',
+       Template       => 'Blank' },
+);
+
+my @UpdateScrips = (
     {  Description    => 'NotifyOnLaunch',
        Queue          => 'Investigations',
        ScripCondition => 'On Create',
@@ -98,6 +134,7 @@
        ScripCondition => 'On Create',
        ScripAction    => 'Notify Requestors',
        Template       => 'NewMessage' },
+
     {  Description => "DetectUserResponse",
        Queue          => 'Incident Reports',
        ScripCondition => 'RTIR Customer Response',
@@ -113,82 +150,20 @@
        ScripCondition => 'RTIR Customer Response',
        ScripAction      => 'RTIR Set Due to Now',
        Template       => 'Blank' },
+
     {  Description => "SetStartsDate",
        Queue            => 'Incidents',
        ScripCondition => 'On Create',
        ScripAction      => 'RTIR Set Starts to Now',
        CustomPrepareCode => '1',
        Template       => 'Blank' },
-    {  Description => "SetDue",
-       Queue            => 'Incident Reports',
-       ScripCondition => 'On Create',
-       ScripAction      => 'RTIR Set Due by SLA',
-       Template       => 'Blank' },
-    {  Description => "SetStarts",
-       Queue            => 'Incident Reports',
-       ScripCondition => 'On Create',
-       ScripAction      => 'RTIR Set Starts by Business Hours',
-       Template       => 'Blank' },
-    {  Description => "SetStarts",
-       Queue            => 'Investigations',
-       ScripCondition => 'On Create',
-       ScripAction      => 'RTIR Set Starts by Business Hours',
-       Template       => 'Blank' },
-    {  Description => "SetStarts",
-       Queue            => 'Blocks',
-       ScripCondition => 'On Create',
-       ScripAction      => 'RTIR Set Starts by Business Hours',
-       Template       => 'Blank' },
-    {  Description => "SetDue",
-       Queue            => 'Investigations',
-       ScripCondition => 'On Create',
-       ScripAction      => 'RTIR Set Due Correspond',
-       Template       => 'Blank' },
-    {  Description => "SetDue",
-       Queue            => 'Blocks',
-       ScripCondition => 'On Create',
-       ScripAction      => 'RTIR Set Due Correspond',
-       Template       => 'Blank' },
-    {  Description => "UnsetDue",
-       Queue            => 'Incident Reports',
-       ScripCondition => 'RTIR Close Ticket',
-       ScripAction      => 'RTIR Unset Due',
-       Template       => 'Blank' },
-    {  Description => "UnsetDue",
-       Queue            => 'Investigations',
-       ScripCondition => 'RTIR Close Ticket',
-       ScripAction      => 'RTIR Unset Due',
-       Template       => 'Blank' },
-    {  Description => "UnsetDue",
-       Queue            => 'Blocks',
-       ScripCondition => 'RTIR Close Ticket',
-       ScripAction      => 'RTIR Unset Due',
-       Template       => 'Blank' },
-    {  Description => "UnsetDue",
-       Queue            => 'Blocks',
-       ScripCondition => 'RTIR Close Ticket',
-       ScripAction      => 'RTIR Unset Due',
-       Template       => 'Blank' },
-    {  Description => "SetDueReopen",
-       Queue            => 'Incident Reports',
-       ScripCondition => 'RTIR Reopen Ticket',
-       ScripAction      => 'RTIR Set Due by SLA',
-       Template       => 'Blank' },
-    {  Description => "SetDueReopen",
-       Queue            => 'Investigations',
-       ScripCondition => 'RTIR Reopen Ticket',
-       ScripAction      => 'RTIR Set Due by SLA',
-       Template       => 'Blank' },
-    {  Description => "SetDueReopen",
-       Queue            => 'Blocks',
-       ScripCondition => 'RTIR Reopen Ticket',
-       ScripAction      => 'RTIR Set Due by SLA',
-       Template       => 'Blank' },
+
     {  Description => "SetHowReported",
        Queue            => 'Incident Reports',
        ScripCondition => 'On Create',
        ScripAction      => 'RTIR Set How Reported',
        Template       => 'Blank' },
+
     {  Description => "SetRTIRState",
        Queue            => 'Blocks',
        ScripCondition   => 'RTIR Require State Change',
@@ -199,23 +174,23 @@
        ScripCondition   => 'RTIR Require State Change',
        ScripAction      => 'RTIR Set Incident Report State',
        Template          => 'Blank', },
-
     {  Description => "SetRTIRState",
        Queue            => 'Investigations',
        ScripCondition   => 'RTIR Require State Change',
        ScripAction      => 'RTIR Set Investigation State',
        Template          => 'Blank', },
-
     {  Description => "SetRTIRState",
        Queue            => 'Incidents',
        ScripCondition   => 'RTIR Require State Change',
        ScripAction      => 'RTIR Set Incident State',
        Template          => 'Blank', },
+
     {  Description => "ResolveAllChildren",
        Queue            => 'Incidents',
        ScripCondition   => 'On Status Change',
        ScripAction      => 'RTIR Resolve Children',
        Template          => 'Blank', },
+
     {  Description => "FixOwnership",
        Queue            => 'Incidents',
        ScripCondition   => 'On Owner Change',
@@ -236,6 +211,7 @@
        ScripCondition   => 'On Owner Change',
        ScripAction      => 'RTIR Change Parent Ownership',
        Template          => 'Blank', },
+
     {  Description => "ReopenIncident",
        Queue            => 'Incident Reports',
        ScripCondition   => 'On Status Change',
@@ -251,5 +227,177 @@
        ScripCondition   => 'On Status Change',
        ScripAction      => 'RTIR Open Parent',
        Template          => 'Blank', },
+
+    {  Description => "UnsetDue",
+       Queue            => 'Incident Reports',
+       ScripCondition => 'RTIR Close Ticket',
+       ScripAction      => 'RTIR Unset Due',
+       Template       => 'Blank' },
+    {  Description => "UnsetDue",
+       Queue            => 'Investigations',
+       ScripCondition => 'RTIR Close Ticket',
+       ScripAction      => 'RTIR Unset Due',
+       Template       => 'Blank' },
+    {  Description => "UnsetDue",
+       Queue            => 'Blocks',
+       ScripCondition => 'RTIR Close Ticket',
+       ScripAction      => 'RTIR Unset Due',
+       Template       => 'Blank' },
 );
+
+my @DeleteScrips = (
+    {  Description => 'SetDates', Queue => 'Incident Reports' },
+    {  Description => 'SetDates', Queue => 'Investigations' },
+    {  Description => 'SetDates', Queue => 'Blocks' },
+);
+
+sub get_queue {
+    my $meta = shift;
+
+    require RT::Queue;
+    my $obj = RT::Queue->new( $RT::SystemUser );
+    $meta = { Name => $meta } unless ref $meta;
+    $obj->LoadByCols( %$meta );
+    unless( $obj->id ) {
+        print STDERR "Couldn't load queue by columns: "
+            . join( ', ', map "$_ = '". $meta->{$_} ."'", sort keys %$meta )
+            . ". ";
+        return;
+    }
+    return $obj;
+
+}
+
+sub get_scrip {
+    my $meta = shift;
+    unless ( $meta ) {
+        require Carp;
+        Carp::cluck("No scrip's metadata provided");
+    }
+    $meta = { Description => $meta } unless ref $meta;
+
+    if ( $meta->{'Queue'} && $meta->{'Queue'} !~ /^\d+$/ ) {
+        my $queue = get_queue( $meta->{'Queue'} ) or return;
+        $meta->{'Queue'} = $queue->id;
+    }
+
+    require RT::Scrip;
+    my $obj = RT::Scrip->new( $RT::SystemUser );
+    $obj->LoadByCols( %$meta );
+    unless( $obj->id ) {
+        print STDERR "Couldn't load scrip by columns: "
+            . join( ', ', map "$_ = '". $meta->{$_} ."'", sort keys %$meta )
+            . ". ";
+        return;
+    }
+    return $obj;
+}
+
+sub set_scrip_action {
+    my $scrip = get_scrip( shift ) or return;
+    my $new_action = shift;
+
+    require RT::ScripAction;
+    my $scrip_action = RT::ScripAction->new( $RT::SystemUser );
+    if ( ref $new_action ) {
+        $scrip_action->LoadByCols( %$new_action );
+    } else {
+        $scrip_action->Load( $new_action );
+    }
+    unless ( $scrip_action->Id ) {
+        print STDERR "Couldn't load scrip action.";
+        return;
+    }
+
+    # current value
+    return if $scrip->ScripAction == $scrip_action->Id;
+
+    my ($status, $msg) = $scrip->SetScripAction( $scrip_action->Id );
+    unless ( $status ) {
+        print STDERR "Couldn't set action to '". $scrip_action->Name ."'"
+            ." on scrip #". $scrip->id .": $msg.";
+        return;
+    }
+    print "Changed action of the scrip #". $scrip->id ." to '". $scrip_action->Description ."'\n";
+}
+
+sub set_scrip_condition {
+    my $scrip = get_scrip( shift ) or return;
+    my $new_condition = shift;
+
+    require RT::ScripCondition;
+    my $scrip_condition = RT::ScripCondition->new( $RT::SystemUser );
+    if ( ref $new_condition ) {
+        $scrip_condition->LoadByCols( %$new_condition );
+    } else {
+        $scrip_condition->Load( $new_condition );
+    }
+    unless ( $scrip_condition->Id ) {
+        print STDERR "Couldn't load scrip condition.";
+        return;
+    }
+
+    # current value
+    return if $scrip->ScripCondition == $scrip_condition->Id;
+
+    my ($status, $msg) = $scrip->SetScripCondition( $scrip_condition->Id );
+    unless ( $status ) {
+        print STDERR "Couldn't set condition to '". $scrip_condition->Name ."'"
+            ." on scrip #". $scrip->id .": $msg.";
+        return;
+    }
+    print "Changed condition of the scrip #". $scrip->id ." to '". $scrip_condition->Description ."'\n";
+}
+
+sub delete_scrip {
+    my $obj = get_scrip( @_ ) or return;
+    # Delete has no return value
+    my ($status, $msg) = $obj->Delete;
+    print "Deleted scrip #". $obj->id .": ". $obj->Description ."\n";
+}
+
+sub set_scrip_field {
+    my $scrip = get_scrip( shift ) or return;
+    my ($field, $value) = @_;
+
+    my $cur = $scrip->$field();
+    return if $value =~ /^\d+$/? $cur == $value: $cur eq $value;
+
+    my $method = 'Set'. $field;
+    my ($status, $msg) = $scrip->$method( $value );
+    unless ( $status ) {
+        print STDERR "Couldn't set $field to '$value'"
+            ." on scrip #". $scrip->id .": $msg.";
+        return;
+    }
+    print "Set $field to '$value' on scrip #". $scrip->id ."\n";
+
+}
+
+@Final = (sub {
+    foreach my $scrip_meta ( @UpdateScrips ) {
+        set_scrip_action(
+            { Description => $scrip_meta->{'Description'}, Queue => $scrip_meta->{'Queue'} },
+            $scrip_meta->{'ScripAction'}
+        );
+        set_scrip_condition(
+            { Description => $scrip_meta->{'Description'}, Queue => $scrip_meta->{'Queue'} },
+            $scrip_meta->{'ScripCondition'}
+        );
+        set_scrip_field(
+            { Description => $scrip_meta->{'Description'}, Queue => $scrip_meta->{'Queue'} },
+            CustomCommitCode => '',
+        );
+        set_scrip_field(
+            { Description => $scrip_meta->{'Description'}, Queue => $scrip_meta->{'Queue'} },
+            CustomPrepareCode => '',
+        );
+        set_scrip_field(
+            { Description => $scrip_meta->{'Description'}, Queue => $scrip_meta->{'Queue'} },
+            CustomIsApplicableCode => '',
+        );
+    }
+}, sub {
+    delete_scrip( $_ ) foreach @DeleteScrips;
+} );
 
