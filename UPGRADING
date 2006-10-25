@@ -52,7 +52,10 @@ queue. Check its content.
 4) NotifyOnLaunch and NotifyOnCreate scrips have been deleted in
 the Implementations and the Blocks queues respectively. You have to
 use the default RT's Autoreply scrip instead or create autoreply
-scrips in these queues if global one is diabled.
+scrips in these queues if global one is disabled or doesn't exist.
+You need the following scrip in the queues:
+
+  On Create AutoReply to Requestors with Template Autoreply
 
 Applying changes from upgrade/1.1.3
 -------------------------
