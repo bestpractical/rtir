@@ -39,6 +39,26 @@ General upgrade instructions
     instructions under "Applying changes from etc/upgrade/1.1.3"
     section below, then do the same with 1.9.0 dir and greater.
 
+Applying changes from upgrade/2.1.1
+-------------------------
+
+At these step no special actions are required, run the upgrade
+scripts where we add several scrips that set 'Started' date
+of tickets in the RTIR.
+
+Applying changes from upgrade/2.1.0
+-------------------------
+
+At these step no special actions are required, run the upgrade
+scripts where we do following things:
+
+1) Apply the _RTIR_IP CF to all RTIR's queues and convert it to
+multiple type. Also, we add several scrips to parse IP addresses
+from incomming mails and to fill those into the CF.
+
+2) The constituency field we apply to all RTIR's queues too and
+and add several scrips to track values of the field.
+
 Applying changes from upgrade/1.9.0
 -------------------------
 
