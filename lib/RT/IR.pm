@@ -121,12 +121,36 @@ use Regexp::Common qw(RE_net_IPv4);
 use Regexp::Common::net::CIDR;
 require Net::CIDR;
 
-require RT::Tickets;
+sub ParseIPRange {
+    my $arg = shift or return ();
+
+    if ( $arg =~ /^\s*$RE{net}{CIDR}{IPv4}{-keep}\s*$/go ) {
+        my $cidr = join( '.', map $_||0, (split /\./, $1)[0..3] ) ."/$2";
+        $arg = (Net::CIDR::cidr2range( $cidr ))[0] || $arg;
+    }
+
+    my ($sIP, $eIP);
+    if ( $arg =~ /^\s*($RE{net}{IPv4})\s*$/o ) {
+        $sIP = $eIP = sprintf "%03d.%03d.%03d.%03d", split /\./, $1;
+    }
+    elsif ( $arg =~ /^\s*($RE{net}{IPv4})-($RE{net}{IPv4})\s*$/o ) {
+        $sIP = sprintf "%03d.%03d.%03d.%03d", split /\./, $1;
+        $eIP = sprintf "%03d.%03d.%03d.%03d", split /\./, $2;
+    }
+    else {
+        return ();
+    }
+    ($sIP, $eIP) = ($eIP, $sIP) if $sIP gt $eIP;
+
+    return $sIP, $eIP;
+}
+
 
 # limit formatting "%03d.%03d.%03d.%03d"
 # "= 'sIP-eIP'" => "( >=sIP AND <=eIP)"
 # "!= 'sIP-eIP'" => "( <sIP OR >eIP)"
 # two ranges intercect when ( eIP1 >= sIP2 AND sIP1 <= eIP2 )
+require RT::Tickets;
 wrap 'RT::Tickets::_CustomFieldLimit',
     pre => sub {
         return if $_[2] && $_[2] =~ /^[<>]=?$/;
@@ -185,19 +209,11 @@ wrap 'RT::ObjectCustomFieldValue::Create',
         for ( my $i = 1; $i < @_; $i += 2 ) {
             next unless $_[$i] && $_[$i] eq 'Content';
 
-            my ($sIP, $eIP);
-            if ( $_[++$i] =~ /^\s*($RE{net}{IPv4})\s*$/o ) {
-                $sIP = $eIP = sprintf "%03d.%03d.%03d.%03d", split /\./, $1;
-            }
-            elsif ( $_[$i] =~ /^\s*($RE{net}{IPv4})-($RE{net}{IPv4})\s*$/o ) {
-                $sIP = sprintf "%03d.%03d.%03d.%03d", split /\./, $1;
-                $eIP = sprintf "%03d.%03d.%03d.%03d", split /\./, $2;
-            }
-            else {
+            my ($sIP, $eIP) = ParseIPRange( $_[++$i] );
+            unless ( $sIP && $eIP ) {
                 $_[-1] = 0;
                 return;
             }
-            ($sIP, $eIP) = ($eIP, $sIP) if $sIP gt $eIP;
             $_[$i] = $sIP;
 
             my $flag = 0;
@@ -235,5 +251,32 @@ eval "require RT::IR_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/IR_Vendor.pm});
 eval "require RT::IR_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/IR_Local.pm});
+
+package RT::ObjectCustomFieldValue;
+
+use strict;
+use warnings;
+
+sub LoadByCols {
+    my $self = shift;
+    my %args = @_;
+    return $self->SUPER::LoadByCols( %args )
+        unless $args{'CustomField'} && $args{'Content'};
+
+    my $cf = RT::IR::GetCustomField( '_RTIR_IP' );
+    unless ( $cf && $cf->id ) {
+        $RT::Logger->crit("Couldn't load IP CF");
+        return $self->SUPER::LoadByCols( %args )
+    }
+    return $self->SUPER::LoadByCols( %args )
+        unless $cf->id == $args{'CustomField'};
+
+    my ($sIP, $eIP) = RT::IR::ParseIPRange( $args{'Content'} );
+    return $self->SUPER::LoadByCols( %args )
+        unless $sIP && $eIP;
+
+    return $self->SUPER::LoadByCols( %args, Content => $sIP, LargeContent => $eIP );
+}
+
 
 1;
