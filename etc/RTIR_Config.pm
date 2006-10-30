@@ -23,11 +23,13 @@ Set($OverdueAfter, 7);
 
 # Set the hash of whois servers
 # Host is of the form "hostname:port"
-Set($whois, { 1 => { Host => "localhost", },
-	      2 => { Host => "whois-demo.bestpractical.com",
-		     FriendlyName => "BPS Demo Server", },
-	  },
-    );
+Set($whois, {
+    1 => { Host => "localhost", },
+    2 => {
+        Host         => "whois-demo.bestpractical.com",
+        FriendlyName => "BPS Demo Server",
+    },
+} );
 
 
 # Set the name of the Business::SLA class
@@ -36,47 +38,37 @@ Set($whois, { 1 => { Host => "localhost", },
 
 # Set the number of minutes for the SLA
 
-Set($SLA, {'Full service' => { BusinessMinutes => 60, 
-			       RealMinutes => 0,
-			   },
-	   'Full service: out of hours' =>  { BusinessMinutes => 120, 
-					      RealMinutes => 0,
-					  },
-	   'Reduced service' =>  { BusinessMinutes => 120, 
-				   RealMinutes => 0,
-			       },
-	   'Now (in business hours)' =>  { BusinessMinutes => 0, 
-					   RealMinutes => 0,
-			       },
-#	   '60 Real Minutes' =>  { BusinessMinutes => undef, 
-#				   RealMinutes => 60,
-#			       },
-       }
-    );
+Set($SLA, {
+    'Full service'               => { BusinessMinutes => 60,    RealMinutes => 0 },
+    'Full service: out of hours' => { BusinessMinutes => 120,   RealMinutes => 0 },
+    'Reduced service'            => { BusinessMinutes => 120,   RealMinutes => 0 },
+    'Now (in business hours)'    => { BusinessMinutes => 0,     RealMinutes => 0 },
+#   '60 Real Minutes'            => { BusinessMinutes => undef, RealMinutes => 60 },
+} );
 
 # Set the SLA for responses
-Set ($SLA_Response_InHours, 'Now (in business hours)');
-Set ($SLA_Response_OutOfHours, 'Now (in business hours)');
+Set($SLA_Response_InHours,    'Now (in business hours)');
+Set($SLA_Response_OutOfHours, 'Now (in business hours)');
 
 # Set the SLA for re-opened tickets
-Set ($SLA_Reopen_InHours, 'Full service');
-Set ($SLA_Reopen_OutOfHours, 'Full service: out of hours');
+Set($SLA_Reopen_InHours,    'Full service');
+Set($SLA_Reopen_OutOfHours, 'Full service: out of hours');
 
 # Set the defaults for RTIR custom fields
 # default values are case-sensitive
 
-Set($_RTIR_SLA_inhours_default, "Full service");
-Set($_RTIR_SLA_outofhours_default, "Full service: out of hours");
-Set($_RTIR_HowReported_default, "Email");
-Set($_RTIR_ReporterType_default, "");
-Set($_RTIR_IP_default, "");
-Set($_RTIR_Netmask_default, "");
-Set($_RTIR_Port_default, "");
-Set($_RTIR_WhereBlocked_default, "");
-Set($_RTIR_Constituency_default, "EDUNET");
-Set($_RTIR_Function_default, "");
-Set($_RTIR_Classification_default, "");
-Set($_RTIR_Description_default, "");
+Set($_RTIR_SLA_inhours_default,         "Full service");
+Set($_RTIR_SLA_outofhours_default,      "Full service: out of hours");
+Set($_RTIR_HowReported_default,         "Email");
+Set($_RTIR_ReporterType_default,        "");
+Set($_RTIR_IP_default,                  "");
+Set($_RTIR_Netmask_default,             "");
+Set($_RTIR_Port_default,                "");
+Set($_RTIR_WhereBlocked_default,        "");
+Set($_RTIR_Constituency_default,        "EDUNET");
+Set($_RTIR_Function_default,            "");
+Set($_RTIR_Classification_default,      "");
+Set($_RTIR_Description_default,         "");
 Set($_RTIR_Resolution_resolved_default, "successfully resolved");
 Set($_RTIR_Resolution_rejected_default, "no resolution reached");
 
@@ -87,27 +79,27 @@ Set($_RTIR_Resolution_rejected_default, "no resolution reached");
 #Set($BusinessHours, {
 #    0 => { Name => 'Sunday',
 #           Start => undef,
-#	   End => undef},
+#           End => undef},
 #
 #    1 => { Name => 'Monday',
 #           Start => '09:00',
-#	   End => '18:00'},
+#           End => '18:00'},
 #
 #    2 => { Name => 'Tuesday',
 #           Start => '09:00',
-#	   End => '18:00'},
+#           End => '18:00'},
 #
 #    3 => { Name => 'Wednesday',
 #           Start => '09:00',
-#	   End => '18:00'},
+#           End => '18:00'},
 #
 #    4 => { Name => 'Thursday',
 #           Start => '09:00',
-#	   End => '18:00'},
+#           End => '18:00'},
 #
 #    5 => { Name => 'Friday',
 #           Start => '09:00',
-#	   End => '18:00'},
+#           End => '18:00'},
 #
 #    6 => { Name => 'Saturday',
 #           Start => undef,
@@ -128,126 +120,101 @@ Set($RTIR_OldestRelatedTickets, 60);
 
 # Default formats for RTIR search results
 Set($RTIRSearchResultFormats, {
-    ReportDefault => q{'<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-			'<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
-			'__CustomField.{_RTIR_State}__/TITLE:State',
-			__LastUpdatedRelative__,
-			__CreatedRelative__,
-			__NEWLINE__,
-			'',
-			__Requestors__,
-			__OwnerName__,
-			__ToldRelative__,
-			__DueRelative__,
-			__TimeLeft__},
-
-    InvestigationDefault => q{'<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-			       '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
-			       '__CustomField.{_RTIR_State}__/TITLE:State',
-			       __LastUpdatedRelative__,
-			       __CreatedRelative__,
-			       __NEWLINE__,
-			       '',
-			       __Requestors__,
-			       __OwnerName__,
-			       __ToldRelative__,
-			       __DueRelative__,
-			       __TimeLeft__},
+    ReportDefault =>
+        q{'<b><a HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
+          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+          '__CustomField.{_RTIR_State}__/TITLE:State',
+          __LastUpdatedRelative__,
+          __CreatedRelative__,
+          __NEWLINE__,
+          '',__Requestors__,__OwnerName__,__ToldRelative__,__DueRelative__,__TimeLeft__},
+    InvestigationDefault =>
+        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
+          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+          '__CustomField.{_RTIR_State}__/TITLE:State',
+          __LastUpdatedRelative__,
+          __CreatedRelative__,
+          __NEWLINE__,
+          '', __Requestors__, __OwnerName__, __ToldRelative__, __DueRelative__, __TimeLeft__},
     
-    BlockDefault => q{'<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-		       '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
-		       '__CustomField.{_RTIR_State}__/TITLE:State',
-		       __LastUpdatedRelative__,
-		       __CreatedRelative__,
-		       __NEWLINE__,
-		       '',
-		       __Requestors__,
-		       __OwnerName__,
-		       __ToldRelative__,
-		       __DueRelative__,
-		       __TimeLeft__},
+    BlockDefault =>
+        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
+          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+          '__CustomField.{_RTIR_State}__/TITLE:State',
+          __LastUpdatedRelative__,
+          __CreatedRelative__,
+          __NEWLINE__,
+          '', __Requestors__, __OwnerName__, __ToldRelative__, __DueRelative__, __TimeLeft__},
 
-    IncidentDefault => q{'<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-			  '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
-			  '__CustomField.{_RTIR_State}__/TITLE:State',
-			  __LastUpdatedRelative__,
-			  __CreatedRelative__,
-			  __Priority__,
-			  __NEWLINE__,
-			  __OwnerName__,
-			  __ToldRelative__,
-			  __DueRelative__,
-			  __TimeLeft__},
-    
-    Merge => qq{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
-		'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
-		__Requestors__,
-		__OwnerName__,
-		__CreatedRelative__,
-		__DueRelative__},
+    IncidentDefault =>
+        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
+          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+          '__CustomField.{_RTIR_State}__/TITLE:State',
+          __LastUpdatedRelative__,
+          __CreatedRelative__,
+          __Priority__,
+          __NEWLINE__,
+          '', '', __OwnerName__, __ToldRelative__, __DueRelative__, __TimeLeft__},
 
-    LinkChildren => qq{'<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-		       '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
-		       __Requestors__,
-		       __OwnerName__,
-		       __CreatedRelative__,
-		       __DueRelative__},
+    Merge =>
+        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
+          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+          __Requestors__, __OwnerName__, __CreatedRelative__, __DueRelative__},
 
-    LinkIncident => qq{'<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-		       '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
-		       __OwnerName__,
-		       __CreatedRelative__},
-    
-    RejectReports, qq{'<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-		      '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
-		      __Requestors__,__OwnerName__,__CreatedRelative__,__DueRelative__},
-    
-    BulkReply => qq{'<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-		    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
-		    __Requestors__,__OwnerName__,__CreatedRelative__,__DueRelative__},
+    LinkChildren =>
+        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
+          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+          __Requestors__, __OwnerName__, __CreatedRelative__, __DueRelative__},
 
-    DueIncidents => qq{'<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-		       '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
-		       '__OwnerName__',
-		       '__Priority__',
-		       '__DueRelative__',
-		   },
-    AbandonIncidents => qq{'<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-		       '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
-		       '__OwnerName__',
-		       '__Priority__',
-		       '__DueRelative__',
-		   },
+    LinkIncident =>
+        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
+          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+          __OwnerName__, __CreatedRelative__},
 
+    RejectReports =>
+        q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',
+          '<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>',
+          __Requestors__, __OwnerName__, __CreatedRelative__, __DueRelative__},
 
-    NewReports => qq{'<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-		       '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
-		       '__Requestors__',
-		       '__OwnerName__',
-		       '__DueRelative__',
-               '__TakeOrSteal__',
-		   },
+    BulkReply =>
+        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
+          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+          __Requestors__, __OwnerName__, __CreatedRelative__, __DueRelative__},
 
-    ChildReport => qq{'<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-                '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
-                '<I>__CustomField.{_RTIR_State}__</I>/TITLE:State',
-                __DueRelative__,
-            },
+    DueIncidents =>
+        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
+          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+          __OwnerName__, __Priority__, __DueRelative__},
 
-    ChildInvestigation => qq{'<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-			     '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
-			     '<I>__CustomField.{_RTIR_State}__</I>/TITLE:State',
-			     __DueRelative__,
-			 },
+    AbandonIncidents =>
+        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
+          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+          __OwnerName__, __Priority__, __DueRelative__},
 
-    ChildBlock => qq{'<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-		     '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
-		     '<I>__CustomField.{_RTIR_State}__</I>/TITLE:State',
-		     __DueRelative__,
-		 },
+    NewReports =>
+        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
+          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+          __Requestors__, __OwnerName__, __DueRelative__, __TakeOrSteal__},
 
-},
-    );
+    ChildReport =>
+        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
+          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+          '__CustomField.{_RTIR_State}__</I>/TITLE:State',
+          __DueRelative__},
+
+    ChildInvestigation =>
+        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
+          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+          '__CustomField.{_RTIR_State}__</I>/TITLE:State',
+          __DueRelative__},
+
+    ChildBlock =>
+        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
+          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+          '__CustomField.{_RTIR_State}__</I>/TITLE:State',
+           __DueRelative__},
+
+} );
 
 
 # Enable this option if you want jump to display screen after saving changes
@@ -259,13 +226,12 @@ Set($TracerouteCommand, '/usr/sbin/traceroute');
 
 
 # Components that available to add on the first page of the RTIR
-Set(@RTIR_HomepageComponents, 
-    qw(
-    QuickCreate 
-    Quicksearch 
+Set(@RTIR_HomepageComponents, qw(
+    QuickCreate
+    Quicksearch
     MyAdminQueues
-    MySupportQueues 
-    MyReminders  
+    MySupportQueues
+    MyReminders
     /RTIR/Elements/NewReports
     /RTIR/Elements/UserDueIncidents
     /RTIR/Elements/DueIncidents
