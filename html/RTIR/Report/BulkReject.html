@@ -145,6 +145,7 @@ my $QueryString = $m->comp('/Elements/QueryString',
     OrderBy   => $OrderBy,
     Order     => $Order,
 );
+
 my $BaseURL = "RTIR/Report/BulkReject.html?"
     . $m->comp('/Elements/QueryString', Queue => $Queue);
 my $current_tab = "$BaseURL&$QueryString";
@@ -156,8 +157,8 @@ $Queue               => 'Incident Reports'
 
 $BaseQuery           => $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue )
 $Query               => $m->comp( '/RTIR/Elements/NewQuery',  Queue => $Queue )
-$Format              => RT->Config->Get('RTIRSearchResultFormats')->{'RejectReports'};
-$Rows                => 50
+$Format              => RT->Config->Get('RTIRSearchResultFormats')->{'RejectReports'}
+$Rows                => RT->Config->Get('DefaultSummaryRows', $session{'CurrentUser'})
 $Page                => 1
 $OrderBy             => 'id'
 $Order               => 'ASC'
