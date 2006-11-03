@@ -34,8 +34,18 @@ my $ShortQueryString = $m->comp('/Elements/QueryString',
 </%PERL>
 
 %# XXX: this code is duplicated in html/Search/Elements/ResultViews (RT)
+
 % if ( $Queue eq 'Incident Reports' ) {
-<a href="<%RT->Config->Get('WebPath')%>/RTIR/Report/BulkReject.html?<% $QueryString %>"><&|/l&>Bulk Reject</&></a> |
+%   if ( $ShowNavigation ) {
+<a href="<% RT->Config->Get('WebPath') %>/RTIR/Report/BulkReject.html?<% $ShortQueryString %>"><&|/l&>Bulk Reject</&></a> |
+%   } else {
+<a href="<% RT->Config->Get('WebPath') %>/RTIR/Report/BulkReject.html?<% $m->comp('/Elements/QueryString',
+    Queue     => $Queue,
+    Query     => $Query,
+    OrderBy   => $OrderBy,
+    Order     => $Order,
+) %>"><&|/l&>Bulk Reject</&></a> |
+%   }
 % }
 
 <a href="<% RT->Config->Get('WebPath') %>/Search/Results.tsv?<% $ShortQueryString %>"><&|/l&>spreadsheet</&></a> |

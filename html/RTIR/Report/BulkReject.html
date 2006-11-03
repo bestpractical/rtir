@@ -158,7 +158,7 @@ $Queue               => 'Incident Reports'
 $BaseQuery           => $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue )
 $Query               => $m->comp( '/RTIR/Elements/NewQuery',  Queue => $Queue )
 $Format              => RT->Config->Get('RTIRSearchResultFormats')->{'RejectReports'}
-$Rows                => RT->Config->Get('DefaultSummaryRows', $session{'CurrentUser'})
+$Rows                => 50
 $Page                => 1
 $OrderBy             => 'id'
 $Order               => 'ASC'

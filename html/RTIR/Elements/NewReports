@@ -41,7 +41,11 @@
     AllowSorting => 0,
 &>
 
-<a href="<% RT->Config->Get('WebPath') %>/RTIR/Report/BulkReject.html?<% $EscapedQueue %>&<% $QueryString %>">[<%loc("Bulk Reject")%>]</a>
+<a href="<% RT->Config->Get('WebPath') %>/RTIR/Report/BulkReject.html?<% $EscapedQueue %>&<% $m->comp('/Elements/QueryString',
+    Query   => $Query,
+    OrderBy => $OrderBy,
+    Order   => $Order,
+) %>">[<%loc("Bulk Reject")%>]</a>
 
 </&>
 
