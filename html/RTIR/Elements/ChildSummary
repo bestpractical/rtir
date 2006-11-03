@@ -23,6 +23,7 @@
 %# 
 %# END LICENSE BLOCK
 <table width="100%" border="0" cellpadding="2" cellspacing="0">
+
 <tr>
 %# XXX: why we don't use TicketList component here?
 <th><b><&|/l&>id<b></&></th>
@@ -31,8 +32,9 @@
 <th><b><&|/l&>Priority<b></&></th>
 <th align="right"><b><&|/l&>Actions<b></&></th>
 </tr>
+
 % my $i=0;
-%while (my $Ticket = $session{'tickets'}->Next) {
+% while (my $Ticket = $session{'tickets'}->Next) {
 % next unless ($Ticket->QueueObj->Name eq $Queue);
 % $i++;
 % my ($t) = $m->comp("/RTIR/Elements/Type", TicketObj => $Ticket);
@@ -76,10 +78,17 @@
 
 <%INIT>
 my $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
-$Query = join ' AND ', $Query, "Content LIKE '$q'" if $q;
+my @conditions = ();
+if ( defined $q && length $q ) {
+    if ( lc( $lookuptype || '' ) eq 'ip' ) {
+        push @conditions, "CF.{_RTIR_IP} = '$q'";
+    } else {
+        push @conditions, "Content LIKE '$q'";
+    }
+}
+$Query = join ' AND ', map "( $_ )", grep $_, $Query, @conditions;
 
-my $QueryString = $m->comp(
-    '/Elements/QueryString',
+my $QueryString = $m->comp('/Elements/QueryString',
     Query   => $Query,
     Format  => $Format,
     Rows    => $Rows,

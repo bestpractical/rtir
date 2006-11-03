@@ -42,9 +42,10 @@
 
 <&| /Widgets/TitleBox, title => loc('Incidents: [_1]', $q) &>
 <& /RTIR/Elements/IncidentSummary, 
-    Type   => $TicketType, 
-    ticket => $ticket, 
-    q      => $q,
+    Type       => $TicketType, 
+    ticket     => $ticket, 
+    lookuptype => $type, 
+    q          => $q,
 &>
 </&>
 

@@ -23,6 +23,7 @@
 %# 
 %# END LICENSE BLOCK
 <table width="100%" border="0" cellpadding="2" cellspacing="0">
+
 <tr>
 <td><b><&|/l&>id<b></&></td>
 <td><b><&|/l&>Subject<b></&></td>
@@ -30,6 +31,7 @@
 <td><b><&|/l&>Priority<b></&></td>
 <td align="right"><b><&|/l&>Actions<b></&></td>
 </tr>
+
 % my $i=0;
 % foreach my $incident (sort keys %{$incidents}) {
 % my $Ticket = $incidents->{$incident}->{'Ticket'};
@@ -68,46 +70,53 @@
 </table>
 
 <%INIT>
-my $Queue = 'Incidents';
+$session{'tickets'} ||= RT::Tickets->new( $session{'CurrentUser'} );
+$session{'tickets'}->GotoFirstItem;
+
 my $incidents;
-
 while ( my $Ticket = $session{'tickets'}->Next ) {
-  if ($Ticket->QueueObj->Name eq "Incidents") {
-    $incidents->{$Ticket->Id} = { Ticket => $Ticket };
-  } elsif ($Ticket->QueueObj->Name eq "Incident Reports") {
-      my $query = "Queue = 'Incidents' AND HasMember = " . $Ticket->Id;
-      my $parents = new RT::Tickets($session{'CurrentUser'});
-      $parents->FromSQL($query);
-      while (my $parent = $parents->Next) {
-	  if ($parent->QueueObj->Name eq 'Incidents') {
-	      $incidents->{$parent->Id} = { Ticket => $parent };
-	  }
-      }
-  }
+    if ( $Ticket->QueueObj->Name eq "Incidents" ) {
+        $incidents->{ $Ticket->Id } = { Ticket => $Ticket };
+    } elsif ( $Ticket->QueueObj->Name eq "Incident Reports" ) {
+        my $query = "Queue = 'Incidents' AND HasMember = " . $Ticket->Id;
+        my $parents = RT::Tickets->new( $session{'CurrentUser'} );
+        $parents->FromSQL( $query );
+        while ( my $parent = $parents->Next ) {
+            $incidents->{ $parent->Id } = { Ticket => $parent };
+        }
+    }
 }
 
-my $Query;
-if (!$Query) {
-    $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
-    $Query .= " AND Content LIKE '$q'" if $q;
+my $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => 'Incidents');
+my @conditions = ();
+if ( defined $q && length $q ) {
+    if ( lc( $lookuptype || '' ) eq 'ip' ) {
+        push @conditions, "CF.{_RTIR_IP} = '$q'";
+    } else {
+        push @conditions, "Content LIKE '$q'";
+    }
 }
+$Query = join ' AND ', map "( $_ )", grep $_, $Query, @conditions;
 
 my $QueryString = $m->comp('/Elements/QueryString',
-                               Query => $Query,
-                               Format => $Format,
-                               Rows => $Rows,
-                               OrderBy => $ARGS{'OrderBy'},
-                               Order => $ARGS{'Order'},
-                               Page => $Page);
-
+    Query => $Query,
+    Format => $Format,
+    Rows => $Rows,
+    Page => $Page,
+    OrderBy => $OrderBy,
+    Order => $Order,
+);
 </%INIT>
 
 <%ARGS>
 $Type => undef
 $ticket => undef
+$lookuptype => undef
 $q => undef
+
 $Format => undef 
-$HideResults => 0
 $Rows => 50
 $Page => 1
+$OrderBy => undef
+$Order => undef
 </%ARGS>
