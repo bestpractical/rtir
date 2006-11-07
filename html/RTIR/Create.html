@@ -372,10 +372,19 @@ push @results, $m->comp( 'SELF:ProcessAttachments', %ARGS );
 # checks
 if ( $ARGS{'Create'} ) {
     if ( $Type eq 'Investigation' && !$ARGS{'Requestors'} ) {
-        push @results, loc( "You must enter a correspondent." );
+        push @results, loc( "You must enter a correspondent" );
         $checks_failure = 1;
     } elsif ( $Type eq 'Block' and not $IncidentObj ) {
         push @results, loc( "You must enter an Incident ID" );
+        $checks_failure = 1;
+    }
+
+    my ($status, @msg) = $m->comp('/Elements/ValidateCustomFields',
+        CustomFields => $QueueObj->TicketCustomFields,
+        ARGSRef      => \%ARGS,
+    );
+    unless ( $status ) {
+        push @results, loc( "Invalid value(s) of the custom fields:" ), @msg;
         $checks_failure = 1;
     }
 }
