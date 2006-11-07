@@ -1,0 +1,33 @@
+
+sub get_cf {
+    my $name = shift;
+    my $obj = RT::CustomField->new( $RT::SystemUser );
+    $obj->Load( $name );
+    unless ( $obj->id ) {
+        print STDERR "Error: Couldn't load custom field '$name'\n";
+        return undef;
+    }
+    return $obj;
+}
+
+sub set_cf_field {
+    my ($name, $field, $value) = @_;
+    my $cf = get_cf( $name ) or return;
+    my $method = 'Set'. $field;
+    my ($status, $msg) = $cf->$method( $value );
+    unless ( $status ) {
+        print STDERR "Couldn't set CF's $field property. Error: $msg\n";
+        return;
+    } else {
+        print "Changed $field for the custom field $name to '$value'\n";
+    }
+}
+
+use Regexp::Common qw(net);
+use Regexp::Common::net::CIDR();
+my $ip_pattern = qr{(?#IP/IP-IP/CIDR)^(?:|\s*$RE{net}{IPv4}(?:\s*-\s*$RE{net}{IPv4})?\s*|$RE{net}{CIDR}{IPv4})$};
+
+@Initial = (
+    sub { set_cf_field( '_RTIR_IP', 'Pattern', "$ip_pattern" ) },
+);
+
