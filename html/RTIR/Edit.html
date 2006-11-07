@@ -220,9 +220,6 @@
 </form>
 
 <%INIT>
-
-my @results;
-
 my $Ticket = LoadTicket($id);
 $id = $ARGS{'id'} = $Ticket->Id;
 
@@ -249,7 +246,9 @@ $CanRespond = 1 if ( $Ticket->CurrentUserHasRight('ReplyToTicket') or
 $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
                      $Ticket->CurrentUserHasRight('ModifyTicket') );
 
+my @results;
 if ( $SaveChanges && !$OnlySearchForPeople ) {
+    my $checks_failure = 0;
     my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, '_RTIR_State' );
     push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
@@ -262,15 +261,22 @@ if ( $SaveChanges && !$OnlySearchForPeople ) {
     # XXX: edit page has no message box or attachments form
     $ARGS{UpdateAttachments} = delete $session{'Attachments'};
     push @results, ProcessUpdateMessage(  TicketObj => $Ticket, ARGSRef=>\%ARGS );
-
     push @results, ProcessTicketBasics(   TicketObj => $Ticket, ARGSRef => \%ARGS );
+
+    my ($status, @msg) = $m->comp('/Elements/ValidateCustomFields',
+        CustomFields => $Ticket->QueueObj->TicketCustomFields,
+        NamePrefix   => "Object-RT::Ticket-$id-CustomField-",
+        ARGSRef      => \%ARGS,
+    );
+    # we don't use messages as later ProcessTicketCustomFieldUpdates do that for us
+    $checks_failure = 1 unless $status;
     push @results, ProcessTicketCustomFieldUpdates( ARGSRef => \%ARGS );
 
     my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, '_RTIR_State' );
     if ($newstate ne $oldstate) {
-      push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
+        push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
     }
-    if ( RT->Config->Get('DisplayAfterEdit', $session{'CurrentUser'}) ) {
+    if ( !$checks_failure && RT->Config->Get('DisplayAfterEdit', $session{'CurrentUser'}) ) {
         return $m->comp("/RTIR/Display.html", results => [@results], id => $id);
     }
 }

@@ -32,13 +32,13 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-% if (!$Ticket->CurrentUserHasRight('ModifyTicket')) {
+% unless ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
 <&|/l&>You are not allowed to edit this Incident.</&>
-%    $m->abort();
+%    return;
 % }
 
 <form method="post" action="Edit.html" enctype="multipart/form-data">
-<input type="hidden" name="id" value="<%$Ticket->Id%>" />
+<input type="hidden" name="id" value="<% $id %>" />
 
 <table border="0" cellspacing="2" cellpadding="0" width="100%">
 <tr>
@@ -152,10 +152,8 @@
 </form>
 
 <%INIT>
-
-my @results;
-
 my $Ticket = LoadTicket($id);
+$id = $ARGS{'id'} = $Ticket->Id;
 
 my $CanRespond = 0;
 my $CanComment = 0;
@@ -166,11 +164,22 @@ $CanRespond = 1 if ( $Ticket->CurrentUserHasRight('ReplyToTicket') or
 $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
                      $Ticket->CurrentUserHasRight('ModifyTicket') );
 
-my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, '_RTIR_State' );
-unless ($OnlySearchForPeople) {
+my @results;
+if ( $SaveChanges && !$OnlySearchForPeople ) {
+    my $checks_failure = 0;
+    my $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
     push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
     push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
+
+    my ($status, @msg) = $m->comp('/Elements/ValidateCustomFields',
+        CustomFields => $Ticket->QueueObj->TicketCustomFields,
+        NamePrefix   => "Object-RT::Ticket-$id-CustomField-",
+        ARGSRef      => \%ARGS,
+    );
+    # we don't use messages as later ProcessTicketCustomFieldUpdates do that for us
+    $checks_failure = 1 unless $status;
     push @results, ProcessTicketCustomFieldUpdates(ARGSRef => \%ARGS);
+
     push @results, ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
 
     my $strict_acl = RT->Config->Set( StrictLinkACL => 0 );
@@ -179,15 +188,14 @@ unless ($OnlySearchForPeople) {
 
     $ARGS{UpdateAttachments} = $session{'Attachments'};
    	push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef=>\%ARGS );
-}
-my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, '_RTIR_State' );
-if ($newstate ne $oldstate) {
-  push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
-}
 
-if( $ARGS{'SaveChanges'} && RT->Config->Get('DisplayAfterEdit', $session{'CurrentUser'}) ) {
-    $m->comp("/RTIR/Incident/Display.html", results => [@results], %ARGS);
-    $m->abort;
+    my $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+    if ($newstate ne $oldstate) {
+        push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
+    }
+    if ( !$checks_failure && RT->Config->Get('DisplayAfterEdit', $session{'CurrentUser'}) ) {
+        return $m->comp("/RTIR/Incident/Display.html", results => [@results], id => $id );
+    }
 }
 
 # If they've gone and moved the ticket to somewhere they can't see, etc...
@@ -200,9 +208,8 @@ unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
 
 <%ARGS>
 $OnlySearchForPeople => undef
-$UserField => undef
-$UserOp => undef
-$UserString => undef
+$SaveChanges         => undef
+
 $id => undef
 </%ARGS>
 
