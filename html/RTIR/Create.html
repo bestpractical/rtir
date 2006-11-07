@@ -387,9 +387,7 @@ if ( $ARGS{'Create'} ) {
         push @results, loc( "Invalid value(s) of the custom fields:" ), @msg;
         $checks_failure = 1;
     }
-}
 
-if ( $ARGS{'Create'} ) {
     unless ( $checks_failure ) {
         $ARGS{'new-MemberOf'} = $parentvalue if $parentvalue;
         return $m->comp( 'Display.html', %ARGS, SkipNotification => \@SkipNotification, results => \@results );

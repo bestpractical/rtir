@@ -200,14 +200,25 @@ if ( $Child ) {
     $ARGS{'Subject'} ||= $ChildObj->Subject;
 }
 
-my $QueueObj = new RT::Queue( $session{'CurrentUser'} );
+my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
 $QueueObj->Load( 'Incidents' ) || Abort( loc("Queue could not be loaded.") );
 
 $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 
+my $checks_failure = 0;
 if ( $CreateIncident ) {
-    my ($inc_obj, @tmp);
-    ($inc_obj, @tmp) = $m->comp(
+    my ($status, @msg) = $m->comp('/Elements/ValidateCustomFields',
+        CustomFields => $QueueObj->TicketCustomFields,
+        ARGSRef      => \%ARGS,
+    );
+    unless ( $status ) {
+        push @results, loc( "Invalid value(s) of the custom fields:" ), @msg;
+        $checks_failure = 1;
+    }
+}
+
+if ( !$checks_failure && $CreateIncident ) {
+    my ($inc_obj, @tmp) = $m->comp(
         '/RTIR/Investigation/Elements/Create:Process',
         %ARGS,
         $Child? ('MemberOf-new' => $Child): (),
