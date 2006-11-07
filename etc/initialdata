@@ -31,6 +31,11 @@
     },
 );
 
+use Regexp::Common qw(net);
+use Regexp::Common::net::CIDR();
+my $ip_pattern = qr{(?#IP/IP-IP/CIDR)^(?:|\s*$RE{net}{IPv4}(?:\s*-\s*$RE{net}{IPv4})?\s*|$RE{net}{CIDR}{IPv4})$};
+
+
 @CustomFields = (
     {
         Name        => '_RTIR_State',
@@ -180,6 +185,7 @@
     {
         Name        => '_RTIR_IP',
         Type        => 'FreeformMultiple',
+        Pattern     => "$ip_pattern",
         Queue       => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
         Disabled    => 0,
         Description => 'IP address for RTIR queues',
