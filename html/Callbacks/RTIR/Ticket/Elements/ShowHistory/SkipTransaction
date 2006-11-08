@@ -3,6 +3,13 @@
 # Set $skip to 1 if transaction matches criteria
 # $skip is passed by reference
 
+# skip _RTIR_IP changes done by system user(scrips)
+if ( $Transaction->Creator == $RT::SystemUser->id && $Transaction->Type eq 'CustomField' ) {
+    my $cf = RT::IR::GetCustomField('_RTIR_IP') or return $$skip = 0;
+    return $$skip = 0 unless $cf->id == $Transaction->Field;
+    return $$skip = 1;
+}
+
 # get out of here asap
 unless ( $Transaction->Field eq 'Status' && $Transaction->Type =~ /^(?:Status|Set)$/ ) {
     return $$skip = 0;
