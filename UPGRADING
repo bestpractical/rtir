@@ -14,9 +14,13 @@ General upgrade instructions
 
 2) Install or upgrade RTFM.
 
-3) Install the new version of RTIR. (DO NOT RUN "make initdb")
+3) Delete '/opt/rt3/share/html/Callbacks/RTIR'. If you have some
+   customized components in the dir then you have to take care of
+   it.
 
-4) Update RTIR's database.
+4) Install the new version of RTIR. (DO NOT RUN "make initdb")
+
+5) Update RTIR's database.
     
     Type:
 
