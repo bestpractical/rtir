@@ -1,59 +1,83 @@
 
-=head2 Merge
+=head2 Merging tickets
 
-RT's C<merge> operation allows users to merge two tickets into one.
-This operation is pretty straight forward, everything that
-RT can merge from the source ticket is added to the target ticket.
-When only one value can be selected, RT prefers the value from
-the target ticket.
+It happens that after some investigation, it turns out that
+two Incidents actually are the same, e.g. where dynamic IP addresses
+are involved. In such a situation, the merge operation can be used,
+effectively making one ticket with out of two, containing the data
+and correspondence of both. Only tickets within the same queue should
+be merged, with the notable exception of merging an incident report
+into an investigation when a correspondent's reply accidentally
+could not be recognized as such and thus got misfiled as new incident
+report.
 
-
-The result of the action depends on the direction of the merge:
-"merge ticket #1 into #2" is not the same as "merge ticket #2 
-into #1".
-
-When you merge ticket #1 into #2 some properties of
-ticket #1 are joined with respective properties of
-ticket #2: TimeEstimated, TimeWorked, TimeLeft, Requestors, 
-Cc and AdminCc and links. Other fields from ticket #1 are 
-ignored . Duplicated links or watchers will be condensed.,
-also if there were links between tickets #1 and #2 then
-RT will drop them
-
-The merge operation can't be reversed and should be used with
-caution.
-
-Users can merge tickets only if they have the right 'ModifyTicket' 
-on both tickets.
-
-Within RTIR, IRs and Investigations can be merged, while other
-RTIR's tickets can be mereged with tickets in the same queue.
 When a user opens a ticket's display page there is a 'Merge'
 option in the page's tabs. The Merge page is split into two
 blocks. The first one is a list of other children of the parent
 incident(s) of the current ticket. It's empty if the ticket is
 not linked to any incidents or if there is no candidate to
-merge into. 
+merge into. By default this page contains only active tickets.
 
-The second box contains other tickets you can merge into, 
+The second box contains other tickets you can merge into,
 tickets are grouped by queue, if it's possible to merge the
 ticket into a ticket in another queue. (for example, you can
 merge an IR into an Investigation). Note that if a user
 merges an IR into an Investigation then investigation is always
 used as the target ticket.
 
-You have to select one ticket from the list and submit form the.
-If the merge completes succesfully, you'll be redirected to the 
-target ticket's main page.
+You have to select one ticket from the list and submit the form.
+If the merge completes successfully, you'll be redirected to the 
+target ticket's main page. The action may fail because of lack of
+permissions or a system error, in this case you'll see an error
+message, consult to your system administrator.
 
 When the merge page doesn't have the ticket you're looking for,
 you can click 'Refine' to adjust the search conditions before
 returning to the merge page by clicking the 'Merge' tab.
 
-You can access RT's generic merge from an RTIR ticket's 'Advanced'
-tab.
+After merge both IDs of tickets you've merged point to the
+target ticket, so you could still use old ID in the subject
+of replies, but RTIR will send new notifications with an ID
+of the merged into ticket.
 
-=head2 Split
+The merge operation B<can't be reversed> and should be used with
+caution.
+
+=head3 Technical details
+
+There is some technical details users may be interested in.
+
+Merge operation is pretty straight forward, everything that
+RT can merge from the source ticket is added to the target ticket.
+When only one value can be selected, RT prefers the value from
+the target ticket, so the result of the action depends on the
+direction of the merge: "merge ticket #1 into #2" is not the same
+as "merge ticket #2 into #1".
+
+When you merge ticket #1 into #2 some properties of ticket #1
+are joined with respective properties of ticket #2: TimeEstimated,
+TimeWorked, TimeLeft, Requestors, Cc and AdminCc and links.
+Duplicated links or watchers will be condensed, also if there
+were links between tickets #1 and #2 then RT will drop them.
+Other fields from ticket #1 are ignored, such as state, queue or
+custom fields of single value type. By default RTIR shows only
+active tickets as candidates for the merge, so you have no way
+to merge a ticket into resolved or rejected, but you should
+note that merging into resolved ticket (you can change search
+conditions via refine tab) is not the same as resolving ticket
+and RTIR will not send notifications in this case.
+
+Users can merge tickets only if they have the right 'ModifyTicket'
+on both tickets.
+
+You, also, can access RT's generic merge from an RTIR ticket's
+'Advanced' tab. This option allows user to merge any ticket into
+any avoiding 'the same queue' and other restrictions RTIR has.
+For example you can merge an investigation into an IR, or an IR
+into a ticket in non RTIR's queues. ACL checks still apply.
+In general workflow this operation should be avoided.
+
+=head2 Splitting tickets
 
 Split operation allows user to create new ticket from the existing one.
 When a user selects the 'Split' tab he will see a new ticket creation form 
@@ -68,19 +92,81 @@ split from.
 Note that the split action is implemented over "create" function and if
 your RTIR configured to notify requestors (correspondents) then mail(s)
 would be send after split. However you can use "Don't send any emails to
-correspondents" checkbox from the split page.
+correspondents" checkbox from the split page to avoid notifications.
 
-=head2 Abandon and Reject
+=head2 Rejecting an IR
 
-These operations are quite similar to each other. A rejected ticket is not
-availble for many operations and this state is treated as inactive.
+Rejecting means "we're not going to work on the ticket". There is several
+reasons to do this: the ticket is spam, problem wouldn't be solved, it's
+out of scope or something else. Rejected tickets are still available for
+searches and can be reopened, but RTIR's default interfaces are designed
+to hide such tickets, so people can concentrate on new and open tickets.
 
-Rejected tickets are still available for searches and can be reopened, 
-but RTIR's default interfaces are designed to hide such tickets,
-so people can concentrate on new and open tickets.
+When you open a ticket's display page there is a 'Reject' tab. You click
+it and see 'reject incident report' page with a box for message and other
+common input fields. You can write a message and choose whether it would be
+comment or response, by default correspondents don't receive comments.
+You submit the form and RTIR sets state of the ticket, records the message
+and unlink the IR from any incidents.
 
-The abandon action allows a user to reject an incident and all its children.
+If you don't want to write any comment or change any properties of an IR
+during reject action then you can submit the reject form immediately or
+use 'Quick Reject' tab and reject the current IR without even opening
+the reject form.
 
+=head3 Rejecting many IRs at once (bulk reject)
+
+On the RTIR home page at the bottom of 'New unlinked Incident Reports' box
+you can see 'Bulk Reject' link. Following that link you can open interface
+for rejecting many tickets at once. The interface has a buttons to
+check/uncheck all tickets on the page or you can select particular IRs
+with checkboxes. To reject tickets you submit the form with 'reject' or
+'reject and return' buttons, by clicking the former one you stay on the
+'bulk reject' page, while the latter one returns you to the RTIR home page
+where you could continue your work.
+
+Note that you couldn't reject IRs that are owned by somebody else (sure, you
+could reject unowned) with the bulk reject interface, these IRs would be
+skipped with a notice even if you'd selected some.
+
+=head2 Abandoning incidents
+
+This operation is quite similar to rejecting an IR, but when you're
+abandoning an incident you also reject IRs, resolve investigations and
+remove blocks linked to it.
+
+Once you open abandon page with the incident's tab you see a list of its
+children grouped by queue and common update form. You can select children
+with checkboxes, only children you've selected would be rejected, resolved
+or removed.
+
+Resolution of the incident is set according to C<$_RTIR_Resolution_rejected_default>
+config option and by default its value is "no resolution reached", however,
+you can choose any value you'd like to.
+
+You can write a message that would be added to the selected children
+as comment or response according to value of 'Update Type' field.
+
+Once user submit the form RTIR updates selected tickets and then checks
+state of children of the incident to decide whether it's OK to abandon it
+or not. In the simplest case the incident you're abandoning has children
+that aren't linked to another open incident, RTIR marks the incident
+as abandoned if all children are closed(resolved, rejected or removed)
+otherwise you see a notice "State of the Incident left unchanged; not
+all children were updated". The latter case may happen when the user's
+selected not all children.
+
+RTIR supports IRs linked to many incidents and in this case abandoning is
+a little bit trickier. When you're abandoning an incident linked to an IR
+that is linked to another open incident, RTIR doesn't reject IR, but adds
+a comment to the IR telling that the incident has been abandoned while
+this ticket is still linked to open incident and left unchanged. In such
+situation the incident is abandoned.
+
+=head3 Abandoning many incidents at once (bulk abandon)
+
+Use a bulk abandon subtab under the incidents tab to abandon multiple
+incidents at once.
 
 =head2 Glossary
 
