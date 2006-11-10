@@ -81,4 +81,21 @@ so people can concentrate on new and open tickets.
 
 The abandon action allows a user to reject an incident and all its children.
 
+
+=head2 Glossary
+
+=over 4
+
+=item active ticket
+
+Within RTIR a ticket is C<active> if its state is C<new>, C<open>, C<pending
+activation>, C<active> or C<pending removal>. See also C<inactive ticket>.
+
+=item inactive ticket
+
+Within RTIR a ticket is C<inactive> if its state is C<resolved>, C<rejected>,
+C<abandoned> or C<removed>. See also C<active ticket>.
+
+=back
+
 =cut
