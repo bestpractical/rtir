@@ -42,18 +42,18 @@
 <a name="top">
         
 % if (exists $ARGS{'TestAddresses'}) {
-<& /Widgets/TitleBoxStart, contentbg => "#cccccc", 
+<&| /Widgets/TitleBox, contentbg => "#cccccc", 
     title => 'Address test results' &>
 <ul>
 %   foreach my $key (keys %$addrhash) {
   <li><%$addrhash->{$key}->{'IP'}%>: <%$addrhash->{$key}->{'Address'}%>
 %   }
 </ul>
-<& /Widgets/TitleBoxEnd &>
+</&>
 <br />
 % }
 
-<& /Widgets/TitleBoxStart, contentbg => "#cccccc", title => loc("Identify Recipients") &>
+<&| /Widgets/TitleBox, contentbg => "#cccccc", title => loc("Identify Recipients") &>
 
 <table border="0" cellpadding="0" cellspacing="2">
 % if ($loop eq 'IP') {
@@ -144,11 +144,11 @@
 % if ($loop eq "IP") {
 <& /Elements/Submit, Name => "TestAddresses", Caption => loc("Test email addresses"), Label => loc("Test")&>
 % }
-<& /Widgets/TitleBoxEnd &>
+</&>
 
 <br />
 
-<& /Widgets/TitleBoxStart, contentbg => "#cccccc", title => loc("Message information") &>
+<&| /Widgets/TitleBox, contentbg => "#cccccc", title => loc("Message information") &>
 
 <table border="0" cellpadding="0" cellspacing="2">
   <tr>
@@ -187,7 +187,7 @@
 </tr>
 </table>
 
-<& /Widgets/TitleBoxEnd &>
+</&>
 <& /Elements/Submit, Name => "SubmitAction", Caption => loc("Create the Incidents and Investigations"), Label => loc("Create")&>
 </form>
 

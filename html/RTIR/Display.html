@@ -35,7 +35,7 @@
 <table border="0" cellpadding="0" cellspacing="2" width="100%">
 <tr>
 <td valign="top" width="50%">
-<& /Widgets/TitleBoxStart, title => loc("The Basics"),
+<&| /Widgets/TitleBox, title => loc("The Basics"),
         title_href  => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=".$Ticket->Id,
         title_class => 'inverse' &>
 
@@ -143,12 +143,12 @@
 
 <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket &>
 
-<& /Widgets/TitleBoxEnd &>
+</&>
 
 </td>
   <td valign="top" width="50%">
 % if ($RT::FM::VERSION) {
-<& /Widgets/TitleBoxStart, title => loc("Articles"),
+<&| /Widgets/TitleBox, title => loc("Articles"),
     title_href => RT->Config->Get('WebPath') ."/RTIR/Advanced.html?id=".$id, 
     title_class=> 'inverse',
     color => "#663366" &>
@@ -168,28 +168,28 @@
 % }
 </ul>
 
-<& /Widgets/TitleBoxEnd &>
+</&>
 % }
   </td>
 </tr>
 <tr>
   <td valign="top" width="50%">
     <br />
-    <& /Widgets/TitleBoxStart, title => loc('People'), 
+    <&| /Widgets/TitleBox, title => loc('People'), 
         title_href  => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=". $Ticket->Id,
         title_class => 'inverse' &>
     <& /RTIR/Elements/ShowPeople, Ticket => $Ticket &>
-    <& /Widgets/TitleBoxEnd &>
+    </&>
     <br />
   </td>
   <td>
         <br />
-          <& /Widgets/TitleBoxStart, title => loc("Dates"),
+          <&| /Widgets/TitleBox, title => loc("Dates"),
                 title_href  => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=". $Ticket->Id,
                 title_class => 'inverse',  
                 color => "#663366" &>
           <& /RTIR/Elements/ShowDates, Ticket => $Ticket &>
-          <& /Widgets/TitleBoxEnd &>
+          </&>
         <br />  
   </td>
 </tr>

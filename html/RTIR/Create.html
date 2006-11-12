@@ -68,7 +68,7 @@
 
 <a name="top"></a>
 
-<& /Widgets/TitleBoxStart, contentbg => "#cccccc", title => $Title &>
+<&| /Widgets/TitleBox, contentbg => "#cccccc", title => $Title &>
 <table border="0" cellpadding="0" cellspacing="2">
 % if ( $Incident ) {
   <tr>
@@ -291,7 +291,7 @@
   </tr>
   <tr>
     <td valign="top" colspan="3">
-      <& /Widgets/TitleBoxStart, title => loc("Dates"),
+      <&| /Widgets/TitleBox, title => loc("Dates"),
           title_class=> 'inverse',  
           color => "#663366",
       &>
@@ -305,11 +305,11 @@
         <td><input size="10" name="Due" value="<% $ARGS{Due} || '' %>" /></td>
         </tr>
       </table>
-    <& /Widgets/TitleBoxEnd &>
+    </&>
     </td>
   </tr>
 </table>
-<& /Widgets/TitleBoxEnd &>
+</&>
 
 <& /Elements/Submit, Name => "Create", Label => $SubmitCaption &>
 </form>

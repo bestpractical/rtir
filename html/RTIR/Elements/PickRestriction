@@ -25,7 +25,7 @@
 <form method="get">
 <input type="hidden" name="Bookmark" value="<% $session{'tickets'}->FreezeLimits()|u %>" />
 <input type="hidden" name="Queue" value="<%$ARGS{'Queue'}%>" />
-<& /Widgets/TitleBoxStart, title => loc('Refine search')&>
+<&| /Widgets/TitleBox, title => loc('Refine search')&>
 <input type="hidden" name="id" value="<%$ARGS{'id'}%>" />
 <input type="hidden" name="CompileRestriction" value="1" />
 
@@ -134,9 +134,9 @@
 
 </ul>
 
-<& /Widgets/TitleBoxEnd &>
+</&>
 
-<& /Widgets/TitleBoxStart, title => loc('Ordering and sorting')&>
+<&| /Widgets/TitleBox, title => loc('Ordering and sorting')&>
 
 <ul>
 
@@ -159,7 +159,7 @@
 
 
 
-<& /Widgets/TitleBoxEnd &>
+</&>
 
 <& /Elements/Submit, Label => loc('Search'), Name => 'Action'&>
 

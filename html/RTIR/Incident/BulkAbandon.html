@@ -54,13 +54,13 @@ my $result_set = $m->scomp('/RTIR/Search/Elements/ShowResults',
 % if( $session{'tickets'}->Count ) {
 % $m->out( $result_set );
 
-<& /Widgets/TitleBoxStart, title => loc("Select recipients") &>
+<&| /Widgets/TitleBox, title => loc("Select recipients") &>
 % foreach my $box( @CheckBox ) {
 % my $checked = (scalar grep $_ && $box->{'Value'}, @ReplyToAll )? ' checked' : '';
 <input type="checkbox" name="ReplyToAll" value="<% $box->{'Value'} %>" <% $checked %>" />
 <% $box->{'Title'} %><br />
 % }
-<& /Widgets/TitleBoxEnd &>
+</&>
 <br />
 
 <& Elements/ReplyForm &>

@@ -33,7 +33,7 @@
 
 <table border="0" cellpadding="0" cellspacing="2" width="100%"><tr><td valign="top" width="50%">
 
-<& /Widgets/TitleBoxStart, title => loc('Incident #[_1]', $id), 
+<&| /Widgets/TitleBox, title => loc('Incident #[_1]', $id), 
         title_href => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=".$id, 
         title_class=> 'inverse' &>
 
@@ -115,11 +115,11 @@
   </tr>
 </table>
 
-<& /Widgets/TitleBoxEnd &>
+</&>
 
 </td><td valign="top">
 
-<& /Widgets/TitleBoxStart,
+<&| /Widgets/TitleBox,
     title => loc('Incident Reports'),
     title_href => RT->Config->Get('WebPath') ."/RTIR/Incident/ShowChildren.html?Queue=Incident%20Reports&id=".$id,
     titleright => '',
@@ -139,11 +139,11 @@
             Rows      => 8,
             FullList  => RT->Config->Get('WebPath')."/RTIR/Incident/ShowChildren.html?Queue=Incident%20Reports&id=".$id,
     &>
-<& /Widgets/TitleBoxEnd &>
+</&>
 
 </td></tr><tr><td valign="top" width="50%">
 
-<& /Widgets/TitleBoxStart, title => loc('Investigations'), 
+<&| /Widgets/TitleBox, title => loc('Investigations'), 
     title_href => RT->Config->Get('WebPath') ."/RTIR/Incident/ShowChildren.html?Queue=Investigations&id=".$id, 
     title_class=> 'inverse',  
     titleright => '', color=> "#336633" &>
@@ -162,10 +162,12 @@
     FullList => RT->Config->Get('WebPath')."/RTIR/Incident/ShowChildren.html?Queue=Investigations&id=".$id,
 &>
 
+</&>
+
 </td><td valign="top" width="50%">
 
 % unless ( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
-<& /Widgets/TitleBoxStart, title => loc('Blocks'),
+<&| /Widgets/TitleBox, title => loc('Blocks'),
     title_href => RT->Config->Get('WebPath') ."/RTIR/Incident/ShowChildren.html?Queue=Blocks&id=".$id,
     title_class=> 'inverse',
     titleright => '', color=> "#336633",
@@ -185,17 +187,17 @@
     FullList => RT->Config->Get('WebPath')."/RTIR/Incident/ShowChildren.html?Queue=Blocks&id=".$id,
 &>
 
-<& /Widgets/TitleBoxEnd &>
+</&>
 % }
 
 </td></tr><tr><td valign="top" width="50%">
 
-<& /Widgets/TitleBoxStart, title => loc("Dates"),
+<&| /Widgets/TitleBox, title => loc("Dates"),
     title_href => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=".$id, 
     title_class=> 'inverse',  
     color => "#663366" &>
 <& /RTIR/Elements/ShowDates, Ticket => $TicketObj &>
-<& /Widgets/TitleBoxEnd &>
+</&>
 
 <br />
 
@@ -205,7 +207,7 @@
 </td><td valign="top" width="50%">
 
 % if ($RT::FM::VERSION) {
-<& /Widgets/TitleBoxStart, title => loc("Articles"),
+<&| /Widgets/TitleBox, title => loc("Articles"),
     title_href => RT->Config->Get('WebPath') ."/RTIR/Advanced.html?id=".$id, 
     title_class=> 'inverse',
     color => "#663366" &>
@@ -225,7 +227,7 @@
 % }
 </ul>
 
-<& /Widgets/TitleBoxEnd &>
+</&>
 % }
 </td></tr></table>
 
