@@ -1,5 +1,8 @@
+=head1 RTIR Tutorial
 
-=head2 Merging tickets
+=head2 Operations with tickets
+
+=head3 Merging tickets
 
 It happens that after some investigation, it turns out that
 two Incidents actually are the same, e.g. where dynamic IP addresses
@@ -43,7 +46,7 @@ of the merged into ticket.
 The merge operation B<can't be reversed> and should be used with
 caution.
 
-=head3 Technical details
+=head4 Technical details
 
 There is some technical details users may be interested in.
 
@@ -77,7 +80,7 @@ For example you can merge an investigation into an IR, or an IR
 into a ticket in non RTIR's queues. ACL checks still apply.
 In general workflow this operation should be avoided.
 
-=head2 Splitting tickets
+=head3 Splitting tickets
 
 Split operation allows user to create new ticket from the existing one.
 When a user selects the 'Split' tab he will see a new ticket creation form 
@@ -94,7 +97,7 @@ your RTIR configured to notify requestors (correspondents) then mail(s)
 would be send after split. However you can use "Don't send any emails to
 correspondents" checkbox from the split page to avoid notifications.
 
-=head2 Rejecting an IR
+=head3 Rejecting an IR
 
 Rejecting means "we're not going to work on the ticket". There is several
 reasons to do this: the ticket is spam, problem wouldn't be solved, it's
@@ -114,7 +117,7 @@ during reject action then you can submit the reject form immediately or
 use 'Quick Reject' tab and reject the current IR without even opening
 the reject form.
 
-=head3 Rejecting many IRs at once (bulk reject)
+=head4 Rejecting many IRs at once (bulk reject)
 
 On the RTIR home page at the bottom of 'New unlinked Incident Reports' box
 you can see 'Bulk Reject' link. Following that link you can open interface
@@ -129,7 +132,7 @@ Note that you couldn't reject IRs that are owned by somebody else (sure, you
 could reject unowned) with the bulk reject interface, these IRs would be
 skipped with a notice even if you'd selected some.
 
-=head2 Abandoning incidents
+=head3 Abandoning incidents
 
 This operation is quite similar to rejecting an IR, but when you're
 abandoning an incident you also reject IRs, resolve investigations and
@@ -163,10 +166,43 @@ a comment to the IR telling that the incident has been abandoned while
 this ticket is still linked to open incident and left unchanged. In such
 situation the incident is abandoned.
 
-=head3 Abandoning many incidents at once (bulk abandon)
+=head4 Abandoning many incidents at once (bulk abandon)
 
 Use a bulk abandon subtab under the incidents tab to abandon multiple
 incidents at once.
+
+
+=head2 Custom fields
+
+=head3 IP
+
+This custom field allow you to associate IPs or IP ranges with a ticket.
+You can enter information in several formats:
+
+* IP - single IP with decimal units separated by dot;
+
+* IP range - interval separated with C<->, for example C<192.168.20.0-192.168.20.255>,
+both ends of the interval are included range;
+
+* CIDR block - IP range in the CIDR format, for example 172.16/24, as you
+can see short form is also supported, RTIR converts ranges in this format
+to IP-IP form.
+
+You can set value of the custom field on create or later through edit page
+of a ticket. You can enter several values at once, one per line, as well
+you could mix different formats. Create or update action fail if you enter
+incorrect values with an error message, you chould fix problem and resubmit
+form. On create IPs and CIDR blocks are also parsed from a text of the
+message and added to the ticket.
+
+=head4 Searching by IP
+
+You can use the same input formats to search by IP, CIDR or range. On a query
+builder page you can see input box for IP condition, enter an IP, range or CIDR
+and add the condition to the current query, return back to search results.
+You should see tickets that have at least one IP from the range. But you
+should note that validation of the input is not implemented in the query
+builder and you may enter incorrect value, be careful.
 
 =head2 Glossary
 
