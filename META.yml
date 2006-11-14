@@ -14,8 +14,10 @@ requires:
   Business::Hours: 0
   Business::SLA: 0
   DBIx::SearchBuilder: 1.4
+  Hook::LexWrap: 0
   Net::CIDR: 0
   Net::Whois::RIPE: 0
   RT::FM: 0
+  Regexp::Common: 0
   Regexp::Common::net::CIDR: 0
-version: 2.1.HEAD
+version: 2.1.4

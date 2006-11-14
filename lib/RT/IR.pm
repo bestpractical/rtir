@@ -46,7 +46,7 @@
 #
 package RT::IR;
 
-our $VERSION = '2.1.3';
+our $VERSION = '2.1.4';
 
 use warnings;
 use strict;
