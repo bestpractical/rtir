@@ -1,0 +1,9 @@
+
+=head2 Maintaining DB size, deleting entries
+
+During normal operation RT/RTIR don't delete data from the database.
+However, since RT 3.7 an extension has been integrated into RT that
+allow you to delete records in the DB. Its name is Shredder.
+You can find documentation for this extension in
+`perldoc lib/RT/Shredder.pm`.
+
