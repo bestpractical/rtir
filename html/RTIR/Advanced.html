@@ -85,7 +85,7 @@ unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
    Abort("No permission to view ticket");
 }
 
-my ($Type) = $m->comp('Elements/Type', TicketObj => $Ticket);
+my $Type = RT::IR::TicketType( Ticket => $Ticket );
 my $Title = loc("Advanced edit $Type #[_1]", $id);
 
 </%INIT>

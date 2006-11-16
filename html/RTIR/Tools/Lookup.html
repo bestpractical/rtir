@@ -244,7 +244,7 @@ my ($TicketObj, $TicketType);
 if ( $ticket ) {
     $TicketObj = LoadTicket( $ticket );
     $ticket = $ARGS{'ticket'} = $TicketObj->id;
-    ($TicketType) = $m->comp('/RTIR/Elements/Type', TicketObj => $TicketObj);
+    $TicketType = RT::IR::TicketType( Ticket => $TicketObj );
 }
 
 my $Format = RT->Config->Get('RTIRSearchResultFormats')->{$TicketType . 'Default'};

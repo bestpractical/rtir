@@ -64,7 +64,7 @@
 my $ChildObj = LoadTicket($id);
 $ARGS{'id'} = $id = $ChildObj->id;
 
-my ($Type) = $m->comp( '/RTIR/Elements/Type', TicketObj => $ChildObj );
+my $Type = RT::IR::TicketType( Ticket => $ChildObj );
 my $title = loc( "Link [_1] #[_2] to selected Incident", $Type, $id );
 
 # XXX: clear radio, checkboxes from format

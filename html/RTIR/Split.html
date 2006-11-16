@@ -46,7 +46,7 @@
 <%INIT>
 my $TicketObj = LoadTicket( $Ticket );
 
-my ($Type) = $m->comp('Elements/Type', TicketObj => $TicketObj );
+my $Type = RT::IR::TicketType( Ticket => $TicketObj );
 if ( $m->comp_exists("/RTIR/$Type/Split.html") ) {
     return $m->comp( "/RTIR/$Type/Split.html", %ARGS );
 }

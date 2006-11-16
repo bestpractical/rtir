@@ -223,7 +223,7 @@
 my $Ticket = LoadTicket($id);
 $id = $ARGS{'id'} = $Ticket->Id;
 
-my ($Type) = $m->comp('/RTIR/Elements/Type', TicketObj => $Ticket);
+my $Type = RT::IR::TicketType( Ticket => $Ticket );
 return $m->comp( '/Ticket/Display.html', %ARGS ) unless $Type;
 if( $Type eq 'Block' && RT->Config->Get('RTIR_DisableBlocksQueue') ) {
     Abort(loc("Blocks queue is disabled via config file"));

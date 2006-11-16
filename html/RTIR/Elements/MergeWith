@@ -12,7 +12,7 @@
 &>
 
 <%INIT>
-my ($Type) = $m->comp( '/RTIR/Elements/Type', Queue => $Queue );
+my $Type = RT::IR::TicketType( Queue => $Queue );
 $Title ||= $Type .'s';
 
 $Query ||= $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);

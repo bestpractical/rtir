@@ -30,7 +30,7 @@
 <%INIT>
 my $title = loc('Reporting');
 
-my ($Type) = $m->comp( '/RTIR/Elements/Type', Queue => $Queue );
+my $Type = RT::IR::TicketType( Queue => $Queue );
 
 my $FullQuery = join ' AND ', map "( $_ )", grep $_, $BaseQuery, $Query;
 

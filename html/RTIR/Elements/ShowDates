@@ -60,5 +60,5 @@
 $Ticket => undef
 </%ARGS>
 <%INIT>
-my ($Type) = $m->comp( '/RTIR/Elements/Type', TicketObj => $Ticket );
+my $Type = RT::IR::TicketType( Ticket => $Ticket );
 </%INIT>

@@ -93,7 +93,7 @@ if ( $SelectedTicket ) {
     }
 }
 
-my ($Type) = $m->comp( '/RTIR/Elements/Type', TicketObj => $Ticket );
+my $Type = RT::IR::TicketType( Ticket => $Ticket );
 my $Queue = $Ticket->QueueObj->Name;
 
 # XXX: clear radio, checkboxes from format

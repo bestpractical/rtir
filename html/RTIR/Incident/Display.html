@@ -262,7 +262,7 @@ my $DoLinks = sub {
     my %args = ();
 
     # Blocks or Incedent Reports can have multiple incidents
-    my ($Type) = $m->comp( '/RTIR/Elements/Type', TicketObj => $child );
+    my $Type = RT::IR::TicketType( Ticket => $child );
     unless( $Type eq 'Block' || $Type eq 'Report' ) {
         my $query = "Queue = 'Incidents' AND HasMember = ". $child->Id ." AND id != ". $parent->id;
         my $incidents = RT::Tickets->new( $session{'CurrentUser'} );

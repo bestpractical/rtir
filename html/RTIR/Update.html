@@ -108,7 +108,7 @@ my $title;
 my $Ticket = LoadTicket($id);
 $id = $ARGS{'id'} = $Ticket->Id;
 
-my ($Type) = $m->comp( 'Elements/Type', TicketObj => $Ticket );
+my $Type = RT::IR::TicketType( Ticket => $Ticket );
 
 my $name;
 if ($Type eq 'Report') {

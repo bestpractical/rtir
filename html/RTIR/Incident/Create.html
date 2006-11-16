@@ -65,13 +65,13 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 <table border="0" cellpadding="0" cellspacing="2">
 
 % if ( $TicketObj ) {
-% my ($Type) = $m->comp("/RTIR/Elements/Type", TicketObj => $TicketObj );
+% my $Type = RT::IR::TicketType( Ticket => $TicketObj );
 <tr><td class="label"><% loc('Split from') %>:</td>
 <td class="value"><% loc("[_1] #[_2]: [_3]", $Type, $TicketObj->Id, $TicketObj->Subject) %></td></tr>
 % }
 
 % if ( $ChildObj ) {
-% my ($Type) = $m->comp("/RTIR/Elements/Type", TicketObj => $ChildObj );
+% my $Type = RT::IR::TicketType( Ticket => $ChildObj );
 <tr><td class="label"><% loc('Link with') %>:</td>
 <td class="value"><% loc("[_1] #[_2]: [_3]", $Type, $ChildObj->Id, $ChildObj->Subject) %></td></tr>
 % }

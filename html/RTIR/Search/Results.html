@@ -83,7 +83,7 @@
 <%INIT>
 my $title = loc("Results");
 
-my $Type = ($m->comp( '/RTIR/Elements/Type', Queue => $Queue ))[0] || '';
+my $Type = RT::IR::TicketType( Queue => $Queue ) || '';
 $Format  ||= RT->Config->Get('RTIRSearchResultFormats')->{ $Type . 'Default' };
 if ( $Type ) {
     $BaseQuery ||= $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue );

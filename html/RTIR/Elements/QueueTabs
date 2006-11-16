@@ -44,7 +44,7 @@ if ( !$Ticket && $id ) {
 }
 $id = $Ticket->id if $Ticket;
 
-my ($Type) = $m->comp( '/RTIR/Elements/Type', Queue => $QueueName );
+my $Type = RT::IR::TicketType( Queue => $QueueName );
 
 my $EscapedQueueName
     = $m->comp( '/Elements/QueryString', Queue => $QueueName );
@@ -312,7 +312,7 @@ if ( $Type eq 'Report' ) {
     };
 } elsif ( $Type eq 'Incident' ) {
     if ( $Ticket && $Ticket->QueueObj->Name ne 'Incidents' ) {
-        my ($childtype) = $m->comp( '/RTIR/Elements/Type', TicketObj => $Ticket );
+        my $childtype = RT::IR::TicketType( Ticket => $Ticket );
 
         $tabs->{'h'} = {
             title => loc( 'Link [_1] #[_2]', $childtype, $Ticket->Id ),
