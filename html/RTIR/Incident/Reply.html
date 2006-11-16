@@ -129,7 +129,7 @@ my $ActiveStatesQuery;
 {
     my @active_states;
     foreach my $q( @queues ) {
-        push @active_states, $m->comp('/RTIR/Elements/States', Queue => $q);
+        push @active_states, RT::IR::States( Queue => $q );
     }
     my %seen;
     $ActiveStatesQuery = join ' OR ',

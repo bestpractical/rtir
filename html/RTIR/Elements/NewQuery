@@ -1,7 +1,7 @@
 <%INIT>
 @states = grep $_, @states;
 unless( @states ) {
-    @states = $m->comp("/RTIR/Elements/States", %ARGS );
+    @states = RT::IR::States( %ARGS );
 }
 
 my %seen = ();

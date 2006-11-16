@@ -85,7 +85,7 @@ $children->FromSQL( $m->comp( '/RTIR/Elements/ChildrenQuery',
                             )
                   );
 
-my @possible_states = $m->comp("/RTIR/Elements/States", Queue => $Queue, Inactive => 1 );
+my @possible_states = RT::IR::States( Queue => $Queue, Inactive => 1 );
 my $all_children = RT::Tickets->new( $session{'CurrentUser'} );
 $all_children->FromSQL( $m->comp( '/RTIR/Elements/ChildrenQuery',
                                   Queue  => $Queue,

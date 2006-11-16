@@ -42,7 +42,7 @@ unless( $Queue ) {
 }
 
 my $type = $type{$Queue} || '';
-my @states = $m->comp("/RTIR/Elements/States", Queue => $Queue);
+my @states = RT::IR::States( Queue => $Queue );
 return ($type, @states);
 
 </%INIT>

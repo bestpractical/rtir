@@ -57,9 +57,9 @@
 
 <%INIT>
 unless( @States ) {
-    @States = ( $m->comp("/RTIR/Elements/States", Queue => $Queue), 'resolved', 'removed' );
+    @States = ( RT::IR::States( Queue => $Queue ), 'resolved', 'removed' );
 }
-my @possible_states = $m->comp("/RTIR/Elements/States", Queue => $Queue, Inactive => 1 );
+my @possible_states = RT::IR::States( Queue => $Queue, Inactive => 1 );
 my $Type = RT::IR::TicketType( Queue => $Queue );
 
 $Format ||= RT->Config->Get('RTIRSearchResultFormats')->{'Child' . $Type};

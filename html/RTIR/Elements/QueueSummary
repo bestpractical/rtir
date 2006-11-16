@@ -42,7 +42,7 @@ Description => loc('RTIR queues summary')
 my @queues = ('Incidents', 'Incident Reports', 'Investigations');
 push @queues, 'Blocks' unless RT->Config->Get('DisableBlocksQueue');
 my %states;
-$states{$_} = [ $m->comp( '/RTIR/Elements/States', Queue => $_ ) ] foreach @queues;
+$states{$_} = [ RT::IR::States( Queue => $_ ) ] foreach @queues;
 my %seen;
 my @states = sort grep !$seen{$_}++, map @$_, values %states;
 </%ONCE>
