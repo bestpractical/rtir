@@ -1,32 +1,3 @@
-<%ONCE>
-my %meta = (
-    'Incidents'        => { Active => ['open'], Inactive => ['resolved', 'abandoned'] },
-    'Incident Reports' => { Active => ['new', 'open'], Inactive => ['resolved', 'rejected'] },
-    'Investigations'   => { Active => ['open'], Inactive => ['resolved'] },
-    'Blocks'           => {
-        Active => ['pending activation', 'active', 'pending removal'],
-        Inactive => ['removed'],
-    },
-);
-</%ONCE>
 <%INIT>
-my @states;
-if( $Queue ) {
-    push @states, @{ $meta{ $Queue }->{'Active'} || [] } if $Active;
-    push @states, @{ $meta{ $Queue }->{'Inactive'} || [] } if $Inactive;
-} else {
-    foreach ( values %meta ) {
-        push @states, @{ $_->{'Active'} || [] } if $Active;
-        push @states, @{ $_->{'Inactive'} || [] } if $Inactive;
-    }
-}
-
-my %seen = ();
-return sort grep !$seen{$_}++, @states;
-
+return RT::IR::States( %ARGS );
 </%INIT>
-<%ARGS>
-$Queue => undef
-$Active => 1,
-$Inactive => 0,
-</%ARGS>

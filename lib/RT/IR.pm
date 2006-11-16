@@ -136,6 +136,7 @@ my %TYPE = (
 
 sub TicketType {
     my %arg = ( Queue => undef, Ticket => undef, @_);
+
     if ( defined $arg{'Ticket'} && !defined $arg{'Queue'} ) {
         my $obj;
         if ( ref $arg{'Ticket'} ) {
@@ -143,7 +144,7 @@ sub TicketType {
         }
         else {
             $obj = RT::Ticket->new( $RT::SystemUser );
-            $obj->Load( $args{'Ticket'} );
+            $obj->Load( $arg{'Ticket'} );
         }
         $arg{'Queue'} = $obj->QueueObj if $obj->id;
     }
@@ -159,7 +160,32 @@ sub TicketType {
     return undef;
 }
 
+my %STATES = (
+    'incidents'        => { Active => ['open'], Inactive => ['resolved', 'abandoned'] },
+    'incident reports' => { Active => ['new', 'open'], Inactive => ['resolved', 'rejected'] },
+    'investigations'   => { Active => ['open'], Inactive => ['resolved'] },
+    'blocks'           => {
+        Active => ['pending activation', 'active', 'pending removal'],
+        Inactive => ['removed'],
+    },
+);
+sub States {
+    my %arg = ( Queue => undef, Active => 1, Inactive => 0, @_ );
+    
+    my @states;
+    if ( $arg{'Queue'} ) {
+        push @states, @{ $STATES{ lc $arg{'Queue'} }->{'Active'} || [] } if $arg{'Active'};
+        push @states, @{ $STATES{ lc $arg{'Queue'} }->{'Inactive'} || [] } if $arg{'Inactive'};
+    } else {
+        foreach ( values %STATES ) {
+            push @states, @{ $_->{'Active'} || [] } if $arg{'Active'};
+            push @states, @{ $_->{'Inactive'} || [] } if $arg{'Inactive'};
+        }
+    }
 
+    my %seen = ();
+    return sort grep !$seen{$_}++, @states;
+}
 
 {
 my %cache;
