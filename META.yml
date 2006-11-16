@@ -20,4 +20,4 @@ requires:
   RT::FM: 0
   Regexp::Common: 0
   Regexp::Common::net::CIDR: 0
-version: 2.1.4
+version: 2.1.5
