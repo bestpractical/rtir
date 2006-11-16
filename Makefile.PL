@@ -36,6 +36,9 @@ requires('Regexp::Common');
 requires('Net::CIDR');
 requires('Regexp::Common::net::CIDR');
 
+build_requires('Test::More');
+build_requires('File::Find');
+
 auto_install();
 
 substitute( {

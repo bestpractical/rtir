@@ -1,5 +1,8 @@
 abstract: RT IR Extension
 author: Best Practical Solutions <sales@bestpractical.com>
+build_requires: 
+  File::Find: 0
+  Test::More: 0
 distribution_type: module
 generated_by: Module::Install version 0.640
 license: GPL Version 2
