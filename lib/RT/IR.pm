@@ -118,6 +118,49 @@ sub SLAInit {
     return $SLAObj;
 }
 
+=head2 TicketType
+
+Returns type of a ticket. Takes either Ticket or Queue argument.
+Both arguments could be objects or IDs, however, name of a queue
+works too for Queue argument. If the queue argument is defined then
+the ticket is ignored even if it's defined too.
+
+=cut
+
+my %TYPE = (
+    'incidents'        => 'Incident',
+    'incident reports' => 'Report',
+    'investigations'   => 'Investigation',
+    'blocks'           => 'Block',
+);
+
+sub TicketType {
+    my %arg = ( Queue => undef, Ticket => undef, @_);
+    if ( defined $arg{'Ticket'} && !defined $arg{'Queue'} ) {
+        my $obj;
+        if ( ref $arg{'Ticket'} ) {
+            $obj = $arg{'Ticket'};
+        }
+        else {
+            $obj = RT::Ticket->new( $RT::SystemUser );
+            $obj->Load( $args{'Ticket'} );
+        }
+        $arg{'Queue'} = $obj->QueueObj if $obj->id;
+    }
+    return undef unless defined $arg{'Queue'};
+
+    return $TYPE{ lc $arg{'Queue'}->Name } if ref $arg{'Queue'};
+    return $TYPE{ lc $arg{'Queue'} } unless $arg{'Queue'} =~ /^\d+$/;
+
+    my $obj = RT::Queue->new( $RT::SystemUser );
+    $obj->Load( $arg{'Queue'} );
+    return $TYPE{ lc $obj->Name } if $obj->id;
+
+    return undef;
+}
+
+
+
 {
 my %cache;
 sub GetCustomField {
