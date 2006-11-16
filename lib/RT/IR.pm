@@ -54,8 +54,17 @@ use strict;
 use Business::Hours;
 use Business::SLA;
 
-sub BusinessHours {
 
+=head1 FUNCTIONS
+
+=head2 BusinessHours
+
+Returns L<Business::Hours> object initilized with information from
+the config file. See option 'BusinessHours'.
+
+=cut
+
+sub BusinessHours {
     my $bizhours = new Business::Hours;
     if ( RT->Config->Get('BusinessHours') ) {
         $bizhours->business_hours( %{ RT->Config->Get('BusinessHours') } );
@@ -64,15 +73,26 @@ sub BusinessHours {
     return $bizhours;
 }
 
+=head2 DefaultSLA
+
+TODO: Not yet described.
+
+=cut
+
 sub DefaultSLA {
-
-    my $sla;
     my $SLAObj = SLAInit();
-    $sla = $SLAObj->SLA(time());
-
-    return $sla;
-
+    return $SLAObj->SLA( time );
 }
+
+=head2 SLAInit
+
+Returns an object of L<Business::SLA> class or class defined in SLAModule
+config option.
+
+See also the following options: SLAModule, _RTIR_SLA_inhours_default,
+_RTIR_SLA_outofhours_default and SLA.
+
+=cut
 
 sub SLAInit {
 
@@ -80,10 +100,10 @@ sub SLAInit {
 
     my $SLAObj = $class->new();
 
-    my $bh = RT::IR::BusinessHours();
     $SLAObj->SetInHoursDefault( RT->Config->Get('_RTIR_SLA_inhours_default') );
     $SLAObj->SetOutOfHoursDefault( RT->Config->Get('_RTIR_SLA_outofhours_default') );
 
+    my $bh = RT::IR::BusinessHours();
     $SLAObj->SetBusinessHours($bh);
 
     my $SLA = RT->Config->Get('SLA');
@@ -96,7 +116,6 @@ sub SLAInit {
     }
 
     return $SLAObj;
-
 }
 
 {
