@@ -4,7 +4,7 @@
 
 =head3 Merging tickets
 
-It happens that after some investigation, it turns out that
+If it happens that after some investigation, it turns out that
 two Incidents actually are the same, e.g. where dynamic IP addresses
 are involved. In such a situation, the merge operation can be used,
 effectively making one ticket with out of two, containing the data
@@ -38,19 +38,19 @@ When the merge page doesn't have the ticket you're looking for,
 you can click 'Refine' to adjust the search conditions before
 returning to the merge page by clicking the 'Merge' tab.
 
-After merge both IDs of tickets you've merged point to the
-target ticket, so you could still use old ID in the subject
-of replies, but RTIR will send new notifications with an ID
-of the merged into ticket.
+After the merge, the IDs of both tickets point to the target
+ticket, so you can still use the old ticket's ID in the subject
+of replies, but RTIR will send new notifications with an ID of
+the merged into ticket.
 
 The merge operation B<can't be reversed> and should be used with
 caution.
 
 =head4 Technical details
 
-There is some technical details users may be interested in.
+There are some technical details users may be interested in.
 
-Merge operation is pretty straight forward, everything that
+The merge operation is pretty straight forward, everything that
 RT can merge from the source ticket is added to the target ticket.
 When only one value can be selected, RT prefers the value from
 the target ticket, so the result of the action depends on the
@@ -65,10 +65,10 @@ were links between tickets #1 and #2 then RT will drop them.
 Other fields from ticket #1 are ignored, such as state, queue or
 custom fields of single value type. By default RTIR shows only
 active tickets as candidates for the merge, so you have no way
-to merge a ticket into resolved or rejected, but you should
-note that merging into resolved ticket (you can change search
-conditions via refine tab) is not the same as resolving ticket
-and RTIR will not send notifications in this case.
+to merge a ticket into one that's been resolved or rejected,
+but you should note that merging into a resolved ticket (you can
+change search conditions via refine tab) is not the same as
+resolving ticket and RTIR will not send notifications in this case.
 
 Users can merge tickets only if they have the right 'ModifyTicket'
 on both tickets.
@@ -78,7 +78,7 @@ You, also, can access RT's generic merge from an RTIR ticket's
 any avoiding 'the same queue' and other restrictions RTIR has.
 For example you can merge an investigation into an IR, or an IR
 into a ticket in non RTIR's queues. ACL checks still apply.
-In general workflow this operation should be avoided.
+In the normal course of work, this operation should be avoided.
 
 =head3 Splitting tickets
 
@@ -99,7 +99,7 @@ correspondents" checkbox from the split page to avoid notifications.
 
 =head3 Rejecting an IR
 
-Rejecting means "we're not going to work on the ticket". There is several
+Rejecting means "we're not going to work on the ticket". There are several
 reasons to do this: the ticket is spam, problem wouldn't be solved, it's
 out of scope or something else. Rejected tickets are still available for
 searches and can be reopened, but RTIR's default interfaces are designed
@@ -128,8 +128,8 @@ with checkboxes. To reject tickets you submit the form with 'reject' or
 'bulk reject' page, while the latter one returns you to the RTIR home page
 where you could continue your work.
 
-Note that you couldn't reject IRs that are owned by somebody else (sure, you
-could reject unowned) with the bulk reject interface, these IRs would be
+Note that you can't reject IRs that are owned by somebody else (sure, you
+can reject unowned) with the bulk reject interface, these IRs would be
 skipped with a notice even if you'd selected some.
 
 =head3 Abandoning incidents
@@ -140,15 +140,15 @@ remove blocks linked to it.
 
 Once you open abandon page with the incident's tab you see a list of its
 children grouped by queue and common update form. You can select children
-with checkboxes, only children you've selected would be rejected, resolved
+with checkboxes, only children you've selected will be rejected, resolved
 or removed.
 
 Resolution of the incident is set according to C<$_RTIR_Resolution_rejected_default>
 config option and by default its value is "no resolution reached", however,
 you can choose any value you'd like to.
 
-You can write a message that would be added to the selected children
-as comment or response according to value of 'Update Type' field.
+You can write a message that that will be added to the selected children as
+a comment or response according to value of 'Update Type' field.
 
 Once user submit the form RTIR updates selected tickets and then checks
 state of children of the incident to decide whether it's OK to abandon it
