@@ -41,9 +41,9 @@ sub Commit {
         ." AND ( MemberOf = ". $ticket->Id ." OR HasMember = ". $ticket->Id ." )";
 
     if ( $constituency ) {
-        $query .= " AND ( CF.{_RTIR_Constituency} != '$constituency' OR CF.{_RTIR_Constituency} IS NULL )";
+        $query .= " AND CF.{_RTIR_Constituency} != '$constituency'";
     } else {
-        $query .= " AND ( CF.{_RTIR_Constituency} IS NOT NULL )";
+        $query .= " AND CF.{_RTIR_Constituency} IS NOT NULL";
     }
 
     my $tickets = RT::Tickets->new( $RT::SystemUser );
