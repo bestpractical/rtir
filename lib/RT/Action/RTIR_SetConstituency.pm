@@ -37,8 +37,7 @@ sub Commit {
         ." OR Queue = 'Incident Reports'"
         ." OR Queue = 'Investigations'"
         ." OR Queue = 'Blocks'"
-        .")"
-        ." AND ( MemberOf = ". $ticket->Id ." OR HasMember = ". $ticket->Id ." )";
+        .")";
 
     if ( $constituency ) {
         $query .= " AND CF.{_RTIR_Constituency} != '$constituency'";
@@ -46,15 +45,18 @@ sub Commit {
         $query .= " AND CF.{_RTIR_Constituency} IS NOT NULL";
     }
 
-    my $tickets = RT::Tickets->new( $RT::SystemUser );
-    $tickets->FromSQL( $query );
-    while ( my $t = $tickets->Next ) {
-        $RT::Logger->debug( "Ticket #". $t->id ." inherits constituency from ticket #". $ticket->id );
-        my ($res, $msg) = $t->AddCustomFieldValue(
-            Field => '_RTIR_Constituency',
-            Value => $constituency,
-        );
-        $RT::Logger->warning( "Couldn't set CF: $msg" ) unless $res;
+    # do two queries as mysql couldn't optimize things well
+    foreach my $link_type (qw(MemberOf HasMember)) {
+        my $tickets = RT::Tickets->new( $RT::SystemUser );
+        $tickets->FromSQL( $query ." AND $link_type = ". $ticket->Id );
+        while ( my $t = $tickets->Next ) {
+            $RT::Logger->debug( "Ticket #". $t->id ." inherits constituency from ticket #". $ticket->id );
+            my ($res, $msg) = $t->AddCustomFieldValue(
+                Field => '_RTIR_Constituency',
+                Value => $constituency,
+            );
+            $RT::Logger->warning( "Couldn't set CF: $msg" ) unless $res;
+        }
     }
     return 1;
 }
