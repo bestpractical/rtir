@@ -35,6 +35,7 @@
 
 <form action="Reply.html" method=get>
 <input type=hidden name=id value=<%$id%>>
+<input type=hidden name=DefaultStatus value=<%$ARGS{'DefaultStatus'}%>>
 <input type=hidden name=Status value=<%$ARGS{'DefaultStatus'}%>>
 <input type=hidden name=All value=<%$ARGS{'All'}%>>
 <input type=hidden name=Query value="<%$Query%>">
@@ -158,12 +159,12 @@ my $do_comment_reply=0;
 $ARGS{'UpdateContent'} =~ s/\r\n/\n/g;
 chomp ($ARGS{'UpdateContent'}) ;
 
-if (($ARGS{ProcessReply} && 
-    $ARGS{Status} eq 'resolved' || $ARGS{Status} eq 'rejected') ||
+if ( $ARGS{SubmitTicket} || (
     $ARGS{'UpdateContent'} &&
     $ARGS{'UpdateContent'} ne '' &&
     $ARGS{'UpdateContent'} ne  "-- \n" .
-    $session{'CurrentUser'}->UserObj->Signature) {
+    $session{'CurrentUser'}->UserObj->Signature ) )
+{
             $do_comment_reply=1;
 }
 
