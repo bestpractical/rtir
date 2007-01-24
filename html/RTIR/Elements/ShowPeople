@@ -22,22 +22,25 @@
 %# 
 %# 
 %# END LICENSE BLOCK
+
+%# XXX: this duplication of RT's /Ticket/Elements/ShowPeople
+%# the only difference is s/Reuestor/Correspondet/, keep in sync
 <table>
   <tr>
     <td class="label"><&|/l&>Owner</&>:</td>
-    <td class="value"><%$Ticket->OwnerObj->Name%></td>
+    <td class="value"><& /Elements/ShowUser, User => $Ticket->OwnerObj &></td>
   </tr>
   <tr>
-    <td class="label"><&|/l&>Correspondents</&>:</td>
-    <td class="value"><%$Ticket->RequestorAddresses%></td>
+    <td class="labeltop"><&|/l&>Correspondents</&>:</td>
+    <td class="value"><& /Ticket/Elements/ShowGroupMembers, Group => $Ticket->Requestors &></td>
   </tr>
   <tr>
-    <td class="label"><&|/l&>Cc</&>:</td>
-    <td class="value"><%$Ticket->CcAddresses%></td>
+    <td class="labeltop"><&|/l&>Cc</&>:</td>
+    <td class="value"><& /Ticket/Elements/ShowGroupMembers, Group => $Ticket->Cc &></td>
   </tr>
   <tr>
-    <td class="label"><&|/l&>AdminCc</&>:</td>
-    <td class="value"><%$Ticket->AdminCcAddresses%></td>
+    <td class="labeltop"><&|/l&>AdminCc</&>:</td>
+    <td class="value"><& /Ticket/Elements/ShowGroupMembers, Group => $Ticket->AdminCc &></td>
   </tr>
 </table>
 <%ARGS>
