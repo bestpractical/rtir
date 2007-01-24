@@ -31,7 +31,7 @@
 <tr><td><&|/l&>Type</&></td><td><&|/l&>Username</&></td></tr>
 % while ( my $u = $Users->Next ) {
 <tr><td><& /Elements/SelectWatcherType, Name => "Ticket-AddWatcher-Principal-". $u->PrincipalId &></td>
-<td><% $u->Name %> (<% $u->RealName %>)</td></tr>
+<td><& /Elements/ShowUser, User => $u &></td></tr>
 % }
 % }
 

@@ -40,7 +40,7 @@
 <table>
   <tr>
     <td class="label"><&|/l&>Owner</&>:</td>
-    <td class="value"><%$TicketObj->OwnerObj->Name%></td>
+    <td class="value"><& /Elements/ShowUser, User => $TicketObj->OwnerObj &></td>
   </tr>
   <tr>
     <td class="label">
