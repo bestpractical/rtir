@@ -268,6 +268,13 @@ if ($Ticket->TimeLeft > 0 ) {
   $TimeWorked = $Ticket->TimeWorked."/".$Ticket->TimeLeft;
 }
 
+$m->comp('/Elements/Callback',
+    _CallbackName => 'BeforeDisplay',
+    TicketObj     => $Ticket,
+    Results       => \@Actions,
+    ARGSRef       => \%ARGS,
+);
+
 my $attachments = $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket);
 
 </%INIT>

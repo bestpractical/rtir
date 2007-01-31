@@ -375,6 +375,14 @@ if ($children->Count == 0) {
         loc("WARNING: Incident [_1] has no children.", $Ticket->Id));
 }
 
+$m->comp('/Elements/Callback',
+    _CallbackName => 'BeforeDisplay',
+    Page          => '/RTIR/Display.html',
+    TicketObj     => $Ticket,
+    Results       => \@Actions,
+    ARGSRef       => \%ARGS,
+);
+
 my $attachments = $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket);
 
 </%INIT>
