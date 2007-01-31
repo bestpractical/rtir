@@ -217,7 +217,7 @@ $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
 unless ($OnlySearchForPeople) {
     @wresults = ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
     @results = ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
-    @cfresults = ProcessTicketCustomFieldUpdates(ARGSRef => \%ARGS);
+    @cfresults = ProcessTicketCustomFieldUpdates(TicketObj => $Ticket, ARGSRef => \%ARGS);
     @dresults = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
     @lresults = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
 
