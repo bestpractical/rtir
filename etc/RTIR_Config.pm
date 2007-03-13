@@ -184,7 +184,7 @@ Set($RTIRSearchResultFormats, {
     DueIncidents =>
         q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
           '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
-          __OwnerName__, __Priority__, __DueRelative__},
+          __OwnerName__, __Priority__, __DueRelative__, __UpdateStatus__},
 
     AbandonIncidents =>
         q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
