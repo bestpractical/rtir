@@ -203,13 +203,14 @@
   </td>
 </tr>
 </table>
-<& /Ticket/Elements/ShowHistory , 
-      Ticket => $Ticket, 
-      Collapsed => $ARGS{'Collapsed'}, 
-      ShowHeaders => $ARGS{'ShowHeaders'},
-      UpdatePath => RT->Config->Get('WebPath') ."/RTIR/Update.html",
-&> 
-
+<& /Ticket/Elements/ShowHistory,
+    Ticket      => $Ticket,
+    Collapsed   => $ARGS{'Collapsed'}, 
+    ShowHeaders => $ARGS{'ShowHeaders'},
+    DisplayPath => RT->Config->Get('WebPath') ."/RTIR/Display.html?id=$id",
+    UpdatePath  => RT->Config->Get('WebPath') ."/RTIR/Update.html",
+    ForwardPath => RT->Config->Get('WebPath') ."/RTIR/Forward.html",
+&>
 <%INIT>
 my ($name);
 my $Ticket = new RT::Ticket( $session{'CurrentUser'} );
@@ -228,6 +229,7 @@ unless ( $id eq 'new' ) {
 
 my $Type = RT::IR::TicketType( Queue => $QueueObj );
 return $m->comp( '/Ticket/Display.html', %ARGS ) unless $Type;
+
 if ($Type eq 'Block' && RT->Config->Get('RTIR_DisableBlocksQueue') ) {
     Abort(loc("Blocks queue is disabled via config file"));
 }

@@ -231,14 +231,14 @@
 % }
 </td></tr></table>
 
-<& /Ticket/Elements/ShowHistory , 
-    Ticket => $TicketObj, 
-    Collapsed => $ARGS{'Collapsed'}, 
+<& /Ticket/Elements/ShowHistory,
+    Ticket      => $TicketObj,
+    Collapsed   => $ARGS{'Collapsed'},
     ShowHeaders => $ARGS{'ShowHeaders'},
-    UpdatePath => RT->Config->Get('WebPath') ."/RTIR/Update.html",
-&> 
-
-  
+    DisplayPath => RT->Config->Get('WebPath') ."/RTIR/Display.html?id=$id",
+    UpdatePath  => RT->Config->Get('WebPath') ."/RTIR/Update.html",
+    ForwardPath => RT->Config->Get('WebPath') ."/RTIR/Forward.html",
+&>
 <%INIT>
 if ($SelectedTicket) {
     $id = $SelectedTicket;
