@@ -43,15 +43,16 @@
 <input type="hidden" name="Order"   value="<% $Order %>" />
 
 <& /RTIR/Search/Elements/ShowResults,
-    Queue     => $Queue,
-    BaseURL   => $BaseURL,
-    BaseQuery => $BaseQuery,
-    Query     => $Query,
-    Format    => '__RTIR_Check__,'. $Format,
-    Rows      => $Rows,
-    Page      => $Page,
-    OrderBy   => $OrderBy,
-    Order     => $Order,
+    Queue           => $Queue,
+    BaseURL         => $BaseURL,
+    BaseQuery       => $BaseQuery,
+    Query           => $Query,
+    DisplayFormat   => "__RTIR_Check__, $Format",
+    Format          => $Format,
+    Rows            => $Rows,
+    Page            => $Page,
+    OrderBy         => $OrderBy,
+    Order           => $Order,
     ShowNavigation  => 1,
     ShowListActions => 0,
 &>
@@ -75,9 +76,6 @@
 
 <%INIT>
 my $title = loc("Reject Incident Reports");
-
-# XXX: clear radio, checkboxes from format
-$Format =~ s/__RTIR_(?:Radio|Check)__,//;
 
 my ( @results );
 if ( $BulkReject ) {

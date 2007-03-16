@@ -35,11 +35,12 @@
 <i><% loc("Check box to unlink") %></i><br />
 % }
 <& /Elements/TicketList, 
-   Collection => $children,
-   Format => $Format,
-   Rows => $Rows,
-   ShowHeader => $ShowHeader,
-   OrderBy => $OrderBy,
+   Collection     => $children,
+   DisplayFormat  => ($Delete? "__RTIR_Check__, $Format": $Format),
+   Format         => $Format,
+   Rows           => $Rows,
+   ShowHeader     => $ShowHeader,
+   OrderBy        => $OrderBy,
    ShowNavigation => 0,
 &>
 % unless( $children->Count ) {
@@ -63,9 +64,6 @@ my @possible_states = RT::IR::States( Queue => $Queue, Inactive => 1 );
 my $Type = RT::IR::TicketType( Queue => $Queue );
 
 $Format ||= RT->Config->Get('RTIRSearchResultFormats')->{'Child' . $Type};
-if ($Delete) {
-    $Format = "__RTIR_Check__, " . $Format;
-}
 
 my $children = RT::Tickets->new( $session{'CurrentUser'} );
 $children->FromSQL( $m->comp( '/RTIR/Elements/ChildrenQuery',

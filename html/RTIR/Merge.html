@@ -96,9 +96,6 @@ if ( $SelectedTicket ) {
 my $Type = RT::IR::TicketType( Ticket => $Ticket );
 my $Queue = $Ticket->QueueObj->Name;
 
-# XXX: clear radio, checkboxes from format
-$Format =~ s/__RTIR_(?:Radio|Check)__,//;
-
 my $title = loc("Merge [_1] #[_2]: [_3]", $Type, $id, $Ticket->Subject);
 
 $Query ||= $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);

@@ -1,14 +1,15 @@
 <h3><% $Title %></h3>
 <& /RTIR/Search/Elements/ShowResults,
-    Queue       => $Queue,
-    BaseQuery   => $BaseQuery,
-    Query       => $Query,
-    Format      => '__RTIR_Radio__,'. $Format,
-    Rows        => $Rows,
-    Page        => $Page,
-    OrderBy     => $OrderBy,
-    Order       => $Order,
-    BaseURL     => "RTIR/Merge.html?id=$id",
+    Queue         => $Queue,
+    BaseQuery     => $BaseQuery,
+    Query         => $Query,
+    DisplayFormat => "__RTIR_Radio__, $Format",
+    Format        => $Format,
+    Rows          => $Rows,
+    Page          => $Page,
+    OrderBy       => $OrderBy,
+    Order         => $Order,
+    BaseURL       => "RTIR/Merge.html?id=$id",
 &>
 
 <%INIT>
@@ -20,9 +21,6 @@ unless ( $BaseQuery ) {
     $BaseQuery = $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
     $BaseQuery = join ' AND ', map "( $_ )", grep $_, $BaseQuery, " id != $id";
 }
-
-# XXX: clear radio, checkboxes from format
-$Format =~ s/__RTIR_(?:Radio|Check)__,//;
 
 </%INIT>
       

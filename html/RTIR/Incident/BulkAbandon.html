@@ -39,15 +39,16 @@
 <%PERL>
 # XXX: cache result set to check if get empty results
 my $result_set = $m->scomp('/RTIR/Search/Elements/ShowResults',
-    Queue       => $Queue,
-    BaseURL     => $BaseURL,
-    BaseQuery   => $BaseQuery,
-    Query       => $Query,
-    Format      => '__RTIR_Check__,'. $Format,
-    Rows        => $Rows,
-    OrderBy     => $OrderBy,
-    Order       => $Order,
-    Page        => $Page,
+    Queue         => $Queue,
+    BaseURL       => $BaseURL,
+    BaseQuery     => $BaseQuery,
+    Query         => $Query,
+    DisplayFormat => "__RTIR_Check__, $Format",
+    Format        => $Format,
+    Rows          => $Rows,
+    OrderBy       => $OrderBy,
+    Order         => $Order,
+    Page          => $Page,
 );
 </%PERL>
 

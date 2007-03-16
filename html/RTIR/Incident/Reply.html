@@ -46,42 +46,45 @@
 
 <h2><&|/l&>Reporters</&></h2>
 <& /RTIR/Search/Elements/ShowResults,
-    Queue     => 'Incident Reports',
-    BaseURL   => $current_tab,
-    BaseQuery => $BaseQuery{'Incident Reports'},
-    Query     => $Query,
-    Format    => '__RTIR_Check__,'. $Format,
-    Rows      => $Rows,
-    Page      => $Page,
-    OrderBy   => $OrderBy,
-    Order     => $Order,
+    Queue         => 'Incident Reports',
+    BaseURL       => $current_tab,
+    BaseQuery     => $BaseQuery{'Incident Reports'},
+    Query         => $Query,
+    DisplayFormat => "__RTIR_Check__, $Format",
+    Format        => $Format,
+    Rows          => $Rows,
+    Page          => $Page,
+    OrderBy       => $OrderBy,
+    Order         => $Order,
 &>
 
 % if ( $All ) {
 <h2><&|/l&>Investigation Correspondents</&></h2>
 <& /RTIR/Search/Elements/ShowResults,
-    Queue     => 'Investigations',
-    BaseURL   => $current_tab,
-    BaseQuery => $BaseQuery{'Investigations'},
-    Query     => $Query,
-    Format    => '__RTIR_Check__,'. $Format,
-    Rows      => $Rows,
-    Page      => $Page,
-    OrderBy   => $OrderBy,
-    Order     => $Order,
+    Queue         => 'Investigations',
+    BaseURL       => $current_tab,
+    BaseQuery     => $BaseQuery{'Investigations'},
+    Query         => $Query,
+    DisplayFormat => "__RTIR_Check__, $Format",
+    Format        => $Format,
+    Rows          => $Rows,
+    Page          => $Page,
+    OrderBy       => $OrderBy,
+    Order         => $Order,
 &>
 % unless( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
 <h2><&|/l&>Blocks Correspondents</&></h2>
 <& /RTIR/Search/Elements/ShowResults,
-    Queue     => 'Investigations',
-    BaseURL   => $current_tab,
-    BaseQuery => $BaseQuery{'Blocks'},
-    Query     => $Query,
-    Format    => '__RTIR_Check__,'. $Format,
-    Rows      => $Rows,
-    Page      => $Page,
-    OrderBy   => $OrderBy,
-    Order     => $Order,
+    Queue         => 'Investigations',
+    BaseURL       => $current_tab,
+    BaseQuery     => $BaseQuery{'Blocks'},
+    Query         => $Query,
+    DisplayFormat => "__RTIR_Check__, $Format",
+    Format        => $Format,
+    Rows          => $Rows,
+    Page          => $Page,
+    OrderBy       => $OrderBy,
+    Order         => $Order,
 &>
 % }
 % }
@@ -96,9 +99,6 @@ my (@results);
 
 my $IncidentObj = LoadTicket( $id );
 $id = $ARGS{'id'} = $IncidentObj->id;
-
-# XXX: clear radio, checkboxes from format
-$Format =~ s/__RTIR_(?:Radio|Check)__,//;
 
 # XXX: we should get rid of DefaultStatus argument at all. use Status
 $Status ||= $DefaultStatus; $DefaultStatus ||= $Status;

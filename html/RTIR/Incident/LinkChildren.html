@@ -43,15 +43,16 @@
 <input type="hidden" name="BulkLink" value="1" />
 
 <& /RTIR/Search/Elements/ShowResults, 
-    Queue       => $Queue,
-    BaseQuery   => $BaseQuery,
-    Query       => $Query,
-    Format      => "__RTIR_Check__,". $Format,
-    Rows        => $Rows,
-    Page        => $Page,
-    OrderBy     => $OrderBy,
-    Order       => $Order,
-    BaseURL     => $current_tab,
+    Queue         => $Queue,
+    BaseQuery     => $BaseQuery,
+    Query         => $Query,
+    DisplayFormat => "__RTIR_Check__, $Format",
+    Format        => $Format,
+    Rows          => $Rows,
+    Page          => $Page,
+    OrderBy       => $OrderBy,
+    Order         => $Order,
+    BaseURL       => $current_tab,
 &>
 
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $title, Label => loc("Link") &>
@@ -63,9 +64,6 @@ $ARGS{'id'} = $id = $IncidentObj->id;
 
 my $Type = RT::IR::TicketType( Queue => $Queue );
 my $title = loc("Link selected [_1] to Incident #[_2]", $Type, $id);
-
-# XXX: clear radio, checkboxes from format
-$Format =~ s/__RTIR_(?:Radio|Check)__,//;
 
 my $QueryString = $m->comp('/Elements/QueryString',
                                Query   => $Query,
