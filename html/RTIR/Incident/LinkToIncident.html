@@ -42,15 +42,16 @@
 <input type="hidden" name="Child" value="<% $id %>" />
 
 <& /RTIR/Search/Elements/ShowResults, 
-    Queue     => $Queue,
-    BaseQuery => $BaseQuery,
-    Query     => $Query,
-    Format    => '__RTIR_Radio__,'. $Format,
-    Rows      => $Rows,
-    Page      => $Page,
-    OrderBy   => $OrderBy,
-    Order     => $Order,
-    BaseURL   => $current_tab,
+    Queue         => $Queue,
+    BaseQuery     => $BaseQuery,
+    Query         => $Query,
+    DisplayFormat => "__RTIR_Radio__, $Format",
+    Format        => $Format,
+    Rows          => $Rows,
+    Page          => $Page,
+    OrderBy       => $OrderBy,
+    Order         => $Order,
+    BaseURL       => $current_tab,
 &>
 
 <& /Elements/Submit,
@@ -66,9 +67,6 @@ $ARGS{'id'} = $id = $ChildObj->id;
 
 my $Type = RT::IR::TicketType( Ticket => $ChildObj );
 my $title = loc( "Link [_1] #[_2] to selected Incident", $Type, $id );
-
-# XXX: clear radio, checkboxes from format
-$Format =~ s/__RTIR_(?:Radio|Check)__,//;
 
 my $Queue = 'Incidents';
 my $BaseQuery = $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue );
