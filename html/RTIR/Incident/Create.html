@@ -80,7 +80,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
     <td class="label"><&|/l&>Owner</&>:</td>
 % if ( $ChildObj ) {
     <td class="value">
-      <& /Elements/ShowUser, $ChildObj->OwnerObj &>
+      <& /Elements/ShowUser, User => $ChildObj->OwnerObj &>
       <input type="hidden" name="Owner" value="<% $ChildObj->Owner %>" />
     </td>
 % } else {
