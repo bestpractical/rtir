@@ -34,6 +34,8 @@
 
 <tr><td colspan="2"><& /RTIR/Create.html:AttachmentsForm &></td></tr>
 
+<tr><td><&|/l&>Attach Report</&></td><td><& /Elements/TicketList, Collection => $siblings, DisplayFormat => "__RTIR_Check__,$Format", Format => $Format, ShowHeader => 0, ShowNavigation => 0 &></td></tr>
+
 <tr><td align="right" valign="top"><&|/l&>Message</&>:</td><td>
 <& /Elements/Callback, Page => '/Ticket/Update.html',_CallbackName => 'BeforeMessageBox', %ARGS &>
 % if ( exists $ARGS{'UpdateContent'} ) {
@@ -49,3 +51,33 @@ $Ticket => undef
 $UpdateCc => ''
 $UpdateBcc => ''
 </%ARGS>
+<%INIT>
+my @parents;
+
+my $type = RT::IR::TicketType( Ticket => $Ticket );
+if ( $type eq 'Incident' ) {
+    push @parents, $Ticket->id;
+} else {
+    my $tickets = RT::Tickets->new( $Ticket->CurrentUser );
+    $tickets->FromSQL( "Queue = 'Incidents' AND HasMember = ". $Ticket->id );
+    while ( my $parent = $tickets->Next ) {
+        push @parents, $parent->id;
+    }
+}
+
+my $siblings_query = "Queue = 'Incident Reports'"
+    ." AND (". join( ' OR ', map "MemberOf = $_", @parents ) . ")";
+if ( $type eq 'Report' ) {
+    $siblings_query .= " AND id != ". $Ticket->id;
+}
+
+my $siblings = RT::Tickets->new( $Ticket->CurrentUser );
+$siblings->FromSQL( $siblings_query );
+
+my $Format = q{
+    '<b><a HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
+    '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+    '__CustomField.{_RTIR_State}__/TITLE:State',
+    __LastUpdatedRelative__, __CreatedRelative__
+};
+</%INIT>
