@@ -38,16 +38,19 @@ $COLUMN_MAP->{'RTIR_Check'} = {
     value => sub {
         my $id = $_[0]->id;
 
-$COLUMN_MAP->{'TakeOrSteal'} = {
-    title => 'Take/Steal',
-    value => sub {
-        my $t = shift;
-        return '' if $t->Owner == $t->CurrentUser->id;
-        my $action = 'Take';
-        $action = 'Steal' if $t->Owner != $RT::Nobody->id;
-        my $link = RT->Config->Get('WebPath') ."/Ticket/Display.html?Action=$action&id=". $t->id;
-        $link = qq{<a href="$link">}. $t->loc($action) .qq{</a>};
-        return \$link;
+        my $name = $_[2] || 'SelectedTickets';
+        return \qq{<input type="checkbox" name="$name" value="$id" checked />}
+            if $m->request_args->{ $name . 'All'};
+
+        my $arg = $m->request_args->{ $name };
+        my $checked = '';
+        if ( $arg && ref $arg ) {
+            $checked = 'checked' if grep $_ == $id, @$arg;
+        }
+        elsif ( $arg ) {
+            $checked = 'checked' if $arg == $id;
+        }
+        return \qq{<input type="checkbox" name="$name" value="$id" $checked />}
     },
 };
 
@@ -74,6 +77,20 @@ foreach my $field ( map "_RTIR_$_", @CFs ) {
     $COLUMN_MAP->{ "CF.{$field}" } =
         $COLUMN_MAP->{ "CustomField.{$field}" } = \%h;
 }
+
+$COLUMN_MAP->{'TakeOrSteal'} = {
+    title => 'Take/Steal',
+    value => sub {
+        my $t = shift;
+        return '' if $t->Owner == $t->CurrentUser->id;
+        my $action = 'Take';
+        $action = 'Steal' if $t->Owner != $RT::Nobody->id;
+        my $link = RT->Config->Get('WebPath') ."/Ticket/Display.html?Action=$action&id=". $t->id;
+        $link = qq{<a href="$link">}. $t->loc($action) .qq{</a>};
+        return \$link;
+    },
+};
+
 </%INIT>
 <%ARGS>
 $COLUMN_MAP => undef
