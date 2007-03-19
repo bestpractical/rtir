@@ -1,29 +1,3 @@
-<%ONCE>
-
-my @CFs = qw(
-    Classification
-    Constituency
-    Description
-    Function
-    HowReported
-    IP
-    Netmask
-    Port
-    ReporterType
-    SLA
-    State
-    WhereBlocked
-);
-my $cf_values_cb = sub {
-    my $old_user = $_[0]->CurrentUser( $RT::SystemUser );
-    my $values = $_[0]->CustomFieldValues( $_[1] );
-    $values->{'find_disabled_rows'} = 1;
-    $_[0]->CurrentUser( $old_user );
-    return map { $_->Content, \'<br />' }
-        @{ $values->ItemsArrayRef };
-};
-
-</%ONCE>
 <%INIT>
 
 # This is scary and should totally be refactored -- jesse
@@ -69,13 +43,21 @@ $COLUMN_MAP->{'RTIR_Radio'} = {
 
 # XXX: map RTIR hidden custom fields staticaly because user has no rights
 # to see this CFs we need to hack over ACLs
-foreach my $field ( map "_RTIR_$_", @CFs ) {
+my $rtir_cfs = RT::CustomFields->new( $RT::SystemUser );
+$rtir_cfs->Limit( FIELD => 'Name', OPERATOR => 'STARTSWITH', VALUE => '_RTIR_' );
+while ( my $cf = $rtir_cfs->Next ) {
+    my $name = $cf->Name;
+    my ($display_name) = $name =~ /^_RTIR_(.*)/i;
+    next if exists $COLUMN_MAP->{ "CustomField.{$name}" };
+
     my %h = (
-        title => $field,
-        value => sub { return $cf_values_cb->($_[0], $field) },
+        title => $display_name,
+        value => sub {
+            return $COLUMN_MAP->{ "CustomField" }->{'value'}->(@_, $name)
+        },
     );
-    $COLUMN_MAP->{ "CF.{$field}" } =
-        $COLUMN_MAP->{ "CustomField.{$field}" } = \%h;
+    $COLUMN_MAP->{ "CF.{$name}" } =
+        $COLUMN_MAP->{ "CustomField.{$name}" } = \%h;
 }
 
 $COLUMN_MAP->{'TakeOrSteal'} = {
