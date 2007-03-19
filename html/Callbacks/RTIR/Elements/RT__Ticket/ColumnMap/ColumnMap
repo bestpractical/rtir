@@ -26,31 +26,17 @@ my $cf_values_cb = sub {
 </%ONCE>
 <%INIT>
 
-my (%selected, $select_all);
-{
-    if ( $m->request_args->{'SelectAllTickets'} ) {
-        $select_all = 1;
-    } else {
-        my $tmp = $m->request_args->{'SelectedTickets'};
-        $tmp = [$tmp] unless UNIVERSAL::isa( $tmp, 'ARRAY' );
-        push @$tmp, $m->request_args->{'SelectedTicket'};
-        %selected = map { $_ => 1 } grep $_, @$tmp;
-    }
-}
-
 # This is scary and should totally be refactored -- jesse
 $COLUMN_MAP->{'RTIR_Check'} = {
     title => sub {
-        return ( \qq{<input type="checkbox" name="AllSelectedTickets" value="1"
-                            onclick="setCheckbox(this.form, 'SelectedTickets', this.checked)" />} );
+        my $name = ($_[1] || 'SelectedTickets') .'All';
+        my $checked = $m->request_args->{ $name }? 'checked': '';
+
+        return \qq{<input type="checkbox" name="$name" value="1" $checked
+                          onclick="setCheckbox(this.form, 'SelectedTickets', this.checked)" />};
     },
     value => sub {
-        my $selected = '';
         my $id = $_[0]->id;
-        $selected = 'checked' if $select_all || $selected{ $id };
-        return ( \qq{<input type="checkbox" name="SelectedTickets" value="$id" $selected />} );
-    },
-};
 
 $COLUMN_MAP->{'TakeOrSteal'} = {
     title => 'Take/Steal',
@@ -68,10 +54,13 @@ $COLUMN_MAP->{'TakeOrSteal'} = {
 $COLUMN_MAP->{'RTIR_Radio'} = {
     title => \'&nbsp;',
     value => sub {
-        my $selected = '';
         my $id = $_[0]->id;
-        $selected = 'checked' if $selected{ $id };
-        return ( \qq{<input type="radio" name="SelectedTicket" value="$id" $selected />} );
+
+        my $name = $_[2] || 'SelectedTicket';
+        my $arg = $m->request_args->{ $name };
+        my $checked = '';
+        $checked = 'checked' if $arg && $arg == $id;
+        return \qq{<input type="radio" name="SelectedTicket" value="$id" $checked />};
     },
 };
 
