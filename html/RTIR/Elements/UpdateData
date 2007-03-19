@@ -34,7 +34,16 @@
 
 <tr><td colspan="2"><& /RTIR/Create.html:AttachmentsForm &></td></tr>
 
-<tr><td><&|/l&>Attach Report</&></td><td><& /Elements/TicketList, Collection => $siblings, DisplayFormat => "__RTIR_Check__,$Format", Format => $Format, ShowHeader => 0, ShowNavigation => 0 &></td></tr>
+<tr><td colspan="2">
+<&| /Widgets/TitleBox, title => loc("Attach Reports") &>
+<& /Elements/TicketList,
+    Collection     => $siblings,
+    DisplayFormat  => "__RTIR_Check.{AttachIncident}__, $Format",
+    Format         => $Format,
+    ShowHeader     => 1,
+    ShowNavigation => 0,
+&>
+</&></td></tr>
 
 <tr><td align="right" valign="top"><&|/l&>Message</&>:</td><td>
 <& /Elements/Callback, Page => '/Ticket/Update.html',_CallbackName => 'BeforeMessageBox', %ARGS &>
