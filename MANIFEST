@@ -24,7 +24,7 @@ html/Callbacks/RTIR/Elements/Header/Head
 html/Callbacks/RTIR/Elements/ListActions/ModifyRow
 html/Callbacks/RTIR/Elements/MakeClicky/Default
 html/Callbacks/RTIR/Elements/QueueSummary/Filter
-html/Callbacks/RTIR/Elements/RT__Ticket/ColumnMap/ColumnMap
+html/Callbacks/RTIR/Elements/RT__Ticket/ColumnMap/Once
 html/Callbacks/RTIR/Elements/ShowCustomFields/MassageCustomFields
 html/Callbacks/RTIR/Elements/Tabs/Default
 html/Callbacks/RTIR/RTFM/Elements/Tabs/Default
@@ -75,6 +75,7 @@ html/RTIR/Elements/TransactionData
 html/RTIR/Elements/Type
 html/RTIR/Elements/UpdateData
 html/RTIR/Elements/UserDueIncidents
+html/RTIR/Forward.html
 html/RTIR/Incident/BulkAbandon.html
 html/RTIR/Incident/Create.html
 html/RTIR/Incident/Display.html
@@ -177,6 +178,7 @@ MANIFEST.SKIP
 META.yml
 README
 reports/report.pl
+t/000-mason-syntax.t
 t/000-rtir-test-setup.t
 t/001-basic-RTIR.t
 t/002-test-reject.t
