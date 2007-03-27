@@ -40,7 +40,7 @@
 <& /Elements/SelectTimeUnits, Name => 'UpdateTimeWorked-TimeUnits' &>
 </td></tr>
 
-<& /RTIR/Elements/UpdateData, %ARGS &>
+<& /RTIR/Elements/UpdateData, %ARGS, Ticket => $TicketObj &>
 
 </table>
 
