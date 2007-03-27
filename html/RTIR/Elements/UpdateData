@@ -74,14 +74,19 @@ if ( $type eq 'Incident' ) {
     }
 }
 
-my $siblings_query = "Queue = 'Incident Reports'"
-    ." AND (". join( ' OR ', map "MemberOf = $_", @parents ) . ")";
-if ( $type eq 'Report' ) {
-    $siblings_query .= " AND id != ". $Ticket->id;
-}
-
 my $siblings = RT::Tickets->new( $Ticket->CurrentUser );
-$siblings->FromSQL( $siblings_query );
+if ( @parents ) {
+    my $siblings_query = "Queue = 'Incident Reports'"
+        ." AND (". join( ' OR ', map "MemberOf = $_", @parents ) . ")";
+
+    if ( $type eq 'Report' ) {
+        $siblings_query .= " AND id != ". $Ticket->id;
+    }
+
+    $siblings->FromSQL( $siblings_query );
+} else {
+    $siblings->FromSQL("id = 0");
+}
 
 my $Format = q{
     '<b><a HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
