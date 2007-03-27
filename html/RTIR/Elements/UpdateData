@@ -38,7 +38,7 @@
 <&| /Widgets/TitleBox, title => loc("Attach Reports") &>
 <& /Elements/TicketList,
     Collection     => $siblings,
-    DisplayFormat  => "__RTIR_Check.{AttachIncident}__, $Format",
+    DisplayFormat  => "__RTIR_Check.{AttachTickets}__, $Format",
     Format         => $Format,
     ShowHeader     => 1,
     ShowNavigation => 0,
