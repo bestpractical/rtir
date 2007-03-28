@@ -7,6 +7,7 @@
     current_subtab => 'RTIR/Display.html?id='. $TicketObj->id,
 &>
 
+<& /Elements/ListActions, actions => \@results &>
 
 <form action="Forward.html" name="ForwardMessage" method="post">
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
@@ -45,9 +46,11 @@ $txn->Load( $QuoteTransaction );
 Abort( loc("Couldn't load transaction #[_1]", $QuoteTransaction) )
     unless $txn->id;
 
+my @results;
 if ( $ARGS{'Forward'} ) {
     require RT::Interface::Email;
-    RT::Interface::Email::ForwardTransaction( $txn, %ARGS );
+    my ($status, $msg) = RT::Interface::Email::ForwardTransaction( $txn, %ARGS );
+    push @results, $msg;
 }
 
 my $Title = loc('Forward message');
