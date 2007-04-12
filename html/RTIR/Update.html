@@ -48,25 +48,23 @@
 <font size="-1">
 
 <table>
-<tr><td>
-<a href="Edit.html?id=<% $id %>"><&|/l&>Correspondents</&></a></td><td align="right">
-<&|/l&>Requestor</&>:
-</td><td>
-<b><% $Ticket->RequestorAddresses %></b>
+<tr><td><a href="Edit.html?id=<% $id %>"><&|/l&>Correspondents</&></a></td><td align="right" colspan=2></td></tr>
+
+
+% foreach my $type (qw(Requestors Cc AdminCc)) { 
+<tr><td>&nbsp;</td><td align="right" valign="top">
+<%loc($type)%>:
+</td><td valign="top">
+<ul class="userlist">
+% my $people = $Ticket->$type()->UserMembersObj;
+% while (my $person = $people->Next) {
+<li><& /Elements/ShowUser, User => $person &></li>
+% }
+</ul>
 </td></tr>
-<tr><td>&nbsp;</td><td align="right">
-<&|/l&>Cc</&>:
-</td><td>
-<b><% $Ticket->CcAddresses %></b>
-</td></tr>
-<tr><td>&nbsp;</td><td align="right">
-<&|/l&>AdminCc</&>:
-</td><td>
-<b><% $Ticket->AdminCcAddresses %></b>
-</td></tr>
-</tr>
+% }
 </table>
-<hr>
+<hr />
 
 <table border="0">
 
