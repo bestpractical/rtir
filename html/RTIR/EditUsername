@@ -1,0 +1,20 @@
+<span id="showuser-<%$User->id%>">
+% my $url = $RT::WebPath."/RTIR/ShowUser?page=1&id=".$User->id;
+<form method="get">
+<&|/l, $User->EmailAddress &>[_1]'s name</&>: 
+<input type="text" id="edit-<%$User->id%>" value="<%$User->RealName%>"&>
+<input type="submit" value="<%loc('Save')%>" 
+onClick="url = '<%$url|n%>';  url = url + '&Name='+ $('edit-<%$User->id%>').value; ahah(url, 'showuser-<%$User->id|n %>'); return false;" 
+>
+[<a href="<%$url|n%>" onClick="ahah('<%$url|n%>', 'showuser-<%$User->id|n %>'); return false;" >Abort</a>]
+</form>
+</span>
+% $m->abort if ($ARGS{'page'});
+<%args>
+$id => undef
+</%args>
+<%init>
+my $User = RT::User->new($session{'CurrentUser'});
+$User->Load($id);
+
+</%init>

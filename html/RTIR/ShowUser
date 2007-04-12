@@ -1,0 +1,21 @@
+<span id="showuser-<%$User->id%>">
+% my $url = $RT::WebPath."/RTIR/EditUserName?page=1&id=".$User->id;
+<& /Elements/ShowUser, User => $User &>
+% if ( $session{'CurrentUser'}->HasRight(Right => 'AdminUsers', Object => $RT::System) ) {
+[<a href="<%$RT::WebPath%>/Admin/Users/Modify.html?id=<%$User->id%>"
+    onClick="ahah('<%$url|n%>', 'showuser-<%$User->id|n %>'); return false;" 
+><&|/l&>Edit</&></a>]
+
+% }
+% $m->abort if ($ARGS{'page'});
+</span>
+<%args>
+$id => undef
+</%args>
+<%init>
+my $User = RT::User->new($session{'CurrentUser'});
+$User->Load($id);
+if ($ARGS{'Name'}) {
+    $User->SetRealName($ARGS{'Name'});
+}
+</%init>

@@ -54,11 +54,12 @@
 % foreach my $type (qw(Requestors Cc AdminCc)) { 
 <tr><td>&nbsp;</td><td align="right" valign="top">
 <%loc($type)%>:
-</td><td valign="top">
+</td><td valign="top" align="left">
 <ul class="userlist">
 % my $people = $Ticket->$type()->UserMembersObj;
 % while (my $person = $people->Next) {
-<li><& /Elements/ShowUser, User => $person &></li>
+<li><& /RTIR/ShowUser, id => $person->id &>
+</li>
 % }
 </ul>
 </td></tr>

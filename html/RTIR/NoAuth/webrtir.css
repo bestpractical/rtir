@@ -3,6 +3,25 @@
     color: red;
 }
 
+ul.userlist {
+    margin:0;
+    padding: 0;
+    border: 0;
+
+}
+ul.userlist li {
+    display: inline;
+}
+
+ul.userlist li::after{
+  content:", ";
+ white-space:pre;
+ }
+
+ul.userlist li:last-child::after{
+  content:"";
+ }
+
 % $m->abort;
 <%INIT>
 $r->content_type('text/css');
