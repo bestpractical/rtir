@@ -22,16 +22,8 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<tr><td align="right"><&|/l&>Cc</&>:</td><td><input name="UpdateCc" size="60" value="<% $UpdateCc %>" /><br />
-<i><font size="-2">
-<&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)</&></font></i>
-</td></tr>
 
-<tr><td align="right"><&|/l&>Bcc</&>:</td><td><input name="UpdateBcc" size="60" value="<% $UpdateBcc %>" /><br />
-<i><font size="-2">
-<&|/l&>(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)</&></font></i>
-</td></tr>
-
+<& /Ticket/Elements/UpdateCc, %ARGS, TicketObj => $Ticket &>
 <tr><td colspan="2"><& /RTIR/Create.html:AttachmentsForm &></td></tr>
 
 <tr><td colspan="2">
