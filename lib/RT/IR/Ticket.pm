@@ -75,7 +75,18 @@ sub Lock {
 
 sub Unlock {
     my $ticket = shift;
+
+    my $lock = $ticket->RT::IR::Ticket::Locked();
+     return undef unless $lock;
+     return undef unless $lock->Content->{User} ==  $ticket->CurrentUser->id;
     $ticket->DeleteAttribute('RTIR_Lock');
 }
 
+
+sub BreakLock {
+    my $ticket = shift;
+    my $lock = $ticket->RT::IR::Ticket::Locked();
+     return undef unless $lock;
+    $ticket->DeleteAttribute('RTIR_Lock');
+}
 1;

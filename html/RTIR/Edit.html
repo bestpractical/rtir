@@ -29,6 +29,7 @@
     current_subtab => "RTIR/Edit.html?id=".$Ticket->Id, 
     Title => $Title &>
 
+<& /RTIR/Elements/ShowLock, Ticket => $Ticket &>
 <& /Elements/ListActions, actions => \@results &>
 
 % if (!$Ticket->CurrentUserHasRight('ModifyTicket')) {

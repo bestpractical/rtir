@@ -28,6 +28,7 @@
     current_subtab => "RTIR/Edit.html?id=$id",
     Title => $title &>
 
+<& /RTIR/Elements/ShowLock, Ticket => $Ticket &>
 <form action="Update.html" name="TicketUpdate" 
 	method="post" enctype="multipart/form-data">
 <input type="hidden" name="QuoteTransaction" value="<% $ARGS{'QuoteTransaction'} || '' %>" />

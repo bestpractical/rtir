@@ -30,8 +30,8 @@
     current_subtab => 'RTIR/Display.html?id='.$Ticket->id,
     Title => $Title &>
 
+<& /RTIR/Elements/ShowLock, Ticket => $Ticket &>
 <& /Elements/ListActions, actions => \@results &>
-
 <table border="0" cellpadding="0" cellspacing="2" width="100%">
 <tr>
 <td valign="top" width="50%">
@@ -247,14 +247,50 @@ if ( $id eq 'new' ) {
 
     if ( $ARGS{'Action'} && $ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/ ) {
         my $action = $1;
-        my (undef, $msg) = $Ticket->$action();
+        my ($status, $msg) = $Ticket->$action();
         push @results, $msg;
+        # If they succeeded in taking the ticket, they should also get a lock
+        if ($status && $action =~  /^(?:Take|Steal)$/) { $ARGS{'Lock'} = 'add'; }
     }
+
 
     if ( $ARGS{'TakeOrStealFirst'} and $Ticket->Owner != $Ticket->CurrentUser->Id) {
         my ($status, $msg) = $Ticket->SetOwner($Ticket->CurrentUser->Id, 'Force');
         push @results, $msg if $msg;
+
+        # If they succeeded in taking the ticket, they should also get a lock
+        if ($status) { $ARGS{'Lock'} = 'add'; }
     }
+
+    if ( $ARGS{'Lock'} ) {
+
+        if ( $ARGS{'Lock'} eq 'add' ) {
+            if ( $Ticket->RT::IR::Ticket::Lock() ) {
+                push @results, loc('You now have a lock on this ticket');
+            } else {
+                push @results, loc('Your attempt to lock this ticket failed');
+
+            }
+        } elsif ( $ARGS{'Lock'} eq 'remove' ) {
+            my $lock = $Ticket->RT::IR::Ticket::Locked();
+            if ( !$lock ) {
+                push @results, loc('This ticket was not locked');
+
+                } elsif ( $lock->Content->{'User'} == $session{'CurrentUser'}->id ) {
+                $Ticket->RT::IR::Ticket::Unlock();
+                push @results, loc('You have unlocked this ticket');
+            } else {
+                push @results,
+                    loc("You can't unlock tickets that you did not lock");
+
+            }
+
+        } elsif ( $ARGS{'Lock'} eq 'break' ) {
+            $Ticket->RT::IR::Ticket::BreakLock();
+            push @results, loc('You have broken the lock on this ticket');
+        }
+    }
+
 
     $ARGS{UpdateAttachments} = delete $session{'Attachments'};
     push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS );

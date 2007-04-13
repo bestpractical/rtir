@@ -22,6 +22,26 @@ ul.userlist li:last-child::after{
   content:"";
  }
 
+
+div.locked-by-you {
+    
+    width: 80%;
+    align: center;
+    border: 2px solid green;
+    padding: 1em;
+    margin: 1em;
+}    
+
+div.lock {
+    
+    width: 80%;
+    align: center;
+    border: 2px solid red;
+    padding: 1em;
+    margin: 1em;
+    
+}
+
 % $m->abort;
 <%INIT>
 $r->content_type('text/css');

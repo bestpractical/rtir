@@ -99,6 +99,9 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
     my %can = map { $_, $Ticket->CurrentUserHasRight($_) }
         qw(ModifyTicket ReplyToTicket OwnTicket CommentOnTicket);
 
+
+    
+
     my $ticket_page_tabs = {
         _A => {
             title => loc('Display'),
@@ -274,6 +277,10 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
             path  => "RTIR/Update.html?Action=Comment&id=$id"
         };
     }
+
+
+
+
 } else {
     $mytab = $current_tab;
 }
@@ -333,6 +340,30 @@ if ( $subtabs ) {
 
         $tab->{'subtabs'} = { %{ $tab->{'subtabs'} || {} }, %$subtabs };
     }
+}
+
+if ($Ticket) {
+if (my $Lock = $Ticket->RT::IR::Ticket::Locked()) {
+    if ($Lock->Content->{'User'} == $session{'CurrentUser'}->id) {
+    $actions->{'Lock'} = { 
+                    path  => "Ticket/Display.html?Lock=remove&id=$id",
+                    title => loc('Unlock') 
+                    };
+    } else {
+    $actions->{'Lock'} = { 
+                    path  => "Ticket/Display.html?Lock=break&id=$id",
+                    title => loc('Break lock') 
+                    };
+
+    }
+} else {
+    $actions->{'Lock'} = { 
+                    path  => "Ticket/Display.html?Lock=add&id=$id",
+                    title => loc('Lock') 
+                    };
+
+
+}
 }
 
 </%INIT>
