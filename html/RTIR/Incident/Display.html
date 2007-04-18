@@ -28,7 +28,8 @@
     current_tab => 'RTIR/Display.html?id='.$id,
     current_subtab => 'RTIR/Display.html?id='.$id,
     Title => loc("Incident #[_1]: [_2]", $id, $TicketObj->Subject) &>
-
+    
+<& /RTIR/Elements/ShowLock, Ticket => $TicketObj &>
 <& /Elements/ListActions, actions => \@results &>
 
 <table border="0" cellpadding="0" cellspacing="2" width="100%"><tr><td valign="top" width="50%">
@@ -314,10 +315,43 @@ if( 1 ) {
     my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $TicketObj, '_RTIR_State' );
 
     if ( $ARGS{'Action'} && $ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/ )
-    {
-        my ($res, $msg) = $TicketObj->$1();
+    {   
+        my $action = $1;
+        my ($res, $msg) = $TicketObj->$action();
         push @results, $msg;
+        # If they succeeded in taking the ticket, they should also get a lock
+        if ($res && $action =~  /^(?:Take|Steal)$/) { $ARGS{'Lock'} = 'add'; }
+
     }
+    if ( $ARGS{'Lock'} ) {
+
+        if ( $ARGS{'Lock'} eq 'add' ) {
+            if ( $Ticket->RT::IR::Ticket::Lock() ) {
+                push @results, loc('You now have a lock on this ticket');
+            } else {
+                push @results, loc('Your attempt to lock this ticket failed');
+
+            }
+        } elsif ( $ARGS{'Lock'} eq 'remove' ) {
+            my $lock = $Ticket->RT::IR::Ticket::Locked();
+            if ( !$lock ) {
+                push @results, loc('This ticket was not locked');
+
+                } elsif ( $lock->Content->{'User'} == $session{'CurrentUser'}->id ) {
+                $Ticket->RT::IR::Ticket::Unlock();
+                push @results, loc('You have unlocked this ticket');
+            } else {
+                push @results,
+                    loc("You can't unlock tickets that you did not lock");
+
+            }
+
+        } elsif ( $ARGS{'Lock'} eq 'break' ) {
+            $Ticket->RT::IR::Ticket::BreakLock();
+            push @results, loc('You have broken the lock on this ticket');
+        }
+    }
+
 
     unless( $new_ticket ) {
         push @results, ProcessTicketBasics( ARGSRef => \%ARGS, TicketObj => $TicketObj );
