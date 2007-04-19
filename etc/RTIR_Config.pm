@@ -194,7 +194,7 @@ Set($RTIRSearchResultFormats, {
     NewReports =>
         q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
           '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
-          __Requestors__, __OwnerName__, __DueRelative__, __TakeOrSteal__},
+          __Requestors__, __OwnerName__, __DueRelative__, __Take__},
 
     ChildReport =>
         q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',

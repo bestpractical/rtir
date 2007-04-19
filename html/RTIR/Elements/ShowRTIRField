@@ -24,6 +24,7 @@
 %# END LICENSE BLOCK
 % unless ( $count ) {
 <span class="cf-value novalue"><&|/l&>no value</&></class>
+% return;
 % } elsif ( $count == 1 ) {
 <span class="cf-value"><% $values->First->Content %></span>
 % } else {

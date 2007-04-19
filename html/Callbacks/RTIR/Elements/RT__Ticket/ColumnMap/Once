@@ -60,6 +60,17 @@ while ( my $cf = $rtir_cfs->Next ) {
         $COLUMN_MAP->{ "CustomField.{$name}" } = \%h;
 }
 
+$COLUMN_MAP->{'Take'} = {
+    title => 'Take',
+    value => sub {
+        my $t = shift;
+        return '' if $t->Owner != $RT::Nobody->id;
+        my $action = 'Take';
+        my $link = RT->Config->Get('WebPath') ."/Ticket/Display.html?Action=$action&id=". $t->id;
+        $link = qq{<a href="$link">}. $t->loc($action) .qq{</a>};
+        return \$link;
+    },
+};
 $COLUMN_MAP->{'TakeOrSteal'} = {
     title => 'Take/Steal',
     value => sub {

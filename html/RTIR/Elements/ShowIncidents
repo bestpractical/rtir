@@ -25,10 +25,10 @@
 % while ( my $incident = $incidents->Next ) {
 % $m->out('<ul>') unless $count;
 <li>
+<a href="<% RT->Config->Get('WebPath') %>/RTIR/Display.html?id=<% $incident->Id %>"><% $incident->Id %>: <% $incident->Subject %></a> <i>( <& /RTIR/Elements/ShowRTIRField, Ticket => $incident, Name => 'State' &> )</i>
 % if ( $show_unlink ) {
 <a href="<% RT->Config->Get('WebPath') %>/RTIR/Display.html?id=<% $Ticket->Id %>&DeleteLink--MemberOf-<% $incident->Id %>=1">[<% loc('Unlink') %>]</a>
 % }
-<a href="<% RT->Config->Get('WebPath') %>/RTIR/Display.html?id=<% $incident->Id %>"><% $incident->Id %>: <% $incident->Subject %></a><i>(<& /RTIR/Elements/ShowRTIRField, Ticket => $incident, Name => 'State' &>)</i>
 % if ( $depth < 8 ) {
 <& /RTIR/Elements/ShowIncidents, Ticket => $incident, depth => ($depth+1) &>
 % }

@@ -145,8 +145,6 @@
 
 </&>
 
-</td>
-  <td valign="top" width="50%">
 % if ($RT::FM::VERSION) {
 <&| /Widgets/TitleBox, title => loc("Articles"),
     title_href => RT->Config->Get('WebPath') ."/RTIR/Advanced.html?id=".$id, 
@@ -170,19 +168,15 @@
 
 </&>
 % }
-  </td>
-</tr>
-<tr>
-  <td valign="top" width="50%">
-    <br />
+</td> <td valign="top" width="50%">
+%#  </td> </tr> <tr> <td valign="top" width="50%">
     <&| /Widgets/TitleBox, title => loc('People'), 
         title_href  => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=". $Ticket->Id,
         title_class => 'inverse' &>
     <& /RTIR/Elements/ShowPeople, Ticket => $Ticket &>
     </&>
     <br />
-  </td>
-  <td>
+%#  </td> <td>
         <br />
           <&| /Widgets/TitleBox, title => loc("Dates"),
                 title_href  => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=". $Ticket->Id,
@@ -253,14 +247,6 @@ if ( $id eq 'new' ) {
         if ($status && $action =~  /^(?:Take|Steal)$/) { $ARGS{'Lock'} = 'add'; }
     }
 
-
-    if ( $ARGS{'TakeOrStealFirst'} and $Ticket->Owner != $Ticket->CurrentUser->Id) {
-        my ($status, $msg) = $Ticket->SetOwner($Ticket->CurrentUser->Id, 'Force');
-        push @results, $msg if $msg;
-
-        # If they succeeded in taking the ticket, they should also get a lock
-        if ($status) { $ARGS{'Lock'} = 'add'; }
-    }
 
     if ( $ARGS{'Lock'} ) {
 

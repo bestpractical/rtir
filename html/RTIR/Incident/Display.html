@@ -324,21 +324,21 @@ if( 1 ) {
 
     }
     if ( $ARGS{'Lock'} ) {
-        my $Ticket = $TicketObj;
+
         if ( $ARGS{'Lock'} eq 'add' ) {
-            if ( $Ticket->RT::IR::Ticket::Lock() ) {
+            if ( $TicketObj->RT::IR::Ticket::Lock() ) {
                 push @results, loc('You now have a lock on this ticket');
             } else {
                 push @results, loc('Your attempt to lock this ticket failed');
 
             }
         } elsif ( $ARGS{'Lock'} eq 'remove' ) {
-            my $lock = $Ticket->RT::IR::Ticket::Locked();
+            my $lock = $TicketObj->RT::IR::Ticket::Locked();
             if ( !$lock ) {
                 push @results, loc('This ticket was not locked');
 
                 } elsif ( $lock->Content->{'User'} == $session{'CurrentUser'}->id ) {
-                $Ticket->RT::IR::Ticket::Unlock();
+                $TicketObj->RT::IR::Ticket::Unlock();
                 push @results, loc('You have unlocked this ticket');
             } else {
                 push @results,
@@ -347,7 +347,7 @@ if( 1 ) {
             }
 
         } elsif ( $ARGS{'Lock'} eq 'break' ) {
-            $Ticket->RT::IR::Ticket::BreakLock();
+            $TicketObj->RT::IR::Ticket::BreakLock();
             push @results, loc('You have broken the lock on this ticket');
         }
     }

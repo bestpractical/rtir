@@ -37,7 +37,6 @@
 <input type="hidden" name="Status" value="<% $DefaultStatus %>" />
 % }
 <input type="hidden" name="Action" value="<% $Action || '' %>" />
-<input type="hidden" name="TakeOrStealFirst" value="<% $ARGS{TakeOrStealFirst} || '' %>" />
 % if ($Type eq 'Report' and $ARGS{'DefaultStatus'} eq 'rejected') {
 %   my $query = "Queue = 'Incidents' AND HasMember = $id";
 %   my $incidents = new RT::Tickets($session{'CurrentUser'});
