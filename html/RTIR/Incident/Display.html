@@ -324,7 +324,7 @@ if( 1 ) {
 
     }
     if ( $ARGS{'Lock'} ) {
-
+        my $Ticket = $TicketObj;
         if ( $ARGS{'Lock'} eq 'add' ) {
             if ( $Ticket->RT::IR::Ticket::Lock() ) {
                 push @results, loc('You now have a lock on this ticket');
