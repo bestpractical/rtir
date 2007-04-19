@@ -100,7 +100,7 @@ my @types = (
     },
     {
         name   => "domain",
-        regex  => q[(?:[\w-]+\.)+[A-Za-z]{2,3}],
+        regex  => q[(?:[\w-]+\.)+[A-Za-z]{2,3}\b],
         action => "host",
     },
     {
