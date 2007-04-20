@@ -11,7 +11,7 @@ if ( $Transaction->Creator == $RT::SystemUser->id && $Transaction->Type eq 'Cust
 }
 
 # get out of here asap
-unless ( $Transaction->Field eq 'Status' && $Transaction->Type =~ /^(?:Status|Set)$/ ) {
+unless ( $Transaction->Type =~ /^(?:Status|Set)$/ && $Transaction->Field  eq 'Status') {
     return $$skip = 0;
 }
 

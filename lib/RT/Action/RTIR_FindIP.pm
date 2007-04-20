@@ -37,15 +37,15 @@ sub Commit {
     for( @{$cf->ValuesForObject( $ticket )->ItemsArrayRef} ) {
         $existing{ $_->Content } =  1;
     }
-
-    my @IPs = ( $attach->Content =~ /(?<!\d)($RE{net}{IPv4})(?!\d)(?!\/(3[0-2]|[1-2]?[0-9]))/go );
+    my $content = $attach->Content || '';
+    my @IPs = ( $content =~ /(?<!\d)($RE{net}{IPv4})(?!\d)(?!\/(3[0-2]|[1-2]?[0-9]))/go );
     $self->AddIP(
         IP          => $_,
         CustomField => $cf,
         Skip        => \%existing,
     ) foreach @IPs;
 
-    my @CIDRs = ( $attach->Content =~ /$RE{net}{CIDR}{IPv4}{-keep}/go );
+    my @CIDRs = ( $content =~ /$RE{net}{CIDR}{IPv4}{-keep}/go );
     while ( my ($addr, $bits) = splice @CIDRs, 0, 2 ) {
         my $cidr = join( '.', map $_||0, (split /\./, $addr)[0..3] ) ."/$bits";
         my $range = (Net::CIDR::cidr2range( $cidr ))[0] or next;

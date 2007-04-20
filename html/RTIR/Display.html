@@ -237,7 +237,7 @@ if ( $id eq 'new' ) {
     }
     ($Ticket, @results) = CreateTicket( %ARGS, Attachments => delete $session{'Attachments'} );
 } elsif( $id ) {
-    my $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+    my $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State') ||'';
 
     if ( $ARGS{'Action'} && $ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/ ) {
         my $action = $1;
@@ -288,7 +288,7 @@ if ( $id eq 'new' ) {
 
     push @results, ProcessTicketDates(   TicketObj => $Ticket, ARGSRef => \%ARGS );
 
-    my $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+    my $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State') || '';
     if ($newstate ne $oldstate) {
         push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
     }

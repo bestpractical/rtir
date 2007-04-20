@@ -334,7 +334,7 @@ if ( $Type eq 'Report' ) {
     };
 }
 
-if ( $subtabs ) {
+if ( $subtabs && $current_tab ) {
     foreach my $tab ( values %{$tabs} ) {
         next unless $tab->{'path'} eq $current_tab;
 
