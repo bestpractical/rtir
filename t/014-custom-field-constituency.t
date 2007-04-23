@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 153;
+use Test::More tests => 182;
 
 require "t/rtir-test.pl";
 
@@ -233,14 +233,115 @@ diag "create an IR and check that we couldn't change value during creation of ne
     is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value' );
 }
 
+my $eduhandler = RT::User->new($RT::SystemUser);
+$eduhandler->Create(Name => 'eduhandler-'.$$, Privileged => 1);
+ok($eduhandler->id, "Created eduhandler");
+my $govhandler = RT::User->new($RT::SystemUser);
+$govhandler->Create(Name => 'govhandler-'.$$, Privileged => 1);
+ok($govhandler->id, "Created govhandler");
+
+my $govqueue = RT::Queue->new($RT::SystemUser);
+$govqueue->LoadByCols(Name => 'Incident Reports - GOVNET');
+unless ($govqueue->id) {
+$govqueue->Create(Name => 'Incident Reports - GOVNET', CorrespondAddress => 'govnet@example.com');
+}
+ok ($govqueue->id);
+my $eduqueue = RT::Queue->new($RT::SystemUser);
+$eduqueue->LoadByCols(Name => 'Incident Reports - EDUNET');
+unless ($eduqueue->id)  {$eduqueue->Create(Name => 'Incident Reports - EDUNET', CorrespondAddress => 'edunet@example.com' )};
+ok($eduqueue->id);
 diag "Grant govhandler the right to see tickets in Incident Reports - GOVNET" if $ENV{'TEST_VERBOSE'};
+
+{ 
+    my ($val,$msg)  = $govhandler->PrincipalObj->GrantRight(Right => 'ShowTicket', Object => $govqueue);
+    ok ($val,$msg);
+
+    ok($govqueue->HasRight(Principal => $govhandler, Right => 'ShowTicket'), "Govhnadler can see govtix"); 
+    ok(!$govqueue->HasRight(Principal => $eduhandler, Right => 'ShowTicket'), "eduhandler can not see gov tix"); 
+
+}
+
+
 diag "Grant eduhandler the right to see tickets in Incident Reports - EDUNET" if $ENV{'TEST_VERBOSE'};
+{ 
+    my ($val,$msg)  = $eduhandler->PrincipalObj->GrantRight(Right => 'ShowTicket', Object => $eduqueue);
+    ok ($val,$msg);
+    ok($eduqueue->HasRight(Principal => $eduhandler, Right => 'ShowTicket'), "For the eduqueue, eduhandler can see tix"); 
+    ok(!$eduqueue->HasRight(Principal => $govhandler, Right => 'ShowTicket'), "For the eduqueue, govhandler can not seetix"); 
+}
 diag "Create an incident report with a default constituency of EDUNET" if $ENV{'TEST_VERBOSE'};
+
+
+    my $val = 'EDUNET';
+    my $ir_id = create_ir(
+        $agent, { Subject => "test" }, { Constituency => $val }
+    );
+    ok( $ir_id, "created IR #$ir_id" );
+    display_ticket($agent, $ir_id);
+    $agent->content_like(qr/EDUNET/, "It was created by edunet");
+
 diag "autoreply comes from the EDUNET queue address" if $ENV{'TEST_VERBOSE'};
+my $ticket = RT::Ticket->new($RT::SystemUser);
+$ticket->Load($ir_id);
+$ticket->AddWatcher(Type => 'Requestor', Email => 'enduser@example.com');
+$ticket->Correspond(Content => 'Testing');
+my $txns = $ticket->Transactions;
+my $from;
+while (my $txn = $txns->Next) {
+    next unless ($txn->Type eq 'EmailRecord');
+    $from = $txn->Attachments->First->GetHeader('From');
+    last;
+}
+ok($from =~ /edunet/, "The from address pciked up the edunet address");
+
+
 diag "govhandler can't see the incident report"       if $ENV{'TEST_VERBOSE'};
+my $ticket_as_gov = RT::Ticket->new($govhandler);
+$ticket_as_gov->Load($ir_id);
+is($ticket_as_gov->Subject,undef, "As the gov handler, I can not see the ticket");
+
+
 diag "eduhandler can see the incident report"         if $ENV{'TEST_VERBOSE'};
+my $ticket_as_edu = RT::Ticket->new($eduhandler);
+$ticket_as_edu->Load($ir_id);
+is($ticket_as_edu->Subject, 'test', "As the edu handler, I can see the ticket");
+
+
+
+
 diag "move the incident report from EDUNET to GOVNET" if $ENV{'TEST_VERBOSE'};
+
+    display_ticket($agent, $ir_id);
+    $agent->follow_link_ok({text => 'Edit'}, "go to Edit page");
+    $agent->form_number(3);
+    ok(set_custom_field( $agent, Constituency => 'GOVNET' ), "fill value in the form");
+    $agent->click('SaveChanges');
+    is( $agent->status, 200, "Attempting to edit ticket #$ir_id" );
+    $agent->content_like( qr/GOVNET/, "value on the page" );
+
+    DBIx::SearchBuilder::Record::Cachable::FlushCache();
+        $RT::IR::ConstituencyCache->{$ir_id}  = undef;
+
+
 diag "govhandler can see the incident report"         if $ENV{'TEST_VERBOSE'};
+$ticket_as_gov = RT::Ticket->new($govhandler);
+$ticket_as_gov->Load($ir_id);
+is($ticket_as_gov->Subject, 'test',"As the gov handler, I can see the ticket");
+
 diag "eduhandler can't see the incident report"       if $ENV{'TEST_VERBOSE'};
+ 
+$ticket_as_edu = RT::Ticket->new($eduhandler);
+$ticket_as_edu->Load($ir_id);
+is($ticket_as_edu->Subject,undef , "As the edu handler, I can not see the ticket");
+
 diag "govhandler replies to the incident report" if $ENV{'TEST_VERBOSE'};
+$ticket_as_gov->Correspond(Content => 'Testing 2');
 diag "reply comes from the GOVNET queue address" if $ENV{'TEST_VERBOSE'};
+my $txns = $ticket->Transactions;
+my $from;
+while (my $txn = $txns->Next) {
+    next unless ($txn->Type eq 'EmailRecord');
+    $from = $txn->Attachments->First->GetHeader('From');
+}
+ok($from =~ /govnet/, "The from address pciked up the gov address");
+
