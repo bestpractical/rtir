@@ -38,7 +38,7 @@
 </&></td></tr>
 
 <tr><td align="right" valign="top"><&|/l&>Message</&>:</td><td>
-<& /Elements/Callback, Page => '/Ticket/Update.html',_CallbackName => 'BeforeMessageBox', %ARGS &>
+% $m->callback( %ARGS, CallbackPage => '/Ticket/Update.html', CallbackName => 'BeforeMessageBox' );
 % if ( exists $ARGS{'UpdateContent'} ) {
 % delete $ARGS{'QuoteTransaction'};
 <& /Elements/MessageBox, Name => "UpdateContent", Default => $ARGS{'UpdateContent'}, %ARGS &>

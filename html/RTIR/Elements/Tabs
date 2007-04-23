@@ -73,7 +73,7 @@ my $topactions = {
     B => { html => $m->scomp('/RTIR/Elements/SimpleSearch') },
 };
 
-$m->comp('/Elements/Callback', toptabs => $toptabs, topactions => $topactions, %ARGS);
+$m->callback( toptabs => $toptabs, topactions => $topactions, %ARGS );
 
 </%INIT>
 <%ARGS>

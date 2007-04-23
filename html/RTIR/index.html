@@ -45,11 +45,11 @@ if ( $ARGS{'q'} ) {
         return $m->comp( '/RTIR/Display.html', id => $1 );
     }
 
-    return if $m->comp( '/Elements/Callback',
-                   %ARGS,
-                   _CallbackName => 'SearchPreFilter',
-                   query         => $query,
-                 );
+    return if $m->callback(
+        %ARGS,
+        CallbackName => 'SearchPreFilter',
+        query        => $query,
+    );
 
     # Incidents don't have requestors, but children do
     if ( $query =~ m/\@/ ) {
