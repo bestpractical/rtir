@@ -335,6 +335,37 @@ wrap 'RT::ObjectCustomFieldValue::Content',
     };
 }
 
+
+# if (0) {
+{
+    require RT::Ticket;
+    wrap 'RT::Ticket::ACLEquivalenceObjects', pre => sub {
+        my $self = shift;
+
+        return if ( $self->CurrentUser->id == $RT::SystemUser->id );
+        my $queue = $self->QueueObj;
+        if ( UNIVERSAL::isa( $self, 'RT::Ticket' ) ) {
+            if (not defined $RT::IR::ConstituencyCache->{ $self->id }) {
+                my $systicket = RT::Ticket->new($RT::SystemUser);
+                $systicket->Load( $self->id );
+                $RT::IR::ConstituencyCache->{$self->id}  = $systicket->FirstCustomFieldValue('_RTIR_Constituency') || '_none';
+            }
+            return if ( $RT::IR::ConstituencyCache->{ $self->id } eq '_none' );
+            if ( not $self->{_constituency_queue} ) {
+                my $new_queue = RT::Queue->new( $self->CurrentUser );
+                $new_queue->LoadByCols( Name => $queue->Name . " - " . $RT::IR::ConstituencyCache->{ $self->id } );
+                return unless ( $new_queue->id );
+                $self->{_constituency_queue} = $new_queue;
+            }
+            $_[-1] =  ($queue, $self->{_constituency_queue});
+        } else {
+            use YAML;
+            $RT::Logger->crit( "$self is not a ticket object like I expected"
+                    . YAML::Dump($self) );
+        }
+    };
+}
+#
 eval "require RT::IR_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/IR_Vendor.pm});
 eval "require RT::IR_Local";
