@@ -24,13 +24,16 @@ sub Commit {
 
     my $cf = RT::CustomField->new( $self->TransactionObj->CurrentUser );
     $cf->LoadByNameAndQueue( Queue => $t->QueueObj->Id, Name => '_RTIR_State' );
-    return 1 unless $cf->Id;
+    unless ( $cf->Id ) {
+        $RT::Logger->warning("Couldn't load '_RTIR_State' CF for queue ". $t->QueueObj->Name );
+        return 1;
+    }
 
     my $state = $self->GetState;
     return 1 unless $state;
 
     my ($res, $msg) = $t->AddCustomFieldValue(Field => $cf->id, Value => $state);
-    $RT::Logger->info("Couldn't add custom field value: $msg") unless $res;
+    $RT::Logger->warning("Couldn't add custom field value: $msg") unless $res;
     return 1;
 }
 
