@@ -338,12 +338,25 @@ wrap 'RT::ObjectCustomFieldValue::Content',
 
 # if (0) {
 {
+    require RT::Record;
+    wrap 'RT::Record::_AddCustomFieldValue', pre => sub {
+        return unless( UNIVERSAL::isa($_[0] => 'RT::Ticket'));
+        $RT::IR::ConstituencyCache->{$_[0]->id}  = undef;
+        
+    };
+
     require RT::Ticket;
     wrap 'RT::Ticket::ACLEquivalenceObjects', pre => sub {
         my $self = shift;
 
-        return if ( $self->CurrentUser->id == $RT::SystemUser->id );
-        my $queue = $self->QueueObj;
+        my $queue = RT::Queue->new($RT::SystemUser);
+        $queue->Load($self->__Value('Queue'));
+
+        # We do this, rather than fall through to the orignal sub, as that interacts poorly with our overloaded QueueObj below
+        if ( $self->CurrentUser->id == $RT::SystemUser->id ) {
+            $_[-1] =  [$queue];
+            return;
+        }
         if ( UNIVERSAL::isa( $self, 'RT::Ticket' ) ) {
             if (not defined $RT::IR::ConstituencyCache->{ $self->id }) {
                 my $systicket = RT::Ticket->new($RT::SystemUser);
@@ -357,7 +370,7 @@ wrap 'RT::ObjectCustomFieldValue::Content',
                 return unless ( $new_queue->id );
                 $self->{_constituency_queue} = $new_queue;
             }
-            $_[-1] =  ($queue, $self->{_constituency_queue});
+            $_[-1] =  [$queue, $self->{_constituency_queue}];
         } else {
             use YAML;
             $RT::Logger->crit( "$self is not a ticket object like I expected"
@@ -365,6 +378,49 @@ wrap 'RT::ObjectCustomFieldValue::Content',
         }
     };
 }
+
+
+{ 
+    wrap 'RT::Ticket::QueueObj', pre => sub {
+        my $queue = RT::Queue->new($_[0]->CurrentUser);
+        $queue->Load($_[0]->__Value('Queue'));
+        $queue->{'_for_ticket'} = $_[0]->id;
+        $_[-1] = $queue;
+        return;
+    };
+
+    { 
+        package RT::Queue;
+
+        sub CorrespondAddress { GetQueueAttribute(shift, 'CorrespondAddress') }
+        sub CommentAddress { GetQueueAttribute(shift, 'CommentAddress') }
+
+    sub GetQueueAttribute {
+        my $queue = shift;
+        my $attr  = shift;
+
+        if ( ( my $id = $queue->{'_for_ticket'} ) ) {
+            my $const = $RT::IR::ConstituencyCache->{$id};
+            unless ($const) {
+                my $ticket = RT::Ticket->new($RT::SystemUser);
+                $ticket->Load($id);
+                $const = $ticket->FirstCustomFieldValue('_RTIR_Constituency');
+            }
+            if ($const) {
+                my $new_queue = RT::Queue->new($RT::SystemUser);
+                $new_queue->LoadByCols(
+                    Name => $queue->Name . " - " . $const );
+                if ( $new_queue->id ) {
+                    return $new_queue->_Value($attr);
+                }
+            }
+        }
+        return $queue->_Value($attr);
+    }
+}
+}
+
+
 #
 eval "require RT::IR_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/IR_Vendor.pm});

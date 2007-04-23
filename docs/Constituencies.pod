@@ -49,14 +49,34 @@ the constituency field(D.3.5.1).
 
 =head2 ACLs
 
-To implement requirement D.3.5.2 we've associated one group with each value of
-the constituency field. Name of a group should match 'DutyTeam <constituency>'.
-When people define or change value of a ticket we add a group to the ticket's
-AdminCc role, so all people in the group inherit rights granted to AdminCc role.
-You can control list of rights through the web interface. Open page RT ->
-Configuration -> Queues -> select a RTIR queue -> Group Rights, change
-rights of the AdminCc role to control access of the constituency groups.
-You can also control access of other groups to the queue.
+RTIR allows you to grant additional rights to tickets based on their
+constituency by means of "pseudo" queues.
+
+For example, assume you have two constituencies "EDUNET" and "GOVNET".
+Your RTIR instance consists of four queues: Incident Reports,
+Incidents, Investigations and Blocks.  To grant the user "Edward"
+the right to work with EDUNET Incident Reports, you'll need to
+create a new queue, "Incident Reports - EDUNET".  Make "Edward" an
+AdminCc of the new queue, either directly or as a member of a group
+like "DutyTeam - EDUNET".
+
+You should grant that user or group the rights you want them to
+have to tickets in the "Incident Reports" queue. It is important
+that you NOT grant the user or group "queue-wide" rights sunch as
+"See Queue" or "Create Ticket" in the pseudo-queue as the system
+will apply those rights to the pseudo-queue "Incident Reports -
+EUDNET" and NOT to the "Incident Reports" queue.
+
+=head2 Outgoing mail: "CorrespondAddress" and "CommentAddress"
+
+If you create queues as described in the ACL section, their
+correspondence and comment addresses will override the original
+queue's where possible.
+
+
+
+It is important to note that these additional rights do NOT also add new mailing rules.  
+
 
 =head2 Presetting constituency according to mail traffic
 

@@ -233,15 +233,14 @@ diag "create an IR and check that we couldn't change value during creation of ne
     is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value' );
 }
 
-diag "Grant govhandler the right to see tickets in Incident Reports - GOVNET"
-    if $ENV{'TEST_VERBOSE'};
-diag "Grant eduhandler the right to see tickets in Incident Reports - EDUNET"
-    if $ENV{'TEST_VERBOSE'};
-diag "Create an incident report with a default constituency of EDUNET"
-    if $ENV{'TEST_VERBOSE'};
+diag "Grant govhandler the right to see tickets in Incident Reports - GOVNET" if $ENV{'TEST_VERBOSE'};
+diag "Grant eduhandler the right to see tickets in Incident Reports - EDUNET" if $ENV{'TEST_VERBOSE'};
+diag "Create an incident report with a default constituency of EDUNET" if $ENV{'TEST_VERBOSE'};
+diag "autoreply comes from the EDUNET queue address" if $ENV{'TEST_VERBOSE'};
 diag "govhandler can't see the incident report"       if $ENV{'TEST_VERBOSE'};
 diag "eduhandler can see the incident report"         if $ENV{'TEST_VERBOSE'};
 diag "move the incident report from EDUNET to GOVNET" if $ENV{'TEST_VERBOSE'};
 diag "govhandler can see the incident report"         if $ENV{'TEST_VERBOSE'};
 diag "eduhandler can't see the incident report"       if $ENV{'TEST_VERBOSE'};
-
+diag "govhandler replies to the incident report" if $ENV{'TEST_VERBOSE'};
+diag "reply comes from the GOVNET queue address" if $ENV{'TEST_VERBOSE'};
