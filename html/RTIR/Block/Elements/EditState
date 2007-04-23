@@ -1,5 +1,4 @@
 <& /Widgets/Form/Select,
-    NamePrefix  => '',
     Name        => 'Status',
     Empty => 0,
     Values => [qw(new open stalled resolved)],
