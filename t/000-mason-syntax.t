@@ -32,7 +32,9 @@ sub compile_file {
     close $fh or die "couldn't close '$file': $!";
 
     my $compiler = new HTML::Mason::Compiler::ToObject;
-    $compiler->compile( comp_source => $text, name => 'my', comp_path => 'my' );
+    $compiler->compile( comp_source => $text, name => 'my',
+   # comp_path => 'my' 
+    );
     return 1;
 }
 
