@@ -85,7 +85,7 @@ diag "started date of an IR" if $ENV{'TEST_VERBOSE'};
     my $ir = RT::Ticket->new( $RT::SystemUser );
     $ir->Load( $ir_id );
     is($ir->id, $ir_id, 'loaded ir');
-    ok( abs($ir->StartedObj->Unix - $ir->CreatedObj->Unix) <= 1, 'for an IR started date == linking to inc time');
+    ok( abs($ir->StartedObj->Unix - $ir->CreatedObj->Unix) <= 2, 'for an IR started date == linking to inc time');
 }
 
 diag "started date of a block" if $ENV{'TEST_VERBOSE'};
