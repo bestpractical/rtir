@@ -110,7 +110,7 @@ sub UpdateDue {
     $children->RowsPerPage(1);
     my $mostdue = $children->First;
 
-    $incident->SetDue( $mostdue? $mostdue->DueObj->ISO: 0 );
+    $incident->SetDue( $mostdue? $mostdue->DueObj->ISO: '1970-01-01 00:00:00' );
 
     return 1;
 }
