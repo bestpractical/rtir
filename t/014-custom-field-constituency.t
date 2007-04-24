@@ -3,8 +3,12 @@
 use strict;
 use warnings;
 use Test::More tests => 182;
+no warnings 'once';
 
 require "t/rtir-test.pl";
+
+# Test must be run wtih RT_SiteConfig:
+# Set(@MailPlugins, 'Auth::MailFrom');
 
 use_ok('RT');
 RT::LoadConfig();
@@ -337,6 +341,7 @@ is($ticket_as_edu->Subject,undef , "As the edu handler, I can not see the ticket
 diag "govhandler replies to the incident report" if $ENV{'TEST_VERBOSE'};
 $ticket_as_gov->Correspond(Content => 'Testing 2');
 diag "reply comes from the GOVNET queue address" if $ENV{'TEST_VERBOSE'};
+{
 my $txns = $ticket->Transactions;
 my $from;
 while (my $txn = $txns->Next) {
@@ -345,3 +350,4 @@ while (my $txn = $txns->Next) {
 }
 ok($from =~ /govnet/, "The from address pciked up the gov address");
 
+}
