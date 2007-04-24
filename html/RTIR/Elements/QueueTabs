@@ -260,12 +260,12 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
     {
         if ( $Type eq 'Report' ) {
             $actions->{'B'} = {
-                path => "RTIR/Update.html?Action=Comment&DefaultStatus=rejected&id=$id",
+                path => "RTIR/Update.html?Action=Comment&TakeOrStealFirst=1&DefaultStatus=rejected&id=$id",
                  title => loc('Reject'),
             };
 
             $actions->{'Bb'} = {
-                path  => "RTIR/Display.html?Status=rejected&Action=Take&id=$id",
+                path  => "RTIR/Display.html?Status=rejected&TakeOrStealFirst=1&id=$id",
                 title => loc('Quick Reject'),
             };
         }

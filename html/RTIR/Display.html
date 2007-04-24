@@ -248,6 +248,14 @@ if ( $id eq 'new' ) {
     }
 
 
+    if ( $ARGS{'TakeOrStealFirst'} and $Ticket->Owner != $Ticket->CurrentUser->Id) {
+        my ($status, $msg) = $Ticket->SetOwner($Ticket->CurrentUser->Id, 'Force');
+        push @results, $msg if $msg;
+
+        # If they succeeded in taking the ticket, they should also get a lock
+        if ($status) { $ARGS{'Lock'} = 'add'; }
+    }
+
     if ( $ARGS{'Lock'} ) {
 
         if ( $ARGS{'Lock'} eq 'add' ) {
