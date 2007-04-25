@@ -24,5 +24,7 @@
 <& /Elements/Header,
     URL  => RT->Config->Get('WebPath') ."/RTIR/index.html",
     Name => loc("RTIR for [_1]", RT->Config->Get('rtirname')),
+    LogoURL => RT->Config->Get('WebPath')."/RTIR/NoAuth/images/logo.png",
     %ARGS
+
 &>
