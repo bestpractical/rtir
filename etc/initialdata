@@ -795,6 +795,7 @@ for my $cf (@CustomFields) {
         body => [
             { type => 'component',  name => '/RTIR/Elements/NewReports' },
             { type => 'component',  name => '/RTIR/Elements/UserDueIncidents' },
+            { type => 'component',  name => '/RTIR/Elements/NobodyDueIncidents' },
             { type => 'component',  name => '/RTIR/Elements/DueIncidents' },
         ],
         summary => [

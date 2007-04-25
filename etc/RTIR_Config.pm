@@ -234,6 +234,7 @@ Set(@RTIR_HomepageComponents, qw(
     MyReminders
     /RTIR/Elements/NewReports
     /RTIR/Elements/UserDueIncidents
+    /RTIR/Elements/NobodyDueIncidents
     /RTIR/Elements/DueIncidents
     /RTIR/Elements/QueueSummary
     RefreshHomepage
