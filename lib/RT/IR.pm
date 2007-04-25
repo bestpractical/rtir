@@ -404,7 +404,7 @@ wrap 'RT::ObjectCustomFieldValue::Content',
             unless ($const) {
                 my $ticket = RT::Ticket->new($RT::SystemUser);
                 $ticket->Load($id);
-                $const = $ticket->FirstCustomFieldValue('_RTIR_Constituency');
+                $const = $RT::IR::ConstituencyCache->{$ticket->id}  = $ticket->FirstCustomFieldValue('_RTIR_Constituency') || '_none';
             }
             if ($const) {
                 my $new_queue = RT::Queue->new($RT::SystemUser);
