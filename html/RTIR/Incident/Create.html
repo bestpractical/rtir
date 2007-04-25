@@ -94,6 +94,12 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 
 <& Elements/Create, Title => $Title, TicketObj => $TicketObj, QueueObj => $QueueObj, ChildObj => $ChildObj, %ARGS &>
 
+<tr><td>&nbsp;</td><td>
+<% loc('Sign')%> <& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $ARGS{'Sign'} &>
+&nbsp;&nbsp;&nbsp;
+<% loc('Encrypt')%> <& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $ARGS{'Encrypt'} &>
+</td></tr>
+
 <tr><td class="labeltop"><&|/l&>Message</&>:</td>
 <td>
 <%PERL>
@@ -202,6 +208,14 @@ if ( $Child ) {
 
 my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
 $QueueObj->Load( 'Incidents' ) || Abort( loc("Queue could not be loaded.") );
+
+foreach ( qw(Sign Encrypt) ) {
+    $ARGS{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
+        Name => $_,
+        DefaultValue => $QueueObj->$_,
+        Arguments => \%ARGS,
+    );
+}
 
 $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 

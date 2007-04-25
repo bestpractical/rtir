@@ -71,6 +71,20 @@ email addresses. These people <b>will</b> receive future updates.)</&></font></i
 <& /RTIR/Create.html:AttachmentsForm &>
 % }
 
+% unless ( $SkipField{'SignEncrypt'} ) {
+<tr><td>&nbsp;</td><td>
+<% loc('Sign')%> <& /Widgets/Form/Boolean:InputOnly,
+    Name => $NamePrefix .'Sign',
+    CurrentValue => $ARGS{ $NamePrefix .'Sign' },
+&>
+&nbsp;&nbsp;&nbsp;
+<% loc('Encrypt')%> <& /Widgets/Form/Boolean:InputOnly,
+    Name => $NamePrefix .'Encrypt',
+    CurrentValue => $ARGS{ $NamePrefix .'Encrypt' },
+&>
+</td></tr>
+% }
+
 % unless ( $SkipField{'Content'} || $HideField{'Content'} ) {
 <tr><td class="labeltop"><&|/l&>Message</&>:</td>
 <td><& /Elements/MessageBox,
@@ -118,12 +132,21 @@ my $value_cb = sub {
     return $value;
 };
 
-if ( !$QueueObj ) {
+unless ( $QueueObj ) {
     if ( my $queue = $value_cb->('Queue') ) {
         $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
         $QueueObj->Load( $queue );
     }
 }
+
+foreach ( qw(Sign Encrypt) ) {
+    $ARGS{ $NamePrefix . $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
+        Name => $NamePrefix . $_,
+        DefaultValue => $QueueObj->$_,
+        Arguments => \%ARGS,
+    );
+}
+
 </%INIT>
 
 <%METHOD Process>
