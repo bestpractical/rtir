@@ -1,6 +1,18 @@
 CHANGES
 docs/AdministrationTutorial.pod
 docs/Constituencies.pod
+docs/logo/gif/rtir-logo-badge-3d.gif
+docs/logo/gif/rtir-logo-badge-shadow.gif
+docs/logo/gif/rtir-logo-badge.gif
+docs/logo/gif/rtir.gif
+docs/logo/png/rtir-logo-badge-3d.png
+docs/logo/png/rtir-logo-badge-shadow.png
+docs/logo/png/rtir-logo-badge.png
+docs/logo/png/rtir.png
+docs/logo/psd/rtir-logo-badge-3d.psd
+docs/logo/psd/rtir-logo-badge-shadow.psd
+docs/logo/psd/rtir-logo-badge.psd
+docs/logo/svg/rtir.svg
 docs/Tutorial.pod
 etc/initialdata
 etc/RTIR_Config.pm
@@ -42,6 +54,7 @@ html/RTIR/Block/Elements/Tabs
 html/RTIR/Create.html
 html/RTIR/Display.html
 html/RTIR/Edit.html
+html/RTIR/EditUsername
 html/RTIR/Elements/AddWatchers
 html/RTIR/Elements/BaseQuery
 html/RTIR/Elements/ChildrenQuery
@@ -56,6 +69,7 @@ html/RTIR/Elements/MakeClicky
 html/RTIR/Elements/MergeWith
 html/RTIR/Elements/NewQuery
 html/RTIR/Elements/NewReports
+html/RTIR/Elements/NobodyDueIncidents
 html/RTIR/Elements/PickRestriction
 html/RTIR/Elements/QueueSummary
 html/RTIR/Elements/QueueTabs
@@ -66,6 +80,7 @@ html/RTIR/Elements/SelectCustomFieldValue
 html/RTIR/Elements/ShowChildren
 html/RTIR/Elements/ShowDates
 html/RTIR/Elements/ShowIncidents
+html/RTIR/Elements/ShowLock
 html/RTIR/Elements/ShowPeople
 html/RTIR/Elements/ShowRTIRField
 html/RTIR/Elements/SimpleSearch
@@ -93,6 +108,8 @@ html/RTIR/index.html
 html/RTIR/Investigation/Elements/Create
 html/RTIR/Investigation/Elements/Tabs
 html/RTIR/Merge.html
+html/RTIR/NoAuth/images/autohandler
+html/RTIR/NoAuth/images/logo.png
 html/RTIR/NoAuth/webrtir.css
 html/RTIR/Prefs/Home.html
 html/RTIR/Report/BulkReject.html
@@ -113,6 +130,7 @@ html/RTIR/Search/index.html
 html/RTIR/Search/Refine.html
 html/RTIR/Search/Reporting.html
 html/RTIR/Search/Results.html
+html/RTIR/ShowUser
 html/RTIR/Split.html
 html/RTIR/Tools/Elements/GetEmailFromIP
 html/RTIR/Tools/Elements/Tabs
@@ -195,6 +213,7 @@ t/013-custom-field-ip.t
 t/014-custom-field-constituency.t
 t/015-make-clicky.t
 t/016-date-started.t
+t/017-locking.t
 t/03firstmilestone.t
 t/rtir-test.pl
 UPGRADING

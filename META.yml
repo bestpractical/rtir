@@ -4,7 +4,7 @@ build_requires:
   File::Find: 0
   Test::More: 0
 distribution_type: module
-generated_by: Module::Install version 0.640
+generated_by: Module::Install version 0.64
 license: GPL Version 2
 name: RT-IR
 no_index: 
@@ -23,4 +23,4 @@ requires:
   RT::FM: 0
   Regexp::Common: 0
   Regexp::Common::net::CIDR: 0
-version: 2.1.5
+version: 2.3.0
