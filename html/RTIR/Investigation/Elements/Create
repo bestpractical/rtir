@@ -71,7 +71,7 @@ email addresses. These people <b>will</b> receive future updates.)</&></font></i
 <& /RTIR/Create.html:AttachmentsForm &>
 % }
 
-% unless ( $SkipField{'SignEncrypt'} ) {
+% if ( !$SkipField{'SignEncrypt'} && RT->Config->Get('GnuPG')->{'Enable'} ) {
 <tr><td>&nbsp;</td><td>
 <% loc('Sign')%> <& /Widgets/Form/Boolean:InputOnly,
     Name => $NamePrefix .'Sign',
@@ -138,13 +138,14 @@ unless ( $QueueObj ) {
         $QueueObj->Load( $queue );
     }
 }
-
-foreach ( qw(Sign Encrypt) ) {
-    $ARGS{ $NamePrefix . $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
-        Name => $NamePrefix . $_,
-        DefaultValue => $QueueObj->$_,
-        Arguments => \%ARGS,
-    );
+if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
+    foreach ( qw(Sign Encrypt) ) {
+        $ARGS{ $NamePrefix . $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
+            Name => $NamePrefix . $_,
+            DefaultValue => $QueueObj->$_,
+            Arguments => \%ARGS,
+        );
+    }
 }
 
 </%INIT>

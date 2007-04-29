@@ -262,11 +262,13 @@
   </tr>
   <tr><td colspan="3"><& SELF:AttachmentsForm &></td><tr>
 
+% if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
   <tr><td>&nbsp;</td><td colspan="2">
     <% loc('Sign')%> <& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $ARGS{'Sign'} &>
     &nbsp;&nbsp;&nbsp;
     <% loc('Encrypt')%> <& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $ARGS{'Encrypt'} &>
   </td></tr>
+% }
 
   <tr>
     <td class="labeltop"><&|/l&>Message</&>:</td>
@@ -333,12 +335,14 @@ if ( $m->comp_exists("/RTIR/$Type/Create.html") ) {
     return $m->comp( "/RTIR/$Type/Create.html", %ARGS );
 }
 
-foreach ( qw(Sign Encrypt) ) {
-    $ARGS{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
-        Name => $_,
-        DefaultValue => $QueueObj->$_,
-        Arguments => \%ARGS,
-    );
+if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
+    foreach ( qw(Sign Encrypt) ) {
+        $ARGS{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
+            Name => $_,
+            DefaultValue => $QueueObj->$_,
+            Arguments => \%ARGS,
+        );
+    }
 }
 
 my ($Status, $name);

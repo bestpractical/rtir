@@ -37,11 +37,13 @@
 &>
 </&></td></tr>
 
+% if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
 <tr><td>&nbsp;</td><td>
 <% loc('Sign')%> <& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $ARGS{'Sign'} &>
 &nbsp;&nbsp;&nbsp;
 <% loc('Encrypt')%> <& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $ARGS{'Encrypt'} &>
 </td></tr>
+% }
 
 <tr><td align="right" valign="top"><&|/l&>Message</&>:</td><td>
 % $m->callback( %ARGS, CallbackPage => '/Ticket/Update.html', CallbackName => 'BeforeMessageBox' );
@@ -72,12 +74,14 @@ if ( $type eq 'Incident' ) {
     }
 }
 
-foreach ( qw(Sign Encrypt) ) {
-    $ARGS{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
-        Name => $_,
-        DefaultValue => $Ticket->QueueObj->$_,
-        Arguments => \%ARGS,
-    );
+if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
+    foreach ( qw(Sign Encrypt) ) {
+        $ARGS{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
+            Name => $_,
+            DefaultValue => $Ticket->QueueObj->$_,
+            Arguments => \%ARGS,
+        );
+    }
 }
 
 my $siblings = RT::Tickets->new( $Ticket->CurrentUser );
