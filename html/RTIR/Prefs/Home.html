@@ -39,20 +39,26 @@ foreach my $comp ( grep !$seen{$_}++, (RT->Config->Get('RTIR_HomepageComponents'
     push @items, ["component-$comp", $desc];
 }
 
-my @sys_searches;
-my @searches = $m->comp( "/Search/Elements/UserSearches" );
-foreach my $s( @searches ) {
-    #XXX: get rid of this exception
-    if ( $s->{'Type'} eq 'system' ) {
-        push @items, ["system-".$s->{'Description'}, $s->{'Description'} ];
-        push @sys_searches, [ $s->{'Description'}, $s->{'Search'} ];
-    }
-    else {
-        my $oid = join '-', ref $s->{'Object'},
-                            $s->{'Object'}->Id,
-                            'SavedSearch',
-                            $s->{'Search'}->Id;
-        push @items, [ "saved-$oid", loc("Saved Search: [_1]", $s->{'Description'}) ];
+my $sys = RT::System->new($session{'CurrentUser'});
+my @objs = ($sys);
+
+push @objs, RT::SavedSearches->new( $session{'CurrentUser'} )->_PrivacyObjects
+    if $session{'CurrentUser'}->HasRight( Right  => 'LoadSavedSearch',
+                                          Object => $RT::System );
+
+for my $object (@objs) {
+    for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
+        my ($desc, $search) = @$_;
+        my $SearchType = $search->Content->{'SearchType'} || 'Ticket';
+        if ($object eq $sys && $SearchType eq 'Ticket') {
+            push @items, ["system-$desc", $desc];
+        }
+        else {
+            my $oid = ref($object).'-'.$object->Id.'-SavedSearch-'.$search->Id;
+            my $type = ($SearchType eq 'Ticket')
+                ? 'Saved Search' : $SearchType; # loc
+            push @items, ["saved-$oid", loc($type).": $desc"];
+        }
     }
 }
 
