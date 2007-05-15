@@ -365,7 +365,7 @@ wrap 'RT::ObjectCustomFieldValue::Content',
             }
             return if ( $RT::IR::ConstituencyCache->{ $self->id } eq '_none' );
             if ( not $self->{_constituency_queue} ) {
-                my $new_queue = RT::Queue->new( $self->CurrentUser );
+                my $new_queue = RT::Queue->new( $RT::SystemUser);
                 $new_queue->LoadByCols( Name => $queue->Name . " - " . $RT::IR::ConstituencyCache->{ $self->id } );
                 return unless ( $new_queue->id );
                 $self->{_constituency_queue} = $new_queue;
