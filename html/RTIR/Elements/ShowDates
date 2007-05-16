@@ -46,8 +46,8 @@
 % } else {
         <% $due->AsString %>
 % }
-% if ( $Type ne 'Incident' && RT->Config->Get('OverdueAfter') ) {
-        [<a href="Display.html?Due_Date=now%20%2B%20<% RT->Config->Get('OverdueAfter') |u %>%20days&id=<% $Ticket->Id %>"><% loc("Set to [_1] days from now", RT->Config->Get('OverdueAfter') ) %></a>]
+% if ( $Type ne 'Incident' && $Due ) {
+        [<a href="Display.html?Due_Date=now%20%2B%20<% $Due |u %>%20days&id=<% $Ticket->Id %>"><% loc("Set to [_1] days from now", $Due ) %></a>]
 % }
     </td>
   </tr>
@@ -61,4 +61,5 @@ $Ticket => undef
 </%ARGS>
 <%INIT>
 my $Type = RT::IR::TicketType( Ticket => $Ticket );
+my $Due = ( $Ticket->QueueObj->DefaultDueIn || (RT->Config->Get('OverdueAfter')) || 7 ) ;
 </%INIT>
