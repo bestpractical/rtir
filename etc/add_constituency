@@ -1,0 +1,164 @@
+#!/usr/bin/perl
+use warnings;
+use strict;
+
+use lib qw(/opt/rt3/lib /opt/rt3/local/lib);
+use RT;
+RT::LoadConfig;
+RT::Init;
+
+my $constituency = shift @ARGV;
+
+unless ($constituency) {
+    print "Run this tool by typing $0 MY_NEW_CONSTITUENCY\nIt will add a new constituency to your RTIR. (Version 2.3 or newer)";
+}
+
+
+$RT::Handle->BeginTransaction;
+
+print "Adding constituency $constituency\n";
+
+my @queue_prefixes = ('Incidents', 'Incident Reports', 'Investigations', 'Blocks');
+
+
+# Add the value to the constituency CF
+my $cf = RT::CustomField->new($RT::SystemUser);
+$cf->LoadByCols(Name => "_RTIR_Constituency");
+my ($val,$msg) = $cf->AddValue(Name => $constituency);
+print "Added $constituency to the constituency dropdown\n";
+
+my %metaqueues;
+my %mainqueues;
+# Create our four new queues
+foreach my $prefix (@queue_prefixes) {
+    $mainqueues{$prefix} = create_or_load_queue($prefix); # will always load
+    $metaqueues{$prefix} = create_or_load_queue($prefix . " - " .$constituency);
+}
+
+
+
+# Create a DutyTeam $constituency
+my $dutyteam = create_or_load_group('DutyTeam '.$constituency);
+my $ro = create_or_load_group('ReadOnly '.$constituency);
+
+my @DUTYTEAM_METAQUEUE_RIGHTS = (
+
+       'OwnTicket', 
+       'CommentOnTicket', 
+       'ShowTicket', 
+       'ShowTicketComments', 
+       'StealTicket', 
+       'TakeTicket', 
+       'Watch', 
+); 
+
+my @DUTYTEAM_PRIMARY_QUEUE_RIGHTS = (
+       'CreateTicket', 
+       'SeeQueue', 
+       'ShowTemplate', 
+);
+
+
+my @RO_METAQUEUE_RIGHTS = (
+       'ShowTicket', 
+       'ShowTicketComments', 
+       'Watch', 
+);
+ 
+
+my @RO_PRIMARY_QUEUE_RIGHTS = (
+       'SeeQueue', 
+       'ShowTemplate', 
+
+);
+   
+    
+my @DUTYTEAM_CF_RIGHTS = ( 'SeeCustomField', 'ModifyCustomField');
+my @RO_CF_RIGHTS = ( 'SeeCustomField');
+
+# Grant that new dutyteam rights to see and update the CFs
+    grant_group_cf_rights($dutyteam, @DUTYTEAM_CF_RIGHTS);
+# Grant that new dutyteam rights to do queue-level things on the "main" RTIR queues
+    grant_group_queue_rights($dutyteam, \%mainqueues, @DUTYTEAM_PRIMARY_QUEUE_RIGHTS);
+# Grant that new dutyteam all the regular dutyteam rights for the new constituency queues
+    grant_group_queue_rights($dutyteam, \%metaqueues, @DUTYTEAM_METAQUEUE_RIGHTS);
+
+
+
+
+# Create or load the group "ReadOnly $constituency"
+    grant_group_cf_rights($ro, @RO_CF_RIGHTS);
+# Grant the new readonly group the rights to see the RTIR CFs
+    grant_group_queue_rights($ro, \%mainqueues, @RO_PRIMARY_QUEUE_RIGHTS);
+# Grant the new readonly group the rights to see the "main" RTIR queues
+    grant_group_queue_rights($ro, \%metaqueues, @RO_METAQUEUE_RIGHTS);
+
+
+$RT::Handle->Commit; print "Done. Enjoy your new constituency.\n"; 
+
+sub grant_group_queue_rights {
+    my $group = shift;
+    my $queues = shift;
+    my @rights = (@_);
+    
+    foreach my $queue    (values %$queues) {
+        print "Granting rights for queue " .$queue->Name. " to group ". $group->Name ."\n";
+        foreach my $right  (@rights) {
+            my ($val,$msg) =  $group->PrincipalObj->GrantRight(Right => $right, Object=>$queue);
+            print  "\t$right\n";
+            unless ($val) {
+                die "Failed to grant $right to ".$group->name. " for Queue ". $queue->Name;
+            }
+        }
+    } 
+}
+
+
+sub grant_group_cf_rights {
+    my $group = shift;
+    my @rights = (@_);
+
+    my $cfs = RT::CustomFields->new($RT::SystemUser);
+    $cfs->UnLimit;
+    while (my $cf = $cfs->Next) {
+        next unless ($cf->Name =~ /^_RTIR/);
+            print "Granting rights for custom field ".$cf->Name . " to group ". $group->Name ."\n";
+        foreach my $right  (@rights) {
+            my ($val,$msg) =  $group->PrincipalObj->GrantRight(Right => $right, Object=>$cf);
+            print "\t$right\n";
+            unless ($val) {
+                die "Failed to grant $right to ".$group->name. " for Custom Field ". $cf->Name;
+            }
+        }
+    } 
+}
+
+sub create_or_load_group {
+    my $name = shift;
+    my $group = RT::Group->new($RT::SystemUser);
+    $group->LoadUserDefinedGroup($name);
+    unless($group->id) {
+        my ($val,$msg) = $group->CreateUserDefinedGroup( Name => $name);
+        print "Creating new group $name: $msg\n";
+    }   
+
+    die "Failed to create group $name." unless ( $group->id);
+
+    return $group;
+}
+
+sub create_or_load_queue {
+    my $name = shift;
+    my $queue = RT::Queue->new($RT::SystemUser);
+    $queue->LoadByCols(Name => $name);
+    unless($queue->id) {
+        my ($val, $msg) = $queue->Create( Name => $name);
+        print "Creating new queue $name: $msg\n";
+    }   
+
+    die "Failed to create queue $name." unless ( $queue->id);
+
+    return $queue;
+}
+
+
