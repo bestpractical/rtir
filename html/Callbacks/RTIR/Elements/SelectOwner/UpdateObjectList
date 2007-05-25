@@ -1,0 +1,21 @@
+<%args>
+$objects => undef
+</%args>
+<%init>
+
+
+# If we're looking at rights on a particular ticket, then we don't want to add other queues for equivalence.
+foreach my $object (@$objects) {
+    return unless ($object->isa('RT::Queue'));
+}
+my @new_objects;
+foreach my $object (@$objects) {
+    if ($object->isa('RT::Queue') && $object->Name =~ /^(?:Incidents|Investigations|Incident Reports)$/) {
+        my $queues = RT::Queues->new($RT::SystemUser);
+        $queues->Limit(FIELD =>'Name', OPERATOR => 'STARTSWITH', VALUE  => $object->Name);
+        while (my $queue = $queues->Next) { warn "Adding ".$queue->Name; unshift @new_objects,$queue; }
+
+    }
+}
+push @$objects, @new_objects;
+</%init>
