@@ -13,7 +13,8 @@ my $COMMENT = shift @ARGV;
 
 
 unless ($constituency) {
-    print "Run this tool by typing $0 MY_NEW_CONSTITUENCY \"CORRESPONDENCE\@DOMAIN\" \"COMMENT\@DOMAIN\"\nIt will add a new constituency to your RTIR. (Version 2.3 or newer)";
+    print "Run this tool by typing $0 MY_NEW_CONSTITUENCY \"CORRESPONDENCE\@DOMAIN\" \"COMMENT\@DOMAIN\"\nIt will add a new constituency to your RTIR. (Version 2.3 or newer)\n\n";
+    exit;
 }
 
 
