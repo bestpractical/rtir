@@ -8,9 +8,12 @@ RT::LoadConfig;
 RT::Init;
 
 my $constituency = shift @ARGV;
+my $CORRESPOND = shift @ARGV;
+my $COMMENT = shift @ARGV;
+
 
 unless ($constituency) {
-    print "Run this tool by typing $0 MY_NEW_CONSTITUENCY\nIt will add a new constituency to your RTIR. (Version 2.3 or newer)";
+    print "Run this tool by typing $0 MY_NEW_CONSTITUENCY \"CORRESPONDENCE\@DOMAIN\" \"COMMENT\@DOMAIN\"\nIt will add a new constituency to your RTIR. (Version 2.3 or newer)";
 }
 
 
@@ -24,9 +27,15 @@ my @queue_prefixes = ('Incidents', 'Incident Reports', 'Investigations', 'Blocks
 # Add the value to the constituency CF
 my $cf = RT::CustomField->new($RT::SystemUser);
 $cf->LoadByCols(Name => "_RTIR_Constituency");
+my $values = $cf->Values;
+my $exists = 0;
+while (my $val = $values->Next) {
+    $exists = 1 if ( $val->Name eq $constituency);
+}
+unless ($exists ==1) {
 my ($val,$msg) = $cf->AddValue(Name => $constituency);
 print "Added $constituency to the constituency dropdown\n";
-
+}
 my %metaqueues;
 my %mainqueues;
 # Create our four new queues
@@ -127,7 +136,7 @@ sub grant_group_cf_rights {
             my ($val,$msg) =  $group->PrincipalObj->GrantRight(Right => $right, Object=>$cf);
             print "\t$right\n";
             unless ($val) {
-                die "Failed to grant $right to ".$group->name. " for Custom Field ". $cf->Name;
+                die "Failed to grant $right to ".$group->Name. " for Custom Field ". $cf->Name;
             }
         }
     } 
@@ -152,7 +161,7 @@ sub create_or_load_queue {
     my $queue = RT::Queue->new($RT::SystemUser);
     $queue->LoadByCols(Name => $name);
     unless($queue->id) {
-        my ($val, $msg) = $queue->Create( Name => $name);
+        my ($val, $msg) = $queue->Create( Name => $name, CommentAddress => $COMMENT, CorrespondAddress => $CORRESPOND);
         print "Creating new queue $name: $msg\n";
     }   
 
