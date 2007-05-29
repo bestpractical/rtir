@@ -1,0 +1,10 @@
+<%init>
+return unless ($CustomField->Name eq '_RTIR_Constituency');
+$$Name = '/RTIR/Elements/EditConstituency';
+
+</%init>
+<%args>
+$Name
+$CustomField
+$Object
+</%args>
