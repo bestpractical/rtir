@@ -27,4 +27,4 @@ requires:
   RT::FM: 0
   Regexp::Common: 0
   Regexp::Common::net::CIDR: 0
-version: 2.3.2
+version: 2.3.3

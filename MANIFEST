@@ -14,6 +14,7 @@ docs/logo/psd/rtir-logo-badge-shadow.psd
 docs/logo/psd/rtir-logo-badge.psd
 docs/logo/svg/rtir.svg
 docs/Tutorial.pod
+etc/add_constituency
 etc/initialdata
 etc/RTIR_Config.pm
 etc/upgrade/1.0.3/content
@@ -31,12 +32,14 @@ etc/upgrade/2.1.1/content
 etc/upgrade/2.1.3/content
 etc/upgrade/upgrade.pl
 html/Callbacks/RTIR/autohandler/Default
+html/Callbacks/RTIR/Elements/EditCustomField/EditComponentName
 html/Callbacks/RTIR/Elements/Header/Default
 html/Callbacks/RTIR/Elements/Header/Head
 html/Callbacks/RTIR/Elements/ListActions/ModifyRow
 html/Callbacks/RTIR/Elements/MakeClicky/Default
 html/Callbacks/RTIR/Elements/QueueSummary/Filter
 html/Callbacks/RTIR/Elements/RT__Ticket/ColumnMap/Once
+html/Callbacks/RTIR/Elements/SelectOwner/UpdateObjectList
 html/Callbacks/RTIR/Elements/ShowCustomFields/MassageCustomFields
 html/Callbacks/RTIR/Elements/Tabs/Default
 html/Callbacks/RTIR/RTFM/Elements/Tabs/Default
@@ -60,6 +63,7 @@ html/RTIR/Elements/BaseQuery
 html/RTIR/Elements/ChildrenQuery
 html/RTIR/Elements/ChildSummary
 html/RTIR/Elements/DueIncidents
+html/RTIR/Elements/EditConstituency
 html/RTIR/Elements/EditDates
 html/RTIR/Elements/EditPeople
 html/RTIR/Elements/EditRTIRField
