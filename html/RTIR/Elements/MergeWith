@@ -3,7 +3,7 @@
     Queue         => $Queue,
     BaseQuery     => $BaseQuery,
     Query         => $Query,
-    DisplayFormat => "__RTIR_Radio__, $Format",
+    DisplayFormat => "__RadioButton__, $Format",
     Format        => $Format,
     Rows          => $Rows,
     Page          => $Page,

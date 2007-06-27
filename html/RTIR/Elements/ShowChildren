@@ -36,7 +36,7 @@
 % }
 <& /Elements/TicketList, 
    Collection     => $children,
-   DisplayFormat  => ($Delete? "__RTIR_Check__, $Format": $Format),
+   DisplayFormat  => ($Delete? "__CheckBox__, $Format": $Format),
    Format         => $Format,
    Rows           => $Rows,
    ShowHeader     => $ShowHeader,
