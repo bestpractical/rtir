@@ -50,7 +50,7 @@
     BaseURL       => $current_tab,
     BaseQuery     => $BaseQuery{'Incident Reports'},
     Query         => $Query,
-    DisplayFormat => "__RTIR_Check__, $Format",
+    DisplayFormat => "__CheckBox.{SelectedReports}__, $Format",
     Format        => $Format,
     Rows          => $Rows,
     Page          => $Page,
@@ -65,7 +65,7 @@
     BaseURL       => $current_tab,
     BaseQuery     => $BaseQuery{'Investigations'},
     Query         => $Query,
-    DisplayFormat => "__RTIR_Check__, $Format",
+    DisplayFormat => "__CheckBox.{SelectedInvestigations}__, $Format",
     Format        => $Format,
     Rows          => $Rows,
     Page          => $Page,
@@ -79,7 +79,7 @@
     BaseURL       => $current_tab,
     BaseQuery     => $BaseQuery{'Blocks'},
     Query         => $Query,
-    DisplayFormat => "__RTIR_Check__, $Format",
+    DisplayFormat => "__CheckBox.{SelectedBlocks}__, $Format",
     Format        => $Format,
     Rows          => $Rows,
     Page          => $Page,
@@ -150,7 +150,7 @@ my $ActiveChildrenQuery = join ' AND ', map "( $_ )", grep $_,
 $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 
 if ( $SubmitTicket ) {
-    foreach my $id( @SelectedTickets ) {
+    foreach my $id( @SelectedReports, @SelectedInvestigations, @SelectedBlocks ) {
         my $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
         $Ticket->Load( $id );
         unless( $Ticket->id ) {
@@ -252,6 +252,8 @@ $Page            => 1
 $OrderBy         => 'id'
 $Order           => 'ASC'
 
-@SelectedTickets => ()
-$SubmitTicket    => 0
+@SelectedReports        => ()
+@SelectedInvestigations => ()
+@SelectedBlocks         => ()
+$SubmitTicket           => 0
 </%ARGS>
