@@ -1,46 +1,5 @@
 <%INIT>
 
-# This is scary and should totally be refactored -- jesse
-$COLUMN_MAP->{'RTIR_Check'} = {
-    title => sub {
-        my $name = ($_[1] || 'SelectedTickets') .'All';
-        my $checked = $m->request_args->{ $name }? 'checked': '';
-
-        return \qq{<input type="checkbox" name="$name" value="1" $checked
-                          onclick="setCheckbox(this.form, 'SelectedTickets', this.checked)" />};
-    },
-    value => sub {
-        my $id = $_[0]->id;
-
-        my $name = $_[2] || 'SelectedTickets';
-        return \qq{<input type="checkbox" name="$name" value="$id" checked />}
-            if $m->request_args->{ $name . 'All'};
-
-        my $arg = $m->request_args->{ $name };
-        my $checked = '';
-        if ( $arg && ref $arg ) {
-            $checked = 'checked' if grep $_ == $id, @$arg;
-        }
-        elsif ( $arg ) {
-            $checked = 'checked' if $arg == $id;
-        }
-        return \qq{<input type="checkbox" name="$name" value="$id" $checked />}
-    },
-};
-
-$COLUMN_MAP->{'RTIR_Radio'} = {
-    title => \'&nbsp;',
-    value => sub {
-        my $id = $_[0]->id;
-
-        my $name = $_[2] || 'SelectedTicket';
-        my $arg = $m->request_args->{ $name };
-        my $checked = '';
-        $checked = 'checked' if $arg && $arg == $id;
-        return \qq{<input type="radio" name="SelectedTicket" value="$id" $checked />};
-    },
-};
-
 # XXX: map RTIR hidden custom fields staticaly because user has no rights
 # to see this CFs we need to hack over ACLs
 my $rtir_cfs = RT::CustomFields->new( $RT::SystemUser );
