@@ -23,9 +23,13 @@
 %# 
 %# END LICENSE BLOCK
 
+% if ( $Ticket ) {
 <& /Ticket/Elements/UpdateCc, %ARGS, TicketObj => $Ticket &>
+% }
+
 <tr><td colspan="2"><& /RTIR/Create.html:AttachmentsForm &></td></tr>
 
+% if ( $siblings ) {
 <tr><td colspan="2">
 <&| /Widgets/TitleBox, title => loc("Attach Reports") &>
 <& /Elements/TicketList,
@@ -36,6 +40,7 @@
     ShowNavigation => 0,
 &>
 </&></td></tr>
+% }
 
 % if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
 <tr><td>&nbsp;</td><td>
@@ -61,41 +66,41 @@ $UpdateCc => ''
 $UpdateBcc => ''
 </%ARGS>
 <%INIT>
-my @parents;
-
-my $type = RT::IR::TicketType( Ticket => $Ticket );
-if ( $type eq 'Incident' ) {
-    push @parents, $Ticket->id;
-} else {
-    my $tickets = RT::Tickets->new( $Ticket->CurrentUser );
-    $tickets->FromSQL( "Queue = 'Incidents' AND HasMember = ". $Ticket->id );
-    while ( my $parent = $tickets->Next ) {
-        push @parents, $parent->id;
-    }
-}
-
 if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
     foreach ( qw(Sign Encrypt) ) {
         $ARGS{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
             Name => $_,
-            DefaultValue => $Ticket->QueueObj->$_,
+            DefaultValue => $Ticket? $Ticket->QueueObj->$_: 0,
             Arguments => \%ARGS,
         );
     }
 }
 
-my $siblings = RT::Tickets->new( $Ticket->CurrentUser );
-if ( @parents ) {
-    my $siblings_query = "Queue = 'Incident Reports'"
-        ." AND (". join( ' OR ', map "MemberOf = $_", @parents ) . ")";
-
-    if ( $type eq 'Report' ) {
-        $siblings_query .= " AND id != ". $Ticket->id;
+my $siblings;
+if ( $Ticket ) {
+    my @parents;
+    my $type = RT::IR::TicketType( Ticket => $Ticket );
+    if ( $type eq 'Incident' ) {
+        push @parents, $Ticket->id;
+    } else {
+        my $tickets = RT::Tickets->new( $Ticket->CurrentUser );
+        $tickets->FromSQL( "Queue = 'Incidents' AND HasMember = ". $Ticket->id );
+        while ( my $parent = $tickets->Next ) {
+            push @parents, $parent->id;
+        }
     }
 
-    $siblings->FromSQL( $siblings_query );
-} else {
-    $siblings->FromSQL("id = 0");
+    if ( @parents ) {
+        $siblings = RT::Tickets->new( $Ticket->CurrentUser );
+        my $siblings_query = "Queue = 'Incident Reports'"
+            ." AND (". join( ' OR ', map "MemberOf = $_", @parents ) . ")";
+
+        if ( $type eq 'Report' ) {
+            $siblings_query .= " AND id != ". $Ticket->id;
+        }
+
+        $siblings->FromSQL( $siblings_query );
+    }
 }
 
 my $Format = q{
