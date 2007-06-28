@@ -1,7 +1,7 @@
 <& /Widgets/Form/Select,
     Name        => 'Status',
-    Empty => 0,
-    Values => [qw(new open stalled resolved)],
+    Default     => 0,
+    Values      => [qw(new open stalled resolved)],
     ValuesLabel => {
         new      => loc('pending activation'),
         open     => loc('active'),
