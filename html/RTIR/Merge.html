@@ -71,7 +71,7 @@ if ( $SelectedTicket ) {
 
     my @queues = sort map {$_->Name} $Ticket->QueueObj, $MergeTicket->QueueObj;
     if ( $queues[0] eq $queues[1] or ($queues[0] eq "Incident Reports" and $queues[1] eq "Investigations")) {
-        if ( $MergeTicket->QueueObj->Name eq "Incident Reports" ) {
+        if ( $queues[0] ne $queues[1] && $MergeTicket->QueueObj->Name eq "Incident Reports" ) {
             # We always want to merge into the Investigation
             ($Ticket, $MergeTicket) = ($MergeTicket, $Ticket);
         }
