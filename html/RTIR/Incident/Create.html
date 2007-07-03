@@ -233,6 +233,11 @@ if ( $CreateIncident ) {
         push @results, loc( "Invalid value(s) of the custom fields:" ), @msg;
         $checks_failure = 1;
     }
+
+    if ( $CreateWithInvestigation && !$ARGS{'InvestigationRequestors'} ) {
+        push @results, loc( "You must enter a correspondent for the investigation" );
+        $checks_failure = 1;
+    }
 }
 
 if ( !$checks_failure && $CreateIncident ) {
