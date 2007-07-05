@@ -11,12 +11,13 @@ use warnings;
 
 use Test::WWW::Mechanize;
 use HTTP::Cookies;
+use Test::More;
 
 ### after: use lib qw(@RT_LIB_PATH@);
 use lib qw(/opt/rt3/local/lib /opt/rt3/lib);
 
 use RT;
-ok(RT::LoadConfig);
+ok(RT::LoadConfig, "Loaded configuration");
 ok(RT::Init, "Basic initialization and DB connectivity");
 
 require $RT::BasePath. '/lib/t/utils.pl';
@@ -66,7 +67,8 @@ sub display_ticket {
     my $agent = shift;
     my $id = shift;
 
-    $agent->get_ok("$RT::WebURL/RTIR/Display.html?id=$id", "Loaded Display page");
+    #$agent->get_ok("$RT::WebURL/RTIR/Display.html?id=$id", "Loaded Display page");
+    $agent->get_ok(RT->Config->Get('WebURL') . "/RTIR/Display.html?id=$id", "Loaded Display page");
 }
 
 sub ticket_state_is {
@@ -200,7 +202,7 @@ sub create_rtir_ticket
 
     # Now see if we succeeded
     my $id = get_ticket_id($agent);
-    ok ($id, "Ticket $id created successfully.");
+    ok ($id, $type{$queue} . " $id created successfully.");
 
     return $id;
 }
@@ -211,6 +213,9 @@ sub get_ticket_id {
     my $id = 0;
     if ($content =~ /.*Ticket (\d+) created.*/g) {
         $id = $1;
+    }
+    elsif ($content =~ /.*No permission to view newly created ticket #\d+.*/g) {
+    	print "\nNo permissions to view the ticket.\n";	
     }
     return $id;
 }
@@ -241,7 +246,7 @@ sub create_incident_for_ir {
     
     is ($agent->status, 200, "Attempting to create new incident linked to child $ir_id");
 
-    ok ($agent->content =~ /.*Ticket (\d+) created in queue*/g, "Incident created from child $ir_id.");
+    ok ($agent->content =~ /.*Ticket (\d+) created in queue.*/g, "Incident created from child $ir_id.");
     my $incident_id = $1;
 
 #    diag("incident ID is $incident_id");

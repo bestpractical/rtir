@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Test::More tests => 23;
 
-require "t/rtir-test.pl";
+require "rtir-test.pl";
 
 my $agent = default_agent();
 
