@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 37;
+use Test::More tests => 38;
 
 require "t/rtir-test.pl";
 
@@ -46,7 +46,13 @@ foreach my $status( qw(open stalled resolved) ) {
 
 
 $agent->follow_link_ok({ text => "Edit" }, "Goto edit page");
+
+# Tests to make sure the unwanted option 'Use system default()' does not appear as an
+# option in the State field (a reported M3 bug)
+$agent->content_unlike(qr{<option (?:value=.*)?>Use system default\(\)</option>}, "The option 'Use system default()' does not exist.");
+
 $agent->form_number(3);
+
 $agent->field(Status => 'resolved');
 $agent->click('SaveChanges');
 ticket_state_is($agent, $block_id, 'removed');
