@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Test::More tests => 23;
 
-require "rtir-test.pl";
+require "t/rtir-test.pl";
 
 my $agent = default_agent();
 
@@ -36,33 +36,10 @@ my $first_incident_id = create_incident_for_ir($agent, $report, {Subject => "fir
 my $second_incident_id = create_incident( $agent, { Subject => "foo Incident", Content => "bar baz quux" } );
 
 # link our report to that incident
-LinkChildToIncident(id => $report, incident => $second_incident_id);
+LinkChildToIncident(agent => $agent, id => $report, incident => $second_incident_id);
 
 # TODO: verify in DB that report has 1 parent, and the right parent
 
 
-sub LinkChildToIncident {
-    my %args = ( @_ );
 
-    my $id = $args{'id'};
-    my $incident = $args{'incident'};
-
-    display_ticket($agent, $id);
-
-    # Select the "Link" link from the Display page
-    $agent->follow_link_ok({text => "[Link]", n => "1"}, "Followed 'Link(to Incident)' link");
-
-    # TODO: Make sure desired incident appears on page
-
-    # Choose the incident and submit
-    $agent->form_number(3);
-    $agent->field("SelectedTicket", $incident);
-    $agent->click("LinkChild");
-
-    is ($agent->status, 200, "Attempting to link child $id to Incident $incident");
-
-    ok ($agent->content =~ /Ticket $id: Link created/g, "Incident $incident linked successfully.");
-
-    return;
-}
 
