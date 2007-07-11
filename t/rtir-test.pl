@@ -67,8 +67,16 @@ sub display_ticket {
     my $agent = shift;
     my $id = shift;
 
-    #$agent->get_ok("$RT::WebURL/RTIR/Display.html?id=$id", "Loaded Display page");
-    $agent->get_ok(RT->Config->Get('WebURL') . "/RTIR/Display.html?id=$id", "Loaded Display page");
+    $agent->get_ok(RT->Config->Get('WebURL') . "/RTIR/Display.html?id=$id", "Loaded Display page for Ticket #$id");
+}
+
+sub ticket_state {
+	my $agent = shift;
+	my $id = shift;
+	
+	display_ticket($agent, $id);
+	$agent->content =~ qr{State:\s*</td>\s*<td[^>]*?>\s*<span class="cf-value">([\w ]+)</span>}ism;
+	return $1;
 }
 
 sub ticket_state_is {
@@ -168,7 +176,7 @@ sub create_rtir_ticket
         'Incident Reports' => 'Report',
         'Investigations'   => 'Investigation',
         'Blocks'           => 'Block',
-        'Incidents'        => 'Incident',
+        'Incidents'        => 'Incident'
     );
 
     go_home($agent);
@@ -193,7 +201,7 @@ sub create_rtir_ticket
         'Incident Reports' => 'Create',
         'Investigations'   => 'Create',
         'Blocks'           => 'Create',
-        'Incidents'        => 'CreateIncident',
+        'Incidents'        => 'CreateIncident'
     );
     # Create it!
     $agent->click( $create{ $queue } );
@@ -214,8 +222,8 @@ sub get_ticket_id {
     if ($content =~ /.*Ticket (\d+) created.*/g) {
         $id = $1;
     }
-    elsif ($content =~ /.*No permission to view newly created ticket #\d+.*/g) {
-    	print "\nNo permissions to view the ticket.\n";	
+    elsif ($content =~ /.*No permission to view newly created ticket #(\d+).*/g) {
+    	diag("\nNo permissions to view the ticket.\n") if($ENV{'TEST_VERBOSE'});
     }
     return $id;
 }
@@ -260,6 +268,33 @@ sub ok_and_content_like {
     
     is($agent->status, 200, "request successful");
     like($agent->content, $re, $desc);
+}
+
+
+sub LinkChildToIncident {
+    my %args = ( @_ );
+
+    my $id = $args{'id'};
+    my $incident = $args{'incident'};
+    my $agent = $args{'agent'};
+
+    display_ticket($agent, $id);
+
+    # Select the "Link" link from the Display page
+    $agent->follow_link_ok({text => "[Link]", n => "1"}, "Followed 'Link(to Incident)' link");
+
+    # TODO: Make sure desired incident appears on page
+
+    # Choose the incident and submit
+    $agent->form_number(3);
+    $agent->field("SelectedTicket", $incident);
+    $agent->click("LinkChild");
+
+    is ($agent->status, 200, "Attempting to link child $id to Incident $incident");
+
+    ok ($agent->content =~ /Ticket $id: Link created/g, "Incident $incident linked successfully.");
+
+    return;
 }
 
 1;
