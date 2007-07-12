@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 336;
+use Test::More tests => 420;
 
 require "t/rtir-test.pl";
 
@@ -175,11 +175,13 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
         );
         $incident_id = $id if $queue eq 'Incidents';
         display_ticket($agent, $id);
-        $agent->follow_link_ok({text => 'Edit', n => "1"}, "Followed 'Edit' link");
 
-        my $val = '172.16.0.'. ++$i;
-        $agent->form_number(3);
         my $field_name = "Object-RT::Ticket-$id-CustomField-". $cf->id ."-Values";
+
+diag "set IP" if $ENV{'TEST_VERBOSE'};
+        my $val = '172.16.0.1';
+        $agent->follow_link_ok({text => 'Edit', n => "1"}, "Followed 'Edit' link");
+        $agent->form_number(3);
         like( $agent->value($field_name), qr/^\s*$/, 'IP is empty' );
         $agent->field( $field_name => $val );
         $agent->click('SaveChanges');
@@ -193,6 +195,63 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
         my %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
         is( scalar values %has, 1, "one IP were added");
         ok( $has{ $val }, "has value" )
+            or diag "but has values ". join ", ", keys %has;
+
+diag "set IP with spaces around" if $ENV{'TEST_VERBOSE'};
+        $val = "  172.16.0.2  \n  ";
+        $agent->follow_link_ok({text => 'Edit', n => "1"}, "Followed 'Edit' link");
+        $agent->form_number(3);
+        like( $agent->value($field_name), qr/^\s*\Q172.16.0.1\E\s*$/, 'IP is in input box' );
+        $agent->field( $field_name => $val );
+        $agent->click('SaveChanges');
+
+        $agent->content_like( qr/\Q172.16.0.2/, "IP on the page" );
+
+        $ticket = RT::Ticket->new( $RT::SystemUser );
+        $ticket->Load( $id );
+        ok( $ticket->id, 'loaded ticket' );
+        $values = $ticket->CustomFieldValues('_RTIR_IP');
+        %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
+        is( scalar values %has, 1, "one IP were added");
+        ok( $has{ '172.16.0.2' }, "has value" )
+            or diag "but has values ". join ", ", keys %has;
+
+diag "replace IP with a range" if $ENV{'TEST_VERBOSE'};
+        $val = '172.16.0.0-172.16.0.255';
+        $agent->follow_link_ok({text => 'Edit', n => "1"}, "Followed 'Edit' link");
+        $agent->form_number(3);
+        like( $agent->value($field_name), qr/^\s*\Q172.16.0.2\E\s*$/, 'IP is in input box' );
+        $agent->field( $field_name => $val );
+        $agent->click('SaveChanges');
+
+        $agent->content_like( qr/\Q$val/, "IP on the page" );
+
+        $ticket = RT::Ticket->new( $RT::SystemUser );
+        $ticket->Load( $id );
+        ok( $ticket->id, 'loaded ticket' );
+        $values = $ticket->CustomFieldValues('_RTIR_IP');
+        %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
+        is( scalar values %has, 1, "one IP were added");
+        ok( $has{ $val }, "has value" )
+            or diag "but has values ". join ", ", keys %has;
+
+diag "delete range, add another range using CIDR" if $ENV{'TEST_VERBOSE'};
+        $val = '172.16/16';
+        $agent->follow_link_ok({text => 'Edit', n => "1"}, "Followed 'Edit' link");
+        $agent->form_number(3);
+        like( $agent->value($field_name), qr/^\s*\Q172.16.0.0-172.16.0.255\E\s*$/, 'IP is empty' );
+        $agent->field( $field_name => $val );
+        $agent->click('SaveChanges');
+
+        $agent->content_like( qr/\Q$val/, "IP on the page" );
+
+        $ticket = RT::Ticket->new( $RT::SystemUser );
+        $ticket->Load( $id );
+        ok( $ticket->id, 'loaded ticket' );
+        $values = $ticket->CustomFieldValues('_RTIR_IP');
+        %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
+        is( scalar values %has, 1, "one IP were added");
+        ok( $has{ '172.16.0.0-172.16.255.255' }, "has value" )
             or diag "but has values ". join ", ", keys %has;
     }
 }
@@ -262,8 +321,14 @@ diag "check that IPs in messages don't add duplicates" if $ENV{'TEST_VERBOSE'};
 
 diag "search tickets by IP" if $ENV{'TEST_VERBOSE'};
 {
+    my $id = create_ir( $agent, {
+        Subject => "test ip",
+        Content => '172.16.1/31'
+    } );
+    ok($id, "created first ticket");
+
     my $tickets = RT::Tickets->new( $rtir_user );
-    $tickets->FromSQL("CF.{_RTIR_IP} = '172.16.1.1'");
+    $tickets->FromSQL("id = $id AND CF.{_RTIR_IP} = '172.16.1.1'");
     ok( $tickets->Count, "found tickets" );
 
     my $flag = 1;
@@ -271,7 +336,8 @@ diag "search tickets by IP" if $ENV{'TEST_VERBOSE'};
         my %has = map { $_->Content => 1 } @{ $ticket->CustomFieldValues('_RTIR_IP')->ItemsArrayRef };
         next if $has{'172.16.1.0-172.16.1.1'};
         $flag = 0;
-        ok(0, "ticket #". $ticket->id ." has no IP 172.16.1.1, but should");
+        ok(0, "ticket #". $ticket->id ." has no IP 172.16.1.1, but should")
+            or diag "but has values ". join ", ", keys %has;
         last;
     }
     ok(1, "all tickets has IP 172.16.1.1") if $flag;
@@ -279,8 +345,14 @@ diag "search tickets by IP" if $ENV{'TEST_VERBOSE'};
 
 diag "search tickets by IP range" if $ENV{'TEST_VERBOSE'};
 {
+    my $id = create_ir( $agent, {
+        Subject => "test ip",
+        Content => '172.16.2/26'
+    } );
+    ok($id, "created first ticket");
+
     my $tickets = RT::Tickets->new( $rtir_user );
-    $tickets->FromSQL("CF.{_RTIR_IP} = '172.16.2.0-172.16.2.255'");
+    $tickets->FromSQL("id = $id AND CF.{_RTIR_IP} = '172.16.2.0-172.16.2.255'");
     ok( $tickets->Count, "found tickets" );
 
     my $flag = 1;
