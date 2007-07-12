@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 252;
+use Test::More tests => 336;
 
 require "t/rtir-test.pl";
 
@@ -97,6 +97,106 @@ diag "create a ticket via web with IP in message" if $ENV{'TEST_VERBOSE'};
     }
 }
 
+diag "create a ticket via web with CIDR" if $ENV{'TEST_VERBOSE'};
+{
+    my $i = 0;
+    my $incident_id; # block couldn't be created without incident id
+    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+        diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
+
+        my $val = '172.16.'. ++$i .'/31'; # add two hosts
+        my $id = create_rtir_ticket(
+            $agent, $queue,
+            {
+                Subject => "test ip",
+                ($queue eq 'Blocks'? (Incident => $incident_id): ()),
+            },
+            { IP => $val },
+        );
+        $incident_id = $id if $queue eq 'Incidents';
+
+        display_ticket($agent, $id);
+        $agent->content_like( qr/172\.16\.$i\.0-172\.16\.$i\.1/, "IP range on the page" );
+
+        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        $ticket->Load( $id );
+        ok( $ticket->id, 'loaded ticket' );
+        my $values = $ticket->CustomFieldValues('_RTIR_IP');
+        my %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
+        ok( $has{ "172.16.$i.0-172.16.$i.1" }, "has value" )
+            or diag "but has values ". join ", ", keys %has;
+    }
+}
+
+diag "create a ticket via web with CIDR in message" if $ENV{'TEST_VERBOSE'};
+{
+    my $i = 0;
+    my $incident_id; # block couldn't be created without incident id
+    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+        diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
+
+        my $val = '172.16.'. ++$i .'/31'; # add two hosts
+        my $id = create_rtir_ticket(
+            $agent, $queue,
+            {
+                Subject => "test ip in message",
+                ($queue eq 'Blocks'? (Incident => $incident_id): ()),
+                Content => "$val",
+            },
+        );
+        $incident_id = $id if $queue eq 'Incidents';
+
+        display_ticket($agent, $id);
+        $agent->content_like( qr/172\.16\.$i\.0-172\.16\.$i\.1/, "IP range on the page" );
+
+        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        $ticket->Load( $id );
+        ok( $ticket->id, 'loaded ticket' );
+        my $values = $ticket->CustomFieldValues('_RTIR_IP');
+        my %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
+        ok( $has{ "172.16.$i.0-172.16.$i.1" }, "has value" )
+            or diag "but has values ". join ", ", keys %has;
+    }
+}
+
+diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'};
+{
+    my $i = 0;
+    my $incident_id; # block couldn't be created without incident id
+    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+        diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
+
+        my $id = create_rtir_ticket(
+            $agent, $queue,
+            {
+                Subject => "test ip in message",
+                ($queue eq 'Blocks'? (Incident => $incident_id): ()),
+            },
+        );
+        $incident_id = $id if $queue eq 'Incidents';
+        display_ticket($agent, $id);
+        $agent->follow_link_ok({text => 'Edit', n => "1"}, "Followed 'Edit' link");
+
+        my $val = '172.16.0.'. ++$i;
+        $agent->form_number(3);
+        my $field_name = "Object-RT::Ticket-$id-CustomField-". $cf->id ."-Values";
+        like( $agent->value($field_name), qr/^\s*$/, 'IP is empty' );
+        $agent->field( $field_name => $val );
+        $agent->click('SaveChanges');
+
+        $agent->content_like( qr/\Q$val/, "IP on the page" );
+
+        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        $ticket->Load( $id );
+        ok( $ticket->id, 'loaded ticket' );
+        my $values = $ticket->CustomFieldValues('_RTIR_IP');
+        my %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
+        is( scalar values %has, 1, "one IP were added");
+        ok( $has{ $val }, "has value" )
+            or diag "but has values ". join ", ", keys %has;
+    }
+}
+
 diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
 {
     my $id = create_ir( $agent, { Subject => "test ip", Content => '1.0.0.0' } );
@@ -158,36 +258,6 @@ diag "check that IPs in messages don't add duplicates" if $ENV{'TEST_VERBOSE'};
     is(scalar values %has, 1, "one IP were added");
     ok(!grep( $_ != 1, values %has ), "no duplicated values");
     ok($has{'192.168.20.2'}, "IP is there");
-}
-
-diag "create a ticket via web with CIDR in message" if $ENV{'TEST_VERBOSE'};
-{
-    my $i = 0;
-    my $incident_id; # block couldn't be created without incident id
-    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
-        diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
-
-        my $val = '172.16.'. ++$i .'/31'; # add two hosts
-        my $id = create_rtir_ticket(
-            $agent, $queue,
-            {
-                Subject => "test ip in message",
-                ($queue eq 'Blocks'? (Incident => $incident_id): ()),
-                Content => "$val",
-            },
-        );
-        $incident_id = $id if $queue eq 'Incidents';
-
-        display_ticket($agent, $id);
-        $agent->content_like( qr/172\.16\.$i\.0-172\.16\.$i\.1/, "IP on the page" );
-
-        my $ticket = RT::Ticket->new( $RT::SystemUser );
-        $ticket->Load( $id );
-        ok( $ticket->id, 'loaded ticket' );
-        my $values = $ticket->CustomFieldValues('_RTIR_IP');
-        my %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
-        ok( $has{ "172.16.$i.0-172.16.$i.1" }, "has value" ) or diag "but has values ". join ", ", keys %has;
-    }
 }
 
 diag "search tickets by IP" if $ENV{'TEST_VERBOSE'};
