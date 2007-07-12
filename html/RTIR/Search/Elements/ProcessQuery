@@ -47,20 +47,22 @@ if ( $NewQuery ) {
 
 # {{{ Parse the query
 my $ParseQuery = sub {
-    my ($string, $results) = @_;
+    my $string = shift;
 
     use RT::Interface::Web::QueryBuilder::Tree;
     my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
-    @$results = $tree->ParseSQL( Query => $string, CurrentUser => $session{'CurrentUser'} );
+    my @errors = $tree->ParseSQL( Query => $string, CurrentUser => $session{'CurrentUser'} );
 
-    return $tree;
+    return ($tree, @errors);
 };
 
-my $tree = $ParseQuery->( $query{'Query'}, \@actions );
+my ($tree, @parsing_errors) = $ParseQuery->( $query{'Query'} );
 
 # if parsing went poorly, send them to the edit page to fix it
-if ( $actions[0] ) {
-    return $m->comp( "Edit.html", Query => $query{'Query'}, actions => \@actions );
+if ( @parsing_errors ) {
+    # XXX: we have no Advanced Query Builder in RTIR, so just push errors into results
+    # return $m->comp( "Edit.html", Query => $query{'Query'}, actions => \@actions );
+    push @actions, @parsing_errors;
 }
 
 my @options = $tree->GetDisplayedNodes;
@@ -150,8 +152,7 @@ my $queues = $tree->GetReferencedQueues;
 
 # Parse queues from BaseQuery
 if ( $BaseQuery ) {
-    my @temp_results;
-    my $tree = $ParseQuery->( $BaseQuery, \@temp_results );
+    my ($tree) = $ParseQuery->( $BaseQuery );
     $queues = { %$queues, %{ $tree->GetReferencedQueues } };
 }
 
