@@ -1,6 +1,6 @@
 <%INIT>
 foreach my $q ( splice @$Queues ) {
-    next if $q->Name =~ /^(Incidents|Incident Reports|Investigations|Blocks)$/i;
+    next if $q->Name =~ /^(?:Incidents|Incident Reports|Investigations|Blocks)(?:\s*-\s*.*)?$/i;
     push @$Queues, $q;
 }
 </%INIT>
