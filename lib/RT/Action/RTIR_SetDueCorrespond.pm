@@ -82,7 +82,7 @@ sub Commit {
     $date->SetToNow;
     $date->AddDays( $due );
 
-    my $due = $bizhours->first_after( $date->Unix );
+    $due = $bizhours->first_after( $date->Unix );
     $date->Set( Format => 'unix', Value => $due );
     $self->TicketObj->SetDue( $date->ISO );
 
