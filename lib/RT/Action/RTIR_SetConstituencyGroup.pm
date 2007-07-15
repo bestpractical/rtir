@@ -37,7 +37,7 @@ sub Commit {
     while ( my $group = $groups->Next ) {
         if ( lc $group->Name eq lc "dutyteam $constituency" ) {
             $required_group_there = 1;
-        } else {
+        } elsif ( $group->Name =~ /^DutyTeam\s+\S.*$/ ) {
             my ($status, $msg) = $ticket->DeleteWatcher(
                 Type        => 'AdminCc',
                 PrincipalId => $group->id,
@@ -47,9 +47,9 @@ sub Commit {
     }
     if ( !$required_group_there && $constituency ) {
         my $group = RT::Group->new( $RT::SystemUser );
-        $group->LoadUserDefinedGroup('DutyTeam '. $constituency);
+        $group->LoadUserDefinedGroup("DutyTeam $constituency");
         unless ( $group->id ) {
-            $RT::Logger->warning("Couldn't load group 'DutyTeam ". $constituency ."'");
+            $RT::Logger->warning("Couldn't load group 'DutyTeam $constituency'");
             # return success as if there is no custom group for the constituency
             # then it means that no custom ACLs should be applied
             return 1;
