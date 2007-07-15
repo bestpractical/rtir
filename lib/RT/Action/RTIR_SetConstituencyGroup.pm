@@ -35,7 +35,7 @@ sub Commit {
     my $constituency = $ticket->FirstCustomFieldValue('_RTIR_Constituency') || '';
     my $required_group_there = 0;
     while ( my $group = $groups->Next ) {
-        if ( lc $group->Name eq 'dutyteam '. $constituency ) {
+        if ( lc $group->Name eq lc "dutyteam $constituency" ) {
             $required_group_there = 1;
         } else {
             my ($status, $msg) = $ticket->DeleteWatcher(
