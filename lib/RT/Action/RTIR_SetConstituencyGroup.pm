@@ -45,7 +45,7 @@ sub Commit {
             $RT::Logger->error("Couldn't delete admin cc: $msg") unless $status;
         }
     }
-    unless ( $required_group_there && $constituency ) {
+    if ( !$required_group_there && $constituency ) {
         my $group = RT::Group->new( $RT::SystemUser );
         $group->LoadUserDefinedGroup('DutyTeam '. $constituency);
         unless ( $group->id ) {
