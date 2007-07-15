@@ -411,7 +411,9 @@ wrap 'RT::ObjectCustomFieldValue::Content',
                 $new_queue->LoadByCols(
                     Name => $queue->Name . " - " . $const );
                 if ( $new_queue->id ) {
-                    return $new_queue->_Value($attr);
+                    my $val = $new_queue->_Value($attr) || $queue->_Value($attr);
+                    $RT::Logger->debug("Overriden $attr is $val for ticket #$id according to constituency $const");
+                    return $val;
                 }
             }
         }
