@@ -87,50 +87,6 @@ SKIP: {
 }
 
 
-
-sub create_incident_and_investigation {
-	my $agent = shift;
-    my $fields = shift || {};
-    my $cfs = shift || {};
-	my $ir_id = shift;
-
-    $ir_id ? display_ticket($agent, $ir_id) : go_home($agent);
-
-	if($ir_id) {
-		# Select the "New" link from the Display page
-    	$agent->follow_link_ok({text => "[New]"}, "Followed 'New (Incident)' link");
-	}
-	else 
-	{
-		$agent->follow_link_ok({text => "Incidents"}, "Followed 'Incidents' link");
-		$agent->follow_link_ok({text => "New Incident", n => '1'}, "Followed 'New Incident' link");
-	}
-
-	# Fill out forms
-    $agent->form_number(3);
-
-    while (my ($f, $v) = each %$fields) {
-        $agent->field($f, $v);
-    }
-
-    while (my ($f, $v) = each %$cfs) {
-        set_custom_field($agent, $f, $v);
-    }
-
-    $agent->click("CreateWithInvestigation");
-    my $msg = $ir_id ? "Attempting to create new incident and investigation linked to child $ir_id" : "Attempting to create new incident and investigation";
-    is ($agent->status, 200, $msg);
-	$msg = $ir_id ? "Incident created from child $ir_id." : "Incident created.";
-    ok ($agent->content =~ /.*Ticket (\d+) created in queue &#39;Incidents&#39;/g, $msg);
-    my $incident_id = $1;
-    
-    ok ($agent->content =~ /.*Ticket (\d+) created in queue &#39;Investigations&#39;/g, "Investigation created for Incident $incident_id.");
-    my $investigation_id = $1;
-
-    return ($incident_id, $investigation_id);
-}
-
-
 sub has_watchers {
 	my $agent = shift;
 	my $id = shift;

@@ -39,7 +39,6 @@ sub set_custom_field {
     my $agent = shift;
     my $cf_name = shift;
     my $val = shift;
-
     my $field_name = $agent->value($cf_name) or return 0;
     $agent->field($field_name, $val);
     return 1;
@@ -272,22 +271,28 @@ sub ok_and_content_like {
 
 
 sub LinkChildToIncident {
-    my %args = ( @_ );
 
-    my $id = $args{'id'};
-    my $incident = $args{'incident'};
-    my $agent = $args{'agent'};
+	my $agent = shift;
+    my $id = shift;
+    my $incident = shift;
 
     display_ticket($agent, $id);
 
     # Select the "Link" link from the Display page
     $agent->follow_link_ok({text => "[Link]", n => "1"}, "Followed 'Link(to Incident)' link");
 
-    # TODO: Make sure desired incident appears on page
-
-    # Choose the incident and submit
+    
+	# Check that the desired incident occurs in the list of available incidents; if not, keep
+	# going to the next page until you find it (or get to the last page and don't find it,
+	# whichever comes first)
+    while($agent->content() !~ m|<a href="/Ticket/Display.html\?id=$incident">$incident</a>|) {
+    	last unless $agent->follow_link(text => 'Next Page');
+    }
+    
     $agent->form_number(3);
+    
     $agent->field("SelectedTicket", $incident);
+
     $agent->click("LinkChild");
 
     is ($agent->status, 200, "Attempting to link child $id to Incident $incident");
@@ -295,6 +300,74 @@ sub LinkChildToIncident {
     ok ($agent->content =~ /Ticket $id: Link created/g, "Incident $incident linked successfully.");
 
     return;
+}
+
+
+sub merge_ticket {
+	my $agent = shift;
+	my $id = shift;
+	my $id_to_merge_to = shift;
+	
+	display_ticket($agent, $id);
+	
+	$agent->follow_link_ok({text => 'Merge', n => '1'}, "Followed 'Merge' link");
+	
+	$agent->content() =~ /Merge ([\w ]+) #$id:/i;
+	my $type = $1 || 'Ticket';
+	
+	$agent->form_number(3);
+	
+	#print "Content:\n\n" . $agent->content() . "\n\n";
+	
+	$agent->field("SelectedTicket", $id_to_merge_to);
+    $agent->click_button(value => 'Merge');
+    
+    is ($agent->status, 200, "Attempting to merge $type #$id to ticket #$id_to_merge_to");
+	
+	$agent->content_like(qr{.*<ul class="action-results">\s*<li>Merge Successful</li>.*}i, 
+    	"Successfully merged $type #$id to ticket #$id_to_merge_to");
+}
+
+
+sub create_incident_and_investigation {
+	my $agent = shift;
+    my $fields = shift || {};
+    my $cfs = shift || {};
+	my $ir_id = shift;
+
+    $ir_id ? display_ticket($agent, $ir_id) : go_home($agent);
+
+	if($ir_id) {
+		# Select the "New" link from the Display page
+    	$agent->follow_link_ok({text => "[New]"}, "Followed 'New (Incident)' link");
+	}
+	else 
+	{
+		$agent->follow_link_ok({text => "Incidents"}, "Followed 'Incidents' link");
+		$agent->follow_link_ok({text => "New Incident", n => '1'}, "Followed 'New Incident' link");
+	}
+
+	# Fill out forms
+    $agent->form_number(3);
+
+    while (my ($f, $v) = each %$fields) {
+    	$agent->field($f, $v);
+    }
+
+    while (my ($f, $v) = each %$cfs) {
+        set_custom_field($agent, $f, $v);
+    }
+    $agent->click("CreateWithInvestigation");
+    my $msg = $ir_id ? "Attempting to create new incident and investigation linked to child $ir_id" : "Attempting to create new incident and investigation";
+    is ($agent->status, 200, $msg);
+	$msg = $ir_id ? "Incident created from child $ir_id." : "Incident created.";
+    $agent->content_like(qr/.*Ticket (\d+) created in queue &#39;Incidents&#39;/, $msg);
+  	my $incident_id = $1;
+  	
+    $agent->content_like(qr/.*Ticket (\d+) created in queue &#39;Investigations&#39;/, "Investigation created for Incident $incident_id.");
+    my $investigation_id = $1;
+
+    return ($incident_id, $investigation_id);
 }
 
 1;

@@ -36,7 +36,7 @@ my $first_incident_id = create_incident_for_ir($agent, $report, {Subject => "fir
 my $second_incident_id = create_incident( $agent, { Subject => "foo Incident", Content => "bar baz quux" } );
 
 # link our report to that incident
-LinkChildToIncident(agent => $agent, id => $report, incident => $second_incident_id);
+LinkChildToIncident($agent, $report, $second_incident_id);
 
 # TODO: verify in DB that report has 1 parent, and the right parent
 

@@ -28,7 +28,7 @@ $inc_obj->Load($incident_ids[0]);
 is($inc_obj->Id, $incident_ids[0], "Incident has the right ID");
 is($inc_obj->Subject, "Incident number 1", "Incident has the right subject");
 
-LinkChildToIncident(agent => $agent, id => $ir_ids[1], incident => $incident_ids[0]);
+LinkChildToIncident($agent, $ir_ids[1], $incident_ids[0]);
 
 ticket_is_linked_to_inc($agent, $ir_ids[0], [$incident_ids[0]]);
 ticket_is_linked_to_inc($agent, $ir_ids[1], [$incident_ids[0]]);
@@ -39,7 +39,7 @@ $inc_obj->Load($incident_ids[0]);
 is($inc_obj->Id, $incident_ids[0], "Incident has the right ID");
 is($inc_obj->Subject, "Incident number 1", "Incident has the right subject");
 
-LinkChildToIncident(agent => $agent, id => $ir_ids[3], incident => $incident_ids[1]);
+LinkChildToIncident($agent, $ir_ids[3], $incident_ids[1]);
 
 ticket_is_linked_to_inc($agent, $ir_ids[2], [$incident_ids[1]]);
 ticket_is_linked_to_inc($agent, $ir_ids[3], [$incident_ids[1]]);
