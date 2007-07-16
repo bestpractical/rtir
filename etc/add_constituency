@@ -2,7 +2,9 @@
 use warnings;
 use strict;
 
-use lib qw(/opt/rt3/lib /opt/rt3/local/lib);
+### after: use lib qw(@RT_LIB_PATH@);
+use lib qw(/opt/rt3/local/lib /opt/rt3/lib);
+
 use RT;
 RT::LoadConfig;
 RT::Init;
