@@ -218,6 +218,9 @@ t/014-custom-field-constituency.t
 t/015-make-clicky.t
 t/016-date-started.t
 t/017-locking.t
+t/018-bulk-abandon.t
+t/019-watchers-on-create.t
+t/019-webui-block-fields.t
 t/03firstmilestone.t
 t/rtir-test.pl
 UPGRADING
