@@ -209,6 +209,15 @@ if ( $SubmitTicket ) {
     return $m->comp("Display.html", results => \@results, id => $id);
 }
 
+# XXX, BLOODY-DIRTY-EVIL HACK: when we load the page first time we should
+# select all children by default, but we have no way to do that right now
+# without something like this
+foreach (qw(SelectedReports SelectedInvestigations SelectedBlocks)) {
+    if ( !exists $ARGS{ $_ } && !exists $ARGS{ $_ .'All'} ) {
+        push @{ $m->{'request_args'} }, $_ .'All' => 1;
+    }
+}
+
 my ($BaseQuery, %BaseQuery) = ( '', () );
 foreach my $queue ( @queues ) {
     my $tmp = $m->comp('/RTIR/Elements/BaseQuery', Queue => $queue);
