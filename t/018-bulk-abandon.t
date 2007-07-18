@@ -87,15 +87,11 @@ sub bulk_abandon {
 	
 	$agent->form_number(3);
 	foreach my $id (@to_abandon) {
-		diag("Ticking incident " . $id);
 		$agent->tick('SelectedTickets', $id);
 	}
 	
 	$agent->click('BulkAbandon');
 	
-	open OF, "> /home/toth/contents" or die "Cannot open file contents for writing: $!";
-	print OF $agent->content();
-	#diag("\nContent:\n\n" . $agent->content());
 	
 	foreach my $id (@to_abandon) {
 		ok_and_content_like($agent, qr{<li>Ticket $id: State changed from \w+ to abandoned</li>}i, "Incident $id abandoned");
