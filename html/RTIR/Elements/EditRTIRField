@@ -37,12 +37,11 @@
 <%INIT>
 my $Values;
 
-my $NamePrefix;
 if ( $TicketObj ) {
     $QueueObj = $TicketObj->QueueObj;
-    $NamePrefix = "Object-RT::Ticket-".$TicketObj->Id."-CustomField-";
+    $NamePrefix .= "Object-RT::Ticket-".$TicketObj->Id."-CustomField-";
 } else {
-    $NamePrefix = "Object-RT::Ticket--CustomField-";
+    $NamePrefix .= "Object-RT::Ticket--CustomField-";
 }
 
 my $cf = RT::CustomField->new( $session{'CurrentUser'} );
@@ -54,6 +53,7 @@ return unless $cf->id;
 $TicketObj => undef
 $QueueObj => undef
 $Name => undef
+$NamePrefix => '',
 # Other args
 # $Default, $Cols, $Rows
 </%ARGS>
