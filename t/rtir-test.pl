@@ -266,7 +266,8 @@ sub ok_and_content_like {
     my $desc = shift || "looks good";
     
     is($agent->status, 200, "request successful");
-    like($agent->content, $re, $desc);
+    #like($agent->content, $re, $desc);
+    $agent->content_like($re, $desc);
 }
 
 
@@ -310,14 +311,32 @@ sub merge_ticket {
 	
 	display_ticket($agent, $id);
 	
+	$agent->timeout(600);
+	
 	$agent->follow_link_ok({text => 'Merge', n => '1'}, "Followed 'Merge' link");
 	
 	$agent->content() =~ /Merge ([\w ]+) #$id:/i;
 	my $type = $1 || 'Ticket';
 	
+
+	# Check that the desired incident occurs in the list of available incidents; if not, keep
+	# going to the next page until you find it (or get to the last page and don't find it,
+	# whichever comes first)
+    while($agent->content() !~ m|<a href="/Ticket/Display.html\?id=$id_to_merge_to">$id_to_merge_to</a>|) {
+    	my @ids = sort map s|<b>\s*<a href="/Ticket/Display.html?id=(\d+)">\1</a>\s*</b>|$1|, split /<td/, $agent->content();
+		my $max = pop @ids;
+		my $url = "Merge.html?id=$id&Order=ASC&Query=( 'CF.{_RTIR_State}' = 'new' OR 'CF.{_RTIR_State}' = 'open' AND 'id' > $max)";
+		my $weburl = RT->Config->Get('WebURL');
+		diag("IDs found: " . join ', ', @ids);
+		diag("Max ID: " . $max);
+		diag ("URL: " . $url);
+    	$agent->get("$weburl/RTIR/$url");
+    	last unless $agent->content() =~ qr|<b>\s*<a href="/Ticket/Display.html?id=(\d+)">\1</a>\s*</b>|sm;
+    }
+    
+	
 	$agent->form_number(3);
 	
-	#print "Content:\n\n" . $agent->content() . "\n\n";
 	
 	$agent->field("SelectedTicket", $id_to_merge_to);
     $agent->click_button(value => 'Merge');

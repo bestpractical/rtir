@@ -78,15 +78,27 @@ sub bulk_abandon {
 	$agent->follow_link_ok({text => "Incidents", n => '1'}, "Followed 'Incidents' link");
 	$agent->follow_link_ok({text => "Bulk Abandon", n => '1'}, "Followed 'Bulk Abandon' link");
 	
+	# Check that the desired incident occurs in the list of available incidents; if not, keep
+	# going to the next page until you find it (or get to the last page and don't find it,
+	# whichever comes first)
+    while($agent->content() !~ qr{<a href="/Ticket/Display.html\?id=$to_abandon[0]">$to_abandon[0]</a>}) {
+    	last unless $agent->follow_link(text => 'Next Page');
+    }
+	
 	$agent->form_number(3);
 	foreach my $id (@to_abandon) {
+		diag("Ticking incident " . $id);
 		$agent->tick('SelectedTickets', $id);
 	}
 	
 	$agent->click('BulkAbandon');
 	
+	open OF, "> /home/toth/contents" or die "Cannot open file contents for writing: $!";
+	print OF $agent->content();
+	#diag("\nContent:\n\n" . $agent->content());
+	
 	foreach my $id (@to_abandon) {
-		ok_and_content_like($agent, qr/Ticket $id: State changed from \w+ to abandoned/, "Incident $id abandoned");
+		ok_and_content_like($agent, qr{<li>Ticket $id: State changed from \w+ to abandoned</li>}i, "Incident $id abandoned");
 	}
 	
 	$agent->form_number(3);
