@@ -24,18 +24,31 @@ go_home($agent);
 {
     $agent->follow_link_ok({ text => '[Bulk Reject]' }, "Followed 'bulk reject' link");
 
+	# Check that the desired incident report occurs in the list of available incident reports; if not, keep
+	# going to the next page until you find it (or get to the last page and don't find it,
+	# whichever comes first)
+	
+	# Note that this method assumes both IRs to be rejected are on the same page, but if they're not, we can't check both in any way.
+    while($agent->content() !~ qr{<td class="collection-as-table">\s*<b>\s*<a href="/Ticket/Display.html?id=$irs[0]">$irs[0]</a>\s*</b>\s*</td>}) {
+    	last unless $agent->follow_link(text => 'Next Page');
+    }
+
     $agent->form_number(3);
-    $agent->tick('SelectedTickets', $irs[0]);
+    $agent->tick('SelectedTickets', $irs[0]);  
     $agent->tick('SelectedTickets', $irs[2]);
     $agent->click('BulkReject');
-    ok_and_content_like($agent, qr{Ticket $irs[0]: State changed from new to rejected}, 'reject notice');
-    ok_and_content_like($agent, qr{Ticket $irs[2]: State changed from new to rejected}, 'reject notice');
+    ok_and_content_like($agent, qr{Ticket $irs[0]: State changed from \w+ to rejected}, 'reject notice');
+    ok_and_content_like($agent, qr{Ticket $irs[2]: State changed from \w+ to rejected}, 'reject notice');
 
     $agent->form_number(3);
     ok($agent->value('BulkReject'), 'still on reject page');
 }
 
 {
+	while($agent->content() !~ qr{<td class="collection-as-table">\s*<b>\s*<a href="/Ticket/Display.html?id=$irs[1]">$irs[1]</a>\s*</b>\s*</td>}) {
+    	last unless $agent->follow_link(text => 'Next Page');
+    }
+	
     $agent->form_number(3);
     ok($agent->value('BulkRejectAndReturn'), 'has reject and return button');
 
@@ -44,7 +57,7 @@ go_home($agent);
     $agent->click('BulkRejectAndReturn');
     ok_and_content_like($agent, qr{Ticket $irs[1]: State changed from new to rejected}, 'reject notice');
     ok_and_content_like($agent, qr{Ticket $irs[3]: State changed from new to rejected}, 'reject notice');
-    ok_and_content_like($agent, qr{New unlinked Incident Reports}, 'we on the main page');
+    ok_and_content_like($agent, qr{New unlinked Incident Reports}, 'we are on the main page');
 }
 
 foreach( @irs ) {
