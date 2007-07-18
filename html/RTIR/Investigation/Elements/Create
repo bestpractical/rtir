@@ -52,18 +52,20 @@ email addresses. These people <b>will</b> receive future updates.)</&></font></i
 
 % unless ( $SkipField{'Customer'} ) {
 <tr><td class="label"><&|/l&>Customer</&>:</td>
-<td class="value"><& /RTIR/Elements/EditRTIRField, 
-         QueueObj => $QueueObj, 
-         Name => 'Customer' &>
-</td></tr>
+<td class="value"><& /RTIR/Elements/EditRTIRField,
+        NamePrefix => $NamePrefix,
+        QueueObj => $QueueObj,
+        Name => 'Customer',
+&></td></tr>
 % }
 
 
 % if ( $QueueObj || $ARGS{'TicketObj'} ) {
 % unless ( $SkipField{'CustomFields'} ) {
 <tr><td colspan="2"><& /Ticket/Elements/EditCustomFields,
-    TicketObj => $ARGS{'TicketObj'},
-	QueueObj  => $QueueObj,
+    NamePrefix => $NamePrefix,
+    TicketObj  => $ARGS{'TicketObj'},
+    QueueObj   => $QueueObj,
 &></td></tr>
 % } }
 
@@ -156,21 +158,88 @@ $NamePrefix => '',
 $DefaultsNamePrefix => undef
 </%ARGS>
 <%INIT>
-if ( $NamePrefix ) {
+if ( defined $NamePrefix && length $NamePrefix ) {
     foreach my $k( keys %ARGS ) {
         next unless $k =~ /^\Q$NamePrefix\E(.*)$/;
-        $ARGS{ $1 } = delete $ARGS{ $k };
+        if ( defined $ARGS{ $k } && length $ARGS{ $k } ) {
+            $ARGS{ $1 } = delete $ARGS{ $k };
+        } else {
+            delete $ARGS{ $k };
+        }
     }
 }
 if ( $DefaultsNamePrefix && $DefaultsNamePrefix ne $NamePrefix ) {
     foreach my $k( keys %ARGS ) {
         next unless $k =~ /^\Q$DefaultsNamePrefix\E(.*)$/;
-        next if exists $ARGS{ $1 };
-        $ARGS{ $1 } = delete $ARGS{ $k };
+        if ( defined $ARGS{ $1 } && length $ARGS{ $1 } ) {
+            delete $ARGS{ $k };
+        } else {
+            $ARGS{ $1 } = delete $ARGS{ $k };
+        }
     }
 }
 delete $ARGS{'DefaultsNamePrefix'};
 delete $ARGS{'NamePrefix'};
+
+# deal with custom fields
+if ( ($DefaultsNamePrefix||'') ne $NamePrefix ) {
+    my $queue = RT::Queue->new( $session{'CurrentUser'} );
+    unless ( $queue->Load( $ARGS{'Queue'} ) ) {
+        Abort('Queue not found');
+    }
+
+    my $prefix = 'Object-RT::Ticket--CustomField-';
+
+    my %cf_map;
+    foreach my $k( keys %ARGS ) {
+        next unless $k =~ /^\Q$prefix\E(\d+)(.*?)$/;
+
+        my ($cf_id, $rest) = ($1, $2);
+        if ( exists $cf_map{ $cf_id } ) {
+            if ( !$cf_map{ $cf_id } ||
+                (    defined $ARGS{ $prefix . $cf_map{ $cf_id } . $rest }
+                  && length $ARGS{ $prefix . $cf_map{ $cf_id } . $rest } ) )
+            {
+                delete $ARGS{ $k };
+            } else {
+                $ARGS{ $prefix . $cf_map{ $cf_id } . $rest } = delete $ARGS{ $k };
+            }
+            next;
+        }
+
+        my $src_cf = $queue->LoadCustomFieldByIdentifier($cf_id);
+        unless ( $src_cf->id ) {
+            $cf_map{ $cf_id } = 0;
+            delete $ARGS{ $k };
+            $RT::Logger->error("Couldn't load CF #$cf_id");
+            next;
+        }
+
+        my $dst_cf = do {
+            my $cfs = $queue->TicketCustomFields;
+            $cfs->Limit( FIELD => 'Name', VALUE => $src_cf->Name );
+            $cfs->RowsPerPage(1);
+            $cfs->First;
+        };
+
+        unless ( $dst_cf && $dst_cf->id ) {
+            $cf_map{ $cf_id } = 0;
+            delete $ARGS{ $k };
+            $RT::Logger->debug( $src_cf->Name .' is not applied. skipping.' );
+            next;
+        }
+        $cf_map{ $cf_id } = $dst_cf->id;
+
+        if ( defined $ARGS{ $prefix . $cf_map{ $cf_id } . $rest } 
+            && length $ARGS{ $prefix . $cf_map{ $cf_id } . $rest } )
+        {
+            $ARGS{ $prefix. $cf_map{ $cf_id } . $rest } =
+                delete $ARGS{ $k };
+        } else {
+            delete $ARGS{ $k };
+        }
+    }
+}
 
 my ($Ticket, @results) = CreateTicket(
     Attachments => $session{'Attachments'},
