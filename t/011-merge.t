@@ -23,10 +23,9 @@ my $agent = default_agent();
 
     display_ticket($agent, $ir1_id);
     ok_and_content_like($agent, qr{Incident Report #$ir1_id:}, 'Opened the merged ticket');
-	#diag("Content:\n\n" . $agent->content());
+
     display_ticket($agent, $ir2_id);
     ok_and_content_like($agent, qr{Incident Report #$ir1_id:}, 'Second id points to the ticket we merged into');
-    #diag("Content:\n\n" . $agent->content());
 
 }
 
