@@ -49,7 +49,7 @@ my %metaqueues;
 my %mainqueues;
 # Create our four new queues
 foreach my $prefix (@queue_prefixes) {
-    $mainqueues{$prefix} = create_or_load_queue($prefix); # will always load
+    $mainqueues{$prefix} = load_queue($prefix); # will always load
     $metaqueues{$prefix} = create_or_load_queue($prefix . " - " .$constituency);
 }
 
@@ -193,6 +193,15 @@ sub create_or_load_group {
     die "Failed to create group $name." unless $group->id;
 
     return $group;
+}
+
+sub load_queue {
+    my $name = shift;
+
+    my $queue = RT::Queue->new( $RT::SystemUser );
+    $queue->LoadByCols( Name => $name );
+    die "Couldn't load queue '$name'" unless $queue->id;
+    return $queue;
 }
 
 sub create_or_load_queue {
