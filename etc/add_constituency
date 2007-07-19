@@ -9,36 +9,42 @@ use RT;
 RT::LoadConfig;
 RT::Init;
 
-my $constituency = shift @ARGV;
-my $CORRESPOND = shift @ARGV;
-my $COMMENT = shift @ARGV;
+my %opt;
 
+sub debug(@) {
+    return unless $opt{'verbose'};
+    print @_;
+    print "\n" if $_[-1] && $_[-1] !~ /\n$/s;
+};
 
-unless ($constituency) {
-    print "Run this tool by typing $0 MY_NEW_CONSTITUENCY \"CORRESPONDENCE\@DOMAIN\" \"COMMENT\@DOMAIN\"\nIt will add a new constituency to your RTIR. (Version 2.3 or newer)\n\n";
-    exit;
+use Getopt::Long;
+GetOptions( \%opt, "name=s", "correspond=s", "comment=s", "help", "verbose" );
+
+if ( $opt{'help'} ) {
+    require Pod::Usage;
+    import Pod::Usage;
+    pod2usage("RTIR Constituencies management tool\n");
+    exit 1;
+}
+
+my $constituency = $opt{'name'};
+# cleanup value
+$constituency = '' unless defined $constituency;
+$constituency =~ s/^\s+//;
+$constituency =~ s/\s+$//;
+$constituency =~ s/\s+/ /gs;
+unless ( defined $constituency && length $constituency ) {
+    print STDERR "Name of constituency is a mandatory argument\n";
+    exit 1;
 }
 
 
 $RT::Handle->BeginTransaction;
 
-print "Adding constituency $constituency\n";
+debug "Adding constituency $constituency";
 
 my @queue_prefixes = ('Incidents', 'Incident Reports', 'Investigations', 'Blocks');
 
-
-# Add the value to the constituency CF
-my $cf = RT::CustomField->new($RT::SystemUser);
-$cf->LoadByCols(Name => "_RTIR_Constituency");
-my $values = $cf->Values;
-my $exists = 0;
-while (my $val = $values->Next) {
-    $exists = 1 if ( $val->Name eq $constituency);
-}
-unless ($exists ==1) {
-my ($val,$msg) = $cf->AddValue(Name => $constituency);
-print "Added $constituency to the constituency dropdown\n";
-}
 my %metaqueues;
 my %mainqueues;
 # Create our four new queues
@@ -46,8 +52,6 @@ foreach my $prefix (@queue_prefixes) {
     $mainqueues{$prefix} = create_or_load_queue($prefix); # will always load
     $metaqueues{$prefix} = create_or_load_queue($prefix . " - " .$constituency);
 }
-
-
 
 # Create a DutyTeam $constituency
 my $dutyteam = create_or_load_group('DutyTeam '.$constituency);
@@ -106,7 +110,36 @@ my @RO_CF_RIGHTS = ( 'SeeCustomField');
     grant_group_queue_rights($ro, \%metaqueues, @RO_METAQUEUE_RIGHTS);
 
 
-$RT::Handle->Commit; print "Done. Enjoy your new constituency.\n"; 
+$RT::Handle->Commit;
+
+debug "Done. Enjoy your new constituency.\n"; 
+
+sub get_cf {
+    my $cf = RT::CustomField->new( $RT::SystemUser );
+    $cf->Load( "_RTIR_Constituency" );
+    unless ( $cf->id ) {
+        die "Could load the cosntituency custom field";
+    }
+    return $cf;
+}
+
+sub add_cf_value {
+    my $value = shift;
+
+    debug "Adding the value to the constituency CF";
+
+    my $cf = get_cf();
+    my $values = $cf->Values;
+    $values->Limit( FIELD => 'Name', VALUE => $value );
+    my $value_obj = $values->First;
+    if ( $value_obj && $value_obj->id ) {
+        debug "Value '$value' already exists";
+    } else {
+        my ($val,$msg) = $cf->AddValue( Name => $value );
+        die $msg unless $val;
+        debug "Added '$value' to the constituency field";
+    }
+}
 
 sub grant_group_queue_rights {
     my $group = shift;
@@ -114,10 +147,10 @@ sub grant_group_queue_rights {
     my @rights = (@_);
     
     foreach my $queue    (values %$queues) {
-        print "Granting rights for queue " .$queue->Name. " to group ". $group->Name ."\n";
+        debug "Granting rights for queue " .$queue->Name. " to group ". $group->Name;
         foreach my $right  (@rights) {
             my ($val,$msg) =  $group->PrincipalObj->GrantRight(Right => $right, Object=>$queue);
-            print  "\t$right\n";
+            debug "\t$right\n";
             unless ($val) {
                 die "Failed to grant $right to ".$group->name. " for Queue ". $queue->Name;
             }
@@ -131,15 +164,16 @@ sub grant_group_cf_rights {
     my @rights = (@_);
 
     my $cfs = RT::CustomFields->new($RT::SystemUser);
-    $cfs->UnLimit;
-    while (my $cf = $cfs->Next) {
-        next unless ($cf->Name =~ /^_RTIR/);
-            print "Granting rights for custom field ".$cf->Name . " to group ". $group->Name ."\n";
+    $cfs->Limit( FIELD => 'Name', OPERATOR => 'STARTSWITH', VALUE => '_RTIR' );
+    while ( my $cf = $cfs->Next ) {
+        debug "Granting rights for custom field ". $cf->Name . " to group ". $group->Name;
+
         foreach my $right  (@rights) {
             my ($val,$msg) =  $group->PrincipalObj->GrantRight(Right => $right, Object=>$cf);
             print "\t$right\n";
             unless ($val) {
-                die "Failed to grant $right to ".$group->Name. " for Custom Field ". $cf->Name;
+                die "Failed to grant $right to ".$group->Name. " for Custom Field ". $cf->Name
+                    .".\nError: $msg";
             }
         }
     } 
@@ -149,26 +183,38 @@ sub create_or_load_group {
     my $name = shift;
     my $group = RT::Group->new($RT::SystemUser);
     $group->LoadUserDefinedGroup($name);
-    unless($group->id) {
+    unless ( $group->id ) {
         my ($val,$msg) = $group->CreateUserDefinedGroup( Name => $name);
-        print "Creating new group $name: $msg\n";
-    }   
+        debug "Creating new group $name: $msg";
+    } else {
+        debug "Group '$name' already exists";
+    }
 
-    die "Failed to create group $name." unless ( $group->id);
+    die "Failed to create group $name." unless $group->id;
 
     return $group;
 }
 
 sub create_or_load_queue {
     my $name = shift;
-    my $queue = RT::Queue->new($RT::SystemUser);
-    $queue->LoadByCols(Name => $name);
-    unless($queue->id) {
-        my ($val, $msg) = $queue->Create( Name => $name, CommentAddress => $COMMENT, CorrespondAddress => $CORRESPOND);
-        print "Creating new queue $name: $msg\n";
-    }   
+    my $queue = RT::Queue->new( $RT::SystemUser );
+    $queue->LoadByCols( Name => $name );
+    unless ( $queue->id ) {
+        my ($val, $msg) = $queue->Create(
+            Name => $name,
+            CommentAddress => $opt{'comment'},
+            CorrespondAddress => $opt{'correspond'},
+        );
+        debug "Creating new queue '$name': $msg";
+        debug "\tcomment address:\t$opt{'comment'}" if $opt{'comment'};
+        debug "\tcorrespond address:\t$opt{'correspond'}" if $opt{'correspond'};
+    } else {
+        debug "Queue '$name' already exists";
 
-    die "Failed to create queue $name." unless ( $queue->id);
+        # TODO: update addresses
+    }
+
+    die "Failed to create queue $name." unless $queue->id;
 
     return $queue;
 }
