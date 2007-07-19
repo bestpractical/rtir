@@ -1,4 +1,49 @@
 #!/usr/bin/perl
+
+=head1 NAME
+
+add_constituency - add or update constitiuensies
+
+=head1 SYNOPSIS
+
+    add_constituency --name <constituency> [options]
+    add_constituency --name EDUNET
+    add_constituency --name EDUNET --verbose
+    add_constituency --name EDUNET --corespond 'edunet@example.com' --verbose
+
+Run `perldoc add_constituency` to gte more info about the tool.
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<--name>
+
+Constituency name. Mandatory argument.
+
+=item --correspond
+
+Set/update correspond address.
+
+=item --comment
+
+Set/update comment address.
+
+=item --verbose
+
+Enable verbose output.
+
+=back
+
+=head1 DESCRIPTION
+
+This command line utitlity is a helper for activating advanced access control
+on tickets using the current value of the constituency field.
+
+Read more in F<docs/Constituencies.pod> using perldoc tool.
+
+=cut
+
 use warnings;
 use strict;
 
