@@ -22,10 +22,12 @@ my $agent = default_agent();
     ok_and_content_like($agent, qr{Merge Successful}, 'Merge Successful');
 
     display_ticket($agent, $ir1_id);
-    ok_and_content_like($agent, qr{Incident Report #$ir2_id:}, 'Opened the merged ticket');
-
+    ok_and_content_like($agent, qr{Incident Report #$ir1_id:}, 'Opened the merged ticket');
+	#diag("Content:\n\n" . $agent->content());
     display_ticket($agent, $ir2_id);
-    ok_and_content_like($agent, qr{Incident Report #$ir2_id:}, 'Second id points to the ticket we merged into');
+    ok_and_content_like($agent, qr{Incident Report #$ir1_id:}, 'Second id points to the ticket we merged into');
+    #diag("Content:\n\n" . $agent->content());
+
 }
 
 { # merge an IR into a linked IR, the product should have open state
@@ -46,10 +48,10 @@ my $agent = default_agent();
     ok_and_content_like($agent, qr{Merge Successful}, 'Merge Successful');
 
     display_ticket($agent, $ir1_id);
-    ok_and_content_like($agent, qr{Incident Report #$ir2_id:}, 'Opened the merged ticket');
+    ok_and_content_like($agent, qr{Incident Report #$ir1_id:}, 'Opened the merged ticket');
 
     display_ticket($agent, $ir2_id);
-    ok_and_content_like($agent, qr{Incident Report #$ir2_id:}, 'Second id points to the ticket we merged into');
+    ok_and_content_like($agent, qr{Incident Report #$ir1_id:}, 'Second id points to the ticket we merged into');
 
     ticket_state_is( $agent, $ir2_id, 'open' );
 }
@@ -73,10 +75,10 @@ my $agent = default_agent();
     ok_and_content_like($agent, qr{Merge Successful}, 'Merge Successful');
 
     display_ticket($agent, $ir2_id);
-    ok_and_content_like($agent, qr{Incident Report #$ir2_id:}, 'Second id points to the ticket we merged into');
+    ok_and_content_like($agent, qr{Incident Report #$ir1_id:}, 'Second id points to the ticket we merged into');
 
     display_ticket($agent, $ir1_id);
-    ok_and_content_like($agent, qr{Incident Report #$ir2_id:}, 'Opened the merged ticket');
+    ok_and_content_like($agent, qr{Incident Report #$ir1_id:}, 'Opened the merged ticket');
     ticket_state_is( $agent, $ir1_id, 'open' );
 }
 
