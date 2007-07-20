@@ -3,7 +3,7 @@ use strict;
 use Test::WWW::Mechanize;
 use Test::More tests => 16;
 
-require "rtir-test.pl";
+require "t/rtir-test.pl";
 
 my $agent = default_agent();
 
