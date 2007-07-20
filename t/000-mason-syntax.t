@@ -21,6 +21,7 @@ find( {
 }, 'html');
 ok($ok, "mason syntax is ok");
 
+use HTML::Mason;
 use HTML::Mason::Compiler;
 use HTML::Mason::Compiler::ToObject;
 
@@ -32,8 +33,10 @@ sub compile_file {
     close $fh or die "couldn't close '$file': $!";
 
     my $compiler = new HTML::Mason::Compiler::ToObject;
-    $compiler->compile( comp_source => $text, name => 'my',
-   # comp_path => 'my' 
+    $compiler->compile(
+        comp_source => $text,
+        name => 'my',
+        $HTML::Mason::VERSION >= 1.36? (comp_path => 'my'): (),
     );
     return 1;
 }
