@@ -9,7 +9,6 @@
 use strict;
 use warnings;
 
-use Test::WWW::Mechanize;
 use HTTP::Cookies;
 use Test::More;
 
@@ -25,13 +24,13 @@ require $RT::BasePath. '/lib/t/utils.pl';
 my $RTIR_TEST_USER = "rtir_test_user";
 my $RTIR_TEST_PASS = "rtir_test_pass";
 
+use RT::Test::Web;
 
 sub default_agent { 
-    my $agent = Test::WWW::Mechanize->new();
-    $agent->cookie_jar(HTTP::Cookies->new);
-
+    my $agent = new RT::Test::Web;
+    $agent->cookie_jar( HTTP::Cookies->new );
+    $agent->login($RTIR_TEST_USER, $RTIR_TEST_PASS);
     go_home($agent);
-    log_in($agent);
     return $agent;
 }
 
@@ -48,18 +47,6 @@ sub go_home {
     my $agent = shift;
     my $weburl = RT->Config->Get('WebURL');
     $agent->get_ok("$weburl/RTIR/index.html", "Loaded home page");
-}
-
-sub log_in {
-    my $agent = shift;
-
-    if ($agent->title eq 'Login') {
-#        diag("logging in");
-        $agent->form_number(1);
-        $agent->field("user", $RTIR_TEST_USER);
-        $agent->field("pass", $RTIR_TEST_PASS);
-        $agent->submit_form(form_number => "1");
-    }
 }
 
 sub display_ticket {
