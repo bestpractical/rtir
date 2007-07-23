@@ -10,12 +10,19 @@ foreach my $object (@$objects) {
 }
 my @new_objects;
 foreach my $object (@$objects) {
-    if ($object->isa('RT::Queue') && $object->Name =~ /^(?:Incidents|Investigations|Incident Reports|Blocks)$/) {
-        my $queues = RT::Queues->new($RT::SystemUser);
-        $queues->Limit(FIELD =>'Name', OPERATOR => 'STARTSWITH', VALUE  => $object->Name);
-        while (my $queue = $queues->Next) { warn "Adding ".$queue->Name; unshift @new_objects,$queue; }
+    next unless ($object->__Value('Name')||'') =~ /^(?:Incidents|Investigations|Incident Reports|Blocks)$/;
 
+    my $queues = RT::Queues->new( $RT::SystemUser );
+    $queues->Limit(
+        FIELD =>'Name',
+        OPERATOR => 'STARTSWITH',
+        VALUE  => $object->__Value('Name'),
+    );
+    while ( my $queue = $queues->Next ) {
+        warn "Adding ".$queue->Name;
+        unshift @new_objects,$queue;
     }
+
 }
 push @$objects, @new_objects;
 </%init>
