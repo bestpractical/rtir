@@ -1,0 +1,115 @@
+=head2 Create new IR via e-mail
+
+=item * Mailgate help: rt/bin/rt-mailgate --help
+
+=head2 Create new IR via web-interface
+
+
+
+=head2 Reply from requestor on IR via e-mail
+
+=head2 Reply IR via web-interface
+
+=head2 Comment IR via web-interface
+
+=head2 Merge IR
+
+=item * RTIR/docs/Tutorial.pod (Section 'Merging tickets')
+
+=head2 Split IR
+
+=item * RTIR/docs/Tutorial.pod (Section 'Splitting tickets')
+
+=head2 Reject IR
+
+=item * RTIR/docs/Tutorial.pod (Section 'Rejecting an IR')
+
+=head3 Bulk Reject IR
+
+=item * RTIR/docs/Tutorial.pod (Section 'Rejecting an IR', subsection 'Rejecting many IRs at once (bulk reject)')
+
+
+=head2 Link IR with new Incident
+
+=head2 Link IR with existing Incident
+
+=head2 Resolve IR
+
+=head2 Reopen IR
+
+=head2 Create new Incident from IR via 'Basics' section
+
+=head2 Create new Incident via web-interface
+
+=head2 Update Incident via e-mail
+
+=head2 Comment Incident via web-interface
+
+=head2 Reply Reporters Incident
+
+=head2 Reply All Incident
+
+=head2 Merge Incident
+
+=head2 Split Incident
+
+=head2 Link Incident with new IR
+
+=head2 Link Incident with existing IR
+
+=head2 Link Incident with new Block
+
+=head2 Link Incident with existing Block
+
+=head2 Resolve Incident
+
+=head2 Resolve Incident & linked IR's and Investigations
+
+=head2 Quick resolve Incident
+
+=head2 Reopen Incident
+
+=head2 Abandon Incident
+
+=item * RTIR/docs/Tutorial.pod (Section 'Abandoning incidents')
+
+=head3 Bulk Abandon Incidents
+
+=item * RTIR/docs/Tutorial.pod (Section 'Abandoning incidents, subsection 'Abandoning many incidents at once (bulk abandon)')
+
+=head2 Launch Investigation
+
+=head2 Reply from correspondent on Investigation via e-mail
+
+=head2 Correspond with Correspondent
+
+=head2 Comment on investigation via web-interface
+
+=head2 Merge Investigation
+
+=head2 Split Investigation
+
+=head2 Resolve Investigation
+
+=head2 Reopen Investigation
+
+=head2 Steal Investigation
+
+=head2 Create new block via web-interface
+
+=head2 Reply from correspondent on Blocks via e-mail
+
+=head2 Correspond with Correspondent
+
+=head2 Comment Blocks via web-interface
+
+=head2 Merge Blocks
+
+=head2 Split Blocks
+
+=head2 Remove Blocks
+
+=head2 Activate Blocks
+
+=head2 Steal Blocks
+
