@@ -94,7 +94,6 @@ if ( $SelectedTicket ) {
         push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
 
         $Ticket = LoadTicket($id);
-        #push @results, "Ticket " . $Ticket->id . " unlocked" if $Ticket->Locked() && $Ticket->Unlock();
         return $m->comp('/RTIR/Display.html', id => $Ticket->id, results => \@results );
     } else {
         push @results, loc("Merge failed: Ticket #[_1] is not the right type", $MergeTicket->Id );
