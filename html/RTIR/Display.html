@@ -30,7 +30,8 @@
     current_subtab => 'RTIR/Display.html?id='.$Ticket->id,
     Title => $Title &>
 
-<& /RTIR/Elements/ShowLock, Ticket => $Ticket &>
+% $duration ||= $ARGS{'duration'};
+<& /Elements/ShowLock, Ticket => $Ticket, duration => $duration &>
 <& /Elements/ListActions, actions => \@results &>
 <table border="0" cellpadding="0" cellspacing="2" width="100%">
 <tr>
@@ -208,6 +209,7 @@
 <%INIT>
 my ($name);
 my $Ticket = new RT::Ticket( $session{'CurrentUser'} );
+my $duration;
 
 my $QueueObj;
 unless ( $id eq 'new' ) {
@@ -259,20 +261,23 @@ if ( $id eq 'new' ) {
     if ( $ARGS{'Lock'} ) {
 
         if ( $ARGS{'Lock'} eq 'add' ) {
-            if ( $Ticket->RT::IR::Ticket::Lock() ) {
+            if ( $Ticket->RT::Ticket::Lock() ) {
                 push @results, loc('You now have a lock on this ticket');
             } else {
                 push @results, loc('Your attempt to lock this ticket failed');
 
             }
         } elsif ( $ARGS{'Lock'} eq 'remove' ) {
-            my $lock = $Ticket->RT::IR::Ticket::Locked();
+            my $lock = $Ticket->RT::Ticket::Locked();
             if ( !$lock ) {
                 push @results, loc('This ticket was not locked');
 
                 } elsif ( $lock->Content->{'User'} == $session{'CurrentUser'}->id ) {
-                $Ticket->RT::IR::Ticket::Unlock();
-                push @results, loc('You have unlocked this ticket');
+                $duration = time() - $lock->Content->{'Timestamp'};
+				my $date = RT::Date->new($session{'CurrentUser'});
+				$duration = $date->DurationAsString($duration);
+				$Ticket->RT::Ticket::Unlock();
+                push @results, loc('You have unlocked this ticket (locked for ' . $duration . ')');
             } else {
                 push @results,
                     loc("You can't unlock tickets that you did not lock");
@@ -280,7 +285,7 @@ if ( $id eq 'new' ) {
             }
 
         } elsif ( $ARGS{'Lock'} eq 'break' ) {
-            $Ticket->RT::IR::Ticket::BreakLock();
+            $Ticket->RT::Ticket::BreakLock();
             push @results, loc('You have broken the lock on this ticket');
         }
     }

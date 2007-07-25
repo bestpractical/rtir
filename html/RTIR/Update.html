@@ -28,7 +28,8 @@
     current_subtab => "RTIR/Edit.html?id=$id",
     Title => $title &>
 
-<& /RTIR/Elements/ShowLock, Ticket => $Ticket &>
+
+<& /Elements/ShowLock, Ticket => $Ticket, noUnlock => 1 &>
 <form action="Update.html" name="TicketUpdate" 
 	method="post" enctype="multipart/form-data">
 <input type="hidden" name="QuoteTransaction" value="<% $ARGS{'QuoteTransaction'} || '' %>" />
@@ -106,6 +107,7 @@
 
 my $title;
 my $Ticket = LoadTicket($id);
+$Ticket->RT::Ticket::Lock() unless $Ticket->RT::Ticket::Locked();
 $id = $ARGS{'id'} = $Ticket->Id;
 
 my $Type = RT::IR::TicketType( Ticket => $Ticket );
@@ -166,6 +168,7 @@ $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
 $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 
 if ( exists $ARGS{SubmitTicket} ) {
+	$ARGS{'Lock'} = 'remove';
     return $m->comp('/RTIR/Display.html', %ARGS);
 }
 

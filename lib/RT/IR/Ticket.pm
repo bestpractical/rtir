@@ -50,43 +50,5 @@ sub IsLinkedToActiveIncidents {
     return $tickets->Count;
 }
 
-sub Locked {
-    my $ticket =shift;
-    return $ticket->FirstAttribute('RTIR_Lock');
-}
 
-sub Lock {
-    my $ticket = shift;
-
-    if ( $ticket->RT::IR::Ticket::Locked ) {
-        return undef;
-    } else {
-        $ticket->SetAttribute(
-            Name    => 'RTIR_Lock',
-            Content => {
-                User      => $ticket->CurrentUser->id,
-                Timestamp => time()
-
-            }
-        );
-    }
-}
-
-
-sub Unlock {
-    my $ticket = shift;
-
-    my $lock = $ticket->RT::IR::Ticket::Locked();
-     return undef unless $lock;
-     return undef unless $lock->Content->{User} ==  $ticket->CurrentUser->id;
-    $ticket->DeleteAttribute('RTIR_Lock');
-}
-
-
-sub BreakLock {
-    my $ticket = shift;
-    my $lock = $ticket->RT::IR::Ticket::Locked();
-     return undef unless $lock;
-    $ticket->DeleteAttribute('RTIR_Lock');
-}
 1;
