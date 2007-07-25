@@ -107,7 +107,7 @@
 
 my $title;
 my $Ticket = LoadTicket($id);
-$Ticket->RT::Ticket::Lock() unless $Ticket->RT::Ticket::Locked();
+$Ticket->Lock() unless $Ticket->Locked();
 $id = $ARGS{'id'} = $Ticket->Id;
 
 my $Type = RT::IR::TicketType( Ticket => $Ticket );
