@@ -35,6 +35,8 @@
     current_subtab => 'RTIR/Search/Refine.html',
 &>
 
+<& /Elements/ShowLock, Ticket => $Ticket, noUnlock => 1 &> 
+
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="<% RT->Config->Get('WebPath') %>/RTIR/Merge.html" method="post">
@@ -65,10 +67,13 @@
 
 <%INIT>
 my $Ticket = LoadTicket($id);
+$Ticket->Lock() unless $Ticket->Locked();
 $id = $ARGS{'id'} = $Ticket->id;
 
 my (@results);
 if ( $SelectedTicket ) {
+	$Ticket->Unlock() if $Ticket->Locked();
+	
     my $MergeTicket = LoadTicket( $SelectedTicket );
 
     my @queues = sort map {$_->Name} $Ticket->QueueObj, $MergeTicket->QueueObj;
@@ -89,6 +94,7 @@ if ( $SelectedTicket ) {
         push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
 
         $Ticket = LoadTicket($id);
+        #push @results, "Ticket " . $Ticket->id . " unlocked" if $Ticket->Locked() && $Ticket->Unlock();
         return $m->comp('/RTIR/Display.html', id => $Ticket->id, results => \@results );
     } else {
         push @results, loc("Merge failed: Ticket #[_1] is not the right type", $MergeTicket->Id );
