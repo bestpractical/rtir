@@ -47,6 +47,8 @@
 &>
 % }
 
+<& /Elements/ShowLock, Ticket => $TicketObj, noUnlock => 1 &> 
+
 <& /Elements/ListActions, actions => \@results &>
 
 % if ( $Split && !$TicketObj->CurrentUserHasRight('ModifyTicket') ) {

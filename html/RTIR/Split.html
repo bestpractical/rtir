@@ -42,9 +42,11 @@
     TicketObj        => $TicketObj,
     Incident         => $Incident,
 &>
+% $TicketObj->Unlock();
 
 <%INIT>
 my $TicketObj = LoadTicket( $Ticket );
+$TicketObj->Lock() unless $TicketObj->Locked();
 
 my $Type = RT::IR::TicketType( Ticket => $TicketObj );
 if ( $m->comp_exists("/RTIR/$Type/Split.html") ) {
