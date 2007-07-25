@@ -29,7 +29,7 @@
     current_subtab => "RTIR/Edit.html?id=".$Ticket->Id, 
     Title => $Title &>
 
-<& /RTIR/Elements/ShowLock, Ticket => $Ticket &>
+<& /Elements/ShowLock, Ticket => $Ticket, noUnlock => 1 &>          
 <& /Elements/ListActions, actions => \@results &>
 
 % if (!$Ticket->CurrentUserHasRight('ModifyTicket')) {
@@ -224,9 +224,12 @@
 
 <%INIT>
 my $Ticket = LoadTicket($id);
+$Ticket->Lock() unless $Ticket->Locked();
 $id = $ARGS{'id'} = $Ticket->Id;
 
+
 my $Type = RT::IR::TicketType( Ticket => $Ticket );
+
 return $m->comp( '/Ticket/Display.html', %ARGS ) unless $Type;
 if( $Type eq 'Block' && RT->Config->Get('RTIR_DisableBlocksQueue') ) {
     Abort(loc("Blocks queue is disabled via config file"));
@@ -234,6 +237,8 @@ if( $Type eq 'Block' && RT->Config->Get('RTIR_DisableBlocksQueue') ) {
 if ( $m->comp_exists("/RTIR/$Type/Edit.html") ) {
     return $m->comp("/RTIR/$Type/Edit.html", %ARGS);
 }
+
+my @results;
 
 my $name;
 if ($Type eq 'Report') {
@@ -249,7 +254,7 @@ $CanRespond = 1 if ( $Ticket->CurrentUserHasRight('ReplyToTicket') or
 $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
                      $Ticket->CurrentUserHasRight('ModifyTicket') );
 
-my @results;
+
 if ( $SaveChanges && !$OnlySearchForPeople ) {
     my $checks_failure = 0;
     my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, '_RTIR_State' );
@@ -280,7 +285,7 @@ if ( $SaveChanges && !$OnlySearchForPeople ) {
         push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
     }
     if ( !$checks_failure && RT->Config->Get('DisplayAfterEdit', $session{'CurrentUser'}) ) {
-        return $m->comp("/RTIR/Display.html", results => [@results], id => $id);
+        return $m->comp("/RTIR/Display.html", results => [@results], id => $id, Lock => 'remove');
     }
 }
  
