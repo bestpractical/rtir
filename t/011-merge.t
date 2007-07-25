@@ -8,11 +8,12 @@ require "t/rtir-test.pl";
 
 my $agent = default_agent();
 
-{ # simple merge of IRs
+diag "simple merge of IRs" if $ENV{'TEST_VERBOSE'};
+{
     my $ir1_id = create_ir($agent, {Subject => "ir1 for merging"});
     my $ir2_id = create_ir($agent, {Subject => "ir2 for merging"});
-    display_ticket($agent, $ir2_id);
 
+    display_ticket($agent, $ir2_id);
     $agent->has_tag('a', 'Merge', 'we have Merge link');
     $agent->follow_link_ok({ text => 'Merge' }, "Followed merge link");
 
@@ -29,7 +30,9 @@ my $agent = default_agent();
 
 }
 
-{ # merge an IR into a linked IR, the product should have open state
+diag "merge an IR into a linked IR, the product should have open state"
+    if $ENV{'TEST_VERBOSE'};
+{
     my $inc_id = create_incident($agent, {Subject => "base inc for merging"});
     my $ir1_id = create_ir($agent, {Subject => "ir1 for merging", Incident => $inc_id});
     ok_and_content_like($agent, qr{Incident:.*$inc_id}ms, 'Created linked IR');

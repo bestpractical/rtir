@@ -364,14 +364,19 @@ sub create_incident_and_investigation {
         set_custom_field($agent, $f, $v);
     }
     $agent->click("CreateWithInvestigation");
-    my $msg = $ir_id ? "Attempting to create new incident and investigation linked to child $ir_id" : "Attempting to create new incident and investigation";
+    my $msg = $ir_id
+        ? "Attempting to create new incident and investigation linked to child $ir_id"
+        : "Attempting to create new incident and investigation";
     is ($agent->status, 200, $msg);
 	$msg = $ir_id ? "Incident created from child $ir_id." : "Incident created.";
-    $agent->content_like(qr/.*Ticket (\d+) created in queue &#39;Incidents&#39;/, $msg);
-  	my $incident_id = $1;
+
+    my $re = qr/.*Ticket (\d+) created in queue &#39;Incidents&#39;/;
+    $agent->content_like( $re, $msg );
+  	my ($incident_id) = ($agent->content =~ $re);
   	
-    $agent->content_like(qr/.*Ticket (\d+) created in queue &#39;Investigations&#39;/, "Investigation created for Incident $incident_id.");
-    my $investigation_id = $1;
+    $re = qr/.*Ticket (\d+) created in queue &#39;Investigations&#39;/;
+    $agent->content_like( $re, "Investigation created for Incident $incident_id." );
+    my ($investigation_id) = ($agent->content =~ $re);
 
     return ($incident_id, $investigation_id);
 }
