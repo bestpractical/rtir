@@ -30,8 +30,8 @@
     current_subtab => 'RTIR/Display.html?id='.$Ticket->id,
     Title => $Title &>
 
-% $duration ||= $ARGS{'duration'};
-<& /Elements/ShowLock, Ticket => $Ticket, duration => $duration &>
+% $Duration ||= $ARGS{'Duration'};
+<& /Elements/ShowLock, Ticket => $Ticket, Duration => $Duration &>
 <& /Elements/ListActions, actions => \@results &>
 <table border="0" cellpadding="0" cellspacing="2" width="100%">
 <tr>
@@ -209,7 +209,7 @@
 <%INIT>
 my ($name);
 my $Ticket = new RT::Ticket( $session{'CurrentUser'} );
-my $duration;
+my $Duration;
 
 my $QueueObj;
 unless ( $id eq 'new' ) {
@@ -269,11 +269,10 @@ if ( $id eq 'new' ) {
             }
         } elsif ( $ARGS{'Lock'} eq 'remove' ) {
             my $lock = $Ticket->Locked();
-            if ( !$lock ) {
+            unless($lock) {
                 push @results, loc('This ticket was not locked');
-
-                } elsif ( $lock->Content->{'User'} == $session{'CurrentUser'}->id ) {
-                $duration = time() - $lock->Content->{'Timestamp'};
+            } elsif ( $lock->Content->{'User'} == $session{'CurrentUser'}->id ) {
+                $Duration = time() - $lock->Content->{'Timestamp'};
 				$Ticket->Unlock();
                 push @results, loc('You have unlocked this ticket');
             } else {
