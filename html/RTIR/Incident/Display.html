@@ -29,7 +29,7 @@
     current_subtab => 'RTIR/Display.html?id='.$id,
     Title => loc("Incident #[_1]: [_2]", $id, $TicketObj->Subject) &>
     
-<& /RTIR/Elements/ShowLock, Ticket => $TicketObj &>
+<& /Elements/ShowLock, Ticket => $TicketObj &>
 <& /Elements/ListActions, actions => \@results &>
 
 <table border="0" cellpadding="0" cellspacing="2" width="100%"><tr><td valign="top" width="50%">
