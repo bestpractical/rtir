@@ -47,7 +47,9 @@
 &>
 % }
 
-<& /Elements/ShowLock, Ticket => $TicketObj, Unlock => 0 &> 
+% if($Split) {
+	<& /Elements/ShowLock, Ticket => $TicketObj, Unlock => 0 &>
+% }
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -411,6 +413,7 @@ if ( $ARGS{'Create'} ) {
 
     unless ( $checks_failure ) {
         $ARGS{'new-MemberOf'} = $parentvalue if $parentvalue;
+        $TicketObj->Unlock() if $TicketObj->Locked();
         return $m->comp( 'Display.html', %ARGS, SkipNotification => \@SkipNotification, results => \@results );
     }
     unshift @results, loc("Creation failed:");
