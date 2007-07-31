@@ -30,6 +30,7 @@
     Title => loc("Edit Incident #[_1]: [_2]", 
     $Ticket->Id, $Ticket->Subject) &>
 
+<& /Elements/ShowLock, Ticket => $Ticket, Unlock => 0 &> 
 <& /Elements/ListActions, actions => \@results &>
 
 % unless ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
@@ -153,6 +154,7 @@
 
 <%INIT>
 my $Ticket = LoadTicket($id);
+$Ticket->Lock();
 $id = $ARGS{'id'} = $Ticket->Id;
 
 my $CanRespond = 0;
@@ -194,7 +196,7 @@ if ( $SaveChanges && !$OnlySearchForPeople ) {
         push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
     }
     if ( !$checks_failure && RT->Config->Get('DisplayAfterEdit', $session{'CurrentUser'}) ) {
-        return $m->comp("/RTIR/Incident/Display.html", results => [@results], id => $id );
+        return $m->comp("/RTIR/Incident/Display.html", results => [@results], id => $id, Lock => 'remove' );
     }
 }
 

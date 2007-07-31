@@ -224,7 +224,7 @@
 
 <%INIT>
 my $Ticket = LoadTicket($id);
-$Ticket->Lock() unless $Ticket->Locked();
+$Ticket->Lock();
 $id = $ARGS{'id'} = $Ticket->Id;
 
 

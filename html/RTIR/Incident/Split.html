@@ -47,6 +47,7 @@
 
 <%INIT>
 my $TicketObj = LoadTicket($Ticket);
+$TicketObj->Lock();
 </%INIT>
 
 <%ARGS>

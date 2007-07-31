@@ -29,7 +29,8 @@
     current_subtab => 'RTIR/Display.html?id='.$id,
     Title => loc("Incident #[_1]: [_2]", $id, $TicketObj->Subject) &>
     
-<& /Elements/ShowLock, Ticket => $TicketObj &>
+% $Duration ||= $ARGS{'Duration'};
+<& /Elements/ShowLock, Ticket => $TicketObj, Duration => $Duration &>
 <& /Elements/ListActions, actions => \@results &>
 
 <table border="0" cellpadding="0" cellspacing="2" width="100%"><tr><td valign="top" width="50%">
@@ -258,6 +259,7 @@ my $take_or_steal = sub {
     return $msg || ();
 };
 
+my $Duration;
 my $deleted_links = 0;
 my $DoLinks = sub {
     my ($child, $parent) = @_;
@@ -328,19 +330,19 @@ if( 1 ) {
     if ( $ARGS{'Lock'} ) {
 
         if ( $ARGS{'Lock'} eq 'add' ) {
-            if ( $TicketObj->RT::IR::Ticket::Lock() ) {
+            if ( $TicketObj->Lock() ) {
                 push @results, loc('You now have a lock on this ticket');
             } else {
                 push @results, loc('Your attempt to lock this ticket failed');
 
             }
         } elsif ( $ARGS{'Lock'} eq 'remove' ) {
-            my $lock = $TicketObj->RT::IR::Ticket::Locked();
-            if ( !$lock ) {
+            my $lock = $TicketObj->Locked();
+            unless($lock) {
                 push @results, loc('This ticket was not locked');
-
-                } elsif ( $lock->Content->{'User'} == $session{'CurrentUser'}->id ) {
-                $TicketObj->RT::IR::Ticket::Unlock();
+            } elsif ( $lock->Content->{'User'} == $session{'CurrentUser'}->id ) {
+                $Duration = time() - $lock->Content->{'Timestamp'};
+				$TicketObj->Unlock();
                 push @results, loc('You have unlocked this ticket');
             } else {
                 push @results,
@@ -349,7 +351,7 @@ if( 1 ) {
             }
 
         } elsif ( $ARGS{'Lock'} eq 'break' ) {
-            $TicketObj->RT::IR::Ticket::BreakLock();
+            $TicketObj->BreakLock();
             push @results, loc('You have broken the lock on this ticket');
         }
     }

@@ -29,6 +29,10 @@
     Title => $Title,
     Ticket => $TicketObj &>
 
+% if($Split) {
+	<& /Elements/ShowLock, Ticket => $TicketObj, Unlock => 0 &>
+% }
+
 <& /Elements/ListActions, actions => \@results &>
 
 <%PERL>
@@ -271,6 +275,7 @@ if ( !$checks_failure && $CreateIncident ) {
         }
     }
     if( $inc_obj ) {
+    	$TicketObj->Unlock() if $TicketObj->Locked();
         return $m->comp('Display.html', id => $inc_obj->id, results => \@results );
     }
 }
