@@ -275,7 +275,7 @@ if ( !$checks_failure && $CreateIncident ) {
         }
     }
     if( $inc_obj ) {
-    	$TicketObj->Unlock() if $TicketObj->Locked();
+    	$TicketObj->Unlock() if $TicketObj && $TicketObj->Locked();
         return $m->comp('Display.html', id => $inc_obj->id, results => \@results );
     }
 }
