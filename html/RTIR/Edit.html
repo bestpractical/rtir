@@ -285,7 +285,13 @@ if ( $SaveChanges && !$OnlySearchForPeople ) {
         push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
     }
     if ( !$checks_failure && RT->Config->Get('DisplayAfterEdit', $session{'CurrentUser'}) ) {
-        return $m->comp("/RTIR/Display.html", results => [@results], id => $id, Lock => 'remove');
+    	my $Duration;
+    	if(my $lock = $Ticket->Locked()) {
+    		$Duration = time() - $lock->Content->{'Timestamp'};
+    		$Ticket->Unlock();
+    	}
+    		
+        return $m->comp("/RTIR/Display.html", results => [@results], id => $id, Duration => $Duration);
     }
 }
  

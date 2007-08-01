@@ -208,7 +208,13 @@ if ( $SubmitTicket ) {
         push @results, loc("State of the Incident left unchanged; not all children were updated");
     }
 
-    return $m->comp("Display.html", results => \@results, id => $id, Lock => 'remove');
+	my $Duration;
+	if(my $lock = $Ticket->Locked()) {
+		$Duration = time() - $lock->Content->{'Timestamp'};
+		$Ticket->Unlock();
+	}
+
+    return $m->comp("Display.html", results => \@results, id => $id, Duration => $Duration);
 }
 
 # XXX, BLOODY-DIRTY-EVIL HACK: when we load the page first time we should

@@ -261,7 +261,7 @@ if ( $id eq 'new' ) {
     if ( $ARGS{'Lock'} ) {
 
         if ( $ARGS{'Lock'} eq 'add' ) {
-            if ( $Ticket->Lock() ) {
+            if ( $Ticket->Lock(1) ) {
                 push @results, loc('You now have a lock on this ticket');
             } else {
                 push @results, loc('Your attempt to lock this ticket failed');
@@ -273,7 +273,7 @@ if ( $id eq 'new' ) {
                 push @results, loc('This ticket was not locked');
             } elsif ( $lock->Content->{'User'} == $session{'CurrentUser'}->id ) {
                 $Duration = time() - $lock->Content->{'Timestamp'};
-				$Ticket->Unlock();
+				$Ticket->Unlock(1);
                 push @results, loc('You have unlocked this ticket');
             } else {
                 push @results,
