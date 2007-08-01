@@ -168,8 +168,10 @@ $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
 $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 
 if ( exists $ARGS{SubmitTicket} ) {
-	$ARGS{'Lock'} = 'remove';
-    return $m->comp('/RTIR/Display.html', %ARGS);
+	my $lock = $Ticket->Locked();
+	my $Duration = time() - $lock->Content->{'Timestamp'} if $lock;
+	$Ticket->Unlock();
+    return $m->comp('/RTIR/Display.html', Duration => $Duration, %ARGS);
 }
 
 </%INIT>
