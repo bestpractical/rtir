@@ -209,9 +209,9 @@ if ( $SubmitTicket ) {
     }
 
 	my $Duration;
-	if(my $lock = $Ticket->Locked()) {
+	if(my $lock = $IncidentObj->Locked()) {
 		$Duration = time() - $lock->Content->{'Timestamp'};
-		$Ticket->Unlock();
+		$IncidentObj->Unlock();
 	}
 
     return $m->comp("Display.html", results => \@results, id => $id, Duration => $Duration);
