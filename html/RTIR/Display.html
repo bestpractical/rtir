@@ -31,7 +31,7 @@
     Title => $Title &>
 
 % $Duration ||= $ARGS{'Duration'};
-<& /Elements/ShowLock, Ticket => $Ticket, Duration => $Duration &>
+<& /Elements/ShowLock, Ticket => $Ticket, Duration => $Duration, Id => $ARGS{'Id'} &>
 <& /Elements/ListActions, actions => \@results &>
 <table border="0" cellpadding="0" cellspacing="2" width="100%">
 <tr>

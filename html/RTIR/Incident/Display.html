@@ -30,7 +30,7 @@
     Title => loc("Incident #[_1]: [_2]", $id, $TicketObj->Subject) &>
     
 % $Duration ||= $ARGS{'Duration'};
-<& /Elements/ShowLock, Ticket => $TicketObj, Duration => $Duration &>
+<& /Elements/ShowLock, Ticket => $TicketObj, Duration => $Duration, Id => $ARGS{'Id'} &>
 <& /Elements/ListActions, actions => \@results &>
 
 <table border="0" cellpadding="0" cellspacing="2" width="100%"><tr><td valign="top" width="50%">

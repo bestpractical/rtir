@@ -29,10 +29,8 @@
     Title => $Title,
     Ticket => $TicketObj &>
 
-% if($Split) {
-	<& /Elements/ShowLock, Ticket => $TicketObj, Unlock => 0 &>
-% }
 
+<& /Elements/ShowLock, Ticket => $TicketObj, Unlock => 0, Id => $Id, Duration => $Duration &>
 <& /Elements/ListActions, actions => \@results &>
 
 <%PERL>
@@ -206,11 +204,25 @@ my @results;
 
 # if there isn't a subject, but there is a child, use that one
 my $ChildObj;
+my $Duration;
+my $Id;
 if ( $Child ) {
     $ChildObj = LoadTicket( $Child );
     $Child = $ARGS{'Child'} = $ChildObj->id;
     $ARGS{'Subject'} ||= $ChildObj->Subject;
+    if($ARGS{'CreateIncident'} || $ARGS{'CreateWithInvestigation'}) {
+		my $lock = $ChildObj->Unlock('Take');
+		$Duration = time() - $lock->Content->{'Timestamp'} if $lock;
+	}
+	else 
+	{
+		$ChildObj->Lock('Take');
+	}
+	$Id = $ARGS{'Child'};
 }
+
+$Id = $ARGS{'Ticket'} if $Split;
+
 
 my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
 $QueueObj->Load( 'Incidents' ) || Abort( loc("Queue could not be loaded.") );
@@ -275,8 +287,8 @@ if ( !$checks_failure && $CreateIncident ) {
         }
     }
     if( $inc_obj ) {
-    	$TicketObj->Unlock() if $TicketObj;
-        return $m->comp('Display.html', id => $inc_obj->id, results => \@results );
+    	$Id = $ChildObj->id if $ChildObj;
+        return $m->comp('Display.html', id => $inc_obj->id, Duration => $Duration, Id => $Id, results => \@results );
     }
 }
 
