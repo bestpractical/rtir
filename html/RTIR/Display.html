@@ -246,7 +246,12 @@ if ( $id eq 'new' ) {
         my ($status, $msg) = $Ticket->$action();
         push @results, $msg;
         # If they succeeded in taking the ticket, they should also get a lock
-        if ($status && $action =~  /^(?:Take|Steal)$/) { $ARGS{'Lock'} = 'add'; }
+        if ($status && $action =~  /^(?:Take|Steal)$/) {
+        	if($Type eq 'Report') {
+        		$Ticket->Lock('IR');
+        		push @results, 'You have a lock on this report until you link it to an incident';
+        	}
+        }
     }
 
 
@@ -261,7 +266,7 @@ if ( $id eq 'new' ) {
     if ( $ARGS{'Lock'} ) {
 
         if ( $ARGS{'Lock'} eq 'add' ) {
-            if ( $Ticket->Lock(1) ) {
+            if ( $Ticket->Lock('Hard') ) {
                 push @results, loc('You now have a lock on this ticket');
             } else {
                 push @results, loc('Your attempt to lock this ticket failed');
@@ -273,7 +278,7 @@ if ( $id eq 'new' ) {
                 push @results, loc('This ticket was not locked');
             } elsif ( $lock->Content->{'User'} == $session{'CurrentUser'}->id ) {
                 $Duration = time() - $lock->Content->{'Timestamp'};
-				$Ticket->Unlock(1);
+				$Ticket->Unlock('Hard');
                 push @results, loc('You have unlocked this ticket');
             } else {
                 push @results,
