@@ -38,6 +38,8 @@
    current_subtab => "RTIR/Search/Refine.html",
 &>
 
+<& /Elements/ShowLock, Ticket => $ChildObj, Unlock => 0 &> 
+
 <form action="<% RT->Config->Get('WebPath') %>/RTIR/Incident/Display.html" method="post">
 <input type="hidden" name="Child" value="<% $id %>" />
 
@@ -65,6 +67,7 @@
 
 <%INIT>
 my $ChildObj = LoadTicket($id);
+$ChildObj->Lock('Take');
 $ARGS{'id'} = $id = $ChildObj->id;
 
 my $Type = RT::IR::TicketType( Ticket => $ChildObj );

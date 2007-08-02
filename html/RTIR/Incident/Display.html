@@ -250,6 +250,14 @@ if ($SelectedTicket) {
 }
 Abort('No incident specified') unless $id;
 
+if($Child) {
+	my $ChildObj = RT::Ticket->new( $session{'CurrentUser'} );
+    $ChildObj->Load($Child);
+    $ChildObj->Unlock('Take');
+}
+    
+
+
 my $take_or_steal = sub {
     my $owner = $_[0]->Owner;
     return () if $owner == $session{'CurrentUser'}->id;

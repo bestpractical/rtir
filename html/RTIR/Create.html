@@ -331,6 +331,17 @@
 my $QueueObj = new RT::Queue( $session{'CurrentUser'} );
 $QueueObj->Load( $Queue ) || Abort( loc("Queue could not be loaded.") );
 
+if($ARGS{'Child'}) {
+	my $ChildObj = LoadTicket($ARGS{'Child'});
+	if($ARGS{'CreateIncident'} || $ARGS{'CreateWithInvestigation'}) {
+		$ChildObj->Unlock('Take');
+	}
+	else 
+	{
+		$ChildObj->Lock('Take');
+	}
+}
+
 my $Type = RT::IR::TicketType( Queue => $Queue );
 if ($Type eq 'Block' && RT->Config->Get('RTIR_DisableBlocksQueue') ) {
     Abort(loc("Blocks queue is disabled via config file"));
