@@ -72,7 +72,7 @@ $id = $ARGS{'id'} = $Ticket->id;
 
 my (@results);
 if ( $SelectedTicket ) {
-	$Ticket->Unlock() if $Ticket->Locked();
+	$Ticket->Unlock();
 	
     my $MergeTicket = LoadTicket( $SelectedTicket );
 
