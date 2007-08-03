@@ -20,12 +20,12 @@ my $report = create_ir($agent, {Subject => $SUBJECT, Content => "bla" });
     is($ir_obj->Id, $report, "report has right ID");
     is($ir_obj->Subject, $SUBJECT, "subject is right");
 
-    ok(!RT::IR::Ticket::Locked($ir_obj), "Starts off unlocked");
-    ok(RT::IR::Ticket::Lock($ir_obj), "Then we lock it");
-    ok(RT::IR::Ticket::Locked($ir_obj), "Then it's locked");
-    ok(!RT::IR::Ticket::Lock($ir_obj), "Can't lock a locked ticket");
-    ok(RT::IR::Ticket::Unlock($ir_obj), "Then we unlock it");
-    ok(!RT::IR::Ticket::Locked($ir_obj), "Ends unlocked");
+    ok(!$ir_obj->Locked, "Starts off unlocked");
+    ok($ir_obj->Lock, "Then we lock it");
+    ok($ir_obj->Locked, "Then it's locked");
+    ok(!$ir_obj->Lock, "Can't lock a locked ticket");
+    ok($ir_obj->Unlock, "Then we unlock it");
+    ok(!$ir_obj->Locked, "Ends unlocked");
 
 }
 
