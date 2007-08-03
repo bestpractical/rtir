@@ -31,7 +31,7 @@
     Title => $Title &>
 
 % $Duration ||= $ARGS{'Duration'};
-<& /Elements/ShowLock, Ticket => $Ticket, Duration => $Duration, Id => $ARGS{'Id'} &>
+<& /Elements/ShowLock, Ticket => $Ticket, Duration => $Duration, Id => $ARGS{'Id'}, Unlock => $Unlock &>
 <& /Elements/ListActions, actions => \@results &>
 <table border="0" cellpadding="0" cellspacing="2" width="100%">
 <tr>
@@ -210,6 +210,7 @@
 my ($name);
 my $Ticket = new RT::Ticket( $session{'CurrentUser'} );
 my $Duration;
+my $Unlock = 1;
 
 my $QueueObj;
 unless ( $id eq 'new' ) {
@@ -248,7 +249,8 @@ if ( $id eq 'new' ) {
         # If they succeeded in taking the ticket, they should also get a lock
         if ($status && $action =~  /^(?:Take|Steal)$/) {
         	if($Type eq 'Report') {
-        		$Ticket->Lock('IR');
+        		$Ticket->Lock('Take');
+        		$Unlock = 0;
         		push @results, 'You have a lock on this report until you link it to an incident';
         	}
         }

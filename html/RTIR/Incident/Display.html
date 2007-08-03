@@ -30,7 +30,8 @@
     Title => loc("Incident #[_1]: [_2]", $id, $TicketObj->Subject) &>
     
 % $Duration ||= $ARGS{'Duration'};
-<& /Elements/ShowLock, Ticket => $TicketObj, Duration => $Duration, Id => $ARGS{'Id'} &>
+% my $Id = $ARGS{'Id'} || $ARGS{'Child'};
+<& /Elements/ShowLock, Ticket => $TicketObj, Duration => $Duration, Id => $Id &>
 <& /Elements/ListActions, actions => \@results &>
 
 <table border="0" cellpadding="0" cellspacing="2" width="100%"><tr><td valign="top" width="50%">
@@ -244,6 +245,8 @@
     ForwardPath => RT->Config->Get('WebPath') ."/RTIR/Forward.html",
 &>
 <%INIT>
+my $Duration;
+
 if ($SelectedTicket) {
     $id = $SelectedTicket;
     $ARGS{'Status'} = "open";
@@ -253,7 +256,8 @@ Abort('No incident specified') unless $id;
 if($Child) {
 	my $ChildObj = RT::Ticket->new( $session{'CurrentUser'} );
     $ChildObj->Load($Child);
-    $ChildObj->Unlock('Take');
+    my $lock =$ChildObj->Unlock('Take');
+    $Duration = time() - $lock->Content->{'Timestamp'} if $lock;
 }
     
 
@@ -267,7 +271,6 @@ my $take_or_steal = sub {
     return $msg || ();
 };
 
-my $Duration;
 my $deleted_links = 0;
 my $DoLinks = sub {
     my ($child, $parent) = @_;

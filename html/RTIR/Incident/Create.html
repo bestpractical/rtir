@@ -221,7 +221,11 @@ if ( $Child ) {
 	$Id = $ARGS{'Child'};
 }
 
-$Id = $ARGS{'Ticket'} if $Split;
+if($Split && ($ARGS{'CreateIncident'} || $ARGS {'CreateWithInvestigation'})) {
+	$Id = $ARGS{'Ticket'};
+	my $lock = $TicketObj->Unlock();
+	$Duration = time() - $lock->Content->{'Timestamp'} if $lock;
+}
 
 
 my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
