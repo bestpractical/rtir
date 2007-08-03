@@ -161,7 +161,7 @@ unless ( exists $ARGS{'Content'} ) {
     <td><input size="10" name="Starts" value="<% $ARGS{'Starts'} || '' %>" /></td></tr>
     
     <tr><td align="right"><&|/l&>Due</&>:</td>
-	<td><input size="10" name="Due" value="<% $ARGS{'Due'} || '' %>" /></td></tr>
+    <td><input size="10" name="Due" value="<% $ARGS{'Due'} || '' %>" /></td></tr>
 
 </table>
 </&>
@@ -211,20 +211,20 @@ if ( $Child ) {
     $Child = $ARGS{'Child'} = $ChildObj->id;
     $ARGS{'Subject'} ||= $ChildObj->Subject;
     if($ARGS{'CreateIncident'} || $ARGS{'CreateWithInvestigation'}) {
-		my $lock = $ChildObj->Unlock('Take');
-		$Duration = time() - $lock->Content->{'Timestamp'} if $lock;
-	}
-	else 
-	{
-		$ChildObj->Lock('Take');
-	}
-	$Id = $ARGS{'Child'};
+        my $lock = $ChildObj->Unlock('Take');
+        $Duration = time() - $lock->Content->{'Timestamp'} if $lock;
+    }
+    else 
+    {
+        $ChildObj->Lock('Take');
+    }
+    $Id = $ARGS{'Child'};
 }
 
 if($Split && ($ARGS{'CreateIncident'} || $ARGS {'CreateWithInvestigation'})) {
-	$Id = $ARGS{'Ticket'};
-	my $lock = $TicketObj->Unlock();
-	$Duration = time() - $lock->Content->{'Timestamp'} if $lock;
+    $Id = $ARGS{'Ticket'};
+    my $lock = $TicketObj->Unlock();
+    $Duration = time() - $lock->Content->{'Timestamp'} if $lock;
 }
 
 
@@ -291,7 +291,7 @@ if ( !$checks_failure && $CreateIncident ) {
         }
     }
     if( $inc_obj ) {
-    	$Id = $ChildObj->id if $ChildObj;
+        $Id = $ChildObj->id if $ChildObj;
         return $m->comp('Display.html', id => $inc_obj->id, Duration => $Duration, Id => $Id, results => \@results );
     }
 }
