@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 170;
+use Test::More tests => 180;
 no warnings 'once';
 
 require "t/rtir-test.pl";
@@ -57,7 +57,7 @@ diag "fetch list of constituencies and check that groups exist" if $ENV{'TEST_VE
 my $agent = default_agent();
 my $rtir_user = rtir_user();
 
-diag "check that there is option to set 'no value' on create" if $ENV{'TEST_VERBOSE'};
+diag "check that there is no option to set 'no value' on create" if $ENV{'TEST_VERBOSE'};
 {
     my $default = RT->Config->Get('_RTIR_Constituency_default');
     foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
@@ -67,6 +67,9 @@ diag "check that there is option to set 'no value' on create" if $ENV{'TEST_VERB
 
         my $value = $agent->form_number(3)->value("Object-RT::Ticket--CustomField-". $cf->id ."-Values");
         is lc $value, lc $default, 'correct value is selected';
+
+        my @values = $agent->form_number(3)->param("Object-RT::Ticket--CustomField-". $cf->id ."-Values");
+        ok !grep( $_ eq '', @values ), 'have no empty value for selection';
     }
 }
 
@@ -75,6 +78,12 @@ diag "create a ticket via web and set field" if $ENV{'TEST_VERBOSE'};
     my $i = 0;
     my $incident_id; # block couldn't be created without incident id
     foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+        #XXX: we skip blocks here, as they are always connected to
+        # an incident and the current implementation comes into play
+        # we havn't decided what to do with inheritance to implement
+        # the right test
+        next if $queue eq 'Blocks';
+
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $val = 'GOVNET';
@@ -90,11 +99,30 @@ diag "create a ticket via web and set field" if $ENV{'TEST_VERBOSE'};
 
         display_ticket($agent, $id);
         $agent->content_like( qr/\Q$val/, "value on the page" );
+        DBIx::SearchBuilder::Record::Cachable::FlushCache();
 
         my $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $id );
         ok( $ticket->id, 'loaded ticket' );
         is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), $val, 'correct value' );
+
+diag "check that we can edit value" if $ENV{'TEST_VERBOSE'};
+        $agent->follow_link( text => 'Edit' );
+        $agent->content_like(qr/Constituency/, 'CF on the page');
+
+        my $value = $agent->form_number(3)->value("Object-RT::Ticket-$id-CustomField-". $cf->id ."-Values");
+        is lc $value, 'govnet', 'correct value is selected';
+
+        $val = 'EDUNET';
+        $agent->select("Object-RT::Ticket-$id-CustomField-". $cf->id ."-Values" => $val );
+        $agent->click('SaveChanges');
+        $agent->content_like(qr/Constituency .* changed to \Q$val/mi, 'field is changed') or diag $agent->content;
+        DBIx::SearchBuilder::Record::Cachable::FlushCache();
+
+        $ticket = RT::Ticket->new( $RT::SystemUser );
+        $ticket->Load( $id );
+        ok( $ticket->id, 'loaded ticket' );
+        is( lc $ticket->FirstCustomFieldValue('_RTIR_Constituency'), lc $val, 'correct value' );
     }
 }
 
