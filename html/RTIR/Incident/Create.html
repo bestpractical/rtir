@@ -201,6 +201,7 @@ unless ( exists $ARGS{'Content'} ) {
 
 <%INIT>
 my @results;
+my $Duration;
 
 # if there isn't a subject, but there is a child, use that one
 my $ChildObj;
@@ -289,7 +290,6 @@ if ( !$checks_failure && $CreateIncident ) {
     if( $inc_obj ) {
         $Id = $ChildObj->id if $ChildObj;
         my $lock = $ChildObj->Unlock('Take');
-        my $Duration
         $Duration = time() - $lock->Content->{'Timestamp'} if $lock;
         return $m->comp('Display.html', id => $inc_obj->id, Duration => $Duration, Id => $Id, results => \@results );
     }
