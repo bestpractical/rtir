@@ -204,18 +204,14 @@ my @results;
 
 # if there isn't a subject, but there is a child, use that one
 my $ChildObj;
-my $Duration;
 my $Id;
 if ( $Child ) {
     $ChildObj = LoadTicket( $Child );
     $Child = $ARGS{'Child'} = $ChildObj->id;
     $ARGS{'Subject'} ||= $ChildObj->Subject;
-    if($ARGS{'CreateIncident'} || $ARGS{'CreateWithInvestigation'}) {
-        my $lock = $ChildObj->Unlock('Take');
-        $Duration = time() - $lock->Content->{'Timestamp'} if $lock;
-    }
-    else 
-    {
+    # We don't want to bother even trying to lock if the form has been submitted
+    # (it will have been locked upon first rendering of the creation page)
+    unless($ARGS{'CreateIncident'} || $ARGS{'CreateWithInvestigation'}) {
         $ChildObj->Lock();
     }
     $Id = $ARGS{'Child'};
@@ -292,6 +288,9 @@ if ( !$checks_failure && $CreateIncident ) {
     }
     if( $inc_obj ) {
         $Id = $ChildObj->id if $ChildObj;
+        my $lock = $ChildObj->Unlock('Take');
+        my $Duration
+        $Duration = time() - $lock->Content->{'Timestamp'} if $lock;
         return $m->comp('Display.html', id => $inc_obj->id, Duration => $Duration, Id => $Id, results => \@results );
     }
 }

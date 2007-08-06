@@ -67,7 +67,7 @@
 
 <%INIT>
 my $ChildObj = LoadTicket($id);
-$ChildObj->Lock('Take');
+$ChildObj->Lock();
 $ARGS{'id'} = $id = $ChildObj->id;
 
 my $Type = RT::IR::TicketType( Ticket => $ChildObj );
