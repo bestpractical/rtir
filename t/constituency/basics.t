@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 154;
+use Test::More tests => 170;
 no warnings 'once';
 
 require "t/rtir-test.pl";
@@ -56,6 +56,19 @@ diag "fetch list of constituencies and check that groups exist" if $ENV{'TEST_VE
 
 my $agent = default_agent();
 my $rtir_user = rtir_user();
+
+diag "check that there is option to set 'no value' on create" if $ENV{'TEST_VERBOSE'};
+{
+    my $default = RT->Config->Get('_RTIR_Constituency_default');
+    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+        diag "'$queue' queue" if $ENV{'TEST_VERBOSE'};
+
+        goto_create_rtir_ticket( $agent, $queue );
+
+        my $value = $agent->form_number(3)->value("Object-RT::Ticket--CustomField-". $cf->id ."-Values");
+        is lc $value, lc $default, 'correct value is selected';
+    }
+}
 
 diag "create a ticket via web and set field" if $ENV{'TEST_VERBOSE'};
 {
@@ -126,8 +139,6 @@ diag "edit constituency on the IR and check that change is cascading" if $ENV{'T
     $ticket->Load( $ir_id );
     ok( $ticket->id, 'loaded ticket' );
     is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value' );
-
-    
 }
 
 diag "create an incident under GOVNET and create a new IR linked to the incident" if $ENV{'TEST_VERBOSE'};

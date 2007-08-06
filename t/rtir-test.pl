@@ -151,12 +151,9 @@ sub create_block {
     return create_rtir_ticket( shift, 'Blocks', @_ );
 }
 
-sub create_rtir_ticket
-{
+sub goto_create_rtir_ticket {
     my $agent = shift;
     my $queue = shift;
-    my $fields = shift || {};
-    my $cfs = shift || {};
 
     my %type = (
         'Incident Reports' => 'Report',
@@ -172,7 +169,16 @@ sub create_rtir_ticket
 
     # set the form
     $agent->form_number(3);
+}
 
+sub create_rtir_ticket
+{
+    my $agent = shift;
+    my $queue = shift;
+    my $fields = shift || {};
+    my $cfs = shift || {};
+
+    goto_create_rtir_ticket($agent, $queue);
 
     $fields->{'Requestors'} ||= $RTIR_TEST_USER if $queue eq 'Investigations';
     while (my ($f, $v) = each %$fields) {
@@ -196,7 +202,7 @@ sub create_rtir_ticket
 
     # Now see if we succeeded
     my $id = get_ticket_id($agent);
-    ok ($id, $type{$queue} . " $id created successfully.");
+    ok ($id, "Created ticket #$id in queue '$queue' successfully.");
 
     return $id;
 }
