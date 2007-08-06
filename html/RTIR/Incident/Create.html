@@ -288,9 +288,11 @@ if ( !$checks_failure && $CreateIncident ) {
         }
     }
     if( $inc_obj ) {
-        $Id = $ChildObj->id if $ChildObj;
-        my $lock = $ChildObj->Unlock('Take');
-        $Duration = time() - $lock->Content->{'Timestamp'} if $lock;
+        if($ChildObj) {
+            $Id = $ChildObj->id;
+            my $lock = $ChildObj->Unlock('Take');
+            $Duration = time() - $lock->Content->{'Timestamp'} if $lock;
+        }
         return $m->comp('Display.html', id => $inc_obj->id, Duration => $Duration, Id => $Id, results => \@results );
     }
 }
