@@ -196,8 +196,13 @@ sub grant_group_queue_rights {
         foreach my $right  (@rights) {
             my ($val,$msg) =  $group->PrincipalObj->GrantRight(Right => $right, Object=>$queue);
             debug "\t$right\n";
-            unless ($val) {
-                die "Failed to grant $right to ".$group->name. " for Queue ". $queue->Name;
+            if ( $val ) {
+                debug "\t...done.";
+            }
+            elsif ( $msg =~ /That principal already has that right/i ) {
+                debug "\t...skipped, already granted.\n";
+            } else {
+                die "Failed to grant $right to ". $group->Name ." for Queue ". $queue->Name;
             }
         }
     } 
@@ -215,8 +220,13 @@ sub grant_group_cf_rights {
 
         foreach my $right  (@rights) {
             my ($val,$msg) =  $group->PrincipalObj->GrantRight(Right => $right, Object=>$cf);
-            print "\t$right\n";
-            unless ($val) {
+            debug "\t$right";
+            if ( $val ) {
+                debug "\t...done.";
+            }
+            elsif ( $msg =~ /That principal already has that right/i ) {
+                debug "\t...skipped, already granted.\n";
+            } else {
                 die "Failed to grant $right to ".$group->Name. " for Custom Field ". $cf->Name
                     .".\nError: $msg";
             }
