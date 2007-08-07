@@ -6,12 +6,10 @@ add_constituency - add or update constitiuensies
 
 =head1 SYNOPSIS
 
+    add_constituency --help
     add_constituency --name <constituency> [options]
     add_constituency --name EDUNET
-    add_constituency --name EDUNET --verbose
-    add_constituency --name EDUNET --corespond 'edunet@example.com' --verbose
-
-Run `perldoc add_constituency` to gte more info about the tool.
+    add_constituency --name EDUNET --corespond 'edunet@example.com' --quiet
 
 =head1 OPTIONS
 
@@ -29,9 +27,9 @@ Set/update correspond address.
 
 Set/update comment address.
 
-=item --verbose
+=item --quiet
 
-Enable verbose output.
+Disable output.
 
 =back
 
@@ -57,19 +55,22 @@ RT::Init;
 my %opt;
 
 sub debug(@) {
-    return unless $opt{'verbose'};
+    return if $opt{'quiet'};
     print @_;
     print "\n" if $_[-1] && $_[-1] !~ /\n$/s;
 };
 
 use Getopt::Long;
-GetOptions( \%opt, "name=s", "correspond=s", "comment=s", "help", "verbose" );
+GetOptions( \%opt, "name=s", "correspond=s", "comment=s", "help", "quiet" );
 
 if ( $opt{'help'} ) {
     require Pod::Usage;
     import Pod::Usage;
-    pod2usage("RTIR Constituencies management tool\n");
-    exit 1;
+    pod2usage(
+        -msg => "RTIR Constituencies management tool\n",
+        -verbose => 2,
+        -exitval => 0,
+    );
 }
 
 my $constituency = $opt{'name'};
@@ -79,8 +80,12 @@ $constituency =~ s/^\s+//;
 $constituency =~ s/\s+$//;
 $constituency =~ s/\s+/ /gs;
 unless ( defined $constituency && length $constituency ) {
-    print STDERR "Name of constituency is a mandatory argument\n";
-    exit 1;
+    require Pod::Usage;
+    import Pod::Usage;
+    pod2usage(
+        -msg => "Name of constituency is a mandatory argument\n",
+        -exitval => 1,
+    );
 }
 
 
