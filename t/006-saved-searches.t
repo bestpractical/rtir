@@ -35,7 +35,7 @@ ok_and_content_like($agent, qr{Privacy:\s*My saved searches}s, "privacy is fixed
 $agent->form_name("BuildQuery");
 $agent->field(ValueOfid => 200);
 $agent->click("AddClause");
-ok_and_content_like($agent, qr/AND id &lt; &#39;200/, "added another clause");
+ok_and_content_like($agent, qr/AND id &lt; 200/, "added another clause");
 
 $agent->form_name("BuildQuery");
 is($agent->value('SavedSearchDescription'), $search1, "name is correct");
