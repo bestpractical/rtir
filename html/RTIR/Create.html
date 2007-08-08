@@ -145,11 +145,14 @@
   <tr>
     <td class="labeltop"><&|/l&>Constituency</&>:</td>
     <td class="value" colspan="2">
-% unless ( $Incident ) {
+% if ( !$Incident || RT->Config->Get('_RTIR_Constituency_Propagation') eq 'no' ) {
+% my $default;
+% $default = $IncidentObj->FirstCustomFieldValue('_RTIR_Constituency') if $Incident;
+% $default ||= scalar RT->Config->Get('_RTIR_Constituency_default');
       <& /RTIR/Elements/EditRTIRField, 
          QueueObj => $QueueObj, 
          Name     => 'Constituency',
-         Default  => scalar RT->Config->Get('_RTIR_Constituency_default') &>
+         Default  => $default &>
 % } else {
 % #TODO: hacks, we need way to define CF value on Create, but don't allow user to change it
 %   my $cf = RT::CustomField->new( $RT::SystemUser );

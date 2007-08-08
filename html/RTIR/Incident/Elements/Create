@@ -39,11 +39,14 @@
 
 <tr><td class="label"><&|/l&>Constituency</&>:</td>
 <td class="value">
-% unless ( $ChildObj ) {
+% if ( !$ChildObj || RT->Config->Get('_RTIR_Constituency_Propagation') eq 'no' ) {
+% my $default;
+% $default = $ChildObj->FirstCustomFieldValue('_RTIR_Constituency') if $ChildObj;
+% $default ||= scalar RT->Config->Get('_RTIR_Constituency_default');
 <& /RTIR/Elements/EditRTIRField,
     QueueObj => $QueueObj,
     Name     => 'Constituency',
-    Default  => scalar RT->Config->Get('_RTIR_Constituency_default'),
+    Default  => $default,
     Rows     => 1,
 &>
 % } else {
