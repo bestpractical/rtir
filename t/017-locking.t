@@ -2,8 +2,8 @@
 
 use strict;
 use warnings;
-#use Test::More qw/no_plan/;
-use Test::More tests => 90;
+use Test::More qw/no_plan/;
+#use Test::More tests => 90;
 use HTTP::Cookies;
 
 require "t/rtir-test.pl";
@@ -96,7 +96,6 @@ my $report = create_ir($agent, {Subject => $SUBJECT, Content => "bla", Owner => 
     $agent->follow_link_ok({text => 'Split', n => '1'}, "Followed Split link");
     $agent->content_like(qr{<div class="locked-by-you">\s*You have locked this ticket}ims, "Split page is auto locked");
     $agent->form_number(3);
-    $agent->field('Owner', $nobody);
     sleep 5;
     $agent->click('Create');
     diag("Submitted Split form") if $ENV{'TEST_VERBOSE'};
@@ -104,16 +103,25 @@ my $report = create_ir($agent, {Subject => $SUBJECT, Content => "bla", Owner => 
     if($agent->content =~ qr{<li>Ticket (\d+) created in queue.*</li>}i) {
         $ir_id2 = $1;
     }
-    #display_ticket($agent, $report);
-    #$agent->follow_link_ok({text => 'Merge', n => '1'}, "Followed Merge link");
-    #$agent->content_like(qr{<div class="locked-by-you">\s*You have locked this ticket\.}ims, "Merge page is locked");
-    #$agent->form_number(3);
+    display_ticket($agent, $report);
+    $agent->follow_link_ok({text => 'Merge', n => '1'}, "Followed Merge link");
+    $agent->content_like(qr{<div class="locked-by-you">\s*You have locked this ticket\.}ims, "Merge page is locked");
+    $agent->form_number(3);
     
-    #$agent->field("SelectedTicket", $ir_id2);
-    #$agent->submit();
-    #diag("Submitted Merge form") if $ENV{'TEST_VERBOSE'};
-    #$agent->content_unlike(qr{<div class="locked-by-you">\s*You have locked this ticket\.}ims, "Lock from $ir_id2 not moved to $report");
+    $agent->field("SelectedTicket", $ir_id2);
+    $agent->submit();
+    diag("Submitted Merge form") if $ENV{'TEST_VERBOSE'};
+    $agent->content_unlike(qr{<div class="locked-by-you">\s*You have locked this ticket\.}ims, "Lock from $ir_id2 not moved to $report");
     $report = $ir_id2;
+   
+    #Now we need to set the owner to Nobody so that we can take the ticket for the Take tests
+    $agent->follow_link_ok({text => 'Edit', n => '1'}, "Followed Edit link");
+    $agent->form_number(3);
+    $agent->field('Owner', $nobody);
+    $agent->click('SaveChanges');
+    $agent->content_like(qr{<li>Owner changed from \w+ to Nobody</li>}, "Owner changed to Nobody");
+
+
 
     #Take lock
     diag("Testing take lock") if $ENV{'TEST_VERBOSE'};
@@ -136,8 +144,6 @@ my $report = create_ir($agent, {Subject => $SUBJECT, Content => "bla", Owner => 
 
     go_home($root);
     display_ticket($root, $report);
-    #open OF, ">/home/toth/test_html/result_content.html" or die;
-    #print OF $root->content;
     $root->content_like(qr{<div class="locked">}, "IR #$report is locked by another");
     $root->follow_link_ok({text => 'Break lock', n => '1'}, "Breaking lock on IR #$report");
     $root->content_like(qr{<li>You have broken the lock on this ticket</li>}, "Lock on IR #$report is broken");
