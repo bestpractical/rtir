@@ -65,13 +65,21 @@ Set($_RTIR_IP_default,                  "");
 Set($_RTIR_Netmask_default,             "");
 Set($_RTIR_Port_default,                "");
 Set($_RTIR_WhereBlocked_default,        "");
-Set($_RTIR_Constituency_default,        "EDUNET");
 Set($_RTIR_Function_default,            "");
 Set($_RTIR_Classification_default,      "");
 Set($_RTIR_Description_default,         "");
 Set($_RTIR_Resolution_resolved_default, "successfully resolved");
 Set($_RTIR_Resolution_rejected_default, "no resolution reached");
 
+# Constituency behaviour
+# read more about constituencies in docs/Constituency.pod
+#
+# default value
+Set( $_RTIR_Constituency_default,        "EDUNET" );
+
+# Constituency propagation algorithm
+# valid values are 'no', 'inherit', 'reject'
+Set( $_RTIR_Constituency_Propagation,    'no' );
 
 # Set the Business Hours for your organization
 # if left unset, defaults are Monday through Friday 09:00 to 18:00

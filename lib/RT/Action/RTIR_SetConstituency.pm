@@ -24,21 +24,26 @@ sub Commit {
     my $self = shift;
     my $ticket = $self->TicketObj;
 
-    my $transaction = $self->TransactionObj;
-    if ( $transaction->Type eq 'Create' ) {
+    my $type = $self->TransactionObj->Type;
+    if ( $type eq 'Create' ) {
         my $status = $self->SetConstituencyOnCreate;
         return $status if defined $status;
     }
 
-    my $constituency = $ticket->FirstCustomFieldValue('_RTIR_Constituency');
+    my $propagation = lc RT->Config->Get('_RTIR_Constituency_Propagation');
+    if ( $type eq 'AddLink' && $propagation eq 'reject' ) {
+        #XXX: check here that linked tickets have the same constituency
+    }
 
-    # change owner of child Incident Reports, Investigations, Blocks
+    return 1 unless $propagation eq 'inherit';
+
     my $query =  "( Queue = 'Incidents'"
         ." OR Queue = 'Incident Reports'"
         ." OR Queue = 'Investigations'"
         ." OR Queue = 'Blocks'"
         .")";
 
+    my $constituency = $ticket->FirstCustomFieldValue('_RTIR_Constituency');
     if ( $constituency ) {
         $query .= " AND CF.{_RTIR_Constituency} != '$constituency'";
     } else {
@@ -64,10 +69,20 @@ sub Commit {
 sub SetConstituencyOnCreate {
     my $self = shift;
     my $ticket = $self->TicketObj;
+
     my ($current, $value);
     $current = $value = $ticket->FirstCustomFieldValue('_RTIR_Constituency');
     if ( my $tmp = $self->GetConstituencyFromParent ) {
-        $value = $tmp;
+        my $propagation = lc RT->Config->Get('_RTIR_Constituency_Propagation');
+        if ( $propagation eq 'inherit' ) {
+            $value = $tmp;
+        } elsif ( $propagation eq 'reject' && ($current||'') ne $tmp ) {
+            $RT::Logger->error(
+                "Constituency propagation algorithm is 'reject', but "
+                . "ticket ". $ticket->id ." has constituency '$current'"
+                . " when its parent incident has '$tmp'"
+            );
+        }
     }
     $value ||= $self->GetConstituencyFromAttachment;
     $value ||= RT->Config->Get('_RTIR_Constituency_default');
@@ -124,9 +139,9 @@ sub IsValidConstituency {
             $RT::Logger->crit("Couldn't load constituency field");
             return 0;
         }
-        %constituency = map { lc $_->Name => 1 } @{ $cf->Values->ItemsArrayRef };
+        %constituency = map { lc $_->Name => $_->Content } @{ $cf->Values->ItemsArrayRef };
     }
-    return exists $constituency{ lc $value };
+    return $constituency{ lc $value };
 }
 
 }
