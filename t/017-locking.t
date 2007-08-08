@@ -2,8 +2,8 @@
 
 use strict;
 use warnings;
-use Test::More qw/no_plan/;
-#use Test::More tests => 90;
+
+use Test::More tests => 96;
 use HTTP::Cookies;
 
 require "t/rtir-test.pl";
