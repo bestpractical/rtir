@@ -19,8 +19,6 @@ use RT;
 RT::LoadConfig();
 RT::Init();
 
-require $RT::BasePath. '/lib/t/utils.pl';
-
 my $RTIR_TEST_USER = "rtir_test_user";
 my $RTIR_TEST_PASS = "rtir_test_pass";
 

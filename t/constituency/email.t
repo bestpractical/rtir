@@ -42,7 +42,7 @@ Subject: This is a test of constituency functionality
 
 Foob!
 EOF
-        my ($status, $id) = create_ticket_via_gate($text, queue => $queue);
+        my ($status, $id) = RT::Test->send_via_mailgate($text, queue => $queue);
         is $status >> 8, 0, "The mail gateway exited ok";
         ok $id, "created ticket $id";
 
@@ -73,7 +73,7 @@ Foob!
 EOF
         my $val = 'GOVNET';
         local $ENV{'EXTENSION'} = $val;
-        my ($status, $id) = create_ticket_via_gate($text, queue => $queue);
+        my ($status, $id) = RT::Test->send_via_mailgate($text, queue => $queue);
         is $status >> 8, 0, "The mail gateway exited ok";
         ok $id, "created ticket $id";
         $incident_id = $id if $queue eq 'Incidents';
