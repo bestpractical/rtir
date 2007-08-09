@@ -2,17 +2,17 @@
 
 use strict;
 use warnings;
-use Test::More tests => 180;
-no warnings 'once';
+use Test::More;
 
 require "t/rtir-test.pl";
 
-# Test must be run wtih RT_SiteConfig:
-# Set(@MailPlugins, 'Auth::MailFrom');
-
-use_ok('RT');
-RT::LoadConfig();
-RT::Init();
+# XXX: we should use new RT::Test features and start server with
+# option we want.
+if ( RT->Config->Get('_RTIR_Constituency_Propagation') eq 'no' ) {
+    plan tests => 180;
+} else {
+    plan skip_all => 'constituency propagation algorithm is not "no"';
+}
 
 use_ok('RT::IR');
 
