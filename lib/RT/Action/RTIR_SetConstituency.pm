@@ -139,7 +139,7 @@ sub IsValidConstituency {
             $RT::Logger->crit("Couldn't load constituency field");
             return 0;
         }
-        %constituency = map { lc $_->Name => $_->Content } @{ $cf->Values->ItemsArrayRef };
+        %constituency = map { lc $_->Name => $_->Name } @{ $cf->Values->ItemsArrayRef };
     }
     return $constituency{ lc $value };
 }
