@@ -204,46 +204,6 @@ diag "create an incident under GOVNET and create a new IR linked to the incident
     is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value' );
 }
 
-diag "create an IR and check that we couldn't change value during creation of new linked incident" if $ENV{'TEST_VERBOSE'};
-{
-    # create an IR
-    my $ir_id = create_ir(
-        $agent, { Subject => "test" }, { Constituency => 'GOVNET' }
-    );
-    ok( $ir_id, "created ticket #$ir_id" );
-    display_ticket($agent, $ir_id);
-    $agent->content_like( qr/GOVNET/, "value on the page" );
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
-    $ticket->Load( $ir_id );
-    ok( $ticket->id, 'loaded ticket' );
-    is( $ticket->QueueObj->Name, 'Incident Reports', 'correct value' );
-    is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value' );
-
-    # click [new] near 'incident', set another constituency and create
-    $agent->follow_link_ok({text => '[New]'}, "go to 'New Incident' page");
-    $agent->form_number(3);
-    ok(!eval{ set_custom_field( $agent, Constituency => 'EDUNET' ) }, "couldn't change value in the form");
-    $agent->click('CreateIncident');
-    is ($agent->status, 200, "Attempted to create the ticket");
-
-    DBIx::SearchBuilder::Record::Cachable::FlushCache();
-
-    # Incident has the new value 
-    my $inc_id = get_ticket_id( $agent );
-    $ticket = RT::Ticket->new( $RT::SystemUser );
-    $ticket->Load( $inc_id );
-    ok( $ticket->id, 'loaded ticket' );
-    is( $ticket->QueueObj->Name, 'Incidents', 'correct value' );
-    is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value' );
-
-    # Incident's value is prefered and was inhertied by the IR
-    $ticket = RT::Ticket->new( $RT::SystemUser );
-    $ticket->Load( $ir_id );
-    ok( $ticket->id, 'loaded ticket' );
-    is( $ticket->QueueObj->Name, 'Incident Reports', 'correct value' );
-    is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value' );
-}
-
 my $eduhandler = RT::User->new($RT::SystemUser);
 $eduhandler->Create(Name => 'eduhandler-'.$$, Privileged => 1);
 ok($eduhandler->id, "Created eduhandler");

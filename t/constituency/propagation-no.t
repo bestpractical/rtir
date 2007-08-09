@@ -29,7 +29,7 @@ diag "load the field" if $ENV{'TEST_VERBOSE'};
 my $agent = default_agent();
 my $rtir_user = rtir_user();
 
-diag "create an incident with EDUNET and linked tickets with GOVNET"
+diag "create an incident with EDUNET and then linked tickets with GOVNET,"
     . " constituency shouldn't propagate back to tickets"
     if $ENV{'TEST_VERBOSE'};
 {
