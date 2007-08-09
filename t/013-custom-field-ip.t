@@ -49,7 +49,7 @@ diag "create a ticket via web and set IP" if $ENV{'TEST_VERBOSE'};
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $val = '192.168.20.'. ++$i;
-        my $id = create_rtir_ticket(
+        my $id = create_rtir_ticket_ok(
             $agent, $queue,
             {
                 Subject => "test ip",
@@ -77,7 +77,7 @@ diag "create a ticket via web with IP in message" if $ENV{'TEST_VERBOSE'};
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $val = '192.168.20.'. ++$i;
-        my $id = create_rtir_ticket(
+        my $id = create_rtir_ticket_ok(
             $agent, $queue,
             {
                 Subject => "test ip in message",
@@ -105,7 +105,7 @@ diag "create a ticket via web with CIDR" if $ENV{'TEST_VERBOSE'};
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $val = '172.16.'. ++$i .'/31'; # add two hosts
-        my $id = create_rtir_ticket(
+        my $id = create_rtir_ticket_ok(
             $agent, $queue,
             {
                 Subject => "test ip",
@@ -136,7 +136,7 @@ diag "create a ticket via web with CIDR in message" if $ENV{'TEST_VERBOSE'};
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $val = '172.16.'. ++$i .'/31'; # add two hosts
-        my $id = create_rtir_ticket(
+        my $id = create_rtir_ticket_ok(
             $agent, $queue,
             {
                 Subject => "test ip in message",
@@ -166,7 +166,7 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
     foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
-        my $id = create_rtir_ticket(
+        my $id = create_rtir_ticket_ok(
             $agent, $queue,
             {
                 Subject => "test ip in message",

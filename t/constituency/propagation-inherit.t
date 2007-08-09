@@ -97,7 +97,7 @@ diag "create an incident with EDUNET, then create children using Incident input 
     . " incident's constituency is prefered even if another value's been selected"
         if $ENV{'TEST_VERBOSE'};
 {
-    my $incident_id = create_rtir_ticket(
+    my $incident_id = create_rtir_ticket_ok(
         $agent, 'Incidents',
         { Subject => "test" },
         { Constituency => 'EDUNET' },
@@ -113,7 +113,7 @@ diag "create an incident with EDUNET, then create children using Incident input 
     foreach my $queue( 'Incident Reports', 'Investigations', 'Blocks' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
-        my $id = create_rtir_ticket(
+        my $id = create_rtir_ticket_ok(
             $agent, $queue,
             {
                 Subject => "test ip",
@@ -147,11 +147,11 @@ diag "check that constituency propagates from a child to a parent after 'Edit', 
     foreach my $queue( 'Incident Reports', 'Investigations', 'Blocks' ) {
         diag "create an incident for linking" if $ENV{'TEST_VERBOSE'};
 
-        my $incident_id = create_rtir_ticket(
+        my $incident_id = create_rtir_ticket_ok(
             $agent, 'Incidents', { Subject => "test" }, { Constituency => 'GOVNET' },
         );
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
-        my $child_id = create_rtir_ticket(
+        my $child_id = create_rtir_ticket_ok(
             $agent, $queue,
             {
                 Subject => "test ip",

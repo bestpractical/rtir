@@ -33,7 +33,7 @@ diag "create an incident with EDUNET and then linked tickets with GOVNET,"
     . " constituency shouldn't propagate back to tickets"
     if $ENV{'TEST_VERBOSE'};
 {
-    my $incident_id = create_rtir_ticket(
+    my $incident_id = create_rtir_ticket_ok(
         $agent, 'Incidents',
         { Subject => "test" },
         { Constituency => 'EDUNET' },
@@ -49,7 +49,7 @@ diag "create an incident with EDUNET and then linked tickets with GOVNET,"
     foreach my $queue( 'Incident Reports', 'Investigations', 'Blocks' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
-        my $id = create_rtir_ticket(
+        my $id = create_rtir_ticket_ok(
             $agent, $queue,
             {
                 Subject => "test ip",

@@ -131,16 +131,16 @@ sub rtir_user {
 }
 
 sub create_incident {
-    return create_rtir_ticket( shift, 'Incidents', @_ );
+    return create_rtir_ticket_ok( shift, 'Incidents', @_ );
 }
 sub create_ir {
-    return create_rtir_ticket( shift, 'Incident Reports', @_ );
+    return create_rtir_ticket_ok( shift, 'Incident Reports', @_ );
 }
 sub create_investigation {
-    return create_rtir_ticket( shift, 'Investigations', @_ );
+    return create_rtir_ticket_ok( shift, 'Investigations', @_ );
 }
 sub create_block {
-    return create_rtir_ticket( shift, 'Blocks', @_ );
+    return create_rtir_ticket_ok( shift, 'Blocks', @_ );
 }
 
 sub goto_create_rtir_ticket {
@@ -161,6 +161,15 @@ sub goto_create_rtir_ticket {
 
     # set the form
     $agent->form_number(3);
+}
+
+sub create_rtir_ticket_ok {
+    my $agent = shift;
+    my $queue = shift;
+
+    my $id = create_rtir_ticket( $agent, $queue, @_ );
+    ok $id, "Created ticket #$id in queue '$queue' successfully.";
+    return $id;
 }
 
 sub create_rtir_ticket
@@ -192,11 +201,7 @@ sub create_rtir_ticket
     
     is ($agent->status, 200, "Attempted to create the ticket");
 
-    # Now see if we succeeded
-    my $id = get_ticket_id($agent);
-    ok ($id, "Created ticket #$id in queue '$queue' successfully.");
-
-    return $id;
+    return get_ticket_id($agent);
 }
 
 sub get_ticket_id {

@@ -87,7 +87,7 @@ diag "create a ticket via web and set field" if $ENV{'TEST_VERBOSE'};
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $val = 'GOVNET';
-        my $id = create_rtir_ticket(
+        my $id = create_rtir_ticket_ok(
             $agent, $queue,
             {
                 Subject => "test ip",
