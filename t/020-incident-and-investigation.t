@@ -3,7 +3,7 @@
 use strict;
 
 use Test::WWW::Mechanize;
-use Test::More tests => 24;
+use Test::More tests => 22;
 
 require "t/rtir-test.pl";
 require RT::IR;

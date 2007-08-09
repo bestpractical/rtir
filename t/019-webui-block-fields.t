@@ -1,7 +1,7 @@
 use strict;
 
 use Test::WWW::Mechanize;
-use Test::More tests => 16;
+use Test::More tests => 14;
 
 require "t/rtir-test.pl";
 

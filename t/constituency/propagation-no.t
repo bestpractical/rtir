@@ -9,7 +9,7 @@ require "t/rtir-test.pl";
 # XXX: we should use new RT::Test features and start server with
 # option we want.
 if ( RT->Config->Get('_RTIR_Constituency_Propagation') eq 'no' ) {
-    plan tests => 180;
+    plan tests => 178;
 } else {
     plan skip_all => 'constituency propagation algorithm is not "no"';
 }

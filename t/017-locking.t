@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 96;
+use Test::More tests => 94;
 use HTTP::Cookies;
 
 require "t/rtir-test.pl";

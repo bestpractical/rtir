@@ -16,17 +16,18 @@ use Test::More;
 use lib qw(/opt/rt3/local/lib /opt/rt3/lib);
 
 use RT;
-ok(RT::LoadConfig, "Loaded configuration");
-ok(RT::Init, "Basic initialization and DB connectivity");
+RT::LoadConfig();
+RT::Init();
 
 require $RT::BasePath. '/lib/t/utils.pl';
 
 my $RTIR_TEST_USER = "rtir_test_user";
 my $RTIR_TEST_PASS = "rtir_test_pass";
 
+require RT::Test;
 use RT::Test::Web;
 
-sub default_agent { 
+sub default_agent {
     my $agent = new RT::Test::Web;
     $agent->cookie_jar( HTTP::Cookies->new );
     $agent->login($RTIR_TEST_USER, $RTIR_TEST_PASS);
@@ -110,18 +111,6 @@ sub ticket_is_not_linked_to_inc {
 sub create_user {
     my $user_obj = rtir_user();
 
-    if ($user_obj->Id) {
-        $user_obj->SetDisabled(0);
-        $user_obj->SetPrivileged(1);
-        $user_obj->SetPassword($RTIR_TEST_PASS);
-    } else {
-        $user_obj->Create(Name => $RTIR_TEST_USER,
-                          Password => $RTIR_TEST_PASS,
-                          EmailAddress => "$RTIR_TEST_USER\@example.com",
-                          RealName => "$RTIR_TEST_USER Smith",
-                          Privileged => 1);
-    }
-
     ok($user_obj->Id > 0, "Successfully found the user");
     
     my $group_obj = RT::Group->new(RT::SystemUser());
@@ -133,8 +122,13 @@ sub create_user {
 }
 
 sub rtir_user {
-    my $u = RT::User->new(RT::SystemUser());
-    $u->Load($RTIR_TEST_USER);
+    my $u = RT::Test->load_or_create_user(
+        Name         => $RTIR_TEST_USER,
+        Password     => $RTIR_TEST_PASS,
+        EmailAddress => "$RTIR_TEST_USER\@example.com",
+        RealName     => "$RTIR_TEST_USER Smith",
+        Privileged   => 1,
+    );
     return $u;
 }
 

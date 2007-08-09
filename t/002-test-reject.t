@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 53;
+use Test::More tests => 51;
 
 require "t/rtir-test.pl";
 
