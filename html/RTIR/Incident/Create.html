@@ -255,6 +255,15 @@ if ( $CreateIncident ) {
         push @results, loc( "You must enter a correspondent for the investigation" );
         $checks_failure = 1;
     }
+
+    if ( $ChildObj && RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject' ) {
+        unless ( $ARGS{ $ARGS{'Constituency'} }
+            eq $ChildObj->FirstCustomFieldValue('_RTIR_Constituency') )
+        {
+            push @results, loc( "New incident and its child #[_1] must have the same constituency", $ChildObj->id );
+            $checks_failure = 1;
+        }
+    }
 }
 
 if ( !$checks_failure && $CreateIncident ) {

@@ -253,13 +253,12 @@ if ($SelectedTicket) {
 }
 Abort('No incident specified') unless $id;
 
-if($Child) {
-	my $ChildObj = RT::Ticket->new( $session{'CurrentUser'} );
+if( $Child ) {
+    my $ChildObj = RT::Ticket->new( $session{'CurrentUser'} );
     $ChildObj->Load($Child);
     my $lock =$ChildObj->Unlock('Take');
     $Duration = time() - $lock->Content->{'Timestamp'} if $lock;
 }
-    
 
 
 my $take_or_steal = sub {
@@ -274,6 +273,12 @@ my $take_or_steal = sub {
 my $deleted_links = 0;
 my $DoLinks = sub {
     my ($child, $parent) = @_;
+
+    if ( RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject' ) {
+        return loc("Couldn't link tickets with different constituencies")
+            unless $child->FirstCustomFieldValue('_RTIR_Constituency') 
+                   eq $parent->FirstCustomFieldValue('_RTIR_Constituency');
+    }
 
     my %args = ();
 
