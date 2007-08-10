@@ -56,12 +56,12 @@ sub display_ticket {
 }
 
 sub ticket_state {
-	my $agent = shift;
-	my $id = shift;
-	
-	display_ticket($agent, $id);
-	$agent->content =~ qr{State:\s*</td>\s*<td[^>]*?>\s*<span class="cf-value">([\w ]+)</span>}ism;
-	return $1;
+    my $agent = shift;
+    my $id = shift;
+    
+    display_ticket($agent, $id);
+    $agent->content =~ qr{State:\s*</td>\s*<td[^>]*?>\s*<span class="cf-value">([\w ]+)</span>}ism;
+    return $1;
 }
 
 sub ticket_state_is {
@@ -158,6 +158,7 @@ sub goto_create_rtir_ticket {
 
     $agent->follow_link_ok({text => $queue, n => "1"}, "Followed '$queue' link");
     $agent->follow_link_ok({text => "New ". $type{ $queue }, n => "1"}, "Followed 'New $type{$queue}' link");
+    
 
     # set the form
     $agent->form_number(3);
@@ -180,6 +181,15 @@ sub create_rtir_ticket
     my $cfs = shift || {};
 
     goto_create_rtir_ticket($agent, $queue);
+    
+    #Enable test scripts to pass in the name of the owner rather than the ID
+    if ($$fields{Owner} && $$fields{Owner} !~ /^\d+$/)
+    {
+        if($agent->content =~ qr{<option.+?value="(\d+)"\s*>$$fields{Owner}</option>}ims) {
+            $$fields{Owner} = $1;
+        }
+    }
+    
 
     $fields->{'Requestors'} ||= $RTIR_TEST_USER if $queue eq 'Investigations';
     while (my ($f, $v) = each %$fields) {
@@ -212,7 +222,7 @@ sub get_ticket_id {
         $id = $1;
     }
     elsif ($content =~ /.*No permission to view newly created ticket #(\d+).*/g) {
-    	diag("\nNo permissions to view the ticket.\n") if($ENV{'TEST_VERBOSE'});
+        diag("\nNo permissions to view the ticket.\n") if($ENV{'TEST_VERBOSE'});
     }
     return $id;
 }
@@ -263,7 +273,7 @@ sub ok_and_content_like {
 
 sub LinkChildToIncident {
 
-	my $agent = shift;
+    my $agent = shift;
     my $id = shift;
     my $incident = shift;
 
@@ -273,11 +283,11 @@ sub LinkChildToIncident {
     $agent->follow_link_ok({text => "[Link]", n => "1"}, "Followed 'Link(to Incident)' link");
 
     
-	# Check that the desired incident occurs in the list of available incidents; if not, keep
-	# going to the next page until you find it (or get to the last page and don't find it,
-	# whichever comes first)
+    # Check that the desired incident occurs in the list of available incidents; if not, keep
+    # going to the next page until you find it (or get to the last page and don't find it,
+    # whichever comes first)
     while($agent->content() !~ m|<a href="/Ticket/Display.html\?id=$incident">$incident</a>|) {
-    	last unless $agent->follow_link(text => 'Next Page');
+        last unless $agent->follow_link(text => 'Next Page');
     }
     
     $agent->form_number(3);
@@ -295,72 +305,72 @@ sub LinkChildToIncident {
 
 
 sub merge_ticket {
-	my $agent = shift;
-	my $id = shift;
-	my $id_to_merge_to = shift;
-	
-	display_ticket($agent, $id);
-	
-	$agent->timeout(600);
-	
-	$agent->follow_link_ok({text => 'Merge', n => '1'}, "Followed 'Merge' link");
-	
-	$agent->content() =~ /Merge ([\w ]+) #$id:/i;
-	my $type = $1 || 'Ticket';
-	
+    my $agent = shift;
+    my $id = shift;
+    my $id_to_merge_to = shift;
+    
+    display_ticket($agent, $id);
+    
+    $agent->timeout(600);
+    
+    $agent->follow_link_ok({text => 'Merge', n => '1'}, "Followed 'Merge' link");
+    
+    $agent->content() =~ /Merge ([\w ]+) #$id:/i;
+    my $type = $1 || 'Ticket';
+    
 
-	# Check that the desired incident occurs in the list of available incidents; if not, keep
-	# going to the next page until you find it (or get to the last page and don't find it,
-	# whichever comes first)
+    # Check that the desired incident occurs in the list of available incidents; if not, keep
+    # going to the next page until you find it (or get to the last page and don't find it,
+    # whichever comes first)
     while($agent->content() !~ m|<a href="/Ticket/Display.html\?id=$id_to_merge_to">$id_to_merge_to</a>|) {
-    	my @ids = sort map s|<b>\s*<a href="/Ticket/Display.html?id=(\d+)">\1</a>\s*</b>|$1|, split /<td/, $agent->content();
-		my $max = pop @ids;
-		my $url = "Merge.html?id=$id&Order=ASC&Query=( 'CF.{_RTIR_State}' = 'new' OR 'CF.{_RTIR_State}' = 'open' AND 'id' > $max)";
-		my $weburl = RT->Config->Get('WebURL');
-		diag("IDs found: " . join ', ', @ids);
-		diag("Max ID: " . $max);
-		diag ("URL: " . $url);
-    	$agent->get("$weburl/RTIR/$url");
-    	last unless $agent->content() =~ qr|<b>\s*<a href="/Ticket/Display.html?id=(\d+)">\1</a>\s*</b>|sm;
+        my @ids = sort map s|<b>\s*<a href="/Ticket/Display.html?id=(\d+)">\1</a>\s*</b>|$1|, split /<td/, $agent->content();
+        my $max = pop @ids;
+        my $url = "Merge.html?id=$id&Order=ASC&Query=( 'CF.{_RTIR_State}' = 'new' OR 'CF.{_RTIR_State}' = 'open' AND 'id' > $max)";
+        my $weburl = RT->Config->Get('WebURL');
+        diag("IDs found: " . join ', ', @ids);
+        diag("Max ID: " . $max);
+        diag ("URL: " . $url);
+        $agent->get("$weburl/RTIR/$url");
+        last unless $agent->content() =~ qr|<b>\s*<a href="/Ticket/Display.html?id=(\d+)">\1</a>\s*</b>|sm;
     }
     
-	
-	$agent->form_number(3);
-	
-	
-	$agent->field("SelectedTicket", $id_to_merge_to);
+    
+    $agent->form_number(3);
+    
+    
+    $agent->field("SelectedTicket", $id_to_merge_to);
     $agent->click_button(value => 'Merge');
     
     is ($agent->status, 200, "Attempting to merge $type #$id to ticket #$id_to_merge_to");
-	
-	$agent->content_like(qr{.*<ul class="action-results">\s*<li>Merge Successful</li>.*}i, 
-    	"Successfully merged $type #$id to ticket #$id_to_merge_to");
+    
+    $agent->content_like(qr{.*<ul class="action-results">\s*<li>Merge Successful</li>.*}i, 
+        "Successfully merged $type #$id to ticket #$id_to_merge_to");
 }
 
 
 sub create_incident_and_investigation {
-	my $agent = shift;
+    my $agent = shift;
     my $fields = shift || {};
     my $cfs = shift || {};
-	my $ir_id = shift;
+    my $ir_id = shift;
 
     $ir_id ? display_ticket($agent, $ir_id) : go_home($agent);
 
-	if($ir_id) {
-		# Select the "New" link from the Display page
-    	$agent->follow_link_ok({text => "[New]"}, "Followed 'New (Incident)' link");
-	}
-	else 
-	{
-		$agent->follow_link_ok({text => "Incidents"}, "Followed 'Incidents' link");
-		$agent->follow_link_ok({text => "New Incident", n => '1'}, "Followed 'New Incident' link");
-	}
+    if($ir_id) {
+        # Select the "New" link from the Display page
+        $agent->follow_link_ok({text => "[New]"}, "Followed 'New (Incident)' link");
+    }
+    else 
+    {
+        $agent->follow_link_ok({text => "Incidents"}, "Followed 'Incidents' link");
+        $agent->follow_link_ok({text => "New Incident", n => '1'}, "Followed 'New Incident' link");
+    }
 
-	# Fill out forms
+    # Fill out forms
     $agent->form_number(3);
 
     while (my ($f, $v) = each %$fields) {
-    	$agent->field($f, $v);
+        $agent->field($f, $v);
     }
 
     while (my ($f, $v) = each %$cfs) {
@@ -371,12 +381,12 @@ sub create_incident_and_investigation {
         ? "Attempting to create new incident and investigation linked to child $ir_id"
         : "Attempting to create new incident and investigation";
     is ($agent->status, 200, $msg);
-	$msg = $ir_id ? "Incident created from child $ir_id." : "Incident created.";
+    $msg = $ir_id ? "Incident created from child $ir_id." : "Incident created.";
 
     my $re = qr/.*Ticket (\d+) created in queue &#39;Incidents&#39;/;
     $agent->content_like( $re, $msg );
-  	my ($incident_id) = ($agent->content =~ $re);
-  	
+      my ($incident_id) = ($agent->content =~ $re);
+      
     $re = qr/.*Ticket (\d+) created in queue &#39;Investigations&#39;/;
     $agent->content_like( $re, "Investigation created for Incident $incident_id." );
     my ($investigation_id) = ($agent->content =~ $re);
