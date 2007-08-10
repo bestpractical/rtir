@@ -256,8 +256,7 @@ Abort('No incident specified') unless $id;
 if( $Child ) {
     my $ChildObj = RT::Ticket->new( $session{'CurrentUser'} );
     $ChildObj->Load($Child);
-    my $lock =$ChildObj->Unlock('Take');
-    $Duration = time() - $lock->Content->{'Timestamp'} if $lock;
+    ($Duration) = $ChildObj->Unlock('Take');
 }
 
 
@@ -358,7 +357,7 @@ if( 1 ) {
                 push @results, loc('This ticket was not locked');
             } elsif ( $lock->Content->{'User'} == $session{'CurrentUser'}->id ) {
                 $Duration = time() - $lock->Content->{'Timestamp'};
-				$TicketObj->Unlock('Hard');
+                $TicketObj->Unlock('Hard');
                 push @results, loc('You have unlocked this ticket');
             } else {
                 push @results,

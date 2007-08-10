@@ -393,7 +393,7 @@ my $parentvalue = '';
 if ( $IncidentObj ) {
     $parentvalue = $IncidentObj->Id;
 } elsif ( $TicketObj ) {
-    my $incidents = RT::Ticketsi->new( $session{'CurrentUser'} );
+    my $incidents = RT::Tickets->new( $session{'CurrentUser'} );
     $incidents->FromSQL( "Queue = 'Incidents' AND HasMember = " . $TicketObj->Id );
     while ( my $incident = $incidents->Next ) {
         $parentvalue .= ' ' if $parentvalue;
@@ -426,10 +426,9 @@ if ( $ARGS{'Create'} ) {
         $ARGS{'new-MemberOf'} = $parentvalue if $parentvalue;
         my $Duration;
         if($TicketObj) {
-			my $lock = $TicketObj->Unlock();
-			$Duration = time() - $lock->Content->{'Timestamp'} if $lock;
-			$Id = $TicketObj->id;
-		}
+            ($Duration) = $TicketObj->Unlock();
+            $Id = $TicketObj->id;
+        }
         return $m->comp( 'Display.html', %ARGS, SkipNotification => \@SkipNotification, results => \@results, Duration => $Duration, Id => $Id );
     }
     unshift @results, loc("Creation failed:");

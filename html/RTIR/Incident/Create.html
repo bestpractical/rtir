@@ -220,8 +220,7 @@ if ( $Child ) {
 
 if($Split && ($ARGS{'CreateIncident'} || $ARGS {'CreateWithInvestigation'})) {
     $Id = $ARGS{'Ticket'};
-    my $lock = $TicketObj->Unlock();
-    $Duration = time() - $lock->Content->{'Timestamp'} if $lock;
+    ($Duration) = $TicketObj->Unlock();
 }
 
 
@@ -299,8 +298,7 @@ if ( !$checks_failure && $CreateIncident ) {
     if( $inc_obj ) {
         if($ChildObj) {
             $Id = $ChildObj->id;
-            my $lock = $ChildObj->Unlock('Take');
-            $Duration = time() - $lock->Content->{'Timestamp'} if $lock;
+            ($Duration) = $ChildObj->Unlock('Take');
         }
         return $m->comp('Display.html', id => $inc_obj->id, Duration => $Duration, Id => $Id, results => \@results );
     }

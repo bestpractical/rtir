@@ -275,18 +275,9 @@ if ( $id eq 'new' ) {
 
             }
         } elsif ( $ARGS{'Lock'} eq 'remove' ) {
-            my $lock = $Ticket->Locked();
-            unless($lock) {
-                push @results, loc('This ticket was not locked');
-            } elsif ( $lock->Content->{'User'} == $session{'CurrentUser'}->id ) {
-                $Duration = time() - $lock->Content->{'Timestamp'};
-                $Ticket->Unlock('Hard');
-                push @results, loc('You have unlocked this ticket');
-            } else {
-                push @results,
-                    loc("You can't unlock tickets that you did not lock");
-
-            }
+            my $msg;
+            ($Duration, $msg) = $Ticket->Unlock('Hard');
+            push @results, loc($msg);
 
         } elsif ( $ARGS{'Lock'} eq 'break' ) {
             $Ticket->BreakLock();
