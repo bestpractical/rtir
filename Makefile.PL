@@ -49,4 +49,6 @@ substitute( {
     'etc/add_constituency',
 );
 
+tests("t/*.t t/*/*.t");
+
 WriteAll();

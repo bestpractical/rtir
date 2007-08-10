@@ -8,10 +8,10 @@ require "t/rtir-test.pl";
 
 # XXX: we should use new RT::Test features and start server with
 # option we want.
-if ( RT->Config->Get('_RTIR_Constituency_Propagation') eq 'inherit' ) {
-    plan tests => 152;
+if ( RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject' ) {
+    plan tests => 105;
 } else {
-    plan skip_all => 'constituency propagation algorithm is not "inherit"';
+    plan skip_all => 'constituency propagation algorithm is not "reject"';
 }
 
 use_ok('RT::IR');
@@ -68,7 +68,6 @@ diag "create an IR and check that we couldn't change constituency"
 
     # click [new] near 'incident', set another constituency and create
     $agent->follow_link_ok({text => '[New]'}, "go to 'New Incident' page");
-    $agent->form_number(3);
     my $form = $agent->form_number(3);
     ok $form->find_input( $form->value('Constituency'), 'hidden'), 'constituency field is hidden';
     $agent->click('CreateIncident');
@@ -94,8 +93,44 @@ diag "create an IR and check that we couldn't change constituency"
         'GOVNET', 'correct value';
 }
 
-diag "create an incident with EDUNET, then create children using Incident input field."
-    . " incident's constituency is prefered even if another value's been selected"
+diag "create an incident with EDUNET, then try to create children using"
+    ." Incident input field and different constituency. Should be rejected."
+        if $ENV{'TEST_VERBOSE'};
+{
+    my $incident_id = create_rtir_ticket_ok(
+        $agent, 'Incidents',
+        { Subject => "test" },
+        { Constituency => 'EDUNET' },
+    );
+    {
+        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        $ticket->Load( $incident_id );
+        ok $ticket->id, 'loaded ticket';
+        is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+            'EDUNET', 'correct value';
+    }
+
+    foreach my $queue( 'Incident Reports', 'Investigations', 'Blocks' ) {
+        diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
+
+        my $id = create_rtir_ticket(
+            $agent, $queue,
+            {
+                Subject => "test ip",
+                Incident => $incident_id,
+            },
+            { Constituency => 'GOVNET' },
+        );
+        ok !$id, 'ticket was not created';
+        $agent->content_like(
+            qr/choose the same value for a new ticket or use another Incident/mi,
+            'creation rejected because of not matching constituency'
+        );
+    }
+}
+
+diag "create an incident with EDUNET and check that we can create children"
+    . " with the same constituency and operation is not rejected"
         if $ENV{'TEST_VERBOSE'};
 {
     my $incident_id = create_rtir_ticket_ok(
@@ -120,7 +155,7 @@ diag "create an incident with EDUNET, then create children using Incident input 
                 Subject => "test ip",
                 Incident => $incident_id,
             },
-            { Constituency => 'GOVNET' },
+            { Constituency => 'EDUNET' },
         );
 
         display_ticket($agent, $id);
@@ -131,7 +166,7 @@ diag "create an incident with EDUNET, then create children using Incident input 
             $ticket->Load( $id );
             ok $ticket->id, 'loaded ticket';
             is uc $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
-                'EDUNET', 'value has been changed';
+                'EDUNET', 'correct value';
         } {
             my $ticket = RT::Ticket->new( $RT::SystemUser );
             $ticket->Load( $incident_id );
@@ -139,91 +174,7 @@ diag "create an incident with EDUNET, then create children using Incident input 
             is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
                 'EDUNET', 'incident still has the same value';
         }
-    }
-}
-
-diag "check that constituency propagates from a child to a parent after 'Edit', and back"
-    if $ENV{'TEST_VERBOSE'};
-{
-    foreach my $queue( 'Incident Reports', 'Investigations', 'Blocks' ) {
-        diag "create an incident for linking" if $ENV{'TEST_VERBOSE'};
-
-        my $incident_id = create_rtir_ticket_ok(
-            $agent, 'Incidents', { Subject => "test" }, { Constituency => 'GOVNET' },
-        );
-        diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
-        my $child_id = create_rtir_ticket_ok(
-            $agent, $queue,
-            {
-                Subject => "test ip",
-                Incident => $incident_id,
-            },
-            { Constituency => 'GOVNET' },
-        );
-        DBIx::SearchBuilder::Record::Cachable::FlushCache();
-
-        diag "check that both have the same correct constituency" if $ENV{'TEST_VERBOSE'};
-        {
-            my $ticket = RT::Ticket->new( $RT::SystemUser );
-            $ticket->Load( $incident_id );
-            ok $ticket->id, 'loaded ticket';
-            is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
-                'GOVNET', 'correct value';
-        } {
-            my $ticket = RT::Ticket->new( $RT::SystemUser );
-            $ticket->Load( $child_id );
-            ok $ticket->id, 'loaded ticket';
-            is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
-                'GOVNET', 'correct value';
-        }
-        
-        diag "edit constituency on the child" if $ENV{'TEST_VERBOSE'};
-        display_ticket($agent, $child_id);
-        $agent->follow_link( text => 'Edit' );
-        $agent->form_number(3);
-        $agent->select("Object-RT::Ticket-$child_id-CustomField-". $cf->id ."-Values" => 'EDUNET' );
-        $agent->click('SaveChanges');
-        $agent->content_like(qr/Constituency .* changed to EDUNET/mi, 'field is changed');
-        DBIx::SearchBuilder::Record::Cachable::FlushCache();
-
-        diag "check that constituency propagates from the child to the parent" if $ENV{'TEST_VERBOSE'};
-        {
-            my $ticket = RT::Ticket->new( $RT::SystemUser );
-            $ticket->Load( $child_id );
-            ok $ticket->id, 'loaded ticket';
-            is uc $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
-                'EDUNET', 'correct value';
-        } {
-            my $ticket = RT::Ticket->new( $RT::SystemUser );
-            $ticket->Load( $incident_id );
-            ok $ticket->id, 'loaded ticket';
-            is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
-                'EDUNET', "incident's constituency has been changed";
-        }
-
-        diag "edit constituency on the incident" if $ENV{'TEST_VERBOSE'};
-        display_ticket($agent, $incident_id);
-        $agent->follow_link( text => 'Edit' );
-        $agent->form_number(3);
-        $agent->select("Object-RT::Ticket-$incident_id-CustomField-". $cf->id ."-Values" => 'GOVNET' );
-        $agent->click('SaveChanges');
-        $agent->content_like(qr/Constituency .* changed to GOVNET/mi, 'field is changed');
-        DBIx::SearchBuilder::Record::Cachable::FlushCache();
-
-        diag "check that constituency propagatesi from the parent to the child" if $ENV{'TEST_VERBOSE'};
-        {
-            my $ticket = RT::Ticket->new( $RT::SystemUser );
-            $ticket->Load( $child_id );
-            ok $ticket->id, 'loaded ticket';
-            is uc $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
-                'GOVNET', 'correct value';
-        } {
-            my $ticket = RT::Ticket->new( $RT::SystemUser );
-            $ticket->Load( $incident_id );
-            ok $ticket->id, 'loaded ticket';
-            is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
-                'GOVNET', "incident's constituency has been changed";
-        }
+        ticket_is_linked_to_inc($agent, $id, $incident_id);
     }
 }
 

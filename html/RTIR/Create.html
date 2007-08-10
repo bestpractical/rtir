@@ -157,6 +157,7 @@
 % #TODO: hacks, we need way to define CF value on Create, but don't allow user to change it
 %   my $cf = RT::CustomField->new( $RT::SystemUser );
 %   $cf->LoadByNameAndQueue( Name => '_RTIR_Constituency', Queue => $Queue );
+      <input type="hidden" class="hidden" name="Constituency" value="Object-RT::Ticket--CustomField-<% $cf->id %>-Values" />
       <input type="hidden" class="hidden" name="Object-RT::Ticket--CustomField-<% $cf->id %>-Values-Magic" value="1" />
       <input type="hidden" class="hidden" name="Object-RT::Ticket--CustomField-<% $cf->id %>-Values" value="<% $IncidentObj->FirstCustomFieldValue('_RTIR_Constituency') %>" />
       <& /RTIR/Elements/ShowRTIRField, Ticket => $IncidentObj, Name => 'Constituency' &>
@@ -371,20 +372,28 @@ if ( $Incident ) {
     unless ( $IncidentObj->id ) {
         push @results, loc("Couldn't load incident #[_1]", $Incident );
         ($checks_failure, $IncidentObj, $Incident) = (1, undef, undef);
-    } elsif ( $IncidentObj->QueueObj->Name ne 'Incidents' ) {
+    }
+    elsif ( $IncidentObj->QueueObj->Name ne 'Incidents' ) {
         push @results, loc('Ticket #[_1] is not an Incident', $Incident );
         ($checks_failure, $IncidentObj, $Incident) = (1, undef, undef);
-    } else {
-        $Incident = $ARGS{'Incident'} = $IncidentObj->id;
+    }
+    elsif ( RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject'
+        && $ARGS{$ARGS{'Constituency'}} ne $IncidentObj->FirstCustomFieldValue('_RTIR_Constituency') )
+    {
+        push @results, loc('Incident #[_1] has constituency [_1], choose the same value for a new ticket or use another Incident', $Incident, $IncidentObj->FirstCustomFieldValue('_RTIR_Constituency') );
+        $checks_failure = 1;
+    }
+    else {
         $Subject ||= $IncidentObj->Subject;
     }
 }
+$Incident = $ARGS{'Incident'} = $IncidentObj->id if $IncidentObj;
 
 my $parentvalue = '';
 if ( $IncidentObj ) {
     $parentvalue = $IncidentObj->Id;
 } elsif ( $TicketObj ) {
-    my $incidents = new RT::Tickets( $session{'CurrentUser'} );
+    my $incidents = RT::Ticketsi->new( $session{'CurrentUser'} );
     $incidents->FromSQL( "Queue = 'Incidents' AND HasMember = " . $TicketObj->Id );
     while ( my $incident = $incidents->Next ) {
         $parentvalue .= ' ' if $parentvalue;
