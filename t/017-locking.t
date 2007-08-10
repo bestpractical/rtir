@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 107;
+use Test::More tests => 111;
 use HTTP::Cookies;
 
 require "t/rtir-test.pl";
@@ -21,7 +21,8 @@ diag("Testing Incident Report locking");
 # Create a report
 my $report = create_ir($agent, {Subject => $SUBJECT, Content => "bla", Owner => 'Nobody in particular &#40;Nobody&#41;' });
     
-{
+
+
     my $ir_obj = RT::Ticket->new(RT::SystemUser());
     my $lock;
 
@@ -39,6 +40,20 @@ my $report = create_ir($agent, {Subject => $SUBJECT, Content => "bla", Owner => 
                             "Unlock link found");
     $lock = $ir_obj->Locked();
     ok(($lock->Content->{'Type'} eq 'Hard'), "Lock is a Hard lock");
+    
+    ###Testing lock expiration###
+    ###Be sure to set LockExpiry to a short time (say, 30) in RT_SiteConfig.pm, or you'll be waiting
+    ###for a while for this test to finish###
+    
+    my $expire = RT->Config->Get('LockExpiry');
+    sleep $expire;
+    
+    $agent->follow_link_ok({text => 'Display', n =>'1'}, "Going back to display page for IR #$report");
+    $agent->content_unlike(qr{<div class="locked-by-you">}, "IR #$report not locked anymore (lock expired)");
+    ok(!$ir_obj->Locked(), "Lock not in the database");
+    
+    
+    $agent->follow_link_ok({text => 'Lock', n => '1'}, "Followed 'Lock' link again");
     sleep 5;    #Otherwise, we run the risk of getting "You have locked this ticket" (see /Elements/ShowLock)
     
     ###Testing Update.html locking###
@@ -126,8 +141,6 @@ my $report = create_ir($agent, {Subject => $SUBJECT, Content => "bla", Owner => 
     sleep 5;
     $agent->click('SaveChanges');
     diag("Submitted Edit form") if $ENV{'TEST_VERBOSE'};
-    #open OF, ">/home/toth/test_html/result_content.html" or die;
-    #print OF $agent->content;
     $agent->content_like(qr{<div class="locked-by-you">.+\. It is now unlocked\.}ims, "IR $report is not locked");
     
     $agent->follow_link_ok({text => 'Split', n => '1'}, "Followed Split link");
@@ -178,10 +191,10 @@ my $report = create_ir($agent, {Subject => $SUBJECT, Content => "bla", Owner => 
     $agent->content_unlike(qr{<div class="locked-by-you">}ims, "IR #$report is not locked");
     
     $agent->follow_link_ok({text => 'Lock', n => '1'}, "Hard locked to test multi-user lock");
-}
 
 
-{
+
+
     diag("Testing IR locking from other user's point of view");
 
     go_home($root);
@@ -189,16 +202,15 @@ my $report = create_ir($agent, {Subject => $SUBJECT, Content => "bla", Owner => 
     $root->content_like(qr{<div class="locked">}, "IR #$report is locked by another");
     $root->follow_link_ok({text => 'Break lock', n => '1'}, "Breaking lock on IR #$report");
     $root->content_like(qr{<li>You have broken the lock on this ticket</li>}, "Lock on IR #$report is broken");
-}
+
 
 
 diag("Testing Incident locking");
 # Create an incident
 my $inc = create_incident($agent, {Subject => $SUBJECT, Content => "bla", Owner => 'Nobody in particular &#40;Nobody&#41;' });
 
-{
+
     my $inc_obj = RT::Ticket->new(RT::SystemUser());
-    my $lock;
 
     $inc_obj->Load($inc);
     is($inc_obj->Id, $inc, "report has right ID");
@@ -242,11 +254,7 @@ my $inc = create_incident($agent, {Subject => $SUBJECT, Content => "bla", Owner 
     $agent->follow_link_ok({text => 'Split', n => '1'}, "Followed Split link");
     $agent->content_like(qr{<div class="locked-by-you">\s*You have had this ticket locked for \d+}ims, "Split page is still locked");
     $agent->form_number(3);
-    my $nobody;
-    if($agent->content =~ qr{<option.+?value="(\d+)"\s*>Nobody in particular &#40;Nobody&#41;</option>}ims) {
-        $nobody = $1;
-        $agent->field('Owner', $nobody);
-    }
+    $agent->field('Owner', $nobody);
     $agent->click('CreateIncident');
     diag("Submitted Split form") if $ENV{'TEST_VERBOSE'};
     my $inc_id2;
@@ -316,16 +324,16 @@ my $inc = create_incident($agent, {Subject => $SUBJECT, Content => "bla", Owner 
     $report = $inc_id2;
 
     $agent->follow_link_ok({text => 'Lock', n => '1'}, "Hard locked to test multi-user lock");
-}
 
-{
+
+
     diag("Testing Incident locking from other user's point of view");
 
     display_ticket($root, $inc);
     $root->content_like(qr{<div class="locked">}, "Incident #$inc is locked by another");
     $root->follow_link_ok({text => 'Break lock', n => '1'}, "Breaking lock on Incident #$inc");
     $root->content_like(qr{<li>You have broken the lock on this ticket</li>}, "Lock on Incident #$inc is broken");
-}
+
 
 
 #removes all user's locks
