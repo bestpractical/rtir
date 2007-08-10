@@ -1,0 +1,56 @@
+flesh out realmail test file
+    needs to know how to deal with signatures (couldn't find anything for this
+      in the other test files, RT might set a header for this though)
+    needs to test many failure modes, such as missing private key
+    notifications
+
+M3 points
+    5.2.1.1. if RT fails to decrypt/verify incoming message it sends complaints
+             to correspondent; RT should show status of failed verification as
+             well
+
+    5.2.2.1. outgoing mail suffers from key management issues
+             encryption to user whose pubkey not signed does not work correctly
+             correspondent gets complaints from web owner, webui does not
+             inform about the problem
+
+    5.2.2.2. no mechanism to verify signature again (in case pubkey was not
+             available when message received)
+
+    5.2.2.3. [decryption] does not behave well when private key not available.
+             The incomming mail will be totaly lost with no warning to user
+             that some mail was dropped
+
+    5.2.2.4. when encryption for the queue is turned on RT sends auto replies
+             only in case the key is signed, at least it should show a warning
+             in the webui
+
+    5.2.2.6. We want a private key associated per mail addresses.
+
+    5.2.2.7. The time limit for caching of the pass phrase MUST be an Option
+             available in Configuration.
+             I believe this is a gnupg(-agent) issue not RTIR.
+             passphrases can be specified in config file only, customer can
+             implement other custom function to retrieve passphrase. If
+             there is a method, where it's documented
+    
+    5.2.2.8. In case it's enabled, the cache MUST by timed, and expire
+             after a configurable amount of time (and at the end of each
+             session).
+
+    5.2.2.9. When encrypting, the interface MUST provide a way of selecting the
+             appropriate Public Keys. A suggestion is the possibility of a
+             multiple selection box, containing all Public Keys stored on the
+             key ring. The user would then select one or more of them to
+             encrypt the message
+
+    5.2.3.1. copy of original message is stored; no mechanism provided to
+             decrypt/verify a message again
+
+    5.2.5.3. The system MUST make it possible to 'reject' (send back to sender)
+             a 'badly encrypted' or undecipherable message i.e.: a message
+             encrypted with an inappropriate key.
+             This system does not behave well during such exceptions, and these
+             feature is missing.  system rejects message by itself and do not
+             allow user to decide
+
