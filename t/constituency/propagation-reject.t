@@ -9,7 +9,7 @@ require "t/rtir-test.pl";
 # XXX: we should use new RT::Test features and start server with
 # option we want.
 if ( RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject' ) {
-    plan tests => 105;
+    plan tests => 127;
 } else {
     plan skip_all => 'constituency propagation algorithm is not "reject"';
 }
@@ -177,4 +177,47 @@ diag "create an incident with EDUNET and check that we can create children"
         ticket_is_linked_to_inc($agent, $id, $incident_id);
     }
 }
+
+diag "create an IR create an Incident with different constituency"
+    ." and goto [Link] IR, we shouldn't see an IR there"
+        if $ENV{'TEST_VERBOSE'};
+{
+    # an IR
+    my $ir_id = create_ir(
+        $agent, { Subject => "test" }, { Constituency => 'GOVNET' }
+    );
+    display_ticket($agent, $ir_id);
+    $agent->content_like( qr/GOVNET/, "value on the page" );
+    {
+        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        $ticket->Load( $ir_id );
+        ok $ticket->id, 'loaded ticket';
+        is $ticket->QueueObj->Name, 'Incident Reports', 'correct value';
+        is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+            'GOVNET', 'correct value';
+        $ticket->Subject("incident report #$ir_id");
+    }
+
+    # an IR
+    my $inc_id = create_incident(
+        $agent, { Subject => "test" }, { Constituency => 'EDUNET' }
+    );
+    display_ticket($agent, $inc_id);
+    $agent->content_like( qr/EDUNET/, "value on the page" );
+    {
+        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        $ticket->Load( $inc_id );
+        ok $ticket->id, 'loaded ticket';
+        is $ticket->QueueObj->Name, 'Incidents', 'correct value';
+        is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+            'EDUNET', 'correct value';
+    }
+    $agent->get_ok(
+        $agent->rt_base_url ."/RTIR/Incident/LinkChildren.html?id=$inc_id&"
+        ."Queue=Incident%20Reports&Query=id%3D$ir_id"
+    );
+    $agent->content_unlike(qr/incident report #$ir_id/, 'no IR on the page');
+}
+
+# TODO: decide what to do with Edit page when we're using reject algorithm
 

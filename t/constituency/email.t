@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 180;
+use Test::More tests => 61;
 require "t/rtir-test.pl";
 
 # Test must be run wtih RT_SiteConfig:
