@@ -2,17 +2,9 @@
 
 use strict;
 use warnings;
-use Test::More tests => 178;
-no warnings 'once';
 
+use Test::More tests => 109;
 require "t/rtir-test.pl";
-
-# Test must be run wtih RT_SiteConfig:
-# Set(@MailPlugins, 'Auth::MailFrom');
-
-use_ok('RT');
-RT::LoadConfig();
-RT::Init();
 
 use_ok('RT::IR');
 
@@ -75,27 +67,17 @@ diag "check that there is no option to set 'no value' on create" if $ENV{'TEST_V
 
 diag "create a ticket via web and set field" if $ENV{'TEST_VERBOSE'};
 {
-    my $i = 0;
-    my $incident_id; # block couldn't be created without incident id
-    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
-        #XXX: we skip blocks here, as they are always connected to
-        # an incident and the current implementation comes into play
-        # we havn't decided what to do with inheritance to implement
-        # the right test
-        next if $queue eq 'Blocks';
-
+    # we skip blocks here, as they are always connected to
+    # an incident and constituency inheritance comes into game
+    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $val = 'GOVNET';
         my $id = create_rtir_ticket_ok(
             $agent, $queue,
-            {
-                Subject => "test ip",
-                ($queue eq 'Blocks'? (Incident => $incident_id): ()),
-            },
+            { Subject => "test ip" },
             { Constituency => $val },
         );
-        $incident_id = $id if $queue eq 'Incidents';
 
         display_ticket($agent, $id);
         $agent->content_like( qr/\Q$val/, "value on the page" );
@@ -124,84 +106,6 @@ diag "check that we can edit value" if $ENV{'TEST_VERBOSE'};
         ok( $ticket->id, 'loaded ticket' );
         is( lc $ticket->FirstCustomFieldValue('_RTIR_Constituency'), lc $val, 'correct value' );
     }
-}
-
-diag "create an IR under EDUNET and create new incident from it" if $ENV{'TEST_VERBOSE'};
-{
-    my $val = 'EDUNET';
-    my $ir_id = create_ir(
-        $agent, { Subject => "test" }, { Constituency => $val }
-    );
-    ok( $ir_id, "created IR #$ir_id" );
-    display_ticket($agent, $ir_id);
-    $agent->content_like( qr/\Q$val/, "value on the page" );
-
-    my $inc_id = create_incident_for_ir(
-        $agent, $ir_id, { Subject => "test" },
-    );
-
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
-    $ticket->Load( $inc_id );
-    ok( $ticket->id, 'loaded ticket' );
-    is( $ticket->QueueObj->Name, 'Incidents', 'correct value' );
-    is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), $val, 'correct value' );
-
-diag "edit constituency on the IR and check that change is cascading" if $ENV{'TEST_VERBOSE'};
-
-    display_ticket($agent, $ir_id);
-    $agent->follow_link_ok({text => 'Edit'}, "go to Edit page");
-    $agent->form_number(3);
-    ok(set_custom_field( $agent, Constituency => 'GOVNET' ), "fill value in the form");
-    $agent->click('SaveChanges');
-    is( $agent->status, 200, "Attempting to edit ticket #$ir_id" );
-    $agent->content_like( qr/GOVNET/, "value on the page" );
-
-    DBIx::SearchBuilder::Record::Cachable::FlushCache();
-
-    $ticket = RT::Ticket->new( $RT::SystemUser );
-    $ticket->Load( $inc_id );
-    ok( $ticket->id, 'loaded ticket' );
-    is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value' );
-
-    $ticket = RT::Ticket->new( $RT::SystemUser );
-    $ticket->Load( $ir_id );
-    ok( $ticket->id, 'loaded ticket' );
-    is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value' );
-}
-
-diag "create an incident under GOVNET and create a new IR linked to the incident" if $ENV{'TEST_VERBOSE'};
-{
-    diag "ferst of all create incident" if $ENV{'TEST_VERBOSE'};
-    my $inc_id = create_incident(
-        $agent, { Subject => "test" }, { Constituency => 'GOVNET' }
-    );
-    ok( $inc_id, "created ticket #$inc_id" );
-    display_ticket( $agent, $inc_id );
-    $agent->content_like( qr/GOVNET/, "value on the page" );
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
-    $ticket->Load( $inc_id );
-    ok( $ticket->id, 'loaded ticket' );
-    is( $ticket->QueueObj->Name, 'Incidents', 'correct value' );
-    is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value' );
-
-    my $ir_id = create_ir(
-        $agent, { Subject => "test", Incident => $inc_id }, { Constituency => 'EDUNET' },
-    );
-    ticket_is_linked_to_inc( $agent, $ir_id => $inc_id );
-
-    DBIx::SearchBuilder::Record::Cachable::FlushCache();
-
-    $ticket = RT::Ticket->new( $RT::SystemUser );
-    $ticket->Load( $ir_id );
-    ok( $ticket->id, 'loaded ticket' );
-    is( $ticket->QueueObj->Name, 'Incident Reports', 'correct value' );
-    is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value' );
-
-    $ticket = RT::Ticket->new( $RT::SystemUser );
-    $ticket->Load( $inc_id );
-    ok( $ticket->id, 'loaded ticket' );
-    is( $ticket->QueueObj->Name, 'Incidents', 'correct value' );
-    is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value' );
 }
 
 my $eduhandler = RT::User->new($RT::SystemUser);
