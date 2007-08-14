@@ -339,10 +339,10 @@ wrap 'RT::ObjectCustomFieldValue::Content',
 # if (0) {
 {
     require RT::Record;
+    # flush constituency cache on update of the custom field value for a ticket
     wrap 'RT::Record::_AddCustomFieldValue', pre => sub {
-        return unless( UNIVERSAL::isa($_[0] => 'RT::Ticket'));
+        return unless UNIVERSAL::isa($_[0] => 'RT::Ticket');
         $RT::IR::ConstituencyCache->{$_[0]->id}  = undef;
-        
     };
 
     require RT::Ticket;
@@ -352,7 +352,8 @@ wrap 'RT::ObjectCustomFieldValue::Content',
         my $queue = RT::Queue->new($RT::SystemUser);
         $queue->Load($self->__Value('Queue'));
 
-        # We do this, rather than fall through to the orignal sub, as that interacts poorly with our overloaded QueueObj below
+        # We do this, rather than fall through to the orignal sub, as that
+        # interacts poorly with our overloaded QueueObj below
         if ( $self->CurrentUser->id == $RT::SystemUser->id ) {
             $_[-1] =  [$queue];
             return;
@@ -388,6 +389,28 @@ wrap 'RT::ObjectCustomFieldValue::Content',
         $_[-1] = $queue;
         return;
     };
+
+    wrap 'RT::Queue::HasRight', pre => sub {
+        return if $_[0]->{'_for_ticket'};
+        return unless $_[0]->__Value('Name') =~
+            /^(Incidents|Incident Reports|Investigations|Blocks)$/i;
+
+        my $name = $1;
+        my %args = (@_[1..(@_-2)]);
+        $args{'Principal'} ||= $_[0]->CurrentUser;
+
+        my $queues = RT::Queues->new( $RT::SystemUser );
+        $queues->Limit( FIELD => 'Name', OPERATOR => 'STARTSWITH', VALUE => "$name - " );
+        my $has_right = $args{'Principal'}->HasRight(
+            %args,
+            Object => $_[0],
+            EquivObjects => $queues->ItemsArrayRef,
+        );
+        $_[-1] = $has_right;
+        return;
+    };
+
+
 
     { 
         package RT::Queue;
