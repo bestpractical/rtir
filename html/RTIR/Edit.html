@@ -85,6 +85,7 @@
     <td class="label"><&|/l&>Time Worked</&>:</td>
     <td class="value"><input name="TimeWorked" value="<%$Ticket->TimeWorked|h%>" size="5" /></td>
   </tr>
+% if ( $constituency_propagation ne 'reject' || !$has_parent ) {
   <tr>
     <td class="labeltop"><&|/l&>Constituency</&>:</td>
     <td class="value">
@@ -93,6 +94,7 @@
          Name => 'Constituency' &>
     </td>
   </tr>
+% }
 
 % if ($Type eq 'Report') {
   <tr>
@@ -255,6 +257,15 @@ $CanRespond = 1 if ( $Ticket->CurrentUserHasRight('ReplyToTicket') or
 $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
                      $Ticket->CurrentUserHasRight('ModifyTicket') );
 
+my $constituency_propagation = RT->Config->Get('_RTIR_Constituency_Propagation');
+my $has_parent = 0;
+if ( $constituency_propagation eq 'reject' ) {
+    my $query = "Queue = 'Incidents' AND HasMember = ". $Ticket->id;
+    my $tickets = RT::Tickets->new( $RT::SystemUser );
+    $tickets->FromSQL( $query );
+    $tickets->RowsPerPage(1);
+    $has_parent = $tickets->First ? 1 : 0;
+}
 
 if ( $SaveChanges && !$OnlySearchForPeople ) {
     my $checks_failure = 0;

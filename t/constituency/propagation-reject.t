@@ -9,7 +9,7 @@ require "t/rtir-test.pl";
 # XXX: we should use new RT::Test features and start server with
 # option we want.
 if ( RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject' ) {
-    plan tests => 127;
+    plan tests => 200;
 } else {
     plan skip_all => 'constituency propagation algorithm is not "reject"';
 }
@@ -116,7 +116,7 @@ diag "create an incident with EDUNET, then try to create children using"
         my $id = create_rtir_ticket(
             $agent, $queue,
             {
-                Subject => "test ip",
+                Subject => "test constituency",
                 Incident => $incident_id,
             },
             { Constituency => 'GOVNET' },
@@ -152,7 +152,7 @@ diag "create an incident with EDUNET and check that we can create children"
         my $id = create_rtir_ticket_ok(
             $agent, $queue,
             {
-                Subject => "test ip",
+                Subject => "test constituency",
                 Incident => $incident_id,
             },
             { Constituency => 'EDUNET' },
@@ -219,5 +219,93 @@ diag "create an IR create an Incident with different constituency"
     $agent->content_unlike(qr/incident report #$ir_id/, 'no IR on the page');
 }
 
-# TODO: decide what to do with Edit page when we're using reject algorithm
+
+diag "check that we can change constituency of an unlinked ticket using 'Edit' page"
+    if $ENV{'TEST_VERBOSE'};
+{
+    # blocks are always linked to an incident
+    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations' ) {
+        my $id = create_rtir_ticket_ok(
+            $agent, $queue,
+            { Subject => "test constituency" },
+            { Constituency => 'GOVNET' },
+        );
+        DBIx::SearchBuilder::Record::Cachable::FlushCache();
+
+        {
+            my $ticket = RT::Ticket->new( $RT::SystemUser );
+            $ticket->Load( $id );
+            ok $ticket->id, 'loaded ticket';
+            is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+                'GOVNET', 'correct value';
+        }
+        
+        display_ticket($agent, $id);
+        $agent->follow_link( text => 'Edit' );
+        $agent->form_number(3);
+        $agent->select("Object-RT::Ticket-$id-CustomField-". $cf->id ."-Values" => 'EDUNET' );
+        $agent->click('SaveChanges');
+        $agent->content_like(qr/Constituency .* changed to EDUNET/mi, 'field is changed');
+        DBIx::SearchBuilder::Record::Cachable::FlushCache();
+
+        {
+            my $ticket = RT::Ticket->new( $RT::SystemUser );
+            $ticket->Load( $id );
+            ok $ticket->id, 'loaded ticket';
+            is uc $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+                'EDUNET', 'correct value';
+        }
+    }
+}
+
+diag "check that we can change constituency of an unlinked ticket using 'Edit' page"
+    if $ENV{'TEST_VERBOSE'};
+{
+    my $incident_id = create_rtir_ticket_ok(
+        $agent, 'Incidents',
+        { Subject => "test" },
+        { Constituency => 'EDUNET' },
+    );
+    {
+        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        $ticket->Load( $incident_id );
+        ok $ticket->id, 'loaded ticket';
+        is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+            'EDUNET', 'correct value';
+    }
+
+    foreach my $queue( 'Blocks', 'Incident Reports', 'Investigations' ) {
+        my $id = create_rtir_ticket_ok(
+            $agent, $queue,
+            {
+                Subject => "test constituency",
+                Incident => $incident_id,
+            },
+            { Constituency => 'EDUNET' },
+        );
+        DBIx::SearchBuilder::Record::Cachable::FlushCache();
+        {
+            my $ticket = RT::Ticket->new( $RT::SystemUser );
+            $ticket->Load( $id );
+            ok $ticket->id, 'loaded ticket';
+            is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+                'EDUNET', 'correct value';
+        }
+        
+        display_ticket($agent, $id);
+        $agent->follow_link( text => 'Edit' );
+        my $form = $agent->form_number(3);
+        ok !eval { $form->value('Constituency') }, 'no constituency hidden field';
+        ok !$form->find_input( "Object-RT::Ticket-$id-CustomField-". $cf->id ."-Values" ),
+            'no constituency select box';
+    }
+
+    # check incident as it's linked now
+    display_ticket($agent, $incident_id);
+    $agent->follow_link( text => 'Edit' );
+    my $form = $agent->form_number(3);
+    ok !eval { $form->value('Constituency') }, 'no constituency hidden field';
+    ok !$form->find_input( "Object-RT::Ticket-$incident_id-CustomField-". $cf->id ."-Values" ),
+        'no constituency select box';
+}
 

@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 109;
+use Test::More tests => 82;
 require "t/rtir-test.pl";
 
 use_ok('RT::IR');
@@ -108,32 +108,31 @@ diag "check that we can edit value" if $ENV{'TEST_VERBOSE'};
     }
 }
 
-my $eduhandler = RT::User->new($RT::SystemUser);
-$eduhandler->Create(Name => 'eduhandler-'.$$, Privileged => 1);
-ok($eduhandler->id, "Created eduhandler");
-my $govhandler = RT::User->new($RT::SystemUser);
-$govhandler->Create(Name => 'govhandler-'.$$, Privileged => 1);
-ok($govhandler->id, "Created govhandler");
+my $eduhandler = RT::Test->load_or_create_user( Name => 'eduhandler' );
+ok $eduhandler->id, "Created eduhandler";
 
-my $govqueue = RT::Queue->new($RT::SystemUser);
-$govqueue->LoadByCols(Name => 'Incident Reports - GOVNET');
-unless ($govqueue->id) {
-$govqueue->Create(Name => 'Incident Reports - GOVNET', CorrespondAddress => 'govnet@example.com');
-}
-ok ($govqueue->id);
-my $eduqueue = RT::Queue->new($RT::SystemUser);
-$eduqueue->LoadByCols(Name => 'Incident Reports - EDUNET');
-unless ($eduqueue->id)  {$eduqueue->Create(Name => 'Incident Reports - EDUNET', CorrespondAddress => 'edunet@example.com' )};
-ok($eduqueue->id);
+my $govhandler = RT::Test->load_or_create_user( Name => 'govhandler' );
+ok $govhandler->id, "Created govhandler";
+
+my $govqueue = RT::Test->load_or_create_queue(
+    Name => 'Incident Reports - GOVNET',
+    CorrespondAddress => 'govnet@example.com',
+);
+ok $govqueue->id, "loaded or created queue";
+
+my $eduqueue = RT::Test->load_or_create_queue(
+    Name => 'Incident Reports - EDUNET',
+    CorrespondAddress => 'edunet@example.com',
+);
+ok $eduqueue->id, "loaded or created queue";
+
 diag "Grant govhandler the right to see tickets in Incident Reports - GOVNET" if $ENV{'TEST_VERBOSE'};
-
 { 
     my ($val,$msg)  = $govhandler->PrincipalObj->GrantRight(Right => 'ShowTicket', Object => $govqueue);
     ok ($val,$msg);
 
     ok($govqueue->HasRight(Principal => $govhandler, Right => 'ShowTicket'), "Govhnadler can see govtix"); 
     ok(!$govqueue->HasRight(Principal => $eduhandler, Right => 'ShowTicket'), "eduhandler can not see gov tix"); 
-
 }
 
 
@@ -144,6 +143,8 @@ diag "Grant eduhandler the right to see tickets in Incident Reports - EDUNET" if
     ok($eduqueue->HasRight(Principal => $eduhandler, Right => 'ShowTicket'), "For the eduqueue, eduhandler can see tix"); 
     ok(!$eduqueue->HasRight(Principal => $govhandler, Right => 'ShowTicket'), "For the eduqueue, govhandler can not seetix"); 
 }
+
+
 diag "Create an incident report with a default constituency of EDUNET" if $ENV{'TEST_VERBOSE'};
 
 
@@ -161,13 +162,18 @@ $ticket->Load($ir_id);
 $ticket->AddWatcher(Type => 'Requestor', Email => 'enduser@example.com');
 $ticket->Correspond(Content => 'Testing');
 my $txns = $ticket->Transactions;
-my $from;
-while (my $txn = $txns->Next) {
-    next unless ($txn->Type eq 'EmailRecord');
-    $from = $txn->Attachments->First->GetHeader('From');
+$txns->Limit( FIELD => 'Type', VALUE => 'EmailRecord' );
+ok $txns->Count, 'we have at least one email record';
+
+my $from_ok = 1;
+while ( my $txn = $txns->Next ) {
+    my $from = $txn->Attachments->First->GetHeader('From');
+    next if $from =~ /edunet/;
+
+    $from_ok = 0;
     last;
 }
-ok($from =~ /edunet/, "The from address pciked up the edunet address");
+ok $from_ok, "The from address picked up the edunet address";
 
 
 diag "govhandler can't see the incident report"       if $ENV{'TEST_VERBOSE'};

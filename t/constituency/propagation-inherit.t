@@ -117,7 +117,7 @@ diag "create an incident with EDUNET, then create children using Incident input 
         my $id = create_rtir_ticket_ok(
             $agent, $queue,
             {
-                Subject => "test ip",
+                Subject => "test constituency",
                 Incident => $incident_id,
             },
             { Constituency => 'GOVNET' },
@@ -155,7 +155,7 @@ diag "check that constituency propagates from a child to a parent after 'Edit', 
         my $child_id = create_rtir_ticket_ok(
             $agent, $queue,
             {
-                Subject => "test ip",
+                Subject => "test constituency",
                 Incident => $incident_id,
             },
             { Constituency => 'GOVNET' },
