@@ -47,7 +47,7 @@
 &>
 % }
 
-<& /Elements/ShowLock, Ticket => $TicketObj, Unlock => 0, Id => $Id &>
+% $m->callback(CallbackName => 'ShowLock', %ARGS, Ticket => $TicketObj);
 <& /Elements/ListActions, actions => \@results &>
 
 % if ( $Split && !$TicketObj->CurrentUserHasRight('ModifyTicket') ) {
@@ -329,10 +329,10 @@
 </form>
 
 <%INIT>
+
 my $QueueObj = new RT::Queue( $session{'CurrentUser'} );
 $QueueObj->Load( $Queue ) || Abort( loc("Queue could not be loaded.") );
 
-my $Id;
 
 my $Type = RT::IR::TicketType( Queue => $Queue );
 if ($Type eq 'Block' && RT->Config->Get('RTIR_DisableBlocksQueue') ) {
@@ -424,12 +424,8 @@ if ( $ARGS{'Create'} ) {
 
     unless ( $checks_failure ) {
         $ARGS{'new-MemberOf'} = $parentvalue if $parentvalue;
-        my $Duration;
-        if($TicketObj) {
-            ($Duration) = $TicketObj->Unlock();
-            $Id = $TicketObj->id;
-        }
-        return $m->comp( 'Display.html', %ARGS, SkipNotification => \@SkipNotification, results => \@results, Duration => $Duration, Id => $Id );
+        $m->callback(CallbackName => 'BeforeDisplay', Ticket => $TicketObj, ARGSref => \%ARGS);
+        return $m->comp( 'Display.html', %ARGS, SkipNotification => \@SkipNotification, results => \@results );
     }
     unshift @results, loc("Creation failed:");
 }

@@ -35,7 +35,7 @@
     current_subtab => "RTIR/Search/Refine.html",
 &>
 
-<& /Elements/ShowLock, Ticket => $IncidentObj, Unlock => 0 &> 
+% $m->callback(CallbackName => 'ShowLock', Ticket => $IncidentObj);
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="Reply.html" method="get">
@@ -99,8 +99,10 @@
 my (@results);
 
 my $IncidentObj = LoadTicket( $id );
-$IncidentObj->Lock();
+
 $id = $ARGS{'id'} = $IncidentObj->id;
+
+$m->callback(CallbackName => 'Initial', %ARGS, Ticket => $IncidentObj);
 
 # XXX: we should get rid of DefaultStatus argument at all. use Status
 $Status ||= $DefaultStatus; $DefaultStatus ||= $Status;
@@ -208,13 +210,9 @@ if ( $SubmitTicket ) {
         push @results, loc("State of the Incident left unchanged; not all children were updated");
     }
 
-	my $Duration;
-	if(my $lock = $IncidentObj->Locked()) {
-		$Duration = time() - $lock->Content->{'Timestamp'};
-		$IncidentObj->Unlock();
-	}
+    $m->callback(CallbackName => 'BeforeDisplay', ARGSref => \%ARGS, Ticket => $IncidentObj);
 
-    return $m->comp("Display.html", results => \@results, id => $id, Duration => $Duration);
+    return $m->comp("Display.html", %ARGS, results => \@results, id => $id);
 }
 
 # XXX, BLOODY-DIRTY-EVIL HACK: when we load the page first time we should

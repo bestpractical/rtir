@@ -29,7 +29,7 @@
     current_subtab => "RTIR/Edit.html?id=".$Ticket->Id, 
     Title => $Title &>
 
-<& /Elements/ShowLock, Ticket => $Ticket, Unlock => 0 &>          
+% $m->callback(CallbackName => 'ShowLock', Ticket => $Ticket);          
 <& /Elements/ListActions, actions => \@results &>
 
 % if (!$Ticket->CurrentUserHasRight('ModifyTicket')) {
@@ -224,9 +224,10 @@
 
 <%INIT>
 my $Ticket = LoadTicket($id);
-$Ticket->Lock();
+
 $id = $ARGS{'id'} = $Ticket->Id;
 
+$m->callback(CallbackName => 'Initial', %ARGS, Ticket => $Ticket);
 
 my $Type = RT::IR::TicketType( Ticket => $Ticket );
 
@@ -285,13 +286,9 @@ if ( $SaveChanges && !$OnlySearchForPeople ) {
         push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
     }
     if ( !$checks_failure && RT->Config->Get('DisplayAfterEdit', $session{'CurrentUser'}) ) {
-    	my $Duration;
-    	if(my $lock = $Ticket->Locked()) {
-    		$Duration = time() - $lock->Content->{'Timestamp'};
-    		$Ticket->Unlock();
-    	}
-    		
-        return $m->comp("/RTIR/Display.html", results => [@results], id => $id, Duration => $Duration);
+        $m->callback(CallbackName => 'BeforeDisplay', ARGSref => \%ARGS, Ticket => $Ticket);
+            
+        return $m->comp("/RTIR/Display.html", %ARGS, results => [@results], id => $id);
     }
 }
  

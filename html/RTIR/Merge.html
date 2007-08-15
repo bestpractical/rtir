@@ -35,7 +35,7 @@
     current_subtab => 'RTIR/Search/Refine.html',
 &>
 
-<& /Elements/ShowLock, Ticket => $Ticket, Unlock => 0 &> 
+% $m->callback(CallbackName => 'ShowLock', Ticket => $Ticket);
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -67,19 +67,16 @@
 
 <%INIT>
 my $Ticket = LoadTicket($id);
-$Ticket->Lock();
+
 $id = $ARGS{'id'} = $Ticket->id;
+
+$m->callback(CallbackName => 'Initial', %ARGS, Ticket => $Ticket);
 
 my (@results);
 if ( $SelectedTicket ) {
-	my $MergeTicket = LoadTicket( $SelectedTicket );
+    my $MergeTicket = LoadTicket( $SelectedTicket );
 
-	if(my $lock = $Ticket->Locked()) {
-		my $lockType = $lock->Content->{'Type'};
-		$MergeTicket->Lock($lockType);
-		$Ticket->Unlock('Hard');	#We don't need any locks on the merged-from ticket, since it's now the merge-to ticket
-		$MergeTicket->Unlock();		#Remove if it's an auto lock
-	}
+    $m->callback(CallbackName => 'MergeTicketSelected', MergeFrom => $Ticket, MergeTo => $MergeTicket);
 
     my @queues = sort map {$_->Name} $Ticket->QueueObj, $MergeTicket->QueueObj;
     if ( $queues[0] eq $queues[1] or ($queues[0] eq "Incident Reports" and $queues[1] eq "Investigations")) {

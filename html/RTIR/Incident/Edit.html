@@ -30,7 +30,7 @@
     Title => loc("Edit Incident #[_1]: [_2]", 
     $Ticket->Id, $Ticket->Subject) &>
 
-<& /Elements/ShowLock, Ticket => $Ticket, Unlock => 0 &> 
+% $m->callback(CallbackName => 'ShowLock', Ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
 
 % unless ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
@@ -53,8 +53,8 @@
     </td>
     <td class="value">
       <& /RTIR/Elements/ShowRTIRField, 
-	Name => 'State', 
-	Ticket => $Ticket &>
+    Name => 'State', 
+    Ticket => $Ticket &>
     </td>
   </tr>
   <tr>
@@ -74,8 +74,8 @@
     <td class="value">
       <& /RTIR/Elements/EditRTIRField, 
          TicketObj => $Ticket, 
-	 Name => 'Description',
-	 Cols => 60 &>
+     Name => 'Description',
+     Cols => 60 &>
     </td>
   </tr>
   <tr>
@@ -91,8 +91,8 @@
     <td class="value">
       <& /RTIR/Elements/EditRTIRField, 
          TicketObj => $Ticket, 
-	 Name => 'Constituency',
-	 Rows => 1 &>
+     Name => 'Constituency',
+     Rows => 1 &>
     </td>
   </tr>
   <tr>
@@ -100,8 +100,8 @@
     <td class="value">
       <& /RTIR/Elements/EditRTIRField, 
          TicketObj => $Ticket, 
-	 Name => 'Function',
-	 Rows => 1 &>
+     Name => 'Function',
+     Rows => 1 &>
     </td>
   </tr>
   <tr>
@@ -109,8 +109,8 @@
     <td class="value">
       <& /RTIR/Elements/EditRTIRField, 
          TicketObj => $Ticket, 
-	 Name => 'Classification',
-	 Rows => 1 &>
+     Name => 'Classification',
+     Rows => 1 &>
     </td>
   </tr>
   <tr>
@@ -118,7 +118,7 @@
     <td class="value">
       <& /RTIR/Elements/EditRTIRField,
          TicketObj => $Ticket,
-	     Name => 'IP',
+         Name => 'IP',
          Cols => 40 &>
     </td>
   </tr>
@@ -127,8 +127,8 @@
     <td class="value">
       <& /RTIR/Elements/EditRTIRField,
          TicketObj => $Ticket,
-	     Name => 'Resolution',
-	     Rows => 1 &>
+         Name => 'Resolution',
+         Rows => 1 &>
     </td>
   </tr>
 </table>
@@ -154,8 +154,11 @@
 
 <%INIT>
 my $Ticket = LoadTicket($id);
-$Ticket->Lock();
+
 $id = $ARGS{'id'} = $Ticket->Id;
+
+
+$m->callback(CallbackName => 'Initial', %ARGS, Ticket => $Ticket);
 
 my $CanRespond = 0;
 my $CanComment = 0;
@@ -189,19 +192,16 @@ if ( $SaveChanges && !$OnlySearchForPeople ) {
     RT->Config->Set( StrictLinkACL => $strict_acl );
 
     $ARGS{UpdateAttachments} = $session{'Attachments'};
-   	push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef=>\%ARGS );
+       push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef=>\%ARGS );
 
     my $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
     if ($newstate ne $oldstate) {
         push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
     }
     if ( !$checks_failure && RT->Config->Get('DisplayAfterEdit', $session{'CurrentUser'}) ) {
-    	my $Duration;
-    	if(my $lock = $Ticket->Locked()) {
-    		$Duration = time() - $lock->Content->{'Timestamp'};
-    		$Ticket->Unlock();
-    	}
-        return $m->comp("/RTIR/Incident/Display.html", results => [@results], id => $id, Duration => $Duration );
+        $m->callback(CallbackName => 'BeforeDisplay', ARGSref => \%ARGS, Ticket => $Ticket);
+
+        return $m->comp("/RTIR/Incident/Display.html", %ARGS, results => [@results], id => $id );
     }
 }
 

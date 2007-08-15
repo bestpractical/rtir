@@ -30,8 +30,7 @@
     current_subtab => 'RTIR/Display.html?id='.$Ticket->id,
     Title => $Title &>
 
-% $Duration ||= $ARGS{'Duration'};
-<& /Elements/ShowLock, Ticket => $Ticket, Duration => $Duration, Id => $ARGS{'Id'}, Unlock => $Unlock &>
+% $m->callback(CallbackName => 'ShowLock', %ARGS, Ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
 <table border="0" cellpadding="0" cellspacing="2" width="100%">
 <tr>
@@ -209,8 +208,6 @@
 <%INIT>
 my ($name);
 my $Ticket = new RT::Ticket( $session{'CurrentUser'} );
-my $Duration;
-my $Unlock = 1;
 
 my $QueueObj;
 unless ( $id eq 'new' ) {
@@ -248,11 +245,7 @@ if ( $id eq 'new' ) {
         push @results, $msg;
         # If they succeeded in taking the ticket, they should also get a lock
         if ($status && $action =~  /^(?:Take|Steal)$/) {
-            if($Type eq 'Report' && !RT::IR::Ticket::IsLinkedToActiveIncidents($Ticket)) {
-                $Ticket->Lock('Take');
-                $Unlock = 0;
-                push @results, 'You have a lock on this report until you link it to an incident';
-            }
+            $m->callback(CallbackName => 'TicketTakeOrSteal', %ARGS, Ticket => $Ticket, Type => $Type, Results => \@results);
         }
     }
 
@@ -260,30 +253,17 @@ if ( $id eq 'new' ) {
     if ( $ARGS{'TakeOrStealFirst'} and $Ticket->Owner != $Ticket->CurrentUser->Id) {
         my ($status, $msg) = $Ticket->SetOwner($Ticket->CurrentUser->Id, 'Force');
         push @results, $msg if $msg;
-
+        
         # If they succeeded in taking the ticket, they should also get a lock
-        if ($status) { $ARGS{'Lock'} = 'add'; }
-    }
-
-    if ( $ARGS{'Lock'} ) {
-
-        if ( $ARGS{'Lock'} eq 'add' ) {
-            if ( $Ticket->Lock('Hard') ) {
-                push @results, loc('You now have a lock on this ticket');
-            } else {
-                push @results, loc('Your attempt to lock this ticket failed');
-
-            }
-        } elsif ( $ARGS{'Lock'} eq 'remove' ) {
-            my $msg;
-            ($Duration, $msg) = $Ticket->Unlock('Hard');
-            push @results, loc($msg);
-
-        } elsif ( $ARGS{'Lock'} eq 'break' ) {
-            $Ticket->BreakLock();
-            push @results, loc('You have broken the lock on this ticket');
+        ## Should they? This should only happen when a ticket is rejected, do we want to lock it?
+        if ($status) { 
+            $m->callback(CallbackName => 'TicketTakeOrSteal', %ARGS, Ticket => $Ticket, Type => $Type, Results => \@results); 
         }
     }
+    $m->callback(CallbackName => 'ProcessLockArgument', 
+                Ticket => $Ticket,
+                ARGSref => \%ARGS,  
+                Actions => \@results);
 
 
     $ARGS{UpdateAttachments} = delete $session{'Attachments'};

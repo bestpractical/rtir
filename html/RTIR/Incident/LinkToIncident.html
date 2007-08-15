@@ -38,7 +38,7 @@
    current_subtab => "RTIR/Search/Refine.html",
 &>
 
-<& /Elements/ShowLock, Ticket => $ChildObj, Unlock => 0 &> 
+% $m->callback(CallbackName => 'ShowLock', Ticket => $ChildObj);
 
 <form action="<% RT->Config->Get('WebPath') %>/RTIR/Incident/Display.html" method="post">
 <input type="hidden" name="Child" value="<% $id %>" />
@@ -67,8 +67,11 @@
 
 <%INIT>
 my $ChildObj = LoadTicket($id);
-$ChildObj->Lock();
+
 $ARGS{'id'} = $id = $ChildObj->id;
+
+
+$m->callback(CallbackName => 'Initial', %ARGS, Ticket => $ChildObj);
 
 my $Type = RT::IR::TicketType( Ticket => $ChildObj );
 my $title = loc( "Link [_1] #[_2] to selected Incident", $Type, $id );

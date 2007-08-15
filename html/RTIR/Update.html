@@ -29,9 +29,9 @@
     Title => $title &>
 
 
-<& /Elements/ShowLock, Ticket => $Ticket, Unlock => 0 &>
+% $m->callback(CallbackName => 'ShowLock', Ticket => $Ticket);
 <form action="Update.html" name="TicketUpdate" 
-	method="post" enctype="multipart/form-data">
+    method="post" enctype="multipart/form-data">
 <input type="hidden" name="QuoteTransaction" value="<% $ARGS{'QuoteTransaction'} || '' %>" />
 % if ( $ARGS{'Status'} ) {
 <input type="hidden" name="DefaultStatus" value="<% $DefaultStatus %>" />
@@ -107,8 +107,11 @@
 
 my $title;
 my $Ticket = LoadTicket($id);
-$Ticket->Lock() unless $Ticket->Locked();
+
 $id = $ARGS{'id'} = $Ticket->Id;
+
+
+$m->callback(CallbackName => 'Initial', %ARGS, Ticket => $Ticket);
 
 my $Type = RT::IR::TicketType( Ticket => $Ticket );
 
@@ -168,10 +171,9 @@ $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
 $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 
 if ( exists $ARGS{SubmitTicket} ) {
-	my $lock = $Ticket->Locked();
-	my $Duration = time() - $lock->Content->{'Timestamp'} if $lock;
-	$Ticket->Unlock();
-    return $m->comp('/RTIR/Display.html', Duration => $Duration, %ARGS);
+    $m->callback(CallbackName => 'BeforeDisplay', ARGSref => \%ARGS, Ticket => $Ticket);
+
+    return $m->comp('/RTIR/Display.html', %ARGS);
 }
 
 </%INIT>

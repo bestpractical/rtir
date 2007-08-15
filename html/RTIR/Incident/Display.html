@@ -22,6 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
+
 <& /RTIR/Elements/Header, Title => loc("Incident #[_1]: [_2]", $id, $TicketObj->Subject) &>
 <& /RTIR/Incident/Elements/Tabs, 
     Ticket => $TicketObj, 
@@ -29,9 +30,7 @@
     current_subtab => 'RTIR/Display.html?id='.$id,
     Title => loc("Incident #[_1]: [_2]", $id, $TicketObj->Subject) &>
     
-% $Duration ||= $ARGS{'Duration'};
-% my $Id = $ARGS{'Id'} || $ARGS{'Child'};
-<& /Elements/ShowLock, Ticket => $TicketObj, Duration => $Duration, Id => $Id &>
+% $m->callback(CallbackName => 'ShowLock', %ARGS, Ticket => $TicketObj);
 <& /Elements/ListActions, actions => \@results &>
 
 <table border="0" cellpadding="0" cellspacing="2" width="100%"><tr><td valign="top" width="50%">
@@ -245,7 +244,6 @@
     ForwardPath => RT->Config->Get('WebPath') ."/RTIR/Forward.html",
 &>
 <%INIT>
-my $Duration;
 
 if ($SelectedTicket) {
     $id = $SelectedTicket;
@@ -256,7 +254,7 @@ Abort('No incident specified') unless $id;
 if( $Child ) {
     my $ChildObj = RT::Ticket->new( $session{'CurrentUser'} );
     $ChildObj->Load($Child);
-    ($Duration) = $ChildObj->Unlock('Take');
+    $m->callback(CallbackName => 'ThisLinkedToIR', ARGSref => \%ARGS, Child => $ChildObj);
 }
 
 
@@ -342,34 +340,10 @@ if( 1 ) {
         if ($res && $action =~  /^(?:Take|Steal)$/) { $ARGS{'Lock'} = 'add'; }
 
     }
-    if ( $ARGS{'Lock'} ) {
-
-        if ( $ARGS{'Lock'} eq 'add' ) {
-            if ( $TicketObj->Lock('Hard') ) {
-                push @results, loc('You now have a lock on this ticket');
-            } else {
-                push @results, loc('Your attempt to lock this ticket failed');
-
-            }
-        } elsif ( $ARGS{'Lock'} eq 'remove' ) {
-            my $lock = $TicketObj->Locked();
-            unless($lock) {
-                push @results, loc('This ticket was not locked');
-            } elsif ( $lock->Content->{'User'} == $session{'CurrentUser'}->id ) {
-                $Duration = time() - $lock->Content->{'Timestamp'};
-                $TicketObj->Unlock('Hard');
-                push @results, loc('You have unlocked this ticket');
-            } else {
-                push @results,
-                    loc("You can't unlock tickets that you did not lock");
-
-            }
-
-        } elsif ( $ARGS{'Lock'} eq 'break' ) {
-            $TicketObj->BreakLock();
-            push @results, loc('You have broken the lock on this ticket');
-        }
-    }
+    $m->callback(CallbackName => 'ProcessLockArgument', 
+                Ticket => $TicketObj,
+                ARGSref => \%ARGS,  
+                Actions => \@results);
 
 
     unless( $new_ticket ) {
