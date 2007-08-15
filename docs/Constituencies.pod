@@ -1,6 +1,6 @@
 =head1 REQUIREMENTS for Multiple Constituency functionality
 
- SWITCHCERT, and several other CSIRT’s provide services for more than one constituency.
+SWITCHCERT, and several other CSIRT’s provide services for more than one constituency.
 For a variety of reasons, it makes sense to separate these constituencies, particularly when handling
 incidents. However, it also makes sense to use the same tools when working on these separate sources
 of data. Depending on the constituency different users may wish to work on incidents within different
@@ -37,7 +37,12 @@ queue (incident report, incident, blocks, investigation)
 Of course the last two points require that the user has the right to do so,
 according to the ACLs. All tickets must belong to a constituency.
 
-=head1 IMPLEMENTATION DETAILS 
+=head1 IMPLEMENTATION DETAILS
+
+=head2 Mandatory
+
+The constituency field is a mandatory field, so users must select value for
+the field during creation of tickets in RTIR's queues.
 
 =head2 Constituency values
 
@@ -45,7 +50,101 @@ Constituency is a custom field that applies to all RTIR's queues. Administrator
 can manage the field and its values via the web interface: RT -> Configuration ->
 Custom Fields -> click on '_RTIR_Constituency' record in the list. At the bottom
 of the page there is control elements to add, delete and rename values of
-the constituency field(D.3.5.1).
+the constituency field.
+
+However, to get advanced control over constituencies you have to create additional
+objects in the system. We'll describe steps below, but as well admins may use
+F<add_constituency> script in the etc dir, which helps add new constituency
+values with additional groups and queues.
+
+=head2 Value propagation algorithms
+
+An administrator can use C<$_RTIR_Constituency_Propagation> config option to
+choose RTIR's behaviour on constituency inheritance between linked tickets.
+There are three algorithms at the moment: 'no', 'inherit' and 'reject'.
+
+Before we'll start discussing algorithms in depth let's figure main ways of
+setting and changing value of the field:
+
+=over4
+
+=item Creating a new ticket without links.
+
+The simplest case. User creates a new ticket and there is no reference to
+another ticket which already exists in the system. For example user creates
+an IR using the Web UI by clicking RTIR -> Incident Reports -> New Report,
+fills in values, leaves the Incident input blank. In this case default value
+from the config is used, however user can change constituency.
+
+Similar situation happenning when ticket is created using the email interface,
+but read more about that in 'Presetting constituency according to mail
+traffic' chapter below.
+
+=item Creating a new ticket with a link.
+
+RTIR allows user to create new tickets and link them with another one
+at one step. For example a user can create a new IR from an Incident
+or launch an Investigation from it. When user is looking on a creation
+page we already know all information about a ticket he's creating a new
+one from, so we select default constituency value using the ticket user
+is going to link to. This is one of situations where the option plays
+its role. Depending on the config we allow user to change constituency of
+the new ticket or not.
+
+There is another way you should pay attention to, when user is creating
+a ticket he can enter ID of an Incident into input field. In this case
+we don't know anything about the incident beforhead and operation may
+be interruped later on the form submit.
+
+=item Changing the value
+
+Changing constituency of a ticket can affect linked tickets as well.
+
+=back
+
+Ok, let's return back to propagation algorithms:
+
+=head3 no
+
+This is the default algorithm. Any combinations are allowed. Users can link
+tickets with different constituencies, changing the value of a ticket doesn't
+effect linked tickets. However, reasonable defaults are suggested. For example
+when user creates a new ticket from another one we select constituency of the
+latter ticket by default instead of using value from the config.
+
+=head3 reject
+
+This algorithm doesn't allow user to link tickets with different value of
+the field.
+
+Users can not change value when create a new ticket from another one.
+
+During linking tickets together list of possible candidates is restricted by
+constituency of the former ticket, so user may not choose targets with different
+constituencies.
+
+XXX: we still have no a decision on what to do when a user tries to change
+constituency of a ticket via 'Edit' page.
+
+=head3 inherit
+
+This algorithm is something in between of the above two. Operations are not
+rejected, instead we prefer value of a new incident when user links tickets
+together.
+
+If user uses 'New' or 'Launch' links on the main view of an incident,
+investigation, incident report or block to create new linked ticket then
+creation page contains predefined value for constituency and couldn't be
+changed at this step.
+
+Changing constituency value is possible through the 'Edit' page. RTIR
+updates all related tickets too during this action, so all have the same
+value.
+
+Note that during linking tickets together list of possible candidates
+is not restricted by constituency of the former ticket, so user may
+choose targets with different constituencies. In the latter case incident's
+constituency value is always prefered.
 
 =head2 ACLs
 
@@ -97,23 +196,9 @@ address as follows in /etc/aliases:
 
 rt-mailgate script expect that MTA sets the EXTENSION environment variable
 with value of "flag". Script adds this value to the incoming message in
-the 'X-RT-Mail-Extension' header's field.
+the 'X-RT-Mail-Extension' header's field. If an incoming mail has
+'X-RT-Mail-Extension: <valid constituency value>' header field then new
+ticket is created and constituency set according to field value.
 
-=head2 Constituency inheritance
-
-* If incoming mail has 'X-RT-Mail-Extension: <valid constituency value>'
-  header field then new ticket is created and constituency set according
-  to field value. See 'Presetting constituency according to mail traffic'
-  above.
-* If user uses 'New' or 'Launch' links on the main view of an incident,
-  investigation, incident report or block to create new linked ticket
-  then creation page contains predefined value for constituency and couldn't
-  be changed at this step.
-* Changing constituency value is possible through the 'Edit' page. RTIR
-  updates all related tickets too during this action.
-
-Note that during linking tickets together list of possible candidates
-is not restricted by constituency of the former ticket, so user may
-choose targets with different constituencies. In the latter case new
-constituency value is not defined as it wasn't defined in requirements.
-We hope to get some feedback from you on this subject during testing.
+The constituency field is mandatory so if the mail gate is not configured
+then default value from the config is used.
