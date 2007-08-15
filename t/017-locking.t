@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 111;
+use Test::More tests => 109;
 use HTTP::Cookies;
 
 require "t/rtir-test.pl";
@@ -36,8 +36,6 @@ diag("Testing hard lock") if $ENV{'TEST_VERBOSE'};
 $agent->goto_ticket($report);
 $agent->follow_link_ok({text => 'Lock', n => '1'}, "Followed 'Lock' link");
 $agent->content_like(qr{<div class="locked-by-you">\s*You have locked this ticket\.}ims, "Added a hard lock on ticket $report");
-$agent->content_like(qr{<a href="/Ticket/Display.html\?id=$report&Lock=remove">Unlock</a>}i,
-                        "Unlock link found");
 $lock = $ir_obj->Locked();
 ok(($lock->Content->{'Type'} eq 'Hard'), "Lock is a Hard lock");
 
@@ -46,14 +44,19 @@ ok(($lock->Content->{'Type'} eq 'Hard'), "Lock is a Hard lock");
 ###for a while for this test to finish###
 
 my $expire = RT->Config->Get('LockExpiry');
-sleep $expire;
 
-$agent->follow_link_ok({text => 'Display', n =>'1'}, "Going back to display page for IR #$report");
-$agent->content_unlike(qr{<div class="locked-by-you">}, "IR #$report not locked anymore (lock expired)");
-ok(!$ir_obj->Locked(), "Lock not in the database");
+SKIP: {
+    skip 'Not testing lock expiry--expiration feature turned off', 4 unless $expire;
+    sleep $expire;
+
+    $agent->follow_link_ok({text => 'Display', n =>'1'}, "Going back to display page for IR #$report");
+    $agent->content_unlike(qr{<div class="locked-by-you">}, "IR #$report not locked anymore (lock expired)");
+    ok(!$ir_obj->Locked(), "Lock not in the database");
 
 
-$agent->follow_link_ok({text => 'Lock', n => '1'}, "Followed 'Lock' link again");
+    $agent->follow_link_ok({text => 'Lock', n => '1'}, "Followed 'Lock' link again");
+}
+
 sleep 5;    #Otherwise, we run the risk of getting "You have locked this ticket" (see /Elements/ShowLock)
 
 ###Testing Update.html locking###
@@ -221,8 +224,6 @@ diag("Testing hard lock") if $ENV{'TEST_VERBOSE'};
 $agent->goto_ticket($inc);
 $agent->follow_link_ok({text => 'Lock', n => '1'}, "Followed 'Lock' link");
 $agent->content_like(qr{<div class="locked-by-you">\s*You have locked this ticket\.}ims, "Added a hard lock on ticket $inc");
-$agent->content_like(qr{<a href="/Ticket/Display.html\?id=$inc&Lock=remove">Unlock</a>}i,
-                        "Unlock link found");
 $lock = $inc_obj->Locked();
 ok(($lock->Content->{'Type'} eq 'Hard'), "Lock is a Hard lock");
 sleep 5;    #Otherwise, we run the risk of getting "You have locked this ticket" (see /Elements/ShowLock)
