@@ -35,7 +35,7 @@
     current_subtab => "RTIR/Search/Refine.html",
 &>
 
-% $m->callback(CallbackName => 'ShowLock', Ticket => $IncidentObj);
+% $m->callback(CallbackName => 'BeforeActionList', Ticket => $IncidentObj);
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="Reply.html" method="get">

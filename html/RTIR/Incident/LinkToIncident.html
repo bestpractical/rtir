@@ -38,7 +38,7 @@
    current_subtab => "RTIR/Search/Refine.html",
 &>
 
-% $m->callback(CallbackName => 'ShowLock', Ticket => $ChildObj);
+% $m->callback(CallbackName => 'BeforeActionList', Ticket => $ChildObj);
 
 <form action="<% RT->Config->Get('WebPath') %>/RTIR/Incident/Display.html" method="post">
 <input type="hidden" name="Child" value="<% $id %>" />

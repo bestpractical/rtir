@@ -30,7 +30,7 @@
     Ticket => $TicketObj &>
 
 
-% $m->callback(CallbackName => 'ShowLock', %ARGS, Ticket => $TicketObj);
+% $m->callback(CallbackName => 'BeforeActionList', %ARGS, Ticket => $TicketObj);
 <& /Elements/ListActions, actions => \@results &>
 
 <%PERL>
@@ -290,7 +290,7 @@ if ( !$checks_failure && $CreateIncident ) {
         }
     }
     if( $inc_obj ) {
-        $m->callback(CallbackName => 'BeforeDisplayIncident', ARGSref => \%ARGS, Child => $ChildObj);
+        $m->callback(CallbackName => 'BeforeDisplay', ARGSref => \%ARGS, Child => $ChildObj);
 
         return $m->comp('Display.html', %ARGS, id => $inc_obj->id, results => \@results );
     }

@@ -29,7 +29,7 @@
     current_subtab => "RTIR/Edit.html?id=".$Ticket->Id, 
     Title => $Title &>
 
-% $m->callback(CallbackName => 'ShowLock', Ticket => $Ticket);          
+% $m->callback(CallbackName => 'BeforeActionList', Ticket => $Ticket);          
 <& /Elements/ListActions, actions => \@results &>
 
 % if (!$Ticket->CurrentUserHasRight('ModifyTicket')) {

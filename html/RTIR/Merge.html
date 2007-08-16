@@ -35,7 +35,7 @@
     current_subtab => 'RTIR/Search/Refine.html',
 &>
 
-% $m->callback(CallbackName => 'ShowLock', Ticket => $Ticket);
+% $m->callback(CallbackName => 'BeforeActionList', Ticket => $Ticket);
 
 <& /Elements/ListActions, actions => \@results &>
 

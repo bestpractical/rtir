@@ -30,7 +30,7 @@
     current_subtab => 'RTIR/Display.html?id='.$id,
     Title => loc("Incident #[_1]: [_2]", $id, $TicketObj->Subject) &>
     
-% $m->callback(CallbackName => 'ShowLock', %ARGS, Ticket => $TicketObj);
+% $m->callback(CallbackName => 'BeforeActionList', %ARGS, Ticket => $TicketObj);
 <& /Elements/ListActions, actions => \@results &>
 
 <table border="0" cellpadding="0" cellspacing="2" width="100%"><tr><td valign="top" width="50%">
@@ -323,6 +323,11 @@ if ( $id eq 'new' ) {
     $TicketObj = LoadTicket( $id );
 }
 
+$m->callback(CallbackName => 'ProcessArguments', 
+            Ticket => $TicketObj,
+            ARGSref => \%ARGS,  
+            Actions => \@results);
+
 unless( $TicketObj->QueueObj->Name eq 'Incidents' ) {
     return $m->comp('/RTIR/Display.html', %ARGS );
 }
@@ -340,10 +345,7 @@ if( 1 ) {
         if ($res && $action =~  /^(?:Take|Steal)$/) { $ARGS{'Lock'} = 'add'; }
 
     }
-    $m->callback(CallbackName => 'ProcessLockArgument', 
-                Ticket => $TicketObj,
-                ARGSref => \%ARGS,  
-                Actions => \@results);
+
 
 
     unless( $new_ticket ) {
