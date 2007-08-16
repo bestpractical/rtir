@@ -123,8 +123,8 @@ During linking tickets together list of possible candidates is restricted by
 constituency of the former ticket, so user may not choose targets with different
 constituencies.
 
-XXX: we still have no a decision on what to do when a user tries to change
-constituency of a ticket via 'Edit' page.
+Changing constituency value through the 'Edit' page is possible ONLY if
+the ticket is not linked another tickets.
 
 =head3 inherit
 
