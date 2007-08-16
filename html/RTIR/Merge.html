@@ -35,7 +35,7 @@
     current_subtab => 'RTIR/Search/Refine.html',
 &>
 
-% $m->callback(CallbackName => 'BeforeActionList', Ticket => $Ticket);
+% $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSref => \%ARGS, Ticket => $Ticket);
 
 <& /Elements/ListActions, actions => \@results &>
 

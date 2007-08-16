@@ -47,7 +47,7 @@
 &>
 % }
 
-% $m->callback(CallbackName => 'BeforeActionList', %ARGS, Ticket => $TicketObj);
+% $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSref => \%ARGS, Ticket => $TicketObj);
 <& /Elements/ListActions, actions => \@results &>
 
 % if ( $Split && !$TicketObj->CurrentUserHasRight('ModifyTicket') ) {

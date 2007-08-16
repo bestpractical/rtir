@@ -30,7 +30,7 @@
     Ticket => $TicketObj &>
 
 
-% $m->callback(CallbackName => 'BeforeActionList', %ARGS, Ticket => $TicketObj);
+% $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSref => \%ARGS, Ticket => $TicketObj);
 <& /Elements/ListActions, actions => \@results &>
 
 <%PERL>
@@ -210,12 +210,9 @@ if ( $Child ) {
     $ChildObj = LoadTicket( $Child );
     $Child = $ARGS{'Child'} = $ChildObj->id;
     $ARGS{'Subject'} ||= $ChildObj->Subject;
-    $m->callback(CallbackName => 'LinkToNewIncident', ARGSref => \%ARGS, Child => $ChildObj);
 }
 
-if($Split && ($ARGS{'CreateIncident'} || $ARGS {'CreateWithInvestigation'})) {
-    $m->callback(CallbackName => 'SplitSubmitted', ARGSref => \%ARGS, Ticket => $TicketObj);
-}
+$m->callback(CallbackName => 'ProcessArguments', ARGSref => \%ARGS, Ticket => $TicketObj, Child => $ChildObj);
 
 
 my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );

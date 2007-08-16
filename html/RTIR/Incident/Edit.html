@@ -30,7 +30,7 @@
     Title => loc("Edit Incident #[_1]: [_2]", 
     $Ticket->Id, $Ticket->Subject) &>
 
-% $m->callback(CallbackName => 'BeforeActionList', Ticket => $Ticket);
+% $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSref => \%ARGS, Ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
 
 % unless ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
