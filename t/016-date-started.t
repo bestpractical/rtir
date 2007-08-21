@@ -17,8 +17,6 @@ use_ok('RT::IR');
 my $agent = default_agent();
 my $rtir_user = RT::CurrentUser->new( rtir_user() );
 
-my %clicky = map { lc $_ => 1 } RT->Config->Get('Active_MakeClicky');
-
 diag "started date of an investigation" if $ENV{'TEST_VERBOSE'};
 {
     my $id = create_investigation($agent, {Subject => "started date"});
