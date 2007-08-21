@@ -182,7 +182,7 @@ Set($RTIRSearchResultFormats, {
     RejectReports =>
         q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',
           '<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>',
-          __Requestors__, __OwnerName__, __CreatedRelative__, __DueRelative__},
+          __HasIncident__, __Requestors__, __OwnerName__, __CreatedRelative__, __DueRelative__},
 
     BulkReply =>
         q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',

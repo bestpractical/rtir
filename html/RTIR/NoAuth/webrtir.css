@@ -3,6 +3,10 @@
     color: red;
 }
 
+.collection-as-table > .yes {
+    background: yellow;
+}
+
 ul.userlist {
     margin:0;
     padding: 0;
