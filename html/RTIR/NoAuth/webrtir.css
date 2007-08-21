@@ -36,7 +36,7 @@ div.locked-by-you {
     margin: 1em;
 }    
 
-div.locked {
+.locked, .no-recipients {
     background: #ffcccc; 
     width: 80%;
     align: center;
