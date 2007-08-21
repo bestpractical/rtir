@@ -29,7 +29,7 @@ sub default_agent {
     my $agent = new RT::Test::Web;
     $agent->cookie_jar( HTTP::Cookies->new );
     $agent->login($RTIR_TEST_USER, $RTIR_TEST_PASS);
-    go_home($agent);
+    $agent->get_ok("/RTIR/index.html", "Loaded home page");
     return $agent;
 }
 
@@ -40,12 +40,6 @@ sub set_custom_field {
     my $field_name = $agent->value($cf_name) or return 0;
     $agent->field($field_name, $val);
     return 1;
-}
-
-sub go_home {
-    my $agent = shift;
-    my $weburl = RT->Config->Get('WebURL');
-    $agent->get_ok("$weburl/RTIR/index.html", "Loaded home page");
 }
 
 sub display_ticket {
@@ -154,8 +148,7 @@ sub goto_create_rtir_ticket {
         'Incidents'        => 'Incident'
     );
 
-    go_home($agent);
-
+    $agent->get_ok("/RTIR/index.html", "Loaded home page");
     $agent->follow_link_ok({text => $queue, n => "1"}, "Followed '$queue' link");
     $agent->follow_link_ok({text => "New ". $type{ $queue }, n => "1"}, "Followed 'New $type{$queue}' link");
     
@@ -354,7 +347,8 @@ sub create_incident_and_investigation {
     my $cfs = shift || {};
     my $ir_id = shift;
 
-    $ir_id ? display_ticket($agent, $ir_id) : go_home($agent);
+    $ir_id ? display_ticket($agent, $ir_id)
+        : $agent->get_ok("/RTIR/index.html", "Loaded home page");
 
     if($ir_id) {
         # Select the "New" link from the Display page
