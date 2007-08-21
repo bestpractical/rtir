@@ -43,16 +43,21 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
- 
-
 
 package RT::Condition::RTIR_CustomerResponse;
 
-
 use strict;
+use warnings;
 
 use base 'RT::Condition::RTIR';
 
+=head1 NAME
+
+RT::Condition::RTIR_CustomerResponse - check for customers corresponds
+
+=head1 DESCRIPTION
+
+=head1 METHODS
 
 =head2 IsApplicable
 
@@ -63,13 +68,11 @@ If the message was from someone not the owner.
 sub IsApplicable {
     my $self = shift;
 
-    if ($self->TransactionObj->Type eq 'Correspond' && 
-        $self->TicketObj->Owner ne $self->TransactionObj->Creator) {
-        return 1;
-    } else {
-        return 0;
-    }
+    # we're interested in corresponds only
+    return 0 unless $self->TransactionObj->Type eq 'Correspond';
 
+    # and reply not from staff member
+    return !$self->IsStaff;
 }
 
 eval "require RT::Condition::RTIR_CustomerResponse_Vendor";
@@ -78,4 +81,3 @@ eval "require RT::Condition::RTIR_CustomerResponse_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/RTIR_CustomerResponse_Local.pm});
 
 1;
-

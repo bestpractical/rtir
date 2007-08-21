@@ -63,13 +63,11 @@ If the message was from the owner.
 sub IsApplicable {
     my $self = shift;
 
-    if ($self->TransactionObj->Type eq 'Correspond' && 
-        $self->TicketObj->Owner eq $self->TransactionObj->Creator) {
-        return 1;
-    } else {
-        return 0;
-    }
+    # we're interested in corresponds only
+    return 0 unless $self->TransactionObj->Type eq 'Correspond';
 
+    # and reply from staff member
+    return $self->IsStaff;
 }
 
 eval "require RT::Condition::RTIR_StaffResponse_Vendor";
