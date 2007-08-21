@@ -47,27 +47,28 @@
 package RT::Action::RTIR_SetDueToNow;
 
 use strict;
+use warnings;
+
 use RT::IR;
 use base 'RT::Action::RTIR';
 
+=head1 NAME
+
+RT::Action::RTIR_SetDueToNow - set due date to now
+
+=head1 DESCRIPTION
+
+Set Due date of a ticket to now.
+
+=head1 METHODS
+
 =head2 Prepare
 
-Determine if it's a User Response.
+Always commit action.
 
 =cut
 
-
-sub Prepare {
-    my $self = shift;
-
-    if ($self->TicketObj->Owner ne $self->TransactionObj->Creator) {
-        return 1;
-    } else {
-        return 0;
-    }
-}
-
-# {{{ sub Commit
+sub Prepare { return 1 }
 
 =head2 Commit
 
@@ -78,29 +79,24 @@ Set the Due date to a configured value.
 sub Commit {
     my $self = shift;
 
-    # create a new SLA object
     my $SLAObj = RT::IR::SLAInit();
-
-    # Set the defaults from the RTIR_Config.pm file
     $SLAObj->SetInHoursDefault(RT->Config->Get('SLA_Response_InHours'));
     $SLAObj->SetOutOfHoursDefault(RT->Config->Get('SLA_Response_OutOfHours'));
-
-    # set the Business::Hours
-    my $bh = RT::IR::BusinessHours();
-    $SLAObj->SetBusinessHours($bh);
+    $SLAObj->SetBusinessHours( RT::IR::BusinessHours() );
 
     # get the due date
     my $time = time;
     my $due = $SLAObj->Due( $time, $SLAObj->SLA( $time ) );
 
     my $date = RT::Date->new($RT::SystemUser);
-    $date->Set(Format => 'unix', Value => $due);
-    $self->TicketObj->SetDue($date->ISO);
+    $date->Set( Format => 'unix', Value => $due );
+    my ($status, $msg) = $self->TicketObj->SetDue( $date->ISO );
+    $RT::Logger->error($msg) unless $status;
+
+    $RT::Logger->debug( "Set Due to now: ". $date->ISO );
 
     return 1;
 }
-
-# }}}
 
 eval "require RT::Action::RTIR_SetDueToNow_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_SetDueToNow_Vendor.pm});
