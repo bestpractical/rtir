@@ -19,8 +19,7 @@ for( my $i = 0; $i < 4; $i++ ) {
     push @irs, create_ir($agent, { Subject => "for bulk reject \#$i" });
 }
 
-go_home($agent);
-
+$agent->get_ok('/RTIR/index.html', 'open rtir at glance');
 {
     $agent->follow_link_ok({ text => '[Bulk Reject]' }, "Followed 'bulk reject' link");
 

@@ -46,7 +46,7 @@ sub display_ticket {
     my $agent = shift;
     my $id = shift;
 
-    $agent->get_ok(RT->Config->Get('WebURL') . "/RTIR/Display.html?id=$id", "Loaded Display page for Ticket #$id");
+    $agent->get_ok("/RTIR/Display.html?id=$id", "Loaded Display page for Ticket #$id");
 }
 
 sub ticket_state {
@@ -100,28 +100,14 @@ sub ticket_is_not_linked_to_inc {
     return 1;
 }
 
-sub create_user {
-    my $user_obj = rtir_user();
-
-    ok($user_obj->Id > 0, "Successfully found the user");
-    
-    my $group_obj = RT::Group->new(RT::SystemUser());
-    $group_obj->LoadUserDefinedGroup("DutyTeam");
-    ok($group_obj->Id > 0, "Successfully found the DutyTeam group");
-
-    $group_obj->AddMember($user_obj->Id);
-    ok($group_obj->HasMember($user_obj->PrincipalObj), "user is in the group");
-}
-
 sub rtir_user {
-    my $u = RT::Test->load_or_create_user(
+    return RT::Test->load_or_create_user(
         Name         => $RTIR_TEST_USER,
         Password     => $RTIR_TEST_PASS,
         EmailAddress => "$RTIR_TEST_USER\@example.com",
         RealName     => "$RTIR_TEST_USER Smith",
-        Privileged   => 1,
+        MemberOf     => 'DutyTeam',
     );
-    return $u;
 }
 
 sub create_incident {

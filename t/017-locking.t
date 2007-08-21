@@ -351,7 +351,6 @@ $agent->follow_link_ok({text => 'Lock', n => '1'}, "Hard locked to test multi-us
 
 diag("Testing IR locking from other user's point of view");
 
-go_home($root);
 display_ticket($root, $report);
 $root->content_like(qr{<div class="locked">}, "IR #$report is locked by another");
 $root->follow_link_ok({text => 'Break lock', n => '1'}, "Breaking lock on IR #$report");

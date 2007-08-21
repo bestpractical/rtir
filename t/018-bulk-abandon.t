@@ -74,7 +74,7 @@ sub bulk_abandon {
 	my $agent = shift;
 	my @to_abandon = @_;
 	
-	go_home($agent);
+    $agent->get_ok('/RTIR/index.html', 'get rtir at glance page');
 	$agent->follow_link_ok({text => "Incidents", n => '1'}, "Followed 'Incidents' link");
 	$agent->follow_link_ok({text => "Bulk Abandon", n => '1'}, "Followed 'Bulk Abandon' link");
 	
