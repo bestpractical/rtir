@@ -28,6 +28,7 @@ use RT::Test::Web;
 sub default_agent {
     my $agent = new RT::Test::Web;
     $agent->cookie_jar( HTTP::Cookies->new );
+    rtir_user();
     $agent->login($RTIR_TEST_USER, $RTIR_TEST_PASS);
     $agent->get_ok("/RTIR/index.html", "Loaded home page");
     return $agent;
