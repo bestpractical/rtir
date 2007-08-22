@@ -219,8 +219,8 @@ if ( $SubmitTicket ) {
     }
 
     $m->callback(CallbackName => 'BeforeDisplay', ARGSref => \%ARGS, Ticket => $IncidentObj);
-
-    return $m->comp("Display.html", %ARGS, results => \@results, id => $id);
+    # NOTE: don't pass %ARGS further as we've done everything we need here
+    return $m->comp("Display.html", results => \@results, id => $id);
 }
 
 # XXX, BLOODY-DIRTY-EVIL HACK: when we load the page first time we should
