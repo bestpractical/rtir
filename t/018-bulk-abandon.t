@@ -1,7 +1,7 @@
 use strict;
 
 use Test::WWW::Mechanize;
-use Test::More tests => 105;
+use Test::More tests => 106;
 
 require "t/rtir-test.pl";
 
@@ -48,11 +48,11 @@ resolve_rtir_ticket($agent, $ir_ids[0], 'Incident Report');
 
 my @invests;
 
-push @invests, create_investigation($agent, {Incident => $incident_ids[0], Subject => 'Investigation 1 for incident ' . $incident_ids[0]});
-push @invests, create_investigation($agent, {Incident => $incident_ids[0], Subject => 'Investigation 2 for incident ' . $incident_ids[0]});
+push @invests, create_investigation($agent, {Incident => $incident_ids[0], Subject => 'Inv 1 for inc ' . $incident_ids[0]});
+push @invests, create_investigation($agent, {Incident => $incident_ids[0], Subject => 'Inv 2 for inc ' . $incident_ids[0]});
 
-push @invests, create_investigation($agent, {Incident => $incident_ids[1], Subject => 'Investigation 1 for incident ' . $incident_ids[1]});
-push @invests, create_investigation($agent, {Incident => $incident_ids[0], Subject => 'Investigation 2 for incident ' . $incident_ids[1]});
+push @invests, create_investigation($agent, {Incident => $incident_ids[1], Subject => 'Inv 1 for inc ' . $incident_ids[1]});
+push @invests, create_investigation($agent, {Incident => $incident_ids[0], Subject => 'Inv 2 for inc ' . $incident_ids[1]});
 
 resolve_rtir_ticket($agent, $invests[0], 'Investigation');
 
@@ -73,10 +73,15 @@ foreach my $id (@invests) {
 sub bulk_abandon {
 	my $agent = shift;
 	my @to_abandon = @_;
+    
+    diag "going to bulk abandon incidents ". join ',', map "#$_", @to_abandon
+        if $ENV{'TEST_VERBOSE'};
 	
     $agent->get_ok('/RTIR/index.html', 'get rtir at glance page');
 	$agent->follow_link_ok({text => "Incidents", n => '1'}, "Followed 'Incidents' link");
 	$agent->follow_link_ok({text => "Bulk Abandon", n => '1'}, "Followed 'Bulk Abandon' link");
+
+    $agent->content_unlike(qr/no incidents/i, 'have an incident');
 	
 	# Check that the desired incident occurs in the list of available incidents; if not, keep
 	# going to the next page until you find it (or get to the last page and don't find it,
@@ -97,8 +102,12 @@ sub bulk_abandon {
 		ok_and_content_like($agent, qr{<li>Ticket $id: State changed from \w+ to abandoned</li>}i, "Incident $id abandoned");
 	}
 	
-	$agent->form_number(3);
-	ok($agent->value('BulkAbandon'), "Still on Bulk Abandon page");
+    if ( $agent->content =~ /no incidents/i ) {
+        ok(1, 'no more incidents');
+    } else {
+    	$agent->form_number(3);
+    	ok($agent->value('BulkAbandon'), "Still on Bulk Abandon page");
+    }
 }
 
 sub resolve_rtir_ticket {
