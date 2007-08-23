@@ -30,7 +30,7 @@
     current_subtab => 'RTIR/Display.html?id='.$id,
     Title => loc("Incident #[_1]: [_2]", $id, $TicketObj->Subject) &>
     
-% $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSref => \%ARGS, Ticket => $TicketObj);
+% $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Ticket => $TicketObj);
 <& /Elements/ListActions, actions => \@results &>
 
 <table border="0" cellpadding="0" cellspacing="2" width="100%"><tr><td valign="top" width="50%">
@@ -254,7 +254,7 @@ Abort('No incident specified') unless $id;
 if( $Child ) {
     my $ChildObj = RT::Ticket->new( $session{'CurrentUser'} );
     $ChildObj->Load($Child);
-    $m->callback(CallbackName => 'ThisLinkedToIR', ARGSref => \%ARGS, Child => $ChildObj);
+    $m->callback(CallbackName => 'ThisLinkedToIR', ARGSRef => \%ARGS, Child => $ChildObj);
 }
 
 
@@ -325,7 +325,7 @@ if ( $id eq 'new' ) {
 
 $m->callback(CallbackName => 'ProcessArguments', 
             Ticket => $TicketObj,
-            ARGSref => \%ARGS,  
+            ARGSRef => \%ARGS,  
             Actions => \@results);
 
 unless( $TicketObj->QueueObj->Name eq 'Incidents' ) {

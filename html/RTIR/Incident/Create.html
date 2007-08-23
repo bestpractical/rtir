@@ -30,7 +30,7 @@
     Ticket => $TicketObj &>
 
 
-% $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSref => \%ARGS, Ticket => $TicketObj);
+% $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Ticket => $TicketObj);
 <& /Elements/ListActions, actions => \@results &>
 
 <%PERL>
@@ -212,7 +212,7 @@ if ( $Child ) {
     $ARGS{'Subject'} ||= $ChildObj->Subject;
 }
 
-$m->callback(CallbackName => 'ProcessArguments', ARGSref => \%ARGS, Ticket => $TicketObj, Child => $ChildObj);
+$m->callback(CallbackName => 'ProcessArguments', ARGSRef => \%ARGS, Ticket => $TicketObj, Child => $ChildObj);
 
 
 my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
@@ -287,7 +287,7 @@ if ( !$checks_failure && $CreateIncident ) {
         }
     }
     if( $inc_obj ) {
-        $m->callback(CallbackName => 'BeforeDisplay', ARGSref => \%ARGS, Child => $ChildObj);
+        $m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Child => $ChildObj);
 
         return $m->comp('Display.html', %ARGS, id => $inc_obj->id, results => \@results );
     }

@@ -30,7 +30,7 @@
     current_subtab => 'RTIR/Display.html?id='.$Ticket->id,
     Title => $Title &>
 
-% $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSref => \%ARGS, Ticket => $Ticket);
+% $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
 <table border="0" cellpadding="0" cellspacing="2" width="100%">
 <tr>
@@ -242,7 +242,7 @@ if ( $id eq 'new' ) {
     
 $m->callback(CallbackName => 'ProcessArguments', 
         Ticket => $Ticket,
-        ARGSref => \%ARGS,  
+        ARGSRef => \%ARGS,  
         Actions => \@results);
 
     if ( $ARGS{'Action'} && $ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/ ) {

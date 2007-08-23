@@ -29,7 +29,7 @@
     Title => $title &>
 
 
-% $m->callback(CallbackName => 'BeforeActionList', ARGSref => \%ARGS, Ticket => $Ticket);
+% $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $Ticket);
 <form action="Update.html" name="TicketUpdate" 
     method="post" enctype="multipart/form-data">
 <input type="hidden" name="QuoteTransaction" value="<% $ARGS{'QuoteTransaction'} || '' %>" />
@@ -171,7 +171,7 @@ $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
 $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 
 if ( exists $ARGS{SubmitTicket} ) {
-    $m->callback(CallbackName => 'BeforeDisplay', ARGSref => \%ARGS, Ticket => $Ticket);
+    $m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Ticket => $Ticket);
 
     return $m->comp('/RTIR/Display.html', %ARGS);
 }

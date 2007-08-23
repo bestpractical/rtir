@@ -35,7 +35,7 @@
     current_subtab => "RTIR/Search/Refine.html",
 &>
 
-% $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSref => \%ARGS, Ticket => $IncidentObj);
+% $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $IncidentObj);
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="Reply.html" method="get">
@@ -218,7 +218,7 @@ if ( $SubmitTicket ) {
         push @results, loc("State of the Incident left unchanged; not all children were updated");
     }
 
-    $m->callback(CallbackName => 'BeforeDisplay', ARGSref => \%ARGS, Ticket => $IncidentObj);
+    $m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Ticket => $IncidentObj);
     # NOTE: don't pass %ARGS further as we've done everything we need here
     return $m->comp("Display.html", results => \@results, id => $id);
 }

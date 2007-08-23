@@ -29,7 +29,7 @@
     current_subtab => "RTIR/Edit.html?id=".$Ticket->Id, 
     Title => $Title &>
 
-% $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSref => \%ARGS, Ticket => $Ticket);          
+% $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket);          
 <& /Elements/ListActions, actions => \@results &>
 
 % if (!$Ticket->CurrentUserHasRight('ModifyTicket')) {
@@ -297,7 +297,7 @@ if ( $SaveChanges && !$OnlySearchForPeople ) {
         push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
     }
     if ( !$checks_failure && RT->Config->Get('DisplayAfterEdit', $session{'CurrentUser'}) ) {
-        $m->callback(CallbackName => 'BeforeDisplay', ARGSref => \%ARGS, Ticket => $Ticket);
+        $m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Ticket => $Ticket);
             
         return $m->comp("/RTIR/Display.html", %ARGS, results => [@results], id => $id);
     }
