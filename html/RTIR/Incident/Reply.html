@@ -218,9 +218,15 @@ if ( $SubmitTicket ) {
         push @results, loc("State of the Incident left unchanged; not all children were updated");
     }
 
-    $m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Ticket => $IncidentObj);
+    my $pass = {};
+    $m->callback(
+        CallbackName => 'BeforeDisplay',
+        ARGSRef => \%ARGS,
+        PassArguments => $pass,
+        Ticket => $IncidentObj
+    );
     # NOTE: don't pass %ARGS further as we've done everything we need here
-    return $m->comp("Display.html", results => \@results, id => $id);
+    return $m->comp("Display.html", %$pass, results => \@results, id => $id);
 }
 
 # XXX, BLOODY-DIRTY-EVIL HACK: when we load the page first time we should
