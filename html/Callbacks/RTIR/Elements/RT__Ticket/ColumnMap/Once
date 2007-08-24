@@ -65,12 +65,29 @@ $COLUMN_MAP->{'HasIncident'} = {
 $COLUMN_MAP->{'RequestorsKey'} = {
     title     => 'Requestors',
     attribute => 'Requestor.EmailAddress',
-    value => sub { return $_[0]->Requestors->MemberEmailAddressesAsString }
+    value => sub {
+        my $t = shift;
+        my @requestors = $t->Requestors->MemberEmailAddresses;
+        for (@requestors)
+        {
+            if ("we don't have key") {
+                $_ .= " (no pubkey!)";
+            }
+        }
+        return join ', ', @requestors;
+    }
 };
 $COLUMN_MAP->{'OwnerNameKey'} = {
     title     => 'Owner',
     attribute => 'Owner',
-    value     => sub { return $_[0]->OwnerObj->Name }
+    value     => sub {
+        my $t = shift;
+        my $email = $t->OwnerObj->EmailAddress;
+        if ("we don't have key") {
+            $email .= " (no pubkey!)";
+        }
+        return $email;
+    }
 };
 
 </%INIT>
