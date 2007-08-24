@@ -62,6 +62,16 @@ $COLUMN_MAP->{'HasIncident'} = {
         return \$yesno;
     },
 };
+$COLUMN_MAP->{'RequestorsKey'} = {
+    title     => 'Requestors',
+    attribute => 'Requestor.EmailAddress',
+    value => sub { return $_[0]->Requestors->MemberEmailAddressesAsString }
+};
+$COLUMN_MAP->{'OwnerNameKey'} = {
+    title     => 'Owner',
+    attribute => 'Owner',
+    value     => sub { return $_[0]->OwnerObj->Name }
+};
 
 </%INIT>
 <%ARGS>
