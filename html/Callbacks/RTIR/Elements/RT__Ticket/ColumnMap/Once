@@ -1,4 +1,5 @@
 <%INIT>
+use RT::Crypt::GnuPG;
 
 # XXX: map RTIR hidden custom fields staticaly because user has no rights
 # to see this CFs we need to hack over ACLs
@@ -68,10 +69,11 @@ $COLUMN_MAP->{'RequestorsKey'} = {
     value => sub {
         my $t = shift;
         my @requestors = $t->Requestors->MemberEmailAddresses;
-        for (@requestors)
+        for my $email (@requestors)
         {
-            if ("we don't have key") {
-                $_ .= " (no pubkey!)";
+            my %key = RT::Crypt::GnuPG::GetKeyInfo($email);
+            if (!defined $key{'info'}) {
+                $email .= " (no pubkey!)";
             }
         }
         return join ', ', @requestors;
@@ -85,7 +87,8 @@ $COLUMN_MAP->{'OwnerNameKey'} = {
         my $email = $t->OwnerObj->EmailAddress;
         return $email if $email eq '';
 
-        if ("we don't have key") {
+        my %key = RT::Crypt::GnuPG::GetKeyInfo($email);
+        if (!defined $key{'info'}) {
             $email .= " (no pubkey!)";
         }
         return $email;
