@@ -83,6 +83,8 @@ $COLUMN_MAP->{'OwnerNameKey'} = {
     value     => sub {
         my $t = shift;
         my $email = $t->OwnerObj->EmailAddress;
+        return $email if $email eq '';
+
         if ("we don't have key") {
             $email .= " (no pubkey!)";
         }
