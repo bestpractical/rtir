@@ -187,7 +187,7 @@ Set($RTIRSearchResultFormats, {
     BulkReply =>
         q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
           '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
-          __RequestorsKey__, __OwnerNameKey__, __CreatedRelative__, __DueRelative__},
+          __KeyRequestors__, __KeyOwnerName__, __CreatedRelative__, __DueRelative__},
 
     DueIncidents =>
         q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
