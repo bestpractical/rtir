@@ -57,11 +57,41 @@ objects in the system. We'll describe steps below, but as well admins may use
 F<add_constituency> script in the etc dir, which helps add new constituency
 values with additional groups and queues.
 
+=head2 Managing constituency values
+
+In common situation administrators may use the web interface to add/delete or rename
+values to the field, however if you want to get advanced access control you have to
+create several queues and groups for each value. To simplify this task we've
+implemented script F<add_constituency> script. You can find it in the etc directory
+of RTIR's tarball. This script adds new value to the field and creates several
+objects in the system if those don't exist and grant basic set of rights.
+
+For example the following objects affect constituency 'EDUNET':
+
+=over 4
+
+=item * Queue 'Incident Reports - EDUNET'
+=item * Queue 'Incidents - EDUNET'
+=item * Queue 'Inestigations - EDUNET'
+=item * Queue 'Blocks - EDUNET'
+=item * Group 'DutyTeam EDUNET'
+
+=back
+
+As each of these queues have the same properties as other RT/RTIR's queues then
+you can set constituency base correspond and comment addresses. Read more about
+that below.
+
+Read more about granting rights using special queues and groups below in ACLs
+section.
+
 =head2 Value propagation algorithms
 
 An administrator can use C<$_RTIR_Constituency_Propagation> config option to
 choose RTIR's behaviour on constituency inheritance between linked tickets.
 There are three algorithms at the moment: 'no', 'inherit' and 'reject'.
+
+=head3 Introduction
 
 Before we'll start discussing algorithms in depth let's figure main ways of
 setting and changing value of the field:
@@ -146,36 +176,21 @@ is not restricted by constituency of the former ticket, so user may
 choose targets with different constituencies. In the latter case incident's
 constituency value is always prefered.
 
-=head2 ACLs
-
-RTIR allows you to grant additional rights to tickets based on their
-constituency by means of "pseudo" queues.
-
-For example, assume you have two constituencies "EDUNET" and "GOVNET".
-Your RTIR instance consists of four queues: Incident Reports,
-Incidents, Investigations and Blocks.  To grant the user "Edward"
-the right to work with EDUNET Incident Reports, you'll need to
-create a new queue, "Incident Reports - EDUNET".  Make "Edward" an
-AdminCc of the new queue, either directly or as a member of a group
-like "DutyTeam - EDUNET".
-
-You should grant that user or group the rights you want them to
-have to tickets in the "Incident Reports" queue. It is important
-that you NOT grant the user or group "queue-wide" rights sunch as
-"See Queue" or "Create Ticket" in the pseudo-queue as the system
-will apply those rights to the pseudo-queue "Incident Reports -
-EUDNET" and NOT to the "Incident Reports" queue.
-
 =head2 Outgoing mail: "CorrespondAddress" and "CommentAddress"
 
-If you create queues as described in the ACL section, their
-correspondence and comment addresses will override the original
-queue's where possible.
+If you create queues as described in the L</Managing constituency values>
+section, their correspondence and comment addresses will override
+the original queue's where possible.
 
+For example an user replies to an IR with constituency EDUNET and RTIR
+sends notifications then correspond address of 'Incident Reports - EDUNET'
+queue is used in notifications, but only if it's not empty. If the field
+is empty then correspond address of 'Incident Reports' queue is used
+unless it's empty too. The last resort is $CorrespondAddress in the RT's
+config file.
 
-
-It is important to note that these additional rights do NOT also add new mailing rules.  
-
+It is important to note that these additional rights do NOT also
+add new mailing rules.  
 
 =head2 Presetting constituency according to mail traffic
 
@@ -202,3 +217,24 @@ ticket is created and constituency set according to field value.
 
 The constituency field is mandatory so if the mail gate is not configured
 then default value from the config is used.
+
+=head2 ACLs
+
+RTIR allows you to grant additional rights to tickets based on their
+constituency by means of "pseudo" queues.
+
+For example, assume you have two constituencies "EDUNET" and "GOVNET".
+Your RTIR instance consists of four queues: Incident Reports,
+Incidents, Investigations and Blocks.  To grant the user "Edward"
+the right to work with EDUNET Incident Reports, you'll need to
+create a new queue, "Incident Reports - EDUNET".  Make "Edward" an
+AdminCc of the new queue, either directly or as a member of a group
+like "DutyTeam EDUNET".
+
+You should grant that user or group the rights you want them to
+have to tickets in the "Incident Reports" queue. It is important
+that you NOT grant the user or group "queue-wide" rights sunch as
+"See Queue" or "Create Ticket" in the pseudo-queue as the system
+will apply those rights to the pseudo-queue "Incident Reports -
+EUDNET" and NOT to the "Incident Reports" queue.
+
