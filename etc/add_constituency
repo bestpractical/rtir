@@ -91,6 +91,20 @@ unless ( defined $constituency && length $constituency ) {
 
 $RT::Handle->BeginTransaction;
 
+if ( cf_value_exists( $constituency ) ) {
+    print <<END;
+Constituency '$constituency' already exists.
+
+If you continue then we'll...
+* create queues if they don't exist
+* create groups if they don't exist
+* grant basic set of rights
+
+END
+
+    exit 0 unless prompt_yN( "Do you want to proceed?" );
+}
+
 debug "Adding constituency $constituency";
 add_cf_value( $constituency );
 
@@ -165,6 +179,13 @@ $RT::Handle->Commit;
 
 debug "Done. Enjoy your new constituency.\n"; 
 
+sub prompt_yN {
+    my $text = shift;
+    print "$text [y/N] ";
+    return 0 unless <STDIN> =~ /^(?:y|yes)$/i;
+    return 1;
+}
+
 sub get_cf {
     my $cf = RT::CustomField->new( $RT::SystemUser );
     $cf->Load( "_RTIR_Constituency" );
@@ -174,16 +195,25 @@ sub get_cf {
     return $cf;
 }
 
+sub cf_value_exists {
+    my $value = shift;
+
+    debug "Check that the constituency exists";
+
+    my $cf = get_cf();
+    my $values = $cf->Values;
+    $values->Limit( FIELD => 'Name', VALUE => $value );
+    my $value_obj = $values->First;
+    return $value_obj && $value_obj->id? 1 : 0;
+}
+
 sub add_cf_value {
     my $value = shift;
 
     debug "Adding the value to the constituency CF";
 
     my $cf = get_cf();
-    my $values = $cf->Values;
-    $values->Limit( FIELD => 'Name', VALUE => $value );
-    my $value_obj = $values->First;
-    if ( $value_obj && $value_obj->id ) {
+    if ( cf_value_exists( $value ) ) {
         debug "Value '$value' already exists";
     } else {
         my ($val,$msg) = $cf->AddValue( Name => $value );
