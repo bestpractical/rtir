@@ -63,37 +63,6 @@ $COLUMN_MAP->{'HasIncident'} = {
         return \$yesno;
     },
 };
-$COLUMN_MAP->{'RequestorsKey'} = {
-    title     => 'Requestors',
-    attribute => 'Requestor.EmailAddress',
-    value => sub {
-        my $t = shift;
-        my @requestors = $t->Requestors->MemberEmailAddresses;
-        for my $email (@requestors)
-        {
-            my %key = RT::Crypt::GnuPG::GetKeyInfo($email);
-            if (!defined $key{'info'}) {
-                $email .= " (no pubkey!)";
-            }
-        }
-        return join ', ', @requestors;
-    }
-};
-$COLUMN_MAP->{'OwnerNameKey'} = {
-    title     => 'Owner',
-    attribute => 'Owner',
-    value     => sub {
-        my $t = shift;
-        my $email = $t->OwnerObj->EmailAddress;
-        return $email if $email eq '';
-
-        my %key = RT::Crypt::GnuPG::GetKeyInfo($email);
-        if (!defined $key{'info'}) {
-            $email .= " (no pubkey!)";
-        }
-        return $email;
-    }
-};
 
 </%INIT>
 <%ARGS>
