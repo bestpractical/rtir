@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 82;
+use Test::More tests => 111;
 require "t/rtir-test.pl";
 
 use_ok('RT::IR');
@@ -129,7 +129,7 @@ ok $eduqueue->id, "loaded or created queue";
 diag "Grant govhandler the right to see tickets in Incident Reports - GOVNET" if $ENV{'TEST_VERBOSE'};
 { 
     my ($val,$msg)  = $govhandler->PrincipalObj->GrantRight(Right => 'ShowTicket', Object => $govqueue);
-    ok ($val,$msg);
+    ok $val || $msg =~ /That principal already has that right/, $msg;
 
     ok($govqueue->HasRight(Principal => $govhandler, Right => 'ShowTicket'), "Govhnadler can see govtix"); 
     ok(!$govqueue->HasRight(Principal => $eduhandler, Right => 'ShowTicket'), "eduhandler can not see gov tix"); 
@@ -138,8 +138,8 @@ diag "Grant govhandler the right to see tickets in Incident Reports - GOVNET" if
 
 diag "Grant eduhandler the right to see tickets in Incident Reports - EDUNET" if $ENV{'TEST_VERBOSE'};
 { 
-    my ($val,$msg)  = $eduhandler->PrincipalObj->GrantRight(Right => 'ShowTicket', Object => $eduqueue);
-    ok ($val,$msg);
+    my ($val,$msg) = $eduhandler->PrincipalObj->GrantRight(Right => 'ShowTicket', Object => $eduqueue);
+    ok $val || $msg =~ /That principal already has that right/, $msg;
     ok($eduqueue->HasRight(Principal => $eduhandler, Right => 'ShowTicket'), "For the eduqueue, eduhandler can see tix"); 
     ok(!$eduqueue->HasRight(Principal => $govhandler, Right => 'ShowTicket'), "For the eduqueue, govhandler can not seetix"); 
 }
