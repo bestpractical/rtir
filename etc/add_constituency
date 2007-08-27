@@ -92,6 +92,7 @@ unless ( defined $constituency && length $constituency ) {
 $RT::Handle->BeginTransaction;
 
 debug "Adding constituency $constituency";
+add_cf_value( $constituency );
 
 my @queue_prefixes = ('Incidents', 'Incident Reports', 'Investigations', 'Blocks');
 
@@ -168,7 +169,7 @@ sub get_cf {
     my $cf = RT::CustomField->new( $RT::SystemUser );
     $cf->Load( "_RTIR_Constituency" );
     unless ( $cf->id ) {
-        die "Could load the cosntituency custom field";
+        die "Couldn't load the constituency custom field";
     }
     return $cf;
 }
