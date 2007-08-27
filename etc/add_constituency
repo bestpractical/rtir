@@ -91,24 +91,30 @@ unless ( defined $constituency && length $constituency ) {
 
 $RT::Handle->BeginTransaction;
 
-if ( cf_value_exists( $constituency ) ) {
-    print <<END;
-Constituency '$constituency' already exists.
+my @queue_prefixes = ('Incidents', 'Incident Reports', 'Investigations', 'Blocks');
 
-If you continue then we'll...
-* create queues if they don't exist
-* create groups if they don't exist
-* grant basic set of rights
+my $exist = cf_value_exists( $constituency );
+
+print "\nIf you continue then we'll...\n";
+if ( $exist ) {
+    print "* WARNING: skip adding constituency value, already exists.\n";
+} else {
+    print "* add new constituency value: '$constituency'.\n";
+}
+foreach (@queue_prefixes) {
+    print "* create queue '$_ - $constituency' if it doesn't exist\n";
+}
+print <<END;
+* create group 'DutyTeam $constituency' if it don't exist
+* create group 'ReadOnly $constituency' if it don't exist
+* grant basic set of rights to the groups on the queues
 
 END
 
-    exit 0 unless prompt_yN( "Do you want to proceed?" );
-}
+exit 0 unless prompt_yN( "Do you want to proceed?" );
 
 debug "Adding constituency $constituency";
 add_cf_value( $constituency );
-
-my @queue_prefixes = ('Incidents', 'Incident Reports', 'Investigations', 'Blocks');
 
 my %metaqueues;
 my %mainqueues;
