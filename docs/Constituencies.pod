@@ -270,3 +270,11 @@ privileges. We suggest leave DutyTeam and constituency specific group
 on the same level, however, you can join them using a new top level
 group.
 
+The same rules applies to user members of groups. Rights of all groups
+a user is member of are summed up and if he is member of DutyTeam with
+default of rights then he has more rights than any member of
+constituency specific group (who is not member of other groups).
+Considiring above suggestion a good way to deal with users is to place
+each user into constituency specific groups user should have access to
+and place her into DutyTeam only if he should work with all constituencies.
+
