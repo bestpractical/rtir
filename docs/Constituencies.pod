@@ -238,3 +238,35 @@ that you NOT grant the user or group "queue-wide" rights sunch as
 will apply those rights to the pseudo-queue "Incident Reports -
 EUDNET" and NOT to the "Incident Reports" queue.
 
+=head3 Constituency specific groups
+
+For each constituency value admin can create a group
+'DutyTeam constituency_value' using either the web UI or the script.
+
+We've added a little bit automation for such groups. Those groups
+are added as AdminCc to a ticket according to value of the field.
+And you can grant additional rights using this fact. For example
+if you grant 'TakeTicket' right to AdminCc role of IR queue
+then users that are memebers of 'DutyTeam EDUNET' group will have
+this rights on all EDUNET tickets.
+
+Note that this method has some limitations and caveats .Users who
+has enough privileges still can add other users and groups as
+AdminCcs of a ticket and these principals will get the same set of
+additional rights constituency specific group get via AdminCc role.
+As you use AdminCc role only then you can not use it to grant one
+set of rights to group X and another set to group Y.
+
+=head3 DutyTeam group vs. constituency specific group
+
+By default DutyTeam has almost all rights on all RTIR's queues, rights
+this group has applies to tickets with all constituencies, so if you
+want to give access to group 'DutyTeam EDUNET' on EDUNET tickets only
+then it's not good idea make this group member of DutyTeam.
+
+In RT/RTIR you can not deny right for a subgroup of a group if the latter
+has it, so you should avoid adding groups into groups with higher
+privileges. We suggest leave DutyTeam and constituency specific group
+on the same level, however, you can join them using a new top level
+group.
+
