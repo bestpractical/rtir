@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 418;
+use Test::More tests => 430;
 
 require "t/rtir-test.pl";
 
@@ -317,6 +317,28 @@ diag "check that IPs in messages don't add duplicates" if $ENV{'TEST_VERBOSE'};
     is(scalar values %has, 1, "one IP were added");
     ok(!grep( $_ != 1, values %has ), "no duplicated values");
     ok($has{'192.168.20.2'}, "IP is there");
+}
+
+diag "check IPs separated by commas and semicolons" if $ENV{'TEST_VERBOSE'};
+{
+    my $id = create_ir( $agent, {
+        Subject => "test ip",
+        Content => '64.64.64.64, 32.32.32.32; 16.16.16.16.'
+    } );
+    ok($id, "created first ticket");
+
+    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    $ticket->Load( $id );
+    ok( $ticket->id, 'loaded ticket' );
+
+    my $values = $ticket->CustomFieldValues('_RTIR_IP');
+    my %has;
+    $has{ $_->Content }++ foreach @{ $values->ItemsArrayRef };
+    is(scalar values %has, 3, "three IPs were added");
+    ok(!grep( $_ != 1, values %has ), "no duplicated values");
+    ok($has{'64.64.64.64'}, "IP is there");
+    ok($has{'32.32.32.32'}, "IP is there");
+    ok($has{'16.16.16.16'}, "IP is there");
 }
 
 diag "search tickets by IP" if $ENV{'TEST_VERBOSE'};
