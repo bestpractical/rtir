@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 111;
+use Test::More tests => 110;
 require "t/rtir-test.pl";
 
 use_ok('RT::IR');
