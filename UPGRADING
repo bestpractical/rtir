@@ -43,6 +43,13 @@ General upgrade instructions
     instructions under "Applying changes from etc/upgrade/1.1.3"
     section below, then do the same with 1.9.0 dir and greater.
 
+Applying changes from upgrade/2.3.0
+-------------------------
+
+At these step no special actions are required, run the upgrade scripts where we
+split out incidents owned by Nobody and the Current User on the most-due views
+on the homepage.
+
 Applying changes from upgrade/2.1.1
 -------------------------
 
