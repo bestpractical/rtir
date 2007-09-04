@@ -12,7 +12,7 @@ depending on the constituency. RTIR does not support this out of
 the box. Of course it would be possible to install one separate
 instance of RTIR per constituency. But this is somewhat cumbersome,
 as a lot of the configuration is identical on all instances, hence
-errorprone.  A better solution would be to integrate the facility
+error-prone.  A better solution would be to integrate the facility
 of handling several constituencies within the same instances of
 RTIR.
 
@@ -59,7 +59,7 @@ the constituency field.
 
 However, to get advanced control over constituencies you have to create additional
 objects in the system. We'll describe steps below, but as well admins may use the
-F<add_constituency> script in the etc dir which helps add and new constituency
+F<add_constituency> script in the etc directory which helps add and new constituency
 values, along with their associated groups and queues.
 
 =head2 Managing constituency values
@@ -132,8 +132,8 @@ constituency of the new ticket or not.
 
 There is another scenario you should be aware of: when user is creating
 a ticket he can enter the ID of an Incident into an input field. In this case
-we don't know anything about the incident beforhead and operation may
-be interruped later on - at the form submit.
+we don't know anything about the incident beforehand and operation may
+be interrupted later on - at the form submit.
 
 =item Changing the value
 
@@ -183,7 +183,7 @@ the same value.
 Note that while linking tickets together, the list of possible candidates
 is not restricted by the constituency of the initial ticket, so a user may
 choose targets with different constituencies. In the latter case the incident's
-constituency value is always prefered.
+constituency value is always preferred.
 
 =head2 Outgoing mail: "CorrespondAddress" and "CommentAddress"
 
@@ -231,7 +231,7 @@ then the default value from the config is used.
 
 RTIR allows you to grant additional rights to tickets based on their
 constituency by means of "pseudo" queues ("Incidents - EDUNET" for
-the EDUNET constitency on the Incidents queue, for example.)
+the EDUNET constituency on the Incidents queue, for example.)
 
 For example, assume you have two constituencies "EDUNET" and "GOVNET".
 Your RTIR instance consists of four queues: Incident Reports,
@@ -243,7 +243,7 @@ like "DutyTeam EDUNET".
 
 You should grant that user or group the rights you want them to
 have to tickets in the "Incident Reports" queue. It is important
-that you NOT grant the user or group "queue-wide" rights sunch as
+that you NOT grant the user or group "queue-wide" rights such as
 "See Queue" or "Create Ticket" in the pseudo-queue as the system
 will apply those rights to the pseudo-queue "Incident Reports -
 EUDNET" and NOT to the "Incident Reports" queue.
@@ -257,7 +257,7 @@ We've added a little bit automation for such groups. Those groups
 are added as AdminCc to a ticket according to value of the field.
 And you can grant additional rights using this fact. For example
 if you grant 'TakeTicket' right to AdminCc role of IR queue
-then users that are memebers of 'DutyTeam EDUNET' group will have
+then users that are members of 'DutyTeam EDUNET' group will have
 this rights on all EDUNET tickets.
 
 Note that this method has some limitations and caveats .Users who
@@ -284,7 +284,7 @@ The same rules applies to user members of groups. Rights of all groups
 a user is member of are summed up and if he is member of DutyTeam with
 default of rights then he has more rights than any member of
 constituency specific group (who is not member of other groups).
-Considiring above suggestion a good way to deal with users is to place
+Considering above suggestion a good way to deal with users is to place
 each user into constituency specific groups user should have access to
 and place her into DutyTeam only if he should work with all constituencies.
 

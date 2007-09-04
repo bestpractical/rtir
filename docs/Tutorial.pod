@@ -84,7 +84,7 @@ In the normal course of work, this operation should be avoided.
 
 Split operation allows user to create new ticket from the existing one.
 When a user selects the 'Split' tab he will see a new ticket creation form 
-with information prefilled from the original ticket, for example Subject, 
+with information pre-filled from the original ticket, for example Subject, 
 Owner, Correspondents(Requestors), Ccs, AdminCs, as well as the original ticket's
 history, formatted as text in the message box. The user can change any and all
 values before creating a new ticket.
@@ -234,8 +234,8 @@ to IP-IP form.
 You can set value of the custom field on create or later through edit page
 of a ticket. You can enter several values at once, one per line, as well
 you could mix different formats. Create or update action fail if you enter
-incorrect values with an error message, you chould fix problem and resubmit
-form. On create IPs and CIDR blocks are also parsed from a text of the
+incorrect values with an error message, you should fix the problem and resubmit
+the form. On creation, IPs and CIDR blocks are also parsed from the body of the
 message and added to the ticket.
 
 =head4 Searching by IP
