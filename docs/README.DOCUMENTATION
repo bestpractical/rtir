@@ -31,7 +31,11 @@
 
 =head2 Link IR with new Incident
 
+=item * RTIR/docs/Tutorial.pod (Section 'Linking', subsection 'Linking IRs to Incidents')
+
 =head2 Link IR with existing Incident
+
+=item * RTIR/docs/Tutorial.pod (Section 'Linking', subsection 'Linking IRs to Incidents')
 
 =head2 Resolve IR
 
@@ -59,19 +63,19 @@
 
 =head2 Link Incident with new IR
 
-=item * RTIR/docs/Tutorial.pod (Section 'Linking')
+=item * RTIR/docs/Tutorial.pod (Section 'Linking', subsection 'Linking Incidents to IRs, Investigations, etc.')
 
 =head2 Link Incident with existing IR
 
-=item * RTIR/docs/Tutorial.pod (Section 'Linking')
+=item * RTIR/docs/Tutorial.pod (Section 'Linking', subsection 'Linking Incidents to IRs, Investigations, etc.')
 
 =head2 Link Incident with new Block
 
-=item * RTIR/docs/Tutorial.pod (Section 'Linking')
+=item * RTIR/docs/Tutorial.pod (Section 'Linking', subsection 'Linking Incidents to IRs, Investigations, etc.')
 
 =head2 Link Incident with existing Block
 
-=item * RTIR/docs/Tutorial.pod (Section 'Linking')
+=item * RTIR/docs/Tutorial.pod (Section 'Linking', subsection 'Linking Incidents to IRs, Investigations, etc.')
 
 =head2 Resolve Incident
 

@@ -217,6 +217,18 @@ to their name.
 
 =head3 Linking
 
+=head4 Linking IRs to Incidents
+
+When creating a new IR, you may enter the ID number of an incident in the
+"Incident" field. This will create a link from the IR to the Incident.
+
+If you have an existing IR, you can link it to an incident by clicking the
+"[Link]" button next to the "Incident" field. You may also create new incidents
+and linking them to this IR by clicking the "[New]" button next to the
+"Incident" field.
+
+=head4 Linking Incidents to IRs, Investigations, etc.
+
 You may link incidents with existing incident responses, investigations,
 blocks, and RTFM articles. On the incident display page there are sections for
 each of these, each with a C<Link> button and the list of already-linked items.
