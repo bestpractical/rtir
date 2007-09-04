@@ -174,12 +174,8 @@ incidents at once.
 =head3 Locking
 
 A lock is created whenever a user performs an action on a ticket that takes
-multiple steps if a hard lock is not already in place for that ticket.
-
-An auto lock is removed once the user is done with whatever he was doing
-on the page (e.g., when he clicks "Save Changes" on the Edit page).
-It is also removed if the Unlock link is clicked from a page that generated
-an auto lock. The following actions produce an auto lock:
+multiple steps if a hard lock is not already in place for that ticket. The
+following actions produce an auto lock:
 
     - Edit
     - Split
@@ -190,6 +186,11 @@ an auto lock. The following actions produce an auto lock:
     - Reject
     - Comment
     - Remove
+
+An auto lock is removed once the user is done with whatever he was doing
+on the page (e.g., when he clicks "Save Changes" on the Edit page).
+It is also removed if the Unlock link is clicked from a page that generated
+an auto lock.
 
 Locks are advisory: if a ticket is locked by one user, other users
 will be given a notification (in red) that another user has locked
