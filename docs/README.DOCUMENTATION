@@ -59,11 +59,19 @@
 
 =head2 Link Incident with new IR
 
+=item * RTIR/docs/Tutorial.pod (Section 'Linking')
+
 =head2 Link Incident with existing IR
+
+=item * RTIR/docs/Tutorial.pod (Section 'Linking')
 
 =head2 Link Incident with new Block
 
+=item * RTIR/docs/Tutorial.pod (Section 'Linking')
+
 =head2 Link Incident with existing Block
+
+=item * RTIR/docs/Tutorial.pod (Section 'Linking')
 
 =head2 Resolve Incident
 

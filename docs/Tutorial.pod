@@ -215,6 +215,17 @@ IRs, those involved in the investigation, and those involved in the
 blocking. You may exclude individual recipients by removing the check next
 to their name.
 
+=head3 Linking
+
+You may link incidents with existing incident responses, investigations,
+blocks, and RTFM articles. On the incident display page there are sections for
+each of these, each with a C<Link> button and the list of already-linked items.
+Clicking on C<Link> lets you link one or more items of that type to the
+incident.
+
+Clicking on C<New> (or in the case of investigations, C<Launch>) lets you create
+a new item and link it to the incident automatically.
+
 =head2 Custom fields
 
 =head3 IP
@@ -227,16 +238,16 @@ You can enter information in several formats:
 * IP range - interval separated with C<->, for example C<192.168.20.0-192.168.20.255>,
 both ends of the interval are included range;
 
-* CIDR block - IP range in the CIDR format, for example 172.16/24, as you
+* CIDR block - IP range in the CIDR format, for example C<172.16/24>, as you
 can see short form is also supported, RTIR converts ranges in this format
 to IP-IP form.
 
-You can set value of the custom field on create or later through edit page
-of a ticket. You can enter several values at once, one per line, as well
-you could mix different formats. Create or update action fail if you enter
-incorrect values with an error message, you should fix the problem and resubmit
-the form. On creation, IPs and CIDR blocks are also parsed from the body of the
-message and added to the ticket.
+You can set value of the custom field on create or later through edit page of a
+ticket. You can enter several values at once, one per line or comma-separated,
+as well you could mix different formats. Create or update action fail if you
+enter incorrect values with an error message, you should fix the problem and
+resubmit the form. On creation, IPs and CIDR blocks are also parsed from the
+body of the message and added to the ticket.
 
 =head4 Searching by IP
 
