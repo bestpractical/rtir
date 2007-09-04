@@ -132,6 +132,10 @@ Documentation for RTIR
         (also at http://svn.bestpractical.com/cgi-bin/index.cgi/bps/view/RT-Extension-TicketAging/lib/RT/Extension/TicketAging.pm )
         Information about configuring and using RT and RTIR Ticket Aging.
 
+   * perldoc RT::Extension::TicketLocking
+        (also at http://svn.bestpractical.com/cgi-bin/index.cgi/bps/view/RT-Extension-TicketLocking/lib/RT/Extension/TicketLocking.pm )
+        Information about configuring and using RT and RTIR Ticket Locking.
+
    * etc/RTIR_Config.pm  
         (Contains a number of RTIR-specific configuration options and instructions for their use)
 
