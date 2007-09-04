@@ -200,6 +200,21 @@ changes on the ticket.
 
 For more information, see L<RT::Extension::TicketLocking>.
 
+=head3 Replying to an Incident
+
+=head4 Reply to Reporters
+
+This operation lets you send a message to all of the parties who created
+IRs. You may exclude individual recipients by removing the check next to
+their name.
+
+=head4 Reply to All
+
+This operation lets you send a message to all of the parties who created
+IRs, those involved in the investigation, and those involved in the
+blocking. You may exclude individual recipients by removing the check next
+to their name.
+
 =head2 Custom fields
 
 =head3 IP

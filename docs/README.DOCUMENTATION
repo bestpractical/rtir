@@ -47,7 +47,11 @@
 
 =head2 Reply Reporters Incident
 
+=item * RTIR/docs/Tutorial.pod (Section 'Replying to an Incident', subsection 'Reply to Reporters')
+
 =head2 Reply All Incident
+
+=item * RTIR/docs/Tutorial.pod (Section 'Replying to Incident', subsection 'Reply to All')
 
 =head2 Merge Incident
 
