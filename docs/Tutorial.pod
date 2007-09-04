@@ -171,6 +171,33 @@ situation the incident is abandoned.
 Use a bulk abandon subtab under the incidents tab to abandon multiple
 incidents at once.
 
+=head3 Locking
+
+A lock is created whenever a user performs an action on a ticket that takes
+multiple steps if a hard lock is not already in place for that ticket.
+
+An auto lock is removed once the user is done with whatever he was doing
+on the page (e.g., when he clicks "Save Changes" on the Edit page).
+It is also removed if the Unlock link is clicked from a page that generated
+an auto lock. The following actions produce an auto lock:
+
+    - Edit
+    - Split
+    - Merge
+    - Advanced
+    - Reply
+    - Resolve
+    - Reject
+    - Comment
+    - Remove
+
+Locks are advisory: if a ticket is locked by one user, other users
+will be given a notification (in red) that another user has locked
+the ticket, with the locking user's name and how long he has had
+it locked for, but they will still be allowed to edit and submit
+changes on the ticket.
+
+For more information, see L<RT::Extension::TicketLocking>.
 
 =head2 Custom fields
 
