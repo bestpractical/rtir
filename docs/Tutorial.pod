@@ -238,6 +238,22 @@ incident.
 Clicking on C<New> (or in the case of investigations, C<Launch>) lets you create
 a new item and link it to the incident automatically.
 
+=head3 Resolution
+
+=head4 Quick Resolve
+
+Incidents have a "Quick Resolve" feature. Clicking Quick Resolve will change
+an incident's status to 'resolved' immediately. You won't be asked to fill in
+a message or time worked, attach files, and so on.
+
+=head3 Blocks
+
+=head4 Creating a Block
+
+To create a new block, create a new ticket in the Blocks queue. You will be
+required to link the Block to an Incident. (needs more info from someone
+knowledgeable)
+
 =head2 Custom fields
 
 =head3 IP

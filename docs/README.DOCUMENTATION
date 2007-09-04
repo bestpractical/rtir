@@ -83,6 +83,8 @@
 
 =head2 Quick resolve Incident
 
+=item * RTIR/docs/Tutorial.pod (Section 'Resolution', subsection 'Quick Resolve')
+
 =head2 Reopen Incident
 
 =head2 Abandon Incident
@@ -91,7 +93,7 @@
 
 =head3 Bulk Abandon Incidents
 
-=item * RTIR/docs/Tutorial.pod (Section 'Abandoning incidents, subsection 'Abandoning many incidents at once (bulk abandon)')
+=item * RTIR/docs/Tutorial.pod (Section 'Abandoning incidents', subsection 'Abandoning many incidents at once (bulk abandon)')
 
 =head2 Launch Investigation
 
@@ -112,6 +114,8 @@
 =head2 Steal Investigation
 
 =head2 Create new block via web-interface
+
+=item * RTIR/docs/Tutorial.pod (Section 'Blocks', subsection 'Creating a Block')
 
 =head2 Reply from correspondent on Blocks via e-mail
 
