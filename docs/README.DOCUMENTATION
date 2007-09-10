@@ -4,14 +4,6 @@
 
 =head2 Create new IR via web-interface
 
-
-
-=head2 Reply from requestor on IR via e-mail
-
-=head2 Reply IR via web-interface
-
-=head2 Comment IR via web-interface
-
 =head2 Merge IR
 
 =item * RTIR/docs/Tutorial.pod (Section 'Merging tickets')
@@ -27,7 +19,6 @@
 =head3 Bulk Reject IR
 
 =item * RTIR/docs/Tutorial.pod (Section 'Rejecting an IR', subsection 'Rejecting many IRs at once (bulk reject)')
-
 
 =head2 Link IR with new Incident
 
@@ -87,8 +78,6 @@
 
 =head2 Correspond with Correspondent
 
-=head2 Create new block via web-interface
-
 =item * RTIR/docs/Tutorial.pod (Section 'Blocks', subsection 'Creating a Block')
 
 =head2 Reply from correspondent on Blocks via e-mail
@@ -97,13 +86,7 @@
 
 =head2 Comment Blocks via web-interface
 
-=head2 Merge Blocks
-
-=head2 Split Blocks
-
 =head2 Remove Blocks
 
 =head2 Activate Blocks
-
-=head2 Steal Blocks
 
