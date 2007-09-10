@@ -9,7 +9,7 @@ add_constituency - add or update constitiuensies
     add_constituency --help
     add_constituency --name <constituency> [options]
     add_constituency --name EDUNET
-    add_constituency --name EDUNET --corespond 'edunet@example.com' --quiet
+    add_constituency --name EDUNET --correspond 'edunet@example.com' --quiet
 
 =head1 OPTIONS
 
