@@ -69,6 +69,8 @@
 
 <a name="top"></a>
 
+<& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues &>
+
 <&| /Widgets/TitleBox, contentbg => "#cccccc", title => $Title &>
 <table border="0" cellpadding="0" cellspacing="2">
 % if ( $Incident ) {
@@ -403,6 +405,25 @@ if ( $IncidentObj ) {
 
 push @results, $m->comp( 'SELF:ProcessAttachments', %ARGS );
 
+my @gnupg_keys_issues;
+if ( $ARGS{'Create'} && $ARGS{'Encrypt'} ) {
+
+    my @recipients = $m->comp(
+        '/Ticket/Elements/PreviewScrips:GetRecipientsOnCreate',
+        %ARGS
+    );
+
+    RT::Crypt::GnuPG::UseKeyForEncryption(
+        map { (/^UseKey-(.*)$/)[0] => $ARGS{ $_ } }
+        grep $ARGS{$_} && /^UseKey-/,
+        keys %ARGS
+    );
+
+    my $status;
+    ($status, @gnupg_keys_issues) = RT::Crypt::GnuPG::CheckRecipients( @recipients );
+    $checks_failure = 1 unless $status;
+}
+
 # checks
 if ( $ARGS{'Create'} ) {
     if ( $Type eq 'Investigation' && !$ARGS{'Requestors'} ) {
@@ -427,7 +448,7 @@ if ( $ARGS{'Create'} ) {
         $m->callback(CallbackName => 'BeforeDisplay', Ticket => $TicketObj, ARGSRef => \%ARGS);
         return $m->comp( 'Display.html', %ARGS, SkipNotification => \@SkipNotification, results => \@results );
     }
-    unshift @results, loc("Creation failed:");
+    unshift @results, loc("Creation failed:") if @results;
 }
 
 my ($Title, $SubmitCaption);
