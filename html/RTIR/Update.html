@@ -48,6 +48,8 @@
 %   }
 % }
 
+<& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues &>
+
 <table>
 <tr><td><a href="Edit.html?id=<% $id %>"><&|/l&>Correspondents</&></a></td><td align="right" colspan=2></td></tr>
 
@@ -169,7 +171,28 @@ $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
 
 $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 
-if ( exists $ARGS{SubmitTicket} ) {
+my $checks_failure;
+
+my @gnupg_keys_issues;
+if ( $ARGS{'Create'} && $ARGS{'Encrypt'} ) {
+
+    my @recipients = $m->comp(
+        '/Ticket/Elements/PreviewScrips:GetRecipients',
+        %ARGS
+    );
+
+    RT::Crypt::GnuPG::UseKeyForEncryption(
+        map { (/^UseKey-(.*)$/)[0] => $ARGS{ $_ } }
+        grep $ARGS{$_} && /^UseKey-/,
+        keys %ARGS
+    );
+
+    my $status;
+    ($status, @gnupg_keys_issues) = RT::Crypt::GnuPG::CheckRecipients( @recipients );
+    $checks_failure = 1 unless $status;
+}
+
+if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {
     $m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Ticket => $Ticket);
 
     return $m->comp('/RTIR/Display.html', %ARGS);
