@@ -174,11 +174,11 @@ $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 my $checks_failure;
 
 my @gnupg_keys_issues;
-if ( $ARGS{'Create'} && $ARGS{'Encrypt'} ) {
+if ( $ARGS{'SubmitTicket'} && $ARGS{'Encrypt'} ) {
 
     my @recipients = $m->comp(
         '/Ticket/Elements/PreviewScrips:GetRecipients',
-        %ARGS
+        %ARGS, TicketObj => $Ticket
     );
 
     RT::Crypt::GnuPG::UseKeyForEncryption(
