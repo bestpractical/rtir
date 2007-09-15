@@ -63,6 +63,8 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 % }
 <a name="top" />
 
+<& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues &>
+
 <&| /Widgets/TitleBox, title => $Title &>
 <table border="0" cellpadding="0" cellspacing="2">
 
@@ -231,6 +233,26 @@ if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
 $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 
 my $checks_failure = 0;
+
+my @gnupg_keys_issues;
+if ( $CreateIncident && $ARGS{'Encrypt'} ) {
+
+    my @recipients = $m->comp(
+        '/Ticket/Elements/PreviewScrips:GetRecipientsOnCreate',
+        %ARGS
+    );
+
+    RT::Crypt::GnuPG::UseKeyForEncryption(
+        map { (/^UseKey-(.*)$/)[0] => $ARGS{ $_ } }
+        grep $ARGS{$_} && /^UseKey-/,
+        keys %ARGS
+    );
+
+    my $status;
+    ($status, @gnupg_keys_issues) = RT::Crypt::GnuPG::CheckRecipients( @recipients );
+    $checks_failure = 1 unless $status;
+}
+
 if ( $CreateIncident ) {
     my ($status, @msg) = $m->comp('/Elements/ValidateCustomFields',
         CustomFields => $QueueObj->TicketCustomFields,
