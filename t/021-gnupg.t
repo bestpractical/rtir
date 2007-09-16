@@ -6,8 +6,9 @@ use warnings;
 use Test::More tests => 46;
 use File::Temp qw(tempdir);
 
-require "t/rtir-test.pl";
+use lib qw(/opt/rt3/local/lib /opt/rt3/lib);
 require RT::Test; import RT::Test;
+require "t/rtir-test.pl";
 
 {
     $RT::Handle->InsertSchema(undef, '/opt/rt3/local/etc/FM');
