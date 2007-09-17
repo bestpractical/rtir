@@ -19,6 +19,7 @@ require "t/rtir-test.pl";
     RT->ConnectToDatabase;
 
     local @INC = ('/opt/rt3/local/etc', '/opt/rt3/etc', @INC);
+    RT->Config->LoadConfig(File => "IR/RTIR_Config.pm");
     $RT::Handle->InsertData('IR/initialdata');
 
     $RT::Handle = new RT::Handle;
