@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 42;
+use Test::More tests => 44;
 use File::Temp qw(tempdir);
 
 use lib qw(/opt/rt3/local/lib /opt/rt3/lib);
@@ -244,7 +244,7 @@ diag "check that key selector works and we can select trusted key";
     is scalar $input->possible_values, 2, 'two options';
 
     $agent->select( 'UseKey-rt-test@example.com' => $fpr1 );
-    $agent->submit;
+    $agent->click('Create');
     $agent->content_like( qr/Ticket \d+ created in queue/i, 'ticket created' );
 
     my @mail = RT::Test->fetch_caught_mails;
