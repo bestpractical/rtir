@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 46;
+use Test::More tests => 42;
 use File::Temp qw(tempdir);
 
 use lib qw(/opt/rt3/local/lib /opt/rt3/lib);
@@ -28,6 +28,10 @@ require "t/rtir-test.pl";
 }
 
 RT::Test->set_mail_catcher;
+
+RT->Config->Set( 'GnuPG',
+                 Enable => 1,
+                 OutgoingMessagesFormat => 'RFC' );
 
 RT->Config->Set( GnuPGOptions =>
     homedir => scalar tempdir( CLEANUP => 0 ),
