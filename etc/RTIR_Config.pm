@@ -8,7 +8,7 @@ RT::IR::Config::Init();
 
 # Set the name of the RTIR application.
 
-Set($rtirname , "RTIR for " . RT->Config->Get('rtname') );
+Set($rtirname , RT->Config->Get('rtname') );
 
 # By default, RT only displays text attachments inline up to the first 16k
 # RTIR will display them no matter how long they are
