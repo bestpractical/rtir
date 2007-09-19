@@ -4,6 +4,14 @@
 
 =head2 Create new IR via web-interface
 
+
+
+=head2 Reply from requestor on IR via e-mail
+
+=head2 Reply IR via web-interface
+
+=head2 Comment IR via web-interface
+
 =head2 Merge IR
 
 =item * RTIR/docs/Tutorial.pod (Section 'Merging tickets')
@@ -20,6 +28,7 @@
 
 =item * RTIR/docs/Tutorial.pod (Section 'Rejecting an IR', subsection 'Rejecting many IRs at once (bulk reject)')
 
+
 =head2 Link IR with new Incident
 
 =item * RTIR/docs/Tutorial.pod (Section 'Linking', subsection 'Linking IRs to Incidents')
@@ -28,9 +37,17 @@
 
 =item * RTIR/docs/Tutorial.pod (Section 'Linking', subsection 'Linking IRs to Incidents')
 
+=head2 Resolve IR
+
+=head2 Reopen IR
+
 =head2 Create new Incident from IR via 'Basics' section
 
+=head2 Create new Incident via web-interface
+
 =head2 Update Incident via e-mail
+
+=head2 Comment Incident via web-interface
 
 =head2 Reply Reporters Incident
 
@@ -39,6 +56,10 @@
 =head2 Reply All Incident
 
 =item * RTIR/docs/Tutorial.pod (Section 'Replying to Incident', subsection 'Reply to All')
+
+=head2 Merge Incident
+
+=head2 Split Incident
 
 =head2 Link Incident with new IR
 
@@ -55,6 +76,8 @@
 =head2 Link Incident with existing Block
 
 =item * RTIR/docs/Tutorial.pod (Section 'Linking', subsection 'Linking Incidents to IRs, Investigations, etc.')
+
+=head2 Resolve Incident
 
 =head2 Resolve Incident & linked IR's and Investigations
 
@@ -78,6 +101,20 @@
 
 =head2 Correspond with Correspondent
 
+=head2 Comment on investigation via web-interface
+
+=head2 Merge Investigation
+
+=head2 Split Investigation
+
+=head2 Resolve Investigation
+
+=head2 Reopen Investigation
+
+=head2 Steal Investigation
+
+=head2 Create new block via web-interface
+
 =item * RTIR/docs/Tutorial.pod (Section 'Blocks', subsection 'Creating a Block')
 
 =head2 Reply from correspondent on Blocks via e-mail
@@ -86,7 +123,13 @@
 
 =head2 Comment Blocks via web-interface
 
+=head2 Merge Blocks
+
+=head2 Split Blocks
+
 =head2 Remove Blocks
 
 =head2 Activate Blocks
+
+=head2 Steal Blocks
 
