@@ -1,81 +1,95 @@
-=head2 Create new IR via e-mail
+=head1 RTIR Documentation Index
 
-=item * Mailgate help: rt/bin/rt-mailgate --help
+RTIR's documentation can be found in POD form in the docs/
+subdirectory of your RTIR install.  Some things may be documented
+with specific tools (such as rt-mailgate) or with RT's standard 
+documentation.  Other topics will be documented in
+the perl modules that comprise RTIR
 
-=head2 Create new IR via web-interface
+=head2 Email
 
+=head3 Create new IR via e-mail
 
+Mailgate help: rt/bin/rt-mailgate --help
 
-=head2 Reply from requestor on IR via e-mail
+=head3 Reply from requestor on IR via e-mail
 
-=head2 Reply IR via web-interface
+Mailgate help: rt/bin/rt-mailgate --help
 
-=head2 Comment IR via web-interface
+=head3 Encrypting Mail with GnuPG
 
-=head2 Merge IR
+See L<RT::Crypt::GnuPg> and L<AdministrationTutorial/GnuPG Encryption>
 
-=item * RTIR/docs/Tutorial.pod (Section 'Merging tickets')
+=head2 Creating 
 
-=head2 Split IR
+These Actions work in the same manner as creating tickets in RT
 
-=item * RTIR/docs/Tutorial.pod (Section 'Splitting tickets')
+=over 4
 
-=head2 Reject IR
+=item Create new IR via web-interface
 
-=item * RTIR/docs/Tutorial.pod (Section 'Rejecting an IR')
+=item Create new Incident via web-interface
+
+=back
+
+=head3 Create new Incident from IR via 'Basics' section
+
+TODO: does this need further explanation or can it be lumped?
+
+=head3 Create new block via web-interface
+
+L<Tutorial/'Creating a Block'>
+
+=head2 Managing Incident Responses
+
+=head3 Merge IR
+
+L<Tutorial/Merging Tickets>
+
+=head3 Split IR
+
+L<Tutorial/'Splitting tickets'>
+
+=head3 Reject IR
+
+L<Tutorial/'Rejecting an IR'>
 
 =head3 Bulk Reject IR
 
-=item * RTIR/docs/Tutorial.pod (Section 'Rejecting an IR', subsection 'Rejecting many IRs at once (bulk reject)')
+L<Tutorial/'Rejecting many IRs at once (bulk reject)'>
 
 
-=head2 Link IR with new Incident
+=head3 Link IR with new Incident
 
-=item * RTIR/docs/Tutorial.pod (Section 'Linking', subsection 'Linking IRs to Incidents')
+L<Tutorial/'Linking IRs to Incidents'>
 
-=head2 Link IR with existing Incident
+=head3 Link IR with existing Incident
 
-=item * RTIR/docs/Tutorial.pod (Section 'Linking', subsection 'Linking IRs to Incidents')
-
-=head2 Resolve IR
-
-=head2 Reopen IR
-
-=head2 Create new Incident from IR via 'Basics' section
-
-=head2 Create new Incident via web-interface
-
-=head2 Update Incident via e-mail
-
-=head2 Comment Incident via web-interface
+L<Tutorial/'Linking IRs to Incidents'>
 
 =head2 Reply Reporters Incident
 
-=item * RTIR/docs/Tutorial.pod (Section 'Replying to an Incident', subsection 'Reply to Reporters')
+L<Tutorial/'Reply to Reporters'>
 
 =head2 Reply All Incident
 
-=item * RTIR/docs/Tutorial.pod (Section 'Replying to Incident', subsection 'Reply to All')
-
-=head2 Merge Incident
-
-=head2 Split Incident
+L<Tutorial/'Reply to All'>
 
 =head2 Link Incident with new IR
 
-=item * RTIR/docs/Tutorial.pod (Section 'Linking', subsection 'Linking Incidents to IRs, Investigations, etc.')
+L<Tutorial/'Linking Incidents to IRs, Investigations, etc.'>
 
 =head2 Link Incident with existing IR
 
-=item * RTIR/docs/Tutorial.pod (Section 'Linking', subsection 'Linking Incidents to IRs, Investigations, etc.')
+L<Tutorial/'Linking Incidents to IRs, Investigations, etc.'>
 
 =head2 Link Incident with new Block
 
-=item * RTIR/docs/Tutorial.pod (Section 'Linking', subsection 'Linking Incidents to IRs, Investigations, etc.')
+L<Tutorial/'Linking Incidents to IRs, Investigations, etc.'>
 
 =head2 Link Incident with existing Block
 
-=item * RTIR/docs/Tutorial.pod (Section 'Linking', subsection 'Linking Incidents to IRs, Investigations, etc.')
+L<Tutorial/'Linking Incidents to IRs, Investigations, etc.'>
 
 =head2 Resolve Incident
 
@@ -83,39 +97,21 @@
 
 =head2 Quick resolve Incident
 
-=item * RTIR/docs/Tutorial.pod (Section 'Resolution', subsection 'Quick Resolve')
+L<Tutorial/'Quick Resolve'>
 
 =head2 Reopen Incident
 
 =head2 Abandon Incident
 
-=item * RTIR/docs/Tutorial.pod (Section 'Abandoning incidents')
+L<Tutorial/'Abandoning incidents'>
 
 =head3 Bulk Abandon Incidents
 
-=item * RTIR/docs/Tutorial.pod (Section 'Abandoning incidents', subsection 'Abandoning many incidents at once (bulk abandon)')
+L<Tutorial/'Abandoning incidents', subsection 'Abandoning many incidents at once (bulk abandon)'>
 
 =head2 Launch Investigation
 
-=head2 Reply from correspondent on Investigation via e-mail
-
-=head2 Correspond with Correspondent
-
-=head2 Comment on investigation via web-interface
-
-=head2 Merge Investigation
-
-=head2 Split Investigation
-
-=head2 Resolve Investigation
-
-=head2 Reopen Investigation
-
-=head2 Steal Investigation
-
-=head2 Create new block via web-interface
-
-=item * RTIR/docs/Tutorial.pod (Section 'Blocks', subsection 'Creating a Block')
+XXX?
 
 =head2 Reply from correspondent on Blocks via e-mail
 
@@ -132,4 +128,37 @@
 =head2 Activate Blocks
 
 =head2 Steal Blocks
+
+=head2 Reply IR via web-interface
+
+=head2 Comment IR via web-interface
+
+=head2 Reply from correspondent on Investigation via e-mail
+
+=head2 Correspond with Correspondent
+
+=head2 Comment on investigation via web-interface
+
+=head2 Resolve IR
+
+=head2 Reopen IR
+
+=head2 Update Incident via e-mail
+
+=head2 Comment Incident via web-interface
+
+=head2 Merge Investigation
+
+=head2 Split Investigation
+
+=head2 Resolve Investigation
+
+=head2 Reopen Investigation
+
+=head2 Steal Investigation
+
+=head2 Merge Incident
+
+=head2 Split Incident
+
 

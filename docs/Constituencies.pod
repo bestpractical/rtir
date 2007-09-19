@@ -16,11 +16,11 @@ error-prone.  A better solution would be to integrate the facility
 of handling several constituencies within the same instances of
 RTIR.
 
-D.3.5.1. We MUST be able to define more than one constituency.
-D.3.5.2. We MUST be able to define Access Control Lists according to the constituency.
-D.3.5.3. We MUST preset the constituency according to mail traffic.
-D.3.5.4. RTIR MUST allow constituency inheritance of newly created tickets in any RTIR
-queue (incident report, incident, blocks, investigation)
+ D.3.5.1. We MUST be able to define more than one constituency.
+ D.3.5.2. We MUST be able to define Access Control Lists according to the constituency.
+ D.3.5.3. We MUST preset the constituency according to mail traffic.
+ D.3.5.4. RTIR MUST allow constituency inheritance of newly created tickets in any RTIR
+  queue (incident report, incident, blocks, investigation)
 
 =head2 Definitions 
 
@@ -99,13 +99,14 @@ the ACL section.
 An administrator can use the C<$_RTIR_Constituency_Propagation> config option to
 choose RTIR's behaviour on constituency inheritance between linked tickets.
 There are three algorithms at the moment: 'no', 'inherit' and 'reject'.
+These algorithms are defined in L</Changing the value>
 
 =head3 Introduction
 
 Before we start discussing algorithms in depth let's look at the primary ways of
 setting and changing value of the 'Constituency' field:
 
-=over4
+=over 4
 
 =item Creating a new ticket without links.
 
@@ -147,9 +148,9 @@ The three propagation algorithms:
 
 This is the default algorithm. Any combinations are allowed. Users can link
 tickets with different constituencies, changing the value of a ticket doesn't
-effect linked tickets. However, reasonable defaults are suggested. For example
-when user creates a new ticket from another one we select constituency of the
-latter ticket by default instead of using value from the config.
+affect linked tickets. However, reasonable defaults are suggested. For example
+when a user creates a new ticket from another one we select constituency of the
+latter ticket by default instead of using the default value from the config.
 
 =head3 reject
 

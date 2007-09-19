@@ -1,5 +1,37 @@
 =head1 RTIR Tutorial
 
+=head2 Incident Response Workflow
+
+RTIR automatically creates four RT queues for tracking incidents: Incident
+Reports, Incidents, Investigations and Blocks.
+
+=head3 Incident Reports 
+
+Incident Reports where new reports appear. When a user sends email to the
+address you set up, RTIR automatically creates an Incident Report, and sets its
+due date according to your organization's SLA rules. New Incident Reports
+appear on the RTIR main page, ordered by due date.
+
+=head3 Incidents
+
+Once you've verified that a new incident report is valid, you can create a new
+Incident from it, or link the report to an existing incident. RTIR fills in
+relevant information from the Incident Report, so there's no need to
+cut-and-paste. If you receive multiple reports about the same issue, you can
+link all of these reports to the same parent Incident, to keep them together.
+
+=head3 Investigation
+
+From an existing incident, you can launch an Investigation to an outside party,
+asking them to look into and/or fix the problem. Once again, relevant
+information from the Incident is filled in when you create the new
+investigation, so there's no need to cut-and-paste.
+
+=head3 Blocks
+
+Blocks are used to track the blocks placed on the borders of the network. You
+can create them from an existing incident.
+
 =head2 Operations with tickets
 
 =head3 Merging tickets
