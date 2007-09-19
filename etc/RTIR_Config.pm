@@ -79,6 +79,7 @@ Set( $_RTIR_Constituency_default,        "EDUNET" );
 
 # Constituency propagation algorithm
 # valid values are 'no', 'inherit', 'reject'
+# Algorithms are defined in docs/Constituency.pod/Changing the value
 Set( $_RTIR_Constituency_Propagation,    'no' );
 
 # Set the Business Hours for your organization
