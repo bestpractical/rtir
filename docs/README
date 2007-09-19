@@ -1,0 +1,14 @@
+Documentation Directory README
+
+Index.pod
+    Index into RTIR documentation
+AdministrationTutorial.pod
+    Discussion of the changes RTIR makes to RT's
+    administrative interface and the Scrips and 
+    Custom Fields specific to RTIR
+Constituencies.pod
+    How to use Constituencies
+Tutorial.pod
+    User's guide to RTIR
+logo
+    rtir's logo in various sizes and formats
