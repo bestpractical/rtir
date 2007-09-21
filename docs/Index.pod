@@ -103,19 +103,21 @@ L<Tutorial/'Quick Resolve'>
 
 =head2 Abandon Incident
 
-L<Tutorial/'Abandoning incidents'>
+L<Tutorial/'Abandoning Incidents'>
 
 =head3 Bulk Abandon Incidents
 
-L<Tutorial/'Abandoning incidents', subsection 'Abandoning many incidents at once (bulk abandon)'>
+L<Tutorial/'Abandoning Incidents', subsection 'Abandoning many Incidents at once (bulk abandon)'>
 
 =head2 Launch Investigation
 
-XXX?
+L<Tutorial/'Linking Incidents to IRs, Investigations, etc.'>
 
 =head2 Reply from correspondent on Blocks via e-mail
 
 =head2 Correspond with Correspondent
+
+L<Tutorial/'Correspond with Correspondent'>
 
 =head2 Comment Blocks via web-interface
 
@@ -135,9 +137,7 @@ XXX?
 
 =head2 Reply from correspondent on Investigation via e-mail
 
-=head2 Correspond with Correspondent
-
-=head2 Comment on investigation via web-interface
+=head2 Comment on Investigation via web-interface
 
 =head2 Resolve IR
 

@@ -14,23 +14,24 @@ appear on the RTIR main page, ordered by due date.
 
 =head3 Incidents
 
-Once you've verified that a new incident report is valid, you can create a new
-Incident from it, or link the report to an existing incident. RTIR fills in
+Once you've verified that a new Incident Report is valid, you can create a new
+Incident from it, or link the report to an existing Incident. RTIR fills in
 relevant information from the Incident Report, so there's no need to
 cut-and-paste. If you receive multiple reports about the same issue, you can
 link all of these reports to the same parent Incident, to keep them together.
 
 =head3 Investigation
 
-From an existing incident, you can launch an Investigation to an outside party,
+From an existing Incident, you can launch an Investigation to an outside party,
 asking them to look into and/or fix the problem. Once again, relevant
 information from the Incident is filled in when you create the new
-investigation, so there's no need to cut-and-paste.
+Investigation, so there's no need to cut-and-paste.
 
 =head3 Blocks
 
 Blocks are used to track the blocks placed on the borders of the network. You
-can create them from an existing incident.
+can create them from an existing Incident. Some sites don't require blocks, so
+they may be disabled.
 
 =head2 Operations with tickets
 
@@ -41,23 +42,23 @@ two Incidents actually are the same, e.g. where dynamic IP addresses
 are involved. In such a situation, the merge operation can be used,
 effectively making one ticket with out of two, containing the data
 and correspondence of both. Only tickets within the same queue should
-be merged, with the notable exception of merging an incident report
-into an investigation when a correspondent's reply accidentally
-could not be recognized as such and thus got misfiled as new incident
-report.
+be merged, with the notable exception of merging an Incident Report
+into an Investigation when a correspondent's reply accidentally
+could not be recognized as such and thus got misfiled as new Incident
+Report.
 
 When a user opens a ticket's display page there is a 'Merge'
 option in the page's tabs. The Merge page is split into two
 blocks. The first one is a list of other children of the parent
-incident(s) of the current ticket. It's empty if the ticket is
-not linked to any incidents or if there is no candidate to
+Incident(s) of the current ticket. It's empty if the ticket is
+not linked to any Incidents or if there is no candidate to
 merge into. By default this page contains only active tickets.
 
 The second box contains other tickets you can merge into,
 tickets are grouped by queue, if it's possible to merge the
 ticket into a ticket in another queue. (for example, you can
 merge an IR into an Investigation). Note that if a user
-merges an IR into an Investigation then investigation is always
+merges an IR into an Investigation then Investigation is always
 used as the target ticket.
 
 You have to select one ticket from the list and submit the form.
@@ -108,7 +109,7 @@ on both tickets.
 You, also, can access RT's generic merge from an RTIR ticket's
 'Advanced' tab. This option allows user to merge any ticket into
 any avoiding 'the same queue' and other restrictions RTIR has.
-For example you can merge an investigation into an IR, or an IR
+For example you can merge an Investigation into an IR, or an IR
 into a ticket in non RTIR's queues. ACL checks still apply.
 In the normal course of work, this operation should be avoided.
 
@@ -138,11 +139,11 @@ searches and can be reopened, but RTIR's default interfaces are designed
 to hide such tickets, so people can concentrate on new and open tickets.
 
 When you open a ticket's display page there is a 'Reject' tab. You click
-it and see 'reject incident report' page with a box for message and other
+it and see 'reject Incident Report' page with a box for message and other
 common input fields. You can write a message and choose whether it would be
 comment or response, by default correspondents don't receive comments.
 You submit the form and RTIR sets state of the ticket, records the message
-and unlink the IR from any incidents.
+and unlink the IR from any Incidents.
 
 If you don't want to write any comment or change any properties of an IR
 during reject action then you can submit the reject form immediately or
@@ -164,18 +165,18 @@ Note that you can't reject IRs that are owned by somebody else (sure, you
 can reject unowned) with the bulk reject interface, these IRs would be
 skipped with a notice even if you'd selected some.
 
-=head3 Abandoning incidents
+=head3 Abandoning Incidents
 
 This operation is quite similar to rejecting an IR, but when you're
-abandoning an incident you also reject IRs, resolve investigations and
-remove blocks linked to it.
+abandoning an Incident you also reject IRs, resolve Investigations and
+remove Blocks linked to it.
 
-Once you open abandon page with the incident's tab you see a list of its
+Once you open abandon page with the Incident's tab you see a list of its
 children grouped by queue and common update form. You can select children
 with checkboxes, only children you've selected will be rejected, resolved
 or removed.
 
-Resolution of the incident is set according to C<$_RTIR_Resolution_rejected_default>
+Resolution of the Incident is set according to C<$_RTIR_Resolution_rejected_default>
 config option and by default its value is "no resolution reached", however,
 you can choose any value you'd like to.
 
@@ -183,25 +184,25 @@ You can write a message that that will be added to the selected children as
 a comment or response according to value of 'Update Type' field.
 
 Once user submit the form RTIR updates selected tickets and then checks
-state of children of the incident to decide whether it's OK to abandon it
-or not. In the simplest case the incident you're abandoning has children
-that aren't linked to another open incident, RTIR marks the incident
+state of children of the Incident to decide whether it's OK to abandon it
+or not. In the simplest case the Incident you're abandoning has children
+that aren't linked to another open Incident, RTIR marks the Incident
 as abandoned if all children are closed(resolved, rejected or removed)
 otherwise you see a notice "State of the Incident left unchanged; not
 all children were updated". The latter case may happen when the user's
 selected not all children.
 
-RTIR supports IRs linked to many incidents and in this case abandoning is
-a little bit trickier. When you're abandoning an incident linked to an IR
-that is linked to another open incident, RTIR doesn't reject IR, but adds
-a comment to the IR telling that the incident has been abandoned while
-this ticket is still linked to open incident and left unchanged. In such
-situation the incident is abandoned.
+RTIR supports IRs linked to many Incidents and in this case abandoning is
+a little bit trickier. When you're abandoning an Incident linked to an IR
+that is linked to another open Incident, RTIR doesn't reject IR, but adds
+a comment to the IR telling that the Incident has been abandoned while
+this ticket is still linked to open Incident and left unchanged. In such
+situation the Incident is abandoned.
 
-=head4 Abandoning many incidents at once (bulk abandon)
+=head4 Abandoning many Incidents at once (bulk abandon)
 
-Use a bulk abandon subtab under the incidents tab to abandon multiple
-incidents at once.
+Use a bulk abandon subtab under the Incidents tab to abandon multiple
+Incidents at once.
 
 =head3 Locking
 
@@ -232,7 +233,7 @@ changes on the ticket.
 
 For more information, see L<RT::Extension::TicketLocking>.
 
-=head3 Replying to an Incident
+=head3 Correspondence
 
 =head4 Reply to Reporters
 
@@ -243,46 +244,51 @@ their name.
 =head4 Reply to All
 
 This operation lets you send a message to all of the parties who created
-IRs, those involved in the investigation, and those involved in the
-blocking. You may exclude individual recipients by removing the check next
+IRs, those involved in the Investigation, and those involved in the
+Blocks. You may exclude individual recipients by removing the check next
 to their name.
+
+=head4 Correspond with Correspondent
+
+This operation lets you send a message to the parties involved in an
+Investigation. This is available when you "Reply to All" on an Incident.
 
 =head3 Linking
 
 =head4 Linking IRs to Incidents
 
-When creating a new IR, you may enter the ID number of an incident in the
+When creating a new IR, you may enter the ID number of an Incident in the
 "Incident" field. This will create a link from the IR to the Incident.
 
-If you have an existing IR, you can link it to an incident by clicking the
-"[Link]" button next to the "Incident" field. You may also create new incidents
+If you have an existing IR, you can link it to an Incident by clicking the
+"[Link]" button next to the "Incident" field. You may also create new Incidents
 and linking them to this IR by clicking the "[New]" button next to the
 "Incident" field.
 
 =head4 Linking Incidents to IRs, Investigations, etc.
 
-You may link incidents with existing incident responses, investigations,
-blocks, and RTFM articles. On the incident display page there are sections for
+You may link Incidents with existing Incident Responses, Investigations,
+Blocks, and RTFM articles. On the Incident display page there are sections for
 each of these, each with a C<Link> button and the list of already-linked items.
 Clicking on C<Link> lets you link one or more items of that type to the
-incident.
+Incident.
 
-Clicking on C<New> (or in the case of investigations, C<Launch>) lets you create
-a new item and link it to the incident automatically.
+Clicking on C<New> (or in the case of Investigations, C<Launch>) lets you create
+a new item and link it to the Incident automatically.
 
 =head3 Resolution
 
 =head4 Quick Resolve
 
 Incidents have a "Quick Resolve" feature. Clicking Quick Resolve will change
-an incident's status to 'resolved' immediately. You won't be asked to fill in
+an Incident's status to 'resolved' immediately. You won't be asked to fill in
 a message or time worked, attach files, and so on.
 
 =head3 Blocks
 
 =head4 Creating a Block
 
-To create a new block, create a new ticket in the Blocks queue. You will be
+To create a new Block, create a new ticket in the Blocks queue. You will be
 required to link the Block to an Incident. (needs more info from someone
 knowledgeable)
 
