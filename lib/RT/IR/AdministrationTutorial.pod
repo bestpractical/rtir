@@ -6,8 +6,66 @@ Discussed a little in Tutorial
 
 =head2 Custom Fields
 
-default values in Config
-We discuss IP in Tutorial
+=over 4
+
+=item _RTIR_State
+
+The various states an incident, IR, investigation, or block can be in, such as
+'open', 'stalled', 'abandoned', etc.
+
+=item _RTIR_Constituency
+
+The constituency of an incident, IR, investigation, or block
+
+=item _RTIR_Description
+
+Short description of an Incident
+
+=item _RTIR_Resolution
+
+How an Incident was or wasn't resolved
+
+=item _RTIR_SLA
+
+The SLA with the reporter of an IR
+
+=item _RTIR_Function
+
+Who is handling the Incident. I think..
+
+=item _RTIR_Classification
+
+The type of Incident, such as system comproise or denial of service
+
+=item _RTIR_HowReported
+
+How the IR got into RTIR
+
+=item _RTIR_ReporterType
+
+Who reported the IR, such as the police or another ISP
+
+=item _RTIR_IP
+
+IP addresses related to the incident, IR, investigation, or block
+
+=item _RTIR_Netmask
+
+Network mask for a Block
+
+=item _RTIR_Port
+
+Port for a Block
+
+=item _RTIR_WhereBlocked
+
+Where the block is placed
+
+=item _RTIR_Customer
+
+Customer for an IR or Investigation
+
+=back
 
 =head2 Scrips
 
