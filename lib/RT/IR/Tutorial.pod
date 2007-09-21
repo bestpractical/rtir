@@ -171,7 +171,7 @@ This operation is quite similar to rejecting an IR, but when you're
 abandoning an Incident you also reject IRs, resolve Investigations and
 remove Blocks linked to it.
 
-Once you open abandon page with the Incident's tab you see a list of its
+Once you open abandon page with the Incidents tab you see a list of its
 children grouped by queue and common update form. You can select children
 with checkboxes, only children you've selected will be rejected, resolved
 or removed.
@@ -277,6 +277,23 @@ Clicking on C<New> (or in the case of Investigations, C<Launch>) lets you create
 a new item and link it to the Incident automatically.
 
 =head3 Resolution
+
+=head4 Resolving an Incident
+
+Once you open resolve page under the Incidents tab you see a list of its
+children grouped by queue and common update form. You can select children
+with checkboxes, only children you've selected will resolved.
+
+You can write a message that that will be added to the selected children as
+a comment or response according to value of 'Update Type' field.
+
+Once a user tries to resolve an Incident, RTIR checks the state of that
+Incident's children to decide whether it's OK to resolve it or not. In the
+simplest case the Incident you're resolving has children that aren't linked to
+another open Incident, RTIR marks the Incident as resolved if all children are
+closed(resolved, rejected or removed) otherwise you see a notice "State of the
+Incident left unchanged; not all children were updated". The latter case may
+happen when the user's selected not all children.
 
 =head4 Quick Resolve
 

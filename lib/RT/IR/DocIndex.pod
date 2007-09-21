@@ -94,7 +94,11 @@ L<Tutorial/'Linking Incidents to IRs, Investigations, etc.'>
 
 =head2 Resolve Incident
 
+L<Tutorial/Resolving an Incident>
+
 =head2 Resolve Incident & linked IR's and Investigations
+
+L<Tutorial/Resolving an Incident>
 
 =head2 Quick resolve Incident
 
