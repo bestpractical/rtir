@@ -32,10 +32,6 @@ These Actions work in the same manner as creating tickets in RT
 
 =back
 
-=head3 Create new Incident from IR via 'Basics' section
-
-TODO: does this need further explanation or can it be lumped?
-
 =head3 Create new block via web-interface
 
 L<Tutorial/'Creating a Block'>
@@ -58,12 +54,17 @@ L<Tutorial/'Rejecting an IR'>
 
 L<Tutorial/'Rejecting many IRs at once (bulk reject)'>
 
+=head3 Linking IRs to Incidents
 
-=head3 Link IR with new Incident
+=over 4
 
-L<Tutorial/'Linking IRs to Incidents'>
+=item Link IR with new Incident
 
-=head3 Link IR with existing Incident
+=item Create new Incident from IR via 'Basics' section
+
+=item Link IR with existing Incident
+
+=back
 
 L<Tutorial/'Linking IRs to Incidents'>
 

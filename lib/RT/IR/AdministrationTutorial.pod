@@ -32,10 +32,14 @@ See the documentation for L<RT::Extension::TicketLocking>
 
 See the documentation for L<RT::Extension::TicketAging>
 
-=head2 Maintaining DB size, deleting entries
+=head2 Maintaining DB size, deleting entries, restoring deleted data
 
 During normal operation RT/RTIR never deletes data from the database.
 Since RT 3.7 the RTx::Shredder extension has been integrated into
 RT.  This extension can remove data such as Users or Tickets
 from the RT/RTIR system. You can find documentation for this 
 extension in in L<RT::Shredder>  by running `perldoc lib/RT/Shredder.pm`
+RT::Shredder's documentation includes information on restoring deleted data
+from backups. RT::Shredder provides SQL commands to reverse any delete
+operations, so any data that it deletes may be restored.
+

@@ -263,7 +263,7 @@ When creating a new IR, you may enter the ID number of an Incident in the
 If you have an existing IR, you can link it to an Incident by clicking the
 "[Link]" button next to the "Incident" field. You may also create new Incidents
 and linking them to this IR by clicking the "[New]" button next to the
-"Incident" field.
+"Incident" field in the "The Basics" section of the IR display.
 
 =head4 Linking Incidents to IRs, Investigations, etc.
 
@@ -289,8 +289,7 @@ a message or time worked, attach files, and so on.
 =head4 Creating a Block
 
 To create a new Block, create a new ticket in the Blocks queue. You will be
-required to link the Block to an Incident. (needs more info from someone
-knowledgeable)
+required to link the Block to an Incident.
 
 =head2 Custom fields
 
