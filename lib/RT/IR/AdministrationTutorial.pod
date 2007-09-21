@@ -15,7 +15,21 @@ RTIR specific scripts
 
 =head2 Templates
 
-RTIR specific templates
+=over 4
+
+=item Autoreply in Blocks queue
+
+This template is sent when a block is created.
+
+=item BlockRemoved in Blocks queue
+
+This template is sent when a block is removed.
+
+=item Autoreply in Investigations queue
+
+This template is sent when a new investigation is launched.
+
+=back
 
 =head2 GnuPG Encryption
 
