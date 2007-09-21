@@ -7,15 +7,15 @@ Reports, Incidents, Investigations and Blocks.
 
 =head3 Incident Reports 
 
-Incident Reports where new reports appear. When a user sends email to the
-address you set up, RTIR automatically creates an Incident Report, and sets its
-due date according to your organization's SLA rules. New Incident Reports
-appear on the RTIR main page, ordered by due date.
+Incident Reports is where new reports appear. When a user sends email to the
+address you set up, RTIR automatically creates an Incident Report (IR), and
+sets its due date according to your organization's SLA rules. New Incident
+Reports appear on the RTIR main page, ordered by due date.
 
 =head3 Incidents
 
 Once you've verified that a new Incident Report is valid, you can create a new
-Incident from it, or link the report to an existing Incident. RTIR fills in
+Incident from it, or link the IR to an existing Incident. RTIR fills in
 relevant information from the Incident Report, so there's no need to
 cut-and-paste. If you receive multiple reports about the same issue, you can
 link all of these reports to the same parent Incident, to keep them together.
@@ -37,15 +37,15 @@ they may be disabled.
 
 =head3 Merging tickets
 
-If it happens that after some investigation, it turns out that
-two Incidents actually are the same, e.g. where dynamic IP addresses
-are involved. In such a situation, the merge operation can be used,
-effectively making one ticket with out of two, containing the data
-and correspondence of both. Only tickets within the same queue should
-be merged, with the notable exception of merging an Incident Report
-into an Investigation when a correspondent's reply accidentally
-could not be recognized as such and thus got misfiled as new Incident
-Report.
+If it turns out that two Incidents are actually the same
+(which can occur when, e.g., dynamic IP addresses are
+involved), they may be merged. The merge operation effectively
+makes one ticket out of two, containing the data and
+correspondence of both. Only tickets within the same queue
+should be merged, with the notable exception of merging an
+Incident Report into an Investigation when a correspondent's
+reply accidentally could not be recognized as such and thus
+got misfiled as new Incident Report.
 
 When a user opens a ticket's display page there is a 'Merge'
 option in the page's tabs. The Merge page is split into two
