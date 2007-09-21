@@ -1,6 +1,4 @@
 CHANGES
-docs/AdministrationTutorial.pod
-docs/Constituencies.pod
 docs/logo/gif/rtir-logo-badge-3d.gif
 docs/logo/gif/rtir-logo-badge-shadow.gif
 docs/logo/gif/rtir-logo-badge.gif
@@ -13,8 +11,7 @@ docs/logo/psd/rtir-logo-badge-3d.psd
 docs/logo/psd/rtir-logo-badge-shadow.psd
 docs/logo/psd/rtir-logo-badge.psd
 docs/logo/svg/rtir.svg
-docs/README.DOCUMENTATION
-docs/Tutorial.pod
+docs/README
 etc/add_constituency
 etc/initialdata
 etc/RTIR_Config.pm
@@ -193,8 +190,12 @@ lib/RT/Condition/RTIR_RequireDueChange.pm
 lib/RT/Condition/RTIR_RequireStateChange.pm
 lib/RT/Condition/RTIR_StaffResponse.pm
 lib/RT/IR.pm
+lib/RT/IR/AdministrationTutorial.pod
 lib/RT/IR/Config.pm
+lib/RT/IR/Constituencies.pod
+lib/RT/IR/DocIndex.pod
 lib/RT/IR/Ticket.pm
+lib/RT/IR/Tutorial.pod
 Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP
@@ -220,6 +221,8 @@ t/017-locking.t
 t/019-watchers-on-create.t
 t/019-webui-block-fields.t
 t/020-incident-and-investigation.t
+t/021-gnupg-on-create.t
+t/022-gnupg-on-update.t
 t/03firstmilestone.t
 t/constituency/acl.t
 t/constituency/basics.t
@@ -227,6 +230,18 @@ t/constituency/email.t
 t/constituency/propagation-inherit.t
 t/constituency/propagation-no.t
 t/constituency/propagation-reject.t
+t/data/gnupg/keys/general-at-example.com.2.public.key
+t/data/gnupg/keys/general-at-example.com.2.secret.key
+t/data/gnupg/keys/general-at-example.com.public.key
+t/data/gnupg/keys/general-at-example.com.secret.key
+t/data/gnupg/keys/recipient-at-example.com.public.key
+t/data/gnupg/keys/recipient-at-example.com.secret.key
+t/data/gnupg/keys/rt-recipient-at-example.com.public.key
+t/data/gnupg/keys/rt-recipient-at-example.com.secret.key
+t/data/gnupg/keys/rt-test-at-example.com.2.public.key
+t/data/gnupg/keys/rt-test-at-example.com.2.secret.key
+t/data/gnupg/keys/rt-test-at-example.com.public.key
+t/data/gnupg/keys/rt-test-at-example.com.secret.key
 t/incident/abandon.t
 t/incident/bulk-abandon.t
 t/incident/split.t
