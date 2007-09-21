@@ -2,7 +2,9 @@
 
 =head2 Blocks Queue
 
-Discussed a little in Tutorial
+You may disable the Blocks by putting the following into your RTIR config:
+
+    Set($RTIR_DisableBlocksQueue, 1);
 
 =head2 Custom Fields
 
@@ -27,11 +29,11 @@ How an Incident was or wasn't resolved
 
 =item _RTIR_SLA
 
-The SLA with the reporter of an IR
+The SLA of an IR
 
 =item _RTIR_Function
 
-Who is handling the Incident. I think..
+Who is handling the Incident
 
 =item _RTIR_Classification
 
@@ -48,6 +50,8 @@ Who reported the IR, such as the police or another ISP
 =item _RTIR_IP
 
 IP addresses related to the incident, IR, investigation, or block
+
+L<Tutorial/'IP'>
 
 =item _RTIR_Netmask
 
@@ -69,7 +73,49 @@ Customer for an IR or Investigation
 
 =head2 Scrips
 
-RTIR specific scripts
+=over 4
+
+=item DetectUserResponse
+
+=item DetectStaffResponse
+
+=item SetStartsDate
+
+=item SetStarts
+
+=item SetStartsDateOnQueueChange
+
+=item SetStarted
+
+=item SetDue
+
+=item SetDueOnQueueChange
+
+=item UnsetDue
+
+=item SetDueReopen
+
+=item SetHowReported
+
+=item SetRTIRState
+
+=item ResolveAllChildren
+
+=item FixOwnership
+
+=item ReopenIncident
+
+=item SetDefaultIncidentResolution
+
+=item NotifyOnClose
+
+=item SetIPFromContent
+
+=item SetConstituency
+
+=item SetConstituencyGroup
+
+=back
 
 =head2 Templates
 

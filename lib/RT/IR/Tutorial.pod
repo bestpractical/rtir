@@ -115,18 +115,18 @@ In the normal course of work, this operation should be avoided.
 
 =head3 Splitting tickets
 
-Split operation allows user to create new ticket from the existing one.
+The Split operation allows user to create a new ticket from an existing one.
 When a user selects the 'Split' tab he will see a new ticket creation form 
 with information pre-filled from the original ticket, for example Subject, 
 Owner, Correspondents(Requestors), Ccs, AdminCs, as well as the original ticket's
 history, formatted as text in the message box. The user can change any and all
-values before creating a new ticket.
+values before splitting off the new ticket.
 
 "Split" tickets can only be created in the same queue as the ticket they're
 split from.
 
 Note that the split action is implemented over "create" function and if
-your RTIR configured to notify requestors (correspondents) then mail(s)
+your RTIR is configured to notify requestors (correspondents) then mail(s)
 would be send after split. However you can use "Don't send any emails to
 correspondents" checkbox from the split page to avoid notifications.
 
@@ -161,9 +161,9 @@ with checkboxes. To reject tickets you submit the form with 'reject' or
 'bulk reject' page, while the latter one returns you to the RTIR home page
 where you could continue your work.
 
-Note that you can't reject IRs that are owned by somebody else (sure, you
-can reject unowned) with the bulk reject interface, these IRs would be
-skipped with a notice even if you'd selected some.
+Note that you can't reject IRs that are owned by somebody else (you can,
+however, reject unowned IRs) with the bulk reject interface. IRs owned by
+others will be skipped with a warning even if you selected them.
 
 =head3 Abandoning Incidents
 
@@ -171,10 +171,9 @@ This operation is quite similar to rejecting an IR, but when you're
 abandoning an Incident you also reject IRs, resolve Investigations and
 remove Blocks linked to it.
 
-Once you open abandon page with the Incidents tab you see a list of its
-children grouped by queue and common update form. You can select children
-with checkboxes, only children you've selected will be rejected, resolved
-or removed.
+Once you open the Abandon page under the Incidents tab you see a list of its
+children grouped by queue. You can select children with checkboxes, only
+children you've selected will be rejected, resolved or removed.
 
 Resolution of the Incident is set according to C<$_RTIR_Resolution_rejected_default>
 config option and by default its value is "no resolution reached", however,
@@ -206,9 +205,9 @@ Incidents at once.
 
 =head3 Locking
 
-A lock is created whenever a user performs an action on a ticket that takes
-multiple steps if a hard lock is not already in place for that ticket. The
-following actions produce an auto lock:
+An automatic lock is created whenever a user performs an action on a ticket that
+takes multiple steps (unless a hard lock is already in place for that ticket).
+The following actions produce an auto lock:
 
     - Edit
     - Split
@@ -220,16 +219,16 @@ following actions produce an auto lock:
     - Comment
     - Remove
 
-An auto lock is removed once the user is done with whatever he was doing
-on the page (e.g., when he clicks "Save Changes" on the Edit page).
-It is also removed if the Unlock link is clicked from a page that generated
-an auto lock.
-
 Locks are advisory: if a ticket is locked by one user, other users
 will be given a notification (in red) that another user has locked
 the ticket, with the locking user's name and how long he has had
 it locked for, but they will still be allowed to edit and submit
 changes on the ticket.
+
+An auto lock is removed once the user is done with whatever he was doing
+on the page (e.g., when he clicks "Save Changes" on the Edit page).
+It is also removed if the Unlock link is clicked from a page that generated
+an auto lock.
 
 For more information, see L<RT::Extension::TicketLocking>.
 
@@ -269,20 +268,20 @@ and linking them to this IR by clicking the "[New]" button next to the
 
 You may link Incidents with existing Incident Responses, Investigations,
 Blocks, and RTFM articles. On the Incident display page there are sections for
-each of these, each with a C<Link> button and the list of already-linked items.
-Clicking on C<Link> lets you link one or more items of that type to the
-Incident.
+each of these, each with a C<Link> button and the list of already-linked
+tickets. Clicking on C<Link> lets you link one or more tickets of that type to
+the Incident.
 
-Clicking on C<New> (or in the case of Investigations, C<Launch>) lets you create
-a new item and link it to the Incident automatically.
+Clicking on C<New> (or in the case of Investigations, C<Launch>) lets you
+create a new tickets and link it to the Incident automatically.
 
 =head3 Resolution
 
 =head4 Resolving an Incident
 
-Once you open resolve page under the Incidents tab you see a list of its
+Once you open the Resolve page under the Incidents tab you see a list of its
 children grouped by queue and common update form. You can select children
-with checkboxes, only children you've selected will resolved.
+with checkboxes. Only children you've selected will resolved.
 
 You can write a message that that will be added to the selected children as
 a comment or response according to value of 'Update Type' field.
@@ -297,9 +296,17 @@ happen when the user's selected not all children.
 
 =head4 Quick Resolve
 
-Incidents have a "Quick Resolve" feature. Clicking Quick Resolve will change
-an Incident's status to 'resolved' immediately. You won't be asked to fill in
-a message or time worked, attach files, and so on.
+Incidents and IRs have a "Quick Resolve" feature. Clicking Quick Resolve will
+change a ticket's status to 'resolved' immediately. You won't be asked to
+fill in a message or time worked, attach files, and so on.
+
+=head3 Investigation
+
+=head4 Launching an Investigation
+
+To launch a new Investigatin, create a new ticket in the Investigation queue.
+You will be required to link the Investigation to an Incident, and provide one
+or more correspondents.
 
 =head3 Blocks
 
