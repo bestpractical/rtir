@@ -1,6 +1,10 @@
 Documentation Directory README
 
-Index.pod
+Documentation can be found lib/RT/IR/*.pod
+If the RT-OnlineDocs extension is installed,
+this will be available through the UI.
+
+DocIndex.pod
     Index into RTIR documentation
 AdministrationTutorial.pod
     Discussion of the changes RTIR makes to RT's
@@ -10,5 +14,8 @@ Constituencies.pod
     How to use Constituencies
 Tutorial.pod
     User's guide to RTIR
+
+
+
 logo
     rtir's logo in various sizes and formats
