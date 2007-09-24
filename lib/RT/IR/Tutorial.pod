@@ -31,7 +31,9 @@ Investigation, so there's no need to cut-and-paste.
 
 Blocks are used to track the blocks placed on the borders of the network. You
 can create them from an existing Incident. Some sites don't require blocks, so
-they may be disabled.
+they may be disabled by your Administrator.  Blocks have several states: pending
+activation, active, pending removal, removed.  These states can be set from
+sub-menu items on ticket display pages.
 
 =head2 Operations with tickets
 
