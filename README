@@ -112,7 +112,7 @@ rtir:         "|/opt/rt3/bin/rt-mailgate --queue 'Incident Reports' --action cor
 You should substitute the URL for RT's web interface for "http://localhost/".
 
 ** If you're configuring RTIR with support for multiple constituencies, please
-refer to the instructions in the file  docs/Constituencies.pod
+refer to the instructions in the file lib/RT/IR/Constituencies.pod
 
 ** Use "perldoc /opt/rt3/bin/rt-mailgate" to get more info about mailgate script.
 
@@ -124,13 +124,25 @@ Documentation for RTIR
    * UPGRADING 
         Instructions for users upgrading from 1.0 or 2.0
 
-   * perldoc docs/Tutorial.pod 
-        ( also at http://svn.bestpractical.com/cgi-bin/index.cgi/bps/view/rtir/branches/2.1-EXPERIMENTAL/docs/Tutorial.pod )
+   * perldoc lib/RT/IR/DocIndex.pod 
+        ( also at http://svn.bestpractical.com/cgi-bin/index.cgi/bps/view/rtir/branches/2.3-EXPERIMENTAL/lib/RT/IR/DocIndex.pod )
+        Links to documentation specific to RTIR
+
+   * perldoc lib/RT/IR/Tutorial.pod 
+        ( also at http://svn.bestpractical.com/cgi-bin/index.cgi/bps/view/rtir/branches/2.3-EXPERIMENTAL/lib/RT/IR/Tutorial.pod )
         Extended information about ticket merging
 
-   * perldoc docs/Constituencies.pod 
-        ( also at http://svn.bestpractical.com/cgi-bin/index.cgi/bps/view/rtir/branches/2.1-EXPERIMENTAL/docs/Constituencies.pod )
+   * perldoc lib/RT/IR/Constituencies.pod 
+        ( also at http://svn.bestpractical.com/cgi-bin/index.cgi/bps/view/rtir/branches/2.3-EXPERIMENTAL/lib/RT/IR/Constituencies.pod )
         Information about setting up RTIR with multiple user constituencies
+
+   * perldoc lib/RT/IR/AdministrationTutorial.pod 
+        ( also at http://svn.bestpractical.com/cgi-bin/index.cgi/bps/view/rtir/branches/2.3-EXPERIMENTAL/lib/RT/IR/AdministrationTutorial.pod )
+        Information about setting up RTIR for Administrators
+        
+   * install extension RT-OnlineDocs to give SuperUsers access to the RT::IR and RT API
+     documentation via the Web UI.  This includes the Tutorial.pod and other .pod files
+     mentioned above.
 
    * perldoc RT::Extension::TicketAging
         (also at http://svn.bestpractical.com/cgi-bin/index.cgi/bps/view/RT-Extension-TicketAging/lib/RT/Extension/TicketAging.pm )
@@ -146,7 +158,7 @@ Documentation for RTIR
    * RTIR mailing list 
         Subscribe by sending mail to rtir-request@lists.bestpractical.com
 
-   * wiki.bestpractical.com?RTIR
+   * http://wiki.bestpractical.com/view/RTIR
         The RTIR section of the community-developed RT wiki is still in its infancy.  
 
 
