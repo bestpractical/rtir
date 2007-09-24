@@ -139,8 +139,7 @@ This template is sent when a new investigation is launched.
 
 Documented in RT L<RT::Crypt::GnuPG>
 GnuPG integration is now a feature of RT.  Configuration
-can be done in your RT_SiteConfig.pm file and you can
-find extensive documentation by reading. 
+can be done in your RT_SiteConfig.pm.
 
 =head2 Locking
 

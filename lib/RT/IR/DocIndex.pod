@@ -1,6 +1,6 @@
 =head1 RTIR Documentation Index
 
-RTIR's documentation can be found in POD form in the docs/
+RTIR's documentation can be found in POD form in the lib/RT/IR/
 subdirectory of your RTIR install.  Some things may be documented
 with specific tools (such as rt-mailgate) or with RT's standard 
 documentation.  Other topics will be documented in

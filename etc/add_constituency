@@ -38,7 +38,7 @@ Disable output.
 This command line utitlity is a helper for activating advanced access control
 on tickets using the current value of the constituency field.
 
-Read more in F<docs/Constituencies.pod> using perldoc tool.
+Read more in F<lib/RT/IR/Constituencies.pod> using perldoc tool.
 
 =cut
 

@@ -72,14 +72,14 @@ Set($_RTIR_Resolution_resolved_default, "successfully resolved");
 Set($_RTIR_Resolution_rejected_default, "no resolution reached");
 
 # Constituency behaviour
-# read more about constituencies in docs/Constituency.pod
+# read more about constituencies in lib/RT/IR/Constituency.pod
 #
 # default value
 Set( $_RTIR_Constituency_default,        "EDUNET" );
 
 # Constituency propagation algorithm
 # valid values are 'no', 'inherit', 'reject'
-# Algorithms are defined in docs/Constituency.pod/Changing the value
+# Algorithms are defined in lib/RT/IR/Constituency.pod/Changing the value
 Set( $_RTIR_Constituency_Propagation,    'no' );
 
 # Set the Business Hours for your organization
