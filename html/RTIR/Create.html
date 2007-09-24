@@ -406,7 +406,7 @@ if ( $IncidentObj ) {
 push @results, $m->comp( 'SELF:ProcessAttachments', %ARGS );
 
 my @gnupg_keys_issues;
-if ( $ARGS{'Encrypt'} ) {
+if ( $ARGS{'Create'} && $ARGS{'Encrypt'} ) {
 
     my @recipients = $m->comp(
         '/Ticket/Elements/PreviewScrips:GetRecipientsOnCreate',
