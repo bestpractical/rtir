@@ -72,7 +72,7 @@ sub Prepare { return 1 }
 
 =head2 Commit
 
-Set the Due date to a configured value.
+Set the Due date based on your SLA_Response settings
 
 =cut
 

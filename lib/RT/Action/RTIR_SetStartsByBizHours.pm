@@ -66,7 +66,7 @@ sub Prepare {
 
 =head2 Commit
 
-Look up the SLA and set the Starts and Due dates accordingly.
+Look up the SLA and set the Starts date to the next time during Business Hours
 
 =cut
 

@@ -68,7 +68,9 @@ sub Prepare {
 
 =head2 Commit
 
-Look up the SLA and set the Due date accordingly.
+Look up the SLA and set the Due date to the configured 
+(on the queue or global) Due date, defaulting to 7 business
+days from now.
 
 =cut
 
