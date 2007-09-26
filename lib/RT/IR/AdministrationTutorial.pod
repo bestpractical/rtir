@@ -160,3 +160,23 @@ RT::Shredder's documentation includes information on restoring deleted data
 from backups. RT::Shredder provides SQL commands to reverse any delete
 operations, so any data that it deletes may be restored.
 
+=head2 GnuPG support
+
+See also the documentation in L<RT::Crypt::GnuPG>.
+
+=head3 Reverification
+
+RTIR supports reverification of incoming email. If a user sends signed mail
+but RTIR doesn't have his public key (or if some other error occurs), then his
+message will be still be processed, but there will be "This message is
+unverified" warnings in the UI. Afterwards, RTIR will automatically attempt to
+reverify that message whenever someone views it.
+
+=head3 Key selection
+
+Sometimes a user will have multiple public keys in RTIR's GPG database. When
+that happens, RTIR has the user writing the message decide which key to use
+when sending that user encrypted mail. They are listed as fingerprints along
+with their trust levels. If only one key is valid, then RTIR will
+automatically choose it instead of asking the user.
+
