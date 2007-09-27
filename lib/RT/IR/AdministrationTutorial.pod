@@ -135,12 +135,6 @@ This template is sent when a new investigation is launched.
 
 =back
 
-=head2 GnuPG Encryption
-
-Documented in RT L<RT::Crypt::GnuPG>
-GnuPG integration is now a feature of RT.  Configuration
-can be done in your RT_SiteConfig.pm.
-
 =head2 Locking
 
 See the documentation for L<RT::Extension::TicketLocking>
@@ -162,6 +156,8 @@ operations, so any data that it deletes may be restored.
 
 =head2 GnuPG support
 
+GnuPG integration is now a feature of RT.  Configuration
+can be done in your RT_SiteConfig.pm.
 See also the documentation in L<RT::Crypt::GnuPG>.
 
 =head3 Reverification
