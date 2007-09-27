@@ -65,7 +65,7 @@ sub Prepare {
 
 =head2 Commit
 
-Set the Due date to a configured value.
+Set the Due date based on the SLA_Reopen_(In|OutOf)Hours settings
 
 =cut
 

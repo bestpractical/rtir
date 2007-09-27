@@ -7,7 +7,8 @@ use base 'RT::Condition::RTIR';
 
 =head2 IsApplicable
 
-If a child had a Due Date change or changes parents.
+Applies to tickets being created, linked to other tickets or when
+the _RTIR_Constituency Custom Field is changed
 
 =cut
 

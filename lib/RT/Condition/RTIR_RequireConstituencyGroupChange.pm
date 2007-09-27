@@ -8,7 +8,7 @@ use RT::CustomField;
 
 =head2 IsApplicable
 
-If a child had a Due Date change or changes parents.
+Applies to Ticket Creation and _RTIR_Constituency changes
 
 =cut
 
