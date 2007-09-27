@@ -77,43 +77,161 @@ Customer for an IR or Investigation
 
 =item DetectUserResponse
 
+Applies to the Incident Reports, Blocks and Investigations queues.
+Sets the Due date based on the SLA_Response_* settings
+if the user sending Correspondence is not a staff member (Duty Team group).
+
 =item DetectStaffResponse
+
+Applies to the Incident Reports, Blocks and Investigations queues.
+Sets the Due date based on the Queue's Default Due or the global OverdueAfter
+configuration using your SLA configuration if the user sending Correspondence 
+is a staff member (Duty Team group).
 
 =item SetStartsDate
 
+Applies to the Incidents Queue.
+On Ticket creation, set the Starts date to now.
+
 =item SetStarts
+
+Applies to the Incident Reports, Blocks and Investigations queues.
+On Ticket creation, set the Starts date to the next instant during Business Hours.
 
 =item SetStartsDateOnQueueChange
 
+In the Incidents Queue, set the Starts date to now when the Queue changes.
+In the Incident Reports, Blocks and Investigations queues, set the Starts
+date to the next instant during Business Hours on a Queue change.
+
 =item SetStarted
+
+In the Block queue: When a Block with Status = 'Active' is created or
+is switched from Pending Activation to Active, set the Started date to now.
+
+In the Incident Reports queue: When a Ticket is created that links to a
+Ticket in the Incidents queue or an existing IR is linked to an Incident,
+set the Started date to now.
 
 =item SetDue
 
+In the Incident Reports queue, Due is set based on the _RTIR_SLA Custom Field 
+during Ticket creation.  _RTIR_SLA is set if needed, based on your Business Hours
+definitions.
+
+In the Investigations and Blocks queues, Due is set to the first instant during
+Business Hours for your Default Due setting, during Ticket creation.
+
 =item SetDueOnQueueChange
+
+In the Incident Reports queue, Due is set based on the _RTIR_SLA Custom Field 
+during Queue Change.  _RTIR_SLA is set if needed, based on your Business Hours
+definitions.
+
+In the Investigations and Blocks queues, Due is set to the first instant during
+Business Hours for your Default Due setting, during Ticket creation.
 
 =item UnsetDue
 
+Applies to the Incident Reports, Blocks and Investigations queues.
+When the Status of a Ticket changes from an Active Status to an Inactive
+Status (see F<RT_Config.pm>) the Due date is unset.
+
 =item SetDueReopen
+
+Applies to the Incident Reports, Blocks and Investigations queues.
+When the Status of a Ticket changes from an Inactive Status to an Active
+Status (see F<RT_Config.pm>) the Due date is set based on your SLA_Reopen
+Config settings.
 
 =item SetHowReported
 
+Applies to the Incident Reports queue.
+On Ticket creation, set the _RTIR_HowReported Custom Field to a default
+value of Email if it wasn't otherwise specified.
+
 =item SetRTIRState
+
+Applies to the Incident Reports, Blocks, Incidents and Investigations queues.
+Sets the _RTIR_State Custom Field based on the current Status
+of the Ticket.  This is triggered on Create, Custom Field change, Status Change,
+Linking of tickets or Queue Change.  Correspondence in the Blocks queue also
+triggers this.
+
+Applies to the Incident Reports, Blocks and Investigations queues.
+If Links between tickets are added or removed, or the Due date is changed,
+the parent Incident ticket has its Due date updated to reflect the Due
+date of the "most due" child ticket.
 
 =item ResolveAllChildren
 
+Applies to the IncidentsQueue.
+If the Status of an Incident is changes to an Inactive Status,
+looks for linked Tickets in the Incident Report, Investigation or Blocks
+Queues and Resolves them.  If any of these linked Tickets are linked
+to other ongoing Incidents, a comment is left and they are left unresolved.
+
 =item FixOwnership
+
+Applies to the Incidents Queue.
+When the Owner of an Incident is changed, the Owner of linked children
+tickets are changed to the same owner.
+
+Applies to the Incident Reports, Blocks and Investigations queues.
+When the Owner of a Ticket in these Queues is changed, that change
+is also applied to the linked Incident
 
 =item ReopenIncident
 
+Applies to the Incident Reports, Blocks and Investigations queues.
+If the status of a Ticket in these Queues is changed from rejected or
+resolved, the linked parent Incident ticket is marked as Open.
+
 =item SetDefaultIncidentResolution
+
+Applies to the Incident Queue.
+When an Incident's Status is changed, if it is changed from an
+Inactive Status to an Active Status, the _RTIR_Resolution Custom Field
+is removed.  If it is changed from an Active Status to an Inactive Status
+and the _RTIR_Resolution Custom Field wasn't set manually, it is set
+to the value of _RTIR_Resolution_(rejected|resolved)_default in your
+F<RTIR_Config.pm>.
 
 =item NotifyOnClose
 
+Applies to the Blocks Queue.
+When a Block Ticket is moved from an Active Status to an Inactive
+Status (closed), the Requestors on the Block are notified using the
+L<Templates/BlockRemoved in Blocks queue> Template
+
 =item SetIPFromContent
+
+Applies to the Incident Reports, Blocks, Incidents and Investigations queues.
+Updates the Ticket Custom Field _RTIR_IP to have a list of all IP and IP Ranges
+found in the body of the ticket during Create and Correspond
 
 =item SetConstituency
 
+Applies to the Incident Reports, Blocks, Incidents and Investigations queues.
+Uses the Constituency algorithms discussed in L<RT::IR::Constituencies> to 
+set and propagate changes to the _RTIR_Constituency Custom Field.  On Ticket
+creation, Constituency is set based on the checking the parent Ticket, the 
+X-RT-Mail-Extension header (see L<RT::IR::Constituencies>) or the default set 
+in your F<RTIR_Config.pm>
+
+When linking tickets or changing the _RTIR_Constituency Custom Field, this
+Scrip ensures that the change is propagated based on your choice of 
+_RTIR_Constituency_Propagation in your F<RTIR_Config.pm>
+
 =item SetConstituencyGroup
+
+Applies to the Incident Reports, Blocks, Incidents and Investigations queues.
+When Tickets are Created, or the _RTIR_Constituency Custom Field is updated,
+this Scrip manages the assignment of DutyTeam groups as AdminCcs.
+It makes sure that for a Constituency EDUNET, a DutyTeam group
+named 'DutyTeam EDUNET' is assigned as AdminCc and removes other DutyTeam
+groups from the AdminCc.  L<RT::IR::Constituencies/ACLs> discusses
+how to use these groups.
 
 =back
 
