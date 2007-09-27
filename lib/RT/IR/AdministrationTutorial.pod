@@ -180,3 +180,7 @@ when sending that user encrypted mail. They are listed as fingerprints along
 with their trust levels. If only one key is valid, then RTIR will
 automatically choose it instead of asking the user.
 
+If a user has no trusted keys, then the web interface will warn and refuse to
+send him an encrypted message. This is ultimately due to limitations in GnuPG:
+we cannot encrypt a message with an untrusted key.
+
