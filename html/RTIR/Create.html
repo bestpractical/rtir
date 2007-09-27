@@ -69,6 +69,10 @@
 
 <a name="top"></a>
 
+% if ($cannot_sign) {
+<& /Elements/GnuPGSignIssues &>
+% }
+
 <& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues &>
 
 <&| /Widgets/TitleBox, contentbg => "#cccccc", title => $Title &>
@@ -404,6 +408,15 @@ if ( $IncidentObj ) {
 }
 
 push @results, $m->comp( 'SELF:ProcessAttachments', %ARGS );
+
+# check to see if we have a good passphrase
+my $cannot_sign = 0;
+if ( $ARGS{'Create'} && $ARGS{'Sign'} ) {
+    if (!RT::Crypt::GnuPG::DrySign($QueueObj->CorrespondAddress, "x")) {
+        $cannot_sign = 1;
+        $checks_failure = 1;
+    }
+}
 
 my @gnupg_keys_issues;
 if ( $ARGS{'Create'} && $ARGS{'Encrypt'} ) {

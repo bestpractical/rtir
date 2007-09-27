@@ -48,6 +48,10 @@
 %   }
 % }
 
+% if ($cannot_sign) {
+<& /Elements/GnuPGSignIssues &>
+% }
+
 <& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues &>
 
 <table>
@@ -172,6 +176,18 @@ $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
 $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 
 my $checks_failure;
+
+# check to see if we have a good passphrase
+my $cannot_sign = 0;
+if ( $ARGS{'SubmitTicket'} && $ARGS{'Sign'} ) {
+    my $address = $ARGS{'UpdateType'} eq "private"
+                ? $Ticket->QueueObj->CommentAddress
+                : $Ticket->QueueObj->CorrespondAddress;
+    if (!RT::Crypt::GnuPG::DrySign($address, "x")) {
+        $cannot_sign = 1;
+        $checks_failure = 1;
+    }
+}
 
 my @gnupg_keys_issues;
 if ( $ARGS{'SubmitTicket'} && $ARGS{'Encrypt'} ) {
