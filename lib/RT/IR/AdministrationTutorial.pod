@@ -296,15 +296,6 @@ automatically choose it instead of asking the user.
 
 If a user has no trusted keys, then the web interface will warn and refuse to
 send him an encrypted message. This is ultimately due to limitations in GnuPG:
-we cannot encrypt a message with an untrusted key.
-
-=head3 Missing passphrase
-
-If RTIR is asked to sign an outgoing message and the passphrase is unavailable,
-it will detect this and avoid sending any email. The user will be asked to
-notify a system administrator.
-
-A missing passphrase occurs when GPG Agent is unresponsive or the passphrase
-was mis-set in RTIR_SiteConfig.pm. Note that you can use either GPG Agent or
-set the passphrase in the site config, you need not do both.
-
+we cannot encrypt a message with an untrusted key.  Managing the trust levels
+of keys must be done outside of RT as there is not currently key management 
+support available.
