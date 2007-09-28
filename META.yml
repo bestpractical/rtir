@@ -5,7 +5,7 @@ build_requires:
   File::Find: 0
   Test::More: 0
 distribution_type: module
-generated_by: Module::Install version 0.670
+generated_by: Module::Install version 0.67
 license: GPL Version 2
 meta-spec: 
   url: http://module-build.sourceforge.net/META-spec-v1.3.html
@@ -28,4 +28,4 @@ requires:
   Regexp::Common: 0
   Regexp::Common::net::CIDR: 0
 tests: t/*.t t/*/*.t
-version: 2.3.7
+version: 2.3.8
