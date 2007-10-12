@@ -27,23 +27,13 @@ ul.userlist li:last-child::after{
  }
 
 
-div.locked-by-you {
-    
-    width: 80%;
-    align: center;
-    border: 2px solid green;
-    padding: 1em;
-    margin: 1em;
-}    
-
-.locked, .no-recipients {
+.no-recipients {
     background: #ffcccc; 
     width: 80%;
     align: center;
     border: 2px solid red;
     padding: 1em;
     margin: 1em;
-    
 }
 
 % $m->abort;
