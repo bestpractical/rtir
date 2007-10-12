@@ -47,6 +47,8 @@
 package RT::Action::RTIR_SetIncidentReportState;
 
 use strict;
+use warnings;
+
 use base 'RT::Action::RTIR_SetState';
 
 =head2 GetState
