@@ -1,5 +1,5 @@
 <span id="showuser-<%$User->id%>">
-% my $url = $RT::WebPath."/RTIR/EditUserName?page=1&id=".$User->id;
+% my $url = $RT::WebPath."/RTIR/EditUsername?page=1&id=".$User->id;
 <& /Elements/ShowUser, User => $User &>
 % if ( $session{'CurrentUser'}->HasRight(Right => 'AdminUsers', Object => $RT::System) ) {
 [<a href="<%$RT::WebPath%>/Admin/Users/Modify.html?id=<%$User->id%>"
