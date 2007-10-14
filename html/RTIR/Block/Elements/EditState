@@ -14,3 +14,8 @@
 $TicketObj => undef
 $Default   => undef
 </%ARGS>
+<%INIT>
+if ( $Default eq 'open' ) {
+    $Default = 'new' unless $TicketObj->FirstCustomFieldValue('_RTIR_State') eq 'active';
+}
+</%INIT>

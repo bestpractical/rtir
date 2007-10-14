@@ -267,10 +267,16 @@ $m->callback(CallbackName => 'ProcessArguments',
         }
     }
 
-
-
     $ARGS{UpdateAttachments} = delete $session{'Attachments'};
     push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS );
+
+    if ( $Type eq 'Block' && ($ARGS{'Status'}||'') eq 'open' && $Ticket->Status eq 'open' ) {
+        my ($id, $msg) = $Ticket->AddCustomFieldValue(
+            Field => '_RTIR_State',
+            Value => 'active',
+        );
+        $RT::Logger->error("Couldn't set state: $msg");
+    }
     push @results, ProcessTicketBasics(  TicketObj => $Ticket, ARGSRef => \%ARGS );
 
     my $strict_acl = RT->Config->Set( StrictLinkACL => 0 );

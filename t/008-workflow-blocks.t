@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 36;
+use Test::More tests => 62;
 
 require "t/rtir-test.pl";
 
@@ -67,6 +67,40 @@ $agent->form_number(3);
 $agent->click('SubmitTicket');
 ticket_state_is($agent, $block_id, 'pending removal');
 
+diag "test activation after reply using 'Activate' link";
+{
+    my $block_id = create_block($agent, {Subject => "block", Incident => $inc_id});
+    ticket_state_is($agent, $block_id, 'pending activation');
 
+    $agent->follow_link_ok({ text => 'Reply' }, "Go to reply page");
+    $agent->form_number(3);
+    $agent->field( UpdateContent => 'reply' );
+    $agent->click('SubmitTicket');
 
+    ticket_state_is($agent, $block_id, 'pending activation');
+
+    $agent->follow_link_ok({ text => 'Activate' }, "activate it");
+
+    ticket_state_is($agent, $block_id, 'active');
+}
+
+diag "test activation after reply using Edit page";
+{
+    my $block_id = create_block($agent, {Subject => "block", Incident => $inc_id});
+    ticket_state_is($agent, $block_id, 'pending activation');
+
+    $agent->follow_link_ok({ text => 'Reply' }, "Go to reply page");
+    $agent->form_number(3);
+    $agent->field( UpdateContent => 'reply' );
+    $agent->click('SubmitTicket');
+
+    ticket_state_is($agent, $block_id, 'pending activation');
+
+    $agent->follow_link_ok({ text => "Edit" }, "Goto edit page");
+    $agent->form_number(3);
+    $agent->field(Status => 'open');
+    $agent->click('SaveChanges');
+
+    ticket_state_is($agent, $block_id, 'active');
+}
 
