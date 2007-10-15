@@ -349,6 +349,8 @@ if ( $m->comp_exists("/RTIR/$Type/Create.html") ) {
 }
 
 if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
+    require RT::Crypt::GnuPG;
+
     foreach ( qw(Sign Encrypt) ) {
         $ARGS{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
             Name => $_,

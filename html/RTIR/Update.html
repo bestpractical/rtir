@@ -177,6 +177,10 @@ $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 
 my $checks_failure;
 
+if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
+    require RT::Crypt::GnuPG;
+}
+
 # check to see if we have a good passphrase
 my $cannot_sign = 0;
 if ( $ARGS{'SubmitTicket'} && $ARGS{'Sign'} ) {
