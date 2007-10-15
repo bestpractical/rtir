@@ -1,0 +1,24 @@
+@ScripActions = (
+    {  Name        => 'RTIR merge IPs',    # loc
+       Description => 'Merge multiple IPs on ticket merge' ,                                            # loc
+       ExecModule  => 'RTIR_MergeIPs',
+    },
+);
+
+@ScripConditions = (
+    {  Name        => 'RTIR Merge',    # loc
+       Description => 'Whenever ticket is merged into another one',                                 # loc
+       ApplicableTransTypes => 'AddLink',
+       ExecModule => 'RTIR_Merge',
+    },
+);
+
+@Scrips = (
+    {  Description       => "MergeIPs",
+       Queue             => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
+       ScripCondition    => 'RTIR Merge',
+       ScripAction       => 'RTIR merge IPs',
+       Template          => 'Blank',
+    },
+);
+

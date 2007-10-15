@@ -311,6 +311,10 @@ my $ip_pattern = qr{(?#IP/IP-IP/CIDR)^(?:|\s*$RE{net}{IPv4}(?:\s*-\s*$RE{net}{IP
        Description => 'Set IP custom field from message content' ,                                            # loc
        ExecModule  => 'RTIR_FindIP',
     },
+    {  Name        => 'RTIR merge IPs',    # loc
+       Description => 'Merge multiple IPs on ticket merge' ,                                            # loc
+       ExecModule  => 'RTIR_MergeIPs',
+    },
     {  Name        => 'RTIR Set Constituency',    # loc
        Description => 'Set and cascade Constituency custom field' ,                                            # loc
        ExecModule  => 'RTIR_SetConstituency',
@@ -372,6 +376,11 @@ my $ip_pattern = qr{(?#IP/IP-IP/CIDR)^(?:|\s*$RE{net}{IPv4}(?:\s*-\s*$RE{net}{IP
        Description => 'Whenever ticket is linked to incident or created with link',                                 # loc
        ApplicableTransTypes => 'Create,AddLink',
        ExecModule => 'RTIR_LinkingToIncident',
+    },
+    {  Name        => 'RTIR Merge',    # loc
+       Description => 'Whenever ticket is merged into another one',                                 # loc
+       ApplicableTransTypes => 'AddLink',
+       ExecModule => 'RTIR_Merge',
     },
 );
 
@@ -543,6 +552,12 @@ my $ip_pattern = qr{(?#IP/IP-IP/CIDR)^(?:|\s*$RE{net}{IPv4}(?:\s*-\s*$RE{net}{IP
        Queue             => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
        ScripCondition    => 'On Create',
        ScripAction       => 'RTIR parse message for IPs',
+       Template          => 'Blank' },
+
+    {  Description       => "MergeIPs",
+       Queue             => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
+       ScripCondition    => 'RTIR Merge',
+       ScripAction       => 'RTIR merge IPs',
        Template          => 'Blank' },
 
     {  Description       => "SetConstituency",

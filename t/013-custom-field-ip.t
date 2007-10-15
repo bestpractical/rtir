@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 430;
+use Test::More tests => 475;
 
 require "t/rtir-test.pl";
 
@@ -543,5 +543,82 @@ diag "create two tickets with different IP ranges and check several searches" if
     $tickets = RT::Tickets->new( $rtir_user );
     $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.22/24'");
     is( $tickets->Count, 0, "didn't finnd ticket" ) or diag "but found ". $tickets->First->id;
+}
+
+diag "merge ticket, IPs should be merged";
+{
+    my $incident_id = create_rtir_ticket_ok(
+        $agent, 'Incidents',
+        { Subject => "test" },
+    );
+    my $b1_id = create_block(
+        $agent, {
+            Subject => "test ip",
+            Incident => $incident_id,
+        },
+        { IP => '172.16.0.1' },
+    );
+    my $b2_id = create_block(
+        $agent, {
+            Subject => "test ip",
+            Incident => $incident_id,
+        },
+        { IP => '172.16.0.2' },
+    );
+
+    display_ticket($agent, $b1_id);
+    $agent->follow_link_ok({ text => 'Merge' }, "Followed merge link");
+    $agent->form_number(3);
+    $agent->field('SelectedTicket', $b2_id);
+    $agent->submit;
+    ok_and_content_like($agent, qr{Merge Successful}, 'Merge Successful');
+
+    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    $ticket->Load( $b1_id );
+    ok $ticket->id, 'loaded ticket';
+    my $values = $ticket->CustomFieldValues('_RTIR_IP');
+    my %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
+    is( scalar values %has, 2, "both IPs are there");
+    ok( $has{ '172.16.0.1' }, "has value" )
+        or diag "but has values ". join ", ", keys %has;
+    ok( $has{ '172.16.0.2' }, "has value" )
+        or diag "but has values ". join ", ", keys %has;
+}
+
+diag "merge ticket with the same IP";
+{
+    my $incident_id = create_rtir_ticket_ok(
+        $agent, 'Incidents',
+        { Subject => "test" },
+    );
+    my $b1_id = create_block(
+        $agent, {
+            Subject => "test ip",
+            Incident => $incident_id,
+        },
+        { IP => '172.16.0.1' },
+    );
+    my $b2_id = create_block(
+        $agent, {
+            Subject => "test ip",
+            Incident => $incident_id,
+        },
+        { IP => '172.16.0.1' },
+    );
+
+    display_ticket($agent, $b1_id);
+    $agent->follow_link_ok({ text => 'Merge' }, "Followed merge link");
+    $agent->form_number(3);
+    $agent->field('SelectedTicket', $b2_id);
+    $agent->submit;
+    ok_and_content_like($agent, qr{Merge Successful}, 'Merge Successful');
+
+    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    $ticket->Load( $b1_id );
+    ok $ticket->id, 'loaded ticket';
+    my $values = $ticket->CustomFieldValues('_RTIR_IP');
+    my @has = map $_->Content, @{ $values->ItemsArrayRef };
+    is( scalar @has, 1, "only one IP") or diag "values: @has";
+    is( $has[0], '172.16.0.1', "has value" );
 }
 
