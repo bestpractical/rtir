@@ -316,13 +316,24 @@ sub create_or_load_queue {
         debug "\tcorrespond address:\t$opt{'correspond'}" if $opt{'correspond'};
     } else {
         debug "Queue '$name' already exists";
+        foreach my $type ( qw(Comment Correspond) ) {
+            next unless $opt{ lc $type };
+            my $method = $type .'Address';
+            my $current = $queue->$method();
+            next if $current eq $opt{ lc $type };
 
-        # TODO: update addresses
+            $method = 'Set'. $method;
+            my ($status, $msg) = $queue->$method( $opt{ lc $type } );
+            unless ( $status ) {
+                print STDERR "Couldn't set $type address of '$name' queue\n";
+            } else {
+                debug "\tnew $type address: ". $opt{ lc $type };
+            }
+        }
     }
 
     die "Failed to create queue $name." unless $queue->id;
 
     return $queue;
 }
-
 
