@@ -381,7 +381,8 @@ wrap 'RT::ObjectCustomFieldValue::Content',
 }
 
 
-{ 
+{
+    require RT::Ticket;
     wrap 'RT::Ticket::QueueObj', pre => sub {
         my $queue = RT::Queue->new($_[0]->CurrentUser);
         $queue->Load($_[0]->__Value('Queue'));
@@ -412,7 +413,8 @@ wrap 'RT::ObjectCustomFieldValue::Content',
 
 
 
-    { 
+    {
+        require RT::Queue;
         package RT::Queue;
 
         sub CorrespondAddress { GetQueueAttribute(shift, 'CorrespondAddress') }
