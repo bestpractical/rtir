@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 51;
+use Test::More tests => 111;
 
 require "t/rtir-test.pl";
 
@@ -67,3 +67,104 @@ for my $id ($nobody_slow, $nobody_quick, $me_quick, $me_slow) {
     is($ir_obj->Id, $id, "loaded ticket $id OK");
     is($ir_obj->Status, 'rejected', "ticket $id is now rejected in DB");
 }
+
+diag "test that after reject links to incidents are still there" if $ENV{'TEST_VERBOSE'};
+{
+    my $inc_id = create_incident($agent, {Subject => "test"});
+    my $id = create_ir($agent, {Subject => "test", Incident => $inc_id});
+    {
+        my $tickets = RT::Tickets->new( $RT::SystemUser );
+        $tickets->FromSQL( "id = $id AND MemberOf = $inc_id");
+        is $tickets->Count, 1, 'have the link';
+    }
+
+    display_ticket($agent, $id);
+    $agent->follow_link_ok({text => "Reject"}, "Followed 'Reject' link");
+    $agent->form_name("TicketUpdate");
+    $agent->field(UpdateContent => "why you are rejected");
+    $agent->click("SubmitTicket");
+    is $agent->status, 200, "attempt to reject succeeded";
+    ticket_state_is( $agent, $id, 'rejected' );
+
+    {
+        my $tickets = RT::Tickets->new( $RT::SystemUser );
+        $tickets->FromSQL( "id = $id AND MemberOf = $inc_id");
+        is $tickets->Count, 1, 'the link is still there';
+    }
+
+    # go to incident and check that we still can see the child
+    display_ticket($agent, $inc_id);
+    $agent->follow_link_ok({text => "Incident Reports", n => 2}, "Followed 'Incident Reports' link");
+    $agent->form_number(3);
+    $agent->tick( States => 'rejected' );
+    $agent->click('RefineStates');
+
+    $agent->has_tag('a', "$id", 'we have link to ticket');
+}
+
+diag "test that after quick reject links to incidents are still there" if $ENV{'TEST_VERBOSE'};
+{
+    my $inc_id = create_incident($agent, {Subject => "test"});
+    my $id = create_ir($agent, {Subject => "test", Incident => $inc_id});
+    {
+        my $tickets = RT::Tickets->new( $RT::SystemUser );
+        $tickets->FromSQL( "id = $id AND MemberOf = $inc_id");
+        is $tickets->Count, 1, 'have the link';
+    }
+
+    display_ticket($agent, $id);
+    $agent->follow_link_ok({text => "Quick Reject"}, "Followed 'Reject' link");
+    ticket_state_is( $agent, $id, 'rejected' );
+
+    {
+        my $tickets = RT::Tickets->new( $RT::SystemUser );
+        $tickets->FromSQL( "id = $id AND MemberOf = $inc_id");
+        is $tickets->Count, 1, 'the link is still there';
+    }
+
+    # go to incident and check that we still can see the child
+    display_ticket($agent, $inc_id);
+    $agent->follow_link_ok({text => "Incident Reports", n => 2}, "Followed 'Incident Reports' link");
+    $agent->form_number(3);
+    $agent->tick( States => 'rejected' );
+    $agent->click('RefineStates');
+
+    $agent->has_tag('a', "$id", 'we have link to ticket');
+}
+
+diag "test that after bulk reject links to incidents are still there" if $ENV{'TEST_VERBOSE'};
+{
+    my $inc_id = create_incident($agent, {Subject => "test"});
+    my $id = create_ir($agent, {Subject => "test", Incident => $inc_id});
+    {
+        my $tickets = RT::Tickets->new( $RT::SystemUser );
+        $tickets->FromSQL( "id = $id AND MemberOf = $inc_id");
+        is $tickets->Count, 1, 'have the link';
+    }
+
+    display_ticket($agent, $id);
+    $agent->follow_link_ok({text => "Incident Reports"}, "Followed 'Incident Reports' link");
+    $agent->has_tag('a', "$id", 'we have link to ticket');
+    $agent->follow_link_ok({text => "Bulk Reject"}, "Followed 'Bulk Reject' link");
+    $agent->form_number(3);
+    $agent->tick( SelectedTickets => $id );
+    $agent->click('BulkReject');
+
+    ticket_state_is( $agent, $id, 'rejected' );
+
+    {
+        my $tickets = RT::Tickets->new( $RT::SystemUser );
+        $tickets->FromSQL( "id = $id AND MemberOf = $inc_id");
+        is $tickets->Count, 1, 'the link is still there';
+    }
+
+    # go to incident and check that we still can see the child
+    display_ticket($agent, $inc_id);
+    $agent->follow_link_ok({text => "Incident Reports", n => 2}, "Followed 'Incident Reports' link");
+    $agent->form_number(3);
+    $agent->tick( States => 'rejected' );
+    $agent->click('RefineStates');
+
+    $agent->has_tag('a', "$id", 'we have link to ticket');
+}
+

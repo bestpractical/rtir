@@ -39,14 +39,6 @@
 % }
 <input type="hidden" name="Action" value="<% $Action || '' %>" />
 <input type="hidden" name="TakeOrStealFirst" value="<% $ARGS{TakeOrStealFirst} || '' %>" />
-% if ($Type eq 'Report' and $ARGS{'DefaultStatus'} eq 'rejected') {
-%   my $query = "Queue = 'Incidents' AND HasMember = $id";
-%   my $incidents = new RT::Tickets($session{'CurrentUser'});
-%   $incidents->FromSQL($query);
-%   while (my $member = $incidents->Next) {
-<input type="hidden" name="DeleteLink--MemberOf-<%$member->Id%>" />
-%   }
-% }
 
 % if ($cannot_sign) {
 <& /Elements/GnuPGSignIssues &>
