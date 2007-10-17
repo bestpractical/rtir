@@ -42,7 +42,7 @@ if ( $ARGS{'q'} ) {
     my $query = $ARGS{'q'};
 
     if ( $query =~ m/^\s*(\d+)\s*$/ ) {
-        return $m->comp( '/RTIR/Display.html', id => $1 );
+        return RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."RTIR/Display.html?id=$query");
     }
 
     return if $m->callback(
