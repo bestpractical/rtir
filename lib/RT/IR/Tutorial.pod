@@ -37,6 +37,16 @@ sub-menu items on ticket display pages.
 
 =head2 Operations with tickets
 
+=head3 Creating tickets
+
+=head4 Suppress sending emails
+
+During creating of a ticket in RTIR, user may check box next to 
+"Don't send any emails to correspondents" phrase, this will
+suppress all outgoing emails to all correspondents. Note that
+this works only during creation and later user will recieve other
+emails according to configuration of notifications.
+
 =head3 Merging tickets
 
 If it turns out that two Incidents are actually the same
