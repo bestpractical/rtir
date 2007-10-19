@@ -172,13 +172,14 @@ if ( $SubmitTicket && ( $ARGS{'Encrypt'} || $ARGS{'Sign'} ) ) {
             push @results, loc( "Ticket [_1]: Couldn't load ticket.", $id );
             next;
         }
-        $id = $Ticket->id;
-        $sign_addresses{ $Ticket->QueueObj->CorrespondAddress } = 1;
+
+        $sign_addresses{ $Ticket->QueueObj->CorrespondAddress } = 1
+            if $ARGS{'Sign'};
 
         push @recipients, $m->comp(
             '/Ticket/Elements/PreviewScrips:GetRecipients',
             %ARGS, TicketObj => $Ticket
-        );
+        ) if $ARGS{'Encrypt'};
     }
 
     RT::Crypt::GnuPG::UseKeyForEncryption(
