@@ -98,7 +98,7 @@
 <h2 class="no-recipients">Warning: no recipients!</h2>
 % }
 
-<& Elements/ReplyForm, TicketObj => $IncidentObj, Status => $Status &>
+<& Elements/ReplyForm, %ARGS, TicketObj => $IncidentObj, Status => $Status &>
 
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => $SubmitLabel &>
 </form>
