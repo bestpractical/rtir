@@ -160,7 +160,7 @@ my @cannot_sign_as;
 $sign_addresses{ $IncidentObj->QueueObj->CorrespondAddress } = 1;
 
 my @gnupg_keys_issues;
-if ( $SubmitTicket && $ARGS{'Encrypt'} ) {
+if ( $SubmitTicket && ( $ARGS{'Encrypt'} || $ARGS{'Sign'} ) ) {
     require RT::Crypt::GnuPG;
 
     my @recipients;
