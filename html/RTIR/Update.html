@@ -173,9 +173,12 @@ if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
 my @cannot_sign_as;
 if ( $ARGS{'SubmitTicket'} && $ARGS{'Sign'} ) {
     my $address = $ARGS{'UpdateType'} eq "private"
-                ? $Ticket->QueueObj->CommentAddress
-                : $Ticket->QueueObj->CorrespondAddress;
-    if (!RT::Crypt::GnuPG::DrySign($address, "x")) {
+        ? ( $Ticket->QueueObj->CommentAddress
+            || RT->Config->Get('CommentAddress') )
+        : ( $Ticket->QueueObj->CorrespondAddress
+            || RT->Config->Get('CorrespondAddress') );
+
+    unless ( RT::Crypt::GnuPG::DrySign($address, "x") ) {
         push @cannot_sign_as, $address;
         $checks_failure = 1;
     }

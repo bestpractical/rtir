@@ -410,8 +410,9 @@ push @results, $m->comp( 'SELF:ProcessAttachments', %ARGS );
 # check to see if we have a good passphrase
 my @cannot_sign_as;
 if ( $ARGS{'Create'} && $ARGS{'Sign'} ) {
-    my $address = $QueueObj->CorrespondAddress;
-    if (!RT::Crypt::GnuPG::DrySign($address, "x")) {
+    my $address = $QueueObj->CorrespondAddress
+        || RT->Config->Get('CorrespondAddress');
+    unless ( RT::Crypt::GnuPG::DrySign($address, "x") ) {
         push @cannot_sign_as, $address;
         $checks_failure = 1;
     }
