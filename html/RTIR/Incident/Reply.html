@@ -107,7 +107,6 @@
 my (@results);
 
 my $IncidentObj = LoadTicket( $id );
-
 $id = $ARGS{'id'} = $IncidentObj->id;
 
 $m->callback(CallbackName => 'Initial', %ARGS, Ticket => $IncidentObj);
@@ -137,18 +136,9 @@ if ($DefaultStatus eq 'resolved') {
 my @queues = ('Incident Reports', 'Investigations');
 push @queues, 'Blocks' unless RT->Config->Get('RTIR_DisableBlocksQueue');
 
-my $ActiveStatesQuery;
-{
-    my @active_states;
-    foreach my $q( @queues ) {
-        push @active_states, RT::IR::States( Queue => $q );
-    }
-    my %seen;
-    $ActiveStatesQuery = join ' OR ',
-        map "CF.{_RTIR_State} = '$_'",
-        grep !$seen{ $_ }++,
-        @active_states;
-}
+my $ActiveStatesQuery =
+    join ' OR ', map "CF.{_RTIR_State} = '$_'",
+    RT::IR::States( Queue => \@queues );
 
 $Query ||= "( $ActiveStatesQuery )";
 

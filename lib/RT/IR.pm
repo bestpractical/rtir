@@ -160,6 +160,23 @@ sub TicketType {
     return undef;
 }
 
+=head2 States
+
+Return sorted list of unique states for one, many or all RTIR queues.
+
+Takes arguments 'Queue', 'Active' and 'Inactive'. By default returns
+only active states. Queue can be an array reference to list several
+queues.
+
+Examples:
+
+    States()
+    States( Queue => 'Blocks' );
+    States( Queue => [ 'Blocks', 'Incident Reports' ] );
+    States( Active => 0, Inactive => 1 );
+
+=cut
+
 my %STATES = (
     'incidents'        => { Active => ['open'], Inactive => ['resolved', 'abandoned'] },
     'incident reports' => { Active => ['new', 'open'], Inactive => ['resolved', 'rejected'] },
@@ -174,8 +191,11 @@ sub States {
     
     my @states;
     if ( $arg{'Queue'} ) {
-        push @states, @{ $STATES{ lc $arg{'Queue'} }->{'Active'} || [] } if $arg{'Active'};
-        push @states, @{ $STATES{ lc $arg{'Queue'} }->{'Inactive'} || [] } if $arg{'Inactive'};
+        my @queues = ref $arg{'Queue'}? @{ $arg{'Queue'} }: ($arg{'Queue'});
+        foreach ( @queues ) {
+            push @states, @{ $STATES{ lc $_ }->{'Active'} || [] } if $arg{'Active'};
+            push @states, @{ $STATES{ lc $_ }->{'Inactive'} || [] } if $arg{'Inactive'};
+        }
     } else {
         foreach ( values %STATES ) {
             push @states, @{ $_->{'Active'} || [] } if $arg{'Active'};
