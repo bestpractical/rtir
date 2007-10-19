@@ -45,6 +45,10 @@
 <input type="hidden" name="All" value="<% $All %>" />
 <input type="hidden" name="Query" value="<% $Query %>" />
 
+% if ($cannot_sign) {
+<& /Elements/GnuPGSignIssues &>
+% }
+
 <& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues &>
 
 % my $recipients = 0;
@@ -154,6 +158,15 @@ my $ActiveChildrenQuery = join ' AND ', map "( $_ )", grep $_,
 $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 
 my $checks_failure = 0;
+
+my $cannot_sign = 0;
+if ( $SubmitTicket && $ARGS{'Sign'} ) {
+    # XXX: address grokking needs improvement
+    if (!RT::Crypt::GnuPG::DrySign($QueueObj->CorrespondAddress, "x")) {
+        $cannot_sign = 1;
+        $checks_failure = 1;
+    }
+}
 
 my @gnupg_keys_issues;
 if ( $SubmitTicket && $ARGS{'Encrypt'} ) {
