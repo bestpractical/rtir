@@ -236,7 +236,7 @@ my $checks_failure = 0;
 
 my @cannot_sign_as;
 if ( $CreateIncident && $ARGS{'Sign'} ) {
-    my $address = $Ticket->QueueObj->CorrespondAddress;
+    my $address = $QueueObj->CorrespondAddress;
     if (!RT::Crypt::GnuPG::DrySign($address, "x")) {
         push @cannot_sign_as, $address;
         $checks_failure = 1;

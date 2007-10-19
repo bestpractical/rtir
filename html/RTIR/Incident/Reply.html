@@ -157,7 +157,7 @@ my $checks_failure = 0;
 
 my %sign_addresses;
 my @cannot_sign_as;
-$sign_address{ $IncidentObj->QueueObj->CorrespondAddress } = 1;
+$sign_addresses{ $IncidentObj->QueueObj->CorrespondAddress } = 1;
 
 my @gnupg_keys_issues;
 if ( $SubmitTicket && $ARGS{'Encrypt'} ) {
@@ -173,7 +173,7 @@ if ( $SubmitTicket && $ARGS{'Encrypt'} ) {
             next;
         }
         $id = $Ticket->id;
-        $sign_address{ $Ticket->QueueObj->CorrespondAddress } = 1;
+        $sign_addresses{ $Ticket->QueueObj->CorrespondAddress } = 1;
 
         push @recipients, $m->comp(
             '/Ticket/Elements/PreviewScrips:GetRecipients',
@@ -193,7 +193,7 @@ if ( $SubmitTicket && $ARGS{'Encrypt'} ) {
 }
 
 if ( $SubmitTicket && $ARGS{'Sign'} ) {
-    for my $address (keys %sign_address) {
+    for my $address (keys %sign_addresses) {
         if (!RT::Crypt::GnuPG::DrySign($address, "x")) {
             push @cannot_sign_as, $address;
             $checks_failure = 1;
