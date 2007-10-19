@@ -351,8 +351,13 @@ wrap 'RT::ObjectCustomFieldValue::Content',
 }
 
 
-# if (0) {
 {
+    require RT::Interface::Web::Handler;
+    # flush constituency cache on each request
+    wrap 'RT::Interface::Web::Handler::CleanupRequest', pre => sub {
+        %RT::IR::ConstituencyCache = ();
+    };
+
     require RT::Record;
     # flush constituency cache on update of the custom field value for a ticket
     wrap 'RT::Record::_AddCustomFieldValue', pre => sub {
