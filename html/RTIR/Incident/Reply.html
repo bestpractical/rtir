@@ -45,11 +45,7 @@
 <input type="hidden" name="All" value="<% $All %>" />
 <input type="hidden" name="Query" value="<% $Query %>" />
 
-% if (defined $cannot_sign_to) {
-<& /Elements/GnuPGSignIssues, Address => $cannot_sign_to &>
-% }
-
-<& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues &>
+<& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues, SignAddresses => \@cannot_sign_as &>
 
 % my $recipients = 0;
 
@@ -160,7 +156,7 @@ $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 my $checks_failure = 0;
 
 my %sign_addresses;
-my $cannot_sign_to;
+my @cannot_sign_as;
 $sign_address{ $IncidentObj->QueueObj->CorrespondAddress } = 1;
 
 my @gnupg_keys_issues;
@@ -199,9 +195,8 @@ if ( $SubmitTicket && $ARGS{'Encrypt'} ) {
 if ( $SubmitTicket && $ARGS{'Sign'} ) {
     for my $address (keys %sign_address) {
         if (!RT::Crypt::GnuPG::DrySign($address, "x")) {
-            $cannot_sign_to = $address;
+            push @cannot_sign_as, $address;
             $checks_failure = 1;
-            last;
         }
     }
 }

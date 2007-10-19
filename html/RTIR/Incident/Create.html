@@ -63,11 +63,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 % }
 <a name="top" />
 
-% if ($cannot_sign) {
-<& /Elements/GnuPGSignIssues &>
-% }
-
-<& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues &>
+<& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues, SignAddresses => \@cannot_sign_as &>
 
 <&| /Widgets/TitleBox, title => $Title &>
 <table border="0" cellpadding="0" cellspacing="2">
@@ -238,11 +234,11 @@ $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 
 my $checks_failure = 0;
 
-my $cannot_sign = 0;
+my @cannot_sign_as;
 if ( $CreateIncident && $ARGS{'Sign'} ) {
     my $address = $Ticket->QueueObj->CorrespondAddress;
     if (!RT::Crypt::GnuPG::DrySign($address, "x")) {
-        $cannot_sign = 1;
+        push @cannot_sign_as, $address;
         $checks_failure = 1;
     }
 }

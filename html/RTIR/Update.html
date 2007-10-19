@@ -40,11 +40,7 @@
 <input type="hidden" name="Action" value="<% $Action || '' %>" />
 <input type="hidden" name="TakeOrStealFirst" value="<% $ARGS{TakeOrStealFirst} || '' %>" />
 
-% if ($cannot_sign) {
-<& /Elements/GnuPGSignIssues &>
-% }
-
-<& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues &>
+<& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues, SignAddresses => \@cannot_sign_as &>
 
 <table>
 <tr><td><a href="Edit.html?id=<% $id %>"><&|/l&>Correspondents</&></a></td><td align="right" colspan=2></td></tr>
@@ -174,13 +170,13 @@ if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
 }
 
 # check to see if we have a good passphrase
-my $cannot_sign = 0;
+my @cannot_sign_as;
 if ( $ARGS{'SubmitTicket'} && $ARGS{'Sign'} ) {
     my $address = $ARGS{'UpdateType'} eq "private"
                 ? $Ticket->QueueObj->CommentAddress
                 : $Ticket->QueueObj->CorrespondAddress;
     if (!RT::Crypt::GnuPG::DrySign($address, "x")) {
-        $cannot_sign = 1;
+        push @cannot_sign_as, $address;
         $checks_failure = 1;
     }
 }
