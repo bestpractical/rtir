@@ -188,19 +188,14 @@ my %STATES = (
 );
 sub States {
     my %arg = ( Queue => undef, Active => 1, Inactive => 0, @_ );
+
+    my @queues = !$arg{'Queue'} ? ( values %STATES )
+        : ref $arg{'Queue'}? @{ $arg{'Queue'} } : ( $arg{'Queue'} );
     
     my @states;
-    if ( $arg{'Queue'} ) {
-        my @queues = ref $arg{'Queue'}? @{ $arg{'Queue'} }: ($arg{'Queue'});
-        foreach ( @queues ) {
-            push @states, @{ $STATES{ lc $_ }->{'Active'} || [] } if $arg{'Active'};
-            push @states, @{ $STATES{ lc $_ }->{'Inactive'} || [] } if $arg{'Inactive'};
-        }
-    } else {
-        foreach ( values %STATES ) {
-            push @states, @{ $_->{'Active'} || [] } if $arg{'Active'};
-            push @states, @{ $_->{'Inactive'} || [] } if $arg{'Inactive'};
-        }
+    foreach ( @queues ) {
+        push @states, @{ $STATES{ lc $_ }->{'Active'} || [] } if $arg{'Active'};
+        push @states, @{ $STATES{ lc $_ }->{'Inactive'} || [] } if $arg{'Inactive'};
     }
 
     my %seen = ();
