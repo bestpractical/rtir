@@ -45,6 +45,8 @@
 <input type="hidden" name="All" value="<% $All %>" />
 <input type="hidden" name="Query" value="<% $Query %>" />
 
+<& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues &>
+
 % my $recipients = 0;
 
 <h2><&|/l&>Reporters</&></h2>
@@ -151,7 +153,41 @@ my $ActiveChildrenQuery = join ' AND ', map "( $_ )", grep $_,
 
 $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 
-if ( $SubmitTicket ) {
+my $checks_failure = 0;
+
+my @gnupg_keys_issues;
+if ( $SubmitTicket && $ARGS{'Encrypt'} ) {
+    require RT::Crypt::GnuPG;
+
+    my @recipients;
+
+    foreach my $id( @SelectedReports, @SelectedInvestigations, @SelectedBlocks ) {
+        my $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
+        $Ticket->Load( $id );
+        unless( $Ticket->id ) {
+            push @results, loc( "Ticket [_1]: Couldn't load ticket.", $id );
+            next;
+        }
+        $id = $Ticket->id;
+
+        push @recipients, $m->comp(
+            '/Ticket/Elements/PreviewScrips:GetRecipients',
+            %ARGS, TicketObj => $Ticket
+        );
+    }
+
+    RT::Crypt::GnuPG::UseKeyForEncryption(
+        map { (/^UseKey-(.*)$/)[0] => $ARGS{ $_ } }
+        grep $ARGS{$_} && /^UseKey-/,
+        keys %ARGS
+    );
+
+    my $status;
+    ($status, @gnupg_keys_issues) = RT::Crypt::GnuPG::CheckRecipients( @recipients );
+    $checks_failure = 1 unless $status;
+}
+
+if ( $SubmitTicket && !$checks_failure ) {
     foreach my $id( @SelectedReports, @SelectedInvestigations, @SelectedBlocks ) {
         my $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
         $Ticket->Load( $id );
