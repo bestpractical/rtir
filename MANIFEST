@@ -226,10 +226,12 @@ t/019-webui-block-fields.t
 t/020-incident-and-investigation.t
 t/021-gnupg-on-create.t
 t/022-gnupg-on-update.t
+t/023-gnupg-on-incident.t
 t/03firstmilestone.t
 t/constituency/acl.t
 t/constituency/basics.t
 t/constituency/email.t
+t/constituency/email_outgoing.t
 t/constituency/propagation-inherit.t
 t/constituency/propagation-no.t
 t/constituency/propagation-reject.t
@@ -248,5 +250,6 @@ t/data/gnupg/keys/rt-test-at-example.com.secret.key
 t/incident/abandon.t
 t/incident/bulk-abandon.t
 t/incident/split.t
+t/mail/skip_notification.t
 t/rtir-test.pl
 UPGRADING
