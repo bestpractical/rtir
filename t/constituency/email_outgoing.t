@@ -3,8 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 55;
-use File::Temp qw(tempdir);
+use Test::More tests => 9;
 
 use lib qw(/opt/rt3/local/lib /opt/rt3/lib);
 require RT::Test; import RT::Test;
@@ -71,7 +70,7 @@ EOF
     
     my $from_ok = 1;
     foreach my $mail ( @mail ) {
-        next if $mail =~ /^From:\s*.*?\Qedu-reports-comment\@example.com/mi;
+        next if $mail =~ /^From:\s*.*?\Qedu-reports\@example.com/mi;
         $from_ok = 0;
         last;
     }
