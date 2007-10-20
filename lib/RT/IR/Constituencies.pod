@@ -186,6 +186,19 @@ is not restricted by the constituency of the initial ticket, so a user may
 choose targets with different constituencies. In the latter case the incident's
 constituency value is always preferred.
 
+=head3 Linking tickets using the 'Advanced' tab
+
+The Advanced tab RTIR has allows people to do things that generic RTIR
+interfaces don't, so you can merge random tickets, move tickets between
+queues and what is B<most important> in regards to constitiencies it
+allows users to link tickets with different constituencies even if
+propagation algorithm is 'reject'.
+
+ALCs are still applied to such operations, but administrators should
+remember that by default links don't require bi-directional ACL checking.
+This behavior can be changed using $StrictLinkACL option in the RT's
+config.
+
 =head2 Outgoing mail: "CorrespondAddress" and "CommentAddress"
 
 If you create queues as described in the L</Managing constituency values>
