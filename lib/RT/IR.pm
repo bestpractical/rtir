@@ -351,7 +351,8 @@ wrap 'RT::ObjectCustomFieldValue::Content',
 }
 
 
-{
+{ # ACL checks for multiple constituencies
+
     require RT::Interface::Web::Handler;
     # flush constituency cache on each request
     wrap 'RT::Interface::Web::Handler::CleanupRequest', pre => sub {
@@ -401,7 +402,8 @@ wrap 'RT::ObjectCustomFieldValue::Content',
 }
 
 
-{
+{ # Queue {Comment,Correspond}Address for multiple constituencies
+
     require RT::Ticket;
     wrap 'RT::Ticket::QueueObj', pre => sub {
         my $queue = RT::Queue->new($_[0]->CurrentUser);
@@ -467,6 +469,53 @@ wrap 'RT::ObjectCustomFieldValue::Content',
 }
 }
 
+
+{ # Set Constituency on Create
+
+    require RT::Ticket;
+    wrap 'RT::Ticket::Create', pre => sub {
+        my $ticket = $_[0];
+        my %args = (@_[1..(@_-2)]);
+
+        # get out if there is constituency value in arguments
+        my $cf = GetCustomField( '_RTIR_Constituency' );
+        return unless $cf && $cf->id;
+        return if $args{ 'CustomField-'. $cf->id };
+
+        # get out of here if it's not RTIR queue
+        my $QueueObj = RT::Queue->new( $RT::SystemUser );
+        if ( ref $args{'Queue'} eq 'RT::Queue' ) {
+            $QueueObj->Load( $args{'Queue'}->Id );
+        }
+        elsif ( $args{'Queue'} ) {
+            $QueueObj->Load( $args{'Queue'} );
+        }
+        else {
+            return;
+        }
+        return unless $QueueObj->id;
+        return unless $QueueObj->Name =~
+            /^(Incidents|Incident Reports|Investigations|Blocks)$/i; 
+        
+        # fetch value
+        my $value;
+        if ( $args{'MIMEObj'} ) {
+            my $tmp = $args{'MIMEObj'}->head->get('X-RT-Mail-Extension');
+            if ( $tmp && !grep lc $_->Name eq lc $tmp, @{ $cf->Values->ItemsArrayRef } ) {
+                $tmp = undef;
+            }
+            $value = $tmp;
+        }
+        $value ||= RT->Config->Get('_RTIR_Constituency_default');
+        return unless $value;
+
+        my @res = $ticket->Create(
+            %args,
+            'CustomField-'. $cf->id => $value,
+        );
+        $_[-1] = \@res;
+    };
+}
 
 #
 eval "require RT::IR_Vendor";

@@ -70,7 +70,8 @@ EOF
     
     my $from_ok = 1;
     foreach my $mail ( @mail ) {
-        next if $mail =~ /^From:\s*.*?\Qedu-reports\@example.com/mi;
+        next if $mail =~ /^From:\s*.*?edu-reports\@example\.com/mi;
+        diag $mail;
         $from_ok = 0;
         last;
     }
