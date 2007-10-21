@@ -262,6 +262,10 @@ that you NOT grant the user or group "queue-wide" rights such as
 will apply those rights to the pseudo-queue "Incident Reports -
 EUDNET" and NOT to the "Incident Reports" queue.
 
+Note that templates, custom fields and scrips can still be applied to
+pseudo queues, but in the current implementation these objects have
+no effect on the RTIR behavior. This may be changed in the future.
+
 =head3 Constituency specific groups
 
 For each constituency value admin can create a group
@@ -274,7 +278,7 @@ if you grant 'TakeTicket' right to AdminCc role of IR queue
 then users that are members of 'DutyTeam EDUNET' group will have
 this rights on all EDUNET tickets.
 
-Note that this method has some limitations and caveats .Users who
+Note that this method has some limitations and caveats. Users who
 has enough privileges still can add other users and groups as
 AdminCcs of a ticket and these principals will get the same set of
 additional rights constituency specific group get via AdminCc role.
