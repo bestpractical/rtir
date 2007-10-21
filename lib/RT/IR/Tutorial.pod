@@ -173,6 +173,17 @@ with checkboxes. To reject tickets you submit the form with 'reject' or
 'bulk reject' page, while the latter one returns you to the RTIR home page
 where you could continue your work.
 
+As well, link to 'Bulk Reject' operation exist at the bottom of searches for
+'Incident Reports', so you can go to RTIR's 'Incident Reports' menu, refine
+search conditions if you like to, and from the page with results go to
+'Bulk Reject' operation.
+
+Using this interface you can reject IRs that have links to Incident(s) what
+may be undesired, so search results on 'Bulk Reject' page have column
+'Has Incident?' which indicates wether a IR linked to Incident or not.
+However this column is only informative and you still can reject IRs
+that are linked to an Incident.
+
 Note that you can't reject IRs that are owned by somebody else (you can,
 however, reject unowned IRs) with the bulk reject interface. IRs owned by
 others will be skipped with a warning even if you selected them.
