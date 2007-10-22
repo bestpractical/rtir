@@ -100,9 +100,9 @@
     </td>
     <td colspan="5">
 % if (exists $ARGS{IPs}) {
-      <& /Elements/MessageBox, Name=>"IPs", Width => 30, Default=>$ARGS{IPs}, %ARGS&>
+      <& /Elements/MessageBox, Name=>"IPs", Width => 30, Default=>$ARGS{IPs}, IncludeSignature => 0, %ARGS&>
 % } else {
-      <& /Elements/MessageBox, Name=> 'IPs', Width => 30 &>
+      <& /Elements/MessageBox, Name=> 'IPs', Width => 30, IncludeSignature => 0 &>
 % }
     </td>
   </tr>
@@ -113,9 +113,9 @@
     </td>
     <td colspan="5">
 % if (exists $ARGS{Addresses}) {
-      <& /Elements/MessageBox, Name=>"Addresses", Width => 30, Default=>$ARGS{Addresses}, %ARGS&>
+      <& /Elements/MessageBox, Name=>"Addresses", Width => 30, Default=>$ARGS{Addresses}, IncludeSignature => 0, %ARGS&>
 % } else {
-      <& /Elements/MessageBox, Name=> 'Addresses', Width => 30 &>
+      <& /Elements/MessageBox, Name=> 'Addresses', Width => 30, IncludeSignature => 0 &>
 % }
     </td>
   </tr>
