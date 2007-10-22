@@ -33,17 +33,21 @@ $$address = loc("ADDRESS_UNKNOWN");
 
 use Net::Whois::RIPE;
 my $whois = Net::Whois::RIPE->new( $server, Debug => 1 );
-if ($whois) {
-  my $query = $whois->query($q);
-  if ($query->can($field)) {
-    $$address = $query->$field();
-  }
-  else {
-    $$error = "Whois server response did not include field '$orig_field'";
-  }
-} else {
-  $$error = "Unable to connect to whois server '$server'";
+unless ( $whois ) {
+    $$error = "Unable to connect to whois server '$server'";
+    return;
 }
+
+my $query = $whois->query($q);
+unless ( $query ) {
+    $$error = "Unable to connect to whois server '$server'";
+    return;
+}
+unless ($query->can($field)) {
+    $$error = "Whois server response did not include field '$orig_field'";
+}
+
+$$address = $query->$field();
 </%INIT>
 
 <%ARGS>
