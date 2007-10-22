@@ -203,8 +203,8 @@ if ( $incidentid ) {
     $Title = loc("Scripted Action: Create Incidents and Investigations");
 }
 
-my $template = new RT::Template($session{'CurrentUser'});
-$template->LoadGlobalTemplate($TemplateName);
+my $template = RT::Template->new($session{'CurrentUser'});
+$template->LoadGlobalTemplate( $TemplateName );
 $ARGS{'Template'} = $template->Id;
 
 foreach my $arg (keys %ARGS) {
@@ -234,235 +234,188 @@ if ($incidentid) {
 $ARGS{'loop'} = $loop if !defined $ARGS{'loop'};
 
 if ($loop eq 'address') {
-  $current_subtab = "RTIR/Tools/ScriptedAction.html",
+    $current_subtab = "RTIR/Tools/ScriptedAction.html",
 } else {
-  $current_subtab =  'RTIR/Tools/ScriptedAction.html?loop=IP';
+    $current_subtab = 'RTIR/Tools/ScriptedAction.html?loop=IP';
 }
 
 # get the list of WHOIS servers
 foreach my $s (sort keys %$servers) {
-  # just pick the first one
-  $server = $servers->{$s} unless ($server);
-  last;
+    # just pick the first one
+    $server = $servers->{$s} unless ($server);
+    last;
 }
 
 # Load the Incidents Queue
-my $incidentq = new RT::Queue($session{'CurrentUser'});        
-unless ($incidentq->Load('Incidents')) {
-  Abort('Queue not found');
+my $incidentq = new RT::Queue($session{'CurrentUser'});
+unless ( $incidentq->Load('Incidents') ) {
+    Abort('Queue not found');
 }
 
 # Load the Investigations Queue
 my $investigationq = new RT::Queue($session{'CurrentUser'});        
 unless ($investigationq->Load('Investigations')) {
-  Abort('Queue not found');
+    Abort('Queue not found');
 }
 
 # Load the Incident Reports Queue
 my $reportq = new RT::Queue($session{'CurrentUser'});        
 unless ($reportq->Load('Incident Reports')) {
-  Abort('Queue not found');
+    Abort('Queue not found');
 }
 
 my $addrhash = {};
 
-if ( exists $ARGS{SubmitAction} || exists $ARGS{'TestAddresses'} ) {
-if ($loop eq 'address') {
-  my ($addresses, @addrs);
-  $addresses = $ARGS{'Addresses'};
-  # replace \r\n with \n
-  $addresses =~ s/\r\n/\n/g;
-  # trim blanks from ends
-  $addresses =~ s/^\s+//;
-  $addresses =~ s/\s+$//;
-  # replace newlines with commas (for use with parse_csv)
-  $addresses =~ s/\n/,/g;
-  @addrs = parse_csv($addresses);
-  my $i = 0;
-  foreach my $addr (@addrs) {
-    $addrhash->{$i} = {Address => $addr, IP => loc("IP_UNKNOWN")};
-    $i++;
-  }
-} elsif ($loop eq 'IP') {
-  my ($ipnums, @ips);
-  $ipnums = $ARGS{'IPs'};
-  # replace \r\n with \n
-  $ipnums =~ s/\r\n/\n/g;
-  # trim blanks from ends
-  $ipnums =~ s/^\s+//;
-  $ipnums =~ s/\s+$//;
-  # replace newlines with commas (for use with parse_csv)
-  $ipnums =~ s/\n/,/g;
-  @ips = parse_csv($ipnums);
-  my $i = 0;
-  foreach my $ip (@ips) {
-    my ($a, $err);
-    $m->comp('Elements/GetEmailFromIP', server => $ARGS{'server'}, q => $ip, field => $ARGS{'field'}, address => \$a, error => \$err);
-    if ($err) {
-      # no addresses
-      push(@finalresults, loc("Could not connect to whois server [_1] while getting address for [_2]", $server, $ip));
-      next;
-    }
-    $addrhash->{$i} = {Address => $a, IP => $ip};
-    $i++;
-  }
-}
-}
+if ( $ARGS{'SubmitAction'} || $ARGS{'TestAddresses'} ) {
+    my $list = $loop eq 'IP'? $ARGS{'IPs'} : $ARGS{'Addresses'};
+    $list =~ s/\r+\n/\n/g;
+    $list =~ s/^\s+//;
+    $list =~ s/\s+$//;
+    # replace newlines with commas (for use with parse_csv)
+    $list =~ s/\n/,/g;
+    next unless $list;
 
-if ( exists $ARGS{SubmitAction} ) {
-
-# Commented out. not forward compatible with 3.4
-#if (!$Incident && (!$ARGS{'Function'} || !$ARGS{$ARGS{'Function'}})) {
-#    push @finalresults, "Incident creation failed: Function must be set.";
-#} else {
-
-foreach my $key (keys %$addrhash) {
-  my $addr = $addrhash->{$key}->{'Address'};
-  my $ip = $addrhash->{$key}->{'IP'};
-  if ((!exists $ARGS{'AddMoreAttach'}) && 
-      ($ARGS{'id'} eq 'new')) { # new ticket?
-    # {{{ Create a new ticket
-    
-  # {{{ deal with deleting uploaded attachments
-  foreach my $key (keys %ARGS) {
-    if ($key =~ m/^DeleteAttach-(.+)$/) {
-        delete $session{'Attachments'}{$1};
-    }
-    $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
-  }
-
-  # {{{ store the uploaded attachment in session
-  if ($ARGS{'Attach'}) {                        # attachment?
-    $session{'Attachments'} = {} unless defined $session{'Attachments'};
-
-    # strip leading directories
-    $ARGS{'Attach'} =~ s#^.*[\\/]##;
-
-
-    my $attachment = MakeMIMEEntity(
-        Subject             => "$ARGS{'Attach'}",
-        Body                => "",
-        AttachmentFieldName => 'Attach'
-    );
-    $session{'Attachments'} = { %{$session{'Attachments'} || {}},
-                                $ARGS{'Attach'} => $attachment };
-  }
-# }}}
-
-  # delete temporary storage entry to make WebUI clean
-  unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
-    delete $session{'Attachments'};
-  }
-
-
-# }}}
-
-  # if the subject contains _ADDR_ or _IP_
-  # substitute appropriately
-  my $orig_subject = $ARGS{'Subject'};
-  $ARGS{'Subject'} =~ s/_ADDR_/$addr/g;
-  $ARGS{'Subject'} =~ s/_IP_/$ip/g;
-
-  if ($addr ne loc("ADDRESS_UNKNOWN")) {
-    # create the Incident
-    unless ($incidentq->CurrentUserHasRight('CreateTicket')) {
-        Abort('You have no permission to create tickets in that queue.');
-    }
-    $ARGS{'Queue'} = $incidentq->Id;
-
-    if (!$Incident) {
-        ($Incident, @IncidentActions) =
-           CreateTicket(Attachments => $session{'Attachments'}, %ARGS);
-        unless ($Incident->CurrentUserHasRight('ShowTicket')) {
-            Abort("No permission to view newly created ticket #".$Incident->id.".");
+    if ($loop eq 'address') {
+        my @addrs = parse_csv( $list );
+        my $i = 0;
+        foreach my $addr (@addrs) {
+            $addrhash->{$i} = {Address => $addr, IP => loc("IP_UNKNOWN")};
+            $i++;
+        }
+    } elsif ($loop eq 'IP') {
+        my @ips = parse_csv( $list );
+        my $i = 0;
+        foreach my $ip (@ips) {
+            my ($a, $err);
+            $m->comp('Elements/GetEmailFromIP',
+                server => $ARGS{'server'},
+                q => $ip,
+                field => $ARGS{'field'},
+                address => \$a,
+                error => \$err,
+            );
+            if ($err) {
+                # no addresses
+                push(@finalresults, loc("Could not connect to whois server [_1] while getting address for [_2]", $server, $ip));
+                next;
+            }
+            $addrhash->{$i} = {Address => $a, IP => $ip};
+            $i++;
         }
     }
-    # }}}
-
-    # create the linked investigation
-    unless ($investigationq->CurrentUserHasRight('CreateTicket')) {
-        Abort('You have no permission to create tickets in that queue.');
-    }
-    $ARGS{'new-MemberOf'} = $Incident->Id;
-    $ARGS{'Queue'} = $investigationq->Id;
-    # Create the investigation without attachments, and send them later
-    ($Ticket, @ChildActions) =
-       CreateTicket(%ARGS);
-    unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
-      Abort("No permission to view newly created ticket #".$Ticket->id.".");
-    }
-    $ARGS{'new-MemberOf'} = undef;
-    $ARGS{'Queue'} = undef;
-
-    # add the address as a Requestor and update the watchers
-    $ARGS{"WatcherAddressEmail1"} = $addr;
-    push @watchresults, ProcessTicketWatchers(TicketObj => $Ticket, ARGSRef => \%ARGS);    
-    $ARGS{"WatcherAddressEmail1"} = undef;
-
-    # find the Create transaction, so we can pass it to the template
-    my $transaction;
-    while ($transaction = $Ticket->Transactions->Next) {
-        last if ($transaction->Type eq 'Create');
-    }
-
-    # if the template's argument contains _ADDR_ or _IP_
-    # substitute appropriately
-    my $arg = $ARGS{'TemplateArg'};
-    $arg =~ s/_ADDR_/$addr/g;
-    $arg =~ s/_IP_/$ip/g;
-
-    # load the selected template
-    my $TemplateObj = new RT::Template($session{'CurrentUser'});
-    $TemplateObj->Load($ARGS{'Template'});
-    # XXX: why don't we handle return values?
-    my ( $result, $message ) = $TemplateObj->Parse(
-                                         Argument       => $arg,
-                                         TicketObj      => $Ticket,
-                                         TransactionObj => $transaction,
-    );
-
-
-    # add the template's MIMEObj to the Attachments list
-    $session{'Attachments'} = { _Body => $TemplateObj->MIMEObj,
-                                %{$session{'Attachments'} || {}} };
-
-    # the content will be part of the template, if desired
-    $ARGS{'UpdateContent'} = " ";
-    $ARGS{UpdateAttachments} = delete $session{'Attachments'};
-    push @updateresults, ProcessUpdateMessage( ARGSRef => \%ARGS,
-                                               TicketObj=>$Ticket );
-
-    # restore original subject
-    $ARGS{'Subject'} = $orig_subject;
-
-  } else {
-
-    # create an unlinked incident report
-    unless ($reportq->CurrentUserHasRight('CreateTicket')) {
-        Abort('You have no permission to create tickets in that queue.');
-    }
-    $ARGS{'Queue'} = $reportq->Id;
-    # Create the investigation without attachments, and send them later
-    ($Ticket, @ChildActions) =
-       CreateTicket(%ARGS);
-    unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
-      Abort("No permission to view newly created ticket #".$Ticket->id.".");
-    }
-    $ARGS{'Queue'} = undef;
-  }
-
-  # say what ticket these refer to
-  my @tempresults = (@watchresults, @updateresults);
-  @tempresults = map { loc("Ticket [_1]: [_2]",$Ticket->Id,$_) } @tempresults;
-
-  # put all the results together
-  push (@finalresults, @IncidentActions, @ChildActions,, @tempresults);
-
-  # delete attachments only after they've been sent to everyone
-  delete $session{'Attachments'};
-  }
 }
-# }
+
+push @finalresults, $m->comp('/RTIR/Create.html:ProcessAttachments', %ARGS);
+
+if ( $ARGS{'SubmitAction'} ) {
+
+    foreach my $key ( keys %$addrhash ) {
+        my $addr = $addrhash->{$key}->{'Address'};
+        my $ip = $addrhash->{$key}->{'IP'};
+
+        # if the subject contains _ADDR_ or _IP_
+        # substitute appropriately
+        my $orig_subject = $ARGS{'Subject'};
+        $ARGS{'Subject'} =~ s/_ADDR_/$addr/g;
+        $ARGS{'Subject'} =~ s/_IP_/$ip/g;
+
+        if ($addr ne loc("ADDRESS_UNKNOWN")) {
+          # create the Incident
+          unless ($incidentq->CurrentUserHasRight('CreateTicket')) {
+              Abort('You have no permission to create tickets in that queue.');
+          }
+          $ARGS{'Queue'} = $incidentq->Id;
+
+          if (!$Incident) {
+              ($Incident, @IncidentActions) =
+                 CreateTicket(Attachments => $session{'Attachments'}, %ARGS);
+              unless ($Incident->CurrentUserHasRight('ShowTicket')) {
+                  Abort("No permission to view newly created ticket #".$Incident->id.".");
+              }
+          }
+
+          # create the linked investigation
+          unless ($investigationq->CurrentUserHasRight('CreateTicket')) {
+              Abort('You have no permission to create tickets in that queue.');
+          }
+          $ARGS{'new-MemberOf'} = $Incident->Id;
+          $ARGS{'Queue'} = $investigationq->Id;
+          # Create the investigation without attachments, and send them later
+          ($Ticket, @ChildActions) =
+             CreateTicket(%ARGS);
+          unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
+            Abort("No permission to view newly created ticket #".$Ticket->id.".");
+          }
+          $ARGS{'new-MemberOf'} = undef;
+          $ARGS{'Queue'} = undef;
+
+          # add the address as a Requestor and update the watchers
+          $ARGS{"WatcherAddressEmail1"} = $addr;
+          push @watchresults, ProcessTicketWatchers(TicketObj => $Ticket, ARGSRef => \%ARGS);    
+          $ARGS{"WatcherAddressEmail1"} = undef;
+
+          # find the Create transaction, so we can pass it to the template
+          my $transaction;
+          while ($transaction = $Ticket->Transactions->Next) {
+              last if ($transaction->Type eq 'Create');
+          }
+
+          # if the template's argument contains _ADDR_ or _IP_
+          # substitute appropriately
+          my $arg = $ARGS{'TemplateArg'};
+          $arg =~ s/_ADDR_/$addr/g;
+          $arg =~ s/_IP_/$ip/g;
+
+          # load the selected template
+          my $TemplateObj = new RT::Template($session{'CurrentUser'});
+          $TemplateObj->Load($ARGS{'Template'});
+          # XXX: why don't we handle return values?
+          my ( $result, $message ) = $TemplateObj->Parse(
+                                               Argument       => $arg,
+                                               TicketObj      => $Ticket,
+                                               TransactionObj => $transaction,
+          );
+
+
+          # add the template's MIMEObj to the Attachments list
+          $session{'Attachments'} = { _Body => $TemplateObj->MIMEObj,
+                                      %{$session{'Attachments'} || {}} };
+
+          # the content will be part of the template, if desired
+          $ARGS{'UpdateContent'} = " ";
+          $ARGS{UpdateAttachments} = delete $session{'Attachments'};
+          push @updateresults, ProcessUpdateMessage( ARGSRef => \%ARGS,
+                                                     TicketObj=>$Ticket );
+
+          # restore original subject
+          $ARGS{'Subject'} = $orig_subject;
+
+        } else {
+
+          # create an unlinked incident report
+          unless ($reportq->CurrentUserHasRight('CreateTicket')) {
+              Abort('You have no permission to create tickets in that queue.');
+          }
+          $ARGS{'Queue'} = $reportq->Id;
+          # Create the investigation without attachments, and send them later
+          ($Ticket, @ChildActions) =
+             CreateTicket(%ARGS);
+          unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
+            Abort("No permission to view newly created ticket #".$Ticket->id.".");
+          }
+          $ARGS{'Queue'} = undef;
+        }
+
+        # say what ticket these refer to
+        my @tempresults = (@watchresults, @updateresults);
+        @tempresults = map { loc("Ticket [_1]: [_2]",$Ticket->Id,$_) } @tempresults;
+
+        # put all the results together
+        push (@finalresults, @IncidentActions, @ChildActions, @tempresults);
+
+        # delete attachments only after they've been sent to everyone
+        delete $session{'Attachments'};
+    }
 }
 
 sub parse_csv {
