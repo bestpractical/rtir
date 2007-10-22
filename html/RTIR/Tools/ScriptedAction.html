@@ -196,7 +196,12 @@ my ($Incident, $Ticket);
 my (@IncidentActions, @ChildActions);
 my (@watchresults, @updateresults, @finalresults);  
 
-$Title = loc("Scripted Action: Create Investigations for Incident #[_1]", $incidentid);
+my $Title;
+if ( $incidentid ) {
+    $Title = loc("Scripted Action: Create Investigations for Incident #[_1]", $incidentid);
+} else {
+    $Title = loc("Scripted Action: Create Incidents and Investigations");
+}
 
 my $template = new RT::Template($session{'CurrentUser'});
 $template->LoadGlobalTemplate($TemplateName);
@@ -483,7 +488,6 @@ $TemplateName => 'Correspondence'
 $Requestors => undef
 $servers => RT->Config->Get('whois')
 $server => undef
-$Title => loc("Scripted Action: Create Incidents and Investigations")
 $current_tab => "RTIR/Tools/ScriptedAction.html"; 
 $current_subtab => undef
 $loop => 'address'
