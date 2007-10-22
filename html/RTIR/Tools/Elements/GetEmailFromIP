@@ -25,6 +25,9 @@
 <%INIT>
 # $address is passed by reference
 
+# Net::Whois::RIPE does this for its method names
+$field =~ tr/-/_/;
+
 use Net::Whois::RIPE;
 my $whois = Net::Whois::RIPE->new( $server, Debug => 1 );
 if ($whois) {
