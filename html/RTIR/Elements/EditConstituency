@@ -81,15 +81,20 @@ $Rows => undef
 </%ARGS>
 
 <%METHOD options>
-% my $selected;
-% my $CFVs = $CustomField->Values;
-% my @levels;
-% my $main_queue = RT::Queue->new($session{'CurrentUser'});
-% $main_queue->LoadByCols(Name => 'Incidents');
-% my $show_all = 0;
-% if ($main_queue->CurrentUserHasRight('OwnTicket')) {
-% $show_all = 1;
-% }
+<%INIT>
+my $selected;
+my $CFVs = $CustomField->Values;
+my @levels;
+
+my $main_queue = RT::Queue->new($session{'CurrentUser'});
+if ( $Object ) {
+    $main_queue->Load( $Object->Queue );
+} else {
+    $main_queue->Load( $m->request_args->{'Queue'} || 'Incidents' );
+}
+$main_queue->{'disable_constituency_right_check'} = 1;
+my $show_all = $main_queue->CurrentUserHasRight('OwnTicket') ? 1 : 0;
+</%INIT>
 
 % while ( my $value = $CFVs->Next ) {
 %       my $name = $value->Name;

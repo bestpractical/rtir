@@ -414,7 +414,9 @@ wrap 'RT::ObjectCustomFieldValue::Content',
     };
 
     wrap 'RT::Queue::HasRight', pre => sub {
-        return if $_[0]->{'_for_ticket'} || !$_[0]->id;
+        return unless $_[0]->id;
+        return if $_[0]->{'disable_constituency_right_check'};
+        return if $_[0]->{'_for_ticket'};
         return unless $_[0]->__Value('Name') =~
             /^(Incidents|Incident Reports|Investigations|Blocks)$/i;
 
