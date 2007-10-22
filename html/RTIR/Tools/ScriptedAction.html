@@ -41,7 +41,7 @@
 <input type="hidden" name="Status" value="<%$ARGS{Status}||'open'%>" />
 <a name="top"></a>
         
-% if (exists $ARGS{'TestAddresses'}) {
+% if ( $ARGS{'TestAddresses'} && keys %$addrhash ) {
 <&| /Widgets/TitleBox, contentbg => "#cccccc", 
     title => 'Address test results' &>
 <ul>
