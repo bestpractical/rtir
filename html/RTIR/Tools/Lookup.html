@@ -200,7 +200,7 @@ my $title = loc("Lookup '[_1]' using server [_2]", $q, $server);
 use Net::Whois::RIPE;
 my ($whois, $port) = split(/\s*:\s*/, $server, 2);
 $port = 43 unless ($port || '') =~ /^\d+$/;
-my $query = Net::Whois::RIPE->new( $whois, Port => $port );
+my $query = Net::Whois::RIPE->new( $whois, Port => $port, Debug => 1 );
 my ($iterator, $error);
 if ( $query ) {
     $iterator = $query->query_iterator($q);
