@@ -26,7 +26,7 @@
 # $address is passed by reference
 
 use Net::Whois::RIPE;
-my $whois = Net::Whois::RIPE->new($server);
+my $whois = Net::Whois::RIPE->new( $server, Debug => 1 );
 if ($whois) {
   my $query = $whois->query($q);
   $$address = "";
