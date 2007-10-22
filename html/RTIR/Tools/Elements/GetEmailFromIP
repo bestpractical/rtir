@@ -28,23 +28,18 @@
 # Net::Whois::RIPE does this for its method names
 $field =~ tr/-/_/;
 
+$$address = loc("ADDRESS_UNKNOWN");
+
 use Net::Whois::RIPE;
 my $whois = Net::Whois::RIPE->new( $server, Debug => 1 );
 if ($whois) {
   my $query = $whois->query($q);
-  $$address = "";
-  foreach my $attribute ($query->attributes()) {
-    last if ($$address);
-    next unless ($attribute eq $field);
-    foreach  my $value ($query->$attribute()) {
-      $$address = $value;
-      last;
-    }
+  if ($query->can($field)) {
+    $$address = $query->$field();
   }
 } else {
   $$error = "Unable to connect to whois server '$server'";
 }
-$$address = loc("ADDRESS_UNKNOWN") if !$$address;
 </%INIT>
 
 <%ARGS>
