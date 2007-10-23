@@ -63,9 +63,9 @@
   <tr>
     <td class="input">
       <select name="server">
-% foreach my $s (sort keys %{$servers}) {
+% foreach my $s (sort keys %{$whois_servers}) {
 % my ($host, $name);
-% my $srv = $servers->{$s};
+% my $srv = $whois_servers->{$s};
 % next unless $srv;
 % if (ref($srv) eq 'HASH') {
 % $host = $srv->{'Host'};
@@ -75,7 +75,7 @@
 % }
 % next unless $srv;
 % my $selected = "";
-% if ($servers->{$s} eq $server) {
+% if ($whois_servers->{$s} eq $server) {
 %   $selected = " SELECTED";
 % }
         <option value="<%$host%>"<%$selected%>><%$name || $host%></option>
@@ -239,9 +239,10 @@ if ($loop eq 'address') {
 }
 
 # get the list of WHOIS servers
-foreach my $s (sort keys %$servers) {
+my $whois_servers => RT->Config->Get('whois');
+foreach my $s (sort keys %$whois_servers) {
     # just pick the first one
-    $server = $servers->{$s} unless ($server);
+    $server = $whois_servers->{$s} unless ($server);
     last;
 }
 
@@ -440,7 +441,6 @@ sub parse_csv {
 $incidentid => undef
 $TemplateName => 'Correspondence'
 $Requestors => undef
-$servers => RT->Config->Get('whois')
 $server => undef
 $current_tab => "RTIR/Tools/ScriptedAction.html"; 
 $current_subtab => undef
