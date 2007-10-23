@@ -273,7 +273,6 @@ if ( $ARGS{'SubmitAction'} || $ARGS{'TestAddresses'} ) {
     $list =~ s/\s+$//;
     # replace newlines with commas (for use with parse_csv)
     $list =~ s/\n/,/g;
-    next unless $list;
 
     if ($loop eq 'address') {
         my @addrs = parse_csv( $list );
