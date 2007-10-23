@@ -34,7 +34,7 @@ unless ( $whois ) {
     return;
 }
 
-my @query = $whois->query($q);
+my @query = grep defined, $whois->query($q);
 unless ( @query ) {
     $$error = loc("Unable to connect to whois server '[_1]'", $server);
     return;
