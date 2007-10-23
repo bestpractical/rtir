@@ -25,35 +25,41 @@
 <%INIT>
 # $address is passed by reference
 
-# Net::Whois::RIPE does this for its method names
-my $orig_field = $field;
-$field =~ tr/-/_/;
-
 $$address = loc("ADDRESS_UNKNOWN");
 
 use Net::Whois::RIPE;
 my $whois = Net::Whois::RIPE->new( $server, Debug => 1 );
 unless ( $whois ) {
-    $$error = "Unable to connect to whois server '$server'";
+    $$error = loc("Unable to connect to whois server '[_1]'", $server);
     return;
 }
 
-my $query = $whois->query($q);
-unless ( $query ) {
-    $$error = "Unable to connect to whois server '$server'";
+my @query = $whois->query($q);
+unless ( @query ) {
+    $$error = loc("Unable to connect to whois server '[_1]'", $server);
     return;
 }
-unless ($query->can($field)) {
-    $$error = "Whois server response did not include field '$orig_field'";
+
+$field ||= 'notify';
+
+my @res;
+foreach my $query ( @query ) {
+    foreach my $attr ( grep lc $_ eq lc $field, $query->attributes ) {
+        push @res, $query->$attr();
+    }
+}
+unless ( @res ) {
+    $$error = loc("Whois server response did not include field '[_1]'", $field);
+    return;
 }
 
-$$address = $query->$field();
+($$address) = grep defined && length, @res;
 </%INIT>
 
 <%ARGS>
 $server => undef
 $q => undef
 $field => "notify"
-$address => undef
-$error => undef
+$address
+$error
 </%ARGS>
