@@ -63,22 +63,19 @@
   <tr>
     <td class="input">
       <select name="server">
-% foreach my $s (sort keys %{$whois_servers}) {
-% my ($host, $name);
-% my $srv = $whois_servers->{$s};
-% next unless $srv;
-% if (ref($srv) eq 'HASH') {
-% $host = $srv->{'Host'};
-% $name = $srv->{'FriendlyName'};
-% } else {
-% $host = $srv;
-% }
-% next unless $srv;
-% my $selected = "";
-% if ($whois_servers->{$s} eq $server) {
-%   $selected = " SELECTED";
-% }
-        <option value="<%$host%>"<%$selected%>><%$name || $host%></option>
+<%PERL>
+foreach my $entry ( map $whois_servers->{ $_ }, sort keys %{$whois_servers} ) {
+    next unless $entry;
+
+    my ($host, $name) = ref($entry)
+        ? ($entry->{'Host'}, $entry->{'FriendlyName'})
+        : ($entry, $entry);
+    next unless $host;
+
+    my $selected = "";
+    $selected = " selected" if $host eq $server;
+</%PERL>
+        <option value="<% $host %>" <% $selected %>><% $name || $host %></option>
 % }
       </select>
   </tr>
@@ -239,11 +236,13 @@ if ($loop eq 'address') {
 }
 
 # get the list of WHOIS servers
-my $whois_servers => RT->Config->Get('whois');
-foreach my $s (sort keys %$whois_servers) {
-    # just pick the first one
-    $server = $whois_servers->{$s} unless ($server);
-    last;
+my $whois_servers = RT->Config->Get('whois');
+unless ( $server ) {
+    ($server) =
+        grep defined && length,
+        map ref( $_ )? $_->{'Host'} : $_,
+        map $whois_servers->{ $_ },
+        sort keys %$whois_servers;
 }
 
 # Load the Incidents Queue
