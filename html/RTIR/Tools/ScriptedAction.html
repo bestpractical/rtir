@@ -295,8 +295,7 @@ if ( $ARGS{'SubmitAction'} || $ARGS{'TestAddresses'} ) {
             );
             if ($err) {
                 # no addresses
-                push @finalresults, loc("Could not connect to whois server [_1] while getting address for [_2]", $server, $ip);
-                push @finalresults, $err;
+                push @finalresults, loc("Couldn't get address for [_1]: [_2]", $ip, $err);
                 next;
             }
             $addrhash->{$i} = {Address => $a, IP => $ip};
