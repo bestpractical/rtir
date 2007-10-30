@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 61;
+use Test::More tests => 62;
 require "t/rtir-test.pl";
 
 # Test must be run wtih RT_SiteConfig:
@@ -24,6 +24,9 @@ diag "load the field" if $ENV{'TEST_VERBOSE'};
     ok $cf, 'have a field';
     ok $cf->id, 'with some ID';
 }
+
+diag "get list of values" if $ENV{'TEST_VERBOSE'};
+my @values = map $_->Name, @{ $cf->Values->ItemsArrayRef };
 
 my $agent = default_agent();
 my $rtir_user = rtir_user();
@@ -60,6 +63,11 @@ EOF
 diag "create a ticket via gate using EXTENSION" if $ENV{'TEST_VERBOSE'};
 {
     my $i = 0;
+
+    my $default = RT->Config->Get('_RTIR_Constituency_default');
+    my $val = (grep lc($_) ne lc($default), @values)[0];
+    ok $val, 'find not default value';
+
     my $incident_id; # block couldn't be created without incident id
     foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
@@ -71,7 +79,6 @@ Subject: This is a test of constituency functionality
 
 Foob!
 EOF
-        my $val = 'GOVNET';
         local $ENV{'EXTENSION'} = $val;
         my ($status, $id) = RT::Test->send_via_mailgate($text, queue => $queue);
         is $status >> 8, 0, "The mail gateway exited ok";
