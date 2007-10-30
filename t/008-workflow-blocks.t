@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 62;
+use Test::More tests => 108;
 
 require "t/rtir-test.pl";
 
@@ -102,5 +102,136 @@ diag "test activation after reply using Edit page";
     $agent->click('SaveChanges');
 
     ticket_state_is($agent, $block_id, 'active');
+}
+
+
+my $re = RT->Config->Get('RTIR_BlockAproveActionRegexp');
+
+SKIP: {
+    skip "RTIR_BlockAproveActionRegexp is defined", 19 if $re;
+
+    my $rtname = RT->Config->Get('rtname');
+    my $block_id = create_block( $agent, {
+        Subject => "block",
+        Incident => $inc_id,
+        Requestors => 'rt-test@example.com',
+    } );
+    ticket_state_is($agent, $block_id, 'pending activation');
+
+    {
+        my $text = <<EOF;
+From: rt-test\@example.com
+To: rt\@@{[RT->Config->Get('rtname')]}
+Subject: [$rtname #$block_id] This is a test
+
+test
+EOF
+        my ($status, $id) = RT::Test->send_via_mailgate($text, queue => 'Blocks');
+        is $status >> 8, 0, "The mail gateway exited ok";
+        is $id, $block_id, "replied to the ticket";
+        ticket_state_is($agent, $block_id, 'active');
+    }
+
+    {
+        display_ticket($agent, $block_id);
+        $agent->follow_link_ok({ text => 'Pending Removal' }, "-> pending removal");
+        $agent->form_number(3);
+        $agent->field( UpdateContent => 'going to remove' );
+        $agent->click('SubmitTicket');
+        ticket_state_is($agent, $block_id, 'pending removal');
+    }
+
+    {
+        my $text = <<EOF;
+From: rt-test\@example.com
+To: rt\@@{[RT->Config->Get('rtname')]}
+Subject: [$rtname #$block_id] This is a test
+
+some text
+EOF
+        my ($status, $id) = RT::Test->send_via_mailgate($text, queue => 'Blocks');
+        is $status >> 8, 0, "The mail gateway exited ok";
+        is $id, $block_id, "replied to the ticket";
+        ticket_state_is($agent, $block_id, 'removed');
+    }
+}
+
+SKIP: {
+    skip "'TestPendingBlock' doesn't match RTIR_BlockAproveActionRegexp", 27
+        unless $re && 'TestPendingBlock' =~ /$re/;
+    my $rtname = RT->Config->Get('rtname');
+    my $block_id = create_block( $agent, {
+        Subject => "block",
+        Incident => $inc_id,
+        Requestors => 'rt-test@example.com',
+    } );
+    ticket_state_is($agent, $block_id, 'pending activation');
+
+    {
+        my $text = <<EOF;
+From: rt-test\@example.com
+To: rt\@@{[RT->Config->Get('rtname')]}
+Subject: [$rtname #$block_id] This is a test
+
+some text
+EOF
+        my ($status, $id) = RT::Test->send_via_mailgate($text, queue => 'Blocks');
+        is $status >> 8, 0, "The mail gateway exited ok";
+        is $id, $block_id, "replied to the ticket";
+        ticket_state_is($agent, $block_id, 'pending activation');
+    }
+
+    {
+        my $text = <<EOF;
+From: rt-test\@example.com
+To: rt\@@{[RT->Config->Get('rtname')]}
+Subject: [$rtname #$block_id] This is a test
+
+TestPendingBlock
+
+EOF
+        my ($status, $id) = RT::Test->send_via_mailgate($text, queue => 'Blocks');
+        is $status >> 8, 0, "The mail gateway exited ok";
+        is $id, $block_id, "replied to the ticket";
+        ticket_state_is($agent, $block_id, 'active');
+    }
+
+    {
+        display_ticket($agent, $block_id);
+        $agent->follow_link_ok({ text => 'Pending Removal' }, "-> pending removal");
+        $agent->form_number(3);
+        $agent->field( UpdateContent => 'going to remove' );
+        $agent->click('SubmitTicket');
+        ticket_state_is($agent, $block_id, 'pending removal');
+    }
+
+    {
+        my $text = <<EOF;
+From: rt-test\@example.com
+To: rt\@@{[RT->Config->Get('rtname')]}
+Subject: [$rtname #$block_id] This is a test
+
+some text
+EOF
+        my ($status, $id) = RT::Test->send_via_mailgate($text, queue => 'Blocks');
+        is $status >> 8, 0, "The mail gateway exited ok";
+        is $id, $block_id, "replied to the ticket";
+        ticket_state_is($agent, $block_id, 'pending removal');
+    }
+
+    {
+        my $text = <<EOF;
+From: rt-test\@example.com
+To: rt\@@{[RT->Config->Get('rtname')]}
+Subject: [$rtname #$block_id] This is a test
+
+TestPendingBlock
+
+EOF
+        my ($status, $id) = RT::Test->send_via_mailgate($text, queue => 'Blocks');
+        is $status >> 8, 0, "The mail gateway exited ok";
+        is $id, $block_id, "replied to the ticket";
+        ticket_state_is($agent, $block_id, 'removed');
+    }
 }
 

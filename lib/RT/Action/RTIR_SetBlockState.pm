@@ -65,17 +65,26 @@ sub GetState {
         rejected => 'removed',
     );
     my $t = $self->TicketObj;
+    my $txn = $self->TransactionObj;
     my $status = $t->Status;
-    return $state{ $status } if $state{ $status };
-
-    # all code below is related to open status
-
     my $old_state = $t->FirstCustomFieldValue('_RTIR_State');
+
+    if ( $status eq 'new' && $txn->Type eq 'Correspond' && $txn->IsInbound && $old_state eq 'pending activation' ) {
+        if ( my $re = RT->Config->Get('RTIR_BlockAproveActionRegexp') ) {
+            my $content = $txn->Content;
+            return '' if !$content || $content !~ /$re/;
+        }
+        my ($val, $msg) = $t->SetStatus( 'open' );
+        $RT::Logger->error("Couldn't change status: $msg") unless $val;
+        return 'active';
+    }
+
+    return $state{ $status } if $state{ $status };
+    # all code below is related to open status
 
     # if block was removed (resolved/rejected) we reactivate it
     return 'active' if $old_state eq 'removed';
 
-    my $txn = $self->TransactionObj;
     if ( $txn->Creator != $RT::SystemUser->id ) {
         # if a duty team member changes Status directly then we want to activate
         if ( ($txn->Type eq 'Status' || ($txn->Type eq 'Set' && $txn->Field eq 'Status')) &&
