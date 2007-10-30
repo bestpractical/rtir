@@ -309,14 +309,19 @@ if ( $ARGS{'SubmitAction'} ) {
 
     # if the subject contains _ADDR_ or _IP_ we will substitute
     my $original_subject = $ARGS{'Subject'};
+    my $original_content = $ARGS{'Content'};
 
     foreach my $key ( keys %$addrhash ) {
         my $addr = $addrhash->{$key}->{'Address'};
         my $ip = $addrhash->{$key}->{'IP'};
 
         $ARGS{'Subject'} = $original_subject;
-        $ARGS{'Subject'} =~ s/_ADDR_/$addr/g;
-        $ARGS{'Subject'} =~ s/_IP_/$ip/g;
+        $ARGS{'Content'} = $original_content;
+
+        for (qw/Subject Content/) {
+            $ARGS{$_} =~ s/_ADDR_/$addr/g;
+            $ARGS{$_} =~ s/_IP_/$ip/g;
+        }
 
         if ( $addr eq loc("ADDRESS_UNKNOWN") ) {
             # create an unlinked incident report
