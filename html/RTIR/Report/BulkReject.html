@@ -138,8 +138,12 @@ if ( $BulkReject ) {
     # force redo search if we changed state
     $session{'tickets'}->RedoSearch;
 
-    if( $BulkRejectAndReturn ) {
-        return $m->comp( '/RTIR/index.html', results   => \@results );
+    if ( $BulkRejectAndReturn ) {
+        push @{ $session{"Actions"} ||= [] }, @results;
+        $session{'i'}++;
+        return RT::Interface::Web::Redirect(
+            RT->Config->Get('WebURL') ."/RTIR/index.html"
+        );
     }
 }
 
