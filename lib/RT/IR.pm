@@ -383,7 +383,9 @@ wrap 'RT::ObjectCustomFieldValue::Content',
             if (not defined $RT::IR::ConstituencyCache->{ $self->id }) {
                 my $systicket = RT::Ticket->new($RT::SystemUser);
                 $systicket->Load( $self->id );
-                $RT::IR::ConstituencyCache->{$self->id}  = $systicket->FirstCustomFieldValue('_RTIR_Constituency') || '_none';
+                $RT::IR::ConstituencyCache->{ $self->id } =
+                    $systicket->FirstCustomFieldValue('_RTIR_Constituency')
+                    || '_none';
             }
             return if ( $RT::IR::ConstituencyCache->{ $self->id } eq '_none' );
             if ( not $self->{_constituency_queue} ) {
