@@ -505,10 +505,12 @@ wrap 'RT::ObjectCustomFieldValue::Content',
         my $value;
         if ( $args{'MIMEObj'} ) {
             my $tmp = $args{'MIMEObj'}->head->get('X-RT-Mail-Extension');
+            chomp $tmp;
             if ( $tmp && !grep lc $_->Name eq lc $tmp, @{ $cf->Values->ItemsArrayRef } ) {
                 $tmp = undef;
             }
             $value = $tmp;
+            $RT::Logger->debug("Found Constituency '$tmp' in email") if $tmp;
         }
         $value ||= RT->Config->Get('_RTIR_Constituency_default');
         return unless $value;
