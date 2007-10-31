@@ -378,41 +378,50 @@ if ( $ARGS{'SubmitAction'} ) {
             ARGSRef => { %ARGS, AddRequestor => $addr },
         );
 
-        # find the Create transaction, so we can pass it to the template
-        my $transaction;
-        while ( $transaction = $Ticket->Transactions->Next ) {
-            last if $transaction->Type eq 'Create';
-        }
-
-        # if the template's argument contains _ADDR_ or _IP_
-        # substitute appropriately
-        my $arg = $ARGS{'TemplateArg'};
-        $arg =~ s/_ADDR_/$addr/g;
-        $arg =~ s/_IP_/$ip/g;
-
-        # load the selected template
         my $TemplateObj = RT::Template->new( $session{'CurrentUser'} );
-        $TemplateObj->Load( $ARGS{'Template'} );
-        # XXX: why don't we handle return values?
-        my ( $result, $message ) = $TemplateObj->Parse(
-            Argument       => $arg,
-            TicketObj      => $Ticket,
-            TransactionObj => $transaction,
-        );
-        unless ( $result ) {
-            $RT::Logger->error("Couldn't parse template: $message");
+        if ( $ARGS{'Template'} ) {
+            $TemplateObj->Load( $ARGS{'Template'} );
+            $RT::Logger->error("Couldn't load template '$ARGS{'Template'}'")
+                unless $TemplateObj->id;
         }
 
-        # add the template's MIMEObj to the Attachments list
-        $session{'Attachments'} = { _Body => $TemplateObj->MIMEObj,
-                                    %{$session{'Attachments'} || {}} };
+        my @updateresults;
+        if ( $TemplateObj->id ) {
 
-        # the content will be part of the template, if desired
-        $ARGS{'UpdateContent'} = " ";
-        $ARGS{'UpdateAttachments'} = delete $session{'Attachments'};
-        my @updateresults = ProcessUpdateMessage(
-            TicketObj => $Ticket, ARGSRef => \%ARGS,
-        );
+            # find the Create transaction, so we can pass it to the template
+            my $transaction;
+            while ( $transaction = $Ticket->Transactions->Next ) {
+                last if $transaction->Type eq 'Create';
+            }
+
+            # if the template's argument contains _ADDR_ or _IP_
+            # substitute appropriately
+            my $arg = $ARGS{'TemplateArg'};
+            $arg =~ s/_ADDR_/$addr/g;
+            $arg =~ s/_IP_/$ip/g;
+
+            my ( $result, $message ) = $TemplateObj->Parse(
+                Argument       => $arg,
+                TicketObj      => $Ticket,
+                TransactionObj => $transaction,
+            );
+            unless ( $result ) {
+                $RT::Logger->error("Couldn't parse template: $message");
+            }
+
+            # add the template's MIMEObj to the Attachments list
+            $session{'Attachments'} = {
+                %{$session{'Attachments'} || {}},
+                _Body => $TemplateObj->MIMEObj,
+            };
+
+            # the content will be part of the template, if desired
+            $ARGS{'UpdateContent'} = " ";
+            $ARGS{'UpdateAttachments'} = $session{'Attachments'};
+            @updateresults = ProcessUpdateMessage(
+                TicketObj => $Ticket, ARGSRef => \%ARGS,
+            );
+        }
 
         push @finalresults, map { loc("Ticket [_1]: [_2]", $Ticket->Id, $_) }
             @watchresults, @updateresults;
