@@ -421,6 +421,7 @@ if ( $ARGS{'SubmitAction'} ) {
         # delete attachments only after they've been sent to everyone
         delete $session{'Attachments'};
     }
+    $ARGS{'Subject'} = $original_subject;
 }
 
 sub parse_csv {
