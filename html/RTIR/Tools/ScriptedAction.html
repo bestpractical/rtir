@@ -198,10 +198,6 @@ if ( $incidentid ) {
     $Title = loc("Scripted Action: Create Incidents and Investigations");
 }
 
-my $template = RT::Template->new($session{'CurrentUser'});
-$template->LoadGlobalTemplate( $TemplateName );
-$ARGS{'Template'} = $template->Id;
-
 # XXX: what's this?
 foreach my $arg (keys %ARGS) {
   if ($arg =~ /^Requestorbox-(.+)/) {
@@ -395,7 +391,7 @@ if ( $ARGS{'SubmitAction'} ) {
         $arg =~ s/_IP_/$ip/g;
 
         # load the selected template
-        my $TemplateObj = new RT::Template($session{'CurrentUser'});
+        my $TemplateObj = RT::Template->new( $session{'CurrentUser'} );
         $TemplateObj->Load( $ARGS{'Template'} );
         # XXX: why don't we handle return values?
         my ( $result, $message ) = $TemplateObj->Parse(
@@ -403,6 +399,9 @@ if ( $ARGS{'SubmitAction'} ) {
             TicketObj      => $Ticket,
             TransactionObj => $transaction,
         );
+        unless ( $result ) {
+            $RT::Logger->error("Couldn't parse template: $message");
+        }
 
         # add the template's MIMEObj to the Attachments list
         $session{'Attachments'} = { _Body => $TemplateObj->MIMEObj,
@@ -443,7 +442,6 @@ sub parse_csv {
 
 <%ARGS>
 $incidentid => undef
-$TemplateName => 'Correspondence'
 $Requestors => undef
 $server => undef
 $current_tab => "RTIR/Tools/ScriptedAction.html"; 
