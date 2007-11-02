@@ -45,7 +45,7 @@
 %   unless ( $action ) {
 <b><a href="<%RT->Config->Get('WebPath')%>/RTIR/Incident/LinkToIncident.html?id=<% $Ticket->Id %>">[Link]</a></b>
 <b><a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Child=<% $Ticket->Id %>&Queue=Incidents">[New]</a></b>
-%   } else {
+%   } elsif ( $action ne 'No' ) {
 <a href="<% RT->Config->Get('WebPath') %>/RTIR/Display.html?Action=<% $action %>&id=<% $Ticket->Id %>">[<% loc( $action ) %>]</a>
 %   }
 % }
@@ -60,10 +60,17 @@ $incidents->FromSQL($query);
 
 my $action = '';
 if ( $Ticket->Owner != $session{'CurrentUser'}->Id ) {
-    if ( $Ticket->Owner == $RT::Nobody->Id ) {
-        $action = 'Take';
+    unless ( $Ticket->CurrentUserHasRight('OwnTicket') ) {
+        $action = 'No';
+    }
+    elsif ( $Ticket->Owner == $RT::Nobody->Id ) {
+        $action = 'Take'
+            if $Ticket->CurrentUserHasRight('ModifyTicket')
+            || $Ticket->CurrentUserHasRight('TakeTicket');
     } else {
-        $action = 'Steal';
+        $action = 'Steal'
+            if $Ticket->CurrentUserHasRight('ModifyTicket')
+            || $Ticket->CurrentUserHasRight('StealTicket');
     }
 }
 

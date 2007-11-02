@@ -246,12 +246,12 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
             $actions->{'D'} = {
                 path  => "RTIR/Display.html?Action=Take&id=$id",
                 title => loc('Take')
-            };
+            } if $can{'ModifyTicket'} || $Ticket->CurrentUserHasRight('TakeTicket');
         } elsif ( $Ticket->Owner != $session{CurrentUser}->id ) {
             $actions->{'E'} = {
                 path  => "RTIR/Display.html?Action=Steal&id=$id",
                 title => loc('Steal')
-            };
+            } if $can{'ModifyTicket'} || $Ticket->CurrentUserHasRight('StealTicket');
         }
     }
 
