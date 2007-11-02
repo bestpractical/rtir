@@ -11,6 +11,8 @@ add_constituency - add or update constitiuensies
     add_constituency --name EDUNET
     add_constituency --name EDUNET --correspond 'edunet@example.com' --quiet
 
+    add_constituency --name <constituency> --rename <new value>
+
 =head1 OPTIONS
 
 =over 4
@@ -26,6 +28,10 @@ Set/update correspond address.
 =item --comment
 
 Set/update comment address.
+
+=item --rename
+
+Rename constituency, use this option to set new value when --name defines old.
 
 =item --quiet
 
@@ -61,7 +67,7 @@ sub debug(@) {
 };
 
 use Getopt::Long;
-GetOptions( \%opt, "name=s", "correspond=s", "comment=s", "help", "quiet" );
+GetOptions( \%opt, "name=s", "rename=s", "correspond=s", "comment=s", "help", "quiet" );
 
 if ( $opt{'help'} ) {
     require Pod::Usage;
@@ -73,12 +79,7 @@ if ( $opt{'help'} ) {
     );
 }
 
-my $constituency = $opt{'name'};
-# cleanup value
-$constituency = '' unless defined $constituency;
-$constituency =~ s/^\s+//;
-$constituency =~ s/\s+$//;
-$constituency =~ s/\s+/ /gs;
+my $constituency = sanitize_value( $opt{'name'} );
 unless ( defined $constituency && length $constituency ) {
     require Pod::Usage;
     import Pod::Usage;
@@ -88,10 +89,16 @@ unless ( defined $constituency && length $constituency ) {
     );
 }
 
+my @queue_prefixes = ('Incidents', 'Incident Reports', 'Investigations', 'Blocks');
+
+if ( exists $opt{'rename'} ) {
+    exit rename_value(
+        $constituency => sanitize_value( $opt{'rename'} )
+    );
+}
+
 
 $RT::Handle->BeginTransaction;
-
-my @queue_prefixes = ('Incidents', 'Incident Reports', 'Investigations', 'Blocks');
 
 my $exist = cf_value_exists( $constituency );
 
@@ -210,7 +217,7 @@ sub cf_value_exists {
     my $values = $cf->Values;
     $values->Limit( FIELD => 'Name', VALUE => $value );
     my $value_obj = $values->First;
-    return $value_obj && $value_obj->id? 1 : 0;
+    return $value_obj && $value_obj->id? $value_obj : undef;
 }
 
 sub add_cf_value {
@@ -276,6 +283,13 @@ sub grant_group_cf_rights {
     } 
 }
 
+sub group_exists {
+    my $name = shift;
+    my $group = RT::Group->new( $RT::SystemUser );
+    $group->LoadByCols( Name => $name );
+    return $group && $group->id ? $group : undef;
+}
+
 sub create_or_load_group {
     my $name = shift;
     my $group = RT::Group->new($RT::SystemUser);
@@ -292,12 +306,17 @@ sub create_or_load_group {
     return $group;
 }
 
-sub load_queue {
+sub queue_exists {
     my $name = shift;
-
     my $queue = RT::Queue->new( $RT::SystemUser );
     $queue->LoadByCols( Name => $name );
-    die "Couldn't load queue '$name'" unless $queue->id;
+    return $queue && $queue->id ? $queue : undef;
+}
+
+sub load_queue {
+    my $name = shift;
+    my $queue = queue_exists( $name );
+    die "Couldn't load queue '$name'" unless $queue;
     return $queue;
 }
 
@@ -335,5 +354,84 @@ sub create_or_load_queue {
     die "Failed to create queue $name." unless $queue->id;
 
     return $queue;
+}
+
+sub rename_value {
+    my $old = shift;
+    my $new = shift;
+
+    my $value_obj;
+    unless ( $value_obj = cf_value_exists( $old ) ) {
+        die "Couldn't rename. Constituency '$old' doesn't exist.";
+    }
+    if ( cf_value_exists( $new ) ) {
+        die "Couldn't rename. Constituency '$new' already exists.";
+    }
+
+    $RT::Handle->BeginTransaction;
+
+    print "\nIf you continue then we'll...\n";
+    print "* rename constituency value '$old' into '$new'.\n";
+    foreach (@queue_prefixes) {
+        print "* rename queue '$_ - $old' if it exists into '$_ - $new'.\n";
+    }
+    print <<END;
+* rename group 'DutyTeam $old' if it exists into 'DutyTeam $new'
+* rename group 'ReadOnly $old' if it exists into 'ReadOnly $new'
+
+END
+    return 0 unless prompt_yN( "Do you want to proceed?" );
+
+    {
+        my ($status, $msg) = $value_obj->SetName( $new );
+        die $msg unless $status;
+        debug "Renamed constituency value '$old' -> '$new'.";
+    }
+
+    foreach (@queue_prefixes) {
+        my $queue = queue_exists( "$_ - $old" );
+        unless ( $queue ) {
+            debug "Queue '$_ - $old' doesn't exist. Skiping...";
+            next;
+        }
+        if ( queue_exists( "$_ - $new" ) ) {
+            die "Couldn't rename queue, target '$_ - $new' already exist.";
+        }
+
+        my ($status, $msg) = $queue->SetName( "$_ - $new" );
+        die $msg unless $status;
+
+        debug "Renamed queue '$_ - $old' -> '$_ - $new'";
+    }
+
+    foreach (qw(DutyTeam Readonly)) {
+        my $group = group_exists( "$_ $old" );
+        unless ( $group ) {
+            debug "Group '$_ $old' doesn't exist. Skiping...";
+            next;
+        }
+        if ( group_exists( "$_ $new" ) ) {
+            die "Couldn't rename group, target '$_ $new' already exist.";
+        }
+
+        my ($status, $msg) = $group->SetName( "$_ $new" );
+        die $msg unless $status;
+
+        debug "Renamed group '$_ $old' -> '$_ $new'";
+    }
+
+    $RT::Handle->Commit;
+
+    return 0;
+}
+
+sub sanitize_value {
+    my $value = shift;
+    # cleanup value
+    $value = '' unless defined $value;
+    $value =~ s/^\s+//;
+    $value =~ s/\s+$//;
+    $value =~ s/\s+/ /gs;
+    return $value;
 }
 
