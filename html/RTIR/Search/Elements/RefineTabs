@@ -109,6 +109,10 @@ elsif( $with_subtab{ $current_tab_base } ) {
 # XXX: there is no way to mark refine subtab active
 #        $subtabs->{'current_subtab'} = $refine_path if $current_subtab_active;
         $subtabs->{'_a'} = {
+            path => $path,
+            title => loc('Results'),
+        };
+        $subtabs->{'_b'} = {
             path => $refine_path,
             title => loc('Refine'),
         };
