@@ -2,9 +2,13 @@
 
 <& "/RTIR/". $Type ."/Elements/Tabs", 
     Title          => $Title,
-    TicketObj      => $TicketObj,
-    current_tab    => 'RTIR/Display.html?id='. $TicketObj->id,
-    current_subtab => 'RTIR/Display.html?id='. $TicketObj->id,
+    Ticket         => $TicketObj,
+    current_tab    => 'RTIR/Display.html?id='. $id,
+    appendtabs     => { _ZF => {
+        title => loc( 'Forward transaction #[_1]', $QuoteTransaction ),
+        path  => 'RTIR/Forward.html?id='. $id .'&QuoteTransaction='. $QuoteTransaction,
+    } },
+    current_subtab => 'RTIR/Forward.html?id='. $id .'&QuoteTransaction='. $QuoteTransaction,
 &>
 
 <& /Elements/ListActions, actions => \@results &>
