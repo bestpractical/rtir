@@ -55,7 +55,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 <input type="hidden" name="Status"       value="<% $ARGS{'Status'}       || 'open' %>" />
 % if ( $ChildObj ) {
 <input type="hidden" name="Child"        value="<% $Child %>" />
-<input type="hidden" name="MemberOf-new" value="<% $Child %>" />
+%#<input type="hidden" name="MemberOf-new" value="<% $Child %>" />
 % }
 % if ( $TicketObj ) {
 <input type="hidden" name="Split"        value="<% $Split %>" />
@@ -320,7 +320,7 @@ if ( !$checks_failure && $CreateIncident ) {
     if( $inc_obj ) {
         $m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Child => $ChildObj);
 
-        return $m->comp('Display.html', %ARGS, id => $inc_obj->id, results => \@results );
+        return $m->comp('Display.html', id => $inc_obj->id, results => \@results );
     }
 }
 
