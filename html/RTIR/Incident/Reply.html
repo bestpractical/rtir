@@ -197,7 +197,7 @@ if ( $SubmitTicket && ( $ARGS{'Encrypt'} || $ARGS{'Sign'} ) ) {
 
 if ( $SubmitTicket && $ARGS{'Sign'} ) {
     for my $address (keys %sign_addresses) {
-        unless ( RT::Crypt::GnuPG::DrySign($address, "x") ) {
+        unless ( RT::Crypt::GnuPG::DrySign( $address ) ) {
             push @cannot_sign_as, $address;
             $checks_failure = 1;
         }
