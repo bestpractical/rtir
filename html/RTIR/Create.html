@@ -69,7 +69,7 @@
 
 <a name="top"></a>
 
-<& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues, SignAddresses => \@cannot_sign_as &>
+<& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
 <&| /Widgets/TitleBox, contentbg => "#cccccc", title => $Title &>
 <table border="0" cellpadding="0" cellspacing="2">
@@ -269,11 +269,9 @@
   </tr>
   <tr><td colspan="3"><& SELF:AttachmentsForm &></td><tr>
 
-% if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
+% if ( $gnupg_widget ) {
   <tr><td>&nbsp;</td><td colspan="2">
-    <% loc('Sign')%> <& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $ARGS{'Sign'} &>
-    &nbsp;&nbsp;&nbsp;
-    <% loc('Encrypt')%> <& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $ARGS{'Encrypt'} &>
+  <& /Elements/GnuPG/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &>
   </td></tr>
 % }
 
@@ -344,18 +342,6 @@ if ( $m->comp_exists("/RTIR/$Type/Create.html") ) {
     return $m->comp( "/RTIR/$Type/Create.html", %ARGS );
 }
 
-if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
-    require RT::Crypt::GnuPG;
-
-    foreach ( qw(Sign Encrypt) ) {
-        $ARGS{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
-            Name => $_,
-            DefaultValue => $QueueObj->$_,
-            Arguments => \%ARGS,
-        );
-    }
-}
-
 my ($Status, $name);
 if ( $Type eq 'Report' ) {
     $name = 'Incident Report';
@@ -408,37 +394,20 @@ if ( $IncidentObj ) {
 
 push @results, $m->comp( 'SELF:ProcessAttachments', %ARGS );
 
-# check to see if we have a good passphrase
-my @cannot_sign_as;
-if ( $ARGS{'Create'} && $ARGS{'Sign'} ) {
-    my $address = $QueueObj->CorrespondAddress
-        || RT->Config->Get('CorrespondAddress');
-    unless ( RT::Crypt::GnuPG::DrySign( $address ) ) {
-        push @cannot_sign_as, $address;
-        $checks_failure = 1;
-    }
-}
-
-my @gnupg_keys_issues;
-if ( $ARGS{'Create'} && $ARGS{'Encrypt'} ) {
-
-    my @recipients = $m->comp(
-        '/Ticket/Elements/PreviewScrips:GetRecipientsOnCreate',
-        %ARGS
+my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
+$m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
+    self      => $gnupg_widget,
+    QueueObj  => $QueueObj,
+);
+if ( $ARGS{'Create'} && $gnupg_widget ) {
+    my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
+        self      => $gnupg_widget,
+        Operation => 'Create',
+        QueueObj  => $QueueObj,
     );
-
-    RT::Crypt::GnuPG::UseKeyForEncryption(
-        map { (/^UseKey-(.*)$/)[0] => $ARGS{ $_ } }
-        grep $ARGS{$_} && /^UseKey-/,
-        keys %ARGS
-    );
-
-    my $status;
-    ($status, @gnupg_keys_issues) = RT::Crypt::GnuPG::CheckRecipients( @recipients );
     $checks_failure = 1 unless $status;
 }
 
-# checks
 if ( $ARGS{'Create'} ) {
     if ( $Type eq 'Investigation' && !$ARGS{'Requestors'} ) {
         push @results, loc( "You must enter a correspondent" );

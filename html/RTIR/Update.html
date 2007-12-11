@@ -40,7 +40,7 @@
 <input type="hidden" name="Action" value="<% $Action || '' %>" />
 <input type="hidden" name="TakeOrStealFirst" value="<% $ARGS{TakeOrStealFirst} || '' %>" />
 
-<& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues, SignAddresses => \@cannot_sign_as &>
+<& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
 <table>
 <tr><td><a href="Edit.html?id=<% $id %>"><&|/l&>Correspondents</&></a></td><td align="right" colspan=2></td></tr>
@@ -88,7 +88,7 @@
 </td></tr>
 <tr><td align="right"><&|/l&>Subject</&>:</td><td> <input name="UpdateSubject" size="60" value="<% $Subject || '' %>" /></td></tr>
 
-<& /RTIR/Elements/UpdateData, Ticket => $Ticket, Type => 'Incident', %ARGS &>
+<& /RTIR/Elements/UpdateData, %ARGS, Ticket => $Ticket, Type => 'Incident' &>
 
 <input type="hidden" name="id" value="<% $id %>" /><br />
 </table>
@@ -165,41 +165,16 @@ $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 
 my $checks_failure;
 
-if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
-    require RT::Crypt::GnuPG;
-}
-
-# check to see if we have a good passphrase
-my @cannot_sign_as;
-if ( $ARGS{'SubmitTicket'} && $ARGS{'Sign'} ) {
-    my $address = $ARGS{'UpdateType'} eq "private"
-        ? ( $Ticket->QueueObj->CommentAddress
-            || RT->Config->Get('CommentAddress') )
-        : ( $Ticket->QueueObj->CorrespondAddress
-            || RT->Config->Get('CorrespondAddress') );
-
-    unless ( RT::Crypt::GnuPG::DrySign( $address ) ) {
-        push @cannot_sign_as, $address;
-        $checks_failure = 1;
-    }
-}
-
-my @gnupg_keys_issues;
-if ( $ARGS{'SubmitTicket'} && $ARGS{'Encrypt'} ) {
-
-    my @recipients = $m->comp(
-        '/Ticket/Elements/PreviewScrips:GetRecipients',
-        %ARGS, TicketObj => $Ticket
+my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
+$m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
+    self => $gnupg_widget,
+    TicketObj => $TicketObj,
+);
+if ( $ARGS{'SubmitTicket'} ) {
+    my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
+        self      => $gnupg_widget,
+        TicketObj => $TicketObj,
     );
-
-    RT::Crypt::GnuPG::UseKeyForEncryption(
-        map { (/^UseKey-(.*)$/)[0] => $ARGS{ $_ } }
-        grep $ARGS{$_} && /^UseKey-/,
-        keys %ARGS
-    );
-
-    my $status;
-    ($status, @gnupg_keys_issues) = RT::Crypt::GnuPG::CheckRecipients( @recipients );
     $checks_failure = 1 unless $status;
 }
 

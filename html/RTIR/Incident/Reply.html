@@ -45,7 +45,7 @@
 <input type="hidden" name="All" value="<% $All %>" />
 <input type="hidden" name="Query" value="<% $Query %>" />
 
-<& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues, SignAddresses => \@cannot_sign_as &>
+<& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
 % my $recipients = 0;
 
@@ -100,7 +100,11 @@
 <h2 class="no-recipients">Warning: no recipients!</h2>
 % }
 
-<& Elements/ReplyForm, %ARGS, TicketObj => $IncidentObj, Status => $Status &>
+<& Elements/ReplyForm, %ARGS,
+    TicketObj    => $IncidentObj,
+    Status       => $Status,
+    $GnuPGWidget => $gnupg_widget,
+&>
 
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => $SubmitLabel &>
 </form>
@@ -111,7 +115,7 @@ my (@results);
 my $IncidentObj = LoadTicket( $id );
 $id = $ARGS{'id'} = $IncidentObj->id;
 
-$m->callback(CallbackName => 'Initial', %ARGS, Ticket => $IncidentObj);
+$m->callback( %ARGS, CallbackName => 'Initial', Ticket => $IncidentObj );
 
 # XXX: we should get rid of DefaultStatus argument at all. use Status
 $Status ||= $DefaultStatus; $DefaultStatus ||= $Status;
@@ -155,15 +159,12 @@ $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 
 my $checks_failure = 0;
 
-my %sign_addresses;
-my @cannot_sign_as;
-
-my @gnupg_keys_issues;
-if ( $SubmitTicket && ( $ARGS{'Encrypt'} || $ARGS{'Sign'} ) ) {
-    require RT::Crypt::GnuPG;
-
-    my @recipients;
-
+my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
+$m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
+    self => $gnupg_widget,
+    QueueObj => $IncidentObj->QueueObj,
+);
+if ( $SubmitTicket && $gnupg_widget ) {
     foreach my $id( @SelectedReports, @SelectedInvestigations, @SelectedBlocks ) {
         my $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
         $Ticket->Load( $id );
@@ -171,36 +172,11 @@ if ( $SubmitTicket && ( $ARGS{'Encrypt'} || $ARGS{'Sign'} ) ) {
             push @results, loc( "Ticket [_1]: Couldn't load ticket.", $id );
             next;
         }
-
-        if ( $ARGS{'Sign'} ) {
-            my $address = $Ticket->QueueObj->CorrespondAddress
-                || RT->Config->Get('CorrespondAddress');
-            $sign_addresses{ $address } = 1;
-        }
-
-        push @recipients, $m->comp(
-            '/Ticket/Elements/PreviewScrips:GetRecipients',
-            %ARGS, TicketObj => $Ticket
-        ) if $ARGS{'Encrypt'};
-    }
-
-    RT::Crypt::GnuPG::UseKeyForEncryption(
-        map { (/^UseKey-(.*)$/)[0] => $ARGS{ $_ } }
-        grep $ARGS{$_} && /^UseKey-/,
-        keys %ARGS
-    );
-
-    my $status;
-    ($status, @gnupg_keys_issues) = RT::Crypt::GnuPG::CheckRecipients( @recipients );
-    $checks_failure = 1 unless $status;
-}
-
-if ( $SubmitTicket && $ARGS{'Sign'} ) {
-    for my $address (keys %sign_addresses) {
-        unless ( RT::Crypt::GnuPG::DrySign( $address ) ) {
-            push @cannot_sign_as, $address;
-            $checks_failure = 1;
-        }
+        my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
+            self      => $gnupg_widget,
+            TicketObj => $Ticket,
+        );
+        $checks_failure = 1 unless $status;
     }
 }
 

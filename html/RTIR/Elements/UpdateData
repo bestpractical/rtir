@@ -42,11 +42,12 @@
 </&></td></tr>
 % }
 
-% if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
+% if ( $GnuPGWidget ) {
 <tr><td>&nbsp;</td><td>
-<% loc('Sign')%> <& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $ARGS{'Sign'} &>
-&nbsp;&nbsp;&nbsp;
-<% loc('Encrypt')%> <& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $ARGS{'Encrypt'} &>
+<& /Elements/GnuPG/SignEncryptWidget,
+    self => $gnupg_widget,
+    TicketObj => $Ticket,
+&>
 </td></tr>
 % }
 
@@ -64,17 +65,9 @@
 $Ticket => undef
 $UpdateCc => ''
 $UpdateBcc => ''
+$GnuPGWidget => undef
 </%ARGS>
 <%INIT>
-if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
-    foreach ( qw(Sign Encrypt) ) {
-        $ARGS{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
-            Name => $_,
-            DefaultValue => $Ticket? $Ticket->QueueObj->$_: 0,
-            Arguments => \%ARGS,
-        );
-    }
-}
 
 my $siblings;
 if ( $Ticket ) {

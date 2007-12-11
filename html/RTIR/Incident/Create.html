@@ -55,7 +55,6 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 <input type="hidden" name="Status"       value="<% $ARGS{'Status'}       || 'open' %>" />
 % if ( $ChildObj ) {
 <input type="hidden" name="Child"        value="<% $Child %>" />
-%#<input type="hidden" name="MemberOf-new" value="<% $Child %>" />
 % }
 % if ( $TicketObj ) {
 <input type="hidden" name="Split"        value="<% $Split %>" />
@@ -63,7 +62,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 % }
 <a name="top" />
 
-<& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues, SignAddresses => \@cannot_sign_as &>
+<& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
 <&| /Widgets/TitleBox, title => $Title &>
 <table border="0" cellpadding="0" cellspacing="2">
@@ -98,11 +97,9 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 
 <& Elements/Create, Title => $Title, TicketObj => $TicketObj, QueueObj => $QueueObj, ChildObj => $ChildObj, %ARGS &>
 
-% if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
+% if ( $gnupg_widget ) {
 <tr><td>&nbsp;</td><td>
-<% loc('Sign')%> <& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $ARGS{'Sign'} &>
-&nbsp;&nbsp;&nbsp;
-<% loc('Encrypt')%> <& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $ARGS{'Encrypt'} &>
+<& /Elements/GnuPG/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &>
 </td></tr>
 % }
 
@@ -220,45 +217,22 @@ $m->callback(CallbackName => 'ProcessArguments', ARGSRef => \%ARGS, Ticket => $T
 my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
 $QueueObj->Load( 'Incidents' ) || Abort( loc("Queue could not be loaded.") );
 
-if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
-    foreach ( qw(Sign Encrypt) ) {
-        $ARGS{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
-            Name => $_,
-            DefaultValue => $QueueObj->$_,
-            Arguments => \%ARGS,
-        );
-    }
-}
-
 $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 
 my $checks_failure = 0;
 
-my @cannot_sign_as;
-if ( $CreateIncident && $ARGS{'Sign'} ) {
-    my $address = $QueueObj->CorrespondAddress || RT->Config->Get('CorrespondAddress');
-    unless ( RT::Crypt::GnuPG::DrySign( $address ) ) {
-        push @cannot_sign_as, $address;
-        $checks_failure = 1;
-    }
-}
+my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
+$m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
+    self      => $gnupg_widget,
+    QueueObj  => $QueueObj,
+);
 
-my @gnupg_keys_issues;
-if ( $CreateIncident && $ARGS{'Encrypt'} ) {
-
-    my @recipients = $m->comp(
-        '/Ticket/Elements/PreviewScrips:GetRecipientsOnCreate',
-        %ARGS
+if ( $CreateIncident && $gnupg_widget ) {
+    my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
+        self      => $gnupg_widget,
+        Operation => 'Create',
+        QueueObj  => $QueueObj,
     );
-
-    RT::Crypt::GnuPG::UseKeyForEncryption(
-        map { (/^UseKey-(.*)$/)[0] => $ARGS{ $_ } }
-        grep $ARGS{$_} && /^UseKey-/,
-        keys %ARGS
-    );
-
-    my $status;
-    ($status, @gnupg_keys_issues) = RT::Crypt::GnuPG::CheckRecipients( @recipients );
     $checks_failure = 1 unless $status;
 }
 
