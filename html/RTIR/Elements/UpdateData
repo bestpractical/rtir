@@ -29,17 +29,8 @@
 
 <tr><td colspan="2"><& /RTIR/Create.html:AttachmentsForm &></td></tr>
 
-% if ( $siblings ) {
-<tr><td colspan="2">
-<&| /Widgets/TitleBox, title => loc("Attach Reports") &>
-<& /Elements/TicketList,
-    Collection     => $siblings,
-    DisplayFormat  => "__CheckBox.{AttachTickets}__, $Format",
-    Format         => $Format,
-    ShowHeader     => 1,
-    ShowNavigation => 0,
-&>
-</&></td></tr>
+% if ( $Ticket ) {
+<tr><td colspan="2"><& /RTIR/Elements/AttachReports, Ticket => $Ticket &></td></tr>
 % }
 
 % if ( $GnuPGWidget ) {
@@ -67,39 +58,3 @@ $UpdateCc => ''
 $UpdateBcc => ''
 $GnuPGWidget => undef
 </%ARGS>
-<%INIT>
-
-my $siblings;
-if ( $Ticket ) {
-    my @parents;
-    my $type = RT::IR::TicketType( Ticket => $Ticket );
-    if ( $type eq 'Incident' ) {
-        push @parents, $Ticket->id;
-    } else {
-        my $tickets = RT::Tickets->new( $Ticket->CurrentUser );
-        $tickets->FromSQL( "Queue = 'Incidents' AND HasMember = ". $Ticket->id );
-        while ( my $parent = $tickets->Next ) {
-            push @parents, $parent->id;
-        }
-    }
-
-    if ( @parents ) {
-        $siblings = RT::Tickets->new( $Ticket->CurrentUser );
-        my $siblings_query = "Queue = 'Incident Reports'"
-            ." AND (". join( ' OR ', map "MemberOf = $_", @parents ) . ")";
-
-        if ( $type eq 'Report' ) {
-            $siblings_query .= " AND id != ". $Ticket->id;
-        }
-
-        $siblings->FromSQL( $siblings_query );
-    }
-}
-
-my $Format = q{
-    '<b><a HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
-    '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
-    '__CustomField.{_RTIR_State}__/TITLE:State',
-    __LastUpdatedRelative__, __CreatedRelative__
-};
-</%INIT>
