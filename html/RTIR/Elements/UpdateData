@@ -45,7 +45,7 @@
 % if ( $GnuPGWidget ) {
 <tr><td>&nbsp;</td><td>
 <& /Elements/GnuPG/SignEncryptWidget,
-    self => $gnupg_widget,
+    self => $GnuPGWidget,
     TicketObj => $Ticket,
 &>
 </td></tr>
