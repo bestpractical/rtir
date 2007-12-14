@@ -168,12 +168,12 @@ my $checks_failure;
 my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
 $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
     self => $gnupg_widget,
-    TicketObj => $TicketObj,
+    TicketObj => $Ticket,
 );
 if ( $ARGS{'SubmitTicket'} ) {
     my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
         self      => $gnupg_widget,
-        TicketObj => $TicketObj,
+        TicketObj => $Ticket,
     );
     $checks_failure = 1 unless $status;
 }
