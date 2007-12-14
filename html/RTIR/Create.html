@@ -267,7 +267,12 @@
         QueueObj => $QueueObj &>
     </td>
   </tr>
+
   <tr><td colspan="3"><& SELF:AttachmentsForm &></td><tr>
+
+% if ( $Type eq "Investigation" && $IncidentObj ) {
+  <tr><td colspan="3"><& /RTIR/Elements/AttachReports, Ticket => $IncidentObj &></td><tr>
+% }
 
 % if ( $gnupg_widget ) {
   <tr><td>&nbsp;</td><td colspan="2">
