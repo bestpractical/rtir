@@ -60,7 +60,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 <input type="hidden" name="Split"        value="<% $Split %>" />
 <input type="hidden" name="Ticket"       value="<% $TicketObj->Id %>" />
 % }
-<a name="top" />
+<a name="top"></a>
 
 <& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
