@@ -118,7 +118,11 @@ print <<END;
 
 END
 
-exit 0 unless prompt_yN( "Do you want to proceed?" );
+if ( $exist ) {
+    exit 0 unless prompt_yN( "Do you want to proceed with update?" );
+} else {
+    exit 0 unless prompt_yN( "Do you want to proceed creating new incident?" );
+}
 
 debug "Adding constituency $constituency";
 add_cf_value( $constituency );
