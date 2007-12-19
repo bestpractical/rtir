@@ -214,6 +214,23 @@ sub GetCustomField {
 }
 }
 
+sub DefaultConstituency {
+    my $queue = shift;
+    my $name = $queue->Name;
+
+    my @values;
+
+    my $queues = RT::Queues->new( $queue->CurrentUser );
+    $queues->Limit( FIELD => 'Name', OPERATOR => 'STARTSWITH', VALUE => "$name - " );
+    while ( my $pqueue = $queues->Next ) {
+        next unless $pqueue->CurrentUserHasRight( "ShowTicket" );
+        push @values, substr $pqueue->__Value('Name'), length("$name - ");
+    }
+    my $default = RT->Config->Get('_RTIR_Constituency_default');
+    return $default if grep lc $_ eq lc $default, @values;
+    return shift @values;
+}
+
 
 # IPs processing hooks
 # in order too implement searches by IP ranges we

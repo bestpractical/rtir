@@ -150,6 +150,7 @@
 % if ( !$Incident || RT->Config->Get('_RTIR_Constituency_Propagation') eq 'no' ) {
 % my $default;
 % $default = $IncidentObj->FirstCustomFieldValue('_RTIR_Constituency') if $Incident;
+% $default ||= RT::IR::DefaultConstituency( $QueueObj );
 % $default ||= scalar RT->Config->Get('_RTIR_Constituency_default');
       <& /RTIR/Elements/EditRTIRField, 
          QueueObj => $QueueObj, 
