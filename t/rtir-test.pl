@@ -203,6 +203,7 @@ sub get_ticket_id {
     }
     elsif ($content =~ /.*No permission to view newly created ticket #(\d+).*/g) {
         diag("\nNo permissions to view the ticket.\n") if($ENV{'TEST_VERBOSE'});
+        $id = $1;
     }
     return $id;
 }
