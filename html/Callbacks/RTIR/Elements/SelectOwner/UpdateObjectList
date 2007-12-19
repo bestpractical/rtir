@@ -19,7 +19,6 @@ foreach my $object (@$objects) {
         VALUE  => $object->__Value('Name'),
     );
     while ( my $queue = $queues->Next ) {
-        warn "Adding ".$queue->Name;
         unshift @new_objects,$queue;
     }
 
