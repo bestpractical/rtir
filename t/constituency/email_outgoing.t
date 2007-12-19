@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 20;
+use Test::More tests => 33;
 
 use lib qw(/opt/rt3/local/lib /opt/rt3/lib);
 require RT::Test; import RT::Test;
@@ -28,26 +28,48 @@ require "t/rtir-test.pl";
 
 RT->Config->Set( '_RTIR_Constituency_default' => 'EDUNET' );
 
-my $queue_ir = RT::Test->load_or_create_queue(
-    Name              => 'Incident Reports',
-    CorrespondAddress => 'reports@example.com',
-    CommentAddress    => 'reports-comment@example.com',
-);
-ok $queue_ir && $queue_ir->id, 'loaded or created queue_ir';
+my ($queue_ir, $queue_ir_edunet, $queue_ir_govnet);
+diag "create or update queues";
+{
+    $queue_ir = RT::Test->load_or_create_queue(
+        Name              => 'Incident Reports',
+        CorrespondAddress => 'reports@example.com',
+        CommentAddress    => 'reports-comment@example.com',
+    );
+    ok $queue_ir && $queue_ir->id, 'loaded or created queue_ir';
 
-my $queue_ir_edunet = RT::Test->load_or_create_queue(
-    Name              => 'Incident Reports - EDUNET',
-    CorrespondAddress => 'edu-reports@example.com',
-    CommentAddress    => 'edu-reports-comment@example.com',
-);
-ok $queue_ir_edunet && $queue_ir_edunet->id, 'loaded or created queue';
+    $queue_ir_edunet = RT::Test->load_or_create_queue(
+        Name              => 'Incident Reports - EDUNET',
+        CorrespondAddress => 'edu-reports@example.com',
+        CommentAddress    => 'edu-reports-comment@example.com',
+    );
+    ok $queue_ir_edunet && $queue_ir_edunet->id, 'loaded or created queue';
 
-my $queue_ir_govnet = RT::Test->load_or_create_queue(
-    Name              => 'Incident Reports - GOVNET',
-    CorrespondAddress => 'gov-reports@example.com',
-    CommentAddress    => 'gov-reports-comment@example.com',
-);
-ok $queue_ir_govnet && $queue_ir_govnet->id, 'loaded or created queue';
+    $queue_ir_govnet = RT::Test->load_or_create_queue(
+        Name              => 'Incident Reports - GOVNET',
+        CorrespondAddress => 'gov-reports@example.com',
+        CommentAddress    => 'gov-reports-comment@example.com',
+    );
+    ok $queue_ir_govnet && $queue_ir_govnet->id, 'loaded or created queue';
+}
+
+my $eduhandler = RT::Test->load_or_create_user( Name => 'eduhandler', Password => 'eduhandler' );
+ok $eduhandler->id, "Created eduhandler";
+my $govhandler = RT::Test->load_or_create_user( Name => 'govhandler', Password => 'govhandler' );
+ok $govhandler->id, "Created govhandler";
+
+ok( RT::Test->add_rights(
+    { Principal => 'Privileged',
+        Right => [qw(ModifyCustomField SeeCustomField OwnTicket)], },
+    { Principal => $govhandler, Object => $queue_ir,
+        Right => [qw(SeeQueue CreateTicket)] },
+    { Principal => $eduhandler, Object => $queue_ir,
+        Right => [qw(SeeQueue CreateTicket)] },
+    { Principal => $eduhandler, Object => $queue_ir_edunet,
+        Right => [qw(ShowTicket CreateTicket)] },
+    { Principal => $govhandler, Object => $queue_ir_govnet,
+        Right => [qw(ShowTicket CreateTicket)] },
+), 'added rights');
 
 RT::Test->set_mail_catcher;
 
@@ -120,6 +142,36 @@ EOF
     my $from_ok = 1;
     foreach my $mail ( @mail ) {
         next if $mail =~ /^From:\s*.*?gov-reports\@example\.com/mi;
+        diag $mail;
+        $from_ok = 0;
+        last;
+    }
+    ok $from_ok, 'all From addresses are correct';
+}
+
+diag "GOV user creates an IR under EDUNET, check addresses";
+{
+    unlink "t/mailbox";
+
+    $agent->login('govhandler', 'govhandler');
+    my $id = create_ir(
+        $agent,
+        { Subject => "test", Requestors => $rtir_user->EmailAddress },
+        { Constituency => 'EDUNET' },
+    );
+    ok $id, "created ticket $id";
+
+    my $ticket = RT::Ticket->new( $RT::SystemUser );
+    $ticket->Load( $id );
+    ok $ticket->id, 'loaded the ticket';
+    is $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'EDUNET', 'correct value';
+
+    my @mail = RT::Test->fetch_caught_mails;
+    ok @mail, 'there are some outgoing emails';
+    
+    my $from_ok = 1;
+    foreach my $mail ( @mail ) {
+        next if $mail =~ /^From:\s*.*?edu-reports\@example\.com/mi;
         diag $mail;
         $from_ok = 0;
         last;
