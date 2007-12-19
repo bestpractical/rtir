@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 110;
+use Test::More tests => 122;
 require "t/rtir-test.pl";
 
 use_ok('RT::IR');
@@ -108,11 +108,16 @@ diag "check that we can edit value" if $ENV{'TEST_VERBOSE'};
     }
 }
 
-my $eduhandler = RT::Test->load_or_create_user( Name => 'eduhandler' );
+my $eduhandler = RT::Test->load_or_create_user( Name => 'eduhandler', Password => 'eduhandler' );
 ok $eduhandler->id, "Created eduhandler";
 
-my $govhandler = RT::Test->load_or_create_user( Name => 'govhandler' );
+my $govhandler = RT::Test->load_or_create_user( Name => 'govhandler', Password => 'govhandler' );
 ok $govhandler->id, "Created govhandler";
+
+my $ir_queue = RT::Test->load_or_create_queue(
+    Name => 'Incident Reports',
+);
+ok $ir_queue->id, "loaded or created queue";
 
 my $govqueue = RT::Test->load_or_create_queue(
     Name => 'Incident Reports - GOVNET',
@@ -126,24 +131,23 @@ my $eduqueue = RT::Test->load_or_create_queue(
 );
 ok $eduqueue->id, "loaded or created queue";
 
+ok( RT::Test->add_rights(
+    { Principal => 'Privileged', Right => [qw(ModifyCustomField SeeCustomField)], },
+    { Principal => $govhandler, Object => $ir_queue, Right => [qw(SeeQueue CreateTicket)] },
+    { Principal => $eduhandler, Object => $ir_queue, Right => [qw(SeeQueue CreateTicket)] },
+    { Principal => $eduhandler, Object => $eduqueue, Right => [qw(ShowTicket CreateTicket OwnTicket)] },
+    { Principal => $govhandler, Object => $govqueue, Right => [qw(ShowTicket CreateTicket OwnTicket)] },
+    { Principal => $eduhandler, Object => $govqueue, Right => [qw(OwnTicket)] },
+    { Principal => $govhandler, Object => $eduqueue, Right => [qw(OwnTicket)] },
+), 'set rights');
+
 diag "Grant govhandler the right to see tickets in Incident Reports - GOVNET" if $ENV{'TEST_VERBOSE'};
 { 
-    my ($val,$msg)  = $govhandler->PrincipalObj->GrantRight(Right => 'ShowTicket', Object => $govqueue);
-    ok $val || $msg =~ /That principal already has that right/, $msg;
-
     ok($govqueue->HasRight(Principal => $govhandler, Right => 'ShowTicket'), "Govhnadler can see govtix"); 
     ok(!$govqueue->HasRight(Principal => $eduhandler, Right => 'ShowTicket'), "eduhandler can not see gov tix"); 
-}
-
-
-diag "Grant eduhandler the right to see tickets in Incident Reports - EDUNET" if $ENV{'TEST_VERBOSE'};
-{ 
-    my ($val,$msg) = $eduhandler->PrincipalObj->GrantRight(Right => 'ShowTicket', Object => $eduqueue);
-    ok $val || $msg =~ /That principal already has that right/, $msg;
     ok($eduqueue->HasRight(Principal => $eduhandler, Right => 'ShowTicket'), "For the eduqueue, eduhandler can see tix"); 
     ok(!$eduqueue->HasRight(Principal => $govhandler, Right => 'ShowTicket'), "For the eduqueue, govhandler can not seetix"); 
 }
-
 
 diag "Create an incident report with a default constituency of EDUNET" if $ENV{'TEST_VERBOSE'};
 
@@ -228,3 +232,26 @@ while (my $txn = $txns->Next) {
 ok($from =~ /govnet/, "The from address pciked up the gov address");
 
 }
+
+diag "check defaults";
+{
+    $agent->login('eduhandler', 'eduhandler');
+    my $ir_id = create_ir(
+        $agent, { Subject => "test" },
+    );
+    my $ticket = RT::Ticket->new($RT::SystemUser);
+    $ticket->Load($ir_id);
+    is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'EDUNET', 'correct value' );
+}
+
+diag "check defaults";
+{
+    $agent->login('govhandler', 'govhandler');
+    my $ir_id = create_ir(
+        $agent, { Subject => "test" },
+    );
+    my $ticket = RT::Ticket->new($RT::SystemUser);
+    $ticket->Load($ir_id);
+    is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value' );
+}
+

@@ -220,13 +220,13 @@ sub DefaultConstituency {
 
     my @values;
 
-    my $queues = RT::Queues->new( $queue->CurrentUser );
+    my $queues = RT::Queues->new( $RT::SystemUser );
     $queues->Limit( FIELD => 'Name', OPERATOR => 'STARTSWITH', VALUE => "$name - " );
     while ( my $pqueue = $queues->Next ) {
-        next unless $pqueue->CurrentUserHasRight( "ShowTicket" );
+        next unless $pqueue->HasRight( Principal => $queue->CurrentUser, Right => "ShowTicket" );
         push @values, substr $pqueue->__Value('Name'), length("$name - ");
     }
-    my $default = RT->Config->Get('_RTIR_Constituency_default');
+    my $default = RT->Config->Get('_RTIR_Constituency_default') || '';
     return $default if grep lc $_ eq lc $default, @values;
     return shift @values;
 }
