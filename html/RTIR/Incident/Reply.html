@@ -101,9 +101,9 @@
 % }
 
 <& Elements/ReplyForm, %ARGS,
-    TicketObj    => $IncidentObj,
-    Status       => $Status,
-    $GnuPGWidget => $gnupg_widget,
+    TicketObj   => $IncidentObj,
+    Status      => $Status,
+    GnuPGWidget => $gnupg_widget,
 &>
 
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => $SubmitLabel &>
