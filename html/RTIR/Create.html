@@ -252,13 +252,21 @@
 % }
   <tr>
     <td class="label"><%loc("IP address")%>:</td>
+<%PERL>
+my $ip_default = $ARGS{'IP-Value'};
+if ( !$ip_default && $IncidentObj ) {
+    $ip_default = join "\n", grep $_, map $_->Content,
+        @{ $IncidentObj->CustomFieldValues( '_RTIR_IP' )->ItemsArrayRef };
+}
+$ip_default ||= RT->Config->Get('_RTIR_IP_default') || '';
+</%PERL>
     <td class="value" colspan="2">
       <& /RTIR/Elements/EditRTIRField, 
         TicketObj => $TicketObj,
         QueueObj => $QueueObj, 
         Name => 'IP',
         Cols => 40, Rows => 5,
-        Default => $ARGS{'IP-Value'} || RT->Config->Get('_RTIR_IP_default') || '', &>
+        Default => $ip_default &>
     </td>
   </tr>
   <tr>
