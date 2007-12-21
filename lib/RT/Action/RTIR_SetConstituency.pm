@@ -35,7 +35,15 @@ sub Commit {
         #XXX: check here that linked tickets have the same constituency
     }
 
-    return 1 unless $propagation eq 'inherit';
+    return $self->InheritConstituency if $propagation eq 'inherit';
+
+    return 1;
+
+}
+
+sub InheritConstituency {
+    my $self = shift;
+    my $ticket = $self->TicketObj;
 
     my $query =  "( Queue = 'Incidents'"
         ." OR Queue = 'Incident Reports'"
@@ -50,7 +58,24 @@ sub Commit {
         $query .= " AND CF.{_RTIR_Constituency} IS NOT NULL";
     }
 
-    # do two queries as mysql couldn't optimize things well
+    my $type = $self->TransactionObj->Type;
+    if ( $type eq 'AddLink' ) {
+        # inherit from parent on linking
+        my $tickets = RT::Tickets->new( $RT::SystemUser );
+        $tickets->FromSQL( $query ." AND HasMember = ". $ticket->Id );
+        $tickets->RowsPerPage( 1 );
+        if ( my $parent = $tickets->First ) {
+            $RT::Logger->debug( "Ticket #". $ticket->id ." inherits constituency from ticket #". $parent->id );
+            my ($res, $msg) = $ticket->AddCustomFieldValue(
+                Field => '_RTIR_Constituency',
+                Value => $constituency,
+            );
+            $RT::Logger->warning( "Couldn't set CF: $msg" ) unless $res;
+            return 1;
+        }
+    }
+
+    # propagate to members
     foreach my $link_type (qw(MemberOf HasMember)) {
         my $tickets = RT::Tickets->new( $RT::SystemUser );
         $tickets->FromSQL( $query ." AND $link_type = ". $ticket->Id );

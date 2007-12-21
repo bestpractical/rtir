@@ -9,7 +9,7 @@ require "t/rtir-test.pl";
 # XXX: we should use new RT::Test features and start server with
 # option we want.
 if ( RT->Config->Get('_RTIR_Constituency_Propagation') eq 'inherit' ) {
-    plan tests => 152;
+    plan tests => 196;
 } else {
     plan skip_all => 'constituency propagation algorithm is not "inherit"';
 }
@@ -223,6 +223,59 @@ diag "check that constituency propagates from a child to a parent after 'Edit', 
             ok $ticket->id, 'loaded ticket';
             is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
                 'GOVNET', "incident's constituency has been changed";
+        }
+    }
+}
+
+diag "check that constituency propagates from a child to a parent after 'Edit', and back"
+    if $ENV{'TEST_VERBOSE'};
+{
+    # can not test this for blocks as those require incident on create
+    foreach my $queue( 'Incident Reports', 'Investigations' ) {
+        diag "create an incident for linking" if $ENV{'TEST_VERBOSE'};
+
+        my $incident_id = create_rtir_ticket_ok(
+            $agent, 'Incidents', { Subject => "test" }, { Constituency => 'EDUNET' },
+        );
+        diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
+        my $child_id = create_rtir_ticket_ok(
+            $agent, $queue,
+            { Subject => "test constituency" },
+            { Constituency => 'GOVNET' },
+        );
+        DBIx::SearchBuilder::Record::Cachable::FlushCache();
+
+        diag "check that both have the same correct constituency" if $ENV{'TEST_VERBOSE'};
+        {
+            my $ticket = RT::Ticket->new( $RT::SystemUser );
+            $ticket->Load( $incident_id );
+            ok $ticket->id, 'loaded ticket';
+            is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+                'EDUNET', 'correct value';
+        } {
+            my $ticket = RT::Ticket->new( $RT::SystemUser );
+            $ticket->Load( $child_id );
+            ok $ticket->id, 'loaded ticket';
+            is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+                'GOVNET', 'correct value';
+        }
+        
+        diag "link the child to parent" if $ENV{'TEST_VERBOSE'};
+        LinkChildToIncident( $agent, $child_id, $incident_id );
+
+        diag "check that constituency propagates from parent to child on linking" if $ENV{'TEST_VERBOSE'};
+        {
+            my $ticket = RT::Ticket->new( $RT::SystemUser );
+            $ticket->Load( $child_id );
+            ok $ticket->id, 'loaded ticket';
+            is uc $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+                'EDUNET', "child's constituency has been changed";
+        } {
+            my $ticket = RT::Ticket->new( $RT::SystemUser );
+            $ticket->Load( $incident_id );
+            ok $ticket->id, 'loaded ticket';
+            is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+                'EDUNET', 'correct value';
         }
     }
 }
