@@ -87,12 +87,21 @@
     Rows     => 1,
 &></td></tr>
 
+<%PERL>
+my $ip_default = $ARGS{'IP-Value'};
+if ( !$ip_default && $ChildObj ) {
+    $ip_default = join "\n", grep $_, map $_->Content,
+        @{ $ChildObj->CustomFieldValues( '_RTIR_IP' )->ItemsArrayRef };
+}
+$ip_default ||= RT->Config->Get('_RTIR_IP_default') || '';
+</%PERL>
 <tr><td class="label"><&|/l&>IP</&>:</td>
 <td class="value">
 <& /RTIR/Elements/EditRTIRField,
     QueueObj => $QueueObj,
     Name     => 'IP',
     Cols     => 40, Rows => 5,
+    Default  => $ip_default,
 &></td></tr>
 
 <tr><td colspan="2">
