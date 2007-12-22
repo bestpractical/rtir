@@ -27,6 +27,8 @@ require "t/rtir-test.pl";
     RT->ConnectToDatabase;
 }
 
+my @rights_backup = RT::Test->store_rights;
+
 RT::Test->set_mail_catcher;
 
 RT->Config->Set( 'GnuPG',
@@ -124,4 +126,6 @@ diag "check that things don't work if there is no key";
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails';
 }
+
+RT::Test->restore_rights( @rights_backup );
 
