@@ -59,6 +59,7 @@ html/RTIR/Display.html
 html/RTIR/Edit.html
 html/RTIR/EditUsername
 html/RTIR/Elements/AddWatchers
+html/RTIR/Elements/AttachReports
 html/RTIR/Elements/BaseQuery
 html/RTIR/Elements/ChildrenQuery
 html/RTIR/Elements/ChildSummary
