@@ -12,7 +12,7 @@ my %actions;
         my %args = @_;
         return qq{<a href="$web_path/RTIR/Tools/Lookup.html?$args{lookup_params}q=$args{value}">$args{value}</a>};
     },
-    url => sub {
+    url_overwrite => sub {
         my %args = @_;
         my $uri  = URI::URL->new($args{value});
         my $host = $uri->host;
