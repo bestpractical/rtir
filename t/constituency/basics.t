@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 122;
+use Test::More tests => 172;
 require "t/rtir-test.pl";
 
 use_ok('RT::IR');
@@ -119,34 +119,42 @@ my $ir_queue = RT::Test->load_or_create_queue(
 );
 ok $ir_queue->id, "loaded or created queue";
 
-my $govqueue = RT::Test->load_or_create_queue(
-    Name => 'Incident Reports - GOVNET',
-    CorrespondAddress => 'govnet@example.com',
-);
-ok $govqueue->id, "loaded or created queue";
-
-my $eduqueue = RT::Test->load_or_create_queue(
-    Name => 'Incident Reports - EDUNET',
-    CorrespondAddress => 'edunet@example.com',
-);
-ok $eduqueue->id, "loaded or created queue";
-
 ok( RT::Test->add_rights(
     { Principal => 'Privileged', Right => [qw(ModifyCustomField SeeCustomField)], },
-    { Principal => $govhandler, Object => $ir_queue, Right => [qw(SeeQueue CreateTicket)] },
-    { Principal => $eduhandler, Object => $ir_queue, Right => [qw(SeeQueue CreateTicket)] },
-    { Principal => $eduhandler, Object => $eduqueue, Right => [qw(ShowTicket CreateTicket OwnTicket)] },
-    { Principal => $govhandler, Object => $govqueue, Right => [qw(ShowTicket CreateTicket OwnTicket)] },
-    { Principal => $eduhandler, Object => $govqueue, Right => [qw(OwnTicket)] },
-    { Principal => $govhandler, Object => $eduqueue, Right => [qw(OwnTicket)] },
 ), 'set rights');
 
-diag "Grant govhandler the right to see tickets in Incident Reports - GOVNET" if $ENV{'TEST_VERBOSE'};
-{ 
-    ok($govqueue->HasRight(Principal => $govhandler, Right => 'ShowTicket'), "Govhnadler can see govtix"); 
-    ok(!$govqueue->HasRight(Principal => $eduhandler, Right => 'ShowTicket'), "eduhandler can not see gov tix"); 
-    ok($eduqueue->HasRight(Principal => $eduhandler, Right => 'ShowTicket'), "For the eduqueue, eduhandler can see tix"); 
-    ok(!$eduqueue->HasRight(Principal => $govhandler, Right => 'ShowTicket'), "For the eduqueue, govhandler can not seetix"); 
+foreach my $name('Incident Reports', 'Incidents', 'Investigations', 'Blocks' ) {
+    my $queue = RT::Test->load_or_create_queue(
+        Name => "$name",
+        CorrespondAddress => 'rt@example.com',
+    );
+    ok $queue->id, "loaded or created queue";
+    ok( RT::Test->add_rights(
+        { Principal => $eduhandler, Object => $queue, Right => [qw(SeeQueue CreateTicket)] },
+        { Principal => $eduhandler, Object => $queue, Right => [qw(SeeQueue CreateTicket)] },
+    ), 'set rights');
+
+    $queue = RT::Test->load_or_create_queue(
+        Name => "$name - EDUNET",
+        CorrespondAddress => 'edunet@example.com',
+    );
+    ok $queue->id, "loaded or created queue";
+    ok( RT::Test->add_rights(
+        { Principal => $eduhandler, Object => $queue, Right => [qw(ShowTicket CreateTicket OwnTicket)] },
+    ), 'set rights');
+    ok($queue->HasRight(Principal => $eduhandler, Right => 'ShowTicket'), "eduhnadler can see edutix"); 
+    ok(!$queue->HasRight(Principal => $govhandler, Right => 'ShowTicket'), "govhnadler can not see edutix"); 
+
+    $queue = RT::Test->load_or_create_queue(
+        Name => "$name - GOVNET",
+        CorrespondAddress => 'govnet@example.com',
+    );
+    ok $queue->id, "loaded or created queue";
+    ok( RT::Test->add_rights(
+        { Principal => $govhandler, Object => $queue, Right => [qw(ShowTicket CreateTicket OwnTicket)] },
+    ), 'set rights');
+    ok(!$queue->HasRight(Principal => $eduhandler, Right => 'ShowTicket'), "eduhnadler can not see edutix"); 
+    ok($queue->HasRight(Principal => $govhandler, Right => 'ShowTicket'), "govhnadler can see edutix"); 
 }
 
 diag "Create an incident report with a default constituency of EDUNET" if $ENV{'TEST_VERBOSE'};
@@ -253,5 +261,49 @@ diag "check defaults";
     my $ticket = RT::Ticket->new($RT::SystemUser);
     $ticket->Load($ir_id);
     is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value' );
+}
+
+diag "check defaults when creating inc with inv";
+{
+    $agent->login('govhandler', 'govhandler');
+	my ($inc_id, $inv_id) = create_incident_and_investigation(
+        $agent, 
+	    {
+            Subject => "Incident", 
+		    InvestigationSubject => "Investigation",
+		    InvestigationRequestors => 'requestor@example.com',
+        },
+    );
+    {
+        my $ticket = RT::Ticket->new($RT::SystemUser);
+        $ticket->Load($inc_id);
+        is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value' );
+    } {
+        my $ticket = RT::Ticket->new($RT::SystemUser);
+        $ticket->Load($inv_id);
+        is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value' );
+    }
+}
+
+diag "check defaults when creating inc with inv";
+{
+    $agent->login('eduhandler', 'eduhandler');
+	my ($inc_id, $inv_id) = create_incident_and_investigation(
+        $agent, 
+	    {
+            Subject => "Incident", 
+		    InvestigationSubject => "Investigation",
+		    InvestigationRequestors => 'requestor@example.com',
+        },
+    );
+    {
+        my $ticket = RT::Ticket->new($RT::SystemUser);
+        $ticket->Load($inc_id);
+        is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'EDUNET', 'correct value' );
+    } {
+        my $ticket = RT::Ticket->new($RT::SystemUser);
+        $ticket->Load($inv_id);
+        is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'EDUNET', 'correct value' );
+    }
 }
 
