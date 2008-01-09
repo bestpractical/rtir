@@ -380,7 +380,7 @@ wrap 'RT::ObjectCustomFieldValue::Content',
     # flush constituency cache on update of the custom field value for a ticket
     wrap 'RT::Record::_AddCustomFieldValue', pre => sub {
         return unless UNIVERSAL::isa($_[0] => 'RT::Ticket');
-        $RT::IR::ConstituencyCache->{$_[0]->id}  = undef;
+        $RT::IR::ConstituencyCache{$_[0]->id}  = undef;
     };
 
     require RT::Ticket;
@@ -397,17 +397,17 @@ wrap 'RT::ObjectCustomFieldValue::Content',
             return;
         }
         if ( UNIVERSAL::isa( $self, 'RT::Ticket' ) ) {
-            if (not defined $RT::IR::ConstituencyCache->{ $self->id }) {
+            if (not defined $RT::IR::ConstituencyCache{ $self->id }) {
                 my $systicket = RT::Ticket->new($RT::SystemUser);
                 $systicket->Load( $self->id );
-                $RT::IR::ConstituencyCache->{ $self->id } =
+                $RT::IR::ConstituencyCache{ $self->id } =
                     $systicket->FirstCustomFieldValue('_RTIR_Constituency')
                     || '_none';
             }
-            return if ( $RT::IR::ConstituencyCache->{ $self->id } eq '_none' );
+            return if ( $RT::IR::ConstituencyCache{ $self->id } eq '_none' );
             if ( not $self->{_constituency_queue} ) {
                 my $new_queue = RT::Queue->new( $RT::SystemUser);
-                $new_queue->LoadByCols( Name => $queue->Name . " - " . $RT::IR::ConstituencyCache->{ $self->id } );
+                $new_queue->LoadByCols( Name => $queue->Name . " - " . $RT::IR::ConstituencyCache{ $self->id } );
                 return unless ( $new_queue->id );
                 $self->{_constituency_queue} = $new_queue;
             }
@@ -468,11 +468,11 @@ wrap 'RT::ObjectCustomFieldValue::Content',
         my $attr  = shift;
 
         if ( ( my $id = $queue->{'_for_ticket'} ) ) {
-            my $const = $RT::IR::ConstituencyCache->{$id};
+            my $const = $RT::IR::ConstituencyCache{$id};
             unless ($const) {
                 my $ticket = RT::Ticket->new($RT::SystemUser);
                 $ticket->Load($id);
-                $const = $RT::IR::ConstituencyCache->{$ticket->id}  = $ticket->FirstCustomFieldValue('_RTIR_Constituency') || '_none';
+                $const = $RT::IR::ConstituencyCache{$ticket->id}  = $ticket->FirstCustomFieldValue('_RTIR_Constituency') || '_none';
             }
             if ($const) {
                 my $new_queue = RT::Queue->new($RT::SystemUser);
