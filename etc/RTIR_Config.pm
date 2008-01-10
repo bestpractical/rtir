@@ -266,4 +266,6 @@ Set($RTIR_BlockAproveActionRegexp, undef);
 # other actions don't apply to the same matched text
 Set(@Active_MakeClicky, qw(httpurl_overwrite ip email domain));
 
+Register( Init => sub { require RT::IR } );
+
 1;
