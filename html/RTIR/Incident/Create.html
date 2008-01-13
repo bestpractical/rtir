@@ -252,8 +252,8 @@ if ( $CreateIncident ) {
     }
 
     if ( $ChildObj && RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject' ) {
-        unless ( $ARGS{ $ARGS{'Constituency'} }
-            eq $ChildObj->FirstCustomFieldValue('_RTIR_Constituency') )
+        unless ( lc $ARGS{ $ARGS{'Constituency'} }
+            eq lc $ChildObj->FirstCustomFieldValue('_RTIR_Constituency') )
         {
             push @results, loc( "New incident and its child #[_1] must have the same constituency", $ChildObj->id );
             $checks_failure = 1;

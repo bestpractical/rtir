@@ -273,8 +273,8 @@ my $DoLinks = sub {
 
     if ( RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject' ) {
         return loc("Couldn't link tickets with different constituencies")
-            unless $child->FirstCustomFieldValue('_RTIR_Constituency') 
-                   eq $parent->FirstCustomFieldValue('_RTIR_Constituency');
+            unless lc $child->FirstCustomFieldValue('_RTIR_Constituency') 
+                   eq lc $parent->FirstCustomFieldValue('_RTIR_Constituency');
     }
 
     my %args = ();
