@@ -383,7 +383,7 @@ if ( $Incident ) {
     }
     elsif ( $ARGS{'Create'} 
         && RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject'
-        && $ARGS{$ARGS{'Constituency'}} ne $IncidentObj->FirstCustomFieldValue('_RTIR_Constituency') )
+        && lc $ARGS{$ARGS{'Constituency'}} ne lc $IncidentObj->FirstCustomFieldValue('_RTIR_Constituency') )
     {
         push @results, loc('Incident #[_1] has constituency [_2], choose the same value for a new ticket or use another Incident', $Incident, $IncidentObj->FirstCustomFieldValue('_RTIR_Constituency') );
         ($checks_failure, $IncidentObj, $Incident) = (1, undef, undef);
