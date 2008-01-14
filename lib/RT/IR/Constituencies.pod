@@ -1,9 +1,9 @@
 =head1 REQUIREMENTS for Multiple Constituency functionality
 
-SWITCHCERT, and several other CSIRT's provide services for more
-than one constituency.  For a variety of reasons, it makes sense
-to separate these constituencies, particularly when handling
-incidents. However, it also makes sense to use the same tools when
+Demand exists to provide services for more than one constituency.
+For a variety of reasons, it makes sense to separate these
+constituencies, particularly when handling incidents. However,
+it also makes sense to use the same tools when
 working on these separate sources of data. Depending on the
 constituency different users may wish to work on incidents within
 different queues or have access to incident data held within different
@@ -15,12 +15,6 @@ as a lot of the configuration is identical on all instances, hence
 error-prone.  A better solution would be to integrate the facility
 of handling several constituencies within the same instances of
 RTIR.
-
- D.3.5.1. We MUST be able to define more than one constituency.
- D.3.5.2. We MUST be able to define Access Control Lists according to the constituency.
- D.3.5.3. We MUST preset the constituency according to mail traffic.
- D.3.5.4. RTIR MUST allow constituency inheritance of newly created tickets in any RTIR
-  queue (incident report, incident, blocks, investigation)
 
 =head2 Definitions 
 
