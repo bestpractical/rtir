@@ -52,8 +52,8 @@
 % }
 <br />
 
-% if( $FullList && $Rows > 0 && $children->Count >= $Rows ) {
-<a href="<% $FullList %>"><i><% loc("More... ([_1] total)", $children->Count) %></i></a><br />
+% if( $FullList && $Rows > 0 && $children->CountAll >= $Rows ) {
+<a href="<% $FullList %>"><i><% loc("More... ([_1] total)", $children->CountAll) %></i></a><br />
 % }
 
 <%INIT>
