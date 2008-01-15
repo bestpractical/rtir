@@ -24,7 +24,7 @@
 %# END LICENSE BLOCK
 
 % if( $ShowStatesSelector ) {
-%   foreach my $s( @possible_states ) {
+%   foreach my $s( RT::IR::States( Queue => $Queue, Inactive => 1 ) ) {
 %       my $checked = (grep { $_ eq $s } @States)? 'checked': '';
 <input type="checkbox" name="States" value="<% $s %>" <% $checked %> />&nbsp;<% $s %>
 %   }
@@ -60,7 +60,6 @@
 unless( @States ) {
     @States = ( RT::IR::States( Queue => $Queue ), 'resolved', 'removed' );
 }
-my @possible_states = RT::IR::States( Queue => $Queue, Inactive => 1 );
 my $Type = RT::IR::TicketType( Queue => $Queue );
 
 $Format ||= RT->Config->Get('RTIRSearchResultFormats')->{'Child' . $Type};
