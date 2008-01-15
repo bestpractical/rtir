@@ -19,9 +19,8 @@ my $local_lib_path = "$RT::LocalPath/lib";
 unshift @INC, $local_lib_path, $lib_path;
 requires('RT::FM');
 
-# RTIR needs this version of SB due lack
-# of features in priviouse
-requires('DBIx::SearchBuilder', 1.40);
+# RTIR needs this version of SB cuz of bug-fix
+requires('DBIx::SearchBuilder', 1.51);
 
 # work hours
 requires('Business::Hours');
