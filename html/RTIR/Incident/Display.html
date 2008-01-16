@@ -123,76 +123,24 @@
 
 </td><td valign="top">
 
-<&| /Widgets/TitleBox,
-    title => loc('Incident Reports'),
-    title_href => RT->Config->Get('WebPath') ."/RTIR/Incident/ShowChildren.html?Queue=Incident%20Reports&id=".$id,
-    titleright => '',
-    title_class=> 'inverse', color=> "#336633",
+<& /RTIR/Incident/Elements/ShowChildren,
+    IncidentObj => $TicketObj, 
+    Queue       => 'Incident Reports',
 &>
-
-% if ($TicketObj->CurrentUserHasRight('ModifyTicket')) {
-    <table width="100%"><tr><td align="right"><font size="-1">
-        | <a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Incident=<%$id%>&Queue=Incident%20Reports"><%loc('New')%></a>
-        | <a href="<%RT->Config->Get('WebPath')%>/RTIR/Incident/LinkChildren.html?id=<%$id%>&Queue=Incident%20Reports"><%loc("Link")%></a> |
-    </font></td></tr></table>
-% }
-
-    <& /RTIR/Elements/ShowChildren, 
-            Ticket    => $TicketObj, 
-            Queue     => 'Incident Reports',
-            Rows      => 8,
-            FullList  => RT->Config->Get('WebPath')."/RTIR/Incident/ShowChildren.html?Queue=Incident%20Reports&id=".$id,
-    &>
-</&>
 
 </td></tr><tr><td valign="top" width="50%">
 
-<&| /Widgets/TitleBox, title => loc('Investigations'), 
-    title_href => RT->Config->Get('WebPath') ."/RTIR/Incident/ShowChildren.html?Queue=Investigations&id=".$id, 
-    title_class=> 'inverse',  
-    titleright => '', color=> "#336633" &>
-
-% if ($TicketObj->CurrentUserHasRight('ModifyTicket')) {
-    <table width="100%"><tr><td align="right"><font size="-1">
-        | <a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Incident=<%$id%>&Queue=Investigations"><%loc('Launch')%></a> 
-        | <a href="<%RT->Config->Get('WebPath')%>/RTIR/Incident/LinkChildren.html?id=<%$id%>&Queue=Investigations"><%loc("Link")%></a> |
-    </font></td></tr></table>
-% }
-
-<& /RTIR/Elements/ShowChildren,
-    Ticket => $TicketObj, 
-    Queue => 'Investigations',
-    Rows => 8,
-    FullList => RT->Config->Get('WebPath')."/RTIR/Incident/ShowChildren.html?Queue=Investigations&id=".$id,
+<& /RTIR/Incident/Elements/ShowChildren,
+    IncidentObj => $TicketObj, 
+    Queue       => 'Investigations',
 &>
-
-</&>
 
 </td><td valign="top" width="50%">
 
-% unless ( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
-<&| /Widgets/TitleBox, title => loc('Blocks'),
-    title_href => RT->Config->Get('WebPath') ."/RTIR/Incident/ShowChildren.html?Queue=Blocks&id=".$id,
-    title_class=> 'inverse',
-    titleright => '', color=> "#336633",
+<& /RTIR/Incident/Elements/ShowChildren,
+    IncidentObj => $TicketObj, 
+    Queue       => 'Blocks',
 &>
-
-% if ($TicketObj->CurrentUserHasRight('ModifyTicket')) {
-    <table width="100%"><tr><td align="right"><font size="-1">
-        | <a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Incident=<%$id%>&Queue=Blocks"><%loc('New')%></a> 
-        | <a href="<%RT->Config->Get('WebPath')%>/RTIR/Incident/LinkChildren.html?id=<%$id%>&Queue=Blocks"><%loc("Link")%></a> |
-    </font></td></tr></table>
-% }
-
-<& /RTIR/Elements/ShowChildren, 
-    Ticket   => $TicketObj, 
-    Queue    => 'Blocks',
-    Rows     => 8,
-    FullList => RT->Config->Get('WebPath')."/RTIR/Incident/ShowChildren.html?Queue=Blocks&id=".$id,
-&>
-
-</&>
-% }
 
 </td></tr><tr><td valign="top" width="50%">
 
