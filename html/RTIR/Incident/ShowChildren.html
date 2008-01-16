@@ -101,5 +101,5 @@ $id              => undef
 $Queue           => 'Incident Reports'
 
 @SelectedTickets => ()
-@States          => ()
+@States          => RT::IR::States( Queue => $Queue )
 </%ARGS>
