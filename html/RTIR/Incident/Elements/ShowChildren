@@ -1,0 +1,75 @@
+<&| /Widgets/TitleBox, 
+    title       => loc( $Queue ),
+    title_href  => RT->Config->Get('WebPath') ."/RTIR/Incident/ShowChildren.html?Queue=". $EscapedQueue ."&id=".$id,
+    ( $total_count > $Rows
+        ? ( titleright    => loc("More... ([_1] total)", $total_count),
+            titleright_href => RT->Config->Get('WebPath') ."/RTIR/Incident/ShowChildren.html?Queue=". $EscapedQueue ."&id=".$id )
+        : (),
+    ),
+    title_class => 'inverse',
+&>
+
+% if ( $IncidentObj->CurrentUserHasRight('ModifyTicket') ) {
+    <table width="100%"><tr><td align="right"><font size="-1">
+        | <a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Incident=<% $id %>&Queue=<% $Queue |u %>"><% $new_caption %></a> 
+        | <a href="<%RT->Config->Get('WebPath')%>/RTIR/Incident/LinkChildren.html?id=<% $id %>&Queue=<% $Queue |u %>"><%loc("Link")%></a> |
+    </font></td></tr></table>
+% }
+
+<& /RTIR/Elements/ShowChildren,
+    Ticket           => $IncidentObj, 
+    Queue            => $Queue,
+    Rows             => $Rows,
+    States           => \@active_states,
+    NoTicketsCaption => loc('No active [_1]', loc( $Queue )),
+&>
+% if ( $active->CountAll < $Rows ) {
+<& /RTIR/Elements/ShowChildren,
+    Ticket           => $IncidentObj,
+    Queue            => $Queue,
+    Rows             => $Rows - $active->CountAll,
+    States           => \@inactive_states,
+    NoTicketsCaption => loc('No inactive [_1]', loc( $Queue )),
+&>
+% }
+</&>
+
+<%ARGS>
+$IncidentObj
+$Queue
+
+$OrderBy => 'Due'
+
+$Rows  => 8
+</%ARGS>
+<%INIT>
+return if $Queue eq 'Blocks' && RT->Config->Get('RTIR_DisableBlocksQueue');
+
+my $id = $IncidentObj->id;
+my $new_caption = $Queue ne 'Investigations'? loc('New') : loc('Launch');
+my $EscapedQueue = $m->interp->apply_escapes( $Queue, 'u' );
+
+my @active_states = RT::IR::States( Queue => $Queue );
+my @inactive_states = RT::IR::States( Queue => $Queue, Active => 0, Inactive => 1 );
+
+my $active = RT::Tickets->new( $session{'CurrentUser'} );
+$active->FromSQL(
+    $m->comp( '/RTIR/Elements/ChildrenQuery',
+        Queue  => $Queue,
+        Ticket => $IncidentObj,
+        States => [ @active_states ],
+    )
+);
+
+my $inactive = RT::Tickets->new( $session{'CurrentUser'} );
+$inactive->FromSQL(
+    $m->comp( '/RTIR/Elements/ChildrenQuery',
+        Queue  => $Queue,
+        Ticket => $IncidentObj,
+        States => [ @inactive_states ],
+    )
+);
+
+my $total_count = $active->CountAll + $inactive->CountAll;
+
+</%INIT>
