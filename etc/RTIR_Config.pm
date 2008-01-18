@@ -5,6 +5,10 @@
 use RT::IR::Config;
 RT::IR::Config::Init();
 
+# WebNoAuthRegex - What portion of RT's URLspace should not require
+# authentication. Adjust it according to RTIR paths
+
+Set($WebNoAuthRegex, qr{ $WebNoAuthRegex | ^/+RTIR/NoAuth/ }x);
 
 # Set the name of the RTIR application.
 
@@ -19,7 +23,6 @@ Set($MaxInlineBody,0);
 # may be inactive before the ticket becomes overdue
 
 Set($OverdueAfter, 7);
-
 
 # Set the hash of whois servers
 # Host is of the form "hostname:port"
