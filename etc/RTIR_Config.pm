@@ -8,7 +8,7 @@ RT::IR::Config::Init();
 # WebNoAuthRegex - What portion of RT's URLspace should not require
 # authentication. Adjust it according to RTIR paths
 
-Set($WebNoAuthRegex, qr{ $WebNoAuthRegex | ^/+RTIR/NoAuth/ }x);
+Set($WebNoAuthRegex, qr{ /+NoAuth/ }x);
 
 # Set the name of the RTIR application.
 
