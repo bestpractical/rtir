@@ -193,44 +193,35 @@ if ( ($DefaultsNamePrefix||'') ne $NamePrefix ) {
     my %cf_map;
     foreach my $k( keys %ARGS ) {
         next unless $k =~ /^\Q$prefix\E(\d+)(.*?)$/;
-
         my ($cf_id, $rest) = ($1, $2);
-        if ( exists $cf_map{ $cf_id } ) {
-            if ( !$cf_map{ $cf_id } ||
-                (    defined $ARGS{ $prefix . $cf_map{ $cf_id } . $rest }
-                  && length $ARGS{ $prefix . $cf_map{ $cf_id } . $rest } ) )
-            {
+
+        unless ( exists $cf_map{ $cf_id } ) {
+            my $src_cf = $queue->LoadCustomFieldByIdentifier($cf_id);
+            unless ( $src_cf->id ) {
+                $cf_map{ $cf_id } = 0;
                 delete $ARGS{ $k };
-            } else {
-                $ARGS{ $prefix . $cf_map{ $cf_id } . $rest } = delete $ARGS{ $k };
+                $RT::Logger->error("Couldn't load CF #$cf_id");
+                next;
             }
-            next;
+
+            my $dst_cf = do {
+                my $cfs = $queue->TicketCustomFields;
+                $cfs->Limit( FIELD => 'Name', VALUE => $src_cf->Name );
+                $cfs->RowsPerPage(1);
+                $cfs->First;
+            };
+
+            unless ( $dst_cf && $dst_cf->id ) {
+                $cf_map{ $cf_id } = 0;
+                delete $ARGS{ $k };
+                $RT::Logger->debug( $src_cf->Name .' is not applied. skipping.' );
+                next;
+            }
+            $cf_map{ $cf_id } = $dst_cf->id;
         }
 
-        my $src_cf = $queue->LoadCustomFieldByIdentifier($cf_id);
-        unless ( $src_cf->id ) {
-            $cf_map{ $cf_id } = 0;
-            delete $ARGS{ $k };
-            $RT::Logger->error("Couldn't load CF #$cf_id");
-            next;
-        }
-
-        my $dst_cf = do {
-            my $cfs = $queue->TicketCustomFields;
-            $cfs->Limit( FIELD => 'Name', VALUE => $src_cf->Name );
-            $cfs->RowsPerPage(1);
-            $cfs->First;
-        };
-
-        unless ( $dst_cf && $dst_cf->id ) {
-            $cf_map{ $cf_id } = 0;
-            delete $ARGS{ $k };
-            $RT::Logger->debug( $src_cf->Name .' is not applied. skipping.' );
-            next;
-        }
-        $cf_map{ $cf_id } = $dst_cf->id;
-
-        if ( defined $ARGS{ $prefix . $cf_map{ $cf_id } . $rest } 
+        if ( $cf_map{ $cf_id }
+            && defined $ARGS{ $prefix . $cf_map{ $cf_id } . $rest } 
             && length $ARGS{ $prefix . $cf_map{ $cf_id } . $rest } )
         {
             $ARGS{ $prefix. $cf_map{ $cf_id } . $rest } =
