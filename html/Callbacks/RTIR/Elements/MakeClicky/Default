@@ -12,12 +12,21 @@ my %actions;
         my %args = @_;
         return qq{<a href="$web_path/RTIR/Tools/Lookup.html?$args{lookup_params}q=$args{value}">$args{value}</a>};
     },
+    url => sub {
+        my %args = @_;
+
+        my $host = $args{'all_matches'}[3];
+        my $super = $super{url} ? $super{url}->(%args) : $args{value};
+
+        my $result = qq{[<a href="$web_path/RTIR/Tools/Lookup.html?$args{lookup_params}type=host&q=$host">}
+            .loc('lookup "[_1]"', $host) .qq{</a>]};
+        return $super . qq{ <span class="clickylink">$result</span>};
+    },
     url_overwrite => sub {
         my %args = @_;
-        my $uri  = URI::URL->new($args{value});
-        my $host = $uri->host;
 
-        my $super = $super{url} ? $super{url}->(%args) : $args{value};
+        my $host = $args{'all_matches'}[3];
+        my $super = $super{url_overwrite} ? $super{url_overwrite}->(%args) : $args{value};
 
         my $result = qq{[<a href="$web_path/RTIR/Tools/Lookup.html?$args{lookup_params}type=host&q=$host">}
             .loc('lookup "[_1]"', $host) .qq{</a>]};
