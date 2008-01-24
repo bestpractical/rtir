@@ -136,7 +136,7 @@ foreach my $s ( sort grep $servers->{ $_ }, keys %{ $servers } ) {
 % if ( $q ) {
 <h2>WHOIS Results</h2>
 % if ( $TicketObj && $TicketType eq 'Incident' ) {
-<form method="post" action="<% RT->Config->Get('WebPath') %>/RTIR/Tools/ScriptedAction.html">
+<form method="post" action="<% RT->Config->Get('WebPath') %>/RTIR/Tools/Lookup.html">
 <input type="hidden" name="incidentid" value="<% $ticket %>" />
 <input type="hidden" name="Subject" value="<% $TicketObj->Subject %>" />
 % }
@@ -183,11 +183,33 @@ Structured RIPE whois data returned. Click <a href="Lookup.html?q=<% $q |u %>&se
     Caption => loc("Investigate to selected addresses"),
     Label => loc("Investigate"),
 &>
+<& /Elements/Submit,
+    Name => "InvestigateWithScriptedActions",
+    Caption => loc("Investigate to selected addresses"),
+    Label => loc("Investigate using scripted action"),
+&>
 % }
 
 </form>
 
 <%INIT>
+
+if ( $ARGS{'InvestigateTo'} ) {
+    my $requestors = join ', ', map /^Requestorbox-(.*)/, keys %ARGS;
+    return RT::Interface::Web::Redirect(
+        RT->Config->Get('WebURL')."RTIR/Create.html?"
+        . $m->comp('/Elements/QueryString',
+            Queue => 'Investigations',
+            Requestors => $requestors,
+            Incident => $ARGS{'incidentid'},
+        )
+    );
+} elsif ( $ARGS{'InvestigateWithScriptedActions'} ) {
+    return RT::Interface::Web::Redirect(
+        RT->Config->Get('WebURL')."RTIR/Tools/ScriptedAction.html?"
+        . $m->comp('/Elements/QueryString', %ARGS )
+    );
+}
 
 unless ( $server ) {
     # just pick the first one
