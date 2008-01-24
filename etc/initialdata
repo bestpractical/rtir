@@ -493,17 +493,7 @@ my $ip_pattern = qr{(?#IP/IP-IP/CIDR)^(?:|\s*$RE{net}{IPv4}(?:\s*-\s*$RE{net}{IP
 
 # XXX: description is duplication, but set Due of the incident
     {  Description       => "SetRTIRState",
-       Queue             => 'Incident Reports',
-       ScripCondition    => 'RTIR Require Due Change',
-       ScripAction       => 'RTIR Set Incident Due',
-       Template          => 'Blank', },
-    {  Description       => "SetRTIRState",
-       Queue             => 'Investigations',
-       ScripCondition    => 'RTIR Require Due Change',
-       ScripAction       => 'RTIR Set Incident Due',
-       Template          => 'Blank', },
-    {  Description       => "SetRTIRState",
-       Queue             => 'Blocks',
+       Queue             => ['Incident Reports', 'Investigations', 'Blocks' ],
        ScripCondition    => 'RTIR Require Due Change',
        ScripAction       => 'RTIR Set Incident Due',
        Template          => 'Blank', },
