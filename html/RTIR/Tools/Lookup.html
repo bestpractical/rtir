@@ -224,9 +224,8 @@ my ($whois, $port) = split(/\s*:\s*/, $server, 2);
 $port = 43 unless ($port || '') =~ /^\d+$/;
 my $query = Net::Whois::RIPE->new( $whois, Port => $port, Debug => 1 );
 my ($iterator, $error);
-if ( $query ) {
-    $iterator = $query->query_iterator($q);
-} else {
+$iterator = $query->query_iterator($q) if $query;
+unless ( $iterator ) {
     $error = loc( "Unable to connect to WHOIS server '[_1]'", $server);
 }
 
