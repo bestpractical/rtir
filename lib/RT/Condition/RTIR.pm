@@ -31,7 +31,7 @@ sub IsStatusChange {
 =head2 IsStaff
 
 Returns true if creator of a transaction is a staff member. By staff member
-we mean memeber of a group which name contains 'DutyTeam'.
+we mean member of a group which name contains 'DutyTeam'.
 
 =cut
 
