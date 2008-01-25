@@ -198,13 +198,14 @@
 </tr>
 </table>
 <& /Ticket/Elements/ShowHistory,
-    Ticket       => $Ticket,
-    Collapsed    => $ARGS{'Collapsed'}, 
-    ShowHeaders  => $ARGS{'ShowHeaders'},
-    DisplayPath  => RT->Config->Get('WebPath') ."/RTIR/Display.html?id=$id",
-    UpdatePath   => RT->Config->Get('WebPath') ."/RTIR/Update.html",
-    ForwardPath  => RT->Config->Get('WebPath') ."/RTIR/Forward.html",
-    WarnUnsigned => 1,
+    Ticket         => $Ticket,
+    Collapsed      => $ARGS{'Collapsed'}, 
+    ShowHeaders    => $ARGS{'ShowHeaders'},
+    DisplayPath    => RT->Config->Get('WebPath') ."/RTIR/Display.html?id=$id",
+    UpdatePath     => RT->Config->Get('WebPath') ."/RTIR/Update.html",
+    ForwardPath    => RT->Config->Get('WebPath') ."/RTIR/Forward.html",
+    EncryptionPath => RT->Config->Get('WebPath') ."/RTIR/GnuPG.html",
+    WarnUnsigned   => 1,
 &>
 <%INIT>
 my ($name);
