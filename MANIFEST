@@ -95,12 +95,14 @@ html/RTIR/Elements/Type
 html/RTIR/Elements/UpdateData
 html/RTIR/Elements/UserDueIncidents
 html/RTIR/Forward.html
+html/RTIR/GnuPG.html
 html/RTIR/Incident/BulkAbandon.html
 html/RTIR/Incident/Create.html
 html/RTIR/Incident/Display.html
 html/RTIR/Incident/Edit.html
 html/RTIR/Incident/Elements/Create
 html/RTIR/Incident/Elements/ReplyForm
+html/RTIR/Incident/Elements/ShowChildren
 html/RTIR/Incident/Elements/Tabs
 html/RTIR/Incident/LinkArticles.html
 html/RTIR/Incident/LinkChildren.html
@@ -228,7 +230,6 @@ t/020-incident-and-investigation.t
 t/021-gnupg-on-create.t
 t/022-gnupg-on-update.t
 t/023-gnupg-on-incident.t
-t/03firstmilestone.t
 t/constituency/acl.t
 t/constituency/basics.t
 t/constituency/email.t
