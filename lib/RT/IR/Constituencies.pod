@@ -279,6 +279,16 @@ additional rights constituency specific group get via AdminCc role.
 As you use AdminCc role only then you can not use it to grant one
 set of rights to group X and another set to group Y.
 
+As well, by default AdminCcs are notified on many actions that happens
+with tickets, so this feature can be a little bit noisy. You either
+can disable notifications of AdminCcs or disable this functionality.
+
+If you want to disable this functionality you just have to disable
+"SetConstituencyGroup" scrips in RTIR's queues. These scrips add or
+replace group in the AdminCc list when people set or change ticket's
+constituency. If you still need more control over ACLs then you
+can use the pseudo-queues to reach the same and much more.
+
 =head3 DutyTeam group vs. constituency specific group
 
 By default DutyTeam has almost all rights on all RTIR's queues, rights
