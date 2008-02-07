@@ -48,7 +48,6 @@
     %ARGS,
     Title     => loc('Other children of the parent incident(s) of #[_1]', $id),
     Ticket    => $Ticket,
-    BaseQuery => "id != $id",
     Query     => $siblings_query,
     Rows      => 0,
     Page      => 1,
@@ -67,39 +66,54 @@
 
 <%INIT>
 my $Ticket = LoadTicket($id);
-
 $id = $ARGS{'id'} = $Ticket->id;
 
 $m->callback(CallbackName => 'Initial', %ARGS, Ticket => $Ticket);
 
+my $MergeTicket;
+$MergeTicket = LoadTicket( $SelectedTicket ) if $SelectedTicket;
+
 my (@results);
-if ( $SelectedTicket ) {
-    my $MergeTicket = LoadTicket( $SelectedTicket );
+my $checks_failure = 0;
+if ( $MergeTicket ) {
+    my @queues = sort map $_->Name, $Ticket->QueueObj, $MergeTicket->QueueObj;
+    unless ( $queues[0] eq $queues[1] or ($queues[0] eq "Incident Reports" and $queues[1] eq "Investigations") ) {
+        push @results, loc("Merge failed: Ticket #[_1] is not the right type", $MergeTicket->Id );
+        $checks_failure = 1;
+    }
+}
+
+if ( $MergeTicket && RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject' ) {
+    if ( lc $MergeTicket->FirstCustomFieldValue('_RTIR_Constituency')
+        ne lc $Ticket->FirstCustomFieldValue('_RTIR_Constituency')
+    ) {
+        push @results, loc("Merge failed: Tickets have different constituencies" );
+        $checks_failure = 1;
+    }
+}
+
+if ( $MergeTicket && !$checks_failure ) {
+
+    my @queues = sort map $_->Name, $Ticket->QueueObj, $MergeTicket->QueueObj;
+    if ( $queues[0] ne $queues[1] && $queues[1] eq "Incident Reports" ) {
+        # We always want to merge into the Investigation
+        ($Ticket, $MergeTicket) = ($MergeTicket, $Ticket);
+    }
 
     $m->callback(CallbackName => 'MergeTicketSelected', MergeFrom => $Ticket, MergeTo => $MergeTicket);
 
-    my @queues = sort map {$_->Name} $Ticket->QueueObj, $MergeTicket->QueueObj;
-    if ( $queues[0] eq $queues[1] or ($queues[0] eq "Incident Reports" and $queues[1] eq "Investigations")) {
-        if ( $queues[0] ne $queues[1] && $MergeTicket->QueueObj->Name eq "Incident Reports" ) {
-            # We always want to merge into the Investigation
-            ($Ticket, $MergeTicket) = ($MergeTicket, $Ticket);
-        }
+    $ARGS{ $Ticket->id .'-MergeInto' } = $MergeTicket->id;
 
-        $ARGS{ $Ticket->id .'-MergeInto' } = $MergeTicket->id;
+    for my $t ( $Ticket, $MergeTicket ) {
+        next if $t->Owner == $t->CurrentUser->Id;
 
-        for my $t ( $Ticket, $MergeTicket ) {
-            next if $t->Owner == $t->CurrentUser->Id;
-
-            my ($status, $msg) = $t->SetOwner($t->CurrentUser->Id, 'Force');
-            push @results, $msg if $msg;
-        }
-        push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
-
-        $Ticket = LoadTicket($id);
-        return $m->comp('/RTIR/Display.html', id => $Ticket->id, results => \@results );
-    } else {
-        push @results, loc("Merge failed: Ticket #[_1] is not the right type", $MergeTicket->Id );
+        my ($status, $msg) = $t->SetOwner($t->CurrentUser->Id, 'Force');
+        push @results, $msg if $msg;
     }
+    push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
+
+    $Ticket = LoadTicket($id);
+    return $m->comp('/RTIR/Display.html', id => $Ticket->id, results => \@results );
 }
 
 my $Type = RT::IR::TicketType( Ticket => $Ticket );
@@ -109,10 +123,13 @@ my $title = loc("Merge [_1] #[_2]: [_3]", $Type, $id, $Ticket->Subject);
 
 $Query ||= $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
 unless ( $BaseQuery ) {
-    $BaseQuery = $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
-    $BaseQuery = join ' AND ', map "( $_ )", grep $_, $BaseQuery, " id != $id";
+    my @parts;
+    push @parts, "id != $id";
+    push @parts, $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
+    push @parts, "CF.{_RTIR_Constituency} = '". $Ticket->FirstCustomFieldValue('_RTIR_Constituency') ."'"
+        if RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject';
+    $BaseQuery = join ' AND ', map "( $_ )", grep $_, @parts;
 }
-
 
 my %defaults = (
     Format  => $Format,
