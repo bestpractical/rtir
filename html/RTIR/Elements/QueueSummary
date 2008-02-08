@@ -18,9 +18,9 @@ Description => loc('RTIR queues summary')
 % for my $queue (@queues) {
 %   $i++;
 %   my $queue_cond = "Queue = '$queue'";
-%   my $all_q = "$queue_cond AND (". join ' OR ', map "CF.{_RTIR_State} = '$_'", @{ $states{ $queue } } .')';
+%   my $all_q = "$queue_cond AND (". join( ' OR ', map "CF.{_RTIR_State} = '$_'", @{ $states{ $queue } } ).')';
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
-<td><a href="<% RT->Config->Get('WebPath')%>/Search/Results.html?Query=<% $all_q %>""><% $queue %></a></td>
+<td><a href="<% RT->Config->Get('WebPath')%>/Search/Results.html?Query=<% $all_q |u %>""><% $queue %></a></td>
 %   foreach my $s ( @states ) {
 <td align="right">
 %   if ( grep $_ eq $s, @{ $states{ $queue } } ) {
