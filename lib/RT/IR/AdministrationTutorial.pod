@@ -78,6 +78,51 @@ allowed portlets people can add to thier workspace. RT has its own
 option $HomepageComponents so you can list different sets for RT and
 RTIR. Read more about different portlets in L<Tutorial>.
 
+=head2 Notifications
+
+Almost all email notifications in RT/RTIR are constrolled via scrips.
+
+There are three default base actions you can use to notify users:
+
+=over 4
+
+=item Notify
+
+Sends a notification to users, reply-to field will be set
+according to correspond address. As well, NotifyActor option
+influence set of recipients.
+
+=item Notify As Comment
+
+Similar to 'Notify', but reply-to field is set according to
+comment address.
+
+=item Autoreply
+
+Is a variation of 'Notify' action which sends email even if NotifyActor
+option is disabled.
+
+=back
+
+Above actions have multiple variants with different list of recipients,
+for example 'Notify Owner' or 'Notify Requestors'. List of recipients
+may contain the following values: 'Requestors', 'Owner', 'Ccs', 'AdminCcs'
+and 'Other Recipients'. 'Other Recipients' is the only special case,
+these are users who are listed as one-time recipients on ticket's
+reply/comment pages. All other entries are watchers of a ticket.
+The list can be combination of values like 'Owner, Ccs, AdminCcs'.
+
+Here is several examples:
+
+    On Correspond Notify Requestors and Ccs with template Correspondence
+    On Create Autoreply To Requestors with template Autoreply
+    On Owner Change Notify Owner with template Transaction
+
+Text of notifications is controlled using templates where queue's template
+can override global one. For example you can create template 'Correspondence'
+in a queue and all notifications (global or queue specific) will be using
+this template instead of global.
+
 =head2 Scrips
 
 =over 4
