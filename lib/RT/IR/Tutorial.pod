@@ -228,6 +228,9 @@ Incidents at once.
 
 =head3 Locking
 
+B<Note> that this functionality is available only when L<RT::Extension::TicketLocking>
+extension is installed.
+
 An automatic lock is created whenever a user performs an action on a ticket that
 takes multiple steps (unless a hard lock is already in place for that ticket).
 The following actions produce an auto lock:
@@ -337,6 +340,42 @@ or more correspondents.
 
 To create a new Block, create a new ticket in the Blocks queue. You will be
 required to link the Block to an Incident.
+
+=head2 Managing 'RT at Glance' and 'RTIR home' pages
+
+You can add/delete or reorder portlets on those pages using preferences.
+Either you can click 'Edit' link or Preferences and then goto subtab
+you're interested in.
+
+Page is splitted into two columns, however you can leave one column empty
+if you need wider one-column layout.
+
+=head3 Available portlets
+
+=over 4
+
+=item QuickSearch
+
+Lists RT's queues with summary on numbers of active tickets in those.
+Allows you to quickly jump to all active tickets in a queue or to tickets
+with particular status.
+
+Note that RTIR's queues are hidden from the list as QuickSearch box
+is not flexible enough to build desired report by RTIR's states.
+New/open/stalled statuses just don't make much sense in RTIR, so we
+hide RTIR's queues. Use /RTIR/Elements/QueueSummary portlet instead.
+
+=item /RTIR/Elements/QueueSummary
+
+Lists RTIR's queues with summary on numbers of active tickets in those.
+Allows you to quickly jump to all active tickets in a queue or to tickets
+with particular state.
+
+=item Other
+
+There are more portlets you use which names are quite self-descriptive.
+
+=back
 
 =head2 Custom fields
 

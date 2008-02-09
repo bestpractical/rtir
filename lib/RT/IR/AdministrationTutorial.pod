@@ -71,6 +71,13 @@ Customer for an IR or Investigation
 
 =back
 
+=head2 Managing "RT at Glance" and "RTIR home" pages
+
+In the config you can set @RTIR_HomepageComponents option to control
+allowed portlets people can add to thier workspace. RT has its own
+option $HomepageComponents so you can list different sets for RT and
+RTIR. Read more about different portlets in L<Tutorial>.
+
 =head2 Scrips
 
 =over 4
