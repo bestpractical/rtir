@@ -40,7 +40,10 @@ while ( my $Transaction = $Transactions->Next ) {
         $m->print( $headers );
     }
 
-    $m->print( $Transaction->Content( Quote => $QuoteText ) );
+    my $content = $Transaction->Content( Quote => $QuoteText );
+    $content =~ s/\s+\z//;
+    $m->print( $content );
+    $m->print( "\n\n" );
 }
 </%INIT>
 <%ARGS>
