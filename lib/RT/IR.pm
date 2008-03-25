@@ -138,23 +138,16 @@ sub TicketType {
     my %arg = ( Queue => undef, Ticket => undef, @_);
 
     if ( defined $arg{'Ticket'} && !defined $arg{'Queue'} ) {
-        my $obj;
-        if ( ref $arg{'Ticket'} ) {
-            $obj = $arg{'Ticket'};
-        }
-        else {
-            $obj = RT::Ticket->new( $RT::SystemUser );
-            $obj->Load( $arg{'Ticket'} );
-        }
-        $arg{'Queue'} = $obj->QueueObj if $obj->id;
+        my $obj = RT::Ticket->new( $RT::SystemUser );
+        $obj->Load( ref $arg{'Ticket'} ? $arg{'Ticket'}->id : $arg{'Ticket'} );
+        $arg{'Queue'} = $obj->QueueObj->Name if $obj->id;
     }
     return undef unless defined $arg{'Queue'};
 
-    return $TYPE{ lc $arg{'Queue'}->Name } if ref $arg{'Queue'};
-    return $TYPE{ lc $arg{'Queue'} } unless $arg{'Queue'} =~ /^\d+$/;
+    return $TYPE{ lc $arg{'Queue'} } if !ref $arg{'Queue'} && $arg{'Queue'} !~ /^\d+$/;
 
     my $obj = RT::Queue->new( $RT::SystemUser );
-    $obj->Load( $arg{'Queue'} );
+    $obj->Load( ref $arg{'Queue'}? $arg{'Queue'}->id : $arg{'Queue'} );
     return $TYPE{ lc $obj->Name } if $obj->id;
 
     return undef;
