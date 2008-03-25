@@ -241,10 +241,12 @@ if ( $id eq 'new' ) {
 } elsif( $id ) {
     my $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State') ||'';
     
-$m->callback(CallbackName => 'ProcessArguments', 
+    $m->callback(
+        CallbackName => 'ProcessArguments', 
         Ticket => $Ticket,
         ARGSRef => \%ARGS,  
-        Actions => \@results);
+        Actions => \@results
+    );
 
     if ( $ARGS{'Action'} && $ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/ ) {
         my $action = $1;
@@ -255,7 +257,6 @@ $m->callback(CallbackName => 'ProcessArguments',
             $m->callback(CallbackName => 'TicketTakeOrSteal', %ARGS, Ticket => $Ticket, Type => $Type, Results => \@results);
         }
     }
-
 
     if ( $ARGS{'TakeOrStealFirst'} and $Ticket->Owner != $Ticket->CurrentUser->Id) {
         my ($status, $msg) = $Ticket->SetOwner($Ticket->CurrentUser->Id, 'Force');
@@ -326,6 +327,6 @@ my $attachments = $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket
 <%ARGS>
 $id => 0
 $Queue => undef
-@results => undef
+@results => ()
 @SelectedTickets => ()
 </%ARGS>
