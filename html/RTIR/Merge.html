@@ -113,7 +113,10 @@ if ( $MergeTicket && !$checks_failure ) {
     push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
 
     $Ticket = LoadTicket($id);
-    return $m->comp('/RTIR/Display.html', id => $Ticket->id, results => \@results );
+
+    push @{ $session{"Actions"} ||= [] }, @results;
+    $session{'i'}++;
+    RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."RTIR/Display.html?id=". $Ticket->id );
 }
 
 my $Type = RT::IR::TicketType( Ticket => $Ticket );

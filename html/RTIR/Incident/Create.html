@@ -294,7 +294,9 @@ if ( !$checks_failure && $CreateIncident ) {
     if( $inc_obj ) {
         $m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Child => $ChildObj);
 
-        return $m->comp('Display.html', id => $inc_obj->id, results => \@results );
+        push @{ $session{"Actions"} ||= [] }, @results;
+        $session{'i'}++;
+        RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."RTIR/Incident/Display.html?id=". $inc_obj->id );
     }
 }
 

@@ -304,8 +304,18 @@ unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
     }
     Abort("No permission to view ticket");
 }
+
 # update id argument in the case we took merged or created new
 $ARGS{'id'} = $id = $Ticket->Id;
+
+if ( @results ) {
+    # We've done something, so we need to clear the decks to avoid
+    # resubmission on refresh. But we need to store Actions somewhere
+    # too, so we don't lose them.
+    push @{ $session{"Actions"} ||= [] }, @results;
+    $session{'i'}++;
+    RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."RTIR/Display.html?id=". $id );
+}
 
 if ( $Type eq 'Report' ) {
     $name = "Incident Report";
