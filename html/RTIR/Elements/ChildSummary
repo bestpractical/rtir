@@ -61,10 +61,10 @@
 % }
 <tr>
 <td colspan="5">
-[<a href="<%RT->Config->Get('WebPath')%>/RTIR/Search/Refine.html?Queue=<%$Queue%><%$QueryString%>"><%loc("Refine Search")%></a>]
+[<a href="<%RT->Config->Get('WebPath')%>/RTIR/Search/Refine.html?Queue=<% $Queue |uhn %>&<% $QueryString %>"><% loc("Refine Search") %></a>]
 % if ($Type eq 'Incident') {
 % if ($Queue) {
-[<a href="<%RT->Config->Get('WebPath')%>/RTIR/Incident/LinkChildren.html?Queue=<%$Queue%>&Query=Content LIKE '<%$q%>'&id=<%$ticket%>"><%loc("Bulk Link")%></a>]
+[<a href="<%RT->Config->Get('WebPath')%>/RTIR/Incident/LinkChildren.html?Queue=<% $Queue |uhn %>&Query=<% 'Content LIKE "$q"' |uhn %>&id=<% $ticket %>"><%loc("Bulk Link")%></a>]
 % }
 %   if ($Queue eq 'Investigations' && $lookuptype eq 'email') {
 <br />[<a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Incident=<%$ticket%>&Requestors=<%$q%>&Queue=Investigations"><%loc("Launch new: [_1]", $q)%></a>]
