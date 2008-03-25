@@ -131,7 +131,7 @@ foreach my $name('Incident Reports', 'Incidents', 'Investigations', 'Blocks' ) {
     ok $queue->id, "loaded or created queue";
     ok( RT::Test->add_rights(
         { Principal => $eduhandler, Object => $queue, Right => [qw(SeeQueue CreateTicket)] },
-        { Principal => $eduhandler, Object => $queue, Right => [qw(SeeQueue CreateTicket)] },
+        { Principal => $govhandler, Object => $queue, Right => [qw(SeeQueue CreateTicket)] },
     ), 'set rights');
 
     $queue = RT::Test->load_or_create_queue(
@@ -203,7 +203,7 @@ is($ticket_as_edu->Subject, 'test', "As the edu handler, I can see the ticket");
 
 
 diag "move the incident report from EDUNET to GOVNET" if $ENV{'TEST_VERBOSE'};
-
+{
     display_ticket($agent, $ir_id);
     $agent->follow_link_ok({text => 'Edit'}, "go to Edit page");
     $agent->form_number(3);
@@ -213,8 +213,8 @@ diag "move the incident report from EDUNET to GOVNET" if $ENV{'TEST_VERBOSE'};
     $agent->content_like( qr/GOVNET/, "value on the page" );
 
     DBIx::SearchBuilder::Record::Cachable::FlushCache();
-        $RT::IR::ConstituencyCache->{$ir_id}  = undef;
-
+        $RT::IR::ConstituencyCache{$ir_id}  = undef;
+}
 
 diag "govhandler can see the incident report"         if $ENV{'TEST_VERBOSE'};
 $ticket_as_gov = RT::Ticket->new($govhandler);
