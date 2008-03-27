@@ -62,7 +62,7 @@
 <tr>
 <td colspan="5">
 % if ($Type eq 'Report' or $Type eq 'Investigation' or $Type eq 'Block') {
-[<a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Child=<% $ticket %>&Queue=Incidents"><b><% loc('New') &></b></a>]
+[<a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Child=<% $ticket %>&Queue=Incidents"><b><% loc('New') %></b></a>]
 % }
 [<a href="<%RT->Config->Get('WebPath')%>/RTIR/Search/Results.html?Queue=Incidents&<% $QueryString %>"><% loc("Refine Search") %></a>]
 </td>
