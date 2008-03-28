@@ -4,6 +4,7 @@ author:
   - Best Practical Solutions <sales@bestpractical.com>
 build_requires: 
   File::Find: 0
+  File::Temp: 0
   Test::More: 0
 distribution_type: module
 generated_by: Module::Install version 0.68
@@ -29,4 +30,4 @@ requires:
   Regexp::Common: 0
   Regexp::Common::net::CIDR: 0
 tests: t/*.t t/*/*.t
-version: 2.3.15
+version: 2.3.16
