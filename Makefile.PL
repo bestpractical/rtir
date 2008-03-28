@@ -35,8 +35,11 @@ requires('Regexp::Common');
 requires('Net::CIDR');
 requires('Regexp::Common::net::CIDR');
 
+# for tests
 build_requires('Test::More');
 build_requires('File::Find');
+# for etc/upgrade/upgrade.pl
+build_requires('File::Temp');
 
 auto_install();
 
