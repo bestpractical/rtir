@@ -38,14 +38,14 @@ sub Commit {
         $existing{ $_->Content } =  1;
     }
     my $content = $attach->Content || '';
-    my @IPs = ( $content =~ /(?<!\d)($RE{net}{IPv4})(?!\d)(?!\/(3[0-2]|[1-2]?[0-9]))/go );
+    my @IPs = ( $content =~ /(?<!\d)($RE{net}{IPv4})(?!\d)(?!\/(?:3[0-2]|[1-2]?[0-9])(?:\D|\z))/go );
     $self->AddIP(
         IP          => $_,
         CustomField => $cf,
         Skip        => \%existing,
     ) foreach @IPs;
 
-    my @CIDRs = ( $content =~ /$RE{net}{CIDR}{IPv4}{-keep}/go );
+    my @CIDRs = ( $content =~ /(?<![0-9.])$RE{net}{CIDR}{IPv4}{-keep}(?!\.?[0-9])/go );
     while ( my ($addr, $bits) = splice @CIDRs, 0, 2 ) {
         my $cidr = join( '.', map $_||0, (split /\./, $addr)[0..3] ) ."/$bits";
         my $range = (Net::CIDR::cidr2range( $cidr ))[0] or next;

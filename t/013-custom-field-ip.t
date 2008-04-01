@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 475;
+use Test::More tests => 483;
 
 require "t/rtir-test.pl";
 
@@ -291,6 +291,14 @@ diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
     is($ticket->CustomFieldValues('_RTIR_IP')->Count, 0, "IP wasn't added");
 
     $id = create_ir( $agent, { Subject => "test ip", Content => '355.255.255.255' } );
+    ok($id, "created a ticket");
+
+    $ticket = RT::Ticket->new( $RT::SystemUser );
+    $ticket->Load( $id );
+    is($ticket->id, $id, 'loaded ticket');
+    is($ticket->CustomFieldValues('_RTIR_IP')->Count, 0, "IP wasn't added");
+
+    $id = create_ir( $agent, { Subject => "test ip", Content => '8.13.8/8.13.0/1.0' } );
     ok($id, "created a ticket");
 
     $ticket = RT::Ticket->new( $RT::SystemUser );
