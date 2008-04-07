@@ -40,6 +40,14 @@ my %actions;
         if ( $args{incident} && !RT->Config->Get('RTIR_DisableBlocksQueue') ) {
             $result .= qq{[<a href="$web_path/RTIR/Create.html?Incident=$args{incident}&Queue=Blocks&IP-Value=$args{host}">block</a>]};
         }
+        if ( $args{'ticket'} && $args{'ticket'}->id ) {
+            my $cf = RT::IR::GetCustomField('_RTIR_IP');
+            my $tid = $args{'ticket'}->id;
+            $result .= qq{[<a href="$web_path/RTIR/Edit.html?id=$tid}
+                .qq{&Object-RT::Ticket-$tid-CustomField-}. $cf->id .qq{-AddValue=}
+                . $m->interp->apply_escapes($args{host}, 'u', 'h')
+                .q{&SaveChanges=1">}. loc('Add IP') .q{</a>]};
+        }
         return $args{value} . qq{ <span class="clickylink">$result</span>};
     },
     ipdecimal => sub {
