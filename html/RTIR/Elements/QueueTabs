@@ -200,7 +200,7 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
             } elsif ( $Type eq 'Block' ) {
                 if ( ($Ticket->FirstCustomFieldValue('_RTIR_State')||'') ne 'active' ) {
                     $actions->{'Ab'} = {
-                        path  => "RTIR/Display.html?Status=open&id=$id",
+                        path  => "RTIR/Update.html?Action=Comment&DefaultStatus=open&id=$id",
                         title => loc('Activate')
                     };
                 }
@@ -223,7 +223,7 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
         } else {
             if ( $Type eq 'Block' ) {
                 $actions->{'C'} = {
-                    path  => "RTIR/Display.html?Status=open&id=$id",
+                    path  => "RTIR/Update.html?Action=Comment&DefaultStatus=open&id=$id",
                     title => loc('Activate')
                 };
             } else {

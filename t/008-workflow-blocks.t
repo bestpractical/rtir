@@ -44,28 +44,40 @@ foreach my $status( qw(open stalled resolved) ) {
     ticket_state_is($agent, $block_id, $state);
 }
 
+diag "remove using edit";
+{
+    $agent->follow_link_ok({ text => "Edit" }, "Goto edit page");
 
-$agent->follow_link_ok({ text => "Edit" }, "Goto edit page");
+    # Tests to make sure the unwanted option 'Use system default()' does not appear as an
+    # option in the State field (a reported M3 bug)
+    $agent->content_unlike(qr{<option (?:value=.*)?>Use system default\(\)</option>}, "The option 'Use system default()' does not exist.");
 
-# Tests to make sure the unwanted option 'Use system default()' does not appear as an
-# option in the State field (a reported M3 bug)
-$agent->content_unlike(qr{<option (?:value=.*)?>Use system default\(\)</option>}, "The option 'Use system default()' does not exist.");
+    $agent->form_number(3);
 
-$agent->form_number(3);
+    $agent->field(Status => 'resolved');
+    $agent->click('SaveChanges');
+    ticket_state_is($agent, $block_id, 'removed');
+}
 
-$agent->field(Status => 'resolved');
-$agent->click('SaveChanges');
-ticket_state_is($agent, $block_id, 'removed');
-$agent->has_tag('a', 'Activate', 'we have Activate action');
+diag "reactivate the block using the link";
+{
+    $agent->has_tag('a', 'Activate', 'we have Activate action');
+    $agent->follow_link_ok({ text => 'Activate' }, "Reactivate block");
 
-$agent->follow_link_ok({ text => 'Activate' }, "Reactivate block");
-ticket_state_is($agent, $block_id, 'active');
-$agent->has_tag('a', 'Pending Removal', 'we have Pending Removal action tab');
+    $agent->form_number(3);
+    $agent->field( UpdateContent => 'activating block' );
+    $agent->click('SubmitTicket');
+    ticket_state_is($agent, $block_id, 'active');
+}
 
-$agent->follow_link_ok({ text => 'Pending Removal' }, "Prepare block for remove");
-$agent->form_number(3);
-$agent->click('SubmitTicket');
-ticket_state_is($agent, $block_id, 'pending removal');
+diag "prepare for removing using the link";
+{
+    $agent->has_tag('a', 'Pending Removal', 'we have Pending Removal action tab');
+    $agent->follow_link_ok({ text => 'Pending Removal' }, "Prepare block for remove");
+    $agent->form_number(3);
+    $agent->click('SubmitTicket');
+    ticket_state_is($agent, $block_id, 'pending removal');
+}
 
 diag "test activation after reply using 'Activate' link";
 {
@@ -80,6 +92,10 @@ diag "test activation after reply using 'Activate' link";
     ticket_state_is($agent, $block_id, 'pending activation');
 
     $agent->follow_link_ok({ text => 'Activate' }, "activate it");
+
+    $agent->form_number(3);
+    $agent->field( UpdateContent => 'activating block' );
+    $agent->click('SubmitTicket');
 
     ticket_state_is($agent, $block_id, 'active');
 }

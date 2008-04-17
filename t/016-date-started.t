@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 68;
+use Test::More tests => 69;
 
 require "t/rtir-test.pl";
 
@@ -99,6 +99,12 @@ diag "started date of a block" if $ENV{'TEST_VERBOSE'};
     display_ticket($agent, $block_id);
     $agent->follow_link_ok({text => 'Activate'}, "activate it");
     is($agent->status, 200, "request successful");
+
+    $agent->form_number(3);
+    $agent->field( UpdateContent => 'activating block' );
+    $agent->click('SubmitTicket');
+    is($agent->status, 200, "request successful");
+
     DBIx::SearchBuilder::Record::Cachable::FlushCache();
 
     $block = RT::Ticket->new( $RT::SystemUser );
