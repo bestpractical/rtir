@@ -22,7 +22,7 @@ if ( $Queue eq 'Incidents' ||
      $Queue eq 'Investigations' ||
      $Queue eq 'Blocks' )
 {
-    $m->comp( '/RTIR/Display.html', %$ARGSRef );
+    $m->subexec( '/RTIR/Display.html', %$ARGSRef );
     $m->abort;
 }
 
