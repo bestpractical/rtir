@@ -30,4 +30,4 @@ requires:
   Regexp::Common: 0
   Regexp::Common::net::CIDR: 0
 tests: t/*.t t/*/*.t
-version: 2.3.16
+version: 2.3.17
