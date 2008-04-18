@@ -367,6 +367,7 @@ wrap 'RT::ObjectCustomFieldValue::Content',
     # flush constituency cache on each request
     wrap 'RT::Interface::Web::Handler::CleanupRequest', pre => sub {
         %RT::IR::ConstituencyCache = ();
+        %RT::IR::HasNoQueueCache = ();
     };
 
     require RT::Record;
@@ -390,21 +391,26 @@ wrap 'RT::ObjectCustomFieldValue::Content',
             return;
         }
         if ( UNIVERSAL::isa( $self, 'RT::Ticket' ) ) {
-            if (not defined $RT::IR::ConstituencyCache{ $self->id }) {
+            my $const = $RT::IR::ConstituencyCache{ $self->id };
+            unless ( $const ) {
                 my $systicket = RT::Ticket->new($RT::SystemUser);
                 $systicket->Load( $self->id );
-                $RT::IR::ConstituencyCache{ $self->id } =
+                $const = $RT::IR::ConstituencyCache{ $self->id } =
                     $systicket->FirstCustomFieldValue('_RTIR_Constituency')
                     || '_none';
             }
-            return if ( $RT::IR::ConstituencyCache{ $self->id } eq '_none' );
-            if ( not $self->{_constituency_queue} ) {
-                my $new_queue = RT::Queue->new( $RT::SystemUser);
-                $new_queue->LoadByCols( Name => $queue->Name . " - " . $RT::IR::ConstituencyCache{ $self->id } );
-                return unless ( $new_queue->id );
-                $self->{_constituency_queue} = $new_queue;
+            return if $const eq '_none';
+            return if $RT::IR::HasNoQueueCache{ $const };
+
+            my $new_queue = RT::Queue->new($RT::SystemUser);
+            $new_queue->LoadByCols(
+                Name => $queue->Name . " - " . $const
+            );
+            unless ( $new_queue->id ) {
+                $RT::IR::HasNoQueueCache{$const} = 1;
+                return;
             }
-            $_[-1] =  [$queue, $self->{_constituency_queue}];
+            $_[-1] =  [$queue, $new_queue];
         } else {
             use YAML;
             $RT::Logger->crit( "$self is not a ticket object like I expected"
@@ -465,9 +471,10 @@ wrap 'RT::ObjectCustomFieldValue::Content',
             unless ($const) {
                 my $ticket = RT::Ticket->new($RT::SystemUser);
                 $ticket->Load($id);
-                $const = $RT::IR::ConstituencyCache{$ticket->id}  = $ticket->FirstCustomFieldValue('_RTIR_Constituency') || '_none';
+                $const = $RT::IR::ConstituencyCache{$ticket->id}
+                    = $ticket->FirstCustomFieldValue('_RTIR_Constituency') || '_none';
             }
-            if ($const) {
+            if ($const ne '_none' && !$RT::IR::HasNoQueueCache{$const} ) {
                 my $new_queue = RT::Queue->new($RT::SystemUser);
                 $new_queue->LoadByCols(
                     Name => $queue->Name . " - " . $const );
@@ -475,6 +482,8 @@ wrap 'RT::ObjectCustomFieldValue::Content',
                     my $val = $new_queue->_Value($attr) || $queue->_Value($attr);
                     $RT::Logger->debug("Overriden $attr is $val for ticket #$id according to constituency $const");
                     return $val;
+                } else {
+                    $RT::IR::HasNoQueueCache{$const} = 1;
                 }
             }
         }
