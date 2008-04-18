@@ -282,6 +282,17 @@ wrap 'RT::Tickets::_CustomFieldLimit',
                 SUBKEY          => $rest{'SUBKEY'}. '.LargeContent',
                 ENTRYAGGREGATOR => 'AND',
             );
+            # as well limit borders so DB optimizers can use better
+            # estimations and scan less rows
+            $tickets->_CustomFieldLimit(
+                $field, '>=', '000.000.000.000', %rest,
+                ENTRYAGGREGATOR => 'AND',
+            );
+            $tickets->_CustomFieldLimit(
+                $field, '<=', '255.255.255.255', %rest,
+                SUBKEY          => $rest{'SUBKEY'}. '.LargeContent',
+                ENTRYAGGREGATOR => 'AND',
+            );
         }
         else { # negative equation
             $tickets->_CustomFieldLimit($field, '>', $end_ip, %rest);
@@ -290,6 +301,9 @@ wrap 'RT::Tickets::_CustomFieldLimit',
                 SUBKEY          => $rest{'SUBKEY'}. '.LargeContent',
                 ENTRYAGGREGATOR => 'OR',
             );
+            # TODO: as well limit borders so DB optimizers can use better
+            # estimations and scan less rows, but it's harder to do
+            # as we have OR aggregator
         }
         $tickets->_CloseParen;
         # return right now as we did everything
