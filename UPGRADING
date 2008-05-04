@@ -49,6 +49,19 @@ General upgrade instructions
     may require manual changes or describe important changes in
     the RTIR you should be aware of.
 
+Upgrading from 2.3.17 and earlier
+-------------------------
+
+By accident RTFM's CustomField Respons could be created with MaxValues = 0
+what is incorrect and should be changed to 1, run the following query to
+update the DB.
+
+    UPDATE CustomFields SET MaxValues = 1 WHERE
+            Name = 'Response'
+            AND Type = 'Wikitext'
+            AND LookupType = 'RT::FM::Class-RT::FM::Article'
+            AND MaxValues = 0;
+
 Upgrading from 2.3.15 and earlier
 -------------------------
 
