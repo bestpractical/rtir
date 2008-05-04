@@ -835,6 +835,7 @@ for my $cf (@CustomFields) {
         my ($id, $msg) = $response->Create(
             Name => 'Response',
             Type => 'Text',
+            MaxValues => 1,
             Description => 'Response to be inserted into the ticket',
             LookupType => RT::FM::Article->CustomFieldLookupType,
         );
