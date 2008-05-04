@@ -58,7 +58,7 @@ update the DB.
 
     UPDATE CustomFields SET MaxValues = 1 WHERE
             Name = 'Response'
-            AND Type = 'Wikitext'
+            AND Type = 'Text'
             AND LookupType = 'RT::FM::Class-RT::FM::Article'
             AND MaxValues = 0;
 
