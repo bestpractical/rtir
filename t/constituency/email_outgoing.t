@@ -79,7 +79,7 @@ $agent->login( rtir_test_user => 'rtir_test_pass' );
 
 diag "create an IR via base address";
 {
-    unlink "t/mailbox";
+    RT::Test->clean_caught_mails;
 
         my $text = <<EOF;
 From: @{[ $rtir_user->EmailAddress ]}
@@ -115,7 +115,7 @@ EOF
 
 diag "create an IR under GOVNET";
 {
-    unlink "t/mailbox";
+    RT::Test->clean_caught_mails;
 
     my $text = <<EOF;
 From: @{[ $rtir_user->EmailAddress ]}
@@ -151,7 +151,7 @@ EOF
 
 diag "GOV user creates an IR under EDUNET, check addresses";
 {
-    unlink "t/mailbox";
+    RT::Test->clean_caught_mails;
 
     $agent->login('govhandler', 'govhandler');
     my $id = create_ir(

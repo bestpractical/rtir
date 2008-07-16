@@ -69,7 +69,7 @@ diag "check that things don't work if there is no key";
     my $inc_id = create_incident_for_ir( $agent, $ir_id, { Subject => 'test' } );
     ok $inc_id, 'created an Inc';
 
-    unlink "t/mailbox";
+    RT::Test->clean_caught_mails;
 
     ok $agent->goto_ticket( $inc_id ), "UI -> ticket #$inc_id";
     $agent->follow_link_ok( { text => 'Reply to Reporters' }, 'inc -> Reply to Reporters' );
@@ -103,7 +103,7 @@ diag "check that things don't work if there is no key";
     my $inc_id = create_incident_for_ir( $agent, $ir_id, { Subject => 'test' } );
     ok $inc_id, 'created an Inc';
 
-    unlink "t/mailbox";
+    RT::Test->clean_caught_mails;
 
     ok $agent->goto_ticket( $inc_id ), "UI -> ticket #$inc_id";
     $agent->follow_link_ok( { text => 'Reply to Reporters' }, 'inc -> Reply to Reporters' );

@@ -37,7 +37,7 @@ $agent->login( rtir_test_user => 'rtir_test_pass' );
 
 diag "create an IR and check that we have outgoing email";
 {
-    unlink "t/mailbox";
+    RT::Test->clean_caught_mails;
 
     my $email = $rtir_user->EmailAddress;
 
@@ -62,7 +62,7 @@ diag "create an IR and check that we have outgoing email";
 
 diag "create an IR and check that 'SkipNotification' feature works";
 {
-    unlink "t/mailbox";
+    RT::Test->clean_caught_mails;
 
     my $email = $rtir_user->EmailAddress;
 
