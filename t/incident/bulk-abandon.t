@@ -87,7 +87,7 @@ sub bulk_abandon {
 	# going to the next page until you find it (or get to the last page and don't find it,
 	# whichever comes first)
     while($agent->content() !~ qr{<a href="/Ticket/Display.html\?id=$to_abandon[0]">$to_abandon[0]</a>}) {
-    	last unless $agent->follow_link(text => 'Next Page');
+    	last unless $agent->follow_link(text => 'Next');
     }
 	
 	$agent->form_number(3);

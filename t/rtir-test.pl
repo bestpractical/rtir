@@ -268,7 +268,7 @@ sub LinkChildToIncident {
     # going to the next page until you find it (or get to the last page and don't find it,
     # whichever comes first)
     while($agent->content() !~ m|<a href="/Ticket/Display.html\?id=$incident">$incident</a>|) {
-        last unless $agent->follow_link(text => 'Next Page');
+        last unless $agent->follow_link(text => 'Next');
     }
     
     $agent->form_number(3);

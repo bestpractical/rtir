@@ -29,7 +29,7 @@ $agent->get_ok('/RTIR/index.html', 'open rtir at glance');
 	
 	# Note that this method assumes both IRs to be rejected are on the same page, but if they're not, we can't check both in any way.
     while($agent->content() !~ qr{<td class="collection-as-table">\s*<b>\s*<a href="/Ticket/Display.html?id=$irs[0]">$irs[0]</a>\s*</b>\s*</td>}) {
-    	last unless $agent->follow_link(text => 'Next Page');
+    	last unless $agent->follow_link(text => 'Next');
     }
 
     $agent->form_number(3);
@@ -45,7 +45,7 @@ $agent->get_ok('/RTIR/index.html', 'open rtir at glance');
 
 {
 	while($agent->content() !~ qr{<td class="collection-as-table">\s*<b>\s*<a href="/Ticket/Display.html?id=$irs[1]">$irs[1]</a>\s*</b>\s*</td>}) {
-    	last unless $agent->follow_link(text => 'Next Page');
+    	last unless $agent->follow_link(text => 'Next');
     }
 	
     $agent->form_number(3);
