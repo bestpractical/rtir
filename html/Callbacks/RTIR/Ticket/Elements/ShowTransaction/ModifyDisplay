@@ -1,4 +1,6 @@
 <%INIT>
+# protect from a bug in 3.8.0
+return unless $text && ref($text) eq 'SCALAR';
 
 # remove the prefix from the beginning of the text
 # useful for removing _RTIR_ from RTIR custom fields
