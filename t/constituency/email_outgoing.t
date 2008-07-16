@@ -9,6 +9,10 @@ use lib qw(/opt/rt3/local/lib /opt/rt3/lib);
 require RT::Test; import RT::Test;
 require "t/rtir-test.pl";
 
+RT->Config->Set( 'Plugins' => 'RT::FM', 'RT::IR' );
+RT::InitPlugins();
+
+
 {
     $RT::Handle->InsertSchema(undef, '/opt/rt3/local/etc/FM');
     $RT::Handle->InsertACL(undef, '/opt/rt3/local/etc/FM');
