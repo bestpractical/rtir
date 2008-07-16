@@ -139,10 +139,11 @@ if ( $BulkReject ) {
     $session{'tickets'}->RedoSearch;
 
     if ( $BulkRejectAndReturn ) {
-        push @{ $session{"Actions"} ||= [] }, @results;
+        my $key = Digest::MD5::md5_hex( rand(1024) );
+        push @{ $session{"Actions"}{ $key } ||= [] }, @results;
         $session{'i'}++;
         return RT::Interface::Web::Redirect(
-            RT->Config->Get('WebURL') ."/RTIR/index.html"
+            RT->Config->Get('WebURL') ."/RTIR/index.html?results=".$key
         );
     }
 }

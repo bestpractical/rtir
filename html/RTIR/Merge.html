@@ -114,9 +114,13 @@ if ( $MergeTicket && !$checks_failure ) {
 
     $Ticket = LoadTicket($id);
 
-    push @{ $session{"Actions"} ||= [] }, @results;
+    my $key = Digest::MD5::md5_hex( rand(1024) );
+    push @{ $session{"Actions"}{ $key } ||= [] }, @results;
     $session{'i'}++;
-    RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."RTIR/Display.html?id=". $Ticket->id );
+    RT::Interface::Web::Redirect(
+        RT->Config->Get('WebURL') ."RTIR/Display.html?id=". $Ticket->id
+        ."&results=$key"
+    );
 }
 
 my $Type = RT::IR::TicketType( Ticket => $Ticket );

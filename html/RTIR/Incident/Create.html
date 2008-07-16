@@ -294,9 +294,14 @@ if ( !$checks_failure && $CreateIncident ) {
     if( $inc_obj ) {
         $m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Child => $ChildObj);
 
-        push @{ $session{"Actions"} ||= [] }, @results;
+        my $key = Digest::MD5::md5_hex( rand(1024) );
+        push @{ $session{"Actions"}{ $key } ||= [] }, @results;
         $session{'i'}++;
-        RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."RTIR/Incident/Display.html?id=". $inc_obj->id );
+        RT::Interface::Web::Redirect(
+            RT->Config->Get('WebURL')
+            ."RTIR/Incident/Display.html?id=". $inc_obj->id
+            ."&results=$key"
+        );
     }
 }
 
