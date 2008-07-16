@@ -279,7 +279,7 @@ sub LinkChildToIncident {
 
     is ($agent->status, 200, "Attempting to link child $id to Incident $incident");
 
-    ok ($agent->content =~ /Ticket $id: Link created/g, "Incident $incident linked successfully.");
+    ok ($agent->content =~ /Ticket\s+$id:\s*Ticket\s+$id\s+member\s+of\s+Ticket\s+$incident/gs, "Incident $incident linked successfully.");
 
     return;
 }
