@@ -87,7 +87,8 @@ diag "check that things don't work if there is no key";
     $agent->content_like(qr/rt-recipient\@example\.com/) or diag $agent->content;
 
     my @mail = RT::Test->fetch_caught_mails;
-    ok !@mail, 'there are no outgoing emails';
+    ok !@mail, 'there are no outgoing emails'
+        or diag "Emails' have been sent: \n". join "\n\n", @mail;
 }
 
 diag 'import rt-recipient@example.com key and sign it';
