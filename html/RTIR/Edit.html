@@ -298,8 +298,8 @@ if ( $SaveChanges && !$OnlySearchForPeople ) {
     }
     if ( !$checks_failure && RT->Config->Get('DisplayAfterEdit', $session{'CurrentUser'}) ) {
         $m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Ticket => $Ticket);
-            
-        return $m->comp("/RTIR/Display.html", %ARGS, results => [@results], id => $id);
+        push @{ $session{'Actions'}{''} ||= [] }, @results;
+        return $m->comp("/RTIR/Display.html", %ARGS, id => $id);
     }
 }
  
