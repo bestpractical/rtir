@@ -45,6 +45,7 @@ diag "GnuPG --homedir ". RT->Config->Get('GnuPGOptions')->{'homedir'};
 RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
 RT->Config->Set( 'Plugins' => 'RT::FM', 'RT::IR' );
+RT::InitPluginPaths();
 RT::InitPlugins();
 
 my $queue = RT::Test->load_or_create_queue(

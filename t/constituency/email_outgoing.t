@@ -10,6 +10,7 @@ require RT::Test; import RT::Test;
 require "t/rtir-test.pl";
 
 RT->Config->Set( 'Plugins' => 'RT::FM', 'RT::IR' );
+RT::InitPluginPaths();
 RT::InitPlugins();
 
 

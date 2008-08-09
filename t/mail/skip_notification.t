@@ -30,6 +30,7 @@ require "t/rtir-test.pl";
 RT->Config->Set( '_RTIR_Constituency_default' => 'EDUNET' );
 
 RT->Config->Set( 'Plugins' => 'RT::FM', 'RT::IR' );
+RT::InitPluginPaths();
 RT::InitPlugins();
 
 RT::Test->set_mail_catcher;

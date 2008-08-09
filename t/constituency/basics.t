@@ -4,9 +4,39 @@ use strict;
 use warnings;
 
 use Test::More tests => 172;
+
+use lib qw(/opt/rt3/local/lib /opt/rt3/lib);
+require RT::Test; import RT::Test;
 require "t/rtir-test.pl";
 
+{
+    $RT::Handle->InsertSchema(undef, '/opt/rt3/local/etc/FM');
+    $RT::Handle->InsertACL(undef, '/opt/rt3/local/etc/FM');
+
+    $RT::Handle = new RT::Handle;
+    $RT::Handle->dbh( undef );
+    RT->ConnectToDatabase;
+
+    local @INC = ('/opt/rt3/local/etc', '/opt/rt3/etc', @INC);
+    RT->Config->LoadConfig(File => "IR/RTIR_Config.pm");
+    $RT::Handle->InsertData('IR/initialdata');
+
+    $RT::Handle = new RT::Handle;
+    $RT::Handle->dbh( undef );
+    RT->ConnectToDatabase;
+}
+
+RT::Test->set_mail_catcher;
+
+RT->Config->Set( Plugins => 'RT::FM', 'RT::IR' );
+RT::InitPluginPaths();
+RT::InitPlugins();
+
 use_ok('RT::IR');
+
+my ($baseurl, $agent) = RT::Test->started_ok;
+rtir_user();
+$agent->login( rtir_test_user => 'rtir_test_pass' );
 
 my $cf;
 diag "load and check basic properties of the CF" if $ENV{'TEST_VERBOSE'};
@@ -45,9 +75,6 @@ diag "fetch list of constituencies and check that groups exist" if $ENV{'TEST_VE
         ok( $group->id, "loaded group for $_ constituency" );
     }
 }
-
-my $agent = default_agent();
-my $rtir_user = rtir_user();
 
 diag "check that there is no option to set 'no value' on create" if $ENV{'TEST_VERBOSE'};
 {
