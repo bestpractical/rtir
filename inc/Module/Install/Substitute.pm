@@ -1,19 +1,20 @@
 #line 1
 package Module::Install::Substitute;
 
-use vars qw(@ISA);
-use Module::Install::Base; @ISA = qw(Module::Install::Base);
-
 use strict;
 use warnings;
+use 5.008; # I don't care much about earlier versions
 
-$Module::Install::Substitute::VERSION = '0.02';
+use Module::Install::Base;
+our @ISA = qw(Module::Install::Base);
+
+our $VERSION = '0.03';
 
 require File::Temp;
 require File::Spec;
 require Cwd;
 
-#line 64
+#line 89
 
 sub substitute
 {
@@ -94,11 +95,12 @@ sub __process_streams
 	my $re_subst = join('|', map {"\Q$_"} keys %{ $subst } );
 
 	while( my $str = <$in> ) {
-		if( $str =~ /^###\s*(before|replace|after)\: ?(.*)$/s ) {
+		if( $str =~ /^###\s*(before|replace|after)\:\s?(.*)$/s ) {
 			my ($action, $nstr) = ($1,$2);
 			$nstr =~ s/\@($re_subst)\@/$subst->{$1}/ge;
 
-			$action = 'before' if !$replace && $action eq 'replace';
+			die "Replace action is bad idea for situations when dest is equal to source"
+                if $replace && $action eq 'replace';
 			if( $action eq 'before' ) {
 				die "no line before 'before' action" unless @queue;
 				# overwrite prev line;
@@ -126,3 +128,4 @@ sub __process_streams
 }
 
 1;
+
