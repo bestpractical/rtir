@@ -2,10 +2,12 @@
 
 use strict;
 use warnings;
-use Test::More tests => 21;
 
-require "t/rtir-test.pl";
+BEGIN { require "t/rtir-test.pl" };
+use lib 't/lib';
+use RT::IR::Test tests => 25;
 
+RT::Test->started_ok;
 my $agent = default_agent();
 
 my $SUBJECT = "foo " . rand;
