@@ -15,10 +15,6 @@ use Test::More;
 ### after: use lib qw(@RT_LIB_PATH@);
 use lib qw(/opt/rt3/local/lib /opt/rt3/lib);
 
-use RT;
-RT::LoadConfig();
-RT::Init();
-
 my $RTIR_TEST_USER = "rtir_test_user";
 my $RTIR_TEST_PASS = "rtir_test_pass";
 
