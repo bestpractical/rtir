@@ -2,7 +2,12 @@
 
 use strict;
 use warnings;
-use Test::More tests => 50;
+
+require "t/rtir-test.pl";
+use Test::More tests => 54;
+
+RT::Test->started_ok;
+my $agent = default_agent();
 
 sub tempfile {
     require File::Temp;
@@ -13,10 +18,6 @@ sub tempfile {
     close $fh;
     return $filename;
 }
-
-require "t/rtir-test.pl";
-
-my $agent = default_agent();
 
 $agent->follow_link_ok({text => 'Incident Reports'}, "go to 'Incident Reports'");
 $agent->follow_link_ok({text => 'New Report'}, "go to 'New Report'");

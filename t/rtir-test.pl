@@ -9,20 +9,19 @@
 use strict;
 use warnings;
 
-use HTTP::Cookies;
-use Test::More;
-
 ### after: use lib qw(@RT_LIB_PATH@);
 use lib qw(/opt/rt3/local/lib /opt/rt3/lib);
 
 my $RTIR_TEST_USER = "rtir_test_user";
 my $RTIR_TEST_PASS = "rtir_test_pass";
 
-require RT::Test;
+use lib 't/lib';
+use RT::IR::Test;
 use RT::Test::Web;
 
 sub default_agent {
     my $agent = new RT::Test::Web;
+    require HTTP::Cookies;
     $agent->cookie_jar( HTTP::Cookies->new );
     rtir_user();
     $agent->login($RTIR_TEST_USER, $RTIR_TEST_PASS);
@@ -69,13 +68,12 @@ sub ticket_is_linked_to_inc {
     my $agent = shift;
     my $id = shift;
     my $incs = shift;
-    my $desc = shift;
     display_ticket( $agent, $id );
     foreach my $inc( ref $incs? @$incs : ($incs) ) {
         my $desc = shift || "Ticket #$id is linked to the Incident #$inc";
         $agent->content_like(
-            qr{Incident:\s*</td>\s*<td[^>]*?>.*?\Q$inc:}ism,
-            $desc || "Ticket #$id is linked to the Incident #$inc"
+            qr{Incident:\s*</td>\s*<td[^>]*?>.*?<a\s+href="/RTIR/Display.html\?id=\Q$inc\E">\Q$inc\E:\s+}ism,
+            $desc
         ) or return 0;
     }
     return 1;
@@ -85,13 +83,13 @@ sub ticket_is_not_linked_to_inc {
     my $agent = shift;
     my $id = shift;
     my $incs = shift;
-    my $desc = shift;
     display_ticket( $agent, $id );
     foreach my $inc( @$incs ) {
-        my $desc = shift || "Ticket #$id is linked to the Incident #$inc";
+        my $desc = shift || "Ticket #$id is not linked to the Incident #$inc";
+        diag $agent->content;
         $agent->content_unlike(
-            qr{Incident:\s*</td>\s*<td[^>]*?>.*?\Q$inc:}ism,
-            $desc || "Ticket #$id is not linked to the Incident #$inc"
+            qr{Incident:\s*</td>\s*<td[^>]*?>.*?<a\s+href="/RTIR/Display.html\?id=\Q$inc\E">\Q$inc\E:\s+}ism,
+            $desc
         ) or return 0;
     }
     return 1;

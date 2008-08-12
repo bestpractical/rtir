@@ -3,15 +3,11 @@
 use strict;
 use warnings;
 
-use Test::More tests => 62;
 require "t/rtir-test.pl";
+use Test::More tests => 65;
 
 # Test must be run wtih RT_SiteConfig:
 # Set(@MailPlugins, 'Auth::MailFrom');
-
-use_ok('RT');
-RT::LoadConfig();
-RT::Init();
 
 use_ok('RT::IR');
 
@@ -28,6 +24,7 @@ diag "load the field" if $ENV{'TEST_VERBOSE'};
 diag "get list of values" if $ENV{'TEST_VERBOSE'};
 my @values = map $_->Name, @{ $cf->Values->ItemsArrayRef };
 
+RT::Test->started_ok;
 my $agent = default_agent();
 my $rtir_user = rtir_user();
 

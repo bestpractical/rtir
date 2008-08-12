@@ -2,10 +2,11 @@
 
 use strict;
 use warnings;
-use Test::More tests => 20;
 
 require "t/rtir-test.pl";
+use Test::More tests => 24;
 
+RT::Test->started_ok;
 my $agent = default_agent();
 
 my $inv_id  = create_investigation($agent, {Subject => "i want to quick-resolve this"});

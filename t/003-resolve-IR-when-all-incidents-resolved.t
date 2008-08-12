@@ -2,10 +2,11 @@
 
 use strict;
 use warnings;
-use Test::More tests => 29;
 
 require "t/rtir-test.pl";
+use Test::More tests => 33;
 
+RT::Test->started_ok;
 my $agent = default_agent();
 
 my $ir_id  = create_ir($agent, {Subject => "resolves slowly"});

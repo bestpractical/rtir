@@ -3,9 +3,8 @@
 use strict;
 use warnings;
 
-BEGIN { require "t/rtir-test.pl" };
-use lib 't/lib';
-use RT::IR::Test tests => 25;
+require "t/rtir-test.pl";
+use Test::More tests => 25;
 
 RT::Test->started_ok;
 my $agent = default_agent();

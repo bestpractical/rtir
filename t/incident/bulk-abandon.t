@@ -1,10 +1,12 @@
-use strict;
+#!/usr/bin/perl
 
-use Test::WWW::Mechanize;
-use Test::More tests => 98;
+use strict;
+use warnings;
 
 require "t/rtir-test.pl";
+use Test::More tests => 102;
 
+RT::Test->started_ok;
 my $agent = default_agent();
 
 my @ir_ids;

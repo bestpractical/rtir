@@ -2,10 +2,11 @@
 
 use strict;
 use warnings;
-use Test::More tests => 114;
 
 require "t/rtir-test.pl";
+use Test::More tests => 118;
 
+RT::Test->started_ok;
 my $agent = default_agent();
 
 diag "simple merge of IRs" if $ENV{'TEST_VERBOSE'};

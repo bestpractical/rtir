@@ -55,11 +55,12 @@ sub import_extra {
         ($ret, $msg) = $RT::Handle->InsertData('etc/initialdata');
         Test::More::ok($ret,"Created ACL: ".($msg||''));
 
-        #$RT::Handle->Connect;
+        $RT::Handle->Connect;
     }
 
     RT->Config->LoadConfig( File => 'RTIR_Config.pm' );
     RT->Config->Set( 'rtirname' => 'regression_tests' );
+    require RT::IR;
 }
 
 1;

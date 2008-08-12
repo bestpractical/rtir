@@ -2,19 +2,12 @@
 
 use strict;
 use warnings;
-use Test::More;
 
 require "t/rtir-test.pl";
-
-# XXX: we should use new RT::Test features and start server with
-# option we want.
-if ( RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject' ) {
-    plan tests => 200;
-} else {
-    plan skip_all => 'constituency propagation algorithm is not "reject"';
-}
+use Test::More tests => 204;
 
 use_ok('RT::IR');
+RT->Config->Set('_RTIR_Constituency_Propagation' => 'reject');
 
 my $cf;
 diag "load the field" if $ENV{'TEST_VERBOSE'};
@@ -26,6 +19,7 @@ diag "load the field" if $ENV{'TEST_VERBOSE'};
     ok $cf->id, 'with some ID';
 }
 
+RT::Test->started_ok;
 my $agent = default_agent();
 my $rtir_user = rtir_user();
 

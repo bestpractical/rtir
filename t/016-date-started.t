@@ -3,18 +3,15 @@
 use strict;
 use warnings;
 
-use Test::More tests => 69;
-
 require "t/rtir-test.pl";
+use Test::More tests => 73;
+
+RT::Test->started_ok;
+my $agent = default_agent();
 
 use_ok('RT');
-RT::LoadConfig();
-RT::Init();
-
 use_ok('RT::IR');
 
-
-my $agent = default_agent();
 my $rtir_user = RT::CurrentUser->new( rtir_user() );
 
 diag "started date of an investigation" if $ENV{'TEST_VERBOSE'};

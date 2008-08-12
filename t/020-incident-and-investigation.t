@@ -1,15 +1,15 @@
-# Tests the creation of inventory-and-investigation from an IR
+#!/usr/bin/perl
 
 use strict;
-
-use Test::WWW::Mechanize;
-use Test::More tests => 22;
+use warnings;
 
 require "t/rtir-test.pl";
-require RT::IR;
+use Test::More tests => 26;
 
+RT::Test->started_ok;
 my $agent = default_agent();
 
+# Tests the creation of inventory-and-investigation from an IR
 
 my $ir = create_ir($agent, {Subject => 'IR for testing creation of a linked Investigation with no correspondents'});
 display_ticket($agent, $ir);

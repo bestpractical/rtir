@@ -1,11 +1,12 @@
+#!/usr/bin/perl
+
 use strict;
 use warnings;
 
-use Test::WWW::Mechanize;
-use Test::More tests => 50;
-
 require "t/rtir-test.pl";
+use Test::More tests => 54;
 
+RT::Test->started_ok;
 my $agent = default_agent();
 
 my $ir = create_ir($agent, {Subject => 'IR to test watcher add bug', 

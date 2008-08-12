@@ -3,11 +3,10 @@
 use strict;
 use warnings;
 
-use Test::More tests => 49;
 require "t/rtir-test.pl";
+use Test::More tests => 52;
 
-use_ok('RT::IR');
-
+RT::Test->started_ok;
 my $agent = default_agent();
 
 diag "abandon unlinked incident" if $ENV{'TEST_VERBOSE'};

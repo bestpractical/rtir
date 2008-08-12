@@ -3,35 +3,10 @@
 use strict;
 use warnings;
 
-use Test::More tests => 16;
-use File::Temp qw(tempdir);
-
-use lib qw(/opt/rt3/local/lib /opt/rt3/lib);
-require RT::Test; import RT::Test;
 require "t/rtir-test.pl";
-
-{
-    $RT::Handle->InsertSchema(undef, '/opt/rt3/local/etc/FM');
-    $RT::Handle->InsertACL(undef, '/opt/rt3/local/etc/FM');
-
-    $RT::Handle = new RT::Handle;
-    $RT::Handle->dbh( undef );
-    RT->ConnectToDatabase;
-
-    local @INC = ('/opt/rt3/local/etc', '/opt/rt3/etc', @INC);
-    RT->Config->LoadConfig(File => "IR/RTIR_Config.pm");
-    $RT::Handle->InsertData('IR/initialdata');
-
-    $RT::Handle = new RT::Handle;
-    $RT::Handle->dbh( undef );
-    RT->ConnectToDatabase;
-}
+use Test::More tests => 19;
 
 RT->Config->Set( '_RTIR_Constituency_default' => 'EDUNET' );
-
-RT->Config->Set( 'Plugins' => 'RT::FM', 'RT::IR' );
-RT::InitPluginPaths();
-RT::InitPlugins();
 
 RT::Test->set_mail_catcher;
 

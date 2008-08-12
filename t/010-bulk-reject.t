@@ -2,10 +2,11 @@
 
 use strict;
 use warnings;
-use Test::More tests => 43;
 
 require "t/rtir-test.pl";
+use Test::More tests => 47;
 
+RT::Test->started_ok;
 my $agent = default_agent();
 
 # Create some reports

@@ -3,8 +3,8 @@
 use strict;
 use warnings;
 
-use Test::More tests => 10;
 require "t/rtir-test.pl";
+use Test::More tests => 13;
 
 use_ok('RT::IR');
 
@@ -28,7 +28,6 @@ my $queue_ir = RT::Test->load_or_create_queue( Name => 'Incident Reports' );
 ok $queue_ir && $queue_ir->id, 'loaded or created queue';
 
 # cleanup ACLs
-my @rights_backup = RT::Test->store_rights;
 RT::Test->set_rights;
 
 my $queue_ir_edunet = RT::Test->load_or_create_queue( Name => 'Incident Reports - EDUNET' );
@@ -48,6 +47,3 @@ ok $queue_ir_edunet && $queue_ir_edunet->id, 'loaded or created queue';
     ok $queue->CurrentUserHasRight('CreateTicket'), 'user has right';
     ok $queue->CurrentUserHasRight('SeeQueue'), 'user has right';
 }
-
-RT::Test->set_rights;
-RT::Test->restore_rights( @rights_backup );

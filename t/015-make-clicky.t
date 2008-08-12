@@ -3,18 +3,12 @@
 use strict;
 use warnings;
 
+require "t/rtir-test.pl";
 use Test::More tests => 33;
 
-require "t/rtir-test.pl";
-
-use_ok('RT');
-RT::LoadConfig();
-RT::Init();
-
-use_ok('RT::IR');
-
-
+RT::Test->started_ok;
 my $agent = default_agent();
+
 my $rtir_user = RT::CurrentUser->new( rtir_user() );
 
 my %clicky = map { lc $_ => 1 } RT->Config->Get('Active_MakeClicky');

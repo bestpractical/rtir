@@ -2,13 +2,12 @@
 
 use strict;
 use warnings;
-use Test::More tests => 483;
 
 require "t/rtir-test.pl";
+use Test::More tests => 486;
 
-use_ok('RT');
-RT::LoadConfig();
-RT::Init();
+RT::Test->started_ok;
+my $agent = default_agent();
 
 use_ok('RT::IR');
 
@@ -38,7 +37,6 @@ diag "check that CF applies to all RTIR's queues" if $ENV{'TEST_VERBOSE'};
     }
 }
 
-my $agent = default_agent();
 my $rtir_user = RT::CurrentUser->new( rtir_user() );
 
 diag "create a ticket via web and set IP" if $ENV{'TEST_VERBOSE'};

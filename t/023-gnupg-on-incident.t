@@ -3,29 +3,9 @@
 use strict;
 use warnings;
 
-use Test::More tests => 36;
-use File::Temp qw(tempdir);
-
-use lib qw(/opt/rt3/local/lib /opt/rt3/lib);
-require RT::Test; import RT::Test;
 require "t/rtir-test.pl";
-
-{
-    $RT::Handle->InsertSchema(undef, '/opt/rt3/local/etc/FM');
-    $RT::Handle->InsertACL(undef, '/opt/rt3/local/etc/FM');
-
-    $RT::Handle = new RT::Handle;
-    $RT::Handle->dbh( undef );
-    RT->ConnectToDatabase;
-
-    local @INC = ('/opt/rt3/local/etc', '/opt/rt3/etc', @INC);
-    RT->Config->LoadConfig(File => "IR/RTIR_Config.pm");
-    $RT::Handle->InsertData('IR/initialdata');
-
-    $RT::Handle = new RT::Handle;
-    $RT::Handle->dbh( undef );
-    RT->ConnectToDatabase;
-}
+use Test::More tests => 39;
+use File::Temp qw(tempdir);
 
 my @rights_backup = RT::Test->store_rights;
 
@@ -43,10 +23,6 @@ RT->Config->Set( GnuPGOptions =>
 diag "GnuPG --homedir ". RT->Config->Get('GnuPGOptions')->{'homedir'};
 
 RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
-
-RT->Config->Set( 'Plugins' => 'RT::FM', 'RT::IR' );
-RT::InitPluginPaths();
-RT::InitPlugins();
 
 my $queue = RT::Test->load_or_create_queue(
     Name              => 'Incident Reports',

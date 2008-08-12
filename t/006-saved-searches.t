@@ -2,10 +2,11 @@
 
 use strict;
 use warnings;
-use Test::More tests => 15;
 
 require "t/rtir-test.pl";
+use Test::More tests => 19;
 
+RT::Test->started_ok;
 my $agent = default_agent();
 
 $agent->follow_link_ok({text => "RT"}, "went to main RT page");

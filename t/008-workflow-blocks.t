@@ -2,10 +2,11 @@
 
 use strict;
 use warnings;
-use Test::More tests => 108;
 
 require "t/rtir-test.pl";
+use Test::More tests => 112;
 
+RT::Test->started_ok;
 my $agent = default_agent();
 
 my $inc_id   = create_incident($agent, {Subject => "incident with block"});
