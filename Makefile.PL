@@ -7,8 +7,8 @@ version_from('lib/RT/IR.pm');
 
 { # check RT version
     my @v = split /\./, "$RT::VERSION";
-    unless ($v[0]>=3 && $v[1]>=7) {
-        die "RTIR 2.x needs RT 3.7.0 at least, you have $RT::VERSION";
+    unless ($v[0]>=3 && $v[1]>=8 && ($v[2]>=1 || $v[2]eq'HEAD')) {
+        die "RTIR 2.4 and newer needs RT 3.8.1 at least, you have $RT::VERSION";
     }
 }
 
