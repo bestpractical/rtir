@@ -1,33 +1,33 @@
---- 
-abstract: RT IR Extension
-author: 
-  - Best Practical Solutions <sales@bestpractical.com>
-build_requires: 
+---
+abstract: 'RT IR Extension'
+author:
+  - 'Best Practical Solutions <sales@bestpractical.com>'
+build_requires:
   File::Find: 0
   File::Temp: 0
   Test::More: 0
 distribution_type: module
-generated_by: Module::Install version 0.68
-license: GPL Version 2
-meta-spec: 
-  url: http://module-build.sourceforge.net/META-spec-v1.3.html
-  version: 1.3
+generated_by: 'Module::Install version 0.77'
+license: 'GPL Version 2'
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
 name: RT-IR
-no_index: 
-  directory: 
+no_index:
+  directory:
     - etc
     - html
+    - po
+    - var
     - inc
     - t
-requires: 
+requires:
   Business::Hours: 0
   Business::SLA: 0
   DBIx::SearchBuilder: 1.51
   Hook::LexWrap: 0
   Net::CIDR: 0
   Net::Whois::RIPE: 0
-  RT::FM: 0
   Regexp::Common: 0
   Regexp::Common::net::CIDR: 0
-tests: t/*.t t/*/*.t
-version: 2.3.17
+version: 2.4.0rc1

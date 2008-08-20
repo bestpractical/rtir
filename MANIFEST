@@ -252,6 +252,7 @@ t/data/gnupg/keys/rt-test-at-example.com.secret.key
 t/incident/abandon.t
 t/incident/bulk-abandon.t
 t/incident/split.t
+t/lib/RT/IR/Test.pm
 t/mail/skip_notification.t
 t/rtir-test.pl
 UPGRADING
