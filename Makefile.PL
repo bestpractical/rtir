@@ -15,9 +15,11 @@ version_from('lib/RT/IR.pm');
 # XXX: This should be reported by M::I::RTx
 my ($lib_path) = $INC{'RT.pm'} =~ /^(.*)[\\\/]/;
 my $local_lib_path = "$RT::LocalPath/lib";
-
 unshift @INC, $local_lib_path, $lib_path;
-requires('RT::FM');
+
+# XXX: we can not depend on RT::FM as new plugin system
+# is not ready for that
+#requires('RT::FM');
 
 # RTIR needs this version of SB cuz of bug-fix
 requires('DBIx::SearchBuilder', 1.51);
