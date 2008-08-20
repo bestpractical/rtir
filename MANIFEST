@@ -223,7 +223,6 @@ t/013-custom-field-ip.t
 t/015-make-clicky.t
 t/016-date-due.t
 t/016-date-started.t
-t/017-locking.t
 t/019-watchers-on-create.t
 t/019-webui-block-fields.t
 t/020-incident-and-investigation.t
