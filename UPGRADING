@@ -10,13 +10,30 @@ General upgrade instructions
 
 0) Make a backup of the database. It's very important.
 
-1) Upgrade to the RT 3.7 following its upgrade instructions.
+1) Layout of files in RT's directories have been changed in RT 3.8.0.
+   Each extension is installed in its own directory and is activated
+   using Plugins option.
 
-2) Install or upgrade RTFM.
+   Also, some files have been renamed and delete, if you leave old
+   files around, you can hurt functionality of the new version.
 
-3) Delete '/opt/rt3/share/html/Callbacks/RTIR'. If you have
-   any locally customized components in that directory, you
-   should be careful not to delete them during the upgrade.
+   Start from new directory for this installtion instead of using
+   directories with previous RT and extensions.
+
+2) Install and upgrade database to the RT 3.8.1 or newer following
+   its upgrade instructions.
+
+2.1) Test how RT upgrade went. You should be able to start server,
+     create tickets and do other things in the RT interface.
+
+2.2) Make another backup of the DB, so you can return to this step
+     if something goes wrong.
+
+3) Install or upgrade RTFM 2.4.0rc1 or newer.
+
+3.1) Enable it in the RT config using @Plugins option
+
+3.2) Test RT and RTFM again
 
 4) Install the new version of RTIR. (DO NOT RUN "make initdb")
 
@@ -27,21 +44,16 @@ General upgrade instructions
         ls etc/upgrade
 
     For each item in that directory whose name is greater than
-    your previously installed RTIR version, run:
-    
-        /opt/rt3/sbin/rt-setup-database --dba <dba> \
-            --prompt-for-dba-password --action schema \
-            --datadir etc/upgrade/<version>
-        /opt/rt3/sbin/rt-setup-database --dba <dba> \
-            --prompt-for-dba-password --action insert \
-            --datadir etc/upgrade/<version>
+    your previously installed RTIR version, you must run upgrade
+    commands.
 
-    After each step follow additional instructions below.
+    Each step is described below and may have additional instructions.
+    Read them before running upgrade commands.
 
-    For example if you had RTIR 1.1.1 then you should run
-    above commands for etc/upgrade/1.1.3 datadir, check
+    For example if you had RTIR 1.1.1 then you should check
     instructions under "Applying changes from etc/upgrade/1.1.3"
-    section below, then do the same with 1.9.0 dir and greater.
+    section below and run commands, then do the same with 1.9.0 dir
+    and greater.
 
     *Note* that even if there is no etc/upgrade/<some version> dir
     then anyway *you must* read instructions below for all versions
@@ -49,12 +61,30 @@ General upgrade instructions
     may require manual changes or describe important changes in
     the RTIR you should be aware of.
 
+    Commands you should run to upgrade DB using data
+    from etc/upgrade/<version> directory: If the dir has any schema
+    files then run:
+
+        /opt/rt3/sbin/rt-setup-database --dba <dba> \
+            --prompt-for-dba-password --action schema \
+            --datadir etc/upgrade/<version>
+
+    If the dir has a file named 'content' then run:
+
+        /opt/rt3/sbin/rt-setup-database --dba <dba> \
+            --prompt-for-dba-password --action insert \
+            --datadir etc/upgrade/<version>
+
 Upgrading from 2.3.17 and earlier
 -------------------------
 
-By accident RTFM's CustomField Respons could be created with MaxValues = 0
-what is incorrect and should be changed to 1, run the following query to
-update the DB.
+1) Layout of files in RT's directories have been changed in RT 3.8.0.
+   Each extension is installed in its own directory and is activated
+   using @Plugins options in the RT config.
+
+2) By accident RTFM's CustomField Response could be created with MaxValues = 0
+   what is incorrect and should be changed to 1, run the following query to
+   update the DB.
 
     UPDATE CustomFields SET MaxValues = 1 WHERE
             Name = 'Response'
@@ -112,16 +142,16 @@ old template, you have to check that the new template suites your
 needs and may be copy customizations from the old one, then delete
 the NewMessage template.
 
-3) The new 'BlockRemoved' template has been added in the Blocks
-queue. Check its content.
-
-4) NotifyOnLaunch and NotifyOnCreate scrips have been deleted in
+3) NotifyOnLaunch and NotifyOnCreate scrips have been deleted in
 the Implementations and the Blocks queues respectively. You have to
 use the default RT's Autoreply scrip instead or create autoreply
 scrips in these queues if global one is disabled or doesn't exist.
 You need the following scrip in the queues:
 
   On Create AutoReply to Requestors with Template Autoreply
+
+4) The new 'BlockRemoved' template has been added in the Blocks
+queue. Check its content.
 
 Applying changes from upgrade/1.1.3
 -------------------------
@@ -134,7 +164,7 @@ Also, we change action of the 'SetDueReopen' scrips.
 Applying changes from upgrade/1.1.1
 -------------------------
 
-1) At these step we switch from 'UserDefined' actions and conditions
+1) At this step we switch from 'UserDefined' actions and conditions
    to modules, so all code would be in the lib directory. If you changed
    the code of the scrips then you have to port changes.
 
@@ -152,13 +182,12 @@ the DutyTeam group.
 Upgrading from RTIR 1.0.0:
 --------------------------
 
-RTIR now installs in RT's share/html directory rather than local/html,
+RTIR now installs in RT's local/plugins/RT-IR directory rather than local/html,
 making local modifications to RTIR easier.
 
 1) IMPORTANT!  Back up any modifications that you've made to the
    /opt/rt3/local/html/RTIR directory.
 
-2) Remove the old RTIR files:
-
-   rm -r /opt/rt3/local/html/RTIR
+2) Remove the old RTIR files or better install everything into clean directory
+   as described in the beginning of this file.
 

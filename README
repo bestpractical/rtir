@@ -14,9 +14,8 @@ or RTIR, please contact Best Practical at sales@bestpractical.com.
 REQUIRED PACKAGES:
 ------------------
 
-o   RT 3.7.0 or later, configured, installed and tested.
-o   RTFM 2.2.0RC4 or later, configured, installed and tested.
-
+o   RT 3.8.1 or later, configured, installed and tested.
+o   RTFM 2.4.0RC1 or later, configured, installed and tested.
 
 
 Upgrade instructions:
@@ -30,43 +29,37 @@ information.
 Installation instructions:
 --------------------------
 
-1) Install RT 3.7 following RT's regular installation instructions
+1) Install RT 3.8.1 or newer following RT's regular installation instructions
 
-2) Install RTFM 2.2.0RC4 or nerwer, following the installation instructions
+2) Install RTFM 2.4.1RC1 or nerwer, following the installation instructions
    in RTFM's README file. (Don't forget to run "make initdb" to set up the 
-   database for RTFM);
+   database for RTFM and activate it using @Plugins option in the RT config); 
 
-3) If you want to enable ticket/incident aging, install RT::Extension::TicketAging
-   following the installation instructions in that extension's INSTALL and README 
-   files.
+3) Run "perl Makefile.PL" to generate a makefile for RTIR. 
 
-4) Run "perl Makefile.PL" to generate a makefile for RTIR. 
-
-5) Install any extra Perl modules RTIR needs that aren't already
+4) Install any extra Perl modules RTIR needs that aren't already
    installed.
 
-6) Type "make install".
+5) Type "make install".
 
-7) Add the following lines to your RT_SiteConfig.pm file:
-
-   # The RTIR config file
-
-   $RTIR_CONFIG_FILE = $RT::LocalEtcPath."/IR/RTIR_Config.pm";
-
-   require $RTIR_CONFIG_FILE
-     || die ("Couldn't load RTIR config file '$RTIR_CONFIG_FILE'\n$@");
-
-8) If you are installing RTIR for the first time, initialize the RTIR
+6) If you are installing RTIR for the first time, initialize the RTIR
    database by typing "make initdb".
 
    WARNING: Do not attempt to re-initialize the database if you are
    upgrading.
 
-9) If you want to enable ticket locking, install RT::Extension::TicketLocking
-   following the installation instructions in that extension's README file.
+7) Activate RTIR extion in the RT config:
 
-10) Stop and start your web server.  
+    Set(@Plugins, 'RT::FM', 'RT::IR');
 
+8) Stop and start your web server.
+
+9) If you want to enable ticket/incident aging, install RT::Extension::TicketAging
+   following the installation instructions in that extension's INSTALL and README 
+   files.
+
+10) If you want to enable ticket locking, install RT::Extension::TicketLocking
+    following the installation instructions in that extension's README file.
 
 
 Configuring RTIR
