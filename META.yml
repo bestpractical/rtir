@@ -30,4 +30,5 @@ requires:
   Net::Whois::RIPE: 0
   Regexp::Common: 0
   Regexp::Common::net::CIDR: 0
-version: 2.4.0rc1
+  perl: 5.8.3
+version: 2.4.0rc2
