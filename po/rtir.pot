@@ -1,0 +1,1755 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: RTIR 2.4.x\n"
+"PO-Revision-Date: 2008-07-07 21:30+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: rt-devel <rt-deve@lists.bestpractical.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: html/RTIR/Incident/ShowChildren.html:76
+#. ($id, $Incident->Subject)
+msgid "$Queue for Incident #%1: %2"
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:96
+#. ($id)
+msgid "$Type #%1"
+msgstr ""
+
+#: html/RTIR/Display.html:328 html/RTIR/Incident/Create.html:73 html/RTIR/Incident/Create.html:79
+#. ($name, $Ticket->Id, $Ticket->Subject)
+#. ($Type, $TicketObj->Id, $TicketObj->Subject)
+#. ($Type, $ChildObj->Id, $ChildObj->Subject)
+msgid "%1 #%2: %3"
+msgstr ""
+
+#: html/RTIR/Elements/ShowDates:56
+#. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
+msgid "%1 by %2"
+msgstr ""
+
+#: html/RTIR/Display.html:64 html/RTIR/Incident/Display.html:76
+#. ($TimeWorked)
+msgid "%1 min"
+msgstr ""
+
+#: html/RTIR/EditUsername:4
+#. ($User->EmailAddress)
+msgid "%1's name"
+msgstr ""
+
+#: html/RTIR/Elements/EditPeople:32
+msgid "(Check box to delete)"
+msgstr ""
+
+#: html/RTIR/Investigation/Elements/Create:41
+msgid ""
+"(Sends a carbon-copy of this update to a comma-delimited list of\n"
+"email addresses. These people <b>will</b> receive future updates.)"
+msgstr ""
+
+#: html/RTIR/Investigation/Elements/Create:49
+msgid ""
+"(Sends a carbon-copy of this update to a comma-delimited list of administrative\n"
+"email addresses. These people <b>will</b> receive future updates.)"
+msgstr ""
+
+#: html/RTIR/Create.html:144
+msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)"
+msgstr ""
+
+#: html/RTIR/Create.html:137
+msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)"
+msgstr ""
+
+#: html/RTIR/Elements/ChildSummary:60
+#. ($Queue)
+msgid "(no %1)"
+msgstr ""
+
+#: html/RTIR/Elements/ShowIncidents:41
+msgid "(no Incidents)"
+msgstr ""
+
+#: html/RTIR/Incident/LinkArticles.html:48
+msgid "(no name)"
+msgstr ""
+
+#: html/RTIR/Create.html:94
+msgid "(required)"
+msgstr ""
+
+#: html/RTIR/Elements/EditConstituency:59
+msgid "-"
+msgstr ""
+
+#: etc/initialdata:371 etc/upgrade/2.1.1/content:10
+msgid "A block was activated or created in active state"
+msgstr ""
+
+#: etc/initialdata:366 etc/upgrade/2.1.0/content:114
+msgid "A group responsible for constituency must be changed"
+msgstr ""
+
+#: html/RTIR/Tools/Elements/GetEmailFromIP:28 html/RTIR/Tools/ScriptedAction.html:322
+msgid "ADDRESS_UNKNOWN"
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:220 html/RTIR/Incident/Reply.html:131
+msgid "Abandon"
+msgstr ""
+
+#: html/RTIR/Update.html:126
+#. ($name, $id, $Ticket->Subject)
+msgid "Abandon %1 #%2 (%3)"
+msgstr ""
+
+#: html/RTIR/Incident/Reply.html:130
+msgid "Abandon Incident"
+msgstr ""
+
+#: html/RTIR/Incident/Reply.html:129
+#. ($id)
+msgid "Abandon Incident #%1 (including children)"
+msgstr ""
+
+#: html/RTIR/Incident/BulkAbandon.html:88
+msgid "Abandon Incidents"
+msgstr ""
+
+#: html/RTIR/Incident/BulkAbandon.html:89
+msgid "Abandon selected incidents"
+msgstr ""
+
+#: html/Callbacks/RTIR/Elements/Header/Default:2
+msgid "About RTIR"
+msgstr ""
+
+#: html/RTIR/Elements/ChildSummary:33 html/RTIR/Elements/IncidentSummary:32
+msgid "Actions<b>"
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:204 html/RTIR/Elements/QueueTabs:227
+msgid "Activate"
+msgstr ""
+
+#: html/RTIR/Search/Elements/BuildQuery:58
+msgid "Add"
+msgstr ""
+
+#: html/RTIR/Search/Elements/PickCriteria:46
+msgid "Add Criteria"
+msgstr ""
+
+#: html/Callbacks/RTIR/Elements/MakeClicky/Default:49
+msgid "Add IP"
+msgstr ""
+
+#: html/RTIR/Create.html:540
+msgid "Add More Files"
+msgstr ""
+
+#: html/RTIR/Search/Elements/BuildQuery:58
+msgid "Add additional criteria"
+msgstr ""
+
+#: html/RTIR/Elements/AddWatchers:27
+msgid "Add new Correspondents"
+msgstr ""
+
+#: html/RTIR/Create.html:540
+msgid "Add/Delete Files"
+msgstr ""
+
+#: html/RTIR/Create.html:512
+#. ($filename)
+msgid "Added attachment '%1'"
+msgstr ""
+
+#: html/RTIR/Tools/ScriptedAction.html:108
+msgid "Addresses"
+msgstr ""
+
+#: html/RTIR/Create.html:141 html/RTIR/Elements/EditPeople:56 html/RTIR/Investigation/Elements/Create:46
+msgid "Admin Cc"
+msgstr ""
+
+#: html/RTIR/Elements/ShowPeople:43
+msgid "AdminCc"
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:130
+msgid "Advanced"
+msgstr ""
+
+#: html/RTIR/Advanced.html:92
+#. ($id)
+msgid "Advanced edit $Type #%1"
+msgstr ""
+
+#: html/RTIR/Search/Elements/PickCriteria:50
+msgid "Aggregator"
+msgstr ""
+
+#: html/RTIR/Tools/ScriptedAction.html:129
+msgid "Argument"
+msgstr ""
+
+#: html/RTIR/Display.html:149 html/RTIR/Incident/Display.html:162
+msgid "Articles"
+msgstr ""
+
+#: html/RTIR/Reporting/Elements/SLASummary:26
+msgid "At the start of the time period"
+msgstr ""
+
+#: html/RTIR/Elements/AttachReports:1
+msgid "Attach Reports"
+msgstr ""
+
+#: html/RTIR/Create.html:537
+msgid "Attach file"
+msgstr ""
+
+#: html/RTIR/Create.html:526
+msgid "Attached file"
+msgstr ""
+
+#: html/RTIR/Forward.html:32
+msgid "BCc"
+msgstr ""
+
+#: html/RTIR/Elements/Tabs:65
+msgid "Blocks"
+msgstr ""
+
+#: html/RTIR/Incident/Reply.html:82
+msgid "Blocks Correspondents"
+msgstr ""
+
+#: html/RTIR/Create.html:353 html/RTIR/Display.html:230 html/RTIR/Edit.html:238
+msgid "Blocks queue is disabled via config file"
+msgstr ""
+
+#: html/RTIR/Tools/Lookup.html:79
+#. ($q)
+msgid "Blocks: %1"
+msgstr ""
+
+#: html/RTIR/Search/Elements/Tabs:14 html/RTIR/Search/index.html:80
+msgid "Build Search"
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:332
+msgid "Bulk Abandon"
+msgstr ""
+
+#: html/RTIR/Elements/ChildSummary:67
+msgid "Bulk Link"
+msgstr ""
+
+#: html/RTIR/Elements/NewReports:48 html/RTIR/Elements/QueueTabs:317 html/RTIR/Search/Elements/ShowResults:40 html/RTIR/Search/Elements/ShowResults:47
+msgid "Bulk Reject"
+msgstr ""
+
+#: html/RTIR/Search/Elements/RefineTabs:51
+msgid "Bulk reply"
+msgstr ""
+
+#: html/RTIR/Tools/Elements/Tabs:45
+msgid "By Email address"
+msgstr ""
+
+#: html/RTIR/Tools/Elements/Tabs:47
+msgid "By IP address"
+msgstr ""
+
+#: html/RTIR/Create.html:134 html/RTIR/Elements/EditPeople:46 html/RTIR/Elements/ShowPeople:39 html/RTIR/Forward.html:29 html/RTIR/Investigation/Elements/Create:38
+msgid "Cc"
+msgstr ""
+
+#: etc/initialdata:279 etc/upgrade/1.1.1/content:38
+msgid "Change the ownership of Incident's children"
+msgstr ""
+
+#: html/RTIR/Create.html:528
+msgid "Check box to delete"
+msgstr ""
+
+#: html/RTIR/Elements/ShowChildren:35
+msgid "Check box to unlink"
+msgstr ""
+
+#: html/RTIR/Search/Elements/RefineTabs:42
+#. ($Queue)
+msgid "Children: %1"
+msgstr ""
+
+#: html/RTIR/Incident/Display.html:95 html/RTIR/Incident/Edit.html:110 html/RTIR/Incident/Elements/Create:73
+msgid "Classification"
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:276
+msgid "Comment"
+msgstr ""
+
+#: html/RTIR/Incident/Elements/ReplyForm:10 html/RTIR/Update.html:72
+msgid "Comments (Not sent to requestors)"
+msgstr ""
+
+#: html/RTIR/Create.html:148 html/RTIR/Display.html:56 html/RTIR/Edit.html:90 html/RTIR/Incident/Display.html:79 html/RTIR/Incident/Edit.html:91 html/RTIR/Incident/Elements/Create:40 html/RTIR/Reporting/index.html:36
+msgid "Constituency"
+msgstr ""
+
+#: html/RTIR/Tools/ScriptedAction.html:87
+msgid "Contact Field"
+msgstr ""
+
+#: html/RTIR/Create.html:126 html/RTIR/Elements/EditPeople:35 html/RTIR/Elements/ShowPeople:35 html/RTIR/Investigation/Elements/Create:33 html/RTIR/Update.html:46
+msgid "Correspondents"
+msgstr ""
+
+#: html/RTIR/Tools/ScriptedAction.html:293
+#. ($ip, $err)
+msgid "Couldn't get address for %1: %2"
+msgstr ""
+
+#: html/RTIR/Incident/Display.html:224
+msgid "Couldn't link tickets with different constituencies"
+msgstr ""
+
+#: html/RTIR/Create.html:377
+#. ($Incident)
+msgid "Couldn't load incident #%1"
+msgstr ""
+
+#: html/RTIR/Incident/Display.html:265
+msgid "Couldn't load queue."
+msgstr ""
+
+#: html/RTIR/Incident/Display.html:312
+#. ($id)
+msgid "Couldn't load ticket #%1 for linking."
+msgstr ""
+
+#: html/RTIR/Incident/BulkAbandon.html:103 html/RTIR/Report/BulkReject.html:89
+msgid "Couldn't load ticket."
+msgstr ""
+
+#: html/RTIR/Forward.html:50 html/RTIR/GnuPG.html:29
+#. ($QuoteTransaction)
+#. ($id)
+msgid "Couldn't load transaction #%1"
+msgstr ""
+
+#: html/RTIR/Report/BulkReject.html:122
+#. ($msg)
+msgid "Couldn't take ticket: %1"
+msgstr ""
+
+#: html/RTIR/Create.html:461 html/RTIR/Incident/Create.html:177 html/RTIR/Tools/ScriptedAction.html:187
+msgid "Create"
+msgstr ""
+
+#: html/RTIR/Incident/Create.html:194
+msgid "Create Incident and run Investigation"
+msgstr ""
+
+#: html/RTIR/Create.html:460
+#. ($name)
+msgid "Create a new %1"
+msgstr ""
+
+#: html/RTIR/Incident/Create.html:311
+msgid "Create a new Incident"
+msgstr ""
+
+#: html/RTIR/Search/Elements/RefineTabs:57
+#. ($QueueType)
+msgid "Create linked %1"
+msgstr ""
+
+#: html/RTIR/Tools/ScriptedAction.html:187
+msgid "Create the Incidents and Investigations"
+msgstr ""
+
+#: html/RTIR/Elements/ShowDates:27
+msgid "Created"
+msgstr ""
+
+#: html/RTIR/Create.html:448
+msgid "Creation failed:"
+msgstr ""
+
+#: html/RTIR/Tools/Lookup.html:34
+#. ($TicketType, $ticket)
+msgid "Current %1: #%2"
+msgstr ""
+
+#: html/RTIR/Elements/EditPeople:28
+msgid "Current Correspondents"
+msgstr ""
+
+#: html/RTIR/Create.html:182 html/RTIR/Create.html:245 html/RTIR/Display.html:126 html/RTIR/Display.html:75 html/RTIR/Edit.html:109 html/RTIR/Edit.html:175 html/RTIR/Investigation/Elements/Create:54
+msgid "Customer"
+msgstr ""
+
+#: html/RTIR/Prefs/Home.html:19
+#. (loc("RTIR home page"))
+msgid "Customize '%1'"
+msgstr ""
+
+#: html/RTIR/Elements/PickRestriction:53
+msgid "Date"
+msgstr ""
+
+#: html/RTIR/Create.html:322 html/RTIR/Display.html:181 html/RTIR/Edit.html:208 html/RTIR/Incident/Create.html:153 html/RTIR/Incident/Display.html:147 html/RTIR/Incident/Edit.html:151 html/RTIR/Investigation/Elements/Create:101
+msgid "Dates"
+msgstr ""
+
+#: html/RTIR/GnuPG.html:16
+msgid "Decrypt"
+msgstr ""
+
+#: html/RTIR/Create.html:497
+#. ($_)
+msgid "Deleted attachment '%1'"
+msgstr ""
+
+#: html/RTIR/Incident/Display.html:62 html/RTIR/Incident/Edit.html:73 html/RTIR/Incident/Elements/Create:31
+msgid "Description"
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:107
+msgid "Display"
+msgstr ""
+
+#: html/RTIR/Create.html:130
+msgid "Don't send any emails to correspondents."
+msgstr ""
+
+#: html/RTIR/Elements/PickRestriction:152
+msgid "Don't show search results"
+msgstr ""
+
+#: html/RTIR/Create.html:332 html/RTIR/Elements/EditDates:51 html/RTIR/Elements/ShowDates:41 html/RTIR/Incident/Create.html:162 html/RTIR/Investigation/Elements/Create:108
+msgid "Due"
+msgstr ""
+
+#: html/RTIR/Elements/DueIncidents:26
+msgid "Due Incidents"
+msgstr ""
+
+#: html/RTIR/Reporting/Elements/SLASummary:33
+msgid "During the time period"
+msgstr ""
+
+#: etc/initialdata:672
+msgid "Duty Team Members"
+msgstr ""
+
+#: etc/initialdata:678 etc/upgrade/2.1.0/content:82
+msgid "Duty Team responsible for EDUNET constituency"
+msgstr ""
+
+#: etc/initialdata:684 etc/upgrade/2.1.0/content:88
+msgid "Duty Team responsible for GOVNET constituency"
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:115 html/RTIR/ShowUser:7 html/RTIR/index.html:94
+msgid "Edit"
+msgstr ""
+
+#: html/RTIR/Edit.html:313
+#. ($name, $Ticket->Id, $Ticket->Subject)
+msgid "Edit %1 #%2: %3"
+msgstr ""
+
+#: html/RTIR/Incident/Edit.html:25 html/RTIR/Incident/Edit.html:31
+#. ($Ticket->Id, $Ticket->Subject)
+msgid "Edit Incident #%1: %2"
+msgstr ""
+
+#: html/RTIR/Advanced.html:58
+msgid "Edit Links"
+msgstr ""
+
+#: html/RTIR/Advanced.html:14
+msgid "Edit basics"
+msgstr ""
+
+#: html/RTIR/Elements/AddWatchers:46
+msgid "Email"
+msgstr ""
+
+#: html/RTIR/GnuPG.html:16 html/RTIR/Investigation/Elements/Create:83
+msgid "Encrypt"
+msgstr ""
+
+#: html/RTIR/GnuPG.html:62
+#. ($id, $ticket->id)
+msgid "Encrypt/Decrypt transaction #%1 of ticket #%2"
+msgstr ""
+
+#: html/RTIR/Reporting/index.html:53
+msgid "End Date:"
+msgstr ""
+
+#: html/RTIR/Reporting/Report.html:30
+msgid "End date"
+msgstr ""
+
+#: html/RTIR/Elements/Refresh:35
+#. ($value/60)
+msgid "Every %1 minutes"
+msgstr ""
+
+#: html/RTIR/Search/Elements/PickCriteria:56
+msgid "Field"
+msgstr ""
+
+#: html/RTIR/Elements/ShowChildren:31
+msgid "Filter states"
+msgstr ""
+
+#: html/RTIR/Advanced.html:52 html/RTIR/Incident/Create.html:141
+msgid "Final Priority"
+msgstr ""
+
+#: html/RTIR/Elements/EditPeople:68
+msgid "Find people whose"
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:69
+msgid "First"
+msgstr ""
+
+#: html/RTIR/Forward.html:37
+msgid "Forward Message"
+msgstr ""
+
+#: html/RTIR/Forward.html:60
+msgid "Forward message"
+msgstr ""
+
+#: html/RTIR/Forward.html:8
+#. ($QuoteTransaction)
+msgid "Forward transaction #%1"
+msgstr ""
+
+#: html/RTIR/Incident/Display.html:87 html/RTIR/Incident/Edit.html:101 html/RTIR/Incident/Elements/Create:64
+msgid "Function"
+msgstr ""
+
+#: html/RTIR/Reporting/index.html:66
+msgid "Generate a HTML report"
+msgstr ""
+
+#: html/RTIR/Reporting/index.html:60
+msgid "Generate a delimited text report"
+msgstr ""
+
+#: html/RTIR/Reporting/index.html:71
+msgid "Generate a spreadsheet report"
+msgstr ""
+
+#: html/RTIR/Search/Elements/ShowResults:73 html/RTIR/Search/Reporting.html:20
+msgid "Go"
+msgstr ""
+
+#: html/RTIR/Elements/EditPeople:70
+msgid "Go!"
+msgstr ""
+
+#: html/RTIR/Elements/AddWatchers:39
+msgid "Group"
+msgstr ""
+
+#: html/RTIR/Reporting/index.html:67
+msgid "HTML"
+msgstr ""
+
+#: html/RTIR/Create.html:190 html/RTIR/Display.html:83 html/RTIR/Edit.html:118
+msgid "How Reported"
+msgstr ""
+
+#: html/RTIR/Edit.html:185 html/RTIR/Incident/Edit.html:119 html/RTIR/Incident/Elements/Create:98
+msgid "IP"
+msgstr ""
+
+#: html/RTIR/Display.html:135 html/RTIR/Edit.html:142 html/RTIR/Incident/Display.html:111
+msgid "IP Address"
+msgstr ""
+
+#: html/RTIR/Tools/ScriptedAction.html:95
+msgid "IP Addresses"
+msgstr ""
+
+#: html/RTIR/Create.html:254
+msgid "IP address"
+msgstr ""
+
+#: html/RTIR/Tools/ScriptedAction.html:276
+msgid "IP_UNKNOWN"
+msgstr ""
+
+#: html/RTIR/Tools/ScriptedAction.html:55
+msgid "Identify Recipients"
+msgstr ""
+
+#: html/RTIR/Advanced.html:65 html/RTIR/Edit.html:224 html/RTIR/Incident/Edit.html:160
+msgid "If you've updated anything above, be sure to"
+msgstr ""
+
+#: html/RTIR/Create.html:78 html/RTIR/Create.html:94 html/RTIR/Display.html:50 html/RTIR/Edit.html:78
+msgid "Incident"
+msgstr ""
+
+#: html/RTIR/Incident/Display.html:38
+#. ($id)
+msgid "Incident #%1"
+msgstr ""
+
+#: html/RTIR/Create.html:388
+#. ($Incident, $IncidentObj->FirstCustomFieldValue('_RTIR_Constituency'))
+msgid "Incident #%1 has constituency %2, choose the same value for a new ticket or use another Incident"
+msgstr ""
+
+#: html/RTIR/Incident/Display.html:26 html/RTIR/Incident/Display.html:31
+#. ($id, $TicketObj->Subject)
+msgid "Incident #%1: %2"
+msgstr ""
+
+#: html/RTIR/Incident/Reply.html:136
+#. ($id)
+msgid "Incident #%1: Reply to All"
+msgstr ""
+
+#: html/RTIR/Incident/Reply.html:138
+#. ($id)
+msgid "Incident #%1: Reply to Reporters"
+msgstr ""
+
+#: html/RTIR/Reporting/Report.html:34
+msgid "Incident Report Summary (including unlinked Incident Reports)"
+msgstr ""
+
+#: html/RTIR/Elements/Tabs:55
+msgid "Incident Reports"
+msgstr ""
+
+#: html/RTIR/Reporting/Elements/SLASummary:36
+msgid "Incident Reports for which SLA time was met"
+msgstr ""
+
+#: html/RTIR/Reporting/Report.html:38
+msgid "Incident Reports resolved during this period"
+msgstr ""
+
+#: html/RTIR/Tools/Lookup.html:66
+#. ($q)
+msgid "Incident Reports: %1"
+msgstr ""
+
+#: html/RTIR/Reporting/Report.html:70
+msgid "Incident reports received"
+msgstr ""
+
+#: html/RTIR/Elements/Tabs:53
+msgid "Incidents"
+msgstr ""
+
+#: html/RTIR/Tools/Lookup.html:43
+#. ($q)
+msgid "Incidents: %1"
+msgstr ""
+
+#: html/RTIR/Create.html:439 html/RTIR/Incident/Create.html:245
+msgid "Invalid value(s) of the custom fields:"
+msgstr ""
+
+#: html/RTIR/Elements/IncidentSummary:54 html/RTIR/Tools/Lookup.html:184
+msgid "Investigate"
+msgstr ""
+
+#: html/Callbacks/RTIR/Elements/MakeClicky/Default:82 html/RTIR/Elements/MakeClicky:58
+msgid "Investigate to"
+msgstr ""
+
+#: html/RTIR/Tools/Lookup.html:183 html/RTIR/Tools/Lookup.html:188
+msgid "Investigate to selected addresses"
+msgstr ""
+
+#: html/RTIR/Tools/Lookup.html:189
+msgid "Investigate using scripted action"
+msgstr ""
+
+#: html/RTIR/Incident/Reply.html:67
+msgid "Investigation Correspondents"
+msgstr ""
+
+#: html/RTIR/Elements/Tabs:57
+msgid "Investigations"
+msgstr ""
+
+#: html/RTIR/Tools/Lookup.html:54
+#. ($q)
+msgid "Investigations: %1"
+msgstr ""
+
+#: html/RTIR/Incident/BulkAbandon.html:109
+msgid "Is not incident."
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:88
+msgid "Last"
+msgstr ""
+
+#: html/RTIR/Elements/EditDates:33
+msgid "Last Contact"
+msgstr ""
+
+#: html/RTIR/Create.html:458 html/RTIR/Incident/Elements/ShowChildren:49
+msgid "Launch"
+msgstr ""
+
+#: html/RTIR/Create.html:457
+#. ($name)
+msgid "Launch a new %1"
+msgstr ""
+
+#: html/RTIR/Elements/ChildSummary:70
+#. ($q)
+msgid "Launch new: %1"
+msgstr ""
+
+#: html/RTIR/Display.html:158 html/RTIR/Elements/ChildSummary:47 html/RTIR/Elements/IncidentSummary:48 html/RTIR/Incident/Display.html:171 html/RTIR/Incident/Elements/ShowChildren:15 html/RTIR/Incident/LinkArticles.html:53 html/RTIR/Incident/LinkChildren.html:58 html/RTIR/Incident/LinkToIncident.html:64
+msgid "Link"
+msgstr ""
+
+#: html/RTIR/Search/Elements/RefineTabs:45
+#. ($QueueType)
+msgid "Link %1"
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:325
+#. ($childtype, $Ticket->Id)
+msgid "Link %1 #%2"
+msgstr ""
+
+#: html/RTIR/Incident/LinkToIncident.html:77
+#. ($Type, $id)
+msgid "Link %1 #%2 to selected Incident"
+msgstr ""
+
+#: html/RTIR/Search/Elements/RefineTabs:54
+msgid "Link article"
+msgstr ""
+
+#: html/RTIR/Incident/LinkChildren.html:66
+#. ($Type, $id)
+msgid "Link selected %1 to Incident #%2"
+msgstr ""
+
+#: html/RTIR/Incident/LinkArticles.html:60
+#. ($id)
+msgid "Link selected articles to Incident #%1"
+msgstr ""
+
+#: html/RTIR/Search/Elements/RefineTabs:48
+msgid "Link to Incident"
+msgstr ""
+
+#: html/RTIR/Incident/Create.html:78
+msgid "Link with"
+msgstr ""
+
+#: html/RTIR/Tools/Lookup.html:97
+msgid "Look Up Information"
+msgstr ""
+
+#: html/RTIR/Tools/Elements/Tabs:39
+msgid "Lookup"
+msgstr ""
+
+#: html/RTIR/Tools/Lookup.html:220
+#. ($q, $server)
+msgid "Lookup '%1' using server %2"
+msgstr ""
+
+#: html/RTIR/Elements/ChildSummary:50 html/RTIR/Elements/IncidentSummary:51 html/RTIR/Elements/QueueTabs:125 html/RTIR/Merge.html:64
+msgid "Merge"
+msgstr ""
+
+#: html/RTIR/Merge.html:129
+#. ($Type, $id, $Ticket->Subject)
+msgid "Merge %1 #%2: %3"
+msgstr ""
+
+#: html/RTIR/Merge.html:81
+#. ($MergeTicket->Id)
+msgid "Merge failed: Ticket #%1 is not the right type"
+msgstr ""
+
+#: html/RTIR/Merge.html:90
+msgid "Merge failed: Tickets have different constituencies"
+msgstr ""
+
+#: html/RTIR/Merge.html:64
+msgid "Merge into selected Ticket"
+msgstr ""
+
+#: html/RTIR/Create.html:293 html/RTIR/Elements/UpdateData:45 html/RTIR/Incident/Create.html:106 html/RTIR/Investigation/Elements/Create:91 html/RTIR/Tools/ScriptedAction.html:174
+msgid "Message"
+msgstr ""
+
+#: html/RTIR/Tools/ScriptedAction.html:147
+msgid "Message information"
+msgstr ""
+
+#: html/RTIR/Incident/Edit.html:47
+#. ($Ticket->Id)
+msgid "Modify incident # %1"
+msgstr ""
+
+#: html/RTIR/Elements/ShowChildren:58 html/RTIR/Incident/Elements/ShowChildren:5
+#. ($children->CountAll)
+#. ($total_count)
+msgid "More... (%1 total)"
+msgstr ""
+
+#: html/RTIR/Elements/DueIncidents:61
+msgid "Most due incidents"
+msgstr ""
+
+#: html/RTIR/Elements/UserDueIncidents:3
+#. ($Owner->Name)
+msgid "Most due incidents owned by %1"
+msgstr ""
+
+#: html/RTIR/Elements/NobodyDueIncidents:3
+msgid "Most due unowned incidents"
+msgstr ""
+
+#: html/RTIR/Create.html:217 html/RTIR/Display.html:101 html/RTIR/Edit.html:150
+msgid "Netmask"
+msgstr ""
+
+#: html/RTIR/Elements/Refresh:29 html/RTIR/Elements/ShowDates:56
+msgid "Never"
+msgstr ""
+
+#: html/RTIR/Display.html:157 html/RTIR/Elements/IncidentSummary:65 html/RTIR/Incident/Display.html:170 html/RTIR/Incident/Elements/ShowChildren:49
+msgid "New"
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:290
+msgid "New $Type"
+msgstr ""
+
+#: html/RTIR/Elements/ChildSummary:72
+#. ($q)
+msgid "New Block: %1"
+msgstr ""
+
+#: html/RTIR/Elements/EditPeople:67
+msgid "New Correspondents"
+msgstr ""
+
+#: html/RTIR/Search/Elements/Tabs:10
+msgid "New Query"
+msgstr ""
+
+#: html/RTIR/Incident/Create.html:258
+#. ($ChildObj->id)
+msgid "New incident and its child #%1 must have the same constituency"
+msgstr ""
+
+#: html/RTIR/Elements/NewReports:53
+msgid "New unlinked Incident Reports..."
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:83
+msgid "Next"
+msgstr ""
+
+#: html/RTIR/Incident/Elements/ShowChildren:24
+#. (loc( $Queue ))
+msgid "No active %1"
+msgstr ""
+
+#: html/RTIR/Incident/Elements/ShowChildren:32
+#. (loc( $Queue ))
+msgid "No inactive %1"
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:232
+msgid "Open"
+msgstr ""
+
+#: html/RTIR/Search/Elements/PickCriteria:56
+msgid "Operator"
+msgstr ""
+
+#: html/RTIR/Elements/PickRestriction:139
+msgid "Ordering and sorting"
+msgstr ""
+
+#: html/RTIR/Merge.html:49
+#. ($id)
+msgid "Other children of the parent incident(s) of #%1"
+msgstr ""
+
+#: html/RTIR/Reporting/Elements/SLASummary:28
+msgid "Outstanding Incident Reports"
+msgstr ""
+
+#: html/RTIR/Reporting/Report.html:36
+msgid "Outstanding reports at the beginning of this period"
+msgstr ""
+
+#: html/RTIR/Create.html:99 html/RTIR/Edit.html:70 html/RTIR/Elements/ShowPeople:31 html/RTIR/Incident/Create.html:83 html/RTIR/Incident/Display.html:44 html/RTIR/Incident/Edit.html:62 html/RTIR/Incident/Elements/ReplyForm:33 html/RTIR/Investigation/Elements/Create:8 html/RTIR/Tools/ScriptedAction.html:152 html/RTIR/Update.html:80
+msgid "Owner"
+msgstr ""
+
+#: html/RTIR/Elements/PickRestriction:33
+msgid "Owner is"
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:239
+msgid "Pending Removal"
+msgstr ""
+
+#: html/RTIR/Display.html:173 html/RTIR/Edit.html:218
+msgid "People"
+msgstr ""
+
+#: html/RTIR/Forward.html:43
+msgid "Permission denied"
+msgstr ""
+
+#: html/RTIR/Create.html:226 html/RTIR/Display.html:109 html/RTIR/Edit.html:158
+msgid "Port"
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:74
+msgid "Prev"
+msgstr ""
+
+#: html/RTIR/Advanced.html:48 html/RTIR/Elements/PickRestriction:48 html/RTIR/Incident/Create.html:138 html/RTIR/Incident/Display.html:71 html/RTIR/Incident/Edit.html:82
+msgid "Priority"
+msgstr ""
+
+#: html/RTIR/Elements/ChildSummary:32 html/RTIR/Elements/IncidentSummary:31
+msgid "Priority<b>"
+msgstr ""
+
+#: html/RTIR/Advanced.html:21 html/RTIR/Elements/QueueSummary:12
+msgid "Queue"
+msgstr ""
+
+#: html/RTIR/Create.html:348 html/RTIR/Display.html:223 html/RTIR/Incident/Create.html:218
+msgid "Queue could not be loaded."
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:269
+msgid "Quick Reject"
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:213
+msgid "Quick Remove"
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:189 html/RTIR/Elements/QueueTabs:198
+msgid "Quick Resolve"
+msgstr ""
+
+#: html/RTIR/Search/Elements/ShowResults:52
+msgid "RSS"
+msgstr ""
+
+#: html/RTIR/Elements/Tabs:47
+msgid "RT"
+msgstr ""
+
+#: html/RTIR/Prefs/Home.html:8
+msgid "RT at a glance"
+msgstr ""
+
+#: html/Callbacks/RTIR/Elements/Tabs/Default:20 html/Callbacks/RTIR/RTFM/Elements/Tabs/Default:6
+msgid "RTIR"
+msgstr ""
+
+#: etc/initialdata:370 etc/upgrade/2.1.1/content:9
+msgid "RTIR Block Activation"
+msgstr ""
+
+#: etc/initialdata:278 etc/upgrade/1.1.1/content:37
+msgid "RTIR Change Child Ownership"
+msgstr ""
+
+#: etc/initialdata:282 etc/upgrade/1.1.1/content:41
+msgid "RTIR Change Parent Ownership"
+msgstr ""
+
+#: etc/initialdata:340 etc/upgrade/1.1.1/content:74
+msgid "RTIR Close Ticket"
+msgstr ""
+
+#: etc/initialdata:330 etc/upgrade/1.1.1/content:69
+msgid "RTIR Customer Response"
+msgstr ""
+
+#: html/Callbacks/RTIR/User/Elements/Tabs/Default:6 html/RTIR/Elements/Tabs:49
+msgid "RTIR Home"
+msgstr ""
+
+#: etc/initialdata:375 etc/upgrade/2.1.1/content:14
+msgid "RTIR Linking To Incident"
+msgstr ""
+
+#: etc/initialdata:380 etc/upgrade/2.3.9/content:9
+msgid "RTIR Merge"
+msgstr ""
+
+#: etc/initialdata:286 etc/upgrade/1.1.1/content:45
+msgid "RTIR Open Parent"
+msgstr ""
+
+#: html/RTIR/Reporting/Report.html:26
+#. ($Constituency)
+msgid "RTIR Periodic Report for %1"
+msgstr ""
+
+#: etc/initialdata:345 etc/upgrade/1.1.1/content:79
+msgid "RTIR Reopen Ticket"
+msgstr ""
+
+#: etc/initialdata:360 etc/upgrade/2.1.0/content:108
+msgid "RTIR Require Constituency Change"
+msgstr ""
+
+#: etc/initialdata:365 etc/upgrade/2.1.0/content:113
+msgid "RTIR Require Constituency Group Change"
+msgstr ""
+
+#: etc/initialdata:355 etc/upgrade/1.1.3/content:16
+msgid "RTIR Require Due Change"
+msgstr ""
+
+#: etc/initialdata:350 etc/upgrade/1.1.1/content:84
+msgid "RTIR Require State Change"
+msgstr ""
+
+#: etc/initialdata:274 etc/upgrade/1.1.1/content:33
+msgid "RTIR Resolve Children"
+msgstr ""
+
+#: etc/initialdata:298 etc/upgrade/1.1.1/content:57
+msgid "RTIR Set Block State"
+msgstr ""
+
+#: etc/initialdata:318 etc/upgrade/2.1.0/content:97
+msgid "RTIR Set Constituency"
+msgstr ""
+
+#: etc/initialdata:322 etc/upgrade/2.1.0/content:101
+msgid "RTIR Set Constituency Group"
+msgstr ""
+
+#: etc/initialdata:250 etc/upgrade/1.1.1/content:17
+msgid "RTIR Set Due Correspond"
+msgstr ""
+
+#: etc/initialdata:254 etc/upgrade/1.1.3/content:7
+msgid "RTIR Set Due Reopen"
+msgstr ""
+
+#: etc/initialdata:246 etc/upgrade/1.1.1/content:13
+msgid "RTIR Set Due by SLA"
+msgstr ""
+
+#: etc/initialdata:234 etc/upgrade/1.1.1/content:5
+msgid "RTIR Set Due to Now"
+msgstr ""
+
+#: etc/initialdata:270 etc/upgrade/1.1.1/content:29
+msgid "RTIR Set How Reported"
+msgstr ""
+
+#: etc/initialdata:258 etc/upgrade/1.1.3/content:3
+msgid "RTIR Set Incident Due"
+msgstr ""
+
+#: etc/initialdata:290 etc/upgrade/1.1.1/content:49
+msgid "RTIR Set Incident Report State"
+msgstr ""
+
+#: etc/initialdata:306 etc/upgrade/1.9.0/content:417
+msgid "RTIR Set Incident Resolution"
+msgstr ""
+
+#: etc/initialdata:302 etc/upgrade/1.1.1/content:61
+msgid "RTIR Set Incident State"
+msgstr ""
+
+#: etc/initialdata:294 etc/upgrade/1.1.1/content:53
+msgid "RTIR Set Investigation State"
+msgstr ""
+
+#: etc/initialdata:242 etc/upgrade/2.1.1/content:2
+msgid "RTIR Set Started to Now"
+msgstr ""
+
+#: etc/initialdata:266 etc/upgrade/1.1.1/content:25
+msgid "RTIR Set Starts by Business Hours"
+msgstr ""
+
+#: etc/initialdata:238 etc/upgrade/1.1.1/content:9
+msgid "RTIR Set Starts to Now"
+msgstr ""
+
+#: etc/initialdata:335 etc/upgrade/1.1.3/content:21
+msgid "RTIR Staff Response"
+msgstr ""
+
+#: etc/initialdata:262 etc/upgrade/1.1.1/content:21
+msgid "RTIR Unset Due"
+msgstr ""
+
+#: html/RTIR/Elements/Header:26
+#. (RT->Config->Get('rtirname'))
+msgid "RTIR for %1"
+msgstr ""
+
+#: etc/initialdata:314 etc/upgrade/2.3.9/content:2
+msgid "RTIR merge IPs"
+msgstr ""
+
+#: etc/initialdata:310 etc/upgrade/2.1.0/content:93
+msgid "RTIR parse message for IPs"
+msgstr ""
+
+#: html/RTIR/Elements/QueueSummary:2 html/RTIR/Elements/QueueSummary:6
+msgid "RTIR queues summary"
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:309 html/RTIR/Search/Elements/RefineTabs:117 html/RTIR/Search/Elements/RefineTabs:95
+msgid "Refine"
+msgstr ""
+
+#: html/RTIR/Elements/ChildSummary:64 html/RTIR/Elements/IncidentSummary:67 html/RTIR/Search/Refine.html:82
+msgid "Refine Search"
+msgstr ""
+
+#: html/RTIR/Elements/PickRestriction:28
+msgid "Refine search"
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:264 html/RTIR/Incident/BulkAbandon.html:74 html/RTIR/Report/BulkReject.html:64
+msgid "Reject"
+msgstr ""
+
+#: html/RTIR/Update.html:128
+#. ($name, $id, $Ticket->Subject)
+msgid "Reject %1 #%2 (%3)"
+msgstr ""
+
+#: html/RTIR/Report/BulkReject.html:78
+msgid "Reject Incident Reports"
+msgstr ""
+
+#: html/RTIR/Report/BulkReject.html:71
+msgid "Reject and return"
+msgstr ""
+
+#: html/RTIR/Report/BulkReject.html:63
+msgid "Reject selected incident reports"
+msgstr ""
+
+#: html/RTIR/Report/BulkReject.html:70
+msgid "Reject selected incident reports and return to reports list"
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:209
+msgid "Remove"
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:167 html/RTIR/Elements/QueueTabs:173 html/RTIR/Incident/Reply.html:134
+msgid "Reply"
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:161
+msgid "Reply to All"
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:156
+msgid "Reply to Reporters"
+msgstr ""
+
+#: html/RTIR/Incident/BulkAbandon.html:86
+msgid "Reply to all investigations"
+msgstr ""
+
+#: html/RTIR/Incident/BulkAbandon.html:85
+msgid "Reply to all reports"
+msgstr ""
+
+#: html/RTIR/Incident/Reply.html:133
+msgid "Reply to selected correspondents"
+msgstr ""
+
+#: html/RTIR/Incident/Elements/ReplyForm:61
+msgid "Reply to selected tickets"
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:299
+msgid "Report"
+msgstr ""
+
+#: html/RTIR/Create.html:202 html/RTIR/Display.html:92 html/RTIR/Edit.html:129
+msgid "Reporter Type"
+msgstr ""
+
+#: html/RTIR/Incident/Reply.html:52
+msgid "Reporters"
+msgstr ""
+
+#: html/RTIR/Reporting/index.html:101 html/RTIR/Search/Reporting.html:31 html/RTIR/Tools/Elements/Tabs:42
+msgid "Reporting"
+msgstr ""
+
+#: html/RTIR/Reporting/Report.html:39
+msgid "Reports unresolved at the end of the period"
+msgstr ""
+
+#: html/RTIR/Elements/PickRestriction:40
+msgid "Requestor email address"
+msgstr ""
+
+#: html/RTIR/Incident/Display.html:103 html/RTIR/Incident/Edit.html:128 html/RTIR/Incident/Elements/Create:82 html/RTIR/Incident/Elements/ReplyForm:19
+msgid "Resolution"
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:185 html/RTIR/Elements/QueueTabs:194 html/RTIR/Incident/Reply.html:127
+msgid "Resolve"
+msgstr ""
+
+#: html/RTIR/Update.html:123
+#. ($name, $id, $Ticket->Subject)
+msgid "Resolve %1 #%2 (%3)"
+msgstr ""
+
+#: html/RTIR/Incident/Reply.html:126
+msgid "Resolve Incident"
+msgstr ""
+
+#: html/RTIR/Incident/Reply.html:125
+#. ($id)
+msgid "Resolve Incident #%1 (including children)"
+msgstr ""
+
+#: etc/initialdata:275 etc/upgrade/1.1.1/content:34
+msgid "Resolve an Incident's children"
+msgstr ""
+
+#: html/RTIR/Reporting/Elements/SLASummary:37
+msgid "Resolved Incident Reports"
+msgstr ""
+
+#: html/RTIR/Incident/Elements/ReplyForm:13 html/RTIR/Update.html:75
+msgid "Response to requestors"
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:295 html/RTIR/Search/Elements/RefineTabs:113 html/RTIR/Search/Results.html:84
+msgid "Results"
+msgstr ""
+
+#: html/RTIR/Elements/PickRestriction:143
+msgid "Results per page"
+msgstr ""
+
+#: html/RTIR/GnuPG.html:13
+msgid "Return back to the ticket"
+msgstr ""
+
+#: html/RTIR/Incident/Create.html:181
+msgid "Run Investigation"
+msgstr ""
+
+#: html/RTIR/Create.html:173 html/RTIR/Display.html:68 html/RTIR/Edit.html:101
+msgid "SLA"
+msgstr ""
+
+#: html/RTIR/EditUsername:6
+msgid "Save"
+msgstr ""
+
+#: html/RTIR/Advanced.html:64 html/RTIR/Edit.html:224 html/RTIR/Incident/Edit.html:160
+msgid "Save Changes"
+msgstr ""
+
+#: html/RTIR/Tools/Elements/Tabs:52
+msgid "Scripted Action"
+msgstr ""
+
+#: html/RTIR/Tools/ScriptedAction.html:198
+msgid "Scripted Action: Create Incidents and Investigations"
+msgstr ""
+
+#: html/RTIR/Tools/ScriptedAction.html:196
+#. ($incidentid)
+msgid "Scripted Action: Create Investigations for Incident #%1"
+msgstr ""
+
+#: html/RTIR/Elements/PickRestriction:164 html/RTIR/Elements/Tabs:51 html/RTIR/Incident/LinkArticles.html:40
+msgid "Search"
+msgstr ""
+
+#: html/RTIR/Elements/SimpleSearch:28
+msgid "Search Incidents"
+msgstr ""
+
+#: html/RTIR/Incident/BulkAbandon.html:60
+msgid "Select recipients"
+msgstr ""
+
+#: html/RTIR/Elements/ShowDates:50
+#. ($Due)
+msgid "Set to %1 days from now"
+msgstr ""
+
+#: html/RTIR/Search/Elements/Tabs:19
+msgid "Show Results"
+msgstr ""
+
+#: html/RTIR/Search/Reporting.html:17
+msgid "Show chart"
+msgstr ""
+
+#: html/RTIR/Search/Elements/ShowResults:63
+msgid "Shredder..."
+msgstr ""
+
+#: html/RTIR/Investigation/Elements/Create:78
+msgid "Sign"
+msgstr ""
+
+#: html/RTIR/Report/BulkReject.html:103 html/RTIR/Report/BulkReject.html:90
+msgid "Skipped."
+msgstr ""
+
+#: html/RTIR/Elements/PickRestriction:147
+msgid "Sort results by"
+msgstr ""
+
+#: html/RTIR/Create.html:454 html/RTIR/Elements/QueueTabs:120 html/RTIR/Incident/Create.html:175
+msgid "Split"
+msgstr ""
+
+#: html/RTIR/Create.html:453
+#. ($name, $TicketObj->id, $TicketObj->Subject)
+msgid "Split %1 #%2: %3"
+msgstr ""
+
+#: html/RTIR/Incident/Split.html:40
+#. ($TicketObj->id, $TicketObj->Subject)
+msgid "Split Incident #%1: %2"
+msgstr ""
+
+#: html/RTIR/Create.html:83 html/RTIR/Incident/Create.html:72
+msgid "Split from"
+msgstr ""
+
+#: html/RTIR/Reporting/index.html:72
+msgid "Spreadsheet"
+msgstr ""
+
+#: html/RTIR/Reporting/index.html:47
+msgid "Start Date:"
+msgstr ""
+
+#: html/RTIR/Reporting/Report.html:29
+msgid "Start date"
+msgstr ""
+
+#: html/RTIR/Elements/EditDates:43 html/RTIR/Elements/ShowDates:36
+msgid "Started"
+msgstr ""
+
+#: html/RTIR/Create.html:328 html/RTIR/Elements/EditDates:27 html/RTIR/Elements/ShowDates:31 html/RTIR/Incident/Create.html:159 html/RTIR/Investigation/Elements/Create:105
+msgid "Starts"
+msgstr ""
+
+#: html/RTIR/Display.html:44 html/RTIR/Edit.html:54 html/RTIR/Incident/Display.html:49 html/RTIR/Incident/Edit.html:52 html/RTIR/Update.html:67
+msgid "State"
+msgstr ""
+
+#: html/RTIR/Display.html:293 html/RTIR/Edit.html:297 html/RTIR/Incident/BulkAbandon.html:150 html/RTIR/Incident/Display.html:330 html/RTIR/Incident/Edit.html:218 html/RTIR/Incident/Reply.html:208 html/RTIR/Incident/Reply.html:234 html/RTIR/Report/BulkReject.html:133
+#. ($oldstate, $newstate)
+msgid "State changed from %1 to %2"
+msgstr ""
+
+#: html/RTIR/Incident/Reply.html:237
+msgid "State of the Incident left unchanged; not all children were updated"
+msgstr ""
+
+#: html/RTIR/Elements/ChildSummary:31 html/RTIR/Elements/IncidentSummary:30
+msgid "State<b>"
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:253
+msgid "Steal"
+msgstr ""
+
+#: html/RTIR/Advanced.html:17 html/RTIR/Create.html:108 html/RTIR/Edit.html:65 html/RTIR/Elements/PickRestriction:45 html/RTIR/Forward.html:23 html/RTIR/Incident/Display.html:58 html/RTIR/Incident/Edit.html:69 html/RTIR/Incident/Elements/Create:26 html/RTIR/Incident/Elements/ReplyForm:4 html/RTIR/Investigation/Elements/Create:17 html/RTIR/Tools/ScriptedAction.html:164 html/RTIR/Update.html:89
+msgid "Subject"
+msgstr ""
+
+#: html/RTIR/Elements/ChildSummary:30 html/RTIR/Elements/IncidentSummary:29
+msgid "Subject<b>"
+msgstr ""
+
+#: html/RTIR/Elements/QueueTabs:248
+msgid "Take"
+msgstr ""
+
+#: html/RTIR/Tools/ScriptedAction.html:121
+msgid "Template"
+msgstr ""
+
+#: html/RTIR/Tools/ScriptedAction.html:141
+msgid "Test"
+msgstr ""
+
+#: html/RTIR/Tools/ScriptedAction.html:141
+msgid "Test email addresses"
+msgstr ""
+
+#: html/RTIR/Reporting/index.html:62
+msgid "Text"
+msgstr ""
+
+#: html/RTIR/Display.html:38 html/RTIR/Edit.html:47 html/RTIR/Incident/Create.html:133
+msgid "The Basics"
+msgstr ""
+
+#: etc/initialdata:361 etc/upgrade/2.1.0/content:109
+msgid "The constituency must be changed"
+msgstr ""
+
+#: etc/initialdata:356
+msgid "The due date of the parent incident must be changed"
+msgstr ""
+
+#: html/RTIR/Create.html:381
+#. ($Incident)
+msgid "Ticket #%1 is not an Incident"
+msgstr ""
+
+#: html/RTIR/Incident/BulkAbandon.html:156 html/RTIR/Incident/Display.html:258 html/RTIR/Incident/Reply.html:211 html/RTIR/Report/BulkReject.html:136 html/RTIR/Tools/ScriptedAction.html:426
+#. ($_->[0], $_->[1])
+#. ($Ticket->Id, $_)
+#. ($child->Id, $_)
+#. ($id, $_)
+msgid "Ticket %1: %2"
+msgstr ""
+
+#: html/RTIR/Incident/Reply.html:172 html/RTIR/Incident/Reply.html:188
+#. ($id)
+msgid "Ticket %1: Couldn't load ticket."
+msgstr ""
+
+#: html/RTIR/Elements/PickRestriction:58
+msgid "Ticket attachment"
+msgstr ""
+
+#: html/RTIR/Advanced.html:26
+msgid "Time Estimated"
+msgstr ""
+
+#: html/RTIR/Advanced.html:40 html/RTIR/Create.html:119 html/RTIR/Incident/Create.html:147 html/RTIR/Investigation/Elements/Create:27
+msgid "Time Left"
+msgstr ""
+
+#: html/RTIR/Advanced.html:33 html/RTIR/Create.html:114 html/RTIR/Display.html:63 html/RTIR/Edit.html:85 html/RTIR/Incident/Create.html:144 html/RTIR/Incident/Display.html:75 html/RTIR/Incident/Edit.html:86 html/RTIR/Investigation/Elements/Create:25
+msgid "Time Worked"
+msgstr ""
+
+#: html/RTIR/Forward.html:26
+msgid "To"
+msgstr ""
+
+#: html/RTIR/Report/BulkReject.html:124
+#. ($msg)
+msgid "Took ticket. %1"
+msgstr ""
+
+#: html/RTIR/Elements/Tabs:59
+msgid "Tools"
+msgstr ""
+
+#: html/RTIR/Reporting/Elements/SLASummary:35
+#. ($service_level)
+msgid "Total %1 Incident Reports created"
+msgstr ""
+
+#: html/RTIR/Incident/ShowChildren.html:36
+#. ($Queue, $children->CountAll)
+msgid "Total %1: %2"
+msgstr ""
+
+#: html/RTIR/Incident/ShowChildren.html:38
+#. ($Queue, $children->CountAll, $all_children->CountAll)
+msgid "Total %1: %2(%3)"
+msgstr ""
+
+#: html/RTIR/Reporting/Report.html:37
+msgid "Total new reports for this period"
+msgstr ""
+
+#: html/RTIR/Tools/Traceroute.html:42
+#. ($q)
+msgid "Traceroute to '%1'."
+msgstr ""
+
+#: html/RTIR/Elements/AddWatchers:31 html/RTIR/Elements/AddWatchers:39 html/RTIR/Elements/AddWatchers:46
+msgid "Type"
+msgstr ""
+
+#: html/RTIR/Tools/Lookup.html:229
+#. ($server)
+msgid "Unable to connect to WHOIS server '%1'"
+msgstr ""
+
+#: html/RTIR/Tools/Elements/GetEmailFromIP:33 html/RTIR/Tools/Elements/GetEmailFromIP:39
+#. ($server)
+msgid "Unable to connect to whois server '%1'"
+msgstr ""
+
+#: html/RTIR/Elements/ShowIncidents:30
+msgid "Unlink"
+msgstr ""
+
+#: html/RTIR/Incident/ShowChildren.html:55
+msgid "Unlink Report"
+msgstr ""
+
+#: html/RTIR/Reporting/Elements/SLASummary:38
+msgid "Unresolved Incident Reports"
+msgstr ""
+
+#: html/RTIR/Update.html:131
+#. ($name, $id, $Ticket->Subject)
+msgid "Update %1 #%2 (%3)"
+msgstr ""
+
+#: html/RTIR/Incident/Elements/ReplyForm:7 html/RTIR/Update.html:69
+msgid "Update Type"
+msgstr ""
+
+#: html/RTIR/Elements/ShowDates:55
+msgid "Updated"
+msgstr ""
+
+#: html/RTIR/index.html:88
+msgid "Updated refresh interval."
+msgstr ""
+
+#: html/RTIR/Elements/AddWatchers:31
+msgid "Username"
+msgstr ""
+
+#: html/RTIR/Search/Elements/PickCriteria:56
+msgid "Value"
+msgstr ""
+
+#: html/RTIR/Incident/Display.html:353
+#. ($id)
+msgid "WARNING: Incident %1 has no children."
+msgstr ""
+
+#: html/RTIR/Report/BulkReject.html:112
+msgid "Warning: already has incident"
+msgstr ""
+
+#: etc/initialdata:376 etc/upgrade/2.1.1/content:15
+msgid "Whenever ticket is linked to incident or created with link"
+msgstr ""
+
+#: etc/initialdata:381 etc/upgrade/2.3.9/content:10
+msgid "Whenever ticket is merged into another one"
+msgstr ""
+
+#: html/RTIR/Create.html:235 html/RTIR/Display.html:117 html/RTIR/Edit.html:166
+msgid "Where Blocked"
+msgstr ""
+
+#: html/RTIR/Tools/Elements/GetEmailFromIP:52
+#. ($field)
+msgid "Whois server response did not include field '%1'"
+msgstr ""
+
+#: html/RTIR/Create.html:88
+msgid "Will be linked to Incident(s):"
+msgstr ""
+
+#: html/RTIR/Incident/Elements/ReplyForm:38 html/RTIR/Update.html:87
+msgid "Worked"
+msgstr ""
+
+#: html/RTIR/Edit.html:36
+#. ($name)
+msgid "You are not allowed to edit this %1."
+msgstr ""
+
+#: html/RTIR/Incident/Edit.html:37
+msgid "You are not allowed to edit this Incident."
+msgstr ""
+
+#: html/RTIR/Incident/Create.html:42
+#. ($ChildObj->id)
+msgid "You are not allowed to link with #%2."
+msgstr ""
+
+#: html/RTIR/Incident/Create.html:38
+#. ($TicketObj->id)
+msgid "You are not allowed to split from #%2."
+msgstr ""
+
+#: html/RTIR/Create.html:54
+#. ($name)
+msgid "You are not allowed to split this %1."
+msgstr ""
+
+#: html/RTIR/Report/BulkReject.html:101
+msgid "You may not reject tickets that belong to another user."
+msgstr ""
+
+#: html/RTIR/Create.html:427
+msgid "You must enter a correspondent"
+msgstr ""
+
+#: html/RTIR/Incident/Create.html:250
+msgid "You must enter a correspondent for the investigation"
+msgstr ""
+
+#: html/RTIR/Create.html:430
+msgid "You must enter an Incident ID"
+msgstr ""
+
+#: html/RTIR/Block/Elements/EditState:7
+msgid "active"
+msgstr ""
+
+#: html/RTIR/Search/Elements/ShowResults:66
+msgid "chart"
+msgstr ""
+
+#: html/RTIR/Elements/PickRestriction:63
+msgid "does not match"
+msgstr ""
+
+#: html/RTIR/Search/Elements/ShowResults:71 html/RTIR/Search/Reporting.html:18
+#. ($m->scomp('/Search/Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $FullQuery))
+#. ($m->scomp('/Search/Elements/SelectGroupBy', Name => 'PrimaryGroupBy'))
+msgid "grouped by %1"
+msgstr ""
+
+#: html/RTIR/Elements/ChildSummary:29 html/RTIR/Elements/IncidentSummary:28
+msgid "id<b>"
+msgstr ""
+
+#: html/RTIR/Elements/PickRestriction:125 html/RTIR/Elements/SelectCustomFieldOperator:29 html/RTIR/Search/Elements/PickCFs:90
+msgid "is"
+msgstr ""
+
+#: html/RTIR/Elements/PickRestriction:126 html/RTIR/Elements/SelectCustomFieldOperator:30 html/RTIR/Search/Elements/PickCFs:90
+msgid "isn't"
+msgstr ""
+
+#: html/Callbacks/RTIR/Elements/MakeClicky/Default:91 html/RTIR/Elements/MakeClicky:76
+msgid "lookup"
+msgstr ""
+
+#: html/RTIR/Elements/MakeClicky:42
+#. ($host)
+msgid "lookup %1"
+msgstr ""
+
+#: html/Callbacks/RTIR/Elements/MakeClicky/Default:39 html/RTIR/Elements/MakeClicky:22
+msgid "lookup IP"
+msgstr ""
+
+#: html/Callbacks/RTIR/Elements/MakeClicky/Default:22 html/Callbacks/RTIR/Elements/MakeClicky/Default:32 html/Callbacks/RTIR/Elements/MakeClicky/Default:85 html/RTIR/Elements/MakeClicky:61 html/RTIR/Elements/MakeClicky:70
+#. ($post)
+#. ($host)
+#. ($domain)
+msgid "lookup \"%1\""
+msgstr ""
+
+#: html/Callbacks/RTIR/Elements/MakeClicky/Default:75 html/RTIR/Elements/MakeClicky:52
+msgid "lookup email"
+msgstr ""
+
+#: html/Callbacks/RTIR/Elements/MakeClicky/Default:97 html/RTIR/Elements/MakeClicky:82
+msgid "lookup host"
+msgstr ""
+
+#: html/RTIR/Elements/PickRestriction:62
+msgid "matches"
+msgstr ""
+
+#: html/RTIR/Update.html:87
+msgid "minutes"
+msgstr ""
+
+#: html/RTIR/Elements/ShowChildren:50
+#. ($Queue)
+msgid "no %1"
+msgstr ""
+
+#: html/RTIR/Elements/ShowChildren:52
+msgid "no children"
+msgstr ""
+
+#: html/RTIR/Incident/BulkAbandon.html:79
+msgid "no incidents"
+msgstr ""
+
+#: html/RTIR/Elements/ShowRTIRField:26
+msgid "no value"
+msgstr ""
+
+#: html/RTIR/Elements/MakeClicky:68
+msgid "open URL"
+msgstr ""
+
+#: html/RTIR/Block/Elements/EditState:6
+msgid "pending activation"
+msgstr ""
+
+#: html/RTIR/Block/Elements/EditState:8
+msgid "pending removal"
+msgstr ""
+
+#: html/RTIR/Block/Elements/EditState:9
+msgid "removed"
+msgstr ""
+
+#: html/RTIR/Search/Elements/ShowResults:51
+msgid "spreadsheet"
+msgstr ""
+
+#: html/RTIR/Search/Elements/ShowResults:72 html/RTIR/Search/Reporting.html:19
+#. ($m->scomp('/Search/Elements/SelectChartType', Name => 'ChartStyle'))
+msgid "style: %1"
+msgstr ""
+
+#: html/RTIR/Incident/Elements/ReplyForm:5
+msgid "uses subjects from tickets"
+msgstr ""
+
