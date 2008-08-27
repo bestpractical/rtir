@@ -55,6 +55,13 @@ use Business::Hours;
 use Business::SLA;
 
 
+# XXX: we push config metadata into RT, but we need
+# need interface to load config options metadata from
+# extensions in RT core
+
+use RT::IR::Config;
+RT::IR::Config::Init();
+
 =head1 FUNCTIONS
 
 =head2 BusinessHours

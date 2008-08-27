@@ -1,10 +1,3 @@
-# XXX: we push config metadata into RT, but we need
-# need interface to load config options metadata from
-# extensions in RT core
-
-use RT::IR::Config;
-RT::IR::Config::Init();
-
 # WebNoAuthRegex - What portion of RT's URLspace should not require
 # authentication. Adjust it according to RTIR paths
 
