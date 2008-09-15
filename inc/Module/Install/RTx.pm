@@ -81,6 +81,8 @@ sub RTx {
     # directories
     my %path;
     if ( $RT::LocalPluginPath ) {
+        die "Because of bugs in RT 3.8.0 this extension can not be installed.\n"
+            ."Upgrade to RT 3.8.1 or newer.\n" if $RT::VERSION =~ /^3\.8\.0/;
         $path{$_} = $RT::LocalPluginPath . "/$original_name/$_"
             foreach @DIRS;
     } else {
@@ -186,4 +188,4 @@ sub RTxInit {
 
 __END__
 
-#line 282
+#line 302
