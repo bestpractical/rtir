@@ -278,8 +278,9 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
         };
     }
 
-
-
+    $actions->{'_ZZ'} = {
+        html => $m->scomp( '/Ticket/Elements/Bookmark', id => $id ),
+    };
 
 } else {
     $mytab = $current_tab;
