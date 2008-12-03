@@ -22,7 +22,7 @@ for( my $i = 0; $i < 4; $i++ ) {
 
 $agent->get_ok('/RTIR/index.html', 'open rtir at glance');
 {
-    $agent->follow_link_ok({ text => '[Bulk Reject]' }, "Followed 'bulk reject' link");
+    $agent->follow_link_ok({ text => 'Bulk Reject' }, "Followed 'bulk reject' link");
 
 	# Check that the desired incident report occurs in the list of available incident reports; if not, keep
 	# going to the next page until you find it (or get to the last page and don't find it,
