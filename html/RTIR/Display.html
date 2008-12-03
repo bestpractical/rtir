@@ -32,12 +32,14 @@
 
 % $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
-<table border="0" cellpadding="0" cellspacing="2" width="100%">
+<table class="ticket-summary" width="100%">
 <tr>
-<td valign="top" width="50%">
-<&| /Widgets/TitleBox, title => loc("The Basics"),
-        title_href  => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=".$Ticket->Id,
-        title_class => 'inverse' &>
+<td class="boxcontainer" valign="top">
+<&| /Widgets/TitleBox,
+    title => loc("The Basics"),
+    title_href  => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=".$Ticket->Id,
+    class => 'ticket-info-basics',
+&>
 
 <table>
   <tr>
@@ -146,10 +148,11 @@
 </&>
 
 % if ($RT::FM::VERSION) {
-<&| /Widgets/TitleBox, title => loc("Articles"),
+<&| /Widgets/TitleBox,
+    title => loc("Articles"),
     title_href => RT->Config->Get('WebPath') ."/RTIR/Advanced.html?id=".$id, 
-    title_class=> 'inverse',
-    color => "#663366" &>
+    class=> 'ticket-info-articles',
+&>
 
 % if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
 % my $qs = $m->comp("/Elements/QueryString", "RefersTo-new" => "t:$id", next => "/RTIR/Display.html?id=$id");
@@ -168,31 +171,30 @@
 
 </&>
 % }
-</td> <td valign="top" width="50%">
-%#  </td> </tr> <tr> <td valign="top" width="50%">
-    <&| /Widgets/TitleBox, title => loc('People'), 
+</td> <td class="boxcontainer" valign="top">
+    <&| /Widgets/TitleBox,
+        title => loc('People'), 
         title_href  => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=". $Ticket->Id,
-        title_class => 'inverse' &>
+        class => 'ticket-info-people',
+    &>
     <& /RTIR/Elements/ShowPeople, Ticket => $Ticket &>
     </&>
-    <br />
-%#  </td> <td>
-        <br />
-          <&| /Widgets/TitleBox, title => loc("Dates"),
-                title_href  => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=". $Ticket->Id,
-                title_class => 'inverse',  
-                color => "#663366" &>
-          <& /RTIR/Elements/ShowDates, Ticket => $Ticket &>
-          </&>
-        <br />  
+    <br /><br />
+    <&| /Widgets/TitleBox, title => loc("Dates"),
+        title_href  => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=". $Ticket->Id,
+        class => 'ticket-info-dates',
+    &>
+    <& /RTIR/Elements/ShowDates, Ticket => $Ticket &>
+    </&>
+    <br />  
   </td>
 </tr>
 <tr>
-  <td valign="top" width="50%">
+  <td class="boxcontainer" valign="top">
     <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, 
        Attachments => $attachments &>
   </td>
-  <td valign="top" width="50%">
+  <td class="boxcontainer" valign="top">
     <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket, DisplayPath => '/RTIR/Display.html' &>
   </td>
 </tr>

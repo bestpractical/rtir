@@ -31,7 +31,7 @@
 &>
 
 % if ( $ticket ) {
-<&| /Widgets/TitleBox, title => loc("Current [_1]: #[_2]", $TicketType, $ticket), color=> "#993333" &>
+<&| /Widgets/TitleBox, title => loc("Current [_1]: #[_2]", $TicketType, $ticket), class => 'ticket-info-basics' &>
 <& /Elements/TicketList, Query => "id = $ticket", Format => $Format, ShowNavigation => 0 &>
 </&>
 % }
@@ -40,7 +40,7 @@
 <table width="100%" border="0" cellpadding="2" cellspacing="0">
 <tr><td valign="top" width="50%">
 
-<&| /Widgets/TitleBox, title => loc('Incidents: [_1]', $q) &>
+<&| /Widgets/TitleBox, title => loc('Incidents: [_1]', $q), class => 'tickets-list-incident' &>
 <& /RTIR/Elements/IncidentSummary, 
     Type       => $TicketType, 
     ticket     => $ticket, 
@@ -51,7 +51,7 @@
 
 </td><td valign="top" width="50%">
 
-<&| /Widgets/TitleBox, title => loc('Investigations: [_1]', $q) &>
+<&| /Widgets/TitleBox, title => loc('Investigations: [_1]', $q), class => 'tickets-list-investigation' &>
 <& /RTIR/Elements/ChildSummary, 
     Queue      => 'Investigations', 
     Type       => $TicketType, 
@@ -63,7 +63,7 @@
 
 </td></tr><tr><td valign="top" width="50%">
 
-<&| /Widgets/TitleBox, title => loc('Incident Reports: [_1]', $q) &>
+<&| /Widgets/TitleBox, title => loc('Incident Reports: [_1]', $q), class => 'tickets-list-report' &>
 <& /RTIR/Elements/ChildSummary,
     Queue      => 'Incident Reports',
     Type       => $TicketType,
@@ -76,7 +76,7 @@
 </td><td width="50%" valign="top">
 
 % unless ( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
-<&| /Widgets/TitleBox, title => loc('Blocks: [_1]', $q) &>
+<&| /Widgets/TitleBox, title => loc('Blocks: [_1]', $q), class => 'tickets-list-block' &>
 <& /RTIR/Elements/ChildSummary,
     Queue      => 'Blocks',
     Type       => $TicketType,

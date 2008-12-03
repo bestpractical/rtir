@@ -42,6 +42,13 @@ ul.userlist li:last-child::after{
 
 #topactions { min-width: 44em; }
 
+%# TODO: the following should be filled with some values
+%# .ticket-info-articles       .titlebox-title .left { background-color: #XXX; color: #XXX; }
+%# .tickets-list-report        .titlebox-title .left { background-color: #XXX; color: #XXX; }
+%# .tickets-list-incident      .titlebox-title .left { background-color: #XXX; color: #XXX; }
+%# .tickets-list-investigation .titlebox-title .left { background-color: #XXX; color: #XXX; }
+%# .tickets-list-block         .titlebox-title .left { background-color: #XXX; color: #XXX; }
+
 % $m->abort;
 <%INIT>
 $r->content_type('text/css');

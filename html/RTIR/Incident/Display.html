@@ -33,11 +33,13 @@
 % $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Ticket => $TicketObj);
 <& /Elements/ListActions, actions => \@results &>
 
-<table border="0" cellpadding="0" cellspacing="2" width="100%"><tr><td valign="top" width="50%">
+<table class="ticket-summary" width="100%"><tr><td class="boxcontainer" valign="top">
 
-<&| /Widgets/TitleBox, title => loc('Incident #[_1]', $id), 
-        title_href => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=".$id, 
-        title_class=> 'inverse' &>
+<&| /Widgets/TitleBox,
+    title => loc('Incident #[_1]', $id), 
+    title_href => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=".$id, 
+    class=> 'ticket-info-basics',
+&>
 
 <table>
   <tr>
@@ -121,33 +123,34 @@
 
 </&>
 
-</td><td valign="top">
+</td><td class="boxcontainer" valign="top">
 
 <& /RTIR/Incident/Elements/ShowChildren,
     IncidentObj => $TicketObj, 
     Queue       => 'Incident Reports',
 &>
 
-</td></tr><tr><td valign="top" width="50%">
+</td></tr><tr><td class="boxcontainer" valign="top">
 
 <& /RTIR/Incident/Elements/ShowChildren,
     IncidentObj => $TicketObj, 
     Queue       => 'Investigations',
 &>
 
-</td><td valign="top" width="50%">
+</td><td class="boxcontainer" valign="top">
 
 <& /RTIR/Incident/Elements/ShowChildren,
     IncidentObj => $TicketObj, 
     Queue       => 'Blocks',
 &>
 
-</td></tr><tr><td valign="top" width="50%">
+</td></tr><tr><td class="boxcontainer" valign="top">
 
-<&| /Widgets/TitleBox, title => loc("Dates"),
+<&| /Widgets/TitleBox,
+    title => loc("Dates"),
     title_href => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=".$id, 
-    title_class=> 'inverse',  
-    color => "#663366" &>
+    class => 'ticket-info-dates',
+&>
 <& /RTIR/Elements/ShowDates, Ticket => $TicketObj &>
 </&>
 
@@ -156,13 +159,14 @@
 <& /Ticket/Elements/ShowAttachments, Ticket => $TicketObj, Attachments => $attachments &>
 <& /Ticket/Elements/ShowRequestor, Ticket => $TicketObj, DisplayPath => "/RTIR/Display.html" &>
 
-</td><td valign="top" width="50%">
+</td><td class="boxcontainer" valign="top">
 
 % if ($RT::FM::VERSION) {
-<&| /Widgets/TitleBox, title => loc("Articles"),
+<&| /Widgets/TitleBox,
+    title => loc("Articles"),
     title_href => RT->Config->Get('WebPath') ."/RTIR/Advanced.html?id=".$id, 
-    title_class=> 'inverse',
-    color => "#663366" &>
+    class=> 'ticket-info-articles',
+&>
 
 % if ($TicketObj->CurrentUserHasRight('ModifyTicket')) {
 % my $qs = $m->comp("/Elements/QueryString", "RefersTo-new" => "t:$id", next => "/RTIR/Display.html?id=$id");

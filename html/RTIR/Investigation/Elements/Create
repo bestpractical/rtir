@@ -99,7 +99,7 @@ email addresses. These people <b>will</b> receive future updates.)</&></font></i
 % unless ( $SkipField{'DateFields'} ) {
 <tr><td>&nbsp;</td><td valign="top"><&| /Widgets/TitleBox,
     title => loc("Dates"),
-    title_class=> 'inverse',
+    class=> 'ticket-info-dates',
 &><table>
 
 <tr><td class="label"><&|/l&>Starts</&>:</td>

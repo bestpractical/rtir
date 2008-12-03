@@ -44,9 +44,10 @@
 <tr>
 <td valign="top" width="50%">
 <&| /Widgets/TitleBox, 
-    title => loc("The Basics"), 
-    color=> "#993333", 
-    width => "100%" &>
+    title => loc("The Basics"),
+    class => 'ticket-info-basics',
+    width => "100%",
+&>
 
 <table>
   <tr>
@@ -205,7 +206,7 @@
 <tr>
 <td valign="top" width="50%">
 
-<&| /Widgets/TitleBox, title => loc('Dates'),  width => "100%", color => "#663366"  &>
+<&| /Widgets/TitleBox, title => loc('Dates'),  width => "100%", class => 'ticket-info-dates'  &>
 <& /RTIR/Elements/EditDates, TicketObj => $Ticket &>
 </&>
 
@@ -215,7 +216,7 @@
 <br />
 
 
-<&| /Widgets/TitleBox, title => loc('People'),width => "100%", color=> "#333399" &>
+<&| /Widgets/TitleBox, title => loc('People'),width => "100%", class => 'ticket-info-people' &>
 <& /RTIR/Elements/EditPeople, Ticket => $Ticket, UserField => $UserField, UserString => $UserString, UserOp => $UserOp &>
 </&>
 

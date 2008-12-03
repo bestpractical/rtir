@@ -6,7 +6,7 @@
             titleright_href => RT->Config->Get('WebPath') ."/RTIR/Incident/ShowChildren.html?Queue=". $EscapedQueue ."&id=".$id )
         : (),
     ),
-    title_class => 'inverse',
+    class => 'tickets-list-'. lc(RT::IR::TicketType( Queue => $Queue )),
 &>
 
 % if ( $IncidentObj->CurrentUserHasRight('ModifyTicket') ) {

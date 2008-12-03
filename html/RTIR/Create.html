@@ -71,7 +71,7 @@
 
 <& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
-<&| /Widgets/TitleBox, contentbg => "#cccccc", title => $Title &>
+<&| /Widgets/TitleBox, title => $Title &>
 <table border="0" cellpadding="0" cellspacing="2">
 % if ( $Incident ) {
   <tr>
@@ -319,10 +319,7 @@ $ip_default ||= RT->Config->Get('_RTIR_IP_default') || '';
   </tr>
   <tr>
     <td valign="top" colspan="3">
-      <&| /Widgets/TitleBox, title => loc("Dates"),
-          title_class=> 'inverse',  
-          color => "#663366",
-      &>
+    <&| /Widgets/TitleBox, title => loc("Dates"), class => 'ticket-info-dates' &>
       <table border="0">
         <tr>
         <td align="right"><&|/l&>Starts</&>:</td>

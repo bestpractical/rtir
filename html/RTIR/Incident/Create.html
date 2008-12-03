@@ -64,7 +64,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 
 <& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
-<&| /Widgets/TitleBox, title => $Title &>
+<&| /Widgets/TitleBox, title => $Title, class => 'ticket-info-basics' &>
 <table border="0" cellpadding="0" cellspacing="2">
 
 % if ( $TicketObj ) {
@@ -131,8 +131,7 @@ unless ( exists $ARGS{'Content'} ) {
 
 <&| /Widgets/TitleBox,
     title => loc('The Basics'),
-    title_class => 'inverse',
-    color => "#993333",
+    class => 'ticket-info-basics',
 &>
 <table border="0">
     <tr><td align="right"><&|/l&>Priority</&>:</td>
@@ -151,8 +150,7 @@ unless ( exists $ARGS{'Content'} ) {
 
 <&| /Widgets/TitleBox,
     title => loc("Dates"),
-    title_class=> 'inverse',  
-    color => "#663366",
+    class=> 'ticket-info-dates',
 &>
 <table border="0">
 
