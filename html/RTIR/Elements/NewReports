@@ -23,10 +23,12 @@
 %# 
 %# END LICENSE BLOCK
 <&| /Widgets/TitleBox, 
-	title_href  => RT->Config->Get('WebPath') ."/RTIR/Search/Results.html?$EscapedQueue\&$QueryString",
-	title_class => 'inverse',
-	title       => $title, 
-	bodyclass   => '',
+    title_href      => RT->Config->Get('WebPath') ."/RTIR/Search/Results.html?$QueryString",
+    title_class     => 'inverse',
+    title           => $title,
+    titleright      => loc("Bulk Reject"),
+    titleright_href => RT->Config->Get('WebPath') ."/RTIR/Report/BulkReject.html?$BulkQS",
+    bodyclass       => '',
 &>
 
 <& /RTIR/Search/Elements/ShowResults,
@@ -40,18 +42,10 @@
     Order        => $Order,
     AllowSorting => 0,
 &>
-
-<a href="<% RT->Config->Get('WebPath') %>/RTIR/Report/BulkReject.html?<% $EscapedQueue %>&<% $m->comp('/Elements/QueryString',
-    Query   => $Query,
-    OrderBy => $OrderBy,
-    Order   => $Order,
-) %>">[<%loc("Bulk Reject")%>]</a>
-
 </&>
 
 <%INIT>
 my $title = loc("New unlinked Incident Reports...");
-my $EscapedQueue = $m->comp('/Elements/QueryString', Queue => $Queue);
 
 unless( $Query ) {
     $Query = $m->comp( '/RTIR/Elements/NewQuery',  Queue => $Queue, states => [ 'new' ] );
@@ -59,6 +53,7 @@ unless( $Query ) {
 }
 
 my $QueryString = $m->comp('/Elements/QueryString',
+    Queue   => $Queue,
     Query   => $Query,
     Format  => $Format,
     Rows    => $Rows,
@@ -67,6 +62,12 @@ my $QueryString = $m->comp('/Elements/QueryString',
     Order   => $Order,
 );
 
+my $BulkQS = $m->comp('/Elements/QueryString',
+    Queue   => $Queue,
+    Query   => $Query,
+    OrderBy => $OrderBy,
+    Order   => $Order,
+);
 
 </%INIT>
 
