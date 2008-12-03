@@ -2,9 +2,8 @@
     %ARGS,
     current_tab    => $current_tab,
     appendtabs     => $appendtabs,
-    subtabs        => $subtabs,
+    subtabs        => $subtabs_in_parent,
     current_subtab => $current_subtab,
-    
 &>
 
 <%INIT>
@@ -73,7 +72,7 @@ if ( $current_subtab ) {
 
 my ($current_tab_base, $current_tab_args) = split /\?/, $current_tab, 2;
 
-my ($appendtabs, $subtabs);
+my ($appendtabs, $subtabs_in_parent);
 if ( $appendable_tab{ $current_tab_base } ) {
     # append tab and add refine subtab if needed
     my $path = $current_tab;
@@ -88,12 +87,18 @@ if ( $appendable_tab{ $current_tab_base } ) {
     };
 
     if ( $current_subtab ) {
-        $appendtabs->{'_I'}->{'current_subtab'} = $refine_path if $current_subtab_active;
+        $appendtabs->{'_I'}->{'current_subtab'}
+            = $current_subtab_active? $refine_path : $path;
         $appendtabs->{'_I'}->{'subtabs'} = {
+            %$subtabs,
             _a => {
-                path => $refine_path,
+                path  => $path,
+                title => loc('Results'),
+            },
+            _b => {
+                path  => $refine_path,
                 title => loc('Refine'),
-            }
+            },
         };
     }
     $current_subtab = $path;
@@ -107,12 +112,14 @@ elsif( $with_subtab{ $current_tab_base } ) {
     }
     if ( $current_subtab ) {
 # XXX: there is no way to mark refine subtab active
-#        $subtabs->{'current_subtab'} = $refine_path if $current_subtab_active;
-        $subtabs->{'_a'} = {
+#       $subtabs_in_parent->{'current_subtab'} = $refine_path
+#           if $current_subtab_active;
+
+        $subtabs_in_parent->{'_a'} = {
             path => $path,
             title => loc('Results'),
         };
-        $subtabs->{'_b'} = {
+        $subtabs_in_parent->{'_b'} = {
             path => $refine_path,
             title => loc('Refine'),
         };
@@ -142,5 +149,6 @@ $QueryString           => undef
 
 $current_tab           => undef
 $current_subtab        => undef
+$subtabs               => {}
 $current_subtab_active => 0
 </%ARGS>

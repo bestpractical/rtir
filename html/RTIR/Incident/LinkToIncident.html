@@ -36,6 +36,12 @@
 
    current_tab    => $current_tab,
    current_subtab => "RTIR/Search/Refine.html",
+   subtabs        => {
+        _z => {
+            title => loc('New Incident'),
+            path  => "RTIR/Create.html?Child=$id&Queue=Incidents",
+        },
+   },
 &>
 
 % $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $ChildObj);
