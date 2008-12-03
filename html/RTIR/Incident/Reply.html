@@ -244,8 +244,9 @@ if ( $SubmitTicket && !$checks_failure ) {
         PassArguments => $pass,
         Ticket => $IncidentObj
     );
+    push @{ $session{'Actions'}{''} ||= [] }, @results;
     # NOTE: don't pass %ARGS further as we've done everything we need here
-    return $m->comp("Display.html", %$pass, results => \@results, id => $id);
+    return $m->comp("Display.html", %$pass, id => $id);
 }
 
 # XXX, BLOODY-DIRTY-EVIL HACK: when we load the page first time we should

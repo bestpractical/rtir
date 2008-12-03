@@ -258,6 +258,8 @@ my $DoLinks = sub {
     return map { loc("Ticket [_1]: [_2]", $child->Id, $_) } @results;
 };
 
+my @results;
+
 my $TicketObj;
 my $new_ticket = 0;
 if ( $id eq 'new' ) {
@@ -359,7 +361,6 @@ my $attachments = $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket
 </%INIT>
 
 <%ARGS>
-@results => ()
 $id => undef
 $Queue => 'Incidents'
 $Child => undef

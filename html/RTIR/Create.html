@@ -443,7 +443,8 @@ if ( $ARGS{'Create'} ) {
     unless ( $checks_failure ) {
         $ARGS{'new-MemberOf'} = $parentvalue if $parentvalue;
         $m->callback(CallbackName => 'BeforeDisplay', Ticket => $TicketObj, ARGSRef => \%ARGS);
-        return $m->comp( 'Display.html', %ARGS, SkipNotification => \@SkipNotification, results => \@results );
+        push @{ $session{'Actions'}{''} ||= [] }, @results;
+        return $m->comp( 'Display.html', %ARGS, SkipNotification => \@SkipNotification );
     }
     unshift @results, loc("Creation failed:") if @results;
 }
