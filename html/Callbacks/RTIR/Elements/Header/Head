@@ -16,3 +16,6 @@
 %# 
 %# END LICENSE BLOCK
 <link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/RTIR/NoAuth/webrtir.css" type="text/css">
+<%INIT>
+return unless $m->request_comp->path =~ m{^/RTIR/};
+</%INIT>
