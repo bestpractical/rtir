@@ -36,6 +36,12 @@ ul.userlist li:last-child::after{
     margin: 1em;
 }
 
+#topactions #simple-search input.button {
+    width:10em;
+}
+
+#topactions { min-width: 44em; }
+
 % $m->abort;
 <%INIT>
 $r->content_type('text/css');

@@ -21,7 +21,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<form action="<% RT->Config->Get('WebPath') %>/RTIR/index.html">
+<form action="<% RT->Config->Get('WebPath') %>/RTIR/index.html" id="simple-search">
 <input type="hidden" name="NewSearch" value="1" />
 <input type="hidden" name="Queue" value="Incidents" />
 <input size="12" name="q" accesskey="0" />
