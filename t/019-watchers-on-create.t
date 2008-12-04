@@ -92,8 +92,12 @@ sub has_watchers {
 	my $agent = shift;
 	my $id = shift;
 	my $type = shift || 'Correspondents';
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
 
 	display_ticket($agent, $id);
 
-	$agent->content_like(qr{<td class="labeltop">Correspondents:</td>\s*<td class="value">\s*([@\w\.]+)<br />}ms, "Found $type");
+	$agent->content_like(
+        qr{<td class="labeltop">Correspondents:</td>\s*<td class="value">\s*([@\w\.]+)\s*<br />}ms,
+        "Found $type",
+    );
 }
