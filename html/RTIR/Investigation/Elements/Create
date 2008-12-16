@@ -89,7 +89,10 @@ email addresses. These people <b>will</b> receive future updates.)</&></font></i
 
 % unless ( $SkipField{'Content'} || $HideField{'Content'} ) {
 <tr><td class="labeltop"><&|/l&>Message</&>:</td>
-<td><& /Elements/MessageBox,
+<td>
+% $m->callback( %ARGS, MessageBoxName => $NamePrefix .'Content',
+%    CallbackPage => '/Ticket/Create.html', CallbackName => 'BeforeMessageBox' );
+<& /Elements/MessageBox,
     Name             => $NamePrefix .'Content',
     Default          => $value_cb->('Content'),
     QuoteTransaction => $value_cb->('QuoteTransaction'),

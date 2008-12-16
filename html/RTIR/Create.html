@@ -314,6 +314,7 @@ $ip_default ||= RT->Config->Get('_RTIR_IP_default') || '';
 %      $ARGS{Content} =~ s/\&gt;/>/g;
 %   }
 % }
+% $m->callback( %ARGS, CallbackPage => '/Ticket/Create.html', CallbackName => 'BeforeMessageBox' );
 <& /Elements/MessageBox, Default => $ARGS{Content}, QuoteTransaction => $QuoteTransaction &>
     </td>
   </tr>
@@ -364,7 +365,8 @@ if ( $Type eq 'Report' ) {
 }
 $name ||= $Type;
 
-my (@results, $checks_failure);
+my (@results, $checks_failure, $skip_create);
+$skip_create = !$ARGS{'Create'};
 
 my $IncidentObj;
 if ( $Incident ) {
@@ -410,7 +412,7 @@ $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
     self      => $gnupg_widget,
     QueueObj  => $QueueObj,
 );
-if ( $ARGS{'Create'} && $gnupg_widget ) {
+if ( !$skip_create && $gnupg_widget ) {
     my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
         self      => $gnupg_widget,
         Operation => 'Create',
@@ -419,7 +421,7 @@ if ( $ARGS{'Create'} && $gnupg_widget ) {
     $checks_failure = 1 unless $status;
 }
 
-if ( $ARGS{'Create'} ) {
+unless ( $skip_create ) {
     if ( $Type eq 'Investigation' && !$ARGS{'Requestors'} ) {
         push @results, loc( "You must enter a correspondent" );
         $checks_failure = 1;
@@ -436,15 +438,24 @@ if ( $ARGS{'Create'} ) {
         push @results, loc( "Invalid value(s) of the custom fields:" ), @msg;
         $checks_failure = 1;
     }
-
-    unless ( $checks_failure ) {
-        $ARGS{'new-MemberOf'} = $parentvalue if $parentvalue;
-        $m->callback(CallbackName => 'BeforeDisplay', Ticket => $TicketObj, ARGSRef => \%ARGS);
-        push @{ $session{'Actions'}{''} ||= [] }, @results;
-        return $m->comp( 'Display.html', %ARGS, SkipNotification => \@SkipNotification );
-    }
-    unshift @results, loc("Creation failed:") if @results;
 }
+
+# for RTFM and other things
+$m->callback(
+    CallbackName => 'BeforeCreate', CallbackPage => '/Ticket/Create.html',
+    ARGSRef => \%ARGS, results => \@results,
+    skip_create => \$skip_create, checks_failure => $checks_failure
+);
+
+unless ( $skip_create || $checks_failure ) {
+    $ARGS{'new-MemberOf'} = $parentvalue if $parentvalue;
+    $m->callback(CallbackName => 'BeforeDisplay', Ticket => $TicketObj, ARGSRef => \%ARGS);
+    push @{ $session{'Actions'}{''} ||= [] }, @results;
+    return $m->comp( 'Display.html', %ARGS, SkipNotification => \@SkipNotification );
+}
+
+unshift @results, loc("Creation failed:")
+    if $checks_failure && @results;
 
 my ($Title, $SubmitCaption);
 if ( $Split ) {
@@ -459,7 +470,6 @@ if ( $Split ) {
         $SubmitCaption = loc("Create");
     }
 }
-
 
 </%INIT>
 
