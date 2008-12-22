@@ -1,11 +1,39 @@
-CHANGES SINCE RTIR 1.0
-----------------------
+CHANGES IN 2.4.1
+----------------
 
-Full integration with RT 3.7.
+FEATURES
+========
+* added 'Bookmark' action for tickets in RTIR, use 'Bookmarked Tickets'
+  portlet to see them on 'RTIR Home' page.
+* added 'Results' subtab to appendable tabs like Link Incident,
+  Link Children... This is interface people used to.
+* added subtab 'New Incident' to 'Link to an Incident from a child'
+  action, so people can jump away if they can not find suitable incident
+* added support for RTFM on Create in RTIR, needs RTFM 2.4.1rc1 with
+  RTFM_TicketCreate option enabled.
+
+BUGS
+====
+
+* we don't apply anymore RTIR's css files if it's not path of the RTIR
+* fixed simple search layout in web2 theme
+* moved 'bulk reject' link to the top right corner, like other
+  similar links in RT, for example 'Edit' or 'Graph'
+* dropped @results argument from Display.html, it's used by
+  new ListActions in RT 3.8. People could see random hex string in
+  the results box caused by this "bug"
+* applied HTML classes on some boxes to be on the same wave as RT.
+  Fixed some layouyt differences, box colors and other.
+* added paging to LinkChildren (adding a child to an incident)
+
+CHANGES IN 2.4.0 SINCE RTIR 1.0
+-------------------------------
+
+Full integration with RT 3.8.
 
 New Search UI
 
-    This includes a 3.7-style search UI, and menu changes to
+    This includes a 3.8-style search UI, and menu changes to
     accomodate this.  Instead of search results and criteria being
     displayed on a single page, you can now choose the 'Refine' menu
     option to refine your search and re-run it after you've added all
@@ -74,5 +102,5 @@ Scrips
 
 Standardized Components
 
-    RTIR 1.2 uses more of RT's core components, making it easier to
+    RTIR 2.4 uses more of RT's core components, making it easier to
     customize and maintain.
