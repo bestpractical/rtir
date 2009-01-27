@@ -1,3 +1,13 @@
+CHANGES IN 2.4.2
+----------------
+
+BUGS
+====
+
+* don't set $$skip to zero in SkipTransaction callback as it may
+  conflict with other users of this callback. Just use return and
+  as well check asap if the txn is already skipped.
+
 CHANGES IN 2.4.1
 ----------------
 
