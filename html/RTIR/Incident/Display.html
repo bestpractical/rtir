@@ -169,7 +169,7 @@
 &>
 
 % if ($TicketObj->CurrentUserHasRight('ModifyTicket')) {
-% my $qs = $m->comp("/Elements/QueryString", "RefersTo-new" => "t:$id", next => "/RTIR/Display.html?id=$id");
+% my $qs = $m->comp("/Elements/QueryString", "RefersTo-new" => "t:$id", next => RT->Config->Get('WebPath')."/RTIR/Display.html?id=$id");
     <table width="100%"><tr><td align="right"><font size="-1">
         | <a href="<%RT->Config->Get('WebPath')%>/RTFM/Article/PreCreate.html?<% $qs |n%>"><%loc('New')%></a> 
         | <a href="<%RT->Config->Get('WebPath')%>/RTIR/Incident/LinkArticles.html?id=<%$id%>"><%loc("Link")%></a> |
