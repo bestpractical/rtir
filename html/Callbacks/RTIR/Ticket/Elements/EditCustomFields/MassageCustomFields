@@ -1,8 +1,13 @@
 <%args>
 $CustomFields => undef
-
+$TicketObj => undef
+$QueueObj => undef
 </%args>
 <%init>
-# We never want to see the RTIR custom fields in the edity ui
-$CustomFields->Limit( FIELD => 'Name', OPERATOR => 'NOT STARTSWITH', VALUE => '_RTIR');
+my $queue = $QueueObj || $TicketObj->QueueObj;
+if ( RT::IR->OurQueue( $queue ) ) {
+    # We never want to see the RTIR custom fields State and Constituency in the edity ui
+    $CustomFields->Limit( FIELD => 'Name', OPERATOR => '!=', VALUE => 'State');
+    $CustomFields->Limit( FIELD => 'Name', OPERATOR => '!=', VALUE => 'Constituency');
+}
 </%init>

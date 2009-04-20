@@ -48,19 +48,11 @@
 
 <table>
   <tr>
-    <td class="label">
-      <&|/l&>State</&>:
-    </td>
-    <td class="value">
-      <& /RTIR/Elements/ShowRTIRField, 
-    Name => 'State', 
-    Ticket => $Ticket &>
-    </td>
+    <td class="label"><&|/l&>State</&>:</td>
+    <td class="value"><& /RTIR/Elements/ShowRTIRField, Name => 'State', Ticket => $Ticket &></td>
   </tr>
   <tr>
-    <td class="label">
-      <&|/l&>Owner</&>:
-    </td>
+    <td class="label"><&|/l&>Owner</&>:</td>
     <td class="value">
       <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->Owner &>
     </td>
@@ -68,15 +60,6 @@
   <tr>
     <td class="label"><&|/l&>Subject</&>:</td>
     <td class="value"><input name="Subject" value="<%$Ticket->Subject|h%>" size="50" /></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Description</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/EditRTIRField, 
-         TicketObj => $Ticket, 
-     Name => 'Description',
-     Cols => 60 &>
-    </td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Priority</&>:</td>
@@ -97,42 +80,6 @@
     </td>
   </tr>
 % }
-  <tr>
-    <td class="label"><&|/l&>Function</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/EditRTIRField, 
-         TicketObj => $Ticket, 
-     Name => 'Function',
-     Rows => 1 &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Classification</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/EditRTIRField, 
-         TicketObj => $Ticket, 
-     Name => 'Classification',
-     Rows => 1 &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>IP</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/EditRTIRField,
-         TicketObj => $Ticket,
-         Name => 'IP',
-         Cols => 40 &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Resolution</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/EditRTIRField,
-         TicketObj => $Ticket,
-         Name => 'Resolution',
-         Rows => 1 &>
-    </td>
-  </tr>
 
   <tr>
     <td colspan="2">
@@ -157,7 +104,9 @@
 </table>
 <br />
 
-<& /Elements/Submit, Name => 'SaveChanges', Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#333399" &>
+<& /Elements/Submit, Name => 'SaveChanges', Label => loc('Save Changes'),
+    Caption => loc("If you've updated anything above, be sure to"), color => "#333399",
+&>
 </form>
 
 <%INIT>

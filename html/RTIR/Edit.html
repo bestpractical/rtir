@@ -51,9 +51,7 @@
 
 <table>
   <tr>
-    <td class="label">
-      <%loc("State")%>:
-    </td>
+    <td class="label"><%loc("State")%>:</td>
     <td class="value" colspan="2">
 % unless ( $Type eq 'Block' ) {
       <& /RTIR/Elements/ShowRTIRField, Ticket => $Ticket, Name => 'State' &>
@@ -67,20 +65,15 @@
     <td class="value"><input name="Subject" value="<%$Ticket->Subject|h%>" size="50" /></td>
   </tr>
   <tr>
-    <td class="label">
-      <&|/l&>Owner</&>:
-    </td>
-    <td>
-      <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->Owner &>
-    </td>
+    <td class="label"><&|/l&>Owner</&>:</td>
+    <td><& /Elements/SelectOwner,
+        Name => 'Owner', Default => $Ticket->Owner,
+        TicketObj => $Ticket, QueueObj => $Ticket->QueueObj,
+    &></td>
   </tr>
   <tr>
-    <td class="label">
-      <%loc("Incident")%>:
-    </td>
-    <td class="value">
-      <& /RTIR/Elements/ShowIncidents, Ticket => $Ticket &>
-    </td>
+    <td class="label"><%loc("Incident")%>:</td>
+    <td class="value"><& /RTIR/Elements/ShowIncidents, Ticket => $Ticket &></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Time Worked</&>:</td>
@@ -93,101 +86,6 @@
       <& /RTIR/Elements/EditRTIRField, 
          TicketObj => $Ticket,
          Name => 'Constituency' &>
-    </td>
-  </tr>
-% }
-
-% if ($Type eq 'Report') {
-  <tr>
-    <td class="labeltop"><&|/l&>SLA</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/EditRTIRField, 
-         TicketObj => $Ticket, 
-         Name => 'SLA' &>
-    </td>
-  </tr>
-  <tr>
-    <td class="labeltop"><&|/l&>Customer</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/EditRTIRField, 
-         TicketObj => $Ticket, 
-         Name => 'Customer' &>
-    </td>
-  </tr>
-  <tr>
-    <td class="labeltop">
-      <%loc("How Reported")%>:
-    </td>
-    <td class="value" colspan="2">
-      <table>
-        <tr>
-          <td>
-            <& /RTIR/Elements/EditRTIRField, 
-              TicketObj => $Ticket,
-              Name => 'HowReported' &>
-          </td>
-    <td class="labeltop">
-      <%loc("Reporter Type")%>:
-    </td>
-    <td class="value" colspan="2">
-      <& /RTIR/Elements/EditRTIRField, 
-        TicketObj => $Ticket,
-        Name => 'ReporterType' &>
-    </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-% } elsif ($Type eq 'Block') {
-  <tr>
-    <td class="label"><&|/l&>IP Address</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/EditRTIRField, 
-         TicketObj => $Ticket,
-         Name => 'IP' &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Netmask</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/EditRTIRField, 
-         TicketObj => $Ticket, 
-         Name => 'Netmask' &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Port</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/EditRTIRField, 
-         TicketObj => $Ticket, 
-         Name => 'Port' &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Where Blocked</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/EditRTIRField, 
-         TicketObj => $Ticket, 
-         Name => 'WhereBlocked' &>
-    </td>
-  </tr>
-% } elsif ($Type eq 'Investigation') {
-  <tr>
-    <td class="labeltop"><&|/l&>Customer</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/EditRTIRField, 
-         TicketObj => $Ticket, 
-         Name => 'Customer' &>
-    </td>
-  </tr>
-% }
-% unless ($Type eq 'Block') {
-  <tr>
-    <td class="labeltop"><&|/l&>IP</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/EditRTIRField, 
-         TicketObj => $Ticket, 
-         Name => 'IP', Cols => 40 &>
     </td>
   </tr>
 % }
