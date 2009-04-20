@@ -10,8 +10,8 @@
 * Description CF in Incidents had Cols => 60 argument, check if we preserve behaviour
 
 * On edit State need special treating for Blocks
-
-* Constituency has special treating on edit depeding on propagation mode
+* Constituency has special treating on edit depending on constituency propagation mode
+** These two custom fields are still massaged via callback and RTIR has special editor
 
 Implemented changes:
 
