@@ -38,7 +38,7 @@ my $ip_pattern = qr{(?#IP/IP-IP/CIDR)^(?:|\s*$RE{net}{IPv4}(?:\s*-\s*$RE{net}{IP
 
 @CustomFields = (
     {
-        Name        => '_RTIR_State',
+        Name        => 'State',
         Type        => 'SelectSingle',
         Queue       => 'Incidents',
         Disabled    => 0,
@@ -50,7 +50,7 @@ my $ip_pattern = qr{(?#IP/IP-IP/CIDR)^(?:|\s*$RE{net}{IPv4}(?:\s*-\s*$RE{net}{IP
         ],
     },
     {
-        Name        => '_RTIR_Constituency',
+        Name        => 'Constituency',
         Type        => 'SelectSingle',
         Queue       => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
         Disabled    => 0,
@@ -61,7 +61,7 @@ my $ip_pattern = qr{(?#IP/IP-IP/CIDR)^(?:|\s*$RE{net}{IPv4}(?:\s*-\s*$RE{net}{IP
         ],
     },
     {
-        Name        => '_RTIR_State',
+        Name        => 'State',
         Type        => 'SelectSingle',
         Queue       => 'Incident Reports',
         Disabled    => 0,
@@ -74,7 +74,7 @@ my $ip_pattern = qr{(?#IP/IP-IP/CIDR)^(?:|\s*$RE{net}{IPv4}(?:\s*-\s*$RE{net}{IP
         ],
     },
     {
-        Name        => '_RTIR_State',
+        Name        => 'State',
         Type        => 'SelectSingle',
         Queue       => 'Investigations',
         Disabled    => 0,
@@ -85,7 +85,7 @@ my $ip_pattern = qr{(?#IP/IP-IP/CIDR)^(?:|\s*$RE{net}{IPv4}(?:\s*-\s*$RE{net}{IP
         ],
     },
     {
-        Name        => '_RTIR_State',
+        Name        => 'State',
         Type        => 'SelectSingle',
         Queue       => 'Blocks',
         Disabled    => 0,
@@ -98,14 +98,14 @@ my $ip_pattern = qr{(?#IP/IP-IP/CIDR)^(?:|\s*$RE{net}{IPv4}(?:\s*-\s*$RE{net}{IP
         ],
     },
     {
-        Name        => '_RTIR_Description',
+        Name        => 'Description',
         Type        => 'FreeformSingle',
         Queue       => 'Incidents',
         Disabled    => 0,
         Description => 'Description for Incidents RTIR queue',
     },
     {
-        Name        => '_RTIR_Resolution',
+        Name        => 'Resolution',
         Type        => 'SelectSingle',
         Queue       => 'Incidents',
         Disabled    => 0,
@@ -118,7 +118,7 @@ my $ip_pattern = qr{(?#IP/IP-IP/CIDR)^(?:|\s*$RE{net}{IPv4}(?:\s*-\s*$RE{net}{IP
         ],
     },
     {
-        Name        => '_RTIR_SLA',
+        Name        => 'SLA',
         Type        => 'SelectSingle',
         Queue       => 'Incident Reports',
         Disabled    => 0,
@@ -130,7 +130,7 @@ my $ip_pattern = qr{(?#IP/IP-IP/CIDR)^(?:|\s*$RE{net}{IPv4}(?:\s*-\s*$RE{net}{IP
         ],
     },
     {
-        Name        => '_RTIR_Function',
+        Name        => 'Function',
         Type        => 'SelectSingle',
         Queue       => 'Incidents',
         Disabled    => 0,
@@ -141,7 +141,7 @@ my $ip_pattern = qr{(?#IP/IP-IP/CIDR)^(?:|\s*$RE{net}{IPv4}(?:\s*-\s*$RE{net}{IP
         ],
     },
     {
-        Name        => '_RTIR_Classification',
+        Name        => 'Classification',
         Type        => 'SelectSingle',
         Queue       => 'Incidents',
         Disabled    => 0,
@@ -156,7 +156,7 @@ my $ip_pattern = qr{(?#IP/IP-IP/CIDR)^(?:|\s*$RE{net}{IPv4}(?:\s*-\s*$RE{net}{IP
         ],
     },
     {
-        Name        => '_RTIR_HowReported',
+        Name        => 'How Reported',
         Type        => 'SelectSingle',
         Queue       => 'Incident Reports',
         Disabled    => 0,
@@ -168,7 +168,7 @@ my $ip_pattern = qr{(?#IP/IP-IP/CIDR)^(?:|\s*$RE{net}{IPv4}(?:\s*-\s*$RE{net}{IP
         ]
     },
     {
-        Name        => '_RTIR_ReporterType',
+        Name        => 'Reporter Type',
         Type        => 'SelectSingle',
         Queue       => 'Incident Reports',
         Disabled    => 0,
@@ -183,7 +183,7 @@ my $ip_pattern = qr{(?#IP/IP-IP/CIDR)^(?:|\s*$RE{net}{IPv4}(?:\s*-\s*$RE{net}{IP
         ]
     },
     {
-        Name        => '_RTIR_IP',
+        Name        => 'IP',
         Type        => 'FreeformMultiple',
         Pattern     => "$ip_pattern",
         Queue       => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
@@ -191,28 +191,28 @@ my $ip_pattern = qr{(?#IP/IP-IP/CIDR)^(?:|\s*$RE{net}{IPv4}(?:\s*-\s*$RE{net}{IP
         Description => 'IP address for RTIR queues',
     },
     {
-        Name        => '_RTIR_Netmask',
+        Name        => 'Netmask',
         Type        => 'FreeformSingle',
         Queue       => 'Blocks',
         Disabled    => 0,
         Description => 'Network mask for Blocks RTIR queue',
     },
     {
-        Name        => '_RTIR_Port',
+        Name        => 'Port',
         Type        => 'FreeformSingle',
         Queue       => 'Blocks',
         Disabled    => 0,
         Description => 'Port for Blocks RTIR queue',
     },
     {
-        Name        => '_RTIR_WhereBlocked',
+        Name        => 'Where Blocked',
         Type        => 'FreeformSingle',
         Queue       => 'Blocks',
         Disabled    => 0,
         Description => 'Where the block is placed for Blocks RTIR queue',
     },
     {
-        Name        => '_RTIR_Customer',
+        Name        => 'Customer',
         Type        => 'SelectMultiple',
         Queue       => 'Incident Reports',
         Disabled    => 0,
@@ -220,7 +220,7 @@ my $ip_pattern = qr{(?#IP/IP-IP/CIDR)^(?:|\s*$RE{net}{IPv4}(?:\s*-\s*$RE{net}{IP
         Description => 'Customer for Incident Reports RTIR queue',
     },
     {
-        Name        => '_RTIR_Customer',
+        Name        => 'Customer',
         Type        => 'SelectSingle',
         Queue       => 'Investigations',
         Disabled    => 0,
@@ -575,23 +575,16 @@ Subject: { $Ticket->Subject }
 { $Transaction->Content }
 
 { my $output = "";
-  my @mailfields = qw(
-      _RTIR_IP
-      _RTIR_Netmask
-      _RTIR_Port
-      _RTIR_WhereBlocked
-  );
+  my @mailfields = ( 'IP', 'Netmask', 'Port', 'Where Blocked' );
 
   my $CustomFields = $Ticket->QueueObj->TicketCustomFields;
   while ( my $CustomField = $CustomFields->Next ) {
     my $name = $CustomField->Name;
-    next unless grep $_ eq $name, @mailfields;
+    next unless grep lc $_ eq lc $name, @mailfields;
 
     my $Values = $Ticket->CustomFieldValues( $CustomField->Id );
     while ( my $Value = $Values->Next ) {
-      $name =~ /^_RTIR_(.*)/;
-      $output .= ($1 || $name) .": "
-              .  $Value->Content ."\n";
+      $output .= $name .": ". $Value->Content ."\n";
     }
   }
   return $output;
@@ -614,22 +607,16 @@ you may reply to this message.
 Block #{$Ticket->id} was removed.
 
 { my $output = "";
-  my @mailfields = qw(
-    _RTIR_IP
-    _RTIR_Netmask
-    _RTIR_Port
-    _RTIR_WhereBlocked
-  );
+  my @mailfields = ( 'IP', 'Netmask', 'Port', 'Where Blocked' );
+
   my $CustomFields = $Ticket->QueueObj->TicketCustomFields;
   while ( my $CustomField = $CustomFields->Next ) {
     my $name = $CustomField->Name;
-    next unless grep $_ eq $name, @mailfields;
+    next unless grep lc $_ eq lc $name, @mailfields;
 
     my $Values = $Ticket->CustomFieldValues( $CustomField->Id );
     while ( my $Value = $Values->Next ) {
-      $name =~ /^_RTIR_(.*)/;
-      $output .= ($1 || $name) .": "
-              .  $Value->Content ."\n";
+      $output .= $name .": ". $Value->Content ."\n";
     }
   }
   return $output;

@@ -1,4 +1,9 @@
 
+my %special_rename = (
+    howreported => 'How Reported',
+    resportertype => 'Reporter Type',
+    whereblocked => 'Where Blocked',
+);
 @Initial = (
     sub {
         my $cfs = RT::CustomFields->new( $RT::SystemUser );
@@ -9,6 +14,8 @@
             
             $new =~ s/^_RTIR_//i;
             next if $name eq $new;
+
+            $new = $special_rename{ lc $new } || $new;
 
             my ($status, $msg) = $cf->SetName( $new );
             $RT::Logger->error("Couldn't rename custom field '$name': $msg");
