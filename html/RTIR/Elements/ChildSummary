@@ -81,7 +81,7 @@ my $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
 my @conditions = ();
 if ( defined $q && length $q ) {
     if ( lc( $lookuptype || '' ) eq 'ip' ) {
-        push @conditions, "CF.{_RTIR_IP} = '$q'";
+        push @conditions, "CF.{IP} = '$q'";
     } else {
         push @conditions, "Content LIKE '$q'";
     }

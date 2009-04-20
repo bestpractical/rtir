@@ -18,13 +18,13 @@ Description => loc('RTIR queues summary')
 % for my $queue (@queues) {
 %   $i++;
 %   my $queue_cond = "Queue = '$queue'";
-%   my $all_q = "$queue_cond AND (". join( ' OR ', map "CF.{_RTIR_State} = '$_'", @{ $states{ $queue } } ).')';
+%   my $all_q = "$queue_cond AND (". join( ' OR ', map "CF.{State} = '$_'", @{ $states{ $queue } } ).')';
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
 <td><a href="<% RT->Config->Get('WebPath')%>/Search/Results.html?Query=<% $all_q |un %>""><% $queue %></a></td>
 %   foreach my $s ( @states ) {
 <td align="right">
 %   if ( grep $_ eq $s, @{ $states{ $queue } } ) {
-%       my $query =  "$queue_cond AND CF.{_RTIR_State} = '$s'";
+%       my $query =  "$queue_cond AND CF.{State} = '$s'";
 %       $Tickets->FromSQL( $query );
 %       my $qs = $m->comp('/Elements/QueryString', Queue => $queue, Query => $query );
 <a href="<% RT->Config->Get('WebPath') %>/RTIR/Search/Results.html?<% $qs |n %>"><% $Tickets->Count %></a></td>

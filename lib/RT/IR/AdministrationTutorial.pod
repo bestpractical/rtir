@@ -10,62 +10,62 @@ You may disable the Blocks by putting the following into your RTIR config:
 
 =over 4
 
-=item _RTIR_State
+=item State
 
 The various states an incident, IR, investigation, or block can be in, such as
 'open', 'stalled', 'abandoned', etc.
 
-=item _RTIR_Constituency
+=item Constituency
 
 The constituency of an incident, IR, investigation, or block
 
-=item _RTIR_Description
+=item Description
 
 Short description of an Incident
 
-=item _RTIR_Resolution
+=item Resolution
 
 How an Incident was or wasn't resolved
 
-=item _RTIR_SLA
+=item SLA
 
 The SLA of an IR
 
-=item _RTIR_Function
+=item Function
 
 Who is handling the Incident
 
-=item _RTIR_Classification
+=item Classification
 
 The type of Incident, such as system comproise or denial of service
 
-=item _RTIR_HowReported
+=item HowReported
 
 How the IR got into RTIR
 
-=item _RTIR_ReporterType
+=item ReporterType
 
 Who reported the IR, such as the police or another ISP
 
-=item _RTIR_IP
+=item IP
 
 IP addresses related to the incident, IR, investigation, or block
 
 L<Tutorial/'IP'>
 
-=item _RTIR_Netmask
+=item Netmask
 
 Network mask for a Block
 
-=item _RTIR_Port
+=item Port
 
 Port for a Block
 
-=item _RTIR_WhereBlocked
+=item WhereBlocked
 
 Where the block is placed
 
-=item _RTIR_Customer
+=item Customer
 
 Customer for an IR or Investigation
 
@@ -167,8 +167,8 @@ set the Started date to now.
 
 =item SetDue
 
-In the Incident Reports queue, Due is set based on the _RTIR_SLA Custom Field 
-during Ticket creation.  _RTIR_SLA is set if needed, based on your Business Hours
+In the Incident Reports queue, Due is set based on the SLA Custom Field 
+during Ticket creation.  SLA is set if needed, based on your Business Hours
 definitions.
 
 In the Investigations and Blocks queues, Due is set to the first instant during
@@ -176,8 +176,8 @@ Business Hours for your Default Due setting, during Ticket creation.
 
 =item SetDueOnQueueChange
 
-In the Incident Reports queue, Due is set based on the _RTIR_SLA Custom Field 
-during Queue Change.  _RTIR_SLA is set if needed, based on your Business Hours
+In the Incident Reports queue, Due is set based on the SLA Custom Field 
+during Queue Change.  SLA is set if needed, based on your Business Hours
 definitions.
 
 In the Investigations and Blocks queues, Due is set to the first instant during
@@ -199,13 +199,13 @@ Config settings.
 =item SetHowReported
 
 Applies to the Incident Reports queue.
-On Ticket creation, set the _RTIR_HowReported Custom Field to a default
+On Ticket creation, set the HowReported Custom Field to a default
 value of Email if it wasn't otherwise specified.
 
 =item SetRTIRState
 
 Applies to the Incident Reports, Blocks, Incidents and Investigations queues.
-Sets the _RTIR_State Custom Field based on the current Status
+Sets the State Custom Field based on the current Status
 of the Ticket.  This is triggered on Create, Custom Field change, Status Change,
 Linking of tickets or Queue Change.  Correspondence in the Blocks queue also
 triggers this.
@@ -243,9 +243,9 @@ resolved, the linked parent Incident ticket is marked as Open.
 
 Applies to the Incident Queue.
 When an Incident's Status is changed, if it is changed from an
-Inactive Status to an Active Status, the _RTIR_Resolution Custom Field
+Inactive Status to an Active Status, the Resolution Custom Field
 is removed.  If it is changed from an Active Status to an Inactive Status
-and the _RTIR_Resolution Custom Field wasn't set manually, it is set
+and the Resolution Custom Field wasn't set manually, it is set
 to the value of _RTIR_Resolution_(rejected|resolved)_default in your
 F<RTIR_Config.pm>.
 
@@ -259,26 +259,26 @@ L<Templates/BlockRemoved in Blocks queue> Template
 =item SetIPFromContent
 
 Applies to the Incident Reports, Blocks, Incidents and Investigations queues.
-Updates the Ticket Custom Field _RTIR_IP to have a list of all IP and IP Ranges
+Updates the Ticket Custom Field IP to have a list of all IP and IP Ranges
 found in the body of the ticket during Create and Correspond
 
 =item SetConstituency
 
 Applies to the Incident Reports, Blocks, Incidents and Investigations queues.
 Uses the Constituency algorithms discussed in L<RT::IR::Constituencies> to 
-set and propagate changes to the _RTIR_Constituency Custom Field.  On Ticket
+set and propagate changes to the Constituency Custom Field.  On Ticket
 creation, Constituency is set based on the checking the parent Ticket, the 
 X-RT-Mail-Extension header (see L<RT::IR::Constituencies>) or the default set 
 in your F<RTIR_Config.pm>
 
-When linking tickets or changing the _RTIR_Constituency Custom Field, this
+When linking tickets or changing the Constituency Custom Field, this
 Scrip ensures that the change is propagated based on your choice of 
 _RTIR_Constituency_Propagation in your F<RTIR_Config.pm>
 
 =item SetConstituencyGroup
 
 Applies to the Incident Reports, Blocks, Incidents and Investigations queues.
-When Tickets are Created, or the _RTIR_Constituency Custom Field is updated,
+When Tickets are Created, or the Constituency Custom Field is updated,
 this Scrip manages the assignment of DutyTeam groups as AdminCcs.
 It makes sure that for a Constituency EDUNET, a DutyTeam group
 named 'DutyTeam EDUNET' is assigned as AdminCc and removes other DutyTeam

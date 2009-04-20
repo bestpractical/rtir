@@ -1,5 +1,5 @@
 <%init>
-return unless ($CustomField->Name eq '_RTIR_Constituency');
+return unless ($CustomField->Name eq 'Constituency');
 $$Name = '/RTIR/Elements/EditConstituency';
 
 </%init>

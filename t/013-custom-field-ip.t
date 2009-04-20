@@ -15,8 +15,8 @@ my $cf;
 diag "load and check basic properties of the IP CF" if $ENV{'TEST_VERBOSE'};
 {
     my $cfs = RT::CustomFields->new( $RT::SystemUser );
-    $cfs->Limit( FIELD => 'Name', VALUE => '_RTIR_IP' );
-    is( $cfs->Count, 1, "found one CF with name '_RTIR_IP'" );
+    $cfs->Limit( FIELD => 'Name', VALUE => 'IP' );
+    is( $cfs->Count, 1, "found one CF with name 'IP'" );
 
     $cf = $cfs->First;
     is( $cf->Type, 'Freeform', 'type check' );
@@ -63,7 +63,7 @@ diag "create a ticket via web and set IP" if $ENV{'TEST_VERBOSE'};
         my $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $id );
         ok( $ticket->id, 'loaded ticket' );
-        is( $ticket->FirstCustomFieldValue('_RTIR_IP'), $val, 'correct value' );
+        is( $ticket->FirstCustomFieldValue('IP'), $val, 'correct value' );
     }
 }
 
@@ -91,7 +91,7 @@ diag "create a ticket via web with IP in message" if $ENV{'TEST_VERBOSE'};
         my $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $id );
         ok( $ticket->id, 'loaded ticket' );
-        is( $ticket->FirstCustomFieldValue('_RTIR_IP'), $val, 'correct value' );
+        is( $ticket->FirstCustomFieldValue('IP'), $val, 'correct value' );
     }
 }
 
@@ -119,7 +119,7 @@ diag "create a ticket via web with CIDR" if $ENV{'TEST_VERBOSE'};
         my $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $id );
         ok( $ticket->id, 'loaded ticket' );
-        my $values = $ticket->CustomFieldValues('_RTIR_IP');
+        my $values = $ticket->CustomFieldValues('IP');
         my %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
         ok( $has{ "172.16.$i.0-172.16.$i.1" }, "has value" )
             or diag "but has values ". join ", ", keys %has;
@@ -150,7 +150,7 @@ diag "create a ticket via web with CIDR in message" if $ENV{'TEST_VERBOSE'};
         my $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $id );
         ok( $ticket->id, 'loaded ticket' );
-        my $values = $ticket->CustomFieldValues('_RTIR_IP');
+        my $values = $ticket->CustomFieldValues('IP');
         my %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
         ok( $has{ "172.16.$i.0-172.16.$i.1" }, "has value" )
             or diag "but has values ". join ", ", keys %has;
@@ -189,7 +189,7 @@ diag "set IP" if $ENV{'TEST_VERBOSE'};
         my $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $id );
         ok( $ticket->id, 'loaded ticket' );
-        my $values = $ticket->CustomFieldValues('_RTIR_IP');
+        my $values = $ticket->CustomFieldValues('IP');
         my %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
         is( scalar values %has, 1, "one IP were added");
         ok( $has{ $val }, "has value" )
@@ -208,7 +208,7 @@ diag "set IP with spaces around" if $ENV{'TEST_VERBOSE'};
         $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $id );
         ok( $ticket->id, 'loaded ticket' );
-        $values = $ticket->CustomFieldValues('_RTIR_IP');
+        $values = $ticket->CustomFieldValues('IP');
         %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
         is( scalar values %has, 1, "one IP were added");
         ok( $has{ '172.16.0.2' }, "has value" )
@@ -227,7 +227,7 @@ diag "replace IP with a range" if $ENV{'TEST_VERBOSE'};
         $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $id );
         ok( $ticket->id, 'loaded ticket' );
-        $values = $ticket->CustomFieldValues('_RTIR_IP');
+        $values = $ticket->CustomFieldValues('IP');
         %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
         is( scalar values %has, 1, "one IP were added");
         ok( $has{ $val }, "has value" )
@@ -246,7 +246,7 @@ diag "delete range, add another range using CIDR" if $ENV{'TEST_VERBOSE'};
         $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $id );
         ok( $ticket->id, 'loaded ticket' );
-        $values = $ticket->CustomFieldValues('_RTIR_IP');
+        $values = $ticket->CustomFieldValues('IP');
         %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
         is( scalar values %has, 1, "one IP were added");
         ok( $has{ '172.16.0.0-172.16.255.255' }, "has value" )
@@ -264,7 +264,7 @@ diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
     is( $ticket->id, $id, 'loaded ticket' );
 
     my %has = ();
-    $has{ $_->Content }++ foreach @{ $ticket->CustomFieldValues('_RTIR_IP')->ItemsArrayRef };
+    $has{ $_->Content }++ foreach @{ $ticket->CustomFieldValues('IP')->ItemsArrayRef };
     is(scalar values %has, 1, "one IP was added");
     ok($has{'1.0.0.0'}, 'correct value');
 
@@ -276,7 +276,7 @@ diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
     is($ticket->id, $id, 'loaded ticket');
 
     %has = ();
-    $has{ $_->Content }++ foreach @{ $ticket->CustomFieldValues('_RTIR_IP')->ItemsArrayRef };
+    $has{ $_->Content }++ foreach @{ $ticket->CustomFieldValues('IP')->ItemsArrayRef };
     is(scalar values %has, 1, "one IP was added");
     ok($has{'255.255.255.255'}, 'correct value');
 
@@ -286,7 +286,7 @@ diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
     $ticket = RT::Ticket->new( $RT::SystemUser );
     $ticket->Load( $id );
     is($ticket->id, $id, 'loaded ticket');
-    is($ticket->CustomFieldValues('_RTIR_IP')->Count, 0, "IP wasn't added");
+    is($ticket->CustomFieldValues('IP')->Count, 0, "IP wasn't added");
 
     $id = create_ir( $agent, { Subject => "test ip", Content => '355.255.255.255' } );
     ok($id, "created a ticket");
@@ -294,7 +294,7 @@ diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
     $ticket = RT::Ticket->new( $RT::SystemUser );
     $ticket->Load( $id );
     is($ticket->id, $id, 'loaded ticket');
-    is($ticket->CustomFieldValues('_RTIR_IP')->Count, 0, "IP wasn't added");
+    is($ticket->CustomFieldValues('IP')->Count, 0, "IP wasn't added");
 
     $id = create_ir( $agent, { Subject => "test ip", Content => '8.13.8/8.13.0/1.0' } );
     ok($id, "created a ticket");
@@ -302,7 +302,7 @@ diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
     $ticket = RT::Ticket->new( $RT::SystemUser );
     $ticket->Load( $id );
     is($ticket->id, $id, 'loaded ticket');
-    is($ticket->CustomFieldValues('_RTIR_IP')->Count, 0, "IP wasn't added");
+    is($ticket->CustomFieldValues('IP')->Count, 0, "IP wasn't added");
 }
 
 diag "check that IPs in messages don't add duplicates" if $ENV{'TEST_VERBOSE'};
@@ -317,7 +317,7 @@ diag "check that IPs in messages don't add duplicates" if $ENV{'TEST_VERBOSE'};
     $ticket->Load( $id );
     ok( $ticket->id, 'loaded ticket' );
 
-    my $values = $ticket->CustomFieldValues('_RTIR_IP');
+    my $values = $ticket->CustomFieldValues('IP');
     my %has;
     $has{ $_->Content }++ foreach @{ $values->ItemsArrayRef };
     is(scalar values %has, 1, "one IP were added");
@@ -337,7 +337,7 @@ diag "check IPs separated by commas and semicolons" if $ENV{'TEST_VERBOSE'};
     $ticket->Load( $id );
     ok( $ticket->id, 'loaded ticket' );
 
-    my $values = $ticket->CustomFieldValues('_RTIR_IP');
+    my $values = $ticket->CustomFieldValues('IP');
     my %has;
     $has{ $_->Content }++ foreach @{ $values->ItemsArrayRef };
     is(scalar values %has, 3, "three IPs were added");
@@ -356,12 +356,12 @@ diag "search tickets by IP" if $ENV{'TEST_VERBOSE'};
     ok($id, "created first ticket");
 
     my $tickets = RT::Tickets->new( $rtir_user );
-    $tickets->FromSQL("id = $id AND CF.{_RTIR_IP} = '172.16.1.1'");
+    $tickets->FromSQL("id = $id AND CF.{IP} = '172.16.1.1'");
     ok( $tickets->Count, "found tickets" );
 
     my $flag = 1;
     while ( my $ticket = $tickets->Next ) {
-        my %has = map { $_->Content => 1 } @{ $ticket->CustomFieldValues('_RTIR_IP')->ItemsArrayRef };
+        my %has = map { $_->Content => 1 } @{ $ticket->CustomFieldValues('IP')->ItemsArrayRef };
         next if $has{'172.16.1.0-172.16.1.1'};
         $flag = 0;
         ok(0, "ticket #". $ticket->id ." has no IP 172.16.1.1, but should")
@@ -380,12 +380,12 @@ diag "search tickets by IP range" if $ENV{'TEST_VERBOSE'};
     ok($id, "created first ticket");
 
     my $tickets = RT::Tickets->new( $rtir_user );
-    $tickets->FromSQL("id = $id AND CF.{_RTIR_IP} = '172.16.2.0-172.16.2.255'");
+    $tickets->FromSQL("id = $id AND CF.{IP} = '172.16.2.0-172.16.2.255'");
     ok( $tickets->Count, "found tickets" );
 
     my $flag = 1;
     while ( my $ticket = $tickets->Next ) {
-        my %has = map { $_->Content => 1 } @{ $ticket->CustomFieldValues('_RTIR_IP')->ItemsArrayRef };
+        my %has = map { $_->Content => 1 } @{ $ticket->CustomFieldValues('IP')->ItemsArrayRef };
         next if grep /^172\.16\.2\./, keys %has;
         $flag = 0;
         ok(0, "ticket #". $ticket->id ." has no IP from 172.16.2.0-172.16.2.255, but should");
@@ -407,68 +407,68 @@ diag "create two tickets with different IPs and check several searches" if $ENV{
 
     # IP
     $tickets = RT::Tickets->new( $rtir_user );
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.10'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168.21.10'");
     is( $tickets->Count, 1, "found one ticket" );
-    is( $tickets->First->FirstCustomFieldValue('_RTIR_IP'), '192.168.21.10', "correct value" );
+    is( $tickets->First->FirstCustomFieldValue('IP'), '192.168.21.10', "correct value" );
     $tickets = RT::Tickets->new( $rtir_user );
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.22.10'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168.22.10'");
     is( $tickets->Count, 1, "found one ticket" );
-    is( $tickets->First->FirstCustomFieldValue('_RTIR_IP'), '192.168.22.10', "correct value" );
+    is( $tickets->First->FirstCustomFieldValue('IP'), '192.168.22.10', "correct value" );
 
     # IP/32 - one address
     $tickets = RT::Tickets->new( $rtir_user );
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.10/32'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168.21.10/32'");
     is( $tickets->Count, 1, "found one ticket" );
-    is( $tickets->First->FirstCustomFieldValue('_RTIR_IP'), '192.168.21.10', "correct value" );
+    is( $tickets->First->FirstCustomFieldValue('IP'), '192.168.21.10', "correct value" );
     $tickets = RT::Tickets->new( $rtir_user );
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.22.10/32'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168.22.10/32'");
     is( $tickets->Count, 1, "found one ticket" );
-    is( $tickets->First->FirstCustomFieldValue('_RTIR_IP'), '192.168.22.10', "correct value" );
+    is( $tickets->First->FirstCustomFieldValue('IP'), '192.168.22.10', "correct value" );
 
     # IP range
     $tickets = RT::Tickets->new( $rtir_user );
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.0-192.168.21.255'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168.21.0-192.168.21.255'");
     is( $tickets->Count, 1, "found one ticket" );
-    is( $tickets->First->FirstCustomFieldValue('_RTIR_IP'), '192.168.21.10', "correct value" );
+    is( $tickets->First->FirstCustomFieldValue('IP'), '192.168.21.10', "correct value" );
     $tickets = RT::Tickets->new( $rtir_user );
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.22.0-192.168.22.255'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168.22.0-192.168.22.255'");
     is( $tickets->Count, 1, "found one ticket" );
-    is( $tickets->First->FirstCustomFieldValue('_RTIR_IP'), '192.168.22.10', "correct value" );
+    is( $tickets->First->FirstCustomFieldValue('IP'), '192.168.22.10', "correct value" );
 
     # IP range, with start IP greater than end
     $tickets = RT::Tickets->new( $rtir_user );
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.255-192.168.21.0'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168.21.255-192.168.21.0'");
     is( $tickets->Count, 1, "found one ticket" );
-    is( $tickets->First->FirstCustomFieldValue('_RTIR_IP'), '192.168.21.10', "correct value" );
+    is( $tickets->First->FirstCustomFieldValue('IP'), '192.168.21.10', "correct value" );
     $tickets = RT::Tickets->new( $rtir_user );
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.22.255-192.168.22.0'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168.22.255-192.168.22.0'");
     is( $tickets->Count, 1, "found one ticket" );
-    is( $tickets->First->FirstCustomFieldValue('_RTIR_IP'), '192.168.22.10', "correct value" );
+    is( $tickets->First->FirstCustomFieldValue('IP'), '192.168.22.10', "correct value" );
 
     # CIDR/24
     $tickets = RT::Tickets->new( $rtir_user );
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.0/24'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168.21.0/24'");
     is( $tickets->Count, 1, "found one ticket" );
-    is( $tickets->First->FirstCustomFieldValue('_RTIR_IP'), '192.168.21.10', "correct value" );
+    is( $tickets->First->FirstCustomFieldValue('IP'), '192.168.21.10', "correct value" );
     $tickets = RT::Tickets->new( $rtir_user );
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.22.0/24'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168.22.0/24'");
     is( $tickets->Count, 1, "found one ticket" );
-    is( $tickets->First->FirstCustomFieldValue('_RTIR_IP'), '192.168.22.10', "correct value" );
+    is( $tickets->First->FirstCustomFieldValue('IP'), '192.168.22.10', "correct value" );
 
     # IP is not in CIDR/24
     $tickets = RT::Tickets->new( $rtir_user );
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} != '192.168.21.0/24'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} != '192.168.21.0/24'");
     is( $tickets->Count, 1, "found one ticket" );
-    is( $tickets->First->FirstCustomFieldValue('_RTIR_IP'), '192.168.22.10', "correct value" );
+    is( $tickets->First->FirstCustomFieldValue('IP'), '192.168.22.10', "correct value" );
     $tickets = RT::Tickets->new( $rtir_user );
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} != '192.168.22.0/24'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} != '192.168.22.0/24'");
     is( $tickets->Count, 1, "found one ticket" );
-    is( $tickets->First->FirstCustomFieldValue('_RTIR_IP'), '192.168.21.10', "correct value" );
+    is( $tickets->First->FirstCustomFieldValue('IP'), '192.168.21.10', "correct value" );
 
     # CIDR or CIDR
     $tickets = RT::Tickets->new( $rtir_user );
     $tickets->FromSQL("(id = $id1 OR id = $id2) AND "
-        ."(CF.{_RTIR_IP} = '192.168.21.0/24' OR CF.{_RTIR_IP} = '192.168.22.0/24')");
+        ."(CF.{IP} = '192.168.21.0/24' OR CF.{IP} = '192.168.22.0/24')");
     is( $tickets->Count, 2, "found both tickets" );
 }
 
@@ -485,69 +485,69 @@ diag "create two tickets with different IP ranges and check several searches" if
 
     # IP
     $tickets = RT::Tickets->new( $rtir_user );
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.0'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168.21.0'");
     is( $tickets->Count, 1, "found one ticket" );
     is( $tickets->First->id, $id1, "correct value" );
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.64'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168.21.64'");
     is( $tickets->Count, 1, "found one ticket" );
     is( $tickets->First->id, $id1, "correct value" );
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.127'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168.21.127'");
     is( $tickets->Count, 1, "found one ticket" );
     is( $tickets->First->id, $id1, "correct value" );
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.128'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168.21.128'");
     is( $tickets->Count, 1, "found one ticket" );
     is( $tickets->First->id, $id2, "correct value" );
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.191'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168.21.191'");
     is( $tickets->Count, 1, "found one ticket" );
     is( $tickets->First->id, $id2, "correct value" );
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.255'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168.21.255'");
     is( $tickets->Count, 1, "found one ticket" );
     is( $tickets->First->id, $id2, "correct value" );
 
     # IP/32 - one address
     $tickets = RT::Tickets->new( $rtir_user );
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.63/32'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168.21.63/32'");
     is( $tickets->Count, 1, "found one ticket" );
     is( $tickets->First->id, $id1, "correct value" );
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.191/32'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168.21.191/32'");
     is( $tickets->Count, 1, "found one ticket" );
     is( $tickets->First->id, $id2, "correct value" );
 
     # IP range, lower than both
     $tickets = RT::Tickets->new( $rtir_user );
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.20.0-192.168.20.255'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168.20.0-192.168.20.255'");
     is( $tickets->Count, 0, "didn't finnd ticket" ) or diag "but found ". $tickets->First->id;
 
     # IP range, intersect with the first range
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.20.0-192.168.21.63'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168.20.0-192.168.21.63'");
     is( $tickets->Count, 1, "found one ticket" );
     is( $tickets->First->id, $id1, "correct value" );
 
     # IP range, equal to the first range
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.0-192.168.21.127'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168.21.0-192.168.21.127'");
     is( $tickets->Count, 1, "found one ticket" );
     is( $tickets->First->id, $id1, "correct value" );
 
     # IP range, lay inside the first range
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.31-192.168.21.63'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168.21.31-192.168.21.63'");
     is( $tickets->Count, 1, "found one ticket" );
     is( $tickets->First->id, $id1, "correct value" );
 
     # IP range, intersect with the ranges
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.31-192.168.21.191'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168.21.31-192.168.21.191'");
     is( $tickets->Count, 2, "found both tickets" );
 
     # IP range, equal to range from the starting IP of the first ticket to the ending IP of the second
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.21.0-192.168.21.255'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168.21.0-192.168.21.255'");
     is( $tickets->Count, 2, "found both tickets" );
 
     # IP range, has the both ranges inside it
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168/16'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168/16'");
     is( $tickets->Count, 2, "found both tickets" );
 
     # IP range, greater than both
     $tickets = RT::Tickets->new( $rtir_user );
-    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{_RTIR_IP} = '192.168.22/24'");
+    $tickets->FromSQL("(id = $id1 OR id = $id2) AND CF.{IP} = '192.168.22/24'");
     is( $tickets->Count, 0, "didn't finnd ticket" ) or diag "but found ". $tickets->First->id;
 }
 
@@ -582,7 +582,7 @@ diag "merge ticket, IPs should be merged";
     my $ticket = RT::Ticket->new( $RT::SystemUser );
     $ticket->Load( $b1_id );
     ok $ticket->id, 'loaded ticket';
-    my $values = $ticket->CustomFieldValues('_RTIR_IP');
+    my $values = $ticket->CustomFieldValues('IP');
     my %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
     is( scalar values %has, 2, "both IPs are there");
     ok( $has{ '172.16.0.1' }, "has value" )
@@ -622,7 +622,7 @@ diag "merge ticket with the same IP";
     my $ticket = RT::Ticket->new( $RT::SystemUser );
     $ticket->Load( $b1_id );
     ok $ticket->id, 'loaded ticket';
-    my $values = $ticket->CustomFieldValues('_RTIR_IP');
+    my $values = $ticket->CustomFieldValues('IP');
     my @has = map $_->Content, @{ $values->ItemsArrayRef };
     is( scalar @has, 1, "only one IP") or diag "values: @has";
     is( $has[0], '172.16.0.1', "has value" );

@@ -168,7 +168,7 @@ if ( $constituency_propagation eq 'reject' ) {
 
 if ( $SaveChanges && !$OnlySearchForPeople ) {
     my $checks_failure = 0;
-    my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, '_RTIR_State' );
+    my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, 'State' );
     push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
     my $strict_acl = RT->Config->Set( StrictLinkACL => 0 );
@@ -191,7 +191,7 @@ if ( $SaveChanges && !$OnlySearchForPeople ) {
     $checks_failure = 1 unless $status;
     push @results, ProcessTicketCustomFieldUpdates( ARGSRef => \%ARGS );
 
-    my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, '_RTIR_State' );
+    my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, 'State' );
     if ($newstate ne $oldstate) {
         push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
     }

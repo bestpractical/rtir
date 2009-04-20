@@ -12,7 +12,7 @@ RT::IR::Ticket - RTIR's tickets utilities
 =head2 FirstCustomFieldValue $TicketObj, $Field
 
 Returns first RTIR ticket's custom field value. Use it only with RTIR's
-special custom fields like C<_RTIR_State> and other.
+special custom fields like C<State> and other.
 
 =cut
 

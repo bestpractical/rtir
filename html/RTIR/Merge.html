@@ -84,8 +84,8 @@ if ( $MergeTicket ) {
 }
 
 if ( $MergeTicket && RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject' ) {
-    if ( lc $MergeTicket->FirstCustomFieldValue('_RTIR_Constituency')
-        ne lc $Ticket->FirstCustomFieldValue('_RTIR_Constituency')
+    if ( lc $MergeTicket->FirstCustomFieldValue('Constituency')
+        ne lc $Ticket->FirstCustomFieldValue('Constituency')
     ) {
         push @results, loc("Merge failed: Tickets have different constituencies" );
         $checks_failure = 1;
@@ -133,7 +133,7 @@ unless ( $BaseQuery ) {
     my @parts;
     push @parts, "id != $id";
     push @parts, $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
-    push @parts, "CF.{_RTIR_Constituency} = '". $Ticket->FirstCustomFieldValue('_RTIR_Constituency') ."'"
+    push @parts, "CF.{Constituency} = '". $Ticket->FirstCustomFieldValue('Constituency') ."'"
         if RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject';
     $BaseQuery = join ' AND ', map "( $_ )", grep $_, @parts;
 }

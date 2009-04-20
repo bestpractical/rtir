@@ -300,7 +300,7 @@ sub merge_ticket {
     while($agent->content() !~ m|<a href="/Ticket/Display.html\?id=$id_to_merge_to">$id_to_merge_to</a>|) {
         my @ids = sort map s|<b>\s*<a href="/Ticket/Display.html?id=(\d+)">\1</a>\s*</b>|$1|, split /<td/, $agent->content();
         my $max = pop @ids;
-        my $url = "Merge.html?id=$id&Order=ASC&Query=( 'CF.{_RTIR_State}' = 'new' OR 'CF.{_RTIR_State}' = 'open' AND 'id' > $max)";
+        my $url = "Merge.html?id=$id&Order=ASC&Query=( 'CF.{State}' = 'new' OR 'CF.{State}' = 'open' AND 'id' > $max)";
         my $weburl = RT->Config->Get('WebURL');
         diag("IDs found: " . join ', ', @ids);
         diag("Max ID: " . $max);

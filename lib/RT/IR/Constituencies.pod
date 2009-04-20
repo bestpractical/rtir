@@ -47,7 +47,7 @@ the field during creation of tickets in RTIR's queues.
 
 Constituency is a custom field that applies to all RTIR's queues. Administrator
 can manage the field and its values via the web interface: RT -> Configuration ->
-Custom Fields -> click on '_RTIR_Constituency' record in the list. At the bottom
+Custom Fields -> click on 'Constituency' record in the list. At the bottom
 of the page there is control elements to add, delete and rename values of
 the constituency field.
 

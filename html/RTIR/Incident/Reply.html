@@ -143,7 +143,7 @@ my @queues = ('Incident Reports', 'Investigations');
 push @queues, 'Blocks' unless RT->Config->Get('RTIR_DisableBlocksQueue');
 
 my $ActiveStatesQuery =
-    join ' OR ', map "CF.{_RTIR_State} = '$_'",
+    join ' OR ', map "CF.{State} = '$_'",
     RT::IR::States( Queue => \@queues );
 
 $Query ||= "( $ActiveStatesQuery )";
@@ -190,7 +190,7 @@ if ( $SubmitTicket && !$checks_failure ) {
         }
         $id = $Ticket->id;
 
-        my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, '_RTIR_State' );
+        my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, 'State' );
 
         my @tempresults;
         $ARGS{'UpdateAttachments'} = delete $session{'Attachments'};
@@ -202,7 +202,7 @@ if ( $SubmitTicket && !$checks_failure ) {
             push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
         }
 
-        my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, '_RTIR_State' );
+        my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, 'State' );
 
         if ($newstate ne $oldstate) {
             push (@tempresults, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
@@ -225,10 +225,10 @@ if ( $SubmitTicket && !$checks_failure ) {
     }
 
     if ( $update_incident_state ) {
-        my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $IncidentObj, '_RTIR_State' );
+        my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $IncidentObj, 'State' );
         push @results, ProcessObjectCustomFieldUpdates( Object => $IncidentObj, ARGSRef => \%ARGS);
         push @results, ProcessTicketBasics( TicketObj => $IncidentObj, ARGSRef => \%ARGS );
-        my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $IncidentObj, '_RTIR_State' );
+        my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $IncidentObj, 'State' );
 
         if ($newstate ne $oldstate) {
             push @results, loc("State changed from [_1] to [_2]", $oldstate, $newstate);

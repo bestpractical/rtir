@@ -347,7 +347,7 @@ require RT::ObjectCustomFieldValue;
 wrap 'RT::ObjectCustomFieldValue::Create',
     pre => sub {
         my %args = @_[1..@_-2];
-        my $cf = GetCustomField( '_RTIR_IP' );
+        my $cf = GetCustomField( 'IP' );
         unless ( $cf && $cf->id ) {
             $RT::Logger->crit("Couldn't load IP CF");
             return;
@@ -431,7 +431,7 @@ wrap 'RT::ObjectCustomFieldValue::Content',
                 my $systicket = RT::Ticket->new($RT::SystemUser);
                 $systicket->Load( $self->id );
                 $const = $RT::IR::ConstituencyCache{ $self->id } =
-                    $systicket->FirstCustomFieldValue('_RTIR_Constituency')
+                    $systicket->FirstCustomFieldValue('Constituency')
                     || '_none';
             }
             return if $const eq '_none';
@@ -507,7 +507,7 @@ wrap 'RT::ObjectCustomFieldValue::Content',
                 my $ticket = RT::Ticket->new($RT::SystemUser);
                 $ticket->Load($id);
                 $const = $RT::IR::ConstituencyCache{$ticket->id}
-                    = $ticket->FirstCustomFieldValue('_RTIR_Constituency') || '_none';
+                    = $ticket->FirstCustomFieldValue('Constituency') || '_none';
             }
             if ($const ne '_none' && !$RT::IR::HasNoQueueCache{$const} ) {
                 my $new_queue = RT::Queue->new($RT::SystemUser);
@@ -536,7 +536,7 @@ wrap 'RT::ObjectCustomFieldValue::Content',
         my %args = (@_[1..(@_-2)]);
 
         # get out if there is constituency value in arguments
-        my $cf = GetCustomField( '_RTIR_Constituency' );
+        my $cf = GetCustomField( 'Constituency' );
         return unless $cf && $cf->id;
         return if $args{ 'CustomField-'. $cf->id };
 
@@ -595,7 +595,7 @@ sub LoadByCols {
     return $self->SUPER::LoadByCols( %args )
         unless $args{'CustomField'} && $args{'Content'};
 
-    my $cf = RT::IR::GetCustomField( '_RTIR_IP' );
+    my $cf = RT::IR::GetCustomField( 'IP' );
     unless ( $cf && $cf->id ) {
         $RT::Logger->crit("Couldn't load IP CF");
         return $self->SUPER::LoadByCols( %args )

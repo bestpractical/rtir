@@ -248,7 +248,7 @@ if ( $q ) {
 
     my $query;
     if ( $type eq 'ip' ) {
-        $query = "CF.{_RTIR_IP} = '$q'"
+        $query = "CF.{IP} = '$q'"
     } else {
         $query = "( ContentType = 'text/plain' "
             . "OR ContentType = 'text' "

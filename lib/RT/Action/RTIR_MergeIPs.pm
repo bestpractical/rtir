@@ -35,18 +35,18 @@ sub Commit {
     my $target = $uri_obj->Object;
     return 1 if $target->id eq $txn->ObjectId;
 
-    my $has_values = $target->CustomFieldValues( '_RTIR_IP' );
+    my $has_values = $target->CustomFieldValues( 'IP' );
 
     my $source = RT::Ticket->new( $self->CurrentUser );
     $source->LoadById( $txn->ObjectId );
-    my $add_values = $source->CustomFieldValues( '_RTIR_IP' );
+    my $add_values = $source->CustomFieldValues( 'IP' );
     while ( my $value = $add_values->Next ) {
         my $ip = $value->Content;
         next if $has_values->HasEntry( $ip );
 
         my ($status, $msg) = $target->AddCustomFieldValue(
             Value => $ip,
-            Field => '_RTIR_IP',
+            Field => 'IP',
         );
         $RT::Logger->error("Couldn't add IP address: $msg")
             unless $status;

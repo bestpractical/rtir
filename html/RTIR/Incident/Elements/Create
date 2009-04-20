@@ -41,7 +41,7 @@
 <td class="value">
 % if ( !$ChildObj || RT->Config->Get('_RTIR_Constituency_Propagation') eq 'no' ) {
 % my $default;
-% $default = $ChildObj->FirstCustomFieldValue('_RTIR_Constituency') if $ChildObj;
+% $default = $ChildObj->FirstCustomFieldValue('Constituency') if $ChildObj;
 % $default ||= RT::IR::DefaultConstituency( $QueueObj );
 % $default ||= scalar RT->Config->Get('_RTIR_Constituency_default');
 <& /RTIR/Elements/EditRTIRField,
@@ -53,10 +53,10 @@
 % } else {
 % #TODO: hacks, we need way to define CF value on Create, but don't allow user to change it
 % my $cf = RT::CustomField->new( $RT::SystemUser );
-% $cf->LoadByNameAndQueue( Name => '_RTIR_Constituency', Queue => 'Incidents' );
+% $cf->LoadByNameAndQueue( Name => 'Constituency', Queue => 'Incidents' );
 <input type="hidden" class="hidden" name="Constituency" value="Object-RT::Ticket--CustomField-<% $cf->id %>-Values" />
 <input type="hidden" class="hidden" name="Object-RT::Ticket--CustomField-<% $cf->id %>-Values-Magic" value="1" />
-<input type="hidden" class="hidden" name="Object-RT::Ticket--CustomField-<% $cf->id %>-Values" value="<% $ChildObj->FirstCustomFieldValue('_RTIR_Constituency') %>" />
+<input type="hidden" class="hidden" name="Object-RT::Ticket--CustomField-<% $cf->id %>-Values" value="<% $ChildObj->FirstCustomFieldValue('Constituency') %>" />
 <& /RTIR/Elements/ShowRTIRField, Ticket => $ChildObj, Name => 'Constituency' &>
 % }
 </td></tr>
@@ -91,7 +91,7 @@
 my $ip_default = $ARGS{'IP-Value'};
 if ( !$ip_default && $ChildObj ) {
     $ip_default = join "\n", grep $_, map $_->Content,
-        @{ $ChildObj->CustomFieldValues( '_RTIR_IP' )->ItemsArrayRef };
+        @{ $ChildObj->CustomFieldValues( 'IP' )->ItemsArrayRef };
 }
 $ip_default ||= RT->Config->Get('_RTIR_IP_default') || '';
 </%PERL>

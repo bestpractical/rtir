@@ -15,7 +15,7 @@ my $cf;
 diag "load the field" if $ENV{'TEST_VERBOSE'};
 {
     my $cfs = RT::CustomFields->new( $RT::SystemUser );
-    $cfs->Limit( FIELD => 'Name', VALUE => '_RTIR_Constituency' );
+    $cfs->Limit( FIELD => 'Name', VALUE => 'Constituency' );
     $cf = $cfs->First;
     ok $cf, 'have a field';
     ok $cf->id, 'with some ID';
@@ -53,7 +53,7 @@ EOF
         $ticket->Load( $id );
         ok $ticket->id, 'loaded ticket';
         is $ticket->QueueObj->Name, $queue, 'correct queue';
-        is $ticket->FirstCustomFieldValue('_RTIR_Constituency'), $val, 'correct value';
+        is $ticket->FirstCustomFieldValue('Constituency'), $val, 'correct value';
     }
 }
 
@@ -89,7 +89,7 @@ EOF
         $ticket->Load( $id );
         ok( $ticket->id, 'loaded ticket' );
         is( $ticket->QueueObj->Name, $queue, 'correct queue' );
-        is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), $val, 'correct value' );
+        is( $ticket->FirstCustomFieldValue('Constituency'), $val, 'correct value' );
     }
 }
 

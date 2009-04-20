@@ -67,7 +67,7 @@ sub GetState {
     my $t = $self->TicketObj;
     my $txn = $self->TransactionObj;
     my $status = $t->Status;
-    my $old_state = $t->FirstCustomFieldValue('_RTIR_State');
+    my $old_state = $t->FirstCustomFieldValue('State');
 
     if ( $status eq 'new' && $txn->Type eq 'Correspond' && $txn->IsInbound && $old_state eq 'pending activation' ) {
         if ( my $re = RT->Config->Get('RTIR_BlockAproveActionRegexp') ) {

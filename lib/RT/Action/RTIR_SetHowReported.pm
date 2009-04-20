@@ -73,7 +73,7 @@ sub Commit {
     my $self = shift;
 
     my $cf = RT::CustomField->new($self->TransactionObj->CurrentUser);
-    $cf->LoadByNameAndQueue(Queue => $self->TicketObj->QueueObj->Id, Name => '_RTIR_HowReported');
+    $cf->LoadByNameAndQueue(Queue => $self->TicketObj->QueueObj->Id, Name => 'HowReported');
     return unless $cf->Id;
 
     my $Values = $self->TicketObj->CustomFieldValues( $cf->id );

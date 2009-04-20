@@ -75,7 +75,7 @@ EOF
     my $ticket = RT::Ticket->new( $RT::SystemUser );
     $ticket->Load( $id );
     ok $ticket->id, 'loaded the ticket';
-    is $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'EDUNET', 'correct value';
+    is $ticket->FirstCustomFieldValue('Constituency'), 'EDUNET', 'correct value';
 
     display_ticket($agent, $id);
     $agent->content_like( qr/\QEDUNET/, "value on the page" );
@@ -111,7 +111,7 @@ EOF
     my $ticket = RT::Ticket->new( $RT::SystemUser );
     $ticket->Load( $id );
     ok $ticket->id, 'loaded the ticket';
-    is $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value';
+    is $ticket->FirstCustomFieldValue('Constituency'), 'GOVNET', 'correct value';
 
     display_ticket($agent, $id);
     $agent->content_like( qr/GOVNET/, "value on the page" );
@@ -144,7 +144,7 @@ diag "GOV user creates an IR under EDUNET, check addresses";
     my $ticket = RT::Ticket->new( $RT::SystemUser );
     $ticket->Load( $id );
     ok $ticket->id, 'loaded the ticket';
-    is $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'EDUNET', 'correct value';
+    is $ticket->FirstCustomFieldValue('Constituency'), 'EDUNET', 'correct value';
 
     my @mail = RT::Test->fetch_caught_mails;
     ok @mail, 'there are some outgoing emails';

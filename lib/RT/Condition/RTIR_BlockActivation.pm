@@ -20,10 +20,10 @@ sub IsApplicable {
 
     my $type = $txn->Type;
     return 1 if $type eq 'Create'
-        && ($self->TicketObj->FirstCustomFieldValue('_RTIR_State')||'') eq 'active';
+        && ($self->TicketObj->FirstCustomFieldValue('State')||'') eq 'active';
 
     if ( $type eq 'CustomField' ) {
-        my $cf = $self->TicketObj->QueueObj->CustomField('_RTIR_State');
+        my $cf = $self->TicketObj->QueueObj->CustomField('State');
         unless ( $cf->id ) {
             $RT::Logger->error("Couldn't load the 'State' field");
             return 0;

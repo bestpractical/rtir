@@ -32,7 +32,7 @@ sub Commit {
     $groups->LimitToUserDefinedGroups;
     $groups->Limit( FIELD => 'Name', OPERATOR => 'STARTSWITH', VALUE => 'DutyTeam ' );
 
-    my $constituency = $ticket->FirstCustomFieldValue('_RTIR_Constituency') || '';
+    my $constituency = $ticket->FirstCustomFieldValue('Constituency') || '';
     my $required_group_there = 0;
     while ( my $group = $groups->Next ) {
         if ( lc $group->Name eq lc "dutyteam $constituency" ) {
@@ -70,7 +70,7 @@ sub ConstituencyValues {
     my $value = shift or return 0;
     unless ( @constituencies ) {
         my $cf = RT::CustomField->new( $RT::SystemUser );
-        $cf->Load('_RTIR_Constituency');
+        $cf->Load('Constituency');
         unless ( $cf->id ) {
             $RT::Logger->crit("Couldn't load constituency field");
             return 0;

@@ -24,9 +24,9 @@ sub Commit {
 
     my $t = $self->TicketObj;
     my $cf = RT::CustomField->new( $self->TransactionObj->CurrentUser );
-    $cf->LoadByNameAndQueue( Queue => $t->QueueObj->Id, Name => '_RTIR_State' );
+    $cf->LoadByNameAndQueue( Queue => $t->QueueObj->Id, Name => 'State' );
     unless ( $cf->Id ) {
-        $RT::Logger->warning("Couldn't load '_RTIR_State' CF for queue ". $t->QueueObj->Name );
+        $RT::Logger->warning("Couldn't load 'State' CF for queue ". $t->QueueObj->Name );
         return 1;
     }
  

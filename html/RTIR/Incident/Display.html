@@ -167,8 +167,8 @@ my $DoLinks = sub {
 
     if ( RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject' ) {
         return loc("Couldn't link tickets with different constituencies")
-            unless lc $child->FirstCustomFieldValue('_RTIR_Constituency') 
-                   eq lc $parent->FirstCustomFieldValue('_RTIR_Constituency');
+            unless lc $child->FirstCustomFieldValue('Constituency') 
+                   eq lc $parent->FirstCustomFieldValue('Constituency');
     }
 
     my %args = ();
@@ -230,7 +230,7 @@ unless( $TicketObj->QueueObj->Name eq 'Incidents' ) {
 $ARGS{'id'} = $id = $TicketObj->Id;
 
 if( 1 ) {
-    my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $TicketObj, '_RTIR_State' );
+    my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $TicketObj, 'State' );
 
     if ( $ARGS{'Action'} && $ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/ )
     {   
@@ -272,7 +272,7 @@ if( 1 ) {
         push @results, ProcessUpdateMessage( ARGSRef => \%ARGS, TicketObj => $TicketObj );
     }
 
-    my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $TicketObj, '_RTIR_State' );
+    my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $TicketObj, 'State' );
     if ($newstate ne $oldstate) {
         push @results, loc("State changed from [_1] to [_2]", $oldstate, $newstate );
     }

@@ -51,11 +51,11 @@ sub InheritConstituency {
         ." OR Queue = 'Blocks'"
         .")";
 
-    my $constituency = $ticket->FirstCustomFieldValue('_RTIR_Constituency');
+    my $constituency = $ticket->FirstCustomFieldValue('Constituency');
     if ( $constituency ) {
-        $query .= " AND CF.{_RTIR_Constituency} != '$constituency'";
+        $query .= " AND CF.{Constituency} != '$constituency'";
     } else {
-        $query .= " AND CF.{_RTIR_Constituency} IS NOT NULL";
+        $query .= " AND CF.{Constituency} IS NOT NULL";
     }
 
     my $type = $self->TransactionObj->Type;
@@ -67,7 +67,7 @@ sub InheritConstituency {
         if ( my $parent = $tickets->First ) {
             $RT::Logger->debug( "Ticket #". $ticket->id ." inherits constituency from ticket #". $parent->id );
             my ($res, $msg) = $ticket->AddCustomFieldValue(
-                Field => '_RTIR_Constituency',
+                Field => 'Constituency',
                 Value => $constituency,
             );
             $RT::Logger->warning( "Couldn't set CF: $msg" ) unless $res;
@@ -82,7 +82,7 @@ sub InheritConstituency {
         while ( my $t = $tickets->Next ) {
             $RT::Logger->debug( "Ticket #". $t->id ." inherits constituency from ticket #". $ticket->id );
             my ($res, $msg) = $t->AddCustomFieldValue(
-                Field => '_RTIR_Constituency',
+                Field => 'Constituency',
                 Value => $constituency,
             );
             $RT::Logger->warning( "Couldn't set CF: $msg" ) unless $res;
@@ -96,7 +96,7 @@ sub SetConstituencyOnCreate {
     my $ticket = $self->TicketObj;
 
     my ($current, $value);
-    $current = $value = $ticket->FirstCustomFieldValue('_RTIR_Constituency');
+    $current = $value = $ticket->FirstCustomFieldValue('Constituency');
     if ( my $tmp = $self->GetConstituencyFromParent ) {
         my $propagation = lc RT->Config->Get('_RTIR_Constituency_Propagation');
         if ( $propagation eq 'inherit' ) {
@@ -114,7 +114,7 @@ sub SetConstituencyOnCreate {
     return undef if ($current||'') eq ($value||'');
 
     my ($status, $msg) = $ticket->AddCustomFieldValue(
-        Field => '_RTIR_Constituency',
+        Field => 'Constituency',
         Value => $value,
     );
     $RT::Logger->warning( "Couldn't set CF: $msg" ) unless $status;
@@ -147,7 +147,7 @@ sub GetConstituencyFromParent {
     $parents->OrderByCols( { FIELD => 'LastUpdated', ORDER => 'DESC' } );
     $parents->RowsPerPage(1);
     return unless my $parent = $parents->First;
-    my $value = $parent->FirstCustomFieldValue('_RTIR_Constituency');
+    my $value = $parent->FirstCustomFieldValue('Constituency');
     $RT::Logger->debug( "Got constituency from parent: ". ($value||'(no value)') );
     return $value;
 }
@@ -159,7 +159,7 @@ sub IsValidConstituency {
     my $value = shift or return 0;
     unless ( keys %constituency ) {
         my $cf = RT::CustomField->new( $RT::SystemUser );
-        $cf->Load('_RTIR_Constituency');
+        $cf->Load('Constituency');
         unless ( $cf->id ) {
             $RT::Logger->crit("Couldn't load constituency field");
             return 0;

@@ -79,9 +79,9 @@ sub Commit {
     # TODO: return if it isn't an Incident Report
 
     # now that we know the SLA, set the value of the CF
-    unless ( $self->TicketObj->FirstCustomFieldValue('_RTIR_SLA') ) {
+    unless ( $self->TicketObj->FirstCustomFieldValue('SLA') ) {
         my $cf = RT::CustomField->new( $self->CurrentUser );
-        $cf->LoadByNameAndQueue( Queue => $self->TicketObj->Queue, Name => '_RTIR_SLA' );
+        $cf->LoadByNameAndQueue( Queue => $self->TicketObj->Queue, Name => 'SLA' );
         return unless $cf->id;
 
         my $SLAObj = RT::IR::SLAInit();

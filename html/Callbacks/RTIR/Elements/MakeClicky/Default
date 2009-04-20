@@ -41,7 +41,7 @@ my %actions;
             $result .= qq{[<a href="$web_path/RTIR/Create.html?Incident=$args{incident}&Queue=Blocks&IP-Value=$args{host}">block</a>]};
         }
         if ( $args{'ticket'} && $args{'ticket'}->id ) {
-            my $cf = RT::IR::GetCustomField('_RTIR_IP');
+            my $cf = RT::IR::GetCustomField('IP');
             my $tid = $args{'ticket'}->id;
             $result .= qq{[<a href="$web_path/RTIR/Edit.html?id=$tid}
                 .qq{&Object-RT::Ticket-$tid-CustomField-}. $cf->id .qq{-AddValue=}

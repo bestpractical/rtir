@@ -27,7 +27,7 @@ sub Commit {
     my $self = shift;
     my $ticket = $self->TicketObj;
 
-    my $cf = $ticket->LoadCustomFieldByIdentifier('_RTIR_IP');
+    my $cf = $ticket->LoadCustomFieldByIdentifier('IP');
     return 1 unless $cf && $cf->id;
 
     my $attach = $self->TransactionObj->ContentObj;

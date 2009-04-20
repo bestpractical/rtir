@@ -8,7 +8,7 @@ use RT::CustomField;
 
 =head2 IsApplicable
 
-Applies to Ticket Creation and _RTIR_Constituency changes
+Applies to Ticket Creation and Constituency changes
 
 =cut
 
@@ -19,7 +19,7 @@ sub IsApplicable {
     return 1 if $type eq 'Create';
     if ( $type eq 'CustomField' ) {
         my $cf = RT::CustomField->new( $RT::SystemUser );
-        $cf->Load('_RTIR_Constituency');
+        $cf->Load('Constituency');
         unless ( $cf->id ) {
             $RT::Logger->error("Couldn't load the 'Costituency' field");
             return 0;

@@ -18,8 +18,8 @@ my $cf;
 diag "load and check basic properties of the CF" if $ENV{'TEST_VERBOSE'};
 {
     my $cfs = RT::CustomFields->new( $RT::SystemUser );
-    $cfs->Limit( FIELD => 'Name', VALUE => '_RTIR_Constituency' );
-    is( $cfs->Count, 1, "found one CF with name '_RTIR_Constituency'" );
+    $cfs->Limit( FIELD => 'Name', VALUE => 'Constituency' );
+    is( $cfs->Count, 1, "found one CF with name 'Constituency'" );
 
     $cf = $cfs->First;
     is( $cf->Type, 'Select', 'type check' );
@@ -89,7 +89,7 @@ diag "create a ticket via web and set field" if $ENV{'TEST_VERBOSE'};
         my $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $id );
         ok( $ticket->id, 'loaded ticket' );
-        is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), $val, 'correct value' );
+        is( $ticket->FirstCustomFieldValue('Constituency'), $val, 'correct value' );
 
 diag "check that we can edit value" if $ENV{'TEST_VERBOSE'};
         $agent->follow_link( text => 'Edit' );
@@ -107,7 +107,7 @@ diag "check that we can edit value" if $ENV{'TEST_VERBOSE'};
         $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $id );
         ok( $ticket->id, 'loaded ticket' );
-        is( lc $ticket->FirstCustomFieldValue('_RTIR_Constituency'), lc $val, 'correct value' );
+        is( lc $ticket->FirstCustomFieldValue('Constituency'), lc $val, 'correct value' );
     }
 }
 
@@ -252,7 +252,7 @@ diag "check defaults";
     );
     my $ticket = RT::Ticket->new($RT::SystemUser);
     $ticket->Load($ir_id);
-    is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'EDUNET', 'correct value' );
+    is( $ticket->FirstCustomFieldValue('Constituency'), 'EDUNET', 'correct value' );
 }
 
 diag "check defaults";
@@ -263,7 +263,7 @@ diag "check defaults";
     );
     my $ticket = RT::Ticket->new($RT::SystemUser);
     $ticket->Load($ir_id);
-    is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value' );
+    is( $ticket->FirstCustomFieldValue('Constituency'), 'GOVNET', 'correct value' );
 }
 
 diag "check defaults when creating inc with inv";
@@ -280,11 +280,11 @@ diag "check defaults when creating inc with inv";
     {
         my $ticket = RT::Ticket->new($RT::SystemUser);
         $ticket->Load($inc_id);
-        is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value' );
+        is( $ticket->FirstCustomFieldValue('Constituency'), 'GOVNET', 'correct value' );
     } {
         my $ticket = RT::Ticket->new($RT::SystemUser);
         $ticket->Load($inv_id);
-        is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value' );
+        is( $ticket->FirstCustomFieldValue('Constituency'), 'GOVNET', 'correct value' );
     }
 }
 
@@ -302,11 +302,11 @@ diag "check defaults when creating inc with inv";
     {
         my $ticket = RT::Ticket->new($RT::SystemUser);
         $ticket->Load($inc_id);
-        is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'EDUNET', 'correct value' );
+        is( $ticket->FirstCustomFieldValue('Constituency'), 'EDUNET', 'correct value' );
     } {
         my $ticket = RT::Ticket->new($RT::SystemUser);
         $ticket->Load($inv_id);
-        is( $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'EDUNET', 'correct value' );
+        is( $ticket->FirstCustomFieldValue('Constituency'), 'EDUNET', 'correct value' );
     }
 }
 

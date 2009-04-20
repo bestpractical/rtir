@@ -13,7 +13,7 @@ my $cf;
 diag "load the field" if $ENV{'TEST_VERBOSE'};
 {
     my $cfs = RT::CustomFields->new( $RT::SystemUser );
-    $cfs->Limit( FIELD => 'Name', VALUE => '_RTIR_Constituency' );
+    $cfs->Limit( FIELD => 'Name', VALUE => 'Constituency' );
     $cf = $cfs->First;
     ok $cf, 'have a field';
     ok $cf->id, 'with some ID';
@@ -40,7 +40,7 @@ diag "create an IR with GOVNET constituency and create a new "
     my $ticket = RT::Ticket->new( $RT::SystemUser );
     $ticket->Load( $inc_id );
     ok $ticket->id, 'loaded ticket';
-    is uc $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+    is uc $ticket->FirstCustomFieldValue('Constituency'),
         'GOVNET', 'correct value';
 }
 
@@ -58,7 +58,7 @@ diag "create an IR and check that we couldn't change constituency"
     $ticket->Load( $ir_id );
     ok $ticket->id, 'loaded ticket';
     is $ticket->QueueObj->Name, 'Incident Reports', 'correct value';
-    is $ticket->FirstCustomFieldValue('_RTIR_Constituency'), 'GOVNET', 'correct value';
+    is $ticket->FirstCustomFieldValue('Constituency'), 'GOVNET', 'correct value';
 
     # click [new] near 'incident', set another constituency and create
     $agent->follow_link_ok({text => '[New]'}, "go to 'New Incident' page");
@@ -75,7 +75,7 @@ diag "create an IR and check that we couldn't change constituency"
     $ticket->Load( $inc_id );
     ok $ticket->id, 'loaded ticket';
     is $ticket->QueueObj->Name, 'Incidents', 'correct value';
-    is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+    is $ticket->FirstCustomFieldValue('Constituency'),
         'GOVNET', 'correct value';
 
     # And the report too
@@ -83,7 +83,7 @@ diag "create an IR and check that we couldn't change constituency"
     $ticket->Load( $ir_id );
     ok $ticket->id, 'loaded ticket';
     is $ticket->QueueObj->Name, 'Incident Reports', 'correct value';
-    is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+    is $ticket->FirstCustomFieldValue('Constituency'),
         'GOVNET', 'correct value';
 }
 
@@ -100,7 +100,7 @@ diag "create an incident with EDUNET, then try to create children using"
         my $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $incident_id );
         ok $ticket->id, 'loaded ticket';
-        is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+        is $ticket->FirstCustomFieldValue('Constituency'),
             'EDUNET', 'correct value';
     }
 
@@ -136,7 +136,7 @@ diag "create an incident with EDUNET and check that we can create children"
         my $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $incident_id );
         ok $ticket->id, 'loaded ticket';
-        is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+        is $ticket->FirstCustomFieldValue('Constituency'),
             'EDUNET', 'correct value';
     }
 
@@ -159,13 +159,13 @@ diag "create an incident with EDUNET and check that we can create children"
             my $ticket = RT::Ticket->new( $RT::SystemUser );
             $ticket->Load( $id );
             ok $ticket->id, 'loaded ticket';
-            is uc $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+            is uc $ticket->FirstCustomFieldValue('Constituency'),
                 'EDUNET', 'correct value';
         } {
             my $ticket = RT::Ticket->new( $RT::SystemUser );
             $ticket->Load( $incident_id );
             ok $ticket->id, 'loaded ticket';
-            is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+            is $ticket->FirstCustomFieldValue('Constituency'),
                 'EDUNET', 'incident still has the same value';
         }
         ticket_is_linked_to_inc($agent, $id, $incident_id);
@@ -187,7 +187,7 @@ diag "create an IR create an Incident with different constituency"
         $ticket->Load( $ir_id );
         ok $ticket->id, 'loaded ticket';
         is $ticket->QueueObj->Name, 'Incident Reports', 'correct value';
-        is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+        is $ticket->FirstCustomFieldValue('Constituency'),
             'GOVNET', 'correct value';
         $ticket->Subject("incident report #$ir_id");
     }
@@ -203,7 +203,7 @@ diag "create an IR create an Incident with different constituency"
         $ticket->Load( $inc_id );
         ok $ticket->id, 'loaded ticket';
         is $ticket->QueueObj->Name, 'Incidents', 'correct value';
-        is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+        is $ticket->FirstCustomFieldValue('Constituency'),
             'EDUNET', 'correct value';
     }
     $agent->get_ok(
@@ -230,7 +230,7 @@ diag "check that we can change constituency of an unlinked ticket using 'Edit' p
             my $ticket = RT::Ticket->new( $RT::SystemUser );
             $ticket->Load( $id );
             ok $ticket->id, 'loaded ticket';
-            is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+            is $ticket->FirstCustomFieldValue('Constituency'),
                 'GOVNET', 'correct value';
         }
         
@@ -246,7 +246,7 @@ diag "check that we can change constituency of an unlinked ticket using 'Edit' p
             my $ticket = RT::Ticket->new( $RT::SystemUser );
             $ticket->Load( $id );
             ok $ticket->id, 'loaded ticket';
-            is uc $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+            is uc $ticket->FirstCustomFieldValue('Constituency'),
                 'EDUNET', 'correct value';
         }
     }
@@ -264,7 +264,7 @@ diag "check that we can change constituency of an unlinked ticket using 'Edit' p
         my $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $incident_id );
         ok $ticket->id, 'loaded ticket';
-        is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+        is $ticket->FirstCustomFieldValue('Constituency'),
             'EDUNET', 'correct value';
     }
 
@@ -282,7 +282,7 @@ diag "check that we can change constituency of an unlinked ticket using 'Edit' p
             my $ticket = RT::Ticket->new( $RT::SystemUser );
             $ticket->Load( $id );
             ok $ticket->id, 'loaded ticket';
-            is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+            is $ticket->FirstCustomFieldValue('Constituency'),
                 'EDUNET', 'correct value';
         }
         

@@ -38,7 +38,7 @@ return unless $siblings->Count;
 my $Format = q{
     '<b><a HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
     '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
-    '__CustomField.{_RTIR_State}__/TITLE:State',
+    '__CustomField.{State}__/TITLE:State',
     __LastUpdatedRelative__, __CreatedRelative__
 };
 </%INIT>

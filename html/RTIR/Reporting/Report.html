@@ -54,13 +54,13 @@ foreach my $incident_type( @functions ) {
             $filter_by_incident_field->(
                 $filter_by_incident_field->(
                     $tix_created,
-                    '_RTIR_Constituency',
+                    'Constituency',
                     $Constituency
                 ),
-                '_RTIR_Function',
+                'Function',
                 $incident_type,
             ),
-            '_RTIR_Classification',
+            'Classification',
             $class ne 'Unclassified'? $class: '',
         );
         push @table, [ $class, scalar keys %{$filtered} ];
@@ -76,25 +76,25 @@ foreach my $incident_type( @functions ) {
         $class_tix->FromSQL(
             "Queue = 'Incident Reports'"
             ." AND Created > '$start' AND Created < '$end'"
-            ." AND CustomField.{_RTIR_SLA} = '$service_level'"
+            ." AND CustomField.{SLA} = '$service_level'"
         );
         my $mytix = $filter_by_incident_field->(
             $filter_by_incident_field->(
                 $class_tix,
-                '_RTIR_Constituency',
+                'Constituency',
                 $Constituency
             ),
-            '_RTIR_Function',
+            'Function',
             $incident_type,
         );
 
         my $myoutstanding = $filter_by_incident_field->(
             $filter_by_incident_field->(
                 $outstanding,
-                '_RTIR_Constituency',
+                'Constituency',
                 $Constituency
             ),
-            '_RTIR_Function',
+            'Function',
             $incident_type,
         ); 
         $m->comp("SELF:Heading$ReportAs",
@@ -162,7 +162,7 @@ $rtend->Set( Format => 'ISO', Value => $end );
 my @functions;
 {
     my $cf = RT::CustomField->new( $session{'CurrentUser'} );
-    $cf->LoadByNameAndQueue( Queue => 'Incidents', Name => '_RTIR_Function' );
+    $cf->LoadByNameAndQueue( Queue => 'Incidents', Name => 'Function' );
     my $values = $cf->Values;
     while ( my $value = $values->Next ) {
         push @functions, $value->Name;
@@ -173,7 +173,7 @@ my @functions;
 my @classifications;
 {
     my $cf = RT::CustomField->new( $session{'CurrentUser'} );
-    $cf->LoadByNameAndQueue( Queue => 'Incidents', Name => '_RTIR_Classification' );
+    $cf->LoadByNameAndQueue( Queue => 'Incidents', Name => 'Classification' );
     my $values = $cf->Values;
     while ( my $value = $values->Next ) {
         push @classifications, $value->Name;
@@ -185,7 +185,7 @@ my @classifications;
 my @sla_levels;
 {
     my $cf = RT::CustomField->new( $session{'CurrentUser'} );
-    $cf->LoadByNameAndQueue( Queue => 'Incidents', Name => '_RTIR_SLA' );
+    $cf->LoadByNameAndQueue( Queue => 'Incidents', Name => 'SLA' );
     my $values = $cf->Values;
     while ( my $value = $values->Next ) {
         push @sla_levels, $value->Name;
@@ -195,12 +195,12 @@ my @sla_levels;
 # of new reports outstanding at start of the period
 my $outstanding = RT::Tickets->new( $session{'CurrentUser'} );
 $outstanding->FromSQL("Queue = 'Incident Reports' AND Created < '$start' AND (Resolved = '1970-01-01 00:00:01' OR Resolved > '$start')");
-my $outstanding_pruned = $filter_by_incident_field->($outstanding, '_RTIR_Constituency', $Constituency);
+my $outstanding_pruned = $filter_by_incident_field->($outstanding, 'Constituency', $Constituency);
 
 # of new reports created during the period
 my $tix_created = RT::Tickets->new( $session{'CurrentUser'} );
 $tix_created->FromSQL("Queue = 'Incident Reports' AND Created > '$start' AND Created < '$end'");
-my $tix_created_pruned = $filter_by_incident_field->( $tix_created, '_RTIR_Constituency', $Constituency );
+my $tix_created_pruned = $filter_by_incident_field->( $tix_created, 'Constituency', $Constituency );
 
 # of new reports resolved/closed/deleted during the period
 # this means "number of reports created during the period that were 
@@ -208,7 +208,7 @@ my $tix_created_pruned = $filter_by_incident_field->( $tix_created, '_RTIR_Const
 
 my $tix_resolved = RT::Tickets->new( $session{'CurrentUser'} );
 $tix_resolved->FromSQL("Queue = 'Incident Reports' AND Created > '$start' AND Created < '$end' AND (Resolved > '1970-01-01 00:00:01' AND Resolved < '$end')");
-my $tix_resolved_pruned = $filter_by_incident_field->($tix_resolved, '_RTIR_Constituency', $Constituency);
+my $tix_resolved_pruned = $filter_by_incident_field->($tix_resolved, 'Constituency', $Constituency);
 
 # of new reports oustanding at end of the period
 # this is "number of reports created during the period that were also 
@@ -216,7 +216,7 @@ my $tix_resolved_pruned = $filter_by_incident_field->($tix_resolved, '_RTIR_Cons
 
 my $tix_unresolved = RT::Tickets->new( $session{'CurrentUser'} );
 $tix_unresolved->FromSQL("Queue = 'Incident Reports' AND Created > '$start' AND Created < '$end' AND ( Resolved = '1970-01-01 00:00:01' OR Resolved > '$end' )");
-my $tix_unresolved_pruned = $filter_by_incident_field->($tix_unresolved, '_RTIR_Constituency', $Constituency);
+my $tix_unresolved_pruned = $filter_by_incident_field->($tix_unresolved, 'Constituency', $Constituency);
 
 if ( $TextReport ) {
     $r->content_type('text/plain');

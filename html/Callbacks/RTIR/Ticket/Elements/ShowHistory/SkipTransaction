@@ -7,9 +7,9 @@ return if $$skip;
 
 my $type = $Transaction->Type;
 
-# skip _RTIR_IP changes done by system user(scrips)
+# skip IP changes done by system user(scrips)
 if ( $Transaction->Creator == $RT::SystemUser->id && $type eq 'CustomField' ) {
-    my $cf = RT::IR::GetCustomField('_RTIR_IP')
+    my $cf = RT::IR::GetCustomField('IP')
         or return;
     return unless $cf->id == $Transaction->Field;
     return $$skip = 1;

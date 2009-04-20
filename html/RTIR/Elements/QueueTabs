@@ -198,7 +198,7 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
                     title => loc('Quick Resolve'),
                 };
             } elsif ( $Type eq 'Block' ) {
-                if ( ($Ticket->FirstCustomFieldValue('_RTIR_State')||'') ne 'active' ) {
+                if ( ($Ticket->FirstCustomFieldValue('State')||'') ne 'active' ) {
                     $actions->{'Ab'} = {
                         path  => "RTIR/Update.html?Action=Comment&DefaultStatus=open&id=$id",
                         title => loc('Activate')
@@ -233,7 +233,7 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
                 };
             }
         }
-        if ( $Type eq 'Block' && ($Ticket->FirstCustomFieldValue('_RTIR_State')||'') eq 'active' ) {
+        if ( $Type eq 'Block' && ($Ticket->FirstCustomFieldValue('State')||'') eq 'active' ) {
             $actions->{'Ab'} = {
                 path  => "RTIR/Update.html?Action=Respond&DefaultStatus=stalled&id=$id",
                 title => loc('Pending Removal'),

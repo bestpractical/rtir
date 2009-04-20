@@ -141,7 +141,7 @@ if ( $id eq 'new' ) {
     }
     ($Ticket, @results) = CreateTicket( %ARGS, Attachments => delete $session{'Attachments'} );
 } elsif( $id ) {
-    my $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State') ||'';
+    my $oldstate = $Ticket->FirstCustomFieldValue('State') ||'';
     
     $m->callback(
         CallbackName => 'ProcessArguments', 
@@ -176,7 +176,7 @@ if ( $id eq 'new' ) {
 
     if ( $Type eq 'Block' && ($ARGS{'Status'}||'') eq 'open' && $Ticket->Status eq 'open' ) {
         my ($id, $msg) = $Ticket->AddCustomFieldValue(
-            Field => '_RTIR_State',
+            Field => 'State',
             Value => 'active',
         );
         $RT::Logger->error("Couldn't set state: $msg");
@@ -189,7 +189,7 @@ if ( $id eq 'new' ) {
 
     push @results, ProcessTicketDates(   TicketObj => $Ticket, ARGSRef => \%ARGS );
 
-    my $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State') || '';
+    my $newstate = $Ticket->FirstCustomFieldValue('State') || '';
     if ($newstate ne $oldstate) {
         push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
     }

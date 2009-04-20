@@ -46,13 +46,13 @@ display_ticket($agent, $ir);
     my $inc = RT::Ticket->new( $RT::SystemUser );
     $inc->Load( $inc_id );
     ok $inc->id, 'loaded incident';
-    is $inc->FirstCustomFieldValue('_RTIR_Classification'), 'Spam', 'CF value is in place';
-    is $inc->FirstCustomFieldValue('_RTIR_IP'), '172.16.0.1', 'CF value is in place';
+    is $inc->FirstCustomFieldValue('Classification'), 'Spam', 'CF value is in place';
+    is $inc->FirstCustomFieldValue('IP'), '172.16.0.1', 'CF value is in place';
 
     my $inv = RT::Ticket->new( $RT::SystemUser );
     $inv->Load( $inv_id );
     ok $inv->id, 'loaded investigation';
-    is $inv->FirstCustomFieldValue('_RTIR_Classification'), undef, 'no classification CF for Invs';
-    is $inv->FirstCustomFieldValue('_RTIR_IP'), '172.16.0.1', 'IP is here';
+    is $inv->FirstCustomFieldValue('Classification'), undef, 'no classification CF for Invs';
+    is $inv->FirstCustomFieldValue('IP'), '172.16.0.1', 'IP is here';
 }
 

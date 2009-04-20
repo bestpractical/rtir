@@ -8,7 +8,7 @@ my %seen = ();
 @states =  grep !$seen{$_}++, map lc, grep $_, @states, @add_states;
 
 my $query = join " OR ",
-            map "'CF.{_RTIR_State}' = '$_'",
+            map "'CF.{State}' = '$_'",
             @states;
 $query = "( $query )" if $query;
 return $query;

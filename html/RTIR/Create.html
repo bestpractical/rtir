@@ -149,7 +149,7 @@
     <td class="value" colspan="2">
 % if ( !$Incident || RT->Config->Get('_RTIR_Constituency_Propagation') eq 'no' ) {
 % my $default;
-% $default = $IncidentObj->FirstCustomFieldValue('_RTIR_Constituency') if $Incident;
+% $default = $IncidentObj->FirstCustomFieldValue('Constituency') if $Incident;
 % $default ||= RT::IR::DefaultConstituency( $QueueObj );
 % $default ||= scalar RT->Config->Get('_RTIR_Constituency_default');
       <& /RTIR/Elements/EditRTIRField, 
@@ -159,10 +159,10 @@
 % } else {
 % #TODO: hacks, we need way to define CF value on Create, but don't allow user to change it
 %   my $cf = RT::CustomField->new( $RT::SystemUser );
-%   $cf->LoadByNameAndQueue( Name => '_RTIR_Constituency', Queue => $Queue );
+%   $cf->LoadByNameAndQueue( Name => 'Constituency', Queue => $Queue );
       <input type="hidden" class="hidden" name="Constituency" value="Object-RT::Ticket--CustomField-<% $cf->id %>-Values" />
       <input type="hidden" class="hidden" name="Object-RT::Ticket--CustomField-<% $cf->id %>-Values-Magic" value="1" />
-      <input type="hidden" class="hidden" name="Object-RT::Ticket--CustomField-<% $cf->id %>-Values" value="<% $IncidentObj->FirstCustomFieldValue('_RTIR_Constituency') %>" />
+      <input type="hidden" class="hidden" name="Object-RT::Ticket--CustomField-<% $cf->id %>-Values" value="<% $IncidentObj->FirstCustomFieldValue('Constituency') %>" />
       <& /RTIR/Elements/ShowRTIRField, Ticket => $IncidentObj, Name => 'Constituency' &>
 % }
     </td>
@@ -256,7 +256,7 @@
 my $ip_default = $ARGS{'IP-Value'};
 if ( !$ip_default && $IncidentObj ) {
     $ip_default = join "\n", grep $_, map $_->Content,
-        @{ $IncidentObj->CustomFieldValues( '_RTIR_IP' )->ItemsArrayRef };
+        @{ $IncidentObj->CustomFieldValues( 'IP' )->ItemsArrayRef };
 }
 $ip_default ||= RT->Config->Get('_RTIR_IP_default') || '';
 </%PERL>
@@ -382,9 +382,9 @@ if ( $Incident ) {
     }
     elsif ( $ARGS{'Create'} 
         && RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject'
-        && lc $ARGS{$ARGS{'Constituency'}} ne lc $IncidentObj->FirstCustomFieldValue('_RTIR_Constituency') )
+        && lc $ARGS{$ARGS{'Constituency'}} ne lc $IncidentObj->FirstCustomFieldValue('Constituency') )
     {
-        push @results, loc('Incident #[_1] has constituency [_2], choose the same value for a new ticket or use another Incident', $Incident, $IncidentObj->FirstCustomFieldValue('_RTIR_Constituency') );
+        push @results, loc('Incident #[_1] has constituency [_2], choose the same value for a new ticket or use another Incident', $Incident, $IncidentObj->FirstCustomFieldValue('Constituency') );
         ($checks_failure, $IncidentObj, $Incident) = (1, undef, undef);
     }
     else {

@@ -13,7 +13,7 @@ my $cf;
 diag "load the field" if $ENV{'TEST_VERBOSE'};
 {
     my $cfs = RT::CustomFields->new( $RT::SystemUser );
-    $cfs->Limit( FIELD => 'Name', VALUE => '_RTIR_Constituency' );
+    $cfs->Limit( FIELD => 'Name', VALUE => 'Constituency' );
     $cf = $cfs->First;
     ok $cf, 'have a field';
     ok $cf->id, 'with some ID';
@@ -36,7 +36,7 @@ diag "create an incident with EDUNET and then linked tickets with GOVNET,"
         my $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $incident_id );
         ok $ticket->id, 'loaded ticket';
-        is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+        is $ticket->FirstCustomFieldValue('Constituency'),
             'EDUNET', 'correct value';
     }
 
@@ -60,13 +60,13 @@ diag "create an incident with EDUNET and then linked tickets with GOVNET,"
             my $ticket = RT::Ticket->new( $RT::SystemUser );
             $ticket->Load( $id );
             ok $ticket->id, 'loaded ticket';
-            is uc $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+            is uc $ticket->FirstCustomFieldValue('Constituency'),
                 'GOVNET', 'correct value';
         } {
             my $ticket = RT::Ticket->new( $RT::SystemUser );
             $ticket->Load( $incident_id );
             ok $ticket->id, 'loaded ticket';
-            is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+            is $ticket->FirstCustomFieldValue('Constituency'),
                 'EDUNET', 'incident still has the same value';
         }
 
@@ -91,13 +91,13 @@ diag "check that if we edit value twice then incident's constituency is still th
             my $ticket = RT::Ticket->new( $RT::SystemUser );
             $ticket->Load( $id );
             ok $ticket->id, 'loaded ticket';
-            is uc $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+            is uc $ticket->FirstCustomFieldValue('Constituency'),
                 'GOVNET', 'correct value';
         } {
             my $ticket = RT::Ticket->new( $RT::SystemUser );
             $ticket->Load( $incident_id );
             ok $ticket->id, 'loaded ticket';
-            is $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+            is $ticket->FirstCustomFieldValue('Constituency'),
                 'EDUNET', 'incident still has the same value';
         }
     }
@@ -120,7 +120,7 @@ diag "create an IR with GOVNET constituency and create a new "
     my $ticket = RT::Ticket->new( $RT::SystemUser );
     $ticket->Load( $inc_id );
     ok $ticket->id, 'loaded ticket';
-    is uc $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+    is uc $ticket->FirstCustomFieldValue('Constituency'),
         'GOVNET', 'correct value';
 }
 
@@ -140,7 +140,7 @@ diag "inheritance should be soft, so user can change constituency using ui"
     my $ticket = RT::Ticket->new( $RT::SystemUser );
     $ticket->Load( $inc_id );
     ok $ticket->id, 'loaded ticket';
-    is uc $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+    is uc $ticket->FirstCustomFieldValue('Constituency'),
         'EDUNET', 'correct value';
 }
 
@@ -162,7 +162,7 @@ diag "create an incident under GOVNET and create a new IR "
         my $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $inc_id );
         ok $ticket->id, 'loaded ticket';
-        is uc $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+        is uc $ticket->FirstCustomFieldValue('Constituency'),
             'GOVNET', 'correct value';
     }
 
@@ -177,13 +177,13 @@ diag "create an incident under GOVNET and create a new IR "
         my $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $ir_id );
         ok $ticket->id, 'loaded ticket';
-        is uc $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+        is uc $ticket->FirstCustomFieldValue('Constituency'),
             'EDUNET', 'correct value';
     } {
         my $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $inc_id );
         ok $ticket->id, 'loaded ticket';
-        is uc $ticket->FirstCustomFieldValue('_RTIR_Constituency'),
+        is uc $ticket->FirstCustomFieldValue('Constituency'),
             'GOVNET', 'correct value';
     }
 }

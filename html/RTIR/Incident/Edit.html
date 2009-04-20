@@ -140,7 +140,7 @@ if ( $constituency_propagation eq 'reject' ) {
 my @results;
 if ( $SaveChanges && !$OnlySearchForPeople ) {
     my $checks_failure = 0;
-    my $oldstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+    my $oldstate = $Ticket->FirstCustomFieldValue('State');
     push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
     push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
 
@@ -162,7 +162,7 @@ if ( $SaveChanges && !$OnlySearchForPeople ) {
     $ARGS{UpdateAttachments} = $session{'Attachments'};
        push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef=>\%ARGS );
 
-    my $newstate = $Ticket->FirstCustomFieldValue('_RTIR_State');
+    my $newstate = $Ticket->FirstCustomFieldValue('State');
     if ($newstate ne $oldstate) {
         push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
     }

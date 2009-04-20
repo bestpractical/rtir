@@ -8,7 +8,7 @@ use base 'RT::Condition::RTIR';
 =head2 IsApplicable
 
 Applies to tickets being created, linked to other tickets or when
-the _RTIR_Constituency Custom Field is changed
+the Constituency Custom Field is changed
 
 =cut
 
@@ -20,7 +20,7 @@ sub IsApplicable {
     return 1 if $type eq 'AddLink';
     if ( $type eq 'CustomField' ) {
         my $cf = RT::CustomField->new( $RT::SystemUser );
-        $cf->Load('_RTIR_Constituency');
+        $cf->Load('Constituency');
         unless ( $cf->id ) {
             $RT::Logger->error("Couldn't load the 'Costituency' field");
             return 0;

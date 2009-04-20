@@ -105,14 +105,14 @@ if ( $BulkReject ) {
         }
 
         # warn if this IR has any incidents
-        my $query = "Queue = 'Incidents' AND HasMember = " . $t->Id . " AND CF.{_RTIR_State} != 'rejected'";
+        my $query = "Queue = 'Incidents' AND HasMember = " . $t->Id . " AND CF.{State} != 'rejected'";
         my $incidents = new RT::Tickets($session{'CurrentUser'});
         $incidents->FromSQL($query);
         if ($incidents->Count > 0) {
             push( @tempresults, [ $id, loc("Warning: already has incident") ] );
         }
 
-        my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $t, '_RTIR_State' ) ||'';
+        my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $t, 'State' ) ||'';
         
         if ( $t->Owner != $session{'CurrentUser'}->id &&
              $t->Owner == $RT::Nobody->id )
@@ -127,7 +127,7 @@ if ( $BulkReject ) {
 
         push @tempresults, ProcessTicketBasics( ARGSRef => \%ARGS, TicketObj => $t );
 
-        my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $t, '_RTIR_State' ) ||'';
+        my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $t, 'State' ) ||'';
         if ( $newstate ne $oldstate ) {
             push @tempresults,
                  [ $id, loc("State changed from [_1] to [_2]", $oldstate, $newstate ) ];

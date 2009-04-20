@@ -81,8 +81,8 @@ unless ( $BaseQuery ) {
     $BaseQuery = join ' AND ', map "( $_ )", $BaseQuery, "MemberOf != $id";
     if ( RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject' ) {
         $BaseQuery = join ' AND ', map "( $_ )",
-            $BaseQuery, "CustomField.{_RTIR_Constituency} = '".
-                $IncidentObj->FirstCustomFieldValue('_RTIR_Constituency') ."'"
+            $BaseQuery, "CustomField.{Constituency} = '".
+                $IncidentObj->FirstCustomFieldValue('Constituency') ."'"
     }
 }
 

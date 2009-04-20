@@ -22,7 +22,7 @@ sub Commit {
 
     my $t = $self->TicketObj;
     my $cf = RT::CustomField->new( $self->TransactionObj->CurrentUser );
-    $cf->LoadByNameAndQueue( Queue => $t->QueueObj->Id, Name => '_RTIR_Resolution' );
+    $cf->LoadByNameAndQueue( Queue => $t->QueueObj->Id, Name => 'Resolution' );
     return 1 unless $cf->Id;
 
     my $status = $t->Status;
