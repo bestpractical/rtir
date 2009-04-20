@@ -1,0 +1,39 @@
+* Names of custom fields were localized in RTIR, we should localize them in RTIR as well
+
+* Stripping of _RTIR_ prefix results in changes of searches: Formats and Queries, write
+  an upgrader for saved searches
+
+* Rename some fields to variants with spaces
+
+* Custom fields in Incident display are very specific and mixed with generic RT properties
+
+* Description CF in Incidents had Cols => 60 argument, check if we preserve behaviour
+
+* On edit State need special treating for Blocks
+
+* Constituency has special treating on edit depeding on propagation mode
+
+Implemented changes:
+
+* RTIR's custom fields are renamed, no more '_RTIR_' prefix. As well some CFs had two
+  word names, spaces have been added. Handled in upgrade script.
+
+* Autoreply and BlockRemoved templates in blocks queue need changes. Block that adds
+  CF values to the mail should be:
+
+    { my $output = "";
+      my @mailfields = ( 'IP', 'Netmask', 'Port', 'Where Blocked' );
+
+      my $CustomFields = $Ticket->QueueObj->TicketCustomFields;
+      while ( my $CustomField = $CustomFields->Next ) {
+        my $name = $CustomField->Name;
+        next unless grep lc $_ eq lc $name, @mailfields;
+
+        my $Values = $Ticket->CustomFieldValues( $CustomField->Id );
+        while ( my $Value = $Values->Next ) {
+          $output .= $name .": ". $Value->Content ."\n";
+        }
+      }
+      return $output;
+    }
+
