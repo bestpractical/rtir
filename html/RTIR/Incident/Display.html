@@ -47,27 +47,8 @@
     <td class="value"><& /Elements/ShowUser, User => $TicketObj->OwnerObj &></td>
   </tr>
   <tr>
-    <td class="label">
-      <&|/l&>State</&>:
-    </td>
-    <td class="value">
-      <& /RTIR/Elements/ShowRTIRField, 
-        Name => 'State', 
-        Ticket => $TicketObj &>
-    </td>
-  </tr>
-  <tr>
     <td class="label"><&|/l&>Subject</&>:</td>
-    <td class="value"><%$TicketObj->Subject %></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Description</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/ShowRTIRField, 
-         Ticket => $TicketObj, 
-         Name => 'Description',
-         Cols => 60 &>
-    </td>
+    <td class="value"><% $TicketObj->Subject %></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Priority</&>:</td>
@@ -77,49 +58,9 @@
     <td class="label"><&|/l&>Time Worked</&>:</td>
     <td class="value"><%loc('[_1] min', $TimeWorked)%></td>
   </tr>
-  <tr>
-    <td class="label"><&|/l&>Constituency</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/ShowRTIRField, 
-         Ticket => $TicketObj, 
-         Name => 'Constituency' &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Function</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/ShowRTIRField, 
-         Ticket => $TicketObj, 
-         Name => 'Function' &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Classification</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/ShowRTIRField, 
-         Ticket => $TicketObj, 
-         Name => 'Classification' &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Resolution</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/ShowRTIRField, 
-         Ticket => $TicketObj, 
-         Name => 'Resolution' &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>IP Address</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/ShowRTIRField, 
-         Ticket => $TicketObj, 
-         Name => 'IP' &>
-    </td>
-  </tr>
 </table>
 
-<& /Ticket/Elements/ShowCustomFields, Ticket => $TicketObj &>
+<& /Elements/ShowCustomFields, Object => $TicketObj &>
 
 </&>
 

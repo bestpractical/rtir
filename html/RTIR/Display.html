@@ -31,119 +31,18 @@
     Title => $Title &>
 
 % $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket);
+
 <& /Elements/ListActions, actions => \@results &>
 <table class="ticket-summary" width="100%">
 <tr>
 <td class="boxcontainer" valign="top">
+
 <&| /Widgets/TitleBox,
     title => loc("The Basics"),
     title_href  => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=".$Ticket->Id,
     class => 'ticket-info-basics',
 &>
-
-<table>
-  <tr>
-    <td class="label"><% loc("State") %>:</td>
-    <td class="value" colspan="2">
-      <& /RTIR/Elements/ShowRTIRField, Ticket => $Ticket, Name => 'State' &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><% loc("Incident") %>:</td>
-    <td class="value" colspan="2">
-      <& /RTIR/Elements/ShowIncidents, Ticket => $Ticket &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Constituency</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/ShowRTIRField, 
-         Ticket => $Ticket, Name => 'Constituency' &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Time Worked</&>:</td>
-    <td class="value"><%loc('[_1] min', $TimeWorked)%></td>
-  </tr>
-% if ($Type eq 'Report') {
-  <tr>
-    <td class="label"><&|/l&>SLA</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/ShowRTIRField, 
-         Ticket => $Ticket, Name => 'SLA' &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Customer</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/ShowRTIRField, 
-         Ticket => $Ticket, Name => 'Customer' &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label">
-      <%loc("How Reported")%>:
-    </td>
-    <td class="value" colspan="2">
-      <& /RTIR/Elements/ShowRTIRField, 
-         Ticket => $Ticket, Name => 'HowReported' &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label">
-      <%loc("Reporter Type")%>:
-    </td>
-    <td class="value" colspan="2">
-      <& /RTIR/Elements/ShowRTIRField, 
-        Ticket => $Ticket, Name => 'ReporterType' &>
-    </td>
-  </tr>
-% } elsif ($Type eq "Block") {
-  <tr>
-    <td class="label"><&|/l&>Netmask</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/ShowRTIRField, 
-         Ticket => $Ticket, 
-         Name => 'Netmask' &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Port</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/ShowRTIRField, 
-         Ticket => $Ticket, 
-         Name => 'Port' &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Where Blocked</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/ShowRTIRField, 
-         Ticket => $Ticket, 
-         Name => 'WhereBlocked' &>
-    </td>
-  </tr>
-% } elsif ($Type eq "Investigation") {
-  <tr>
-    <td class="label"><&|/l&>Customer</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/ShowRTIRField, 
-         Ticket => $Ticket, 
-         Name => 'Customer' &>
-    </td>
-  </tr>
-% }
-  <tr>
-    <td class="label"><&|/l&>IP Address</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/ShowRTIRField, 
-         Ticket => $Ticket, 
-         Name => 'IP' &>
-    </td>
-  </tr>
-</table>
-
-<& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket &>
+<& /Elements/ShowCustomFields, Object => $Ticket &>
 
 </&>
 
