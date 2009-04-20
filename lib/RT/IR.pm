@@ -63,6 +63,24 @@ use Business::SLA;
 use RT::IR::Config;
 RT::IR::Config::Init();
 
+my @QUEUES = ('Incidents', 'Incident Reports', 'Investigations', 'Blocks');
+my %QUEUES = map { lc($_) => $_ } @QUEUES;
+my %TYPE = (
+    'incidents'        => 'Incident',
+    'incident reports' => 'Report',
+    'investigations'   => 'Investigation',
+    'blocks'           => 'Block',
+);
+my %STATES = (
+    'incidents'        => { Active => ['open'], Inactive => ['resolved', 'abandoned'] },
+    'incident reports' => { Active => ['new', 'open'], Inactive => ['resolved', 'rejected'] },
+    'investigations'   => { Active => ['open'], Inactive => ['resolved'] },
+    'blocks'           => {
+        Active => ['pending activation', 'active', 'pending removal'],
+        Inactive => ['removed'],
+    },
+);
+
 =head1 FUNCTIONS
 
 =head2 BusinessHours
@@ -126,6 +144,17 @@ sub SLAInit {
     return $SLAObj;
 }
 
+=head2 OurQueue
+
+=cut
+
+sub OurQueue {
+    my $self = shift;
+    my $queue = shift;
+    $queue = $queue->Name if ref $queue;
+    return $QUEUES{ lc $queue }? 1 : 0;
+}
+
 =head2 TicketType
 
 Returns type of a ticket. Takes either Ticket or Queue argument.
@@ -134,13 +163,6 @@ works too for Queue argument. If the queue argument is defined then
 the ticket is ignored even if it's defined too.
 
 =cut
-
-my %TYPE = (
-    'incidents'        => 'Incident',
-    'incident reports' => 'Report',
-    'investigations'   => 'Investigation',
-    'blocks'           => 'Block',
-);
 
 sub TicketType {
     my %arg = ( Queue => undef, Ticket => undef, @_);
@@ -178,15 +200,6 @@ Examples:
 
 =cut
 
-my %STATES = (
-    'incidents'        => { Active => ['open'], Inactive => ['resolved', 'abandoned'] },
-    'incident reports' => { Active => ['new', 'open'], Inactive => ['resolved', 'rejected'] },
-    'investigations'   => { Active => ['open'], Inactive => ['resolved'] },
-    'blocks'           => {
-        Active => ['pending activation', 'active', 'pending removal'],
-        Inactive => ['removed'],
-    },
-);
 sub States {
     my %arg = ( Queue => undef, Active => 1, Inactive => 0, @_ );
 
