@@ -3,8 +3,8 @@
 use strict;
 use warnings;
 
-require "t/rtir-test.pl";
-use Test::More tests => 204;
+use lib "t/lib";
+use RT::IR::Test tests => 204;
 
 use_ok('RT::IR');
 RT->Config->Set('_RTIR_Constituency_Propagation' => 'reject');

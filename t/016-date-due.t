@@ -3,8 +3,8 @@
 use strict;
 use warnings;
 
-require "t/rtir-test.pl";
-use Test::More tests => 14;
+use lib "t/lib";
+use RT::IR::Test tests => 14;
 
 my $duty_a = RT::Test->load_or_create_user(
     Name       => 'duty a',

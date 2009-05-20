@@ -3,8 +3,8 @@
 use strict;
 use warnings;
 
-require "t/rtir-test.pl";
-use Test::More tests => 39;
+use lib "t/lib";
+use RT::IR::Test tests => 39;
 use File::Temp qw(tempdir);
 
 my @rights_backup = RT::Test->store_rights;

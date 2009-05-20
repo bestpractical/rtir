@@ -3,8 +3,8 @@
 use strict;
 use warnings;
 
-require "t/rtir-test.pl";
-use Test::More tests => 65;
+use lib "t/lib";
+use RT::IR::Test tests => 65;
 
 # Test must be run wtih RT_SiteConfig:
 # Set(@MailPlugins, 'Auth::MailFrom');

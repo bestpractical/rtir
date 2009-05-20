@@ -48,9 +48,9 @@ auto_install();
 substitute( {
         RT_LIB_PATH => join( ' ', $local_lib_path, $lib_path ),
     },
-    't/rtir-test.pl',
     'etc/upgrade/upgrade.pl',
     'etc/add_constituency',
+    't/lib/RT/IR/Test.pm',
 );
 
 tests("t/*.t t/*/*.t");
