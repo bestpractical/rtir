@@ -65,6 +65,10 @@ sub import_extra {
         my $old_func = \&RT::Plugin::_BasePath;
         *RT::Plugin::_BasePath = sub {
             return $cwd if $_[0]->{name} eq 'RT::IR';
+            if ( $_[0]->{name} eq 'RT::FM' ) {
+                my ($path) = map $ENV{$_}, grep /^CHIMPS_RTFM.*_ROOT$/, keys %ENV;
+                return $path;
+            }
             return $old_func->(@_);
         };
     }
@@ -72,8 +76,6 @@ sub import_extra {
     RT->InitPluginPaths;
 
     {
-#        require RT::FM::Test;
-#        RT::FM::Test->set_plugin_base_path;
         require RT::Plugin;
         my $rtfm = RT::Plugin->new( name => 'RT::FM' );
         # RTFM's data
