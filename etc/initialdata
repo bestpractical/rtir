@@ -575,7 +575,7 @@ Subject: { $Ticket->Subject }
 { $Transaction->Content }
 
 { my $output = "";
-  my @mailfields = ( 'IP', 'Netmask', 'Port', 'Where Blocked' );
+  my @mailfields = ( "IP", "Netmask", "Port", "Where Blocked" );
 
   my $CustomFields = $Ticket->QueueObj->TicketCustomFields;
   while ( my $CustomField = $CustomFields->Next ) {
@@ -607,7 +607,7 @@ you may reply to this message.
 Block #{$Ticket->id} was removed.
 
 { my $output = "";
-  my @mailfields = ( 'IP', 'Netmask', 'Port', 'Where Blocked' );
+  my @mailfields = ( "IP", "Netmask", "Port", "Where Blocked" );
 
   my $CustomFields = $Ticket->QueueObj->TicketCustomFields;
   while ( my $CustomField = $CustomFields->Next ) {
