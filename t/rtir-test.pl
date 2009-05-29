@@ -60,8 +60,11 @@ sub ticket_state_is {
     my $state = shift;
     my $desc = shift || "State of the ticket #$id is '$state'";
     display_ticket( $agent, $id );
-    $agent->content =~ qr{State:\s*</td>\s*<td[^>]*?>\s*<span class="cf-value">([\w ]+)</span>}ism;
-    return is($1, $state, $desc);
+    my ($got) = ($agent->content =~ qr{State:\s*</td>\s*<td[^>]*?class="value"[^>]*?>\s*([\w ]+?)\s*</td>}ism);
+    unless ( $got ) {
+        Test::More::diag("Error: couldn't find state value on the page, may be regexp problem");
+    }
+    return is($got, $state, $desc);
 }
 
 sub ticket_is_linked_to_inc {
