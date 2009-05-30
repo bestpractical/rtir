@@ -30,10 +30,28 @@ sub default_agent {
 }
 
 sub set_custom_field {
-    my $agent = shift;
+    my $agent   = shift;
+    my $queue   = shift;
     my $cf_name = shift;
-    my $val = shift;
-    my $field_name = $agent->value($cf_name) or return 0;
+    my $val     = shift;
+
+    my $cf_obj = RT::CustomField->new( $RT::SystemUser );
+    $cf_obj->LoadByName( Queue => $queue, Name => $cf_name );
+    unless ( $cf_obj->id ) {
+        Test::More::diag("Can not load custom field '$cf_name' in queue '$queue'");
+        return 0;
+    }
+    my $cf_id = $cf_obj->id;
+    
+    my ($field_name) =
+        grep /^Object-RT::Ticket-\d*-CustomField-$cf_id-Values?$/,
+        map $_->name,
+        $agent->current_form->inputs;
+    unless ( $field_name ) {
+        Test::More::diag("Can not find input for custom field '$cf_name' #$cf_id");
+        return 0;
+    }
+
     $agent->field($field_name, $val);
     return 1;
 }
@@ -174,7 +192,7 @@ sub create_rtir_ticket
     }
 
     while (my ($f, $v) = each %$cfs) {
-        set_custom_field($agent, $f, $v);
+        set_custom_field($agent, $queue, $f, $v);
     }
 
     my %create = (
@@ -215,7 +233,8 @@ sub create_incident_for_ir {
     display_ticket($agent, $ir_id);
 
     # Select the "New" link from the Display page
-    $agent->follow_link_ok({text => "[New]"}, "Followed 'New (Incident)' link");
+    $agent->follow_link_ok({text => "[New]"}, "Followed 'New (Incident)' link")
+        or diag $agent->content;
 
     $agent->form_number(3);
 
@@ -224,7 +243,7 @@ sub create_incident_for_ir {
     }
 
     while (my ($f, $v) = each %$cfs) {
-        set_custom_field($agent, $f, $v);
+        set_custom_field($agent, 'Incidents', $f, $v);
     }
 
     $agent->click("CreateIncident");
@@ -353,7 +372,7 @@ sub create_incident_and_investigation {
     }
 
     while (my ($f, $v) = each %$cfs) {
-        set_custom_field($agent, $f, $v);
+        set_custom_field($agent, 'Incidents', $f, $v);
     }
     $agent->click("CreateWithInvestigation");
     my $msg = $ir_id
