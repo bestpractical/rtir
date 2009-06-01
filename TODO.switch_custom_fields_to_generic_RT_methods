@@ -13,6 +13,24 @@
 * Constituency has special treating on edit depending on constituency propagation mode
 ** These two custom fields are still massaged via callback and RTIR has special editor
 
+* Default values:
+** Reports/SLA/OnCreate: RT::IR::DefaultSLA()
+** Reports/How Reported/OnCreate: $ARGS{'HowReported-Value'} || RT->Config->Get('_RTIR_HowReported_default')
+** the same for 'reporter type'
+** Blocks/Port/OnCreate: $ARGS{'Port-Value'} || RT->Config->Get('_RTIR_Port_default')
+** Blocks/Where Blocked/OnCreate: $ARGS{'WhereBlocked-Value'} || RT->Config->Get('_RTIR_WhereBlocked_default')
+** similar applies to 'Net Mask'
+
+** IP default on Create:
+my $ip_default = $ARGS{'IP-Value'};
+if ( !$ip_default && $IncidentObj ) {
+    $ip_default = join "\n", grep $_, map $_->Content,
+        @{ $IncidentObj->CustomFieldValues( 'IP' )->ItemsArrayRef };
+}
+$ip_default ||= RT->Config->Get('_RTIR_IP_default') || '';
+
+
+
 Implemented changes:
 
 * RTIR's custom fields are renamed, no more '_RTIR_' prefix. As well some CFs had two
