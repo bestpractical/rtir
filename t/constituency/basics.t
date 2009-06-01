@@ -210,7 +210,7 @@ diag "move the incident report from EDUNET to GOVNET" if $ENV{'TEST_VERBOSE'};
     display_ticket($agent, $ir_id);
     $agent->follow_link_ok({text => 'Edit'}, "go to Edit page");
     $agent->form_number(3);
-    ok(set_custom_field( $agent, Constituency => 'GOVNET' ), "fill value in the form");
+    ok(set_custom_field( $agent, 'Incident Reports', Constituency => 'GOVNET' ), "fill value in the form");
     $agent->click('SaveChanges');
     is( $agent->status, 200, "Attempting to edit ticket #$ir_id" );
     $agent->content_like( qr/GOVNET/, "value on the page" );
