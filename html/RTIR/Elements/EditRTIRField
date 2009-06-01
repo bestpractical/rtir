@@ -22,11 +22,6 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-% if ($cf->Type eq 'FreeformSingle') {
-<input type="hidden" name="<% $Name %>" value="<% $NamePrefix %><% $cf->id %>-Value" /> 
-% } else {
-<input type="hidden" name="<% $Name %>" value="<% $NamePrefix %><% $cf->id %>-Values" />
-% }
 <& /Elements/EditCustomField,
     %ARGS,
     Object      => $TicketObj, 
@@ -45,7 +40,7 @@ if ( $TicketObj ) {
 }
 
 my $cf = RT::CustomField->new( $session{'CurrentUser'} );
-$cf->LoadByNameAndQueue( Queue => $QueueObj->id, Name => "_RTIR_".$Name );
+$cf->LoadByNameAndQueue( Queue => $QueueObj->id, Name => $Name );
 return unless $cf->id;
 
 </%INIT>
