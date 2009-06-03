@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 require "t/rtir-test.pl";
-use Test::More tests => 33;
+use Test::More tests => 35;
 
 RT::Test->started_ok;
 my $agent = default_agent();
