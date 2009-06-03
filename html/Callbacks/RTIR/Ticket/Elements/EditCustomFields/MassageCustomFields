@@ -5,9 +5,13 @@ $QueueObj => undef
 </%args>
 <%init>
 my $queue = $QueueObj || $TicketObj->QueueObj;
-if ( RT::IR->OurQueue( $queue ) ) {
-    # We never want to see the RTIR custom fields State and Constituency in the edity ui
-    $CustomFields->Limit( FIELD => 'Name', OPERATOR => '!=', VALUE => 'State');
-    $CustomFields->Limit( FIELD => 'Name', OPERATOR => '!=', VALUE => 'Constituency');
-}
+return unless RT::IR->OurQueue( $queue );
+
+my $on_create = $QueueObj && !($TicketObj && $TicketObj->id);
+
+# We never want to see the RTIR custom fields State and Constituency in the edity ui
+$CustomFields->_OpenParen('RTIR');
+$CustomFields->Limit( SUBCLAUSE => 'RTIR', ENTRYAGGREGATOR => 'AND', FIELD => 'Name', OPERATOR => '!=', VALUE => 'State');
+$CustomFields->Limit( SUBCLAUSE => 'RTIR', ENTRYAGGREGATOR => 'AND', FIELD => 'Name', OPERATOR => '!=', VALUE => 'Constituency');
+$CustomFields->_CloseParen('RTIR');
 </%init>
