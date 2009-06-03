@@ -152,7 +152,9 @@ sub OurQueue {
     my $self = shift;
     my $queue = shift;
     $queue = $queue->Name if ref $queue;
-    return $QUEUES{ lc $queue }? 1 : 0;
+    return undef unless $queue;
+    return '' unless $QUEUES{ lc $queue };
+    return $TYPE{ lc $queue };
 }
 
 =head2 TicketType
