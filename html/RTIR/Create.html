@@ -238,6 +238,10 @@
 </form>
 
 <%INIT>
+$m->callback(
+    CallbackName => 'Init', CallbackPage => '/Ticket/Create.html',
+    ARGSRef => \%ARGS,
+);
 
 my $QueueObj = new RT::Queue( $session{'CurrentUser'} );
 $QueueObj->Load( $Queue ) || Abort( loc("Queue could not be loaded.") );
@@ -277,7 +281,7 @@ if ( $Incident ) {
         push @results, loc('Ticket #[_1] is not an Incident', $Incident );
         ($checks_failure, $IncidentObj, $Incident) = (1, undef, undef);
     }
-    elsif ( $ARGS{'Create'} 
+    elsif ( !$skip_create 
         && RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject'
         && lc $ARGS{$ARGS{'Constituency'}} ne lc $IncidentObj->FirstCustomFieldValue('Constituency') )
     {
