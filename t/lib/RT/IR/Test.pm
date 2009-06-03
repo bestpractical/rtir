@@ -110,10 +110,28 @@ sub default_agent {
 }
 
 sub set_custom_field {
-    my $agent = shift;
+    my $agent   = shift;
+    my $queue   = shift;
     my $cf_name = shift;
-    my $val = shift;
-    my $field_name = $agent->value($cf_name) or return 0;
+    my $val     = shift;
+
+    my $cf_obj = RT::CustomField->new( $RT::SystemUser );
+    $cf_obj->LoadByName( Queue => $queue, Name => $cf_name );
+    unless ( $cf_obj->id ) {
+        Test::More::diag("Can not load custom field '$cf_name' in queue '$queue'");
+        return 0;
+    }
+    my $cf_id = $cf_obj->id;
+    
+    my ($field_name) =
+        grep /^Object-RT::Ticket-\d*-CustomField-$cf_id-Values?$/,
+        map $_->name,
+        $agent->current_form->inputs;
+    unless ( $field_name ) {
+        Test::More::diag("Can not find input for custom field '$cf_name' #$cf_id");
+        return 0;
+    }
+
     $agent->field($field_name, $val);
     return 1;
 }
@@ -130,8 +148,11 @@ sub ticket_state {
     my $id = shift;
     
     display_ticket($agent, $id);
-    $agent->content =~ qr{State:\s*</td>\s*<td[^>]*?>\s*<span class="cf-value">([\w ]+)</span>}ism;
-    return $1;
+    my ($got) = ($agent->content =~ qr{State:\s*</td>\s*<td[^>]*?class="value"[^>]*?>\s*([\w ]+?)\s*</td>}ism);
+    unless ( $got ) {
+        Test::More::diag("Error: couldn't find state value on the page, may be regexp problem");
+    }
+    return $got;
 }
 
 sub ticket_state_is {
@@ -139,9 +160,7 @@ sub ticket_state_is {
     my $id = shift;
     my $state = shift;
     my $desc = shift || "State of the ticket #$id is '$state'";
-    display_ticket( $agent, $id );
-    $agent->content =~ qr{State:\s*</td>\s*<td[^>]*?>\s*<span class="cf-value">([\w ]+)</span>}ism;
-    return Test::More::is($1, $state, $desc);
+    return Test::More::is(ticket_state($id), $state, $desc);
 }
 
 sub ticket_is_linked_to_inc {
@@ -251,7 +270,7 @@ sub create_rtir_ticket
     }
 
     while (my ($f, $v) = each %$cfs) {
-        set_custom_field($agent, $f, $v);
+        set_custom_field($agent, $queue, $f, $v);
     }
 
     my %create = (
@@ -292,7 +311,8 @@ sub create_incident_for_ir {
     display_ticket($agent, $ir_id);
 
     # Select the "New" link from the Display page
-    $agent->follow_link_ok({text => "[New]"}, "Followed 'New (Incident)' link");
+    $agent->follow_link_ok({text => "[New]"}, "Followed 'New (Incident)' link")
+        or diag $agent->content;
 
     $agent->form_number(3);
 
@@ -301,7 +321,7 @@ sub create_incident_for_ir {
     }
 
     while (my ($f, $v) = each %$cfs) {
-        set_custom_field($agent, $f, $v);
+        set_custom_field($agent, 'Incidents', $f, $v);
     }
 
     $agent->click("CreateIncident");
@@ -380,7 +400,7 @@ sub merge_ticket {
     while($agent->content() !~ m|<a href="/Ticket/Display.html\?id=$id_to_merge_to">$id_to_merge_to</a>|) {
         my @ids = sort map s|<b>\s*<a href="/Ticket/Display.html?id=(\d+)">\1</a>\s*</b>|$1|, split /<td/, $agent->content();
         my $max = pop @ids;
-        my $url = "Merge.html?id=$id&Order=ASC&Query=( 'CF.{_RTIR_State}' = 'new' OR 'CF.{_RTIR_State}' = 'open' AND 'id' > $max)";
+        my $url = "Merge.html?id=$id&Order=ASC&Query=( 'CF.{State}' = 'new' OR 'CF.{State}' = 'open' AND 'id' > $max)";
         my $weburl = RT->Config->Get('WebURL');
         diag("IDs found: " . join ', ', @ids);
         diag("Max ID: " . $max);
@@ -430,7 +450,7 @@ sub create_incident_and_investigation {
     }
 
     while (my ($f, $v) = each %$cfs) {
-        set_custom_field($agent, $f, $v);
+        set_custom_field($agent, 'Incidents', $f, $v);
     }
     $agent->click("CreateWithInvestigation");
     my $msg = $ir_id
