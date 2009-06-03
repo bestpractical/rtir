@@ -449,9 +449,7 @@ wrap 'RT::ObjectCustomFieldValue::Content',
             }
             $_[-1] =  [$queue, $new_queue];
         } else {
-            use YAML;
-            $RT::Logger->crit( "$self is not a ticket object like I expected"
-                    . YAML::Dump($self) );
+            $RT::Logger->crit("$self is not a ticket object like I expected");
         }
     };
 }

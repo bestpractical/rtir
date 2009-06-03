@@ -3,8 +3,8 @@
 use strict;
 use warnings;
 
-require "t/rtir-test.pl";
-use Test::More tests => 58;
+use lib "t/lib";
+use RT::IR::Test tests => 58;
 
 use File::Temp qw(tempdir);
 

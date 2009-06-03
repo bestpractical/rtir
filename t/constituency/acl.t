@@ -3,8 +3,8 @@
 use strict;
 use warnings;
 
-require "t/rtir-test.pl";
-use Test::More tests => 13;
+use lib "t/lib";
+use RT::IR::Test tests => 13;
 
 use_ok('RT::IR');
 

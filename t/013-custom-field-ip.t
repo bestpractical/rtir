@@ -3,8 +3,8 @@
 use strict;
 use warnings;
 
-require "t/rtir-test.pl";
-use Test::More tests => 486;
+use lib "t/lib";
+use RT::IR::Test tests => 486;
 
 RT::Test->started_ok;
 my $agent = default_agent();

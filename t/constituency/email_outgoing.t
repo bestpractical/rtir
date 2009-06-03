@@ -3,8 +3,8 @@
 use strict;
 use warnings;
 
-require "t/rtir-test.pl";
-use Test::More tests => 36;
+use lib "t/lib";
+use RT::IR::Test tests => 36;
 
 RT->Config->Set( '_RTIR_Constituency_default' => 'EDUNET' );
 

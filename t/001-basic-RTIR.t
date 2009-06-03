@@ -2,9 +2,9 @@
 
 use strict;
 use warnings;
+use lib 't/lib';
 
-require "t/rtir-test.pl";
-use Test::More tests => 25;
+use RT::IR::Test tests => 25;
 
 RT::Test->started_ok;
 my $agent = default_agent();

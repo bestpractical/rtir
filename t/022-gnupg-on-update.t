@@ -3,8 +3,8 @@
 use strict;
 use warnings;
 
-require "t/rtir-test.pl";
-use Test::More tests => 65;
+use lib "t/lib";
+use RT::IR::Test tests => 65;
 use File::Temp qw(tempdir);
 
 RT::Test->set_mail_catcher;
