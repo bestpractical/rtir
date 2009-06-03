@@ -67,7 +67,7 @@ sub import_extra {
             return $cwd if $_[0]->{name} eq 'RT::IR';
             if ( $_[0]->{name} eq 'RT::FM' ) {
                 my ($path) = map $ENV{$_}, grep /^CHIMPS_RTFM.*_ROOT$/, keys %ENV;
-                return $path;
+                return $path if $path;
             }
             return $old_func->(@_);
         };
