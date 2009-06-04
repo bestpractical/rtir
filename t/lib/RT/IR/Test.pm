@@ -166,7 +166,6 @@ sub ticket_is_not_linked_to_inc {
     display_ticket( $agent, $id );
     foreach my $inc( @$incs ) {
         my $desc = shift || "Ticket #$id is not linked to the Incident #$inc";
-        diag $agent->content;
         $agent->content_unlike(
             qr{Incident:\s*</td>\s*<td[^>]*?>.*?<a\s+href="/RTIR/Display.html\?id=\Q$inc\E">\Q$inc\E:\s+}ism,
             $desc
@@ -276,7 +275,7 @@ sub get_ticket_id {
         $id = $1;
     }
     elsif ($content =~ /.*No permission to view newly created ticket #(\d+).*/g) {
-        diag("\nNo permissions to view the ticket.\n") if($ENV{'TEST_VERBOSE'});
+        Test::More::diag("\nNo permissions to view the ticket.\n") if($ENV{'TEST_VERBOSE'});
         $id = $1;
     }
     return $id;
@@ -382,9 +381,9 @@ sub merge_ticket {
         my $max = pop @ids;
         my $url = "Merge.html?id=$id&Order=ASC&Query=( 'CF.{_RTIR_State}' = 'new' OR 'CF.{_RTIR_State}' = 'open' AND 'id' > $max)";
         my $weburl = RT->Config->Get('WebURL');
-        diag("IDs found: " . join ', ', @ids);
-        diag("Max ID: " . $max);
-        diag ("URL: " . $url);
+        Test::More::diag("IDs found: " . join ', ', @ids);
+        Test::More::diag("Max ID: " . $max);
+        Test::More::diag ("URL: " . $url);
         $agent->get("$weburl/RTIR/$url");
         last unless $agent->content() =~ qr|<b>\s*<a href="/Ticket/Display.html?id=(\d+)">\1</a>\s*</b>|sm;
     }
