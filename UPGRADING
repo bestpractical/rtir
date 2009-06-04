@@ -17,10 +17,13 @@ General upgrade instructions
    Also, some files have been renamed and delete, if you leave old
    files around, you can hurt functionality of the new version.
 
-   Start from new directory for this installtion instead of using
-   directories with previous RT and extensions.
+   If you're upgrading from RTIR 2.4 or newer, so RTIR is already
+   is in local/plugins/RT-IR directory, then you can move it before
+   proceding. Otherwise it's better to start from a new directory
+   for this installtion instead of using directories with previous
+   RT and extensions.
 
-2) Install and upgrade database to the RT 3.8.1 or newer following
+2) Install and upgrade database to the RT 3.8.4 or newer following
    its upgrade instructions.
 
 2.1) Test how RT upgrade went. You should be able to start server,
@@ -29,7 +32,7 @@ General upgrade instructions
 2.2) Make another backup of the DB, so you can return to this step
      if something goes wrong.
 
-3) Install or upgrade RTFM 2.4.0rc1 or newer.
+3) Install or upgrade RTFM 2.4.0 or newer.
 
 3.1) Enable it in the RT config using @Plugins option
 
@@ -74,6 +77,14 @@ General upgrade instructions
         /opt/rt3/sbin/rt-setup-database --dba <dba> \
             --prompt-for-dba-password --action insert \
             --datadir etc/upgrade/<version>
+
+Upgrading from 2.4.x and earlier
+-------------------------
+
+_RTIR_ prefix has been deleted from all RTIR's custom fields. What
+means that you have to update custom code you have: templates,
+scrips and other customizations which may have name of a custom
+field hardcoded.
 
 Upgrading from 2.3.17 and earlier
 -------------------------
