@@ -86,6 +86,9 @@ means that you have to update custom code you have: templates,
 scrips and other customizations which may have name of a custom
 field hardcoded.
 
+_RTIR_*_default options in the config has been merged together
+into RTIR_CustomFieldDefaults hash. Change RTIR's site config.
+
 Upgrading from 2.3.17 and earlier
 -------------------------
 
