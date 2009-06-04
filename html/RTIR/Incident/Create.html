@@ -197,12 +197,15 @@ unless ( exists $ARGS{'Content'} ) {
 
 
 <%INIT>
+$m->callback(
+    CallbackName => 'Init', CallbackPage => '/Ticket/Create.html',
+    ARGSRef => \%ARGS,
+);
 
 my @results;
 
 # if there isn't a subject, but there is a child, use that one
 my $ChildObj;
-
 if ( $Child ) {
     $ChildObj = LoadTicket( $Child );
     $Child = $ARGS{'Child'} = $ChildObj->id;
