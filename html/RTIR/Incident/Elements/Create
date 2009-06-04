@@ -28,15 +28,6 @@
 <input name="Subject" size="60" maxsize="100" value="<% $Subject %>" />
 </td></tr>
 
-<tr><td class="labeltop"><&|/l&>Description</&>:</td>
-<td class="value">
-<& /RTIR/Elements/EditRTIRField,
-    QueueObj => $QueueObj,
-    Name     => 'Description',
-    Default  => scalar RT->Config->Get('_RTIR_Description_default'),
-    Cols     => 40,
-&></td></tr>
-
 <tr><td class="label"><&|/l&>Constituency</&>:</td>
 <td class="value">
 % if ( !$ChildObj || RT->Config->Get('_RTIR_Constituency_Propagation') eq 'no' ) {
@@ -60,49 +51,6 @@
 <& /RTIR/Elements/ShowRTIRField, Ticket => $ChildObj, Name => 'Constituency' &>
 % }
 </td></tr>
-
-<tr><td class="label"><&|/l&>Function</&>:</td>
-<td class="value">
-<& /RTIR/Elements/EditRTIRField, 
-    QueueObj => $QueueObj, 
-    Name     => 'Function',
-    Default  => scalar RT->Config->Get('_RTIR_Function_default'),
-    Rows     => 1,
-&></td></tr>
-
-<tr><td class="label"><&|/l&>Classification</&>:</td>
-<td class="value">
-<& /RTIR/Elements/EditRTIRField, 
-    QueueObj => $QueueObj, 
-    Name     => 'Classification',
-    Default  => scalar RT->Config->Get('_RTIR_Classification_default'),
-    Rows     => 1,
-&></td></tr>
-
-<tr><td class="label"><&|/l&>Resolution</&>:</td>
-<td class="value">
-<& /RTIR/Elements/EditRTIRField,
-    QueueObj => $QueueObj,
-    Name     => 'Resolution',
-    Rows     => 1,
-&></td></tr>
-
-<%PERL>
-my $ip_default = $ARGS{'IP-Value'};
-if ( !$ip_default && $ChildObj ) {
-    $ip_default = join "\n", grep $_, map $_->Content,
-        @{ $ChildObj->CustomFieldValues( 'IP' )->ItemsArrayRef };
-}
-$ip_default ||= RT->Config->Get('_RTIR_IP_default') || '';
-</%PERL>
-<tr><td class="label"><&|/l&>IP</&>:</td>
-<td class="value">
-<& /RTIR/Elements/EditRTIRField,
-    QueueObj => $QueueObj,
-    Name     => 'IP',
-    Cols     => 40, Rows => 5,
-    Default  => $ip_default,
-&></td></tr>
 
 <tr><td colspan="2">
 <& /Ticket/Elements/EditCustomFields,
