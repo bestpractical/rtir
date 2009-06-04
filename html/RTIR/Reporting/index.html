@@ -38,7 +38,7 @@
       <& /RTIR/Elements/EditRTIRField, 
          QueueObj => $QueueObj, 
 	     Name     => 'Constituency',
-	     Default  => scalar RT->Config->Get('_RTIR_Constituency_default'),
+	     Default  => RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'},
 	     Rows     => 1
       &>
     </td>

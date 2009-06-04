@@ -6,7 +6,7 @@ use warnings;
 use lib "t/lib";
 use RT::IR::Test tests => 19;
 
-RT->Config->Set( '_RTIR_Constituency_default' => 'EDUNET' );
+RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'} = 'EDUNET';
 
 RT::Test->set_mail_catcher;
 

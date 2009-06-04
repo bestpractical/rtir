@@ -38,7 +38,7 @@ sub Commit {
 
     return 1 unless $t->QueueObj->IsInactiveStatus( $status );
 
-    my $value = RT->Config->Get("_RTIR_Resolution_${status}_default");
+    my $value = RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Resolution'}{$status};
     return 1 unless $value;
 
     return 1 if $t->FirstCustomFieldValue( $cf->id );

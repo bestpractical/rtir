@@ -54,7 +54,7 @@ diag "fetch list of constituencies and check that groups exist" if $ENV{'TEST_VE
 
 diag "check that there is no option to set 'no value' on create" if $ENV{'TEST_VERBOSE'};
 {
-    my $default = RT->Config->Get('_RTIR_Constituency_default');
+    my $default = RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'};
     foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
         diag "'$queue' queue" if $ENV{'TEST_VERBOSE'};
 

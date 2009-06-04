@@ -110,7 +110,7 @@ sub SetConstituencyOnCreate {
         }
     }
     $value ||= $self->GetConstituencyFromAttachment;
-    $value ||= RT->Config->Get('_RTIR_Constituency_default');
+    $value ||= RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'};
     return undef if ($current||'') eq ($value||'');
 
     my ($status, $msg) = $ticket->AddCustomFieldValue(

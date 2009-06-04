@@ -246,7 +246,7 @@ When an Incident's Status is changed, if it is changed from an
 Inactive Status to an Active Status, the Resolution Custom Field
 is removed.  If it is changed from an Active Status to an Inactive Status
 and the Resolution Custom Field wasn't set manually, it is set
-to the value of _RTIR_Resolution_(rejected|resolved)_default in your
+to the value according %RTIR_CustomFieldsDefaults in your
 F<RTIR_Config.pm>.
 
 =item NotifyOnClose

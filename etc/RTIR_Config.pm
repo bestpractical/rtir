@@ -6,12 +6,12 @@ Set($WebNoAuthRegex, qr{ (?: $rt_no_auth | ^/+RTIR/+NoAuth/ ) }x);
 
 # Set the name of the RTIR application.
 
-Set($rtirname , RT->Config->Get('rtname') );
+Set($rtirname, RT->Config->Get('rtname') );
 
 # By default, RT only displays text attachments inline up to the first 16k
 # RTIR will display them no matter how long they are
 #
-Set($MaxInlineBody,0);
+Set($MaxInlineBody, 0);
 
 # Set the number of days a message awaiting an external response
 # may be inactive before the ticket becomes overdue
@@ -54,25 +54,29 @@ Set($SLA_Reopen_OutOfHours, 'Full service: out of hours');
 # Set the defaults for RTIR custom fields
 # default values are case-sensitive
 
-Set($_RTIR_SLA_inhours_default,         "Full service");
-Set($_RTIR_SLA_outofhours_default,      "Full service: out of hours");
-Set($_RTIR_HowReported_default,         "Email");
-Set($_RTIR_ReporterType_default,        "");
-Set($_RTIR_IP_default,                  "");
-Set($_RTIR_Netmask_default,             "");
-Set($_RTIR_Port_default,                "");
-Set($_RTIR_WhereBlocked_default,        "");
-Set($_RTIR_Function_default,            "");
-Set($_RTIR_Classification_default,      "");
-Set($_RTIR_Description_default,         "");
-Set($_RTIR_Resolution_resolved_default, "successfully resolved");
-Set($_RTIR_Resolution_rejected_default, "no resolution reached");
+Set( %RTIR_CustomFieldsDefaults,
+    SLA => {
+        InHours => 'Full service',
+        OutOfHours => 'Full service: out of hours',
+    },
+    HowReported    => "",
+    ReporterType   => "",
+    IP             => "",
+    Netmask        => "",
+    Port           => "",
+    WhereBlocked   => "",
+    Function       => "",
+    Classification => "",
+    Description    => "",
+    Resolution => {
+        resolved => "successfully resolved",
+        rejected => "no resolution reached",
+    },
+    Constituency => 'EDUNET',
+);
 
 # Constituency behaviour
 # read more about constituencies in lib/RT/IR/Constituency.pod
-#
-# default value
-Set( $_RTIR_Constituency_default,        "EDUNET" );
 
 # Constituency propagation algorithm
 # valid values are 'no', 'inherit', 'reject'

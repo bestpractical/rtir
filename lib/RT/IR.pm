@@ -115,8 +115,7 @@ sub DefaultSLA {
 Returns an object of L<Business::SLA> class or class defined in SLAModule
 config option.
 
-See also the following options: SLAModule, _RTIR_SLA_inhours_default,
-_RTIR_SLA_outofhours_default and SLA.
+See also the following options: SLAModule, RTIR_CustomFieldsDefaults and SLA.
 
 =cut
 
@@ -125,9 +124,8 @@ sub SLAInit {
     my $class = RT->Config->Get('SLAModule') || 'Business::SLA';
 
     my $SLAObj = $class->new();
-
-    $SLAObj->SetInHoursDefault( RT->Config->Get('_RTIR_SLA_inhours_default') );
-    $SLAObj->SetOutOfHoursDefault( RT->Config->Get('_RTIR_SLA_outofhours_default') );
+    $SLAObj->SetInHoursDefault( RT->Config->Get('RTIR_CustomFieldsDefaults')->{'SLA'}{'InHours'} );
+    $SLAObj->SetOutOfHoursDefault( RT->Config->Get('RTIR_CustomFieldsDefaults')->{'SLA'}{'OutOfHours'} );
 
     my $bh = RT::IR::BusinessHours();
     $SLAObj->SetBusinessHours($bh);
@@ -242,7 +240,7 @@ sub DefaultConstituency {
         next unless $pqueue->HasRight( Principal => $queue->CurrentUser, Right => "ShowTicket" );
         push @values, substr $pqueue->__Value('Name'), length("$name - ");
     }
-    my $default = RT->Config->Get('_RTIR_Constituency_default') || '';
+    my $default = RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'} || '';
     return $default if grep lc $_ eq lc $default, @values;
     return shift @values;
 }
@@ -567,7 +565,7 @@ wrap 'RT::ObjectCustomFieldValue::Content',
             $value = $tmp;
             $RT::Logger->debug("Found Constituency '$tmp' in email") if $tmp;
         }
-        $value ||= RT->Config->Get('_RTIR_Constituency_default');
+        $value ||= RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'};
         return unless $value;
 
         my @res = $ticket->Create(

@@ -31,7 +31,7 @@ my $rtir_user = rtir_user();
 diag "create a ticket via gate" if $ENV{'TEST_VERBOSE'};
 {
     my $i = 0;
-    my $val = RT->Config->Get('_RTIR_Constituency_default'); # we have one default
+    my $val = RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'}; # we have one default
     foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
@@ -61,7 +61,7 @@ diag "create a ticket via gate using EXTENSION" if $ENV{'TEST_VERBOSE'};
 {
     my $i = 0;
 
-    my $default = RT->Config->Get('_RTIR_Constituency_default');
+    my $default = RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'};
     my $val = (grep lc($_) ne lc($default), @values)[0];
     ok $val, 'find not default value';
 

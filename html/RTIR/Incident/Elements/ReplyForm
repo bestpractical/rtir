@@ -24,7 +24,7 @@
     Name      => 'Resolution',
     Default   => (
         $TicketObj->FirstCustomFieldValue('Resolution') ||
-        scalar RT->Config->Get("Resolution_". $Status ."_default")
+        RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Resolution'}{$Status}
     ),
     Rows      => 1,
 &></td></tr>

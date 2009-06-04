@@ -198,7 +198,7 @@ Once you open the Abandon page under the Incidents tab you see a list of its
 children grouped by queue. You can select children with checkboxes, only
 children you've selected will be rejected, resolved or removed.
 
-Resolution of the Incident is set according to C<$_RTIR_Resolution_rejected_default>
+Resolution of the Incident is set according to C<%RTIR_CustomFieldsDefaults>
 config option and by default its value is "no resolution reached", however,
 you can choose any value you'd like to.
 

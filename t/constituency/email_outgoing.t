@@ -6,7 +6,7 @@ use warnings;
 use lib "t/lib";
 use RT::IR::Test tests => 36;
 
-RT->Config->Set( '_RTIR_Constituency_default' => 'EDUNET' );
+RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'} = 'EDUNET';
 
 my ($queue_ir, $queue_ir_edunet, $queue_ir_govnet);
 diag "create or update queues";
