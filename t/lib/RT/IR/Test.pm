@@ -79,6 +79,8 @@ sub import_extra {
         require RT::Plugin;
         my $rtfm = RT::Plugin->new( name => 'RT::FM' );
         # RTFM's data
+
+        Test::More::diag("RTFM path: ". $rtfm->Path('etc') );
         my ($ret, $msg) = $RT::Handle->InsertSchema( undef, $rtfm->Path('etc') );
         Test::More::ok($ret,"Created Schema: ".($msg||''));
         ($ret, $msg) = $RT::Handle->InsertACL( undef, $rtfm->Path('etc') );
@@ -160,7 +162,7 @@ sub ticket_state_is {
     my $id = shift;
     my $state = shift;
     my $desc = shift || "State of the ticket #$id is '$state'";
-    return Test::More::is(ticket_state($id), $state, $desc);
+    return Test::More::is(ticket_state($agent, $id), $state, $desc);
 }
 
 sub ticket_is_linked_to_inc {
