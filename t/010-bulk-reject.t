@@ -16,7 +16,7 @@ my $rtir_user = rtir_user();
 # both for IRs that you own and IRs that are unowned.  So we make four IRs to work with.
 my @irs;
 for( my $i = 0; $i < 4; $i++ ) {
-    push @irs, create_ir($agent, { Subject => "for bulk reject \#$i" });
+    push @irs, $agent->create_ir( { Subject => "for bulk reject \#$i" });
 }
 
 $agent->get_ok('/RTIR/index.html', 'open rtir at glance');
@@ -36,8 +36,8 @@ $agent->get_ok('/RTIR/index.html', 'open rtir at glance');
     $agent->tick('SelectedTickets', $irs[0]);  
     $agent->tick('SelectedTickets', $irs[2]);
     $agent->click('BulkReject');
-    ok_and_content_like($agent, qr{Ticket $irs[0]: State changed from \w+ to rejected}, 'reject notice');
-    ok_and_content_like($agent, qr{Ticket $irs[2]: State changed from \w+ to rejected}, 'reject notice');
+    $agent->ok_and_content_like( qr{Ticket $irs[0]: State changed from \w+ to rejected}, 'reject notice');
+    $agent->ok_and_content_like( qr{Ticket $irs[2]: State changed from \w+ to rejected}, 'reject notice');
 
     $agent->form_number(3);
     ok($agent->value('BulkReject'), 'still on reject page');
@@ -54,11 +54,11 @@ $agent->get_ok('/RTIR/index.html', 'open rtir at glance');
     $agent->tick('SelectedTickets', $irs[1]);
     $agent->tick('SelectedTickets', $irs[3]);
     $agent->click('BulkRejectAndReturn');
-    ok_and_content_like($agent, qr{Ticket $irs[1]: State changed from new to rejected}, 'reject notice');
-    ok_and_content_like($agent, qr{Ticket $irs[3]: State changed from new to rejected}, 'reject notice');
-    ok_and_content_like($agent, qr{New unlinked Incident Reports}, 'we are on the main page');
+    $agent->ok_and_content_like( qr{Ticket $irs[1]: State changed from new to rejected}, 'reject notice');
+    $agent->ok_and_content_like( qr{Ticket $irs[3]: State changed from new to rejected}, 'reject notice');
+    $agent->ok_and_content_like( qr{New unlinked Incident Reports}, 'we are on the main page');
 }
 
 foreach( @irs ) {
-    ticket_state_is( $agent, $_, 'rejected', "Ticket #$_ is rejected" );
+    $agent->ticket_state_is( $_, 'rejected', "Ticket #$_ is rejected" );
 }

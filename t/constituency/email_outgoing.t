@@ -76,7 +76,7 @@ EOF
     ok $ticket->id, 'loaded the ticket';
     is $ticket->FirstCustomFieldValue('Constituency'), 'EDUNET', 'correct value';
 
-    display_ticket($agent, $id);
+    $agent->display_ticket( $id);
     $agent->content_like( qr/\QEDUNET/, "value on the page" );
 
     my @mail = RT::Test->fetch_caught_mails;
@@ -112,7 +112,7 @@ EOF
     ok $ticket->id, 'loaded the ticket';
     is $ticket->FirstCustomFieldValue('Constituency'), 'GOVNET', 'correct value';
 
-    display_ticket($agent, $id);
+    $agent->display_ticket( $id);
     $agent->content_like( qr/GOVNET/, "value on the page" );
 
     my @mail = RT::Test->fetch_caught_mails;

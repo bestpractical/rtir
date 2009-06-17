@@ -19,7 +19,7 @@ my $subj1 = "something".rand();
 $agent->field(ValueOfAttachment => $subj1);
 
 $agent->click("AddClause");
-ok_and_content_like($agent, qr/Subject LIKE &#39;$subj1/, "added new clause");
+$agent->ok_and_content_like( qr/Subject LIKE &#39;$subj1/, "added new clause");
 
 $agent->form_name("BuildQuery");
 my $search1 = "saved".rand();
@@ -35,7 +35,7 @@ like($agent->value('SavedSearchOwner'), qr/^RT::User-\d+$/, "privacy is correct"
 $agent->form_name("BuildQuery");
 $agent->field(ValueOfid => 200);
 $agent->click("AddClause");
-ok_and_content_like($agent, qr/AND id &lt; 200/, "added another clause");
+$agent->ok_and_content_like( qr/AND id &lt; 200/, "added another clause");
 
 $agent->form_name("BuildQuery");
 is($agent->value('SavedSearchDescription'), $search1, "name is correct");

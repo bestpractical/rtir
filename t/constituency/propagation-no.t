@@ -51,7 +51,7 @@ diag "create an incident with EDUNET and then linked tickets with GOVNET,"
             { Constituency => 'GOVNET' },
         );
 
-        display_ticket($agent, $id);
+        $agent->display_ticket( $id);
         $agent->content_like( qr/GOVNET/i, "value on the page" );
         DBIx::SearchBuilder::Record::Cachable::FlushCache();
         
@@ -110,7 +110,7 @@ diag "create an IR with GOVNET constituency and create a new "
         $agent, { Subject => "test" }, { Constituency => 'GOVNET' }
     );
     ok $ir_id, "created IR #$ir_id";
-    display_ticket($agent, $ir_id);
+    $agent->display_ticket( $ir_id);
 
     my $inc_id = create_incident_for_ir(
         $agent, $ir_id, { Subject => "test" },
@@ -130,7 +130,7 @@ diag "inheritance should be soft, so user can change constituency using ui"
         $agent, { Subject => "test" }, { Constituency => 'GOVNET' }
     );
     ok $ir_id, "created IR #$ir_id";
-    display_ticket($agent, $ir_id);
+    $agent->display_ticket( $ir_id);
 
     my $inc_id = create_incident_for_ir(
         $agent, $ir_id, { Subject => "test" }, { Constituency => 'EDUNET' }
@@ -153,7 +153,7 @@ diag "create an incident under GOVNET and create a new IR "
         $agent, { Subject => "test" }, { Constituency => 'GOVNET' }
     );
     ok( $inc_id, "created ticket #$inc_id" );
-    display_ticket( $agent, $inc_id );
+    $agent->display_ticket( $inc_id );
     $agent->content_like( qr/GOVNET/, "value on the page" );
     DBIx::SearchBuilder::Record::Cachable::FlushCache();
 
@@ -169,7 +169,7 @@ diag "create an incident under GOVNET and create a new IR "
     my $ir_id = create_ir(
         $agent, { Subject => "test", Incident => $inc_id }, { Constituency => 'EDUNET' },
     );
-    ticket_is_linked_to_inc( $agent, $ir_id => $inc_id );
+    $agent->ticket_is_linked_to_inc( $ir_id => $inc_id );
     DBIx::SearchBuilder::Record::Cachable::FlushCache();
 
     {

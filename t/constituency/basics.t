@@ -57,7 +57,7 @@ diag "check that there is no option to set 'no value' on create" if $ENV{'TEST_V
     foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
         diag "'$queue' queue" if $ENV{'TEST_VERBOSE'};
 
-        goto_create_rtir_ticket( $agent, $queue );
+        $agent->goto_create_rtir_ticket( $queue );
 
         my $value = $agent->form_number(3)->value("Object-RT::Ticket--CustomField-". $cf->id ."-Values");
         is lc $value, lc $default, 'correct value is selected';
@@ -81,7 +81,7 @@ diag "create a ticket via web and set field" if $ENV{'TEST_VERBOSE'};
             { Constituency => $val },
         );
 
-        display_ticket($agent, $id);
+        $agent->display_ticket( $id);
         $agent->content_like( qr/\Q$val/, "value on the page" );
         DBIx::SearchBuilder::Record::Cachable::FlushCache();
 
@@ -167,7 +167,7 @@ diag "Create an incident report with a default constituency of EDUNET" if $ENV{'
         $agent, { Subject => "test" }, { Constituency => $val }
     );
     ok( $ir_id, "created IR #$ir_id" );
-    display_ticket($agent, $ir_id);
+    $agent->display_ticket( $ir_id);
     $agent->content_like(qr/EDUNET/, "It was created by edunet");
 
 diag "autoreply comes from the EDUNET queue address" if $ENV{'TEST_VERBOSE'};
@@ -206,10 +206,10 @@ is($ticket_as_edu->Subject, 'test', "As the edu handler, I can see the ticket");
 
 diag "move the incident report from EDUNET to GOVNET" if $ENV{'TEST_VERBOSE'};
 {
-    display_ticket($agent, $ir_id);
+    $agent->display_ticket( $ir_id);
     $agent->follow_link_ok({text => 'Edit'}, "go to Edit page");
     $agent->form_number(3);
-    ok(set_custom_field( $agent, 'Incident Reports', Constituency => 'GOVNET' ), "fill value in the form");
+    ok($agent->set_custom_field( 'Incident Reports', Constituency => 'GOVNET' ), "fill value in the form");
     $agent->click('SaveChanges');
     is( $agent->status, 200, "Attempting to edit ticket #$ir_id" );
     $agent->content_like( qr/GOVNET/, "value on the page" );

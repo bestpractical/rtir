@@ -8,28 +8,28 @@ use RT::IR::Test tests => 33;
 RT::Test->started_ok;
 my $agent = default_agent();
 
-my $ir_id  = create_ir($agent, {Subject => "resolves slowly"});
+my $ir_id  = $agent->create_ir( {Subject => "resolves slowly"});
 
 my $subj1 = "inc1_" . rand;
 my $subj2 = "inc2_" . rand;
 
-my $inc_1 = create_incident_for_ir($agent, $ir_id, {Subject => $subj1});
-my $inc_2 = create_incident_for_ir($agent, $ir_id, {Subject => $subj2});
+my $inc_1 = $agent->create_incident_for_ir( $ir_id, {Subject => $subj1});
+my $inc_2 = $agent->create_incident_for_ir( $ir_id, {Subject => $subj2});
 
-display_ticket($agent, $ir_id);
+$agent->display_ticket( $ir_id);
 
 like($agent->content, qr/\Q$subj1/, "we're linked to the first incident");
 like($agent->content, qr/\Q$subj2/, "we're linked to the second incident");
 
 ir_status('open');
 
-display_ticket($agent, $inc_1);
+$agent->display_ticket( $inc_1);
 $agent->follow_link_ok({text => "Quick Resolve"}, "followed 'Quick Resolve' link for first incident");
 like($agent->content, qr/State changed from open to resolved/, "resolved the first incident");
 
 ir_status('open');
 
-display_ticket($agent, $inc_2);
+$agent->display_ticket( $inc_2);
 $agent->follow_link_ok({text => "Quick Resolve"}, "followed 'Quick Resolve' link for second incident");
 like($agent->content, qr/State changed from open to resolved/, "resolved the second incident");
 

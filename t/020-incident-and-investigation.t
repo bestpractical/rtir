@@ -10,8 +10,8 @@ my $agent = default_agent();
 
 # Tests the creation of inventory-and-investigation from an IR
 
-my $ir = create_ir($agent, {Subject => 'IR for testing creation of a linked Investigation with no correspondents'});
-display_ticket($agent, $ir);
+my $ir = $agent->create_ir( {Subject => 'IR for testing creation of a linked Investigation with no correspondents'});
+$agent->display_ticket( $ir);
 
 
 # The following is adapted from create_incident_and_investigation() in t/rtir-test.pl. The reason
@@ -33,7 +33,7 @@ display_ticket($agent, $ir);
 
 # Okay, enough funny business. Now for some straightforward tests, how it should work
 {
-    my ($inc_id, $inv_id) = create_incident_and_investigation($agent, 
+    my ($inc_id, $inv_id) = $agent->create_incident_and_investigation( 
         {Subject => 'Incident for testing Incident-and-investigation-from-IR creation',
         InvestigationSubject => 'Investigation for testing Incident-and-Investigation-from-IR creation', 
         InvestigationRequestors => 'foo@example.com'}, {Classification => 'Spam', IP => '172.16.0.1'},

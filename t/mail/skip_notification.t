@@ -19,7 +19,7 @@ diag "create an IR and check that we have outgoing email";
 
     my $email = $rtir_user->EmailAddress;
 
-    my $id = create_ir( $agent, {
+    my $id = $agent->create_ir( {
         Subject => "test", 
         Requestors => $email,
     } );
@@ -44,7 +44,7 @@ diag "create an IR and check that 'SkipNotification' feature works";
 
     my $email = $rtir_user->EmailAddress;
 
-    my $id = create_ir( $agent, {
+    my $id = $agent->create_ir( {
         Subject          => "test", 
         Requestors       => $email,
         SkipNotification => 'Requestors',

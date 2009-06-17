@@ -8,7 +8,7 @@ use RT::IR::Test tests => 54;
 RT::Test->started_ok;
 my $agent = default_agent();
 
-my $ir = create_ir($agent, {Subject => 'IR to test watcher add bug', 
+my $ir = $agent->create_ir( {Subject => 'IR to test watcher add bug', 
 	Requestors => 'requestor@example.com', Cc => 'foo@example.com', AdminCc => 'bar@example.com'});
 
 
@@ -18,13 +18,13 @@ SKIP: {
 	$agent->content_unlike(qr/permission denied/i, "No permissions problems");
 
 	diag("Testing if incident report has all watchers") if($ENV{'TEST_VERBOSE'});
-	has_watchers($agent, $ir);
-	has_watchers($agent, $ir, 'Cc');
-	has_watchers($agent, $ir, 'AdminCc');
+	$agent->has_watchers( $ir);
+	$agent->has_watchers( $ir, 'Cc');
+	$agent->has_watchers( $ir, 'AdminCc');
 
 
 	# Testing creating an incident and investigation from an Incident Report
-	my ($ir_inc, $ir_inv) = create_incident_and_investigation($agent, 
+	my ($ir_inc, $ir_inv) = $agent->create_incident_and_investigation( 
 		{Subject => "Incident linked with IR $ir to test adding watchers", 
 		InvestigationSubject => "Investigation linked with Incident to test adding watchers",
 		InvestigationRequestors => 'requestor@example.com',
@@ -39,16 +39,16 @@ SKIP: {
 		$agent->content_unlike(qr/permission denied/i, "No permissions problems");
 
 		diag("Testing if investigation from IR has all watchers") if($ENV{'TEST_VERBOSE'});
-		has_watchers($agent, $ir_inv);
-		has_watchers($agent, $ir_inv, 'Cc');
-		has_watchers($agent, $ir_inv, 'AdminCc');
+		$agent->has_watchers( $ir_inv);
+		$agent->has_watchers( $ir_inv, 'Cc');
+		$agent->has_watchers( $ir_inv, 'AdminCc');
 	}
 }
 
 
 
 # Testing creating an incident and investigation not from an incident report
-my ($inc, $inv) = create_incident_and_investigation($agent, 
+my ($inc, $inv) = $agent->create_incident_and_investigation( 
 	{Subject => "Incident to test adding watchers", 
 	InvestigationSubject => "Investigation linked to Incident to test adding watchers",
 	InvestigationRequestors => 'requestor@example.com',
@@ -61,15 +61,15 @@ SKIP: {
 	$agent->content_unlike(qr/permission denied/i, "No permissions problems");
 
 	diag("Testing if investigation has all watchers") if($ENV{'TEST_VERBOSE'});
-	has_watchers($agent, $inv);
-	has_watchers($agent, $inv, 'Cc');
-	has_watchers($agent, $inv, 'AdminCc');
+	$agent->has_watchers( $inv);
+	$agent->has_watchers( $inv, 'Cc');
+	$agent->has_watchers( $inv, 'AdminCc');
 
 }
 
 
 # Testing creating an investigation by itself
-my $solo_inv = create_investigation($agent, 
+my $solo_inv = $agent->create_investigation( 
 	{Subject => 'Investigation created on its own to test adding watchers',
 	Requestors => 'requestor@example.com',
 	Cc => 'foo@example.com',
@@ -81,9 +81,9 @@ SKIP: {
 	$agent->content_unlike(qr/permission denied/i, "No permissions problems");
 
 	diag("Testing if solo investigation has all watchers") if($ENV{'TEST_VERBOSE'});
-	has_watchers($agent, $solo_inv);
-	has_watchers($agent, $solo_inv, 'Cc');
-	has_watchers($agent, $solo_inv, 'AdminCc');
+	$agent->has_watchers( $solo_inv);
+	$agent->has_watchers( $solo_inv, 'Cc');
+	$agent->has_watchers( $solo_inv, 'AdminCc');
 }
 
 
@@ -93,7 +93,7 @@ sub has_watchers {
 	my $type = shift || 'Correspondents';
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
-	display_ticket($agent, $id);
+	$agent->display_ticket( $id);
 
 	$agent->content_like(
         qr{<td class="labeltop">Correspondents:</td>\s*<td class="value">\s*([@\w\.]+)\s*<br />}ms,

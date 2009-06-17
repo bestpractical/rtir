@@ -42,10 +42,10 @@ RT::Test->set_rights(
 diag "check that things don't work if there is no key";
 {
 
-    my $ir_id = create_ir( $agent, { Subject => 'test', Requestors => 'rt-test@example.com' } );
+    my $ir_id = $agent->create_ir( { Subject => 'test', Requestors => 'rt-test@example.com' } );
     ok $ir_id, 'created an IR';
     
-    my $inc_id = create_incident_for_ir( $agent, $ir_id, { Subject => 'test' } );
+    my $inc_id = $agent->create_incident_for_ir( $ir_id, { Subject => 'test' } );
     ok $inc_id, 'created an Inc';
 
     RT::Test->clean_caught_mails;
@@ -77,10 +77,10 @@ diag 'import rt-recipient@example.com key and sign it';
 
 diag "check that things don't work if there is no key";
 {
-    my $ir_id = create_ir( $agent, { Subject => 'test', Requestors => 'rt-test@example.com' } );
+    my $ir_id = $agent->create_ir( { Subject => 'test', Requestors => 'rt-test@example.com' } );
     ok $ir_id, 'created an IR';
     
-    my $inc_id = create_incident_for_ir( $agent, $ir_id, { Subject => 'test' } );
+    my $inc_id = $agent->create_incident_for_ir( $ir_id, { Subject => 'test' } );
     ok $inc_id, 'created an Inc';
 
     RT::Test->clean_caught_mails;

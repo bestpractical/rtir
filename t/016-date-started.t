@@ -15,8 +15,8 @@ my $rtir_user = RT::CurrentUser->new( rtir_user() );
 
 diag "started date of an investigation" if $ENV{'TEST_VERBOSE'};
 {
-    my $id = create_investigation($agent, {Subject => "started date"});
-    display_ticket($agent, $id);
+    my $id = $agent->create_investigation( {Subject => "started date"});
+    $agent->display_ticket( $id);
     my $ticket = RT::Ticket->new( $RT::SystemUser );
     $ticket->Load( $id );
     is($ticket->id, $id, 'loaded ticket');
@@ -25,11 +25,11 @@ diag "started date of an investigation" if $ENV{'TEST_VERBOSE'};
 
 diag "started date of an IR" if $ENV{'TEST_VERBOSE'};
 {
-    my $ir_id = create_ir($agent, {Subject => "started date"});
-    display_ticket($agent, $ir_id);
+    my $ir_id = $agent->create_ir( {Subject => "started date"});
+    $agent->display_ticket( $ir_id);
     sleep 5;
 
-    my $inc_id = create_incident_for_ir( $agent, $ir_id, {Subject => "started date"} );
+    my $inc_id = $agent->create_incident_for_ir( $ir_id, {Subject => "started date"} );
     my $inc = RT::Ticket->new( $RT::SystemUser );
     $inc->Load( $inc_id );
     is($inc->id, $inc_id, 'loaded inc');
@@ -42,13 +42,13 @@ diag "started date of an IR" if $ENV{'TEST_VERBOSE'};
 
 diag "started date of an IR" if $ENV{'TEST_VERBOSE'};
 {
-    my $ir_id = create_ir($agent, {Subject => "started date"});
+    my $ir_id = $agent->create_ir( {Subject => "started date"});
     my $ir = RT::Ticket->new( $RT::SystemUser );
     $ir->Load( $ir_id );
     is($ir->id, $ir_id, 'loaded ir');
     ok($ir->StartedObj->Unix <= 0, 'started is not set on a new IR');
 
-    display_ticket($agent, $ir_id);
+    $agent->display_ticket( $ir_id);
     $agent->follow_link_ok({text => 'Reply'}, "go to 'Reply'");
     is($agent->status, 200, "request successful");
 
@@ -66,11 +66,11 @@ diag "started date of an IR" if $ENV{'TEST_VERBOSE'};
 
 diag "started date of an IR" if $ENV{'TEST_VERBOSE'};
 {
-    my $inc_id = create_incident($agent, {Subject => "started date"});
+    my $inc_id = $agent->create_incident( {Subject => "started date"});
     sleep 5;
 
-    my $ir_id = create_ir($agent, {Subject => "started date", Incident => $inc_id});
-    display_ticket($agent, $ir_id);
+    my $ir_id = $agent->create_ir( {Subject => "started date", Incident => $inc_id});
+    $agent->display_ticket( $ir_id);
 
     my $inc = RT::Ticket->new( $RT::SystemUser );
     $inc->Load( $inc_id );
@@ -84,15 +84,15 @@ diag "started date of an IR" if $ENV{'TEST_VERBOSE'};
 
 diag "started date of a block" if $ENV{'TEST_VERBOSE'};
 {
-    my $inc_id = create_incident($agent, {Subject => "started date"});
-    my $block_id = create_block($agent, {Subject => "started date", Incident => $inc_id});
+    my $inc_id = $agent->create_incident( {Subject => "started date"});
+    my $block_id = $agent->create_block( {Subject => "started date", Incident => $inc_id});
 
     my $block = RT::Ticket->new( $RT::SystemUser );
     $block->Load( $block_id );
     is($block->id, $block_id, 'loaded block');
     ok( $block->StartedObj->Unix <= 0, 'a new block is not active');
 
-    display_ticket($agent, $block_id);
+    $agent->display_ticket( $block_id);
     $agent->follow_link_ok({text => 'Activate'}, "activate it");
     is($agent->status, 200, "request successful");
 

@@ -45,7 +45,7 @@ EOF
         is $status >> 8, 0, "The mail gateway exited ok";
         ok $id, "created ticket $id";
 
-        display_ticket($agent, $id);
+        $agent->display_ticket( $id);
         $agent->content_like( qr/\Q$val/, "value on the page" );
 
         my $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -81,7 +81,7 @@ EOF
         ok $id, "created ticket $id";
         $incident_id = $id if $queue eq 'Incidents';
 
-        display_ticket($agent, $id);
+        $agent->display_ticket( $id);
         $agent->content_like( qr/\Q$val/, "value on the page" );
 
         my $ticket = RT::Ticket->new( $RT::SystemUser );

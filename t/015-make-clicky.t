@@ -14,8 +14,8 @@ my %clicky = map { lc $_ => 1 } RT->Config->Get('Active_MakeClicky');
 
 diag "clicky ip" if $ENV{'TEST_VERBOSE'};
 {
-    my $id = create_ir( $agent, { Subject => 'clicky ip', Content => '1.0.0.0' } );
-    display_ticket($agent, $id);
+    my $id = $agent->create_ir( { Subject => 'clicky ip', Content => '1.0.0.0' } );
+    $agent->display_ticket( $id);
     my @links = $agent->followable_links;
     if ( $clicky{'ip'} ) {
         my ($lookup_link) = grep lc $_->text eq 'lookup ip', @links;
@@ -25,8 +25,8 @@ diag "clicky ip" if $ENV{'TEST_VERBOSE'};
         ok(!grep( lc $_->text eq 'lookup ip', @links ), "not found link");
     }
 
-    $id = create_ir( $agent, { Subject => 'clicky ip', Content => '255.255.255.255' } );
-    display_ticket($agent, $id);
+    $id = $agent->create_ir( { Subject => 'clicky ip', Content => '255.255.255.255' } );
+    $agent->display_ticket( $id);
     @links = $agent->followable_links;
     if ( $clicky{'ip'} ) {
         my ($lookup_link) = grep lc $_->text eq 'lookup ip', @links;
@@ -36,13 +36,13 @@ diag "clicky ip" if $ENV{'TEST_VERBOSE'};
         ok(!grep( lc $_->text eq 'lookup ip', @links ), "not found link");
     }
 
-    $id = create_ir( $agent, { Subject => 'clicky ip', Content => '255.255.255.256' } );
-    display_ticket($agent, $id);
+    $id = $agent->create_ir( { Subject => 'clicky ip', Content => '255.255.255.256' } );
+    $agent->display_ticket( $id);
     @links = $agent->followable_links;
     ok(!grep( lc $_->text eq 'lookup ip', @links ), "not found link");
 
-    $id = create_ir( $agent, { Subject => 'clicky ip', Content => '355.255.255.255' } );
-    display_ticket($agent, $id);
+    $id = $agent->create_ir( { Subject => 'clicky ip', Content => '355.255.255.255' } );
+    $agent->display_ticket( $id);
     @links = $agent->followable_links;
     ok(!grep( lc $_->text eq 'lookup ip', @links ), "not found link");
 }

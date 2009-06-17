@@ -171,8 +171,8 @@ SKIP: {
 
 # let's check reply page
 {
-    my $tid = create_ir($agent, {Subject => "IR #xxx"});
-    display_ticket($agent, $tid);
+    my $tid = $agent->create_ir( {Subject => "IR #xxx"});
+    $agent->display_ticket( $tid);
     $agent->follow_link_ok({text => 'Reply'}, "go to 'Reply'");
 
     my $content = "this is test";

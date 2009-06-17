@@ -15,8 +15,8 @@ my $rtir_user = rtir_user();
 # regression: split an inc, launch an inv on the new inc => the inv is linked
 # to both incidents, which is wrong, should be linked to one only
 {
-    my $id = create_incident($agent, {Subject => "split incident"});
-    display_ticket($agent, $id);
+    my $id = $agent->create_incident( {Subject => "split incident"});
+    $agent->display_ticket( $id);
     $agent->follow_link_ok({text => "Split"}, "Followed link");
     $agent->form_number(3);
     $agent->click('CreateIncident');
@@ -33,7 +33,7 @@ my $rtir_user = rtir_user();
     my $inv_id = ($agent->content =~ /.*Ticket (\d+) created.*/i )[0];
     ok ($inv_id, "Ticket created successfully: #$inv_id.");
 
-    ticket_is_linked_to_inc($agent, $inv_id, [$new_id]);
-    ticket_is_not_linked_to_inc($agent, $inv_id, [$id]);
+    $agent->ticket_is_linked_to_inc( $inv_id, [$new_id]);
+    $agent->ticket_is_not_linked_to_inc( $inv_id, [$id]);
 }
 

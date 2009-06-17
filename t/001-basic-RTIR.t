@@ -11,7 +11,7 @@ my $agent = default_agent();
 my $SUBJECT = "foo " . rand;
 
 # Create a report
-my $report = create_ir($agent, {Subject => $SUBJECT, Content => "bla" });
+my $report = $agent->create_ir( {Subject => $SUBJECT, Content => "bla" });
 
 {
     my $ir_obj = RT::Ticket->new(RT::SystemUser());
@@ -23,7 +23,7 @@ my $report = create_ir($agent, {Subject => $SUBJECT, Content => "bla" });
 
 
 # Create a new Incident from that report
-my $first_incident_id = create_incident_for_ir($agent, $report, {Subject => "first incident"},
+my $first_incident_id = $agent->create_incident_for_ir( $report, {Subject => "first incident"},
                                                {Function => "IncidentCoord"});
 
 # TODO: make sure subject and content come from Report
@@ -33,10 +33,10 @@ my $first_incident_id = create_incident_for_ir($agent, $report, {Subject => "fir
 # TODO: make sure all fields are set properly in DB
 
 # create a new incident
-my $second_incident_id = create_incident( $agent, { Subject => "foo Incident", Content => "bar baz quux" } );
+my $second_incident_id = $agent->create_incident( { Subject => "foo Incident", Content => "bar baz quux" } );
 
 # link our report to that incident
-LinkChildToIncident($agent, $report, $second_incident_id);
+$agent->LinkChildToIncident( $report, $second_incident_id);
 
 # TODO: verify in DB that report has 1 parent, and the right parent
 

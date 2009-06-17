@@ -56,7 +56,7 @@ diag "create a ticket via web and set IP" if $ENV{'TEST_VERBOSE'};
         );
         $incident_id = $id if $queue eq 'Incidents';
 
-        display_ticket($agent, $id);
+        $agent->display_ticket( $id);
         $agent->content_like( qr/\Q$val/, "IP on the page" );
 
         my $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -84,7 +84,7 @@ diag "create a ticket via web with IP in message" if $ENV{'TEST_VERBOSE'};
         );
         $incident_id = $id if $queue eq 'Incidents';
 
-        display_ticket($agent, $id);
+        $agent->display_ticket( $id);
         $agent->content_like( qr/\Q$val/, "IP on the page" );
 
         my $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -112,7 +112,7 @@ diag "create a ticket via web with CIDR" if $ENV{'TEST_VERBOSE'};
         );
         $incident_id = $id if $queue eq 'Incidents';
 
-        display_ticket($agent, $id);
+        $agent->display_ticket( $id);
         $agent->content_like( qr/172\.16\.$i\.0-172\.16\.$i\.1/, "IP range on the page" );
 
         my $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -143,7 +143,7 @@ diag "create a ticket via web with CIDR in message" if $ENV{'TEST_VERBOSE'};
         );
         $incident_id = $id if $queue eq 'Incidents';
 
-        display_ticket($agent, $id);
+        $agent->display_ticket( $id);
         $agent->content_like( qr/172\.16\.$i\.0-172\.16\.$i\.1/, "IP range on the page" );
 
         my $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -171,7 +171,7 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
             },
         );
         $incident_id = $id if $queue eq 'Incidents';
-        display_ticket($agent, $id);
+        $agent->display_ticket( $id);
 
         my $field_name = "Object-RT::Ticket-$id-CustomField-". $cf->id ."-Values";
 
@@ -255,7 +255,7 @@ diag "delete range, add another range using CIDR" if $ENV{'TEST_VERBOSE'};
 
 diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
 {
-    my $id = create_ir( $agent, { Subject => "test ip", Content => '1.0.0.0' } );
+    my $id = $agent->create_ir( { Subject => "test ip", Content => '1.0.0.0' } );
     ok($id, "created a ticket");
 
     my $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -267,7 +267,7 @@ diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
     is(scalar values %has, 1, "one IP was added");
     ok($has{'1.0.0.0'}, 'correct value');
 
-    $id = create_ir( $agent, { Subject => "test ip", Content => '255.255.255.255' } );
+    $id = $agent->create_ir( { Subject => "test ip", Content => '255.255.255.255' } );
     ok($id, "created a ticket");
 
     $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -279,7 +279,7 @@ diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
     is(scalar values %has, 1, "one IP was added");
     ok($has{'255.255.255.255'}, 'correct value');
 
-    $id = create_ir( $agent, { Subject => "test ip", Content => '255.255.255.256' } );
+    $id = $agent->create_ir( { Subject => "test ip", Content => '255.255.255.256' } );
     ok($id, "created a ticket");
 
     $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -287,7 +287,7 @@ diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
     is($ticket->id, $id, 'loaded ticket');
     is($ticket->CustomFieldValues('IP')->Count, 0, "IP wasn't added");
 
-    $id = create_ir( $agent, { Subject => "test ip", Content => '355.255.255.255' } );
+    $id = $agent->create_ir( { Subject => "test ip", Content => '355.255.255.255' } );
     ok($id, "created a ticket");
 
     $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -295,7 +295,7 @@ diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
     is($ticket->id, $id, 'loaded ticket');
     is($ticket->CustomFieldValues('IP')->Count, 0, "IP wasn't added");
 
-    $id = create_ir( $agent, { Subject => "test ip", Content => '8.13.8/8.13.0/1.0' } );
+    $id = $agent->create_ir( { Subject => "test ip", Content => '8.13.8/8.13.0/1.0' } );
     ok($id, "created a ticket");
 
     $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -306,7 +306,7 @@ diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
 
 diag "check that IPs in messages don't add duplicates" if $ENV{'TEST_VERBOSE'};
 {
-    my $id = create_ir( $agent, {
+    my $id = $agent->create_ir( {
         Subject => "test ip",
         Content => '192.168.20.2 192.168.20.2 192.168.20.2/32'
     } );
@@ -326,7 +326,7 @@ diag "check that IPs in messages don't add duplicates" if $ENV{'TEST_VERBOSE'};
 
 diag "check IPs separated by commas and semicolons" if $ENV{'TEST_VERBOSE'};
 {
-    my $id = create_ir( $agent, {
+    my $id = $agent->create_ir( {
         Subject => "test ip",
         Content => '64.64.64.64, 32.32.32.32; 16.16.16.16.'
     } );
@@ -348,7 +348,7 @@ diag "check IPs separated by commas and semicolons" if $ENV{'TEST_VERBOSE'};
 
 diag "search tickets by IP" if $ENV{'TEST_VERBOSE'};
 {
-    my $id = create_ir( $agent, {
+    my $id = $agent->create_ir( {
         Subject => "test ip",
         Content => '172.16.1/31'
     } );
@@ -372,7 +372,7 @@ diag "search tickets by IP" if $ENV{'TEST_VERBOSE'};
 
 diag "search tickets by IP range" if $ENV{'TEST_VERBOSE'};
 {
-    my $id = create_ir( $agent, {
+    my $id = $agent->create_ir( {
         Subject => "test ip",
         Content => '172.16.2/26'
     } );
@@ -395,9 +395,9 @@ diag "search tickets by IP range" if $ENV{'TEST_VERBOSE'};
 
 diag "create two tickets with different IPs and check several searches" if $ENV{'TEST_VERBOSE'};
 {
-    my $id1 = create_ir( $agent, { Subject => "test ip" }, { IP => '192.168.21.10' } );
+    my $id1 = $agent->create_ir( { Subject => "test ip" }, { IP => '192.168.21.10' } );
     ok($id1, "created first ticket");
-    my $id2 = create_ir( $agent, { Subject => "test ip" }, { IP => '192.168.22.10' } );
+    my $id2 = $agent->create_ir( { Subject => "test ip" }, { IP => '192.168.22.10' } );
     ok($id2, "created second ticket");
 
     my $tickets = RT::Tickets->new( $rtir_user );
@@ -473,9 +473,9 @@ diag "create two tickets with different IPs and check several searches" if $ENV{
 
 diag "create two tickets with different IP ranges and check several searches" if $ENV{'TEST_VERBOSE'};
 {
-    my $id1 = create_ir( $agent, { Subject => "test ip" }, { IP => '192.168.21.0-192.168.21.127' } );
+    my $id1 = $agent->create_ir( { Subject => "test ip" }, { IP => '192.168.21.0-192.168.21.127' } );
     ok($id1, "created first ticket");
-    my $id2 = create_ir( $agent, { Subject => "test ip" }, { IP => '192.168.21.128-192.168.21.255' } );
+    my $id2 = $agent->create_ir( { Subject => "test ip" }, { IP => '192.168.21.128-192.168.21.255' } );
     ok($id2, "created second ticket");
 
     my $tickets = RT::Tickets->new( $rtir_user );
@@ -571,12 +571,12 @@ diag "merge ticket, IPs should be merged";
         { IP => '172.16.0.2' },
     );
 
-    display_ticket($agent, $b1_id);
+    $agent->display_ticket( $b1_id);
     $agent->follow_link_ok({ text => 'Merge' }, "Followed merge link");
     $agent->form_number(3);
     $agent->field('SelectedTicket', $b2_id);
     $agent->submit;
-    ok_and_content_like($agent, qr{Merge Successful}, 'Merge Successful');
+    $agent->ok_and_content_like( qr{Merge Successful}, 'Merge Successful');
 
     my $ticket = RT::Ticket->new( $RT::SystemUser );
     $ticket->Load( $b1_id );
@@ -611,12 +611,12 @@ diag "merge ticket with the same IP";
         { IP => '172.16.0.1' },
     );
 
-    display_ticket($agent, $b1_id);
+    $agent->display_ticket( $b1_id);
     $agent->follow_link_ok({ text => 'Merge' }, "Followed merge link");
     $agent->form_number(3);
     $agent->field('SelectedTicket', $b2_id);
     $agent->submit;
-    ok_and_content_like($agent, qr{Merge Successful}, 'Merge Successful');
+    $agent->ok_and_content_like( qr{Merge Successful}, 'Merge Successful');
 
     my $ticket = RT::Ticket->new( $RT::SystemUser );
     $ticket->Load( $b1_id );

@@ -8,9 +8,9 @@ use RT::IR::Test tests => 19;
 RT::Test->started_ok;
 my $agent = default_agent();
 
-my $ir_id  = create_ir($agent, {Subject => "looking for rtfm"});
+my $ir_id  = $agent->create_ir( {Subject => "looking for rtfm"});
 
-display_ticket($agent, $ir_id);
+$agent->display_ticket( $ir_id);
 
 $agent->follow_link_ok({text => "RTFM"}, "followed 'RTFM' overview link");
 $agent->title_like(qr/Overview/);

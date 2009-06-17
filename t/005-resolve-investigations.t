@@ -8,16 +8,16 @@ use RT::IR::Test tests => 24;
 RT::Test->started_ok;
 my $agent = default_agent();
 
-my $inv_id  = create_investigation($agent, {Subject => "i want to quick-resolve this"});
+my $inv_id  = $agent->create_investigation( {Subject => "i want to quick-resolve this"});
 
-display_ticket($agent, $inv_id);
+$agent->display_ticket( $inv_id);
 
 $agent->follow_link_ok({text => "Quick Resolve"}, "followed 'RTFM' overview link");
 like($agent->content, qr/State changed from open to resolved/, "it got resolved");
 
-$inv_id = create_investigation($agent, {Subject => "resolve me slower"});
+$inv_id = $agent->create_investigation( {Subject => "resolve me slower"});
 
-display_ticket($agent, $inv_id);
+$agent->display_ticket( $inv_id);
 
 $agent->follow_link_ok({text => "Resolve"}, "Followed 'Resolve' link");
 

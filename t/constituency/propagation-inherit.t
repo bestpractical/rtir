@@ -30,7 +30,7 @@ diag "create an IR with GOVNET constituency and create a new "
         $agent, { Subject => "test" }, { Constituency => 'GOVNET' }
     );
     ok $ir_id, "created IR #$ir_id";
-    display_ticket($agent, $ir_id);
+    $agent->display_ticket( $ir_id);
 
     my $inc_id = create_incident_for_ir(
         $agent, $ir_id, { Subject => "test" },
@@ -51,7 +51,7 @@ diag "create an IR and check that we couldn't change constituency"
         $agent, { Subject => "test" }, { Constituency => 'GOVNET' }
     );
     ok $ir_id, "created ticket #$ir_id";
-    display_ticket($agent, $ir_id);
+    $agent->display_ticket( $ir_id);
     $agent->content_like( qr/GOVNET/, "value on the page" );
     my $ticket = RT::Ticket->new( $RT::SystemUser );
     $ticket->Load( $ir_id );
@@ -116,7 +116,7 @@ diag "create an incident with EDUNET, then create children using Incident input 
             { Constituency => 'GOVNET' },
         );
 
-        display_ticket($agent, $id);
+        $agent->display_ticket( $id);
         DBIx::SearchBuilder::Record::Cachable::FlushCache();
         
         {
@@ -171,7 +171,7 @@ diag "check that constituency propagates from a child to a parent after 'Edit', 
         }
         
         diag "edit constituency on the child" if $ENV{'TEST_VERBOSE'};
-        display_ticket($agent, $child_id);
+        $agent->display_ticket( $child_id);
         $agent->follow_link( text => 'Edit' );
         $agent->form_number(3);
         $agent->select("Object-RT::Ticket-$child_id-CustomField-". $cf->id ."-Values" => 'EDUNET' );
@@ -195,7 +195,7 @@ diag "check that constituency propagates from a child to a parent after 'Edit', 
         }
 
         diag "edit constituency on the incident" if $ENV{'TEST_VERBOSE'};
-        display_ticket($agent, $incident_id);
+        $agent->display_ticket( $incident_id);
         $agent->follow_link( text => 'Edit' );
         $agent->form_number(3);
         $agent->select("Object-RT::Ticket-$incident_id-CustomField-". $cf->id ."-Values" => 'GOVNET' );
@@ -254,7 +254,7 @@ diag "check that constituency propagates from a child to a parent after 'Edit', 
         }
         
         diag "link the child to parent" if $ENV{'TEST_VERBOSE'};
-        LinkChildToIncident( $agent, $child_id, $incident_id );
+        $agent->LinkChildToIncident( $child_id, $incident_id );
 
         diag "check that constituency propagates from parent to child on linking" if $ENV{'TEST_VERBOSE'};
         {
