@@ -52,7 +52,8 @@ ok( RT::Test->add_rights(
 
 RT::Test->set_mail_catcher;
 
-my ($baseurl, $agent) = RT::Test->started_ok;
+my ($baseurl) = RT::Test->started_ok;
+my $agent = default_agent();
 my $rtir_user = rtir_user();
 $agent->login( rtir_test_user => 'rtir_test_pass' );
 

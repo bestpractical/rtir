@@ -9,7 +9,8 @@ RT::Test->set_mail_catcher;
 
 use_ok('RT::IR');
 
-my ($baseurl, $agent) = RT::Test->started_ok;
+my ($baseurl) = RT::Test->started_ok;
+my $agent = default_agent();
 rtir_user();
 $agent->login( rtir_test_user => 'rtir_test_pass' );
 

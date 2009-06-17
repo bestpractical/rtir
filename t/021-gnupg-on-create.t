@@ -29,7 +29,8 @@ my $queue = RT::Test->load_or_create_queue(
 );
 ok $queue && $queue->id, 'loaded or created queue';
 
-my ($baseurl, $agent) = RT::Test->started_ok;
+my ($baseurl) = RT::Test->started_ok;
+my $agent = default_agent();
 rtir_user();
 $agent->login( rtir_test_user => 'rtir_test_pass' );
 
