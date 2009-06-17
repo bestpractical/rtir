@@ -3,7 +3,6 @@
 use strict;
 use warnings;
 
-use lib "t/lib";
 use RT::IR::Test tests => 13;
 
 use_ok('RT::IR');

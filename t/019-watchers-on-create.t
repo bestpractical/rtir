@@ -3,7 +3,6 @@
 use strict;
 use warnings;
 
-use lib "t/lib";
 use RT::IR::Test tests => 54;
 
 RT::Test->started_ok;

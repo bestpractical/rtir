@@ -3,7 +3,6 @@
 use strict;
 use warnings;
 
-use lib "t/lib";
 use RT::IR::Test tests => 65;
 
 # Test must be run wtih RT_SiteConfig:

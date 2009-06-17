@@ -3,7 +3,6 @@
 use strict;
 use warnings;
 
-use lib "t/lib";
 use RT::IR::Test tests => 14;
 
 my $duty_a = RT::Test->load_or_create_user(
