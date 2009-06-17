@@ -11,7 +11,7 @@ use lib qw(/opt/rt3/local/lib /opt/rt3/lib);
 eval 'use RT::Test; 1'
     or Test::More::plan skip_all => "requires 3.8 to run tests. Error:\n$@\nYou may need to set PERL5LIB=/path/to/rt/lib";
 
-use RT::Test::Web;
+use RT::IR::Test::Web;
 
 our @EXPORT = qw(
     default_agent
@@ -102,7 +102,7 @@ my $RTIR_TEST_USER = "rtir_test_user";
 my $RTIR_TEST_PASS = "rtir_test_pass";
 
 sub default_agent {
-    my $agent = new RT::Test::Web;
+    my $agent = new RT::IR::Test::Web;
     require HTTP::Cookies;
     $agent->cookie_jar( HTTP::Cookies->new );
     rtir_user();
