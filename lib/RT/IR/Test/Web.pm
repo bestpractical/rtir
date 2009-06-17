@@ -357,4 +357,18 @@ sub create_incident_and_investigation {
     return ($incident_id, $investigation_id);
 }
 
+sub has_watchers {
+    my $self = shift;
+    my $id   = shift;
+    my $type = shift || 'Correspondents';
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    $self->display_ticket($id);
+
+    $self->content_like(
+qr{<td class="labeltop">Correspondents:</td>\s*<td class="value">\s*([@\w\.]+)\s*<br />}ms,
+        "Found $type",
+    );
+}
+
 1;
