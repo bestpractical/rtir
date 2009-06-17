@@ -371,4 +371,14 @@ qr{<td class="labeltop">Correspondents:</td>\s*<td class="value">\s*([@\w\.]+)\s
     );
 }
 
+sub goto_edit_block {
+    my $self = shift;
+    my $id   = shift;
+
+    $self->display_ticket($id);
+
+    $self->follow_link_ok( { text => 'Edit', n => '1' },
+        "Followed 'Edit' (block) link" );
+}
+
 1;
