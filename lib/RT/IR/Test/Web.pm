@@ -381,4 +381,73 @@ sub goto_edit_block {
         "Followed 'Edit' (block) link" );
 }
 
+sub resolve_rtir_ticket {
+    my $self = shift;
+    my $id   = shift;
+    my $type = shift || 'Ticket';
+
+    $self->display_ticket($id);
+    $self->follow_link_ok(
+        { text => "Quick Resolve", n => "1" },
+        "Followed 'Quick Resolve' link"
+    );
+
+    Test::More::is( $self->status, 200, "Attempting to resolve $type #$id" );
+
+    $self->content_like(
+        qr/.*State changed from \w+ to resolved.*/,
+        "Successfully resolved $type #$id"
+    );
+}
+
+sub bulk_abandon {
+    my $self       = shift;
+    my @to_abandon = @_;
+
+    Test::More::diag "going to bulk abandon incidents " . join ',', map "#$_",
+      @to_abandon
+      if $ENV{'TEST_VERBOSE'};
+
+    $self->get_ok( '/RTIR/index.html', 'get rtir at glance page' );
+    $self->follow_link_ok( { text => "Incidents", n => '1' },
+        "Followed 'Incidents' link" );
+    $self->follow_link_ok(
+        { text => "Bulk Abandon", n => '1' },
+        "Followed 'Bulk Abandon' link"
+    );
+
+    $self->content_unlike( qr/no incidents/i, 'have an incident' );
+
+# Check that the desired incident occurs in the list of available incidents; if not, keep
+# going to the next page until you find it (or get to the last page and don't find it,
+# whichever comes first)
+    while ( $self->content() !~
+        qr{<a href="/Ticket/Display.html\?id=$to_abandon[0]">$to_abandon[0]</a>}
+      )
+    {
+        last unless $self->follow_link( text => 'Next' );
+    }
+
+    $self->form_number(3);
+    foreach my $id (@to_abandon) {
+        $self->tick( 'SelectedTickets', $id );
+    }
+
+    $self->click('BulkAbandon');
+
+    foreach my $id (@to_abandon) {
+        $self->ok_and_content_like(
+            qr{<li>Ticket $id: State changed from \w+ to abandoned</li>}i,
+            "Incident $id abandoned" );
+    }
+
+    if ( $self->content =~ /no incidents/i ) {
+        Test::More::ok( 1, 'no more incidents' );
+    }
+    else {
+        $self->form_number(3);
+        Test::More::ok( $self->value('BulkAbandon'), "Still on Bulk Abandon page" );
+    }
+}
+
 1;
