@@ -270,6 +270,11 @@ $name ||= $Type;
 my (@results, $checks_failure, $skip_create);
 $skip_create = !$ARGS{'Create'};
 
+my $constituency_cf = RT::CustomField->new( $RT::SystemUser );
+$constituency_cf->LoadByNameAndQueue( Name => 'Constituency', Queue => $Queue );
+my $constituency_field = 
+    'Object-RT::Ticket--CustomField-' . $constituency_cf->id .'-Values';
+
 my $IncidentObj;
 if ( $Incident ) {
     $IncidentObj = RT::Ticket->new( $session{'CurrentUser'} );
@@ -284,7 +289,7 @@ if ( $Incident ) {
     }
     elsif ( !$skip_create 
         && RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject'
-        && lc $ARGS{$ARGS{'Constituency'}} ne lc $IncidentObj->FirstCustomFieldValue('Constituency') )
+        && lc $ARGS{$constituency_field} ne lc $IncidentObj->FirstCustomFieldValue('Constituency') )
     {
         push @results, loc('Incident #[_1] has constituency [_2], choose the same value for a new ticket or use another Incident', $Incident, $IncidentObj->FirstCustomFieldValue('Constituency') );
         ($checks_failure, $IncidentObj, $Incident) = (1, undef, undef);
