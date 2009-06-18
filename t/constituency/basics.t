@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 175;
+use RT::IR::Test tests => 176;
 
 RT::Test->set_mail_catcher;
 
@@ -76,8 +76,8 @@ diag "create a ticket via web and set field" if $ENV{'TEST_VERBOSE'};
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $val = 'GOVNET';
-        my $id = create_rtir_ticket_ok(
-            $agent, $queue,
+        my $id = $agent->create_rtir_ticket_ok(
+            $queue,
             { Subject => "test ip" },
             { Constituency => $val },
         );
@@ -164,8 +164,8 @@ diag "Create an incident report with a default constituency of EDUNET" if $ENV{'
 
 
     my $val = 'EDUNET';
-    my $ir_id = create_ir(
-        $agent, { Subject => "test" }, { Constituency => $val }
+    my $ir_id = $agent->create_ir(
+        { Subject => "test" }, { Constituency => $val }
     );
     ok( $ir_id, "created IR #$ir_id" );
     $agent->display_ticket( $ir_id);
@@ -247,8 +247,8 @@ ok($from =~ /govnet/, "The from address pciked up the gov address");
 diag "check defaults";
 {
     $agent->login('eduhandler', 'eduhandler');
-    my $ir_id = create_ir(
-        $agent, { Subject => "test" },
+    my $ir_id = $agent->create_ir(
+        { Subject => "test" },
     );
     my $ticket = RT::Ticket->new($RT::SystemUser);
     $ticket->Load($ir_id);
@@ -258,8 +258,8 @@ diag "check defaults";
 diag "check defaults";
 {
     $agent->login('govhandler', 'govhandler');
-    my $ir_id = create_ir(
-        $agent, { Subject => "test" },
+    my $ir_id = $agent->create_ir(
+        { Subject => "test" },
     );
     my $ticket = RT::Ticket->new($RT::SystemUser);
     $ticket->Load($ir_id);
@@ -269,8 +269,7 @@ diag "check defaults";
 diag "check defaults when creating inc with inv";
 {
     $agent->login('govhandler', 'govhandler');
-	my ($inc_id, $inv_id) = create_incident_and_investigation(
-        $agent, 
+	my ($inc_id, $inv_id) = $agent->create_incident_and_investigation(
 	    {
             Subject => "Incident", 
 		    InvestigationSubject => "Investigation",
@@ -291,8 +290,7 @@ diag "check defaults when creating inc with inv";
 diag "check defaults when creating inc with inv";
 {
     $agent->login('eduhandler', 'eduhandler');
-	my ($inc_id, $inv_id) = create_incident_and_investigation(
-        $agent, 
+	my ($inc_id, $inv_id) = $agent->create_incident_and_investigation(
 	    {
             Subject => "Incident", 
 		    InvestigationSubject => "Investigation",

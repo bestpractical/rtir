@@ -26,14 +26,14 @@ diag "create an IR with GOVNET constituency and create a new "
     . "incident for the IR, we want it to inherit by default"
         if $ENV{'TEST_VERBOSE'};
 {
-    my $ir_id = create_ir(
-        $agent, { Subject => "test" }, { Constituency => 'GOVNET' }
+    my $ir_id = $agent->create_ir(
+         { Subject => "test" }, { Constituency => 'GOVNET' }
     );
     ok $ir_id, "created IR #$ir_id";
     $agent->display_ticket( $ir_id);
 
-    my $inc_id = create_incident_for_ir(
-        $agent, $ir_id, { Subject => "test" },
+    my $inc_id = $agent->create_incident_for_ir(
+         $ir_id, { Subject => "test" },
     );
 
     my $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -47,8 +47,8 @@ diag "create an IR and check that we couldn't change constituency"
     ." value during creation of new linked incident" if $ENV{'TEST_VERBOSE'};
 {
     # create an IR
-    my $ir_id = create_ir(
-        $agent, { Subject => "test" }, { Constituency => 'GOVNET' }
+    my $ir_id = $agent->create_ir(
+         { Subject => "test" }, { Constituency => 'GOVNET' }
     );
     ok $ir_id, "created ticket #$ir_id";
     $agent->display_ticket( $ir_id);
@@ -70,7 +70,7 @@ diag "create an IR and check that we couldn't change constituency"
     DBIx::SearchBuilder::Record::Cachable::FlushCache();
 
     # Incident has the same value 
-    my $inc_id = get_ticket_id( $agent );
+    my $inc_id = $agent->get_ticket_id();
     $ticket = RT::Ticket->new( $RT::SystemUser );
     $ticket->Load( $inc_id );
     ok $ticket->id, 'loaded ticket';
@@ -91,8 +91,8 @@ diag "create an incident with EDUNET, then create children using Incident input 
     . " incident's constituency is prefered even if another value's been selected"
         if $ENV{'TEST_VERBOSE'};
 {
-    my $incident_id = create_rtir_ticket_ok(
-        $agent, 'Incidents',
+    my $incident_id = $agent->create_rtir_ticket_ok(
+         'Incidents',
         { Subject => "test" },
         { Constituency => 'EDUNET' },
     );
@@ -107,8 +107,8 @@ diag "create an incident with EDUNET, then create children using Incident input 
     foreach my $queue( 'Incident Reports', 'Investigations', 'Blocks' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
-        my $id = create_rtir_ticket_ok(
-            $agent, $queue,
+        my $id = $agent->create_rtir_ticket_ok(
+             $queue,
             {
                 Subject => "test constituency",
                 Incident => $incident_id,
@@ -141,12 +141,12 @@ diag "check that constituency propagates from a child to a parent after 'Edit', 
     foreach my $queue( 'Incident Reports', 'Investigations', 'Blocks' ) {
         diag "create an incident for linking" if $ENV{'TEST_VERBOSE'};
 
-        my $incident_id = create_rtir_ticket_ok(
-            $agent, 'Incidents', { Subject => "test" }, { Constituency => 'GOVNET' },
+        my $incident_id = $agent->create_rtir_ticket_ok(
+             'Incidents', { Subject => "test" }, { Constituency => 'GOVNET' },
         );
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
-        my $child_id = create_rtir_ticket_ok(
-            $agent, $queue,
+        my $child_id = $agent->create_rtir_ticket_ok(
+             $queue,
             {
                 Subject => "test constituency",
                 Incident => $incident_id,
@@ -227,12 +227,12 @@ diag "check that constituency propagates from a child to a parent after 'Edit', 
     foreach my $queue( 'Incident Reports', 'Investigations' ) {
         diag "create an incident for linking" if $ENV{'TEST_VERBOSE'};
 
-        my $incident_id = create_rtir_ticket_ok(
-            $agent, 'Incidents', { Subject => "test" }, { Constituency => 'EDUNET' },
+        my $incident_id = $agent->create_rtir_ticket_ok(
+             'Incidents', { Subject => "test" }, { Constituency => 'EDUNET' },
         );
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
-        my $child_id = create_rtir_ticket_ok(
-            $agent, $queue,
+        my $child_id = $agent->create_rtir_ticket_ok(
+             $queue,
             { Subject => "test constituency" },
             { Constituency => 'GOVNET' },
         );

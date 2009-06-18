@@ -26,8 +26,8 @@ diag "create an incident with EDUNET and then linked tickets with GOVNET,"
     . " constituency shouldn't propagate back to tickets"
     if $ENV{'TEST_VERBOSE'};
 {
-    my $incident_id = create_rtir_ticket_ok(
-        $agent, 'Incidents',
+    my $incident_id = $agent->create_rtir_ticket_ok(
+        'Incidents',
         { Subject => "test" },
         { Constituency => 'EDUNET' },
     );
@@ -42,8 +42,8 @@ diag "create an incident with EDUNET and then linked tickets with GOVNET,"
     foreach my $queue( 'Incident Reports', 'Investigations', 'Blocks' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
-        my $id = create_rtir_ticket_ok(
-            $agent, $queue,
+        my $id = $agent->create_rtir_ticket_ok(
+            $queue,
             {
                 Subject => "test ip",
                 Incident => $incident_id,
@@ -106,14 +106,14 @@ diag "create an IR with GOVNET constituency and create a new "
     . "incident for the IR, we want it to inherit"
         if $ENV{'TEST_VERBOSE'};
 {
-    my $ir_id = create_ir(
-        $agent, { Subject => "test" }, { Constituency => 'GOVNET' }
+    my $ir_id = $agent->create_ir(
+        { Subject => "test" }, { Constituency => 'GOVNET' }
     );
     ok $ir_id, "created IR #$ir_id";
     $agent->display_ticket( $ir_id);
 
-    my $inc_id = create_incident_for_ir(
-        $agent, $ir_id, { Subject => "test" },
+    my $inc_id = $agent->create_incident_for_ir(
+        $ir_id, { Subject => "test" },
     );
 
     my $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -126,14 +126,14 @@ diag "create an IR with GOVNET constituency and create a new "
 diag "inheritance should be soft, so user can change constituency using ui"
         if $ENV{'TEST_VERBOSE'};
 {
-    my $ir_id = create_ir(
-        $agent, { Subject => "test" }, { Constituency => 'GOVNET' }
+    my $ir_id = $agent->create_ir(
+        { Subject => "test" }, { Constituency => 'GOVNET' }
     );
     ok $ir_id, "created IR #$ir_id";
     $agent->display_ticket( $ir_id);
 
-    my $inc_id = create_incident_for_ir(
-        $agent, $ir_id, { Subject => "test" }, { Constituency => 'EDUNET' }
+    my $inc_id = $agent->create_incident_for_ir(
+        $ir_id, { Subject => "test" }, { Constituency => 'EDUNET' }
     );
 
     my $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -149,8 +149,8 @@ diag "create an incident under GOVNET and create a new IR "
 {
     diag "first of all create the incident" if $ENV{'TEST_VERBOSE'};
 
-    my $inc_id = create_incident(
-        $agent, { Subject => "test" }, { Constituency => 'GOVNET' }
+    my $inc_id = $agent->create_incident(
+        { Subject => "test" }, { Constituency => 'GOVNET' }
     );
     ok( $inc_id, "created ticket #$inc_id" );
     $agent->display_ticket( $inc_id );
@@ -166,8 +166,8 @@ diag "create an incident under GOVNET and create a new IR "
     }
 
     diag "then create the report" if $ENV{'TEST_VERBOSE'};
-    my $ir_id = create_ir(
-        $agent, { Subject => "test", Incident => $inc_id }, { Constituency => 'EDUNET' },
+    my $ir_id = $agent->create_ir(
+        { Subject => "test", Incident => $inc_id }, { Constituency => 'EDUNET' },
     );
     $agent->ticket_is_linked_to_inc( $ir_id => $inc_id );
     DBIx::SearchBuilder::Record::Cachable::FlushCache();

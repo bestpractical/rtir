@@ -26,14 +26,14 @@ diag "create an IR with GOVNET constituency and create a new "
     . "incident for the IR, we want it to inherit by default"
         if $ENV{'TEST_VERBOSE'};
 {
-    my $ir_id = create_ir(
-        $agent, { Subject => "test" }, { Constituency => 'GOVNET' }
+    my $ir_id = $agent->create_ir(
+        { Subject => "test" }, { Constituency => 'GOVNET' }
     );
     ok $ir_id, "created IR #$ir_id";
     $agent->display_ticket( $ir_id);
 
-    my $inc_id = create_incident_for_ir(
-        $agent, $ir_id, { Subject => "test" },
+    my $inc_id = $agent->create_incident_for_ir(
+        $ir_id, { Subject => "test" },
     );
 
     my $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -47,8 +47,8 @@ diag "create an IR and check that we couldn't change constituency"
     ." value during creation of new linked incident" if $ENV{'TEST_VERBOSE'};
 {
     # create an IR
-    my $ir_id = create_ir(
-        $agent, { Subject => "test" }, { Constituency => 'GOVNET' }
+    my $ir_id = $agent->create_ir(
+        { Subject => "test" }, { Constituency => 'GOVNET' }
     );
     ok $ir_id, "created ticket #$ir_id";
     $agent->display_ticket( $ir_id);
@@ -69,7 +69,7 @@ diag "create an IR and check that we couldn't change constituency"
     DBIx::SearchBuilder::Record::Cachable::FlushCache();
 
     # Incident has the same value 
-    my $inc_id = get_ticket_id( $agent );
+    my $inc_id = $agent->get_ticket_id( );
     $ticket = RT::Ticket->new( $RT::SystemUser );
     $ticket->Load( $inc_id );
     ok $ticket->id, 'loaded ticket';
@@ -90,8 +90,8 @@ diag "create an incident with EDUNET, then try to create children using"
     ." Incident input field and different constituency. Should be rejected."
         if $ENV{'TEST_VERBOSE'};
 {
-    my $incident_id = create_rtir_ticket_ok(
-        $agent, 'Incidents',
+    my $incident_id = $agent->create_rtir_ticket_ok(
+        'Incidents',
         { Subject => "test" },
         { Constituency => 'EDUNET' },
     );
@@ -106,8 +106,8 @@ diag "create an incident with EDUNET, then try to create children using"
     foreach my $queue( 'Incident Reports', 'Investigations', 'Blocks' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
-        my $id = create_rtir_ticket(
-            $agent, $queue,
+        my $id = $agent->create_rtir_ticket(
+            $queue,
             {
                 Subject => "test constituency",
                 Incident => $incident_id,
@@ -126,8 +126,8 @@ diag "create an incident with EDUNET and check that we can create children"
     . " with the same constituency and operation is not rejected"
         if $ENV{'TEST_VERBOSE'};
 {
-    my $incident_id = create_rtir_ticket_ok(
-        $agent, 'Incidents',
+    my $incident_id = $agent->create_rtir_ticket_ok(
+        'Incidents',
         { Subject => "test" },
         { Constituency => 'EDUNET' },
     );
@@ -142,8 +142,8 @@ diag "create an incident with EDUNET and check that we can create children"
     foreach my $queue( 'Incident Reports', 'Investigations', 'Blocks' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
-        my $id = create_rtir_ticket_ok(
-            $agent, $queue,
+        my $id = $agent->create_rtir_ticket_ok(
+            $queue,
             {
                 Subject => "test constituency",
                 Incident => $incident_id,
@@ -176,8 +176,8 @@ diag "create an IR create an Incident with different constituency"
         if $ENV{'TEST_VERBOSE'};
 {
     # an IR
-    my $ir_id = create_ir(
-        $agent, { Subject => "test" }, { Constituency => 'GOVNET' }
+    my $ir_id = $agent->create_ir(
+        { Subject => "test" }, { Constituency => 'GOVNET' }
     );
     $agent->display_ticket( $ir_id);
     $agent->content_like( qr/GOVNET/, "value on the page" );
@@ -192,8 +192,8 @@ diag "create an IR create an Incident with different constituency"
     }
 
     # an IR
-    my $inc_id = create_incident(
-        $agent, { Subject => "test" }, { Constituency => 'EDUNET' }
+    my $inc_id = $agent->create_incident(
+        { Subject => "test" }, { Constituency => 'EDUNET' }
     );
     $agent->display_ticket( $inc_id);
     $agent->content_like( qr/EDUNET/, "value on the page" );
@@ -218,8 +218,8 @@ diag "check that we can change constituency of an unlinked ticket using 'Edit' p
 {
     # blocks are always linked to an incident
     foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations' ) {
-        my $id = create_rtir_ticket_ok(
-            $agent, $queue,
+        my $id = $agent->create_rtir_ticket_ok(
+            $queue,
             { Subject => "test constituency" },
             { Constituency => 'GOVNET' },
         );
@@ -254,8 +254,8 @@ diag "check that we can change constituency of an unlinked ticket using 'Edit' p
 diag "check that we can change constituency of an unlinked ticket using 'Edit' page"
     if $ENV{'TEST_VERBOSE'};
 {
-    my $incident_id = create_rtir_ticket_ok(
-        $agent, 'Incidents',
+    my $incident_id = $agent->create_rtir_ticket_ok(
+        'Incidents',
         { Subject => "test" },
         { Constituency => 'EDUNET' },
     );
@@ -268,8 +268,8 @@ diag "check that we can change constituency of an unlinked ticket using 'Edit' p
     }
 
     foreach my $queue( 'Blocks', 'Incident Reports', 'Investigations' ) {
-        my $id = create_rtir_ticket_ok(
-            $agent, $queue,
+        my $id = $agent->create_rtir_ticket_ok(
+            $queue,
             {
                 Subject => "test constituency",
                 Incident => $incident_id,

@@ -134,8 +134,8 @@ diag "GOV user creates an IR under EDUNET, check addresses";
     RT::Test->clean_caught_mails;
 
     $agent->login('govhandler', 'govhandler');
-    my $id = create_ir(
-        $agent,
+    my $id = $agent->create_ir(
+        
         { Subject => "test", Requestors => $rtir_user->EmailAddress },
         { Constituency => 'EDUNET' },
     );
