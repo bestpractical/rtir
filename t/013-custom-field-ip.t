@@ -35,7 +35,6 @@ diag "check that CF applies to all RTIR's queues" if $ENV{'TEST_VERBOSE'};
         is( $cfs->Count, 1, 'field applies to queue' );
     }
 }
-
 my $rtir_user = RT::CurrentUser->new( rtir_user() );
 
 diag "create a ticket via web and set IP" if $ENV{'TEST_VERBOSE'};
@@ -46,11 +45,11 @@ diag "create a ticket via web and set IP" if $ENV{'TEST_VERBOSE'};
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $val = '192.168.20.'. ++$i;
-        my $id = create_rtir_ticket_ok(
-            $agent, $queue,
+        my $id = $agent->create_rtir_ticket_ok(
+            $queue,
             {
                 Subject => "test ip",
-                ($queue eq 'Blocks'? (Incident => $incident_id): ()),
+                ( $queue eq 'Blocks' ? ( Incident => $incident_id ) : () ),
             },
             { IP => $val },
         );
@@ -74,8 +73,8 @@ diag "create a ticket via web with IP in message" if $ENV{'TEST_VERBOSE'};
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $val = '192.168.20.'. ++$i;
-        my $id = create_rtir_ticket_ok(
-            $agent, $queue,
+        my $id = $agent->create_rtir_ticket_ok(
+            $queue,
             {
                 Subject => "test ip in message",
                 ($queue eq 'Blocks'? (Incident => $incident_id): ()),
@@ -102,8 +101,8 @@ diag "create a ticket via web with CIDR" if $ENV{'TEST_VERBOSE'};
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $val = '172.16.'. ++$i .'/31'; # add two hosts
-        my $id = create_rtir_ticket_ok(
-            $agent, $queue,
+        my $id = $agent->create_rtir_ticket_ok(
+            $queue,
             {
                 Subject => "test ip",
                 ($queue eq 'Blocks'? (Incident => $incident_id): ()),
@@ -133,8 +132,8 @@ diag "create a ticket via web with CIDR in message" if $ENV{'TEST_VERBOSE'};
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $val = '172.16.'. ++$i .'/31'; # add two hosts
-        my $id = create_rtir_ticket_ok(
-            $agent, $queue,
+        my $id = $agent->create_rtir_ticket_ok(
+            $queue,
             {
                 Subject => "test ip in message",
                 ($queue eq 'Blocks'? (Incident => $incident_id): ()),
@@ -163,8 +162,8 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
     foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
-        my $id = create_rtir_ticket_ok(
-            $agent, $queue,
+        my $id = $agent->create_rtir_ticket_ok(
+            $queue,
             {
                 Subject => "test ip in message",
                 ($queue eq 'Blocks'? (Incident => $incident_id): ()),
@@ -552,19 +551,19 @@ diag "create two tickets with different IP ranges and check several searches" if
 
 diag "merge ticket, IPs should be merged";
 {
-    my $incident_id = create_rtir_ticket_ok(
-        $agent, 'Incidents',
+    my $incident_id = $agent->create_rtir_ticket_ok(
+        'Incidents',
         { Subject => "test" },
     );
-    my $b1_id = create_block(
-        $agent, {
+    my $b1_id = $agent->create_block(
+        {
             Subject => "test ip",
             Incident => $incident_id,
         },
         { IP => '172.16.0.1' },
     );
-    my $b2_id = create_block(
-        $agent, {
+    my $b2_id = $agent->create_block(
+        {
             Subject => "test ip",
             Incident => $incident_id,
         },
@@ -592,19 +591,19 @@ diag "merge ticket, IPs should be merged";
 
 diag "merge ticket with the same IP";
 {
-    my $incident_id = create_rtir_ticket_ok(
-        $agent, 'Incidents',
+    my $incident_id = $agent->create_rtir_ticket_ok(
+        'Incidents',
         { Subject => "test" },
     );
-    my $b1_id = create_block(
-        $agent, {
+    my $b1_id = $agent->create_block(
+        {
             Subject => "test ip",
             Incident => $incident_id,
         },
         { IP => '172.16.0.1' },
     );
-    my $b2_id = create_block(
-        $agent, {
+    my $b2_id = $agent->create_block(
+        {
             Subject => "test ip",
             Incident => $incident_id,
         },
