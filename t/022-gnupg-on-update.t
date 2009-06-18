@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 65;
+use RT::IR::Test tests => 66;
 use File::Temp qw(tempdir);
 
 RT::Test->set_mail_catcher;

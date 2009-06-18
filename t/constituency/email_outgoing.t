@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 36;
+use RT::IR::Test tests => 37;
 
 RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'} = 'EDUNET';
 
@@ -92,7 +92,6 @@ EOF
     }
     ok $from_ok, 'all From addresses are correct';
 }
-
 diag "create an IR under GOVNET";
 {
     RT::Test->clean_caught_mails;
