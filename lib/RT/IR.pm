@@ -418,7 +418,7 @@ wrap 'RT::ObjectCustomFieldValue::Content',
         }
         if ( UNIVERSAL::isa( $self, 'RT::Ticket' ) ) {
             my $const = $RT::IR::ConstituencyCache{ $self->id };
-            unless ( $const ) {
+            if (!$const || $const eq '_none' ) {
                 my $systicket = RT::Ticket->new($RT::SystemUser);
                 $systicket->Load( $self->id );
                 $const = $RT::IR::ConstituencyCache{ $self->id } =
@@ -489,10 +489,9 @@ wrap 'RT::ObjectCustomFieldValue::Content',
     sub GetQueueAttribute {
         my $queue = shift;
         my $attr  = shift;
-
         if ( ( my $id = $queue->{'_for_ticket'} ) ) {
             my $const = $RT::IR::ConstituencyCache{$id};
-            unless ($const) {
+            if (!$const || $const eq '_none' ) {
                 my $ticket = RT::Ticket->new($RT::SystemUser);
                 $ticket->Load($id);
                 $const = $RT::IR::ConstituencyCache{$ticket->id}
