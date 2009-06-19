@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 13;
+use RT::IR::Test tests => 16;
 
 use_ok('RT::IR');
 

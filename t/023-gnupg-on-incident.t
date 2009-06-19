@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 40;
+use RT::IR::Test tests => 43;
 use File::Temp qw(tempdir);
 
 my @rights_backup = RT::Test->store_rights;

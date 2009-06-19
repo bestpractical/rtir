@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 4;
+use RT::IR::Test tests => 7;
 
 my $ok = 1;
 

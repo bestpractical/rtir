@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 204;
+use RT::IR::Test tests => 207;
 
 use_ok('RT::IR');
 RT->Config->Set('_RTIR_Constituency_Propagation' => 'reject');

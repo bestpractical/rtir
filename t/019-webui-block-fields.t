@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 18;
+use RT::IR::Test tests => 21;
 
 RT::Test->started_ok;
 my $agent = default_agent();

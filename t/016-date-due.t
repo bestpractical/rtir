@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 14;
+use RT::IR::Test tests => 17;
 
 my $duty_a = RT::Test->load_or_create_user(
     Name       => 'duty a',

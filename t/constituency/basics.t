@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 176;
+use RT::IR::Test tests => 179;
 
 RT::Test->set_mail_catcher;
 

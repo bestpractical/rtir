@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 37;
+use RT::IR::Test tests => 40;
 
 RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'} = 'EDUNET';
 
