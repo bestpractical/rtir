@@ -13,6 +13,30 @@
 * Constituency has special treating on edit depending on constituency propagation mode
 ** These two custom fields are still massaged via callback and RTIR has special editor
 
+Implemented changes:
+
+* RTIR's custom fields are renamed, no more '_RTIR_' prefix. As well some CFs had two
+  word names, spaces have been added. Handled in upgrade script.
+
+* Autoreply and BlockRemoved templates in blocks queue need changes. Block that adds
+  CF values to the mail should be:
+
+    { my $output = "";
+      my @mailfields = ( 'IP', 'Netmask', 'Port', 'Where Blocked' );
+
+      my $CustomFields = $Ticket->QueueObj->TicketCustomFields;
+      while ( my $CustomField = $CustomFields->Next ) {
+        my $name = $CustomField->Name;
+        next unless grep lc $_ eq lc $name, @mailfields;
+
+        my $Values = $Ticket->CustomFieldValues( $CustomField->Id );
+        while ( my $Value = $Values->Next ) {
+          $output .= $name .": ". $Value->Content ."\n";
+        }
+      }
+      return $output;
+    }
+
 * Default values:
 ** Reports/SLA/OnCreate: RT::IR::DefaultSLA()
 ** Reports/How Reported/OnCreate: $ARGS{'HowReported-Value'} || RT->Config->Get('_RTIR_HowReported_default')
@@ -38,29 +62,4 @@ if ( !$ip_default && $ChildObj ) {
         @{ $ChildObj->CustomFieldValues( 'IP' )->ItemsArrayRef };
 }
 $ip_default ||= RT->Config->Get('_RTIR_IP_default') || '';
-
-
-Implemented changes:
-
-* RTIR's custom fields are renamed, no more '_RTIR_' prefix. As well some CFs had two
-  word names, spaces have been added. Handled in upgrade script.
-
-* Autoreply and BlockRemoved templates in blocks queue need changes. Block that adds
-  CF values to the mail should be:
-
-    { my $output = "";
-      my @mailfields = ( 'IP', 'Netmask', 'Port', 'Where Blocked' );
-
-      my $CustomFields = $Ticket->QueueObj->TicketCustomFields;
-      while ( my $CustomField = $CustomFields->Next ) {
-        my $name = $CustomField->Name;
-        next unless grep lc $_ eq lc $name, @mailfields;
-
-        my $Values = $Ticket->CustomFieldValues( $CustomField->Id );
-        while ( my $Value = $Values->Next ) {
-          $output .= $name .": ". $Value->Content ."\n";
-        }
-      }
-      return $output;
-    }
 
