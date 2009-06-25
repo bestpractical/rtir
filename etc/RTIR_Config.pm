@@ -54,21 +54,22 @@ Set($SLA_Reopen_OutOfHours, 'Full service: out of hours');
 # Set the defaults for RTIR custom fields
 # default values are case-sensitive
 
-Set( %RTIR_CustomFieldsDefaults,
+Set(
+    %RTIR_CustomFieldsDefaults,
     SLA => {
-        InHours => 'Full service',
+        InHours    => 'Full service',
         OutOfHours => 'Full service: out of hours',
     },
-    HowReported    => "",
-    ReporterType   => "",
-    IP             => "",
-    Netmask        => "",
-    Port           => "",
-    WhereBlocked   => "",
-    Function       => "",
-    Classification => "",
-    Description    => "",
-    Resolution => {
+    'How Reported'  => "",
+    'Reporter Type' => "",
+    IP              => "",
+    Netmask         => "",
+    Port            => "",
+    'Where Blocked' => "",
+    Function        => "",
+    Classification  => "",
+    Description     => "",
+    Resolution      => {
         resolved => "successfully resolved",
         rejected => "no resolution reached",
     },
