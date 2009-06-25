@@ -168,9 +168,10 @@
   </tr>
   <tr>
     <td colspan="3">
-      <& /Ticket/Elements/EditCustomFields, 
+      <& /RTIR/Elements/EditCustomFields, 
         TicketObj => $TicketObj, 
         QueueObj => $QueueObj,
+        $Split ? ( OnCreate => 1 ) : (),
       &>
     </td>
   </tr>
