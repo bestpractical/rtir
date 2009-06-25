@@ -38,6 +38,26 @@ unless ( $TicketObj && $TicketObj->Id ) {
         if ( $CustomField->Name eq 'SLA' ) {
             $ARGS{"CustomField-".$CustomField->Id} = RT::IR::DefaultSLA();
         }
+        elsif ( $CustomField->Name eq 'IP' ) {
+            if ( $ARGS{"IP-Value"} ) {
+                $ARGS{"CustomField-".$CustomField->Id} = $ARGS{"IP-Value"};
+            }
+            elsif ( $ChildObj || $IncidentObj ) {
+                my $Obj = $ChildObj || $IncidentObj;
+                $ARGS{"CustomField-".$CustomField->Id} = join "\n",
+                    grep $_, map $_->Content,
+                    @{ $Obj->CustomFieldValues( 'IP' )->ItemsArrayRef };
+            }
+            elsif ( $Defaults{IP} ) {
+                if ( ref $Defaults{IP} eq 'ARRAY' ) {
+                    $ARGS{"CustomField-".$CustomField->Id} =
+                        join "\n", @{$Defaults{IP}};
+                }
+                else {
+                    $ARGS{"CustomField-".$CustomField->Id} = $Defaults{IP};
+                }
+            }
+        }
         else {
             my $Name = $CustomField->Name;
             if ( $ARGS{"$Name-Value"} ) {
@@ -46,9 +66,7 @@ unless ( $TicketObj && $TicketObj->Id ) {
             elsif ( $Defaults{$Name} && !ref $Defaults{$Name} ) {
 # if $Defaults{$Name} is ref, it should be treated carefully, like the 'SLA'
 # above
-
                 $ARGS{"CustomField-".$CustomField->Id} = $Defaults{$Name};
-#TODO special treatment of CF IP
             }
         }
     }
@@ -58,4 +76,6 @@ unless ( $TicketObj && $TicketObj->Id ) {
 <%ARGS>
 $TicketObj => undef
 $QueueObj => undef
+$ChildObj => undef
+$IncidentObj => undef
 </%ARGS>
