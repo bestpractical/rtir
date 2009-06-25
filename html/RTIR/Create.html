@@ -172,6 +172,7 @@
         TicketObj => $TicketObj, 
         QueueObj => $QueueObj,
         $Split ? ( OnCreate => 1 ) : (),
+        $IncidentObj ? ( IncidentObj => $IncidentObj ) : (),
       &>
     </td>
   </tr>

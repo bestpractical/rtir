@@ -53,9 +53,10 @@
 </td></tr>
 
 <tr><td colspan="2">
-<& /Ticket/Elements/EditCustomFields,
+<& /RTIR/Elements/EditCustomFields,
     TicketObj => $TicketObj,
     QueueObj => $QueueObj,
+    ChildObj => $ChildObj,
 &></td></tr>
 
 <tr><td colspan="2"><& /RTIR/Create.html:AttachmentsForm &></td></tr>
