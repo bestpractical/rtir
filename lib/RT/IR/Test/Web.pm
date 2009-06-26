@@ -143,26 +143,36 @@ sub set_custom_field {
     my $queue   = shift;
     my $cf_name = shift;
     my $val     = shift;
+    
+    my $field_name = $self->custom_field_input( $queue, $cf_name )
+        or return 0;
+
+    $self->field($field_name, $val);
+    return 1;
+}
+
+sub custom_field_input {
+    my $self   = shift;
+    my $queue   = shift;
+    my $cf_name = shift;
 
     my $cf_obj = RT::CustomField->new( $RT::SystemUser );
     $cf_obj->LoadByName( Queue => $queue, Name => $cf_name );
     unless ( $cf_obj->id ) {
         Test::More::diag("Can not load custom field '$cf_name' in queue '$queue'");
-        return 0;
+        return undef;
     }
     my $cf_id = $cf_obj->id;
     
-    my ($field_name) =
+    my ($res) =
         grep /^Object-RT::Ticket-\d*-CustomField-$cf_id-Values?$/,
         map $_->name,
         $self->current_form->inputs;
-    unless ( $field_name ) {
+    unless ( $res ) {
         Test::More::diag("Can not find input for custom field '$cf_name' #$cf_id");
-        return 0;
+        return undef;
     }
-
-    $self->field($field_name, $val);
-    return 1;
+    return $res;
 }
 
 sub display_ticket {
