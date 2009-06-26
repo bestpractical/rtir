@@ -216,17 +216,66 @@ sub States {
     return sort grep !$seen{$_}++, @states;
 }
 
-{
-my %cache;
 sub GetCustomField {
     my $field = shift or return;
-    return $cache{ $field } if exists $cache{ $field };
+    return (__PACKAGE__->CustomFields( $field ))[0];
+}
 
-    my $cf = RT::CustomField->new( $RT::SystemUser );
-    $cf->Load( $field );
-    return $cache{ $field } = $cf;
-}
-}
+{ my %cache;
+sub CustomFields {
+    my $self = shift;
+    my %arg = (
+        Field => undef,
+        Queue => undef,
+        Ticket => undef,
+        @_%2 ? (Field => @_) : @_
+    );
+
+    unless ( keys %cache ) {
+        foreach my $qname ( @QUEUES ) {
+            my $type = TicketType( Queue => $qname );
+            $cache{$type} = [];
+
+            my $queue = RT::Queue->new( $RT::SystemUser );
+            $queue->Load( $qname );
+            die "Couldn't load queue '$qname'" unless $queue->id;
+
+            my $cfs = RT::CustomFields->new( $RT::SystemUser );
+            $cfs->LimitToLookupType( 'RT::Queue-RT::Ticket' );
+            $cfs->LimitToQueue( $queue->id );
+            while ( my $cf = $cfs->Next ) {
+                push @{ $cache{$type} }, $cf;
+            }
+        }
+
+        $cache{'Global'} = [];
+        my $cfs = RT::CustomFields->new( $RT::SystemUser );
+        $cfs->LimitToLookupType( 'RT::Queue-RT::Ticket' );
+        $cfs->LimitToGlobal;
+        while ( my $cf = $cfs->Next ) {
+            push @{ $cache{'Global'} }, $cf;
+        }
+    }
+
+    my $type = TicketType( %arg );
+
+    my @list;
+    if ( $type ) {
+        @list = (@{ $cache{'Global'} }, @{ $cache{$type} });
+    } else {
+        @list = (@{ $cache{'Global'} }, map @$_, @cache{values %TYPE});
+    }
+
+    if ( my $field = $arg{'Field'} ) {
+        if ( $field =~ /\D/ ) {
+            @list = grep lc $_->Name eq lc $field, @list;
+        } else {
+            @list = grep $_->id == $field, @list;
+        }
+    }
+
+    return @list;
+} }
 
 sub DefaultConstituency {
     my $queue = shift;
