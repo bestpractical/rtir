@@ -1,13 +1,10 @@
-* Names of custom fields were localized in RTIR, we should localize them in RTIR as well
-
-* Stripping of _RTIR_ prefix results in changes of searches: Formats and Queries, write
-  an upgrader for saved searches
-
 * Rename some fields to variants with spaces
 
 * Custom fields in Incident display are very specific and mixed with generic RT properties
 
 * Description CF in Incidents had Cols => 60 argument, check if we preserve behaviour
+(update: the answer is no. and seems there's no way to do this except hacking rt's
+/Elements/EditCustomField or /Elements/EditCustomFieldFreeform)
 
 * On edit State need special treating for Blocks
 * Constituency has special treating on edit depending on constituency propagation mode
@@ -62,4 +59,11 @@ if ( !$ip_default && $ChildObj ) {
         @{ $ChildObj->CustomFieldValues( 'IP' )->ItemsArrayRef };
 }
 $ip_default ||= RT->Config->Get('_RTIR_IP_default') || '';
+
+* Names of custom fields were localized in RT, we should localize them in RTIR as well
+( this is automatically done since we use RT's cf edit component )
+
+* Stripping of _RTIR_ prefix results in changes of searches: Formats and Queries, write an upgrader for saved searches
+( the script is at etc/upgrade/2.5.1/update_saved_searches.pl, maybe put it somewhere
+better? )
 
