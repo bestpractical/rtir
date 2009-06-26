@@ -54,6 +54,7 @@
 
 <tr><td colspan="2">
 <& /RTIR/Elements/EditCustomFields,
+    %ARGS,
     TicketObj => $TicketObj,
     QueueObj => $QueueObj,
     ChildObj => $ChildObj,
