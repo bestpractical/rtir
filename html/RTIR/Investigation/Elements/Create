@@ -32,6 +32,7 @@
 % unless ( $SkipField{'Requestors'} || $HideField{'Requestors'} ) {
 <tr><td class="label"><&|/l&>Correspondents</&>:</td>
 <td class="value"><input name="<% $NamePrefix %>Requestors" value="<% $value_cb->('Requestors') %>" size="40" /></td></tr>
+% $m->callback( CallbackName => 'AfterRequestors', ARGSRef => \%ARGS );
 % }
 
 % unless ( $SkipField{'Cc'} || $HideField{'Cc'} ) {
