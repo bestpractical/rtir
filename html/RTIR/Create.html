@@ -130,6 +130,7 @@
       <&|/l&>Don't send any emails to correspondents.</&>
     </td>
   </tr>
+% $m->callback( CallbackName => 'AfterRequestors', ARGSRef => \%ARGS );
   <tr>
     <td class="label"><&|/l&>Cc</&>:</td>
     <td class="value"><input name="Cc" value="<% $ARGS{'Cc'} || '' %>" size="40" /></td>
