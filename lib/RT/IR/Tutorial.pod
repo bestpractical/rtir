@@ -307,9 +307,9 @@ create a new tickets and link it to the Incident automatically.
 
 Once you open the Resolve page under the Incidents tab you see a list of its
 children grouped by queue and common update form. You can select children
-with checkboxes. Only children you've selected will resolved.
+with checkboxes. Only children you've selected will be resolved.
 
-You can write a message that that will be added to the selected children as
+You can write a message that will be added to the selected children as
 a comment or response according to value of 'Update Type' field.
 
 Once a user tries to resolve an Incident, RTIR checks the state of that
