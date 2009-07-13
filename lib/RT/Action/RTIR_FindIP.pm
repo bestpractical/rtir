@@ -30,6 +30,8 @@ sub Commit {
     my $cf = $ticket->LoadCustomFieldByIdentifier('IP');
     return 1 unless $cf && $cf->id;
 
+    my $can_many = $cf->MaxValues;
+
     my $attach = $self->TransactionObj->ContentObj;
     return 1 unless $attach && $attach->id;
 
@@ -37,6 +39,12 @@ sub Commit {
     for( @{$cf->ValuesForObject( $ticket )->ItemsArrayRef} ) {
         $existing{ $_->Content } =  1;
     }
+
+    if ( $how_many_can && $how_many_can >= keys %existing ) {
+        $RT::Logger->debug("Ticket #". $ticket->id ." already has maximum number of IPs, skipping" );
+        return 1;
+    }
+
     my $content = $attach->Content || '';
     my @IPs = ( $content =~ /(?<!\d)($RE{net}{IPv4})(?!\d)(?!\/(?:3[0-2]|[1-2]?[0-9])(?:\D|\z))/go );
     $self->AddIP(
