@@ -247,8 +247,8 @@ if ( $q ) {
     $current_subtab .= '?'. $m->comp('/Elements/QueryString', q => $q, server => $server );
 
     my $query;
-    if ( $type eq 'ip' ) {
-        $query = "CF.{IP} = '$q'"
+    if ( $type && RT::IR->CustomFields( Field => $type ) ) {
+        $query = "'CF.{$type}' = '$q'"
     } else {
         $query = "( ContentType = 'text/plain' "
             . "OR ContentType = 'text' "

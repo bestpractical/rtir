@@ -32,6 +32,10 @@
 <td align="right"><b><&|/l&>Actions<b></&></td>
 </tr>
 
+% if ( $lookup_cf_not_applies ) {
+<tr><td colspan="5"><% loc("Custom field '[_1]' doesn't applies to this queue", loc($lookuptype) ) %></td></tr>
+% }
+
 % my $i=0;
 % foreach my $incident (sort keys %{$incidents}) {
 % my $Ticket = $incidents->{$incident}->{'Ticket'};
@@ -89,9 +93,16 @@ while ( my $Ticket = $session{'tickets'}->Next ) {
 
 my $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => 'Incidents');
 my @conditions = ();
+my $lookup_cf_not_applies = 0;
 if ( defined $q && length $q ) {
-    if ( lc( $lookuptype || '' ) eq 'ip' ) {
-        push @conditions, "CF.{IP} = '$q'";
+    if ( $lookuptype && RT::IR->CustomFields( Field => $lookuptype ) ) {
+        my @this = RT::IR->CustomFields( Field => $lookuptype, Queue => 'Incidents' );
+        if ( @this ) {
+            push @conditions, "'CF.{$lookuptype}' = '$q'";
+        } else {
+            $lookup_cf_not_applies = 1;
+            push @conditions, "id = 0";
+        }
     } else {
         push @conditions, "Content LIKE '$q'";
     }
