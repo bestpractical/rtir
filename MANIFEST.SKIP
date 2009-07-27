@@ -2,6 +2,7 @@
 ^releng\.cnf$
 ^blib/
 ^pm_to_blib
+^\.git
 \.old$
 \.bak$
 ^Makefile$
