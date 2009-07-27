@@ -30,7 +30,7 @@ sub Commit {
     my $cf = $ticket->LoadCustomFieldByIdentifier('IP');
     return 1 unless $cf && $cf->id;
 
-    my $can_many = $cf->MaxValues;
+    my $how_many_can = $cf->MaxValues;
 
     my $attach = $self->TransactionObj->ContentObj;
     return 1 unless $attach && $attach->id;
