@@ -14,8 +14,8 @@ or RTIR, please contact Best Practical at sales@bestpractical.com.
 REQUIRED PACKAGES:
 ------------------
 
-o   RT 3.8.1 or later, configured, installed and tested.
-o   RTFM 2.4.0RC1 or later, configured, installed and tested.
+o   RT 3.8.3 or later, configured, installed and tested.
+o   RTFM 2.4.1 or later, configured, installed and tested.
 
 
 Upgrade instructions:
@@ -29,9 +29,9 @@ information.
 Installation instructions:
 --------------------------
 
-1) Install RT 3.8.1 or newer following RT's regular installation instructions
+1) Install RT 3.8.3 or newer following RT's regular installation instructions
 
-2) Install RTFM 2.4.1RC1 or nerwer, following the installation instructions
+2) Install RTFM 2.4.1 or nerwer, following the installation instructions
    in RTFM's README file. (Don't forget to run "make initdb" to set up the 
    database for RTFM and activate it using @Plugins option in the RT config); 
 

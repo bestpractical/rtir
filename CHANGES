@@ -1,6 +1,10 @@
 CHANGES IN 2.4.2
 ----------------
 
+FEATURES
+========
+* use priority widget from RT 3.8.3 in RTIR
+
 BUGS
 ====
 
