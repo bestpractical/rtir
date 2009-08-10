@@ -42,12 +42,11 @@ ul.userlist li:last-child::after{
 
 #topactions { min-width: 44em; }
 
-%# TODO: the following should be filled with some values
-%# .ticket-info-articles       .titlebox-title .left { background-color: #XXX; color: #XXX; }
-%# .tickets-list-report        .titlebox-title .left { background-color: #XXX; color: #XXX; }
-%# .tickets-list-incident      .titlebox-title .left { background-color: #XXX; color: #XXX; }
-%# .tickets-list-investigation .titlebox-title .left { background-color: #XXX; color: #XXX; }
-%# .tickets-list-block         .titlebox-title .left { background-color: #XXX; color: #XXX; }
+.ticket-info-articles       .titlebox-title .left { background-color: #316531; color: #fff; }
+.tickets-list-report        .titlebox-title .left { background-color: #316531; color: #fff; }
+.tickets-list-incident      .titlebox-title .left { background-color: #316531; color: #fff; }
+.tickets-list-investigation .titlebox-title .left { background-color: #316531; color: #fff; }
+.tickets-list-block         .titlebox-title .left { background-color: #316531; color: #fff; }
 
 % $m->abort;
 <%INIT>
