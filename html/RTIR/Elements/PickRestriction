@@ -47,7 +47,7 @@
 
 <li><&|/l&>Priority</&> <& /Elements/SelectEqualityOperator, Name => "PriorityOp" &>
 
-<input name="ValueOfPriority" size="5" />
+<&/Elements/SelectPriority, Name=>"ValueOfPriority" &>
 
 <li>
 <&|/l&>Date</&> 

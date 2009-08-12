@@ -46,13 +46,15 @@ sub Commit {
     }
 
     my $content = $attach->Content || '';
-    my @IPs = ( $content =~ /(?<!\d)($RE{net}{IPv4})(?!\d)(?!\/(?:3[0-2]|[1-2]?[0-9])(?:\D|\z))/go );
+# 0.0.0.0 is illegal IP address
+    my @IPs = ( $content =~ /(?<!\d)(?!0\.0\.0\.0)($RE{net}{IPv4})(?!\d)(?!\/(?:3[0-2]|[1-2]?[0-9])(?:\D|\z))/go );
     $self->AddIP(
         IP          => $_,
         CustomField => $cf,
         Skip        => \%existing,
     ) foreach @IPs;
 
+# but 0.0.0.0/0 is legal CIDR
     my @CIDRs = ( $content =~ /(?<![0-9.])$RE{net}{CIDR}{IPv4}{-keep}(?!\.?[0-9])/go );
     while ( my ($addr, $bits) = splice @CIDRs, 0, 2 ) {
         my $cidr = join( '.', map $_||0, (split /\./, $addr)[0..3] ) ."/$bits";

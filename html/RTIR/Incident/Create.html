@@ -135,10 +135,19 @@ unless ( exists $ARGS{'Content'} ) {
 &>
 <table border="0">
     <tr><td align="right"><&|/l&>Priority</&>:</td>
-    <td><input size="3" name="InitialPriority" value="<% $ARGS{InitialPriority} || $QueueObj->InitialPriority %>" /></td></tr>
+    <td>
+<& /Elements/SelectPriority,
+    Name => "InitialPriority",
+    Default => $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->InitialPriority,
+&></td></tr>
 
     <tr><td align="right"><&|/l&>Final Priority</&>:</td>
-    <td><input size="3" name="FinalPriority" value="<% $ARGS{FinalPriority} || $QueueObj->FinalPriority %>" /></td></tr>
+    <td>
+<& /Elements/SelectPriority,
+    Name => "FinalPriority",
+    Default => $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->FinalPriority,
+&>
+</td></tr>
 
     <tr><td align="right"><&|/l&>Time Worked</&>:</td>
     <td><input size="3" name="TimeWorked" value="<% $ARGS{TimeWorked} || '0' %>" /></td></tr>

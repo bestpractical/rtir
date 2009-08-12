@@ -346,7 +346,10 @@ wrap 'RT::Tickets::_CustomFieldLimit',
         my ($tickets, $field, $op, $value, %rest) = @_[0..($#_-1)];
         $tickets->_OpenParen;
         unless ( $op =~ /NOT|!=|<>/i ) { # positive equation
-            $tickets->_CustomFieldLimit($field, '<=', $end_ip, %rest);
+            $tickets->_CustomFieldLimit(
+                $field, '<=', $end_ip, %rest,
+                SUBKEY => $rest{'SUBKEY'}. '.Content',
+            );
             $tickets->_CustomFieldLimit(
                 $field, '>=', $start_ip, %rest,
                 SUBKEY          => $rest{'SUBKEY'}. '.LargeContent',
@@ -356,6 +359,7 @@ wrap 'RT::Tickets::_CustomFieldLimit',
             # estimations and scan less rows
             $tickets->_CustomFieldLimit(
                 $field, '>=', '000.000.000.000', %rest,
+                SUBKEY          => $rest{'SUBKEY'}. '.Content',
                 ENTRYAGGREGATOR => 'AND',
             );
             $tickets->_CustomFieldLimit(

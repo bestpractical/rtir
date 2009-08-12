@@ -46,11 +46,11 @@
 
   <tr>
     <td class="label"><&|/l&>Priority</&>:</td>
-    <td class="value"><input name="Priority" value="<% $Ticket->Priority %>" size="5" /></td>
+    <td class="value"><&/Elements/SelectPriority, Name=>"Priority", Default=>$Ticket->Priority &></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Final Priority</&>:</td>
-    <td class="value"><input name="FinalPriority" value="<% $Ticket->FinalPriority %>" size="5" /></td>
+    <td class="value"><&/Elements/SelectPriority, Name=>"FinalPriority", Default=>$Ticket->FinalPriority &></td>
   </tr>
 </table>
 </&>
