@@ -30,8 +30,8 @@ sub IsApplicable {
         }
 
         return 0 unless $cf->id == $txn->Field;
-        return 0 unless ($txn->OldValue) eq 'pending activation';
-        return 0 unless ($txn->NewValue) eq 'active';
+        return 0 unless ($txn->OldValue||'') eq 'pending activation';
+        return 0 unless ($txn->NewValue||'') eq 'active';
         return 1;
     }
 
