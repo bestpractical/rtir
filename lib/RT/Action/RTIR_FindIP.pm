@@ -40,7 +40,7 @@ sub Commit {
         $existing{ $_->Content } =  1;
     }
 
-    if ( $how_many_can && $how_many_can >= keys %existing ) {
+    if ( $how_many_can && $how_many_can <= keys %existing ) {
         $RT::Logger->debug("Ticket #". $ticket->id ." already has maximum number of IPs, skipping" );
         return 1;
     }
