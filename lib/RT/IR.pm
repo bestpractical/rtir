@@ -368,18 +368,20 @@ wrap 'RT::ObjectCustomFieldValue::Create',
 
 # strip zero chars(deserialize)
 {
+my $re_ip_sunit = qr/[0-1][0-9][0-9]|2[0-4][0-9]|25[0-5]/;
+my $re_ip_serialized = qr/$re_ip_sunit(?:\.$re_ip_sunit){3}/;
 my $obj;
 wrap 'RT::ObjectCustomFieldValue::Content',
     pre  => sub { $obj = $_[0] },
     post => sub {
         return unless $_[-1];
         my $val = ref $_[-1]? \$_[-1][0]: \$_[-1];
-        return unless $$val =~ /^\s*($RE{net}{IPv4})\s*$/;
+        return unless $$val =~ /^\s*($re_ip_serialized)\s*$/o;
         $$val = sprintf "%d.%d.%d.%d", split /\./, $1;
 
         my $large_content = $obj->__Value('LargeContent');
         return if !$large_content
-            || $large_content !~ /^\s*($RE{net}{IPv4})\s*$/;
+            || $large_content !~ /^\s*($re_ip_serialized)\s*$/o;
         my $eIP = sprintf "%d.%d.%d.%d", split /\./, $1;
         $$val .= '-'. $eIP unless $$val eq $eIP;
         return;
