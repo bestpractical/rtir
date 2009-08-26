@@ -134,7 +134,7 @@ Set($RTIRSearchResultFormats, {
     ReportDefault =>
         q{'<b><a HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
           '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
-          '__CustomField.{_RTIR_State}__/TITLE:State',
+          '__CustomField.{State}__/TITLE:State',
           __LastUpdatedRelative__,
           __CreatedRelative__,
           __NEWLINE__,
@@ -142,7 +142,7 @@ Set($RTIRSearchResultFormats, {
     InvestigationDefault =>
         q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
           '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
-          '__CustomField.{_RTIR_State}__/TITLE:State',
+          '__CustomField.{State}__/TITLE:State',
           __LastUpdatedRelative__,
           __CreatedRelative__,
           __NEWLINE__,
@@ -151,7 +151,7 @@ Set($RTIRSearchResultFormats, {
     BlockDefault =>
         q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
           '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
-          '__CustomField.{_RTIR_State}__/TITLE:State',
+          '__CustomField.{State}__/TITLE:State',
           __LastUpdatedRelative__,
           __CreatedRelative__,
           __NEWLINE__,
@@ -160,7 +160,7 @@ Set($RTIRSearchResultFormats, {
     IncidentDefault =>
         q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
           '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
-          '__CustomField.{_RTIR_State}__/TITLE:State',
+          '__CustomField.{State}__/TITLE:State',
           __LastUpdatedRelative__,
           __CreatedRelative__,
           __Priority__,
@@ -210,19 +210,19 @@ Set($RTIRSearchResultFormats, {
     ChildReport =>
         q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
           '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
-          '__CustomField.{_RTIR_State}__</I>/TITLE:State',
+          '__CustomField.{State}__',
           __DueRelative__},
 
     ChildInvestigation =>
         q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
           '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
-          '__CustomField.{_RTIR_State}__</I>/TITLE:State',
+          '__CustomField.{State}__',
           __DueRelative__},
 
     ChildBlock =>
         q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
           '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
-          '__CustomField.{_RTIR_State}__</I>/TITLE:State',
+          '__CustomField.{State}__',
            __DueRelative__},
 
 } );
