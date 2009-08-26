@@ -35,7 +35,6 @@
 </ul>
 % }
 <%INIT>
-$Name = "_RTIR_". $Name;
 my $values = $Ticket->CustomFieldValues( $Name );
 my $count = $values->Count;
 </%INIT>

@@ -17,10 +17,6 @@ return unless $m->request_comp->path =~ m{^/RTIR/};
 if ( $$row =~ /^\s*(?:Ticket\s*#?\d+:\s*)?Status changed from/ ) {
     return $$skip = 1;
 }
-
-# remove _RTIR_ from RTIR custom fields
-$$row =~ s/^_RTIR_//;
-
 </%INIT>
 
 <%ARGS>
