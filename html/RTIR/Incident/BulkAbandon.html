@@ -113,7 +113,7 @@ if ( $ARGS{'BulkAbandon'} ) {
         # process replies
         if( scalar @ReplyToAll ) {
             # XXX: why do we limit to open?
-            my $query = "CF.{_RTIR_State} = 'open' AND MemberOf = $id";
+            my $query = "CF.{State} = 'open' AND MemberOf = $id";
             $query .= " AND (". join(' OR ', map "Queue = '$_'", @ReplyToAll) .")";
             my $members = new RT::Tickets( $t->CurrentUser );
             $members->FromSQL( $query );
