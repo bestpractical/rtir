@@ -50,7 +50,6 @@ html/Callbacks/RTIR/Ticket/Create.html/Default
 html/Callbacks/RTIR/Ticket/Display.html/Initial
 html/Callbacks/RTIR/Ticket/Elements/EditCustomFields/MassageCustomFields
 html/Callbacks/RTIR/Ticket/Elements/ShowHistory/SkipTransaction
-html/Callbacks/RTIR/Ticket/Elements/ShowTransaction/ModifyDisplay
 html/Callbacks/RTIR/User/Elements/Tabs/Default
 html/RTIR/Advanced.html
 html/RTIR/Block/Elements/EditState
@@ -81,9 +80,6 @@ html/RTIR/Elements/PickRestriction
 html/RTIR/Elements/QueueSummary
 html/RTIR/Elements/QueueTabs
 html/RTIR/Elements/Refresh
-html/RTIR/Elements/SearchRTIRField
-html/RTIR/Elements/SelectCustomFieldOperator
-html/RTIR/Elements/SelectCustomFieldValue
 html/RTIR/Elements/ShowChildren
 html/RTIR/Elements/ShowDates
 html/RTIR/Elements/ShowIncidents
