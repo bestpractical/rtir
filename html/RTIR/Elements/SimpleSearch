@@ -24,6 +24,5 @@
 <form action="<% RT->Config->Get('WebPath') %>/RTIR/index.html" id="simple-search">
 <input type="hidden" name="NewSearch" value="1" />
 <input type="hidden" name="Queue" value="Incidents" />
-<input size="12" name="q" accesskey="0" />
-<input type="submit" class="button" value="<&|/l&>Search Incidents</&>" />&nbsp;
+<input size="15" name="q" accesskey="0" value="<&|/l&>Search Incidents</&>..." onfocus="if (this.value=='<&|/l&>Search Incidents</&>...') this.value=''" />
 </form>
