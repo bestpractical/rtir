@@ -5,7 +5,7 @@
 <& /Widgets/SelectionBox:header, nojs => 1 &>
 % foreach my $box( @boxes ) {
 <&|/Widgets/TitleBox,
-    title => loc('RT at a glance') .': '. loc( $box->{Name} ),
+    title => loc('RTIR at a glance') .': '. loc( $box->{Name} ),
     bodyclass => ""
 &>
 <& /Widgets/SelectionBox:show, self => $box, nojs => 1 &>
