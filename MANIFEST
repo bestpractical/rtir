@@ -124,8 +124,6 @@ html/RTIR/Reporting/Report.html
 html/RTIR/Reporting/Report.tsv
 html/RTIR/Reporting/Report.txt
 html/RTIR/Search/Elements/BuildQuery
-html/RTIR/Search/Elements/PickCFs
-html/RTIR/Search/Elements/PickCriteria
 html/RTIR/Search/Elements/ProcessQuery
 html/RTIR/Search/Elements/RefineTabs
 html/RTIR/Search/Elements/ShowResults
