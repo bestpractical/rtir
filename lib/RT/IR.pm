@@ -450,6 +450,16 @@ wrap 'RT::ObjectCustomFieldValue::Content',
     };
 }
 
+# don't return LargeContent to avoid making angry RT's AddCFV logic
+wrap 'RT::ObjectCustomFieldValue::LargeContent',
+    pre  => sub {
+        my $obj = $_[0];
+        my $cf = GetCustomField( 'IP' );
+        return unless $cf && $cf->id;
+        return unless $obj->CustomField == $cf->id;
+        $_[-1] = undef;
+    };
+
 
 { # ACL checks for multiple constituencies
 
