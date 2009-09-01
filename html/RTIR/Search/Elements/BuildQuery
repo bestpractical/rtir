@@ -54,7 +54,8 @@
 <table width="100%">
 <tr>
 <td valign="top" class="boxcontainer">
-<& PickCriteria, Queues => $queues &>
+<& /Search/Elements/PickCriteria, cfqueues => $queues &>
+
 <& /Elements/Submit, Caption => loc('Add additional criteria'), Label => loc('Add'), Name => 'AddClause'&>
 
 </td>
