@@ -48,6 +48,16 @@ ul.userlist li:last-child::after{
 .tickets-list-investigation .titlebox-title .left { background-color: #316531; color: #fff; }
 .tickets-list-block         .titlebox-title .left { background-color: #316531; color: #fff; }
 
+
+#comp-RTIR-Search #body {
+    position: relative;
+}
+#comp-RTIR-Search .submit {
+    width: 58%;
+}
+
+
+
 % $m->abort;
 <%INIT>
 $r->content_type('text/css');

@@ -44,36 +44,42 @@
 %# 
 %# }}} END BPS TAGGED BLOCK
 
-<form method="post" action="<% RT->Config->Get('WebPath')%><% $m->request_comp->path %>" name="BuildQuery">
+<form method="post" action="<% RT->Config->Get('WebPath') %><% $m->request_comp->path %>" name="BuildQuery">
 <input type="hidden" class="hidden" name="SavedSearchId" value="<% $saved_search{'Id'} %>" />
 <input type="hidden" class="hidden" name="ResultPage" value="<% $ResultPage %>" />
 <input type="hidden" class="hidden" name="BaseQuery" value="<% $BaseQuery %>" />
 
 <input type="hidden" class="hidden" name="Query" value="<% $query{'Query'} %>" />
 <input type="hidden" class="hidden" name="Format" value="<% $query{'Format'} %>" />
-<table width="100%">
-<tr>
-<td valign="top" class="boxcontainer">
-<& /Search/Elements/PickCriteria, cfqueues => $queues &>
 
-<& /Elements/Submit, Caption => loc('Add additional criteria'), Label => loc('Add'), Name => 'AddClause'&>
+<div id="pick-criteria"><& /Search/Elements/PickCriteria, cfqueues => $queues &></div>
 
-</td>
-<td valign="top" class="boxcontainer">
+<& /Elements/Submit, Label => loc('Add these terms'), Name => 'AddClause' &>
+<& /Elements/Submit, Label => loc('Add these terms and Search'), Name => 'DoSearch' &>
+
+<div id="editquery">
 <& /Search/Elements/EditQuery,
     %ARGS,
     actions => \@actions,
     optionlist => $optionlist,
     Description => $saved_search{'Description'},
 &>
-<br />
+</div>
 
+<div id="editsearches">
 <& /Search/Elements/EditSearches, %saved_search, CurrentSearch => \%query &>
-</td>
-</tr>
-</table>
+</div>
 
+<span id="display-options">
 <& /Search/Elements/DisplayOptions, %ARGS, %query, cfqueues => $queues &>
+</span>
+
+<& /Elements/Submit,
+    Label => loc('Update format and Search'),
+    Name => 'DoSearch',
+    id => "formatbuttons",
+&>
+
 </form>
 <%ARGS>
 $BaseQuery    => ''
