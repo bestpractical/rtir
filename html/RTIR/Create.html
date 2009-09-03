@@ -85,7 +85,7 @@
   </tr>
 % if ( $parentvalue ) {
   <tr>
-    <td align="right"><&|/l&>Will be linked to Incident(s):</&></td>
+    <td align="right"><&|/l&>Will be linked to Incident(s)</&>:</td>
     <td colspan="2"><% $parentvalue %></td>
   </tr>
 % }
@@ -114,12 +114,12 @@
     </td>
   </tr>
   <tr>
-    <td align="right"><&|/l&>Time Worked</&>:</td>
+    <td align="right" class="label"><&|/l&>Time Worked</&>:</td>
     <td colspan="2">
       <table>
       <tr>
         <td><input size="3" name="TimeWorked" value="<% $ARGS{'TimeWorked'} || '' %>" /></td>
-        <td align="right"><&|/l&>Time Left</&>:</td>
+        <td align="right" class="label"><&|/l&>Time Left</&>:</td>
         <td><input size="3" name="TimeLeft" value="<% $ARGS{'TimeLeft'} || '' %>" /></td>
       </tr>
       </table>
@@ -127,8 +127,8 @@
   </tr>
   <tr>
     <td class="label"><&|/l&>Correspondents</&>:</td>
-    <td><input name="Requestors" value="<% $ARGS{'Requestors'} || '' %>" size="40" /></td>
-    <td>
+    <td class="value"><input name="Requestors" value="<% $ARGS{'Requestors'} || '' %>" size="40" /></td>
+    <td class="label">
       <input type="checkbox" name="SkipNotification" value="Requestors" <% (grep $_ eq 'Requestors', @SkipNotification)? 'checked': '' %> />
       <&|/l&>Don't send any emails to correspondents.</&>
     </td>
