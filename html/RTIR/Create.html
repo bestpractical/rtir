@@ -91,8 +91,11 @@
 % }
 % } else {
   <tr>
-    <td class="label"><&|/l&>Incident</&><% $Type eq 'Block'? loc('(required)'): '' %>:</td>
-    <td class="value" colspan="2"><input name="Incident" size="16" maxsize="16" value="<% $Incident || '' %>" /></td>
+    <td class="label"><&|/l&>Incident</&>:</td>
+    <td class="value"><input name="Incident" size="16" maxsize="16" value="<% $Incident || '' %>" /></td>
+    <td><i><font size="-2">
+        (<&|/l&>Id of an Incident to link a new ticket to</&>. <% $Type eq 'Block'? '<strong>'.loc('Required').'</strong>': loc('Optional') |n %>.)
+    </font></i></td>
   </tr>
 % }
   <tr>
