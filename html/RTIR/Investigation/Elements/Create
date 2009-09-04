@@ -51,16 +51,6 @@ email addresses. These people <b>will</b> receive future updates.)</&></font></i
 </td></tr>
 % }
 
-% unless ( $SkipField{'Customer'} ) {
-<tr><td class="label"><&|/l&>Customer</&>:</td>
-<td class="value"><& /RTIR/Elements/EditRTIRField,
-        NamePrefix => $NamePrefix,
-        QueueObj => $QueueObj,
-        Name => 'Customer',
-&></td></tr>
-% }
-
-
 % if ( $QueueObj || $ARGS{'TicketObj'} ) {
 % unless ( $SkipField{'CustomFields'} ) {
 <tr><td colspan="2"><& /Ticket/Elements/EditCustomFields,
