@@ -36,6 +36,7 @@
 <table class="ticket-summary" width="100%">
 <tr>
 <td class="boxcontainer" valign="top">
+% $m->callback( %ARGS, Ticket => $Ticket, CallbackName => 'LeftColumnStart' );
 
 <&| /Widgets/TitleBox,
     title => loc("The Basics"),
@@ -84,6 +85,8 @@
 </&>
 % }
 </td> <td class="boxcontainer" valign="top">
+% $m->callback( %ARGS, Ticket => $Ticket, CallbackName => 'RightColumnStart' );
+
     <&| /Widgets/TitleBox,
         title => loc('People'), 
         title_href  => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=". $Ticket->Id,
@@ -91,7 +94,6 @@
     &>
     <& /RTIR/Elements/ShowPeople, Ticket => $Ticket &>
     </&>
-    <br /><br />
     <&| /Widgets/TitleBox, title => loc("Dates"),
         title_href  => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=". $Ticket->Id,
         class => 'ticket-info-dates',
@@ -101,6 +103,7 @@
     <br />  
   </td>
 </tr>
+
 <tr>
   <td class="boxcontainer" valign="top">
     <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, 
