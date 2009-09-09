@@ -144,6 +144,7 @@ dropdb ::
         $has_etc{acl}++;
     }
     if ( -e 'etc/initialdata' ) { $has_etc{initialdata}++; }
+    if ( -e 'etc/upgrade' ) { $has_etc{upgrade}++; }
 
     $self->postamble("$postamble\n");
     unless ( $subdirs{'lib'} ) {
@@ -172,6 +173,14 @@ dropdb ::
 .
         $self->postamble("initdb ::\n$initdb\n");
         $self->postamble("initialize-database ::\n$initdb\n");
+
+        if ( $has_etc{upgrade} ) {
+            my $cmds = <<".";
+\t\$(NOECHO) \$(PERL) -Ilib -I"$local_lib_path" -I"$lib_path" -Minc::Module::Install -e"RTxInitDB(qw(upgrade))"
+.
+            $self->postamble("upgrade ::\n$cmds\n");
+        }
+        
     }
 }
 
@@ -188,4 +197,4 @@ sub RTxInit {
 
 __END__
 
-#line 302
+#line 311
