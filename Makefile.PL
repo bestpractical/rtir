@@ -50,7 +50,7 @@ substitute( {
     },
     'etc/upgrade/upgrade.pl',
     'etc/add_constituency',
-    't/lib/RT/IR/Test.pm',
+    'lib/RT/IR/Test.pm',
 );
 
 tests("t/*.t t/*/*.t");
