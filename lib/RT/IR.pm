@@ -203,7 +203,7 @@ Examples:
 sub States {
     my %arg = ( Queue => undef, Active => 1, Inactive => 0, @_ );
 
-    my @queues = !$arg{'Queue'} ? ( values %STATES )
+    my @queues = !$arg{'Queue'} ? (@QUEUES)
         : ref $arg{'Queue'}? @{ $arg{'Queue'} } : ( $arg{'Queue'} );
     
     my @states;
