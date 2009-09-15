@@ -80,7 +80,10 @@ sub InheritConstituency {
         my $tickets = RT::Tickets->new( $RT::SystemUser );
         $tickets->FromSQL( $query ." AND $link_type = ". $ticket->Id );
         while ( my $t = $tickets->Next ) {
-            $RT::Logger->debug( "Ticket #". $t->id ." inherits constituency from ticket #". $ticket->id );
+            $RT::Logger->debug(
+                "Ticket #". $t->id ." inherits constituency"
+                ." from ticket #". $ticket->id
+            );
             my ($res, $msg) = $t->AddCustomFieldValue(
                 Field => 'Constituency',
                 Value => $constituency,
