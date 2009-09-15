@@ -15,18 +15,15 @@ Applies to Ticket Creation and Constituency changes
 sub IsApplicable {
     my $self = shift;
 
-    my $type = $self->TransactionObj->Type;
-    return 1 if $type eq 'Create';
-    if ( $type eq 'CustomField' ) {
-        my $cf = RT::CustomField->new( $RT::SystemUser );
-        $cf->Load('Constituency');
-        unless ( $cf->id ) {
-            $RT::Logger->error("Couldn't load the 'Costituency' field");
-            return 0;
-        }
-        return 1 if $cf->id == $self->TransactionObj->Field;
-    }
+    my $ticket = $self->TicketObj;
+    my $cf = $ticket->LoadCustomFieldByIdentifier('Constituency');
+    # no constituency
+    return 0 unless $cf && $cf->id;
 
+    my $txn = $self->TransactionObj;
+    my $type = $txn->Type;
+    return 1 if $type eq 'Create';
+    return 1 if $type eq 'CustomField' && $cf->id == $txn->Field;
     return 0;
 }
 
