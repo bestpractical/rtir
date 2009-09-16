@@ -274,7 +274,7 @@ sub CustomFields {
         }
     }
 
-    return @list;
+    return wantarray? @list : $list[0];
 } }
 
 sub DefaultConstituency {

@@ -22,7 +22,8 @@ unless ( $BaseQuery ) {
     push @parts, "id != $id";
     push @parts, $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue) if $Queue;
     push @parts, "CF.{Constituency} = '". $Ticket->FirstCustomFieldValue('Constituency') ."'"
-        if RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject';
+        if RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject'
+            && RT::IR->CustomFields(Constituency => Queue => $Queue);
     $BaseQuery = join ' AND ', map "( $_ )", grep $_, @parts;
 }
 

@@ -79,7 +79,7 @@
     <td class="label"><&|/l&>Time Worked</&>:</td>
     <td class="value"><input name="TimeWorked" value="<%$Ticket->TimeWorked|h%>" size="5" /></td>
   </tr>
-% if ( $constituency_propagation ne 'reject' || !$has_parent ) {
+% if ( $constituency_cf && ($constituency_propagation ne 'reject' || !$has_parent) ) {
   <tr>
     <td class="labeltop"><&|/l&>Constituency</&>:</td>
     <td class="value">
@@ -156,6 +156,7 @@ $CanRespond = 1 if ( $Ticket->CurrentUserHasRight('ReplyToTicket') or
 $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
                      $Ticket->CurrentUserHasRight('ModifyTicket') );
 
+my $constituency_cf = RT::IR->CustomFields( Constituency => Ticket => $Ticket );
 my $constituency_propagation = RT->Config->Get('_RTIR_Constituency_Propagation');
 my $has_parent = 0;
 if ( $constituency_propagation eq 'reject' ) {
