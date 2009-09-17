@@ -131,6 +131,15 @@ Set($RTIR_OldestRelatedTickets, 60);
 
 # Default formats for RTIR search results
 Set($RTIRSearchResultFormats, {
+    Default =>
+        q{'<b><a HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
+          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+          __QueueName__,
+          '__CustomField.{State}__',
+          __LastUpdatedRelative__,
+          __CreatedRelative__,
+          __NEWLINE__,
+          '',__Requestors__,__OwnerName__,__ToldRelative__,__DueRelative__,__TimeLeft__},
     ReportDefault =>
         q{'<b><a HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
           '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
