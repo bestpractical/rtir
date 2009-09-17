@@ -28,6 +28,7 @@
 <input name="Subject" size="60" maxsize="100" value="<% $Subject %>" />
 </td></tr>
 
+% if ($constituency_cf) {
 <tr><td class="label"><&|/l&>Constituency</&>:</td>
 <td class="value">
 % if ( !$ChildObj || RT->Config->Get('_RTIR_Constituency_Propagation') eq 'no' ) {
@@ -43,14 +44,13 @@
 &>
 % } else {
 % #TODO: hacks, we need way to define CF value on Create, but don't allow user to change it
-% my $cf = RT::CustomField->new( $RT::SystemUser );
-% $cf->LoadByNameAndQueue( Name => 'Constituency', Queue => 'Incidents' );
-<input type="hidden" class="hidden" name="Constituency" value="Object-RT::Ticket--CustomField-<% $cf->id %>-Values" />
-<input type="hidden" class="hidden" name="Object-RT::Ticket--CustomField-<% $cf->id %>-Values-Magic" value="1" />
-<input type="hidden" class="hidden" name="Object-RT::Ticket--CustomField-<% $cf->id %>-Values" value="<% $ChildObj->FirstCustomFieldValue('Constituency') %>" />
+<input type="hidden" class="hidden" name="Constituency" value="Object-RT::Ticket--CustomField-<% $constituency_cf->id %>-Values" />
+<input type="hidden" class="hidden" name="Object-RT::Ticket--CustomField-<% $constituency_cf->id %>-Values-Magic" value="1" />
+<input type="hidden" class="hidden" name="Object-RT::Ticket--CustomField-<% $constituency_cf->id %>-Values" value="<% $ChildObj->FirstCustomFieldValue('Constituency') %>" />
 <& /RTIR/Elements/ShowRTIRField, Ticket => $ChildObj, Name => 'Constituency' &>
 % }
 </td></tr>
+% }
 
 <tr><td colspan="2">
 <& /RTIR/Elements/EditCustomFields,
@@ -62,6 +62,9 @@
 
 <tr><td colspan="2"><& /RTIR/Create.html:AttachmentsForm &></td></tr>
 
+<%INIT>
+my $constituency_cf = RT::IR->CustomFields( 'Constituency', Queue => $QueueObj->Name );
+</%INIT>
 <%ARGS>
 $NamePrefix => ''
 $QueueObj   => undef
