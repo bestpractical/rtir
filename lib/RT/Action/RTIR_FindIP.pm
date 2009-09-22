@@ -45,21 +45,29 @@ sub Commit {
         return 1;
     }
 
+    my $spots_left = $how_many_can - keys %existing;
+
     my $content = $attach->Content || '';
 # 0.0.0.0 is illegal IP address
     my @IPs = ( $content =~ /(?<!\d)(?!0\.0\.0\.0)($RE{net}{IPv4})(?!\d)(?!\/(?:3[0-2]|[1-2]?[0-9])(?:\D|\z))/go );
-    $self->AddIP(
-        IP          => $_,
-        CustomField => $cf,
-        Skip        => \%existing,
-    ) foreach @IPs;
+    foreach my $ip ( @IPs ) {
+        $spots_left -= $self->AddIP(
+            IP          => $ip,
+            CustomField => $cf,
+            Skip        => \%existing,
+        );
+        return 1 unless $spots_left;
+    }
 
 # but 0.0.0.0/0 is legal CIDR
     my @CIDRs = ( $content =~ /(?<![0-9.])$RE{net}{CIDR}{IPv4}{-keep}(?!\.?[0-9])/go );
     while ( my ($addr, $bits) = splice @CIDRs, 0, 2 ) {
         my $cidr = join( '.', map $_||0, (split /\./, $addr)[0..3] ) ."/$bits";
         my $range = (Net::CIDR::cidr2range( $cidr ))[0] or next;
-        $self->AddIP( IP => $range, CustomField => $cf, Skip => \%existing );
+        $spots_left -= $self->AddIP(
+            IP => $range, CustomField => $cf, Skip => \%existing
+        );
+        return 1 unless $spots_left;
     }
 
     return 1;
@@ -68,7 +76,7 @@ sub Commit {
 sub AddIP {
     my $self = shift;
     my %arg = ( CustomField => undef, IP => undef, Skip => {}, @_ );
-    return if !$arg{'IP'} || $arg{'Skip'}->{ $arg{'IP'} }++
+    return 0 if !$arg{'IP'} || $arg{'Skip'}->{ $arg{'IP'} }++
         || $arg{'Skip'}->{ $arg{'IP'} .'-'. $arg{'IP'} }++;
 
     my ($status, $msg) = $self->TicketObj->AddCustomFieldValue(
@@ -77,7 +85,7 @@ sub AddIP {
     );
     $RT::Logger->error("Couldn't add IP address: $msg") unless $status;
 
-    return;
+    return 1;
 }
 
 1;
