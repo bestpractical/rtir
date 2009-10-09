@@ -277,6 +277,14 @@ sub CustomFields {
     return wantarray? @list : $list[0];
 } }
 
+{ my $cache;
+sub HasConstituency {
+    return $cache if defined $cache;
+
+    my $self = shift;
+    return $cache = $self->CustomFields('Constituency');
+} }
+
 sub DefaultConstituency {
     my $queue = shift;
     my $name = $queue->Name;
@@ -461,7 +469,8 @@ wrap 'RT::ObjectCustomFieldValue::LargeContent',
     };
 
 
-{ # ACL checks for multiple constituencies
+if ( RT::IR->HasConstituency ) {
+    # ACL checks for multiple constituencies
 
     require RT::Interface::Web::Handler;
     # flush constituency cache on each request
@@ -518,7 +527,8 @@ wrap 'RT::ObjectCustomFieldValue::LargeContent',
 }
 
 
-{ # Queue {Comment,Correspond}Address for multiple constituencies
+if ( RT::IR->HasConstituency ) {
+    # Queue {Comment,Correspond}Address for multiple constituencies
 
     require RT::Ticket;
     wrap 'RT::Ticket::QueueObj', pre => sub {
@@ -552,13 +562,11 @@ wrap 'RT::ObjectCustomFieldValue::LargeContent',
     };
 
 
+    require RT::Queue;
+    package RT::Queue;
 
-    {
-        require RT::Queue;
-        package RT::Queue;
-
-        sub CorrespondAddress { GetQueueAttribute(shift, 'CorrespondAddress') }
-        sub CommentAddress { GetQueueAttribute(shift, 'CommentAddress') }
+    sub CorrespondAddress { GetQueueAttribute(shift, 'CorrespondAddress') }
+    sub CommentAddress { GetQueueAttribute(shift, 'CommentAddress') }
 
     sub GetQueueAttribute {
         my $queue = shift;
@@ -587,10 +595,10 @@ wrap 'RT::ObjectCustomFieldValue::LargeContent',
         return $queue->_Value($attr);
     }
 }
-}
 
 
-{ # Set Constituency on Create
+if ( RT::IR->HasConstituency ) {
+    # Set Constituency on Create
 
     require RT::Ticket;
     wrap 'RT::Ticket::Create', pre => sub {
