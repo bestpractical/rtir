@@ -1,21 +1,30 @@
 <span id="showuser-<%$User->id%>">
-% my $url = $RT::WebPath."/RTIR/EditUsername?page=1&id=".$User->id;
+% my $url = RT->Config->Get('WebPath') ."/RTIR/EditUsername?page=1&id=". $User->id;
 <& /Elements/ShowUser, User => $User &>
-% if ( $session{'CurrentUser'}->HasRight(Right => 'AdminUsers', Object => $RT::System) ) {
-[<a href="<%$RT::WebPath%>/Admin/Users/Modify.html?id=<%$User->id%>"
-    onClick="ahah('<%$url|n%>', 'showuser-<%$User->id|n %>'); return false;" 
+% if ( $can_modify ) {
+% my $modify_url = $can_see_admin? RT->Config->Get('WebPath') .'/Admin/Users/Modify.html?id='. $User->id : '#';
+[<a href="<% $modify_url %>"
+    onClick="ahah('<% $url |n%>', 'showuser-<%$User->id|n %>'); return false;"
 ><&|/l&>Edit</&></a>]
-
 % }
-% $m->abort if ($ARGS{'page'});
+% $m->abort if $page;
 </span>
 <%args>
 $id => undef
+$Name => undef
+$page => undef
 </%args>
 <%init>
 my $User = RT::User->new($session{'CurrentUser'});
 $User->Load($id);
-if ($ARGS{'Name'}) {
-    $User->SetRealName($ARGS{'Name'});
+if ( $Name ) {
+    $User->SetRealName( $Name );
 }
+
+my $can_modify = $session{'CurrentUser'}->HasRight(
+    Right => 'AdminUsers', Object => $RT::System,
+);
+my $can_see_admin = $session{'CurrentUser'}->HasRight(
+    Right => 'ShowConfigTab', Object => $RT::System,
+);
 </%init>
