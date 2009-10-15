@@ -221,8 +221,12 @@ if ( $Child ) {
     $ARGS{'Subject'} ||= $ChildObj->Subject;
 }
 
-$m->callback(CallbackName => 'ProcessArguments', ARGSRef => \%ARGS, Ticket => $TicketObj, Child => $ChildObj);
-
+$m->callback(
+    CallbackName => 'ProcessArguments',
+    ARGSRef => \%ARGS,
+    Ticket => $TicketObj,
+    Child => $ChildObj
+);
 
 my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
 $QueueObj->Load( 'Incidents' ) || Abort( loc("Queue could not be loaded.") );
@@ -231,7 +235,10 @@ $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 
 my $checks_failure = 0;
 
-my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
+my $gnupg_widget = $m->comp(
+    '/Elements/GnuPG/SignEncryptWidget:new',
+    Arguments => \%ARGS
+);
 $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
     self      => $gnupg_widget,
     QueueObj  => $QueueObj,
