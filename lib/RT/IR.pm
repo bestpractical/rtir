@@ -238,7 +238,11 @@ sub CustomFields {
 
             my $queue = RT::Queue->new( $RT::SystemUser );
             $queue->Load( $qname );
-            die "Couldn't load queue '$qname'" unless $queue->id;
+            unless ($queue->id) {
+                $RT::Logger->error("Couldn't load queue '$qname'");
+                delete $cache{$type};
+                return;
+            }
 
             my $cfs = RT::CustomFields->new( $RT::SystemUser );
             $cfs->LimitToLookupType( 'RT::Queue-RT::Ticket' );
