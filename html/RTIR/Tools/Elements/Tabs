@@ -22,7 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /Elements/Callback, tabs => $tabs, %ARGS &>
+% $m->callback( tabs => $tabs, %ARGS );
 <& /RTIR/Elements/Tabs,
     tabs           => $tabs,
     current_toptab => $current_toptab,
