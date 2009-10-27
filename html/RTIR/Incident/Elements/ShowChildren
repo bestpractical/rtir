@@ -11,7 +11,9 @@
 
 % if ( $IncidentObj->CurrentUserHasRight('ModifyTicket') ) {
     <table width="100%"><tr><td align="right"><font size="-1">
+%   if ( $QueueObj->Id and $QueueObj->CurrentUserHasRight('CreateTicket') ) {
         | <a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Incident=<% $id %>&Queue=<% $Queue |u %>"><% $new_caption %></a> 
+%   }
         | <a href="<%RT->Config->Get('WebPath')%>/RTIR/Incident/LinkChildren.html?id=<% $id %>&Queue=<% $Queue |u %>"><%loc("Link")%></a> |
     </font></td></tr></table>
 % }
@@ -71,5 +73,8 @@ $inactive->FromSQL(
 );
 
 my $total_count = $active->CountAll + $inactive->CountAll;
+
+my $QueueObj = RT::Queue->new($session{CurrentUser});
+$QueueObj->Load($Queue);
 
 </%INIT>
