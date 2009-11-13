@@ -4,11 +4,39 @@ CHANGES IN 2.6.0 SINCE RTIR 2.4.x
 FEATURES
 ========
 
-* INCOMPATIBLE CHANGE: prefix '_RTIR_' has been deleted from
+* INCOMPATIBLE: prefix '_RTIR_' has been deleted from
   all custom fields in RTIR. See UPGRADING for upgrade
   instructions.
+* INCOMPATIBLE: New option %RTIR_CustomFieldDefaults
+  that replaces several $RTIR_*_default options that
+  were there before, don't forget to update config.
 * almost all default Custom Fields of RTIR now can be
-  disabled or un-applied, except State CF.
+  disabled or un-applied. Read more in Administration
+  Tutorial.
+* IP CF can be changed to single value
+* On create with linking (a new child from an incident or a new
+  incident from a child) use default values for custom fields
+  from linked object
+* allow to use any custom field for lookup, not only IP,
+  no UI at the moment, but can be used via arguments of a URL
+  in clicky actions or linked CFs 
+* RTIR's QuickSearch searches by IP in all queues if
+  query is an IP only
+* we have search in any RTIR's queue, so we need default
+  search format, new entry in $RTIRSearchResultFormats
+  config option
+* switched over RT's style for RTIR's query builder
+* RT::IR->OurQueue(...) method
+* RT::IR->CustomFields(...) method
+* refactored test suite for re-use in RTIR's extensions
+* described better Incident input field on Create pages
+
+CALLBACKS
+=========
+
+* 'Init' callback in Create.html acting like /Ticket/Create.html
+* 'AfterRequestors' in several components
+* 'LeftColumnStart' and 'RightColumnStart' in Display.html
 
 CHANGES IN 2.4.2
 ----------------
