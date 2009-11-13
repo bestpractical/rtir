@@ -8,6 +8,11 @@ You may disable the Blocks by putting the following into your RTIR config:
 
 =head2 Custom Fields
 
+When RTIR is installed several custom fields are created and applied
+to queues in RTIR. Some of these custom fields are important for
+RTIR functionality and can not be renamed, disabled or un-applied,
+but other fields can be.
+
 =over 4
 
 =item State
@@ -15,9 +20,18 @@ You may disable the Blocks by putting the following into your RTIR config:
 The various states an incident, IR, investigation, or block can be in, such as
 'open', 'stalled', 'abandoned', etc.
 
+This field represent custom status of tickets and values are different in
+different queues. Critical field for functionality, don't change it.
+Even values can not be changed without consequences.
+
 =item Constituency
 
-The constituency of an incident, IR, investigation, or block
+The constituency of an incident, IR, investigation, or block.
+
+Additional quite heavy automation is tied to this field. This
+is described in L<Constituencies> doc. Don't rename this field
+if you want to use this functionality. If you don't need this
+feature then name custom field differently.
 
 =item Description
 
@@ -29,7 +43,8 @@ How an Incident was or wasn't resolved
 
 =item SLA
 
-The SLA of an IR
+The SLA of an IR. Due dates are calculated using this custom
+field.
 
 =item Function
 
@@ -37,7 +52,7 @@ Who is handling the Incident
 
 =item Classification
 
-The type of Incident, such as system comproise or denial of service
+The type of Incident, such as system compromise or denial of service
 
 =item HowReported
 
@@ -49,9 +64,14 @@ Who reported the IR, such as the police or another ISP
 
 =item IP
 
-IP addresses related to the incident, IR, investigation, or block
+IP addresses related to the incident, IR, investigation, or block.
 
-L<Tutorial/'IP'>
+Don't rename this custom field or it will loose all magic. It's
+possible to change this CF from multiple values to single value.
+
+End user documentation is in L<Tutorial/'IP'>.
+
+See also L</SetIPFromContent> below.
 
 =item Netmask
 
@@ -260,7 +280,12 @@ L<Templates/BlockRemoved in Blocks queue> Template
 
 Applies to the Incident Reports, Blocks, Incidents and Investigations queues.
 Updates the Ticket Custom Field IP to have a list of all IP and IP Ranges
-found in the body of the ticket during Create and Correspond
+found in the body of the ticket during Create and Correspond.
+
+If configuration of the CF allows only one value then only first IP
+from the content is used.
+
+It's OK to disable this scrip.
 
 =item SetConstituency
 
