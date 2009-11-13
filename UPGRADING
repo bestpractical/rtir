@@ -79,15 +79,46 @@ General upgrade instructions
             --datadir etc/upgrade/<version>
 
 Upgrading from 2.4.x and earlier
--------------------------
+--------------------------------
 
-_RTIR_ prefix has been deleted from all RTIR's custom fields. What
-means that you have to update custom code you have: templates,
-scrips and other customizations which may have name of a custom
-field hardcoded.
+1) _RTIR_ prefix has been deleted from all RTIR's custom fields. What
+   means that you have to update custom code you have: templates,
+   scrips and other customizations which may have name of a custom
+   field hardcoded.
 
-_RTIR_*_default options in the config has been merged together
-into RTIR_CustomFieldDefaults hash. Change RTIR's site config.
+   Custom Fields with multiple words in the name and no spaces have
+   been renamed, now there is space. These custom fields are:
+
+       HowReported  => How Reported
+       ReporterType => Reporter Type
+       WhereBlocked => Where Blocked
+
+   All these changes are implemented in F<etc/upgrade/2.5.1/content>
+   file.
+
+2) Saved searches affected by above change and you can convert them
+   using a script provided.
+
+       perl -I /opt/rt3/local/lib -I/opt/rt3/lib etc/upgrade/2.5.1/update_saved_searches.pl
+
+3) Some templates RTIR comes with contain code to insert values of
+   CFs into emails. This is impossible to change these templates
+   automatically. You have to do it manually. To identify templates
+   and/or confirm that all has been changed you can use the following
+   SQL query:
+
+       SELECT id, Queue FROM Templates WHERE Content LIKE '%_RTIR_%';
+
+   Usually this change is simple as deleting _RTIR_ prefix and adding
+   a space to three names mentioned above.
+
+   Some of your code may still use old names. Make sure to change
+   that. The following command might help you identify places:
+
+        find dir/ | xargs grep '_RTIR_'
+
+2) _RTIR_*_default options in the config has been merged together
+into RTIR_CustomFieldDefaults hash. Change site config accordingly.
 
 Upgrading from 2.3.17 and earlier
 -------------------------
