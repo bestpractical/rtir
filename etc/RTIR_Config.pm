@@ -204,19 +204,19 @@ Set($RTIRSearchResultFormats, {
     ChildReport =>
         q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
           '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
-          '__CustomField.{_RTIR_State}__</I>/TITLE:State',
+          '__CustomField.{_RTIR_State}__/TITLE:State',
           __DueRelative__},
 
     ChildInvestigation =>
         q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
           '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
-          '__CustomField.{_RTIR_State}__</I>/TITLE:State',
+          '__CustomField.{_RTIR_State}__/TITLE:State',
           __DueRelative__},
 
     ChildBlock =>
         q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
           '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
-          '__CustomField.{_RTIR_State}__</I>/TITLE:State',
+          '__CustomField.{_RTIR_State}__/TITLE:State',
            __DueRelative__},
 
 } );
