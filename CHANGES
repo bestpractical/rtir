@@ -1,3 +1,15 @@
+CHANGES IN 2.6.0 SINCE RTIR 2.4.x
+---------------------------------
+
+FEATURES
+========
+
+* INCOMPATIBLE CHANGE: prefix '_RTIR_' has been deleted from
+  all custom fields in RTIR. See UPGRADING for upgrade
+  instructions.
+* almost all default Custom Fields of RTIR now can be
+  disabled or un-applied, except State CF.
+
 CHANGES IN 2.4.2
 ----------------
 
