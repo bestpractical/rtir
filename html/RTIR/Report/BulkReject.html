@@ -57,7 +57,7 @@
     ShowListActions => 0,
 &>
 
-% if( $session{'tickets'}->Count ) {
+% if ( $session{'tickets'}->Count ) {
 <& /Elements/Submit,
     Name => "BulkReject",
     Caption => loc("Reject selected incident reports"),
@@ -136,7 +136,7 @@ if ( $BulkReject ) {
     push @results, map { ref($_)? loc( "Ticket [_1]: [_2]", $_->[0], $_->[1] ): $_ }
                    @tempresults;
     # force redo search if we changed state
-    $session{'tickets'}->RedoSearch;
+    $session{'tickets'}->RedoSearch if $session{'tickets'};
 
     if ( $BulkRejectAndReturn ) {
         my $key = Digest::MD5::md5_hex( rand(1024) );
