@@ -3,11 +3,14 @@ abstract: 'RT IR Extension'
 author:
   - 'Best Practical Solutions <sales@bestpractical.com>'
 build_requires:
+  ExtUtils::MakeMaker: 6.42
   File::Find: 0
   File::Temp: 0
   Test::More: 0
+configure_requires:
+  ExtUtils::MakeMaker: 6.42
 distribution_type: module
-generated_by: 'Module::Install version 0.77'
+generated_by: 'Module::Install version 0.91'
 license: 'GPL Version 2'
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -17,9 +20,8 @@ no_index:
   directory:
     - etc
     - html
-    - po
-    - var
     - inc
+    - po
     - t
 requires:
   Business::Hours: 0
@@ -31,4 +33,4 @@ requires:
   Regexp::Common: 0
   Regexp::Common::net::CIDR: 0
   perl: 5.8.3
-version: 2.4.1
+version: 2.4.2
