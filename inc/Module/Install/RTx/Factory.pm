@@ -30,7 +30,7 @@ sub RTxInitDB {
         "-I$lib_path",
         "$RT::SbinPath/rt-setup-database",
         "--action"      => $action,
-        "--datadir"     => "etc",
+        "--datadir"     => $action ne 'upgrade'? 'etc' : 'etc/upgrade',
         (($action eq 'insert') ? ("--datafile"    => "etc/initialdata") : ()),
         "--dba"         => $RT::DatabaseUser,
         "--prompt-for-dba-password" => ''
