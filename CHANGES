@@ -20,7 +20,8 @@ FEATURES
 * allow to use any custom field for lookup, not only IP,
   no UI at the moment, but can be used via arguments of a URL
   in clicky actions or linked CFs 
-* RTIR's QuickSearch searches by IP in all queues if
+* switch SimpleSearch over to the buttonless version
+* RTIR's SimpleSearch searches by IP in all queues if
   query is an IP only
 * we have search in any RTIR's queue, so we need default
   search format, new entry in $RTIRSearchResultFormats
@@ -30,6 +31,12 @@ FEATURES
 * RT::IR->CustomFields(...) method
 * refactored test suite for re-use in RTIR's extensions
 * described better Incident input field on Create pages
+
+BUGS
+====
+
+* Hide Launch links if user can not create an Inv
+* More...
 
 CALLBACKS
 =========
