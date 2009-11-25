@@ -254,12 +254,17 @@ if ( $CreateIncident && $gnupg_widget ) {
 }
 
 if ( $CreateIncident ) {
+    my $TicketCFs = $QueueObj->TicketCustomFields;
     my ($status, @msg) = $m->comp('/Elements/ValidateCustomFields',
-        CustomFields => $QueueObj->TicketCustomFields,
+        CustomFields => $TicketCFs,
         ARGSRef      => \%ARGS,
     );
     unless ( $status ) {
-        push @results, loc( "Invalid value(s) of the custom fields:" ), @msg;
+        push @results, loc( "Invalid value(s) of the custom fields:" );
+        while (my $CF = $TicketCFs->Next) {
+            my $msg = $m->notes('InvalidField-' . $CF->Id) or next;
+            push @results, $CF->Name . ': ' . $msg;
+        }
         $checks_failure = 1;
     }
 
