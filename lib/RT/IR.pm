@@ -190,7 +190,7 @@ my %STATES = (
 sub States {
     my %arg = ( Queue => undef, Active => 1, Inactive => 0, @_ );
 
-    my @queues = !$arg{'Queue'} ? (@QUEUES)
+    my @queues = !$arg{'Queue'} ? (keys %STATES)
         : ref $arg{'Queue'}? @{ $arg{'Queue'} } : ( $arg{'Queue'} );
     
     my @states;
