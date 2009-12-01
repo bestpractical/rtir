@@ -255,5 +255,4 @@ t/incident/bulk-abandon.t
 t/incident/split.t
 t/lib/RT/IR/Test.pm
 t/mail/skip_notification.t
-t/rtir-test.pl
 UPGRADING

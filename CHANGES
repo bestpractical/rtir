@@ -1,3 +1,10 @@
+CHANGES IN 2.4.3
+----------------
+
+BUGS
+====
+* RTIR 2.4.2 had syntax error that was preventing server to start
+
 CHANGES IN 2.4.2
 ----------------
 
@@ -7,7 +14,6 @@ FEATURES
 
 BUGS
 ====
-
 * don't set $$skip to zero in SkipTransaction callback as it may
   conflict with other users of this callback. Just use return and
   as well check asap if the txn is already skipped.
