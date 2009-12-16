@@ -123,7 +123,10 @@ unless ( exists $ARGS{'Content'} ) {
     }
 }
 </%PERL>
-<& /Elements/MessageBox, Default => $ARGS{'Content'} &>
+<& /Elements/MessageBox,
+    Default => $ARGS{'Content'},
+    IncludeSignature => !$ARGS{'Content'},
+&>
 
 </td></tr>
 

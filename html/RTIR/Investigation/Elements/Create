@@ -92,9 +92,11 @@ email addresses. These people <b>will</b> receive future updates.)</&></font></i
 <td>
 % $m->callback( %ARGS, MessageBoxName => $NamePrefix .'Content',
 %    CallbackPage => '/Ticket/Create.html', CallbackName => 'BeforeMessageBox' );
+% my $content = $value_cb->('Content');
 <& /Elements/MessageBox,
     Name             => $NamePrefix .'Content',
-    Default          => $value_cb->('Content'),
+    Default          => $content,
+    IncludeSignature => !$content,
     QuoteTransaction => $value_cb->('QuoteTransaction'),
 &></td></tr>
 % }

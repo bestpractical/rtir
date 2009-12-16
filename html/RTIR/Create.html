@@ -315,7 +315,11 @@ $ip_default ||= RT->Config->Get('_RTIR_IP_default') || '';
 %   }
 % }
 % $m->callback( %ARGS, CallbackPage => '/Ticket/Create.html', CallbackName => 'BeforeMessageBox' );
-<& /Elements/MessageBox, Default => $ARGS{Content}, QuoteTransaction => $QuoteTransaction &>
+% if ( $ARGS{Content} ) {
+<& /Elements/MessageBox, Default => $ARGS{Content}, IncludeSignature => 0 &>
+% } else {
+<& /Elements/MessageBox, QuoteTransaction => $QuoteTransaction &>
+% }
     </td>
   </tr>
   <tr>
