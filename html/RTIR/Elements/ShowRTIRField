@@ -26,11 +26,11 @@
 <span class="cf-value novalue"><&|/l&>no value</&></class>
 % return;
 % } elsif ( $count == 1 ) {
-<span class="cf-value"><% $values->First->Content %></span>
+<span class="cf-value"><% $show_cb->( $values->First ) |n %></span>
 % } else {
 <ul class="cf-values">
 % while ( my $value = $values->Next ) {
-<li class="cf-value"><% $value->Content %></li>
+<li class="cf-value"><% $show_cb->( $value ) |n %></li>
 % }
 </ul>
 % }
@@ -38,6 +38,18 @@
 $Name = "_RTIR_". $Name;
 my $values = $Ticket->CustomFieldValues( $Name );
 my $count = $values->Count;
+
+my $show_cb = sub {
+    my $value = shift;
+    my $linked = $value->LinkValueTo;
+    if ( $linked ) {
+        $m->out('<a href="'. $m->interp->apply_escapes( $value->LinkValueTo, 'h' ) .'" target="_new">');
+    }
+    $m->out( $m->interp->apply_escapes( $value->Content, 'h' ) );
+    if ( $linked ) {
+        $m->out('</a>');
+    }
+};
 </%INIT>
 <%ARGS>
 $Ticket => undef
