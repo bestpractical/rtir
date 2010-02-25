@@ -7,7 +7,7 @@ use Module::Install::Base ();
 
 use vars qw{$VERSION @ISA $ISCORE};
 BEGIN {
-	$VERSION = '0.91';
+	$VERSION = '0.92';
 	@ISA     = 'Module::Install::Base';
 	$ISCORE  = 1;
 }
@@ -34,6 +34,17 @@ sub prompt {
 	}
 }
 
+# Store a cleaned up version of the MakeMaker version,
+# since we need to behave differently in a variety of
+# ways based on the MM version.
+my $makemaker = eval $ExtUtils::MakeMaker::VERSION;
+
+# If we are passed a param, do a "newer than" comparison.
+# Otherwise, just return the MakeMaker version.
+sub makemaker {
+	( @_ < 2 or $makemaker >= eval($_[1]) ) ? $makemaker : 0
+}
+
 sub makemaker_args {
 	my $self = shift;
 	my $args = ( $self->{makemaker_args} ||= {} );
@@ -44,7 +55,7 @@ sub makemaker_args {
 # For mm args that take multiple space-seperated args,
 # append an argument to the current list.
 sub makemaker_append {
-	my $self = sShift;
+	my $self = shift;
 	my $name = shift;
 	my $args = $self->makemaker_args;
 	$args->{name} = defined $args->{$name}
@@ -130,12 +141,13 @@ sub write {
 		# an underscore, even though its own version may contain one!
 		# Hence the funny regexp to get rid of it.  See RT #35800
 		# for details.
-		$self->build_requires( 'ExtUtils::MakeMaker' => $ExtUtils::MakeMaker::VERSION =~ /^(\d+\.\d+)/ );
-		$self->configure_requires( 'ExtUtils::MakeMaker' => $ExtUtils::MakeMaker::VERSION =~ /^(\d+\.\d+)/ );
+		my $v = $ExtUtils::MakeMaker::VERSION =~ /^(\d+\.\d+)/;
+		$self->build_requires(     'ExtUtils::MakeMaker' => $v );
+		$self->configure_requires( 'ExtUtils::MakeMaker' => $v );
 	} else {
 		# Allow legacy-compatibility with 5.005 by depending on the
 		# most recent EU:MM that supported 5.005.
-		$self->build_requires( 'ExtUtils::MakeMaker' => 6.42 );
+		$self->build_requires(     'ExtUtils::MakeMaker' => 6.42 );
 		$self->configure_requires( 'ExtUtils::MakeMaker' => 6.42 );
 	}
 
@@ -152,42 +164,62 @@ sub write {
 		$args->{ABSTRACT} = $self->abstract;
 		$args->{AUTHOR}   = $self->author;
 	}
-	if ( eval($ExtUtils::MakeMaker::VERSION) >= 6.10 ) {
+	if ( $self->makemaker(6.10) ) {
 		$args->{NO_META} = 1;
 	}
-	if ( eval($ExtUtils::MakeMaker::VERSION) > 6.17 and $self->sign ) {
+	if ( $self->makemaker(6.17) and $self->sign ) {
 		$args->{SIGN} = 1;
 	}
 	unless ( $self->is_admin ) {
 		delete $args->{SIGN};
 	}
 
-	# Merge both kinds of requires into prereq_pm
 	my $prereq = ($args->{PREREQ_PM} ||= {});
 	%$prereq = ( %$prereq,
-		map { @$_ }
+		map { @$_ } # flatten [module => version]
 		map { @$_ }
 		grep $_,
-		($self->configure_requires, $self->build_requires, $self->requires)
+		($self->requires)
 	);
 
 	# Remove any reference to perl, PREREQ_PM doesn't support it
 	delete $args->{PREREQ_PM}->{perl};
 
-	# merge both kinds of requires into prereq_pm
+	# Merge both kinds of requires into BUILD_REQUIRES
+	my $build_prereq = ($args->{BUILD_REQUIRES} ||= {});
+	%$build_prereq = ( %$build_prereq,
+		map { @$_ } # flatten [module => version]
+		map { @$_ }
+		grep $_,
+		($self->configure_requires, $self->build_requires)
+	);
+
+	# Remove any reference to perl, BUILD_REQUIRES doesn't support it
+	delete $args->{BUILD_REQUIRES}->{perl};
+
+	# Delete bundled dists from prereq_pm
 	my $subdirs = ($args->{DIR} ||= []);
 	if ($self->bundles) {
 		foreach my $bundle (@{ $self->bundles }) {
 			my ($file, $dir) = @$bundle;
 			push @$subdirs, $dir if -d $dir;
-			delete $prereq->{$file};
+			delete $build_prereq->{$file}; #Delete from build prereqs only
 		}
+	}
+
+	unless ( $self->makemaker('6.55_03') ) {
+		%$prereq = (%$prereq,%$build_prereq);
+		delete $args->{BUILD_REQUIRES};
 	}
 
 	if ( my $perl_version = $self->perl_version ) {
 		eval "use $perl_version; 1"
 			or die "ERROR: perl: Version $] is installed, "
 			. "but we need version >= $perl_version";
+
+		if ( $self->makemaker(6.48) ) {
+			$args->{MIN_PERL_VERSION} = $perl_version;
+		}
 	}
 
 	$args->{INSTALLDIRS} = $self->installdirs;
@@ -265,4 +297,4 @@ sub postamble {
 
 __END__
 
-#line 394
+#line 426

@@ -28,7 +28,7 @@ BEGIN {
 	# This is not enforced yet, but will be some time in the next few
 	# releases once we can make sure it won't clash with custom
 	# Module::Install extensions.
-	$VERSION = '0.91';
+	$VERSION = '0.92';
 
 	# Storage for the pseudo-singleton
 	$MAIN    = undef;
@@ -348,17 +348,24 @@ sub _caller {
 	return $call;
 }
 
+# Done in evals to avoid confusing Perl::MinimumVersion
+eval( $] >= 5.006 ? <<'END_NEW' : <<'END_OLD' ); die $@ if $@;
 sub _read {
 	local *FH;
-	if ( $] >= 5.006 ) {
-		open( FH, '<', $_[0] ) or die "open($_[0]): $!";
-	} else {
-		open( FH, "< $_[0]"  ) or die "open($_[0]): $!";
-	}
+	open( FH, '<', $_[0] ) or die "open($_[0]): $!";
 	my $string = do { local $/; <FH> };
 	close FH or die "close($_[0]): $!";
 	return $string;
 }
+END_NEW
+sub _read {
+	local *FH;
+	open( FH, "< $_[0]"  ) or die "open($_[0]): $!";
+	my $string = do { local $/; <FH> };
+	close FH or die "close($_[0]): $!";
+	return $string;
+}
+END_OLD
 
 sub _readperl {
 	my $string = Module::Install::_read($_[0]);
@@ -379,18 +386,26 @@ sub _readpod {
 	return $string;
 }
 
+# Done in evals to avoid confusing Perl::MinimumVersion
+eval( $] >= 5.006 ? <<'END_NEW' : <<'END_OLD' ); die $@ if $@;
 sub _write {
 	local *FH;
-	if ( $] >= 5.006 ) {
-		open( FH, '>', $_[0] ) or die "open($_[0]): $!";
-	} else {
-		open( FH, "> $_[0]"  ) or die "open($_[0]): $!";
-	}
+	open( FH, '>', $_[0] ) or die "open($_[0]): $!";
 	foreach ( 1 .. $#_ ) {
 		print FH $_[$_] or die "print($_[0]): $!";
 	}
 	close FH or die "close($_[0]): $!";
 }
+END_NEW
+sub _write {
+	local *FH;
+	open( FH, "> $_[0]"  ) or die "open($_[0]): $!";
+	foreach ( 1 .. $#_ ) {
+		print FH $_[$_] or die "print($_[0]): $!";
+	}
+	close FH or die "close($_[0]): $!";
+}
+END_OLD
 
 # _version is for processing module versions (eg, 1.03_05) not
 # Perl versions (eg, 5.8.1).
@@ -427,4 +442,4 @@ sub _CLASS ($) {
 
 1;
 
-# Copyright 2008 - 2009 Adam Kennedy.
+# Copyright 2008 - 2010 Adam Kennedy.
