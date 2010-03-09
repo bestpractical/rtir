@@ -49,6 +49,7 @@ my $show_cb = sub {
     if ( $linked ) {
         $m->out('</a>');
     }
+    return '';
 };
 </%INIT>
 <%ARGS>
