@@ -1,0 +1,26 @@
+<%ARGS>
+$COLUMN_MAP => undef
+</%ARGS>
+<%INIT>
+# RTIR's custom fields have _RTIR_ prefix and we should delete
+# that on display. However in RT 3.8.8 we moved CustomFields from
+# Tickets' map to generic
+if ( $COLUMN_MAP->{'CustomField'} ) {
+    my $rtir_cfs = RT::CustomFields->new( $RT::SystemUser );
+    $rtir_cfs->Limit( FIELD => 'Name', OPERATOR => 'STARTSWITH', VALUE => '_RTIR_' );
+    while ( my $cf = $rtir_cfs->Next ) {
+        my $name = $cf->Name;
+        my ($display_name) = $name =~ /^_RTIR_(.*)/i;
+        next if exists $COLUMN_MAP->{ "CustomField.{$name}" };
+
+        my %h = (
+            title => $display_name,
+            value => sub {
+                return $COLUMN_MAP->{ "CustomField" }->{'value'}->(@_, $name)
+            },
+        );
+        $COLUMN_MAP->{ "CF.{$name}" } =
+            $COLUMN_MAP->{ "CustomField.{$name}" } = \%h;
+    }
+}
+</%INIT>
