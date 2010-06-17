@@ -31,6 +31,7 @@ etc/upgrade/2.3.0/content
 etc/upgrade/2.3.9/content
 etc/upgrade/upgrade.pl
 html/Callbacks/RTIR/autohandler/Default
+html/Callbacks/RTIR/Elements/ColumnMap/Once
 html/Callbacks/RTIR/Elements/EditCustomField/EditComponentName
 html/Callbacks/RTIR/Elements/Header/Default
 html/Callbacks/RTIR/Elements/Header/Head
