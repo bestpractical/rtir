@@ -254,8 +254,10 @@ if ( $q ) {
             . "OR ContentType = 'text' "
             . "OR ContentType = 'text/html' )"
             . " AND Content LIKE '$q'";
+        # apply transaction date search only if it's FTS as otherwise
+        # it can ruin performance of mysql optimizer rather than help
+        $query = "( $query ) AND TransactionDate > '". $now->ISO ."'"
     }
-    $query = "( $query ) AND TransactionDate > '". $now->ISO ."'";
 
     my ($val, $msg) = $session{'tickets'}->FromSQL( $query );
     $RT::Logger->warning( $msg ) unless $val;

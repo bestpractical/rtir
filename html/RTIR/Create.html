@@ -196,7 +196,8 @@
   <tr>
     <td class="labeltop"><&|/l&>Message</&>:</td>
     <td colspan="2">
-% if (!exists $ARGS{Content}) {
+% my $include_signature = 1;
+% unless (exists $ARGS{Content}) {
 %   my $Transactions;
 %   if ($TicketObj) {
 %     $Transactions = $TicketObj->Transactions;
@@ -217,9 +218,15 @@
 %      QuoteText => $quote);
 %      $ARGS{Content} =~ s/\&gt;/>/g;
 %   }
+% } else {
+%   $include_signature = 0;
 % }
 % $m->callback( %ARGS, CallbackPage => '/Ticket/Create.html', CallbackName => 'BeforeMessageBox' );
-<& /Elements/MessageBox, Default => $ARGS{Content}, QuoteTransaction => $QuoteTransaction &>
+% if ( $ARGS{Content} ) {
+<& /Elements/MessageBox, Default => $ARGS{Content}, IncludeSignature => $include_signature &>
+% } else {
+<& /Elements/MessageBox, QuoteTransaction => $QuoteTransaction &>
+% }
     </td>
   </tr>
   <tr>

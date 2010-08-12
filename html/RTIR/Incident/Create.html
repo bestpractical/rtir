@@ -106,6 +106,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 <tr><td class="labeltop"><&|/l&>Message</&>:</td>
 <td>
 <%PERL>
+my $include_signature = 1;
 unless ( exists $ARGS{'Content'} ) {
     my $Transactions;
     if ( $TicketObj ) {
@@ -121,9 +122,14 @@ unless ( exists $ARGS{'Content'} ) {
         ) || '';
         $ARGS{'Content'} =~ s/\&gt;/>/g;
     }
+} else {
+    $include_signature = 0;
 }
 </%PERL>
-<& /Elements/MessageBox, Default => $ARGS{'Content'} &>
+<& /Elements/MessageBox,
+    Default => $ARGS{'Content'},
+    IncludeSignature => $include_signature,
+&>
 
 </td></tr>
 
