@@ -21,10 +21,21 @@ Set($OverdueAfter, 7);
 # Set the hash of whois servers
 # Host is of the form "hostname:port"
 Set($whois, {
-    1 => { Host => "localhost", },
+    1 => {
+        Host         => "whois.iana.org",
+        FriendlyName => "IANA",
+    },
+    5 => {
+        Host         => "whois.ripe.net",
+        FriendlyName => "RIPE",
+    },
     2 => {
-        Host         => "whois-demo.bestpractical.com",
-        FriendlyName => "BPS Demo Server",
+        Host         => "whois.internic.net",
+        FriendlyName => "INTERNIC",
+    },
+    3 => {
+        Host         => "whois.arin.net",
+        FriendlyName => "ARIN",
     },
 } );
 
