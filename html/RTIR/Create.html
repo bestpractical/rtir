@@ -341,6 +341,7 @@ $ip_default ||= RT->Config->Get('_RTIR_IP_default') || '';
     </&>
     </td>
   </tr>
+% $m->callback(CallbackName => 'AdditionalRTIRBoxes', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Ticket => $TicketObj);
 </table>
 </&>
 

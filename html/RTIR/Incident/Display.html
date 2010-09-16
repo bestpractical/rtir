@@ -130,7 +130,9 @@
     Queue       => 'Incident Reports',
 &>
 
-</td></tr><tr><td class="boxcontainer" valign="top">
+</td></tr>
+% $m->callback(CallbackName => 'AdditionalRTIRBoxes', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Ticket => $TicketObj);
+<tr><td class="boxcontainer" valign="top">
 
 <& /RTIR/Incident/Elements/ShowChildren,
     IncidentObj => $TicketObj, 
