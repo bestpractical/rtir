@@ -41,7 +41,8 @@ sub IsLinkedToActiveIncidents {
 
     my $query =  "Queue = 'Incidents'"
                 ." AND HasMember = ". $child->id
-                ." AND ( ". join(" OR ", map "Status = '$_'", RT->Config->Get('ActiveStatus') ) ." ) ";
+                ." AND ( ". join(" OR ", map "Status = '$_'",
+                            RT::Queue->ActiveStatusArray ) ." ) ";
 
     $query   .= " AND id != ". $parent->Id if $parent;
 

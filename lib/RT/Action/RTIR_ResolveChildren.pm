@@ -84,7 +84,8 @@ sub Commit {
                 .") AND MemberOf = " . $id
                 ." AND ("
                 # TODO: move to per queue statuses lists
-                . join(" AND ", map "Status != '$_'", RT->Config->Get('InactiveStatus') )
+                . join(" AND ", map "Status != '$_'",
+                        RT::Queue->InactiveStatusArray )
                 .")";
 
     my $members = new RT::Tickets( $self->TransactionObj->CurrentUser );
