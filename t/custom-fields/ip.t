@@ -18,7 +18,7 @@ diag "load and check basic properties of the IP CF" if $ENV{'TEST_VERBOSE'};
     is( $cfs->Count, 1, "found one CF with name 'IP'" );
 
     $cf = $cfs->First;
-    is( $cf->Type, 'Freeform', 'type check' );
+    is( $cf->Type, 'IPAddressRange', 'type check' );
     is( $cf->LookupType, 'RT::Queue-RT::Ticket', 'lookup type check' );
     ok( !$cf->MaxValues, "unlimited number of values" );
     ok( !$cf->Disabled, "not disabled" );
