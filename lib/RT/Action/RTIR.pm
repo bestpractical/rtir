@@ -4,7 +4,7 @@ use strict;
 use RT::IR;
 package RT::Action::RTIR;
 
-use base 'RT::Action::Generic';
+use base 'RT::Action';
 
 sub CreatorCurrentUser {
     my $self = shift;

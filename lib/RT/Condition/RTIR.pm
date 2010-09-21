@@ -4,7 +4,7 @@ use strict;
 use RT::IR;
 
 package RT::Condition::RTIR;
-use base 'RT::Condition::Generic';
+use base 'RT::Condition';
 
 =head1 NAME
 
