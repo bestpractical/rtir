@@ -14,7 +14,7 @@ my $cf_name = 'test';
         Type       => 'FreeformSingle',
     );
 
-    for my $q ('Incident Reports', 'Investigation', 'Incidents', 'Blocks') {
+    for my $q ('Incident Reports', 'Investigations', 'Incidents', 'Blocks') {
         my $q_obj = RT::Queue->new($RT::SystemUser);
         $q_obj->Load($q);
         unless ( $q_obj->Id ) {
