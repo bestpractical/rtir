@@ -1,3 +1,14 @@
+CHANGES IN 2.4.5
+----------------
+
+CLEANUPS
+========
+
+* In ScriptedActions add requestor when we call Create instead
+  of delaying it, so "on create" scrips notify requestors
+* Updated sample WHOIS servers
+* CSS to clean up the RTIR home page a bit
+
 CHANGES IN 2.4.4
 ----------------
 
