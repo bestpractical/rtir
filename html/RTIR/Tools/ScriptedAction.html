@@ -364,6 +364,7 @@ if ( $ARGS{'SubmitAction'} ) {
             %ARGS,
             Queue          => $investigationq->Id,
             'new-MemberOf' => $Incident->Id,
+            Requestor      => $addr,
         );
         unless ( $Ticket ) {
             Abort("Couldn't launch an Investigation");
@@ -372,11 +373,6 @@ if ( $ARGS{'SubmitAction'} ) {
             Abort("No permission to view newly created ticket #".$Ticket->id.".");
         }
         push @finalresults, @ChildActions;
-
-        my @watchresults = ProcessTicketWatchers(
-            TicketObj => $Ticket,
-            ARGSRef => { %ARGS, AddRequestor => $addr },
-        );
 
         my $TemplateObj = RT::Template->new( $session{'CurrentUser'} );
         if ( $ARGS{'Template'} ) {
@@ -424,7 +420,7 @@ if ( $ARGS{'SubmitAction'} ) {
         }
 
         push @finalresults, map { loc("Ticket [_1]: [_2]", $Ticket->Id, $_) }
-            @watchresults, @updateresults;
+            @updateresults;
 
         # delete attachments only after they've been sent to everyone
         delete $session{'Attachments'};
