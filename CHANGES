@@ -86,10 +86,14 @@ FEATURES
 
 BUGS
 ====
-
 * don't set $$skip to zero in SkipTransaction callback as it may
   conflict with other users of this callback. Just use return and
   as well check asap if the txn is already skipped.
+* make proper overriding of WebNoAuthRegexp
+* recheck Constituency cache if $const is _none
+* adjust deserialization of IP from value with leading zeroes
+* RT::IR::States without Queue argument never worked properly
+* don't show modify user link if user can not modify the user
 
 CHANGES IN 2.4.1
 ----------------

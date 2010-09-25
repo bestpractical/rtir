@@ -6,3 +6,4 @@
 \.old$
 \.bak$
 ^Makefile$
+^\.git

@@ -33,6 +33,7 @@ etc/upgrade/2.5.1/content
 etc/upgrade/2.5.1/update_saved_searches.pl
 etc/upgrade/upgrade.pl
 html/Callbacks/RTIR/autohandler/Default
+html/Callbacks/RTIR/Elements/ColumnMap/Once
 html/Callbacks/RTIR/Elements/EditCustomField/EditComponentName
 html/Callbacks/RTIR/Elements/Header/Default
 html/Callbacks/RTIR/Elements/Header/Head
