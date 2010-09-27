@@ -246,7 +246,7 @@ ok($from =~ /govnet/, "The from address pciked up the gov address");
 
 diag "check defaults";
 {
-    $agent->login('eduhandler', 'eduhandler');
+    $agent->login('eduhandler', 'eduhandler', logout => 1 );
     my $ir_id = $agent->create_ir(
         { Subject => "test" },
     );
@@ -257,7 +257,7 @@ diag "check defaults";
 
 diag "check defaults";
 {
-    $agent->login('govhandler', 'govhandler');
+    $agent->login('govhandler', 'govhandler', logout => 1);
     my $ir_id = $agent->create_ir(
         { Subject => "test" },
     );
@@ -268,7 +268,7 @@ diag "check defaults";
 
 diag "check defaults when creating inc with inv";
 {
-    $agent->login('govhandler', 'govhandler');
+    $agent->login('govhandler', 'govhandler', logout => 1);
 	my ($inc_id, $inv_id) = $agent->create_incident_and_investigation(
 	    {
             Subject => "Incident", 
@@ -289,7 +289,7 @@ diag "check defaults when creating inc with inv";
 
 diag "check defaults when creating inc with inv";
 {
-    $agent->login('eduhandler', 'eduhandler');
+    $agent->login('eduhandler', 'eduhandler', logout => 1);
 	my ($inc_id, $inv_id) = $agent->create_incident_and_investigation(
 	    {
             Subject => "Incident", 
