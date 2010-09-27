@@ -41,7 +41,7 @@ Subject: This is a test of constituency functionality
 
 Foob!
 EOF
-        my ($status, $id) = RT::Test->send_via_mailgate($text, queue => $queue);
+        my ($status, $id) = RT::Test->send_via_mailgate_and_http($text, queue => $queue);
         is $status >> 8, 0, "The mail gateway exited ok";
         ok $id, "created ticket $id";
 
@@ -76,7 +76,7 @@ Subject: This is a test of constituency functionality
 Foob!
 EOF
         local $ENV{'EXTENSION'} = $val;
-        my ($status, $id) = RT::Test->send_via_mailgate($text, queue => $queue);
+        my ($status, $id) = RT::Test->send_via_mailgate_and_http($text, queue => $queue);
         is $status >> 8, 0, "The mail gateway exited ok";
         ok $id, "created ticket $id";
         $incident_id = $id if $queue eq 'Incidents';
