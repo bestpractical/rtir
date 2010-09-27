@@ -33,9 +33,6 @@ requires('Net::Whois::RIPE');
 # IP searching
 requires('Hook::LexWrap');
 requires('Regexp::Common');
-# CIDR parsing and converting
-requires('Net::CIDR');
-requires('Regexp::Common::net::CIDR');
 
 # for tests
 build_requires('Test::More');
