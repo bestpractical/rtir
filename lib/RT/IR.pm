@@ -371,11 +371,35 @@ if ( RT::IR->HasConstituency ) {
     };
 }
 
+require RT::Ticket;
+{
+    no warnings 'redefine';
+    my $set_status = RT::Ticket->can('SetStatus');
+    *RT::Ticket::SetStatus = sub {
+        my $self = shift;
+        my %args;
+        if ( @_ == 1 ) {
+
+            # it's called like $ticket->SetStatus('new')
+            $args{Status} = $_[0];
+        }
+        else {
+            %args = @_;
+        }
+
+        my $old  = $self->__Value('Status');
+        # if old status is open, we don't want to SetStarted
+        if ( $old eq 'open' ) {
+            $args{SetStarted} = 0;
+        }
+
+        $self->$set_status(%args);
+    };
+}
 
 if ( RT::IR->HasConstituency ) {
     # Queue {Comment,Correspond}Address for multiple constituencies
 
-    require RT::Ticket;
     wrap 'RT::Ticket::QueueObj', pre => sub {
         my $queue = RT::Queue->new($_[0]->CurrentUser);
         $queue->Load($_[0]->__Value('Queue'));
