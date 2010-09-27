@@ -3,33 +3,33 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 25;
+use RT::IR::Test tests => 34;
 
 my $cf_name = 'test';
 {
     my $cf = RT::CustomField->new( $RT::SystemUser );
-    my ($id, $status) = $cf->Create(
+    my ($id, $msg) = $cf->Create(
         Name       => $cf_name,
         LookupType => 'RT::Queue-RT::Ticket', 
         Type       => 'FreeformSingle',
     );
+    ok( $id, "created custom field" ) or diag "error: $msg";
 
-    for my $q ('Incident Reports', 'Investigation', 'Incidents', 'Blocks') {
+    for my $q ('Incident Reports', 'Investigations', 'Incidents', 'Blocks') {
         my $q_obj = RT::Queue->new($RT::SystemUser);
         $q_obj->Load($q);
-        unless ( $q_obj->Id ) {
-            $RT::Logger->error("Could not find queue ". $q );
-            next;
-        }
+        ok( $q_obj->id, "Loaded queue '$q'" );
+
         my $OCF = RT::ObjectCustomField->new($RT::SystemUser);
         my ($status, $msg) = $OCF->Create(
             CustomField => $cf->id,
             ObjectId    => $q_obj->id,
         );
-        $RT::Logger->error( $msg ) unless $status and $OCF->Id;
+        ok( $status && $OCF->id, 'Applied CF to the queue') or diag "error: $msg";
     }
 
     RT::IR::Test->add_rights( Principal => 'everyone', Right => ['SeeCustomField', 'ModifyCustomField']);
+    RT::IR->_FlushCustomFieldsCache;
 }
 
 
@@ -65,7 +65,7 @@ my $agent = default_agent();
     my $inc_id;
     {
         $inc_id = $agent->create_incident_for_ir( $ir_id );
-        
+
         my $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $inc_id );
         ok( $ticket->id, 'loaded ticket' );
