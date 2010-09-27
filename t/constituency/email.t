@@ -41,7 +41,7 @@ Subject: This is a test of constituency functionality
 
 Foob!
 EOF
-        my ($status, $id) = RT::Test->send_via_mailgate_and_http($text, queue => $queue);
+        my ($status, $id) = RT::Test->send_via_mailgate($text, queue => $queue);
         is $status >> 8, 0, "The mail gateway exited ok";
         ok $id, "created ticket $id";
 
@@ -56,7 +56,7 @@ EOF
     }
 }
 
-diag "create a ticket via gate using EXTENSION" if $ENV{'TEST_VERBOSE'};
+diag "create a ticket via gate using Extension header" if $ENV{'TEST_VERBOSE'};
 {
     my $i = 0;
 
@@ -71,12 +71,12 @@ diag "create a ticket via gate using EXTENSION" if $ENV{'TEST_VERBOSE'};
         my $text = <<EOF;
 From: @{[ $rtir_user->EmailAddress ]}
 To: rt\@@{[RT->Config->Get('rtname')]}
+X-RT-Mail-Extension: $val
 Subject: This is a test of constituency functionality
 
 Foob!
 EOF
-        local $ENV{'EXTENSION'} = $val;
-        my ($status, $id) = RT::Test->send_via_mailgate_and_http($text, queue => $queue);
+        my ($status, $id) = RT::Test->send_via_mailgate($text, queue => $queue );
         is $status >> 8, 0, "The mail gateway exited ok";
         ok $id, "created ticket $id";
         $incident_id = $id if $queue eq 'Incidents';

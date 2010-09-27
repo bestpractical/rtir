@@ -68,7 +68,7 @@ Subject: This is a test of constituency functionality
 
 Foob!
 EOF
-    my ($status, $id) = RT::Test->send_via_mailgate_and_http($text, queue => 'Incident Reports');
+    my ($status, $id) = RT::Test->send_via_mailgate($text, queue => 'Incident Reports');
     is $status >> 8, 0, "The mail gateway exited ok";
     ok $id, "created ticket $id";
 
@@ -99,11 +99,12 @@ diag "create an IR under GOVNET";
     my $text = <<EOF;
 From: @{[ $rtir_user->EmailAddress ]}
 To: gov-reports\@example.com
+X-RT-Mail-Extension: GOVNET
 Subject: This is a test of constituency functionality
 
 Foob!
 EOF
-    my ($status, $id) = RT::Test->send_via_mailgate_and_http($text, queue => 'Incident Reports', extension => 'GOVNET');
+    my ($status, $id) = RT::Test->send_via_mailgate($text, queue => 'Incident Reports');
     is $status >> 8, 0, "The mail gateway exited ok";
     ok $id, "created ticket $id";
 
