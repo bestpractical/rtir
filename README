@@ -14,7 +14,7 @@ or RTIR, please contact Best Practical at sales@bestpractical.com.
 REQUIRED PACKAGES:
 ------------------
 
-o   RT 3.8.3 or later, configured, installed and tested.
+o   RT 3.9.6 or later, configured, installed and tested.
 o   RTFM 2.4.1 or later, configured, installed and tested.
 
 
@@ -29,7 +29,7 @@ information.
 Installation instructions:
 --------------------------
 
-1) Install RT 3.8.3 or newer following RT's regular installation instructions
+1) Install RT 3.9.6 or newer following RT's regular installation instructions
 
 2) Install RTFM 2.4.1 or nerwer, following the installation instructions
    in RTFM's README file. (Don't forget to run "make initdb" to set up the 
@@ -51,6 +51,168 @@ Installation instructions:
 7) Activate RTIR extion in the RT config:
 
     Set(@Plugins, 'RT::FM', 'RT::IR');
+    Set(
+        %Lifecycles,
+        default => {
+            default_initial => 'new',
+            initial         => [ 'new', 'open' ],
+            active          => [ 'open', 'stalled' ],
+            inactive        => [ 'resolved', 'rejected', 'deleted' ],
+
+            transitions => {
+
+                # from   => [ to list ],
+                new      => [qw(open stalled resolved rejected deleted)],
+                open     => [qw(new stalled resolved rejected deleted)],
+                stalled  => [qw(new open rejected resolved deleted)],
+                resolved => [qw(new open stalled rejected deleted)],
+                rejected => [qw(new open stalled resolved deleted)],
+                deleted  => [qw(new open stalled rejected resolved)],
+            },
+            rights => {
+                '* -> deleted'  => 'DeleteTicket',
+                '* -> rejected' => 'ModifyTicket',
+                '* -> *'        => 'ModifyTicket',
+            },
+            actions => {
+
+                # 'from -> to'    => [action text, Respond/Comment/hide/''],
+                'new -> open'     => [ 'Open It', 'Respond' ],
+                'new -> resolved' => [ 'Resolve', 'Comment' ],
+                'new -> rejected' => [ 'Reject',  'Respond' ],
+                'new -> deleted'  => [ 'Delete',  '' ],
+
+                'open -> stalled'  => [ 'Stall',   'Comment' ],
+                'open -> resolved' => [ 'Resolve', 'Comment' ],
+                'open -> rejected' => [ 'Reject',  'Respond' ],
+                'open -> deleted'  => [ 'Delete',  'hide' ],
+
+                'stalled -> open'  => [ 'Open It',  '' ],
+                'resolved -> open' => [ 'Re-open',  'Comment' ],
+                'rejected -> open' => [ 'Re-open',  'Comment' ],
+                'deleted -> open'  => [ 'Undelete', '' ],
+                'open -> new'      => [ 'New',      'hide' ],
+            },
+        },
+        incidents => {
+            default_initial => 'open',
+            initial         => ['open'],
+            active          => ['open'],
+            inactive        => [ 'resolved', 'abandoned' ],
+
+            transitions => {
+
+                # from   => [ to list ],
+                open      => [qw(resolved abandoned)],
+                resolved  => [qw(open abandoned)],
+                abandoned => [qw(open resolved)],
+            },
+            rights  => { '* -> *' => 'ModifyTicket', },
+            actions => {
+                'open -> resolved'  => [ 'Resolve', 'Comment' ],
+                'open -> abandoned' => [ 'Abandon', 'Comment' ],
+                'resolved -> open'  => [ 'Re-open', 'Comment' ],
+                'abandoned -> open' => [ 'Re-open', 'Comment' ],
+            },
+        },
+        incident_reports => {
+            default_initial => 'new',
+            initial         => [ 'new', 'open' ],
+            active          => ['open'],
+            inactive        => [ 'resolved', 'rejected' ],
+
+            transitions => {
+
+                # from   => [ to list ],
+                new      => [qw(open resolved rejected)],
+                open     => [qw(new resolved rejected)],
+                resolved => [qw(new open rejected)],
+                rejected => [qw(new open resolved)],
+            },
+            rights  => { '* -> *' => 'ModifyTicket', },
+            actions => {
+                'new -> open'     => [ 'Open It', 'Respond' ],
+                'new -> resolved' => [ 'Resolve', 'Comment' ],
+                'new -> rejected' => [ 'Reject',  'Respond' ],
+
+                'open -> resolved' => [ 'Resolve', 'Comment' ],
+                'open -> rejected' => [ 'Reject',  'Respond' ],
+
+                'resolved -> open' => [ 'Re-open', 'Comment' ],
+                'rejected -> open' => [ 'Re-open', 'Comment' ],
+
+                'open -> new' => [ 'New', 'hide' ],
+            },
+        },
+        investigations => {
+            default_initial => 'open',
+            initial         => ['open'],
+            active          => ['open'],
+            inactive        => ['resolved'],
+
+            transitions => {
+
+                # from   => [ to list ],
+                open     => [qw(resolved)],
+                resolved => [qw(open)],
+            },
+            rights  => { '* -> *' => 'ModifyTicket', },
+            actions => {
+                'open -> resolved' => [ 'Resolve', 'Comment' ],
+                'resolved -> open' => [ 'Re-open', 'Comment' ],
+            },
+        },
+        blocks => {
+            default_initial => 'pending activation',
+            initial         => ['pending activation'],
+            active          => [ 'active', 'pending removal' ],
+            inactive        => ['removed'],
+
+            transitions => {
+                'pending activation' =>
+                  [ 'active', 'pending removal', 'removed' ],
+                active =>
+                  [ 'pending removal', 'removed', 'pending activation' ],
+                'pending removal' =>
+                  [ 'pending activation', 'removed', 'active' ],
+                removed =>
+                  [ 'pending activation', 'active', 'pending removal' ],
+            },
+            rights  => { '* -> *' => 'ModifyTicket', },
+            actions => {
+                'pending activation -> active' => [ 'Activate', 'Comment' ],
+                'pending activation -> pending removal' =>
+                  [ 'Pending to remove', 'Comment' ],
+                'pending activation -> removed' => [ 'Remove', 'Comment' ],
+
+                'active -> pending activation' =>
+                  [ 'Pending to activate', 'Comment' ],
+                'active -> pending removal' =>
+                  [ 'Pending to remove', 'Comment' ],
+                'active -> removed' => [ 'Remove', 'Comment' ],
+
+                'pending removal -> removed' => [ 'Remove',   'Comment' ],
+                'pending removal -> active'  => [ 'Activate', 'Comment' ],
+                'pending removal -> pending activation' =>
+                  [ 'Pending to Activate', 'Comment' ],
+
+                'removed -> active' => [ 'Activate', 'Comment' ],
+                'removed -> pending activation' =>
+                  [ 'Pending to activate', 'Comment' ],
+                'removed -> pending removal' =>
+                  [ 'Pending to remove', 'Comment' ],
+            },
+        },
+    );
+
+    Set(
+        %LifecycleMap,
+        General            => 'default',
+        Incidents          => 'incidents',
+        'Incident Reports' => 'incident_reports',
+        Investigations     => 'investigations',
+        Blocks             => 'blocks',
+    );
 
 8) Stop and start your web server.
 
