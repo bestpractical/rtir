@@ -19,21 +19,7 @@ sub IsApplicable {
     my $txn = $self->TransactionObj;
 
     my $type = $txn->Type;
-    return 1 if $type eq 'Create'
-        && ($self->TicketObj->FirstCustomFieldValue('State')||'') eq 'active';
-
-    if ( $type eq 'CustomField' ) {
-        my $cf = $self->TicketObj->QueueObj->CustomField('State');
-        unless ( $cf->id ) {
-            $RT::Logger->error("Couldn't load the 'State' field");
-            return 0;
-        }
-
-        return 0 unless $cf->id == $txn->Field;
-        return 0 unless ($txn->OldValue||'') eq 'pending activation';
-        return 0 unless ($txn->NewValue||'') eq 'active';
-        return 1;
-    }
+    return 1 if $type eq 'Create' && $self->TicketObj->Status eq 'active';
 
     return 0;
 }

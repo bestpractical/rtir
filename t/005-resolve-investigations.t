@@ -13,7 +13,7 @@ my $inv_id  = $agent->create_investigation( {Subject => "i want to quick-resolve
 $agent->display_ticket( $inv_id);
 
 $agent->follow_link_ok({text => "Quick Resolve"}, "followed 'RTFM' overview link");
-like($agent->content, qr/State changed from open to resolved/, "it got resolved");
+like($agent->content, qr/Status changed from \S*open\S* to \S*resolved\S*/, "it got resolved");
 
 $inv_id = $agent->create_investigation( {Subject => "resolve me slower"});
 
@@ -27,7 +27,7 @@ $agent->click("SubmitTicket");
 
 is ($agent->status, 200, "attempt to resolve inv succeeded");
 
-like($agent->content, qr/State changed from open to resolved/, "site says ticket got resolved");
+like($agent->content, qr/Status changed from \S*open\S* to \S*resolved\S*/, "site says ticket got resolved");
 
 $agent->follow_link_ok({text => "Open"}, "Followed 'open' link");
-like($agent->content, qr/State changed from resolved to open/, "site says ticket got re-opened");
+like($agent->content, qr/Status changed from \S*resolved\S* to \S*open\S*/, "site says ticket got re-opened");

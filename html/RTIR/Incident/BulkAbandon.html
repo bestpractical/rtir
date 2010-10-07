@@ -113,7 +113,7 @@ if ( $ARGS{'BulkAbandon'} ) {
         # process replies
         if( scalar @ReplyToAll ) {
             # XXX: why do we limit to open?
-            my $query = "CF.{State} = 'open' AND MemberOf = $id";
+            my $query = "Status = 'open' AND MemberOf = $id";
             $query .= " AND (". join(' OR ', map "Queue = '$_'", @ReplyToAll) .")";
             my $members = new RT::Tickets( $t->CurrentUser );
             $members->FromSQL( $query );
@@ -140,15 +140,7 @@ if ( $ARGS{'BulkAbandon'} ) {
 
         push @tmp, $t;
         foreach my $t( @tmp ) {
-            my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $t, 'State' );
-
             push @tempresults, ProcessTicketBasics( ARGSRef => \%ARGS, TicketObj => $t );
-
-            my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $t, 'State' );
-            if ( $newstate ne $oldstate ) {
-                push @tempresults,
-                     [ $t->id, loc("State changed from [_1] to [_2]", $oldstate, $newstate ) ];
-            }
         }
     }
 
@@ -176,7 +168,7 @@ my $current_tab = $BaseURL ."&$QueryString";
 
 </%INIT>
 <%ARGS>
-$Status          => 'rejected'
+$Status          => 'abandoned'
 $Queue           => 'Incidents'
 
 $BaseQuery       => $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue );

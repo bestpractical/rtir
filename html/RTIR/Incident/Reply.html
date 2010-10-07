@@ -125,7 +125,7 @@ if ($DefaultStatus eq 'resolved') {
     $title = loc("Resolve Incident #[_1] (including children)", $id);
     $SubmitCaption = loc("Resolve Incident");
     $SubmitLabel = loc("Resolve");
-} elsif ($DefaultStatus eq 'rejected') {
+} elsif ($DefaultStatus eq 'abandoned') {
     $title = loc("Abandon Incident #[_1] (including children)", $id);
     $SubmitCaption = loc("Abandon Incident");
     $SubmitLabel = loc("Abandon");
@@ -143,7 +143,7 @@ my @queues = ('Incident Reports', 'Investigations');
 push @queues, 'Blocks' unless RT->Config->Get('RTIR_DisableBlocksQueue');
 
 my $ActiveStatesQuery =
-    join ' OR ', map "CF.{State} = '$_'",
+    join ' OR ', map "Status = '$_'",
     RT::IR::States( Queue => \@queues );
 
 $Query ||= "( $ActiveStatesQuery )";
@@ -190,8 +190,6 @@ if ( $SubmitTicket && !$checks_failure ) {
         }
         $id = $Ticket->id;
 
-        my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, 'State' );
-
         my @tempresults;
         $ARGS{'UpdateAttachments'} = delete $session{'Attachments'};
         push @tempresults, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS );
@@ -199,20 +197,15 @@ if ( $SubmitTicket && !$checks_failure ) {
         unless ( RT::IR::Ticket::IsLinkedToActiveIncidents( $Ticket, $IncidentObj ) ) {
             # XXX: we push into results directly cuz ProcessTicketBasics returns results
             # with leading 'Ticket XX:' string
-            push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
-        }
-
-        my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, 'State' );
-
-        if ($newstate ne $oldstate) {
-            push (@tempresults, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
+            push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef
+=> { %ARGS, $ARGS{Status} eq 'abandoned' ? ( Status => 'rejected' ) : () } );
         }
 
         push @results, map { loc("Ticket [_1]: [_2]", $id, $_) } @tempresults;
     }
 
     my $update_incident_state = 1;
-    if ( $DefaultStatus =~ /^(rejected|resolved)$/) {
+    if ( $DefaultStatus =~ /^(abandoned|resolved)$/) {
         # if we are going to resolve/reject incident then do it only when we've
         # rejected all children that are not linked to another active incident(s)
         my $children = RT::Tickets->new( $session{'CurrentUser'} );
@@ -225,16 +218,10 @@ if ( $SubmitTicket && !$checks_failure ) {
     }
 
     if ( $update_incident_state ) {
-        my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $IncidentObj, 'State' );
         push @results, ProcessObjectCustomFieldUpdates( Object => $IncidentObj, ARGSRef => \%ARGS);
         push @results, ProcessTicketBasics( TicketObj => $IncidentObj, ARGSRef => \%ARGS );
-        my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $IncidentObj, 'State' );
-
-        if ($newstate ne $oldstate) {
-            push @results, loc("State changed from [_1] to [_2]", $oldstate, $newstate);
-        }
     } else {
-        push @results, loc("State of the Incident left unchanged; not all children were updated");
+        push @results, loc("Status of the Incident left unchanged; not all children were updated");
     }
 
     my $pass = {};

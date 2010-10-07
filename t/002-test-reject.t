@@ -39,9 +39,8 @@ for my $id ($nobody_quick, $me_quick) {
     $agent->display_ticket( $id);
     $agent->follow_link_ok({text => "Quick Reject"}, "Followed 'Quick Reject' link");
 
-    like($agent->content, qr/State changed from new to rejected/, "site says ticket got rejected");
+    like($agent->content, qr/Status changed from \S*new\S* to \S*rejected\S*/, "site says ticket got rejected");
 }
-
 for my $id ($nobody_slow, $me_slow) {
     $agent->display_ticket( $id);
 
@@ -53,13 +52,12 @@ for my $id ($nobody_slow, $me_slow) {
 
     is ($agent->status, 200, "attempt to reject succeeded");
 
-    like($agent->content, qr/State changed from new to rejected/, "site says ticket got rejected");
+    like($agent->content, qr/Status changed from \S*new\S* to \S*rejected\S*/, "site says ticket got rejected");
 }
 
 # we need to flush the cache, or else later the status change will not be detected
 use DBIx::SearchBuilder::Record::Cachable;
 DBIx::SearchBuilder::Record::Cachable::FlushCache();
-
 
 for my $id ($nobody_slow, $nobody_quick, $me_quick, $me_slow) {
     my $ir_obj = RT::Ticket->new(RT::SystemUser());
@@ -84,7 +82,7 @@ diag "test that after reject links to incidents are still there" if $ENV{'TEST_V
     $agent->field(UpdateContent => "why you are rejected");
     $agent->click("SubmitTicket");
     is $agent->status, 200, "attempt to reject succeeded";
-    $agent->ticket_state_is( $id, 'rejected' );
+    $agent->ticket_status_is( $id, 'rejected' );
 
     {
         my $tickets = RT::Tickets->new( $RT::SystemUser );
@@ -97,7 +95,7 @@ diag "test that after reject links to incidents are still there" if $ENV{'TEST_V
     $agent->follow_link_ok({text => "Incident Reports", n => 2}, "Followed 'Incident Reports' link");
     $agent->form_number(3);
     $agent->tick( States => 'rejected' );
-    $agent->click('RefineStates');
+    $agent->click('RefineStatus');
 
     $agent->has_tag('a', "$id", 'we have link to ticket');
 }
@@ -114,7 +112,7 @@ diag "test that after quick reject links to incidents are still there" if $ENV{'
 
     $agent->display_ticket( $id);
     $agent->follow_link_ok({text => "Quick Reject"}, "Followed 'Reject' link");
-    $agent->ticket_state_is( $id, 'rejected' );
+    $agent->ticket_status_is( $id, 'rejected' );
 
     {
         my $tickets = RT::Tickets->new( $RT::SystemUser );
@@ -127,7 +125,7 @@ diag "test that after quick reject links to incidents are still there" if $ENV{'
     $agent->follow_link_ok({text => "Incident Reports", n => 2}, "Followed 'Incident Reports' link");
     $agent->form_number(3);
     $agent->tick( States => 'rejected' );
-    $agent->click('RefineStates');
+    $agent->click('RefineStatus');
 
     $agent->has_tag('a', "$id", 'we have link to ticket');
 }
@@ -153,7 +151,7 @@ diag "test that after bulk reject links to incidents are still there" if $ENV{'T
     $agent->tick( SelectedTickets => $id );
     $agent->click('BulkReject');
 
-    $agent->ticket_state_is( $id, 'rejected' );
+    $agent->ticket_status_is( $id, 'rejected' );
 
     {
         my $tickets = RT::Tickets->new( $RT::SystemUser );
@@ -166,7 +164,7 @@ diag "test that after bulk reject links to incidents are still there" if $ENV{'T
     $agent->follow_link_ok({text => "Incident Reports", n => 2}, "Followed 'Incident Reports' link");
     $agent->form_number(3);
     $agent->tick( States => 'rejected' );
-    $agent->click('RefineStates');
+    $agent->click('RefineStatus');
 
     $agent->has_tag('a', "$id", 'we have link to ticket');
 }

@@ -155,12 +155,12 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
             $actions->{'A'} = {
                 title => loc('Reply to Reporters'),
                 path  =>
-                    "RTIR/Incident/Reply.html?id=$id&DefaultStatus=stalled&SelectAllTickets=1",
+                    "RTIR/Incident/Reply.html?id=$id&SelectAllTickets=1",
             };
             $actions->{'Ab'} = {
                 title => loc('Reply to All'),
                 path  =>
-                    "RTIR/Incident/Reply.html?id=$id&DefaultStatus=stalled&SelectAllTickets=1&All=1",
+                    "RTIR/Incident/Reply.html?id=$id&SelectAllTickets=1&All=1",
             };
         } elsif ( $Type eq 'Block' ) {
             $actions->{'A'} = {
@@ -172,7 +172,7 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
             $actions->{'A'} = {
                 title => loc('Reply'),
                 path  =>
-                    "RTIR/Update.html?id=$id&Action=Respond&DefaultStatus=stalled",
+                    "RTIR/Update.html?id=$id&Action=Respond",
             };
         }
     }
@@ -198,32 +198,32 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
                     title => loc('Quick Resolve'),
                 };
             } elsif ( $Type eq 'Block' ) {
-                if ( ($Ticket->FirstCustomFieldValue('State')||'') ne 'active' ) {
+                if ( $Ticket->Status ne 'active' ) {
                     $actions->{'Ab'} = {
-                        path  => "RTIR/Update.html?Action=Comment&DefaultStatus=open&id=$id",
+                        path  => "RTIR/Update.html?Action=Comment&DefaultStatus=active&id=$id",
                         title => loc('Activate')
                     };
                 }
                 $actions->{'Ac'} = {
-                    path  => "RTIR/Update.html?Action=Comment&DefaultStatus=resolved&id=$id",
+                    path  => "RTIR/Update.html?Action=Comment&DefaultStatus=removed&id=$id",
                     title => loc('Remove'),
                 };
                 $actions->{'Acc'} = {
-                    path  => "RTIR/Display.html?Status=resolved&id=$id",
+                    path  => "RTIR/Display.html?Status=removed&id=$id",
                     title => loc('Quick Remove'),
                 };
             }
             if ( $Type eq 'Incident' ) {
                 $actions->{'B'} = {
                     path =>
-                        "RTIR/Incident/Reply.html?id=$id&Action=Comment&All=1&DefaultStatus=rejected&SelectAllTickets=1",
+                        "RTIR/Incident/Reply.html?id=$id&Action=Comment&All=1&DefaultStatus=abandoned&SelectAllTickets=1",
                     title => loc('Abandon'),
                 };
             }
         } else {
             if ( $Type eq 'Block' ) {
                 $actions->{'C'} = {
-                    path  => "RTIR/Update.html?Action=Comment&DefaultStatus=open&id=$id",
+                    path  => "RTIR/Update.html?Action=Comment&DefaultStatus=active&id=$id",
                     title => loc('Activate')
                 };
             } else {
@@ -233,9 +233,9 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
                 };
             }
         }
-        if ( $Type eq 'Block' && ($Ticket->FirstCustomFieldValue('State')||'') eq 'active' ) {
+        if ( $Type eq 'Block' && $Ticket->Status eq 'active' ) {
             $actions->{'Ab'} = {
-                path  => "RTIR/Update.html?Action=Respond&DefaultStatus=stalled&id=$id",
+                path  => "RTIR/Update.html?Action=Respond&DefaultStatus=pending removal&id=$id",
                 title => loc('Pending Removal'),
             };
         }

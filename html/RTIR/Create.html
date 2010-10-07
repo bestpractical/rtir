@@ -62,7 +62,6 @@
 % }
 <input type="hidden" name="id" value="new" />
 <input type="hidden" name="Queue" value="<% $Queue %>" />
-<input type="hidden" name="Status" value="<% $Status || 'new' %>" />
 % if ( $Split ) {
 <input type="hidden" name="Ticket" value="<% $TicketObj->Id %>" />
 % }
@@ -98,6 +97,17 @@
     </font></i></td>
   </tr>
 % }
+  <tr>
+    <td class="label"><&|/l&>Status</&>:</td>
+    <td colspan="2">
+      <& /Elements/SelectStatus,
+          Name => 'Status',
+          QueueObj => $QueueObj,
+          DefaultValue => 0,
+#          Default => 'new',
+      &>
+    </td>
+  </tr>
   <tr>
     <td class="label"><&|/l&>Owner</&>:</td>
     <td colspan="2">
@@ -276,7 +286,7 @@ if ( $Type eq 'Report' ) {
 } elsif ( $Type eq 'Investigation' ) {
     $Status = 'open';
 } elsif ( $Type eq 'Block' ) {
-    $Status = 'new';
+    $Status = 'active';
 }
 $name ||= $Type;
 

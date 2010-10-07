@@ -57,6 +57,7 @@ Returns state of the C<Incident>.
 
 sub GetState {
     my $self = shift;
+    return '';
     my %state = (
         new      => 'open',
         open     => 'open',

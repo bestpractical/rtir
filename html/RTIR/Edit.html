@@ -51,12 +51,17 @@
 
 <table>
   <tr>
-    <td class="label"><%loc("State")%>:</td>
+    <td class="label"><&|/l&>Status</&>:</td>
     <td class="value" colspan="2">
 % unless ( $Type eq 'Block' ) {
-      <& /RTIR/Elements/ShowRTIRField, Ticket => $Ticket, Name => 'State' &>
+      <% $Ticket->Status %>
 % } else {
-      <& /RTIR/Block/Elements/EditState, TicketObj => $Ticket, Default => $Ticket->Status &>
+      <& /Elements/SelectStatus,
+          Name => 'Status',
+          QueueObj => $Ticket->QueueObj,
+          DefaultValue => 0,
+          Default => $Ticket->Status,
+      &>
 % }
     </td>
   </tr>
@@ -169,7 +174,6 @@ if ( $constituency_propagation eq 'reject' ) {
 
 if ( $SaveChanges && !$OnlySearchForPeople ) {
     my $checks_failure = 0;
-    my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, 'State' );
     push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
     my $strict_acl = RT->Config->Set( StrictLinkACL => 0 );
@@ -192,10 +196,6 @@ if ( $SaveChanges && !$OnlySearchForPeople ) {
     $checks_failure = 1 unless $status;
     push @results, ProcessTicketCustomFieldUpdates( ARGSRef => \%ARGS );
 
-    my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $Ticket, 'State' );
-    if ($newstate ne $oldstate) {
-        push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
-    }
     if ( !$checks_failure && RT->Config->Get('DisplayAfterEdit', $session{'CurrentUser'}) ) {
         $m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Ticket => $Ticket);
         push @{ $session{'Actions'}{''} ||= [] }, @results;

@@ -57,44 +57,11 @@ Returns state of the C<Block>.
 
 sub GetState {
     my $self = shift;
-    my %state = (
-        new      => 'pending activation',
-#        open     => 'active',
-        stalled  => 'pending removal',
-        resolved => 'removed',
-        rejected => 'removed',
-    );
     my $t = $self->TicketObj;
     my $txn = $self->TransactionObj;
-    my $status = $t->Status;
-    my $old_state = $t->FirstCustomFieldValue('State');
+    my $old_status = $t->Status;
 
-    if ( $status eq 'new' && $txn->Type eq 'Correspond' && $txn->IsInbound && $old_state eq 'pending activation' ) {
-        if ( my $re = RT->Config->Get('RTIR_BlockAproveActionRegexp') ) {
-            my $content = $txn->Content;
-            return '' if !$content || $content !~ /$re/;
-        }
-        my ($val, $msg) = $t->SetStatus( 'open' );
-        $RT::Logger->error("Couldn't change status: $msg") unless $val;
-        return 'active';
-    }
-
-    return $state{ $status } if $state{ $status };
-    # all code below is related to open status
-
-    # if block was removed (resolved/rejected) we reactivate it
-    return 'active' if $old_state eq 'removed';
-
-    if ( $txn->Creator != $RT::SystemUser->id ) {
-        # if a duty team member changes Status directly then we want to activate
-        if ( ($txn->Type eq 'Status' || ($txn->Type eq 'Set' && $txn->Field eq 'Status')) &&
-                $self->CreatorCurrentUser->PrincipalObj->HasRight(
-                    Right => 'ModifyTicket', Object => $t
-                )
-        ) {
-            return 'active';
-        }
-    }
+    return 'active' if $old_status eq 'removed';
 
     # next code related to requestor's correspondents
     return '' unless $txn->Type eq 'Correspond';
@@ -105,15 +72,11 @@ sub GetState {
         return '' if !$content || $content !~ /$re/;
     }
 
-    if ( $old_state eq 'pending activation' ) {
+    if ( $old_status eq 'pending activation' ) {
         # switch to active state if it is reply from requestor(s)
         return 'active';
-    } elsif ( $old_state eq 'pending removal' ) {
-        # switch to removed state when requestor(s) replies
-        # but do it via changing status!
-        my ($val, $msg) = $t->SetStatus( 'resolved' );
-        $RT::Logger->error("Couldn't change status: $msg") unless $val;
-        return '';
+    } elsif ( $old_status eq 'pending removal' ) {
+        return 'removed';
     }
 
     return '';

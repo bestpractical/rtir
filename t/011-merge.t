@@ -36,7 +36,7 @@ diag "merge an IR into a linked IR, the product should have open state"
     my $inc_id = $agent->create_incident( {Subject => "base inc for merging"});
     my $ir1_id = $agent->create_ir( {Subject => "ir1 for merging", Incident => $inc_id});
     $agent->ok_and_content_like( qr{Incident:.*$inc_id}ms, 'Created linked IR');
-    $agent->ticket_state_is( $ir1_id, 'open' );
+    $agent->ticket_status_is( $ir1_id, 'open' );
 
     my $ir2_id = $agent->create_ir( {Subject => "ir2 for merging"});
     $agent->display_ticket( $ir2_id);
@@ -55,7 +55,7 @@ diag "merge an IR into a linked IR, the product should have open state"
     $agent->display_ticket( $ir2_id);
     $agent->ok_and_content_like( qr{Incident Report #$ir1_id:}, 'Second id points to the ticket we merged into');
 
-    $agent->ticket_state_is( $ir2_id, 'open' );
+    $agent->ticket_status_is( $ir2_id, 'open' );
 }
 
 { # as previouse but with reversed merge operation
@@ -64,7 +64,7 @@ diag "merge an IR into a linked IR, the product should have open state"
     my $inc_id = $agent->create_incident( {Subject => "base inc for merging"});
     my $ir2_id = $agent->create_ir( {Subject => "ir2 for merging", Incident => $inc_id});
     $agent->ok_and_content_like( qr{Incident:.*$inc_id}ms, 'Created linked IR');
-    $agent->ticket_state_is( $ir2_id, 'open' );
+    $agent->ticket_status_is( $ir2_id, 'open' );
 
     $agent->display_ticket( $ir2_id);
 
@@ -81,7 +81,7 @@ diag "merge an IR into a linked IR, the product should have open state"
 
     $agent->display_ticket( $ir1_id);
     $agent->ok_and_content_like( qr{Incident Report #$ir1_id:}, 'Opened the merged ticket');
-    $agent->ticket_state_is( $ir1_id, 'open' );
+    $agent->ticket_status_is( $ir1_id, 'open' );
 }
 
 { # merge two IRs that are linked to different Incidents

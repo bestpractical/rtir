@@ -60,14 +60,14 @@ $agent->resolve_rtir_ticket( $invests[0], 'Investigation');
 $agent->bulk_abandon( @incident_ids);
 
 foreach my $id (@incident_ids) {
-	$agent->ticket_state_is( $id, 'abandoned', "Incident $id is abandoned");
+	$agent->ticket_status_is( $id, 'abandoned', "Incident $id is abandoned");
 }
 
 foreach my $id (@ir_ids ) {
-	diag("IR #$id state is " . $agent->ticket_state( $id)) if($ENV{'TEST_VERBOSE'});
+	diag("IR #$id state is " . $agent->ticket_status( $id)) if($ENV{'TEST_VERBOSE'});
 }
 foreach my $id (@invests) {
-	diag("IR #$id state is " . $agent->ticket_state( $id)) if($ENV{'TEST_VERBOSE'});
+	diag("IR #$id state is " . $agent->ticket_status( $id)) if($ENV{'TEST_VERBOSE'});
 }
 
 

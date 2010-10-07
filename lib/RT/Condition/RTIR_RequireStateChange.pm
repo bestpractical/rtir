@@ -65,7 +65,7 @@ sub IsApplicable {
     my $self = shift;
 
     my $type = $self->TransactionObj->Type;
-    return 1 if $type eq "Create" or $type eq "CustomField";
+    return 1 if $type eq "Create";# or $type eq "CustomField";
     return 1 if $self->IsStatusChange;
 
     my $field = $self->TransactionObj->Field;

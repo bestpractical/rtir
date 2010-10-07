@@ -71,15 +71,6 @@ my %TYPE = (
     'investigations'   => 'Investigation',
     'blocks'           => 'Block',
 );
-my %STATES = (
-    'incidents'        => { Active => ['open'], Inactive => ['resolved', 'abandoned'] },
-    'incident reports' => { Active => ['new', 'open'], Inactive => ['resolved', 'rejected'] },
-    'investigations'   => { Active => ['open'], Inactive => ['resolved'] },
-    'blocks'           => {
-        Active => ['pending activation', 'active', 'pending removal'],
-        Inactive => ['removed'],
-    },
-);
 
 =head1 FUNCTIONS
 
@@ -207,9 +198,17 @@ sub States {
         : ref $arg{'Queue'}? @{ $arg{'Queue'} } : ( $arg{'Queue'} );
     
     my @states;
-    foreach ( @queues ) {
-        push @states, @{ $STATES{ lc $_ }->{'Active'} || [] } if $arg{'Active'};
-        push @states, @{ $STATES{ lc $_ }->{'Inactive'} || [] } if $arg{'Inactive'};
+    foreach my $name (@queues) {
+        my $queue = RT::Queue->new($RT::SystemUser);
+        $queue->Load($name);
+        if ( $queue->id ) {
+            push @states, $queue->lifecycle->active   if $arg{'Active'};
+            push @states, $queue->lifecycle->inactive if $arg{'Inactive'};
+        }
+        else {
+            $RT::Logger->error( "failed to load queue $name" );
+        }
+
     }
 
     my %seen = ();
@@ -394,6 +393,17 @@ require RT::Ticket;
         }
 
         $self->$set_status(%args);
+    };
+}
+
+require RT::Action::AutoOpen;
+{
+    no warnings 'redefine';
+    my $prepare = RT::Action::AutoOpen->can('Prepare');
+    *RT::Action::AutoOpen::Prepare = sub {
+        my $self = shift;
+        return 1 if $self->TicketObj->QueueObj->Name eq 'Blocks';
+        $self->$prepare(@_);
     };
 }
 

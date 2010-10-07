@@ -11,7 +11,7 @@ my $on_create = $QueueObj && !($TicketObj && $TicketObj->id);
 
 # We never want to see the RTIR custom fields State and Constituency in the edity ui
 $CustomFields->_OpenParen('RTIR');
-$CustomFields->Limit( SUBCLAUSE => 'RTIR', ENTRYAGGREGATOR => 'AND', FIELD => 'Name', OPERATOR => '!=', VALUE => 'State');
+# $CustomFields->Limit( SUBCLAUSE => 'RTIR', ENTRYAGGREGATOR => 'AND', FIELD => 'Name', OPERATOR => '!=', VALUE => 'State');
 $CustomFields->Limit( SUBCLAUSE => 'RTIR', ENTRYAGGREGATOR => 'AND', FIELD => 'Name', OPERATOR => '!=', VALUE => 'Constituency');
 $CustomFields->_CloseParen('RTIR');
 </%init>

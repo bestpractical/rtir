@@ -27,7 +27,7 @@
 <tr>
 <td><b><&|/l&>id<b></&></td>
 <td><b><&|/l&>Subject<b></&></td>
-<td><b><&|/l&>State<b></&></td>
+<td><b><&|/l&>Status<b></&></td>
 <td><b><&|/l&>Priority<b></&></td>
 <td align="right"><b><&|/l&>Actions<b></&></td>
 </tr>
@@ -44,7 +44,7 @@
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
 <td><b><a href="<%RT->Config->Get('WebPath')%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%></a></b></td>
 <td><b><a href="<%RT->Config->Get('WebPath')%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Subject%></a></b></td>
-<td><& "/RTIR/Elements/ShowRTIRField", Ticket => $Ticket, Name => 'State' &>
+<td><%$Ticket->Status%></td>
 </td>
 <td><%$Ticket->Priority%></td>
 <td align="right">

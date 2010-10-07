@@ -45,6 +45,12 @@
 &>
 <table>
   <tr>
+    <td class="label"><% loc("Status") %>:</td>
+    <td class="value" colspan="2">
+      <% $Ticket->Status %>
+    </td>
+  </tr>
+  <tr>
     <td class="label"><% loc("Incident") %>:</td>
     <td class="value" colspan="2">
       <& /RTIR/Elements/ShowIncidents, Ticket => $Ticket &>
@@ -157,13 +163,12 @@ if ( $id eq 'new' ) {
     }
     ($Ticket, @results) = CreateTicket( %ARGS, Attachments => delete $session{'Attachments'} );
 } elsif( $id ) {
-    my $oldstate = $Ticket->FirstCustomFieldValue('State') ||'';
     
     $m->callback(
         CallbackName => 'ProcessArguments', 
         Ticket => $Ticket,
         ARGSRef => \%ARGS,  
-        Actions => \@results
+        Actions => \@results,
     );
 
     if ( $ARGS{'Action'} && $ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/ ) {
@@ -190,13 +195,6 @@ if ( $id eq 'new' ) {
     $ARGS{UpdateAttachments} = delete $session{'Attachments'};
     push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
-    if ( $Type eq 'Block' && ($ARGS{'Status'}||'') eq 'open' && $Ticket->Status eq 'open' ) {
-        my ($id, $msg) = $Ticket->AddCustomFieldValue(
-            Field => 'State',
-            Value => 'active',
-        );
-        $RT::Logger->error("Couldn't set state: $msg");
-    }
     push @results, ProcessTicketBasics(  TicketObj => $Ticket, ARGSRef => \%ARGS );
 
     my $strict_acl = RT->Config->Set( StrictLinkACL => 0 );
@@ -204,11 +202,6 @@ if ( $id eq 'new' ) {
     RT->Config->Set( StrictLinkACL => $strict_acl );
 
     push @results, ProcessTicketDates(   TicketObj => $Ticket, ARGSRef => \%ARGS );
-
-    my $newstate = $Ticket->FirstCustomFieldValue('State') || '';
-    if ($newstate ne $oldstate) {
-        push (@results, loc("State changed from [_1] to [_2]", $oldstate, $newstate));
-    }
 }
 
 if ( $ARGS{'BulkArticles'} && @SelectedTickets ) {
@@ -226,15 +219,13 @@ unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
 # update id argument in the case we took merged or created new
 $ARGS{'id'} = $id = $Ticket->Id;
 
-if ( @results ) {
-    # We've done something, so we need to clear the decks to avoid
-    # resubmission on refresh. But we need to store Actions somewhere
-    # too, so we don't lose them.
-    my $key = Digest::MD5::md5_hex( rand(1024) );
-    push @{ $session{"Actions"}{ $key } ||= [] }, @results;
-    $session{'i'}++;
-    RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."RTIR/Display.html?id=". $id ."&results=" . $key );
-}
+$m->comp(
+    '/Ticket/Elements/MaybeRedirectForResults',
+    Actions     => \@results,
+    Path        => 'RTIR/Display.html',
+    TicketObj   => $Ticket,
+);
+
 
 if ( $Type eq 'Report' ) {
     $name = "Incident Report";

@@ -25,13 +25,21 @@ ir_status('open');
 
 $agent->display_ticket( $inc_1);
 $agent->follow_link_ok({text => "Quick Resolve"}, "followed 'Quick Resolve' link for first incident");
-like($agent->content, qr/State changed from open to resolved/, "resolved the first incident");
+like(
+    $agent->content,
+    qr/Status changed from \S*open\S* to \S*resolved\S*/,
+    "resolved the first incident"
+);
 
 ir_status('open');
 
 $agent->display_ticket( $inc_2);
 $agent->follow_link_ok({text => "Quick Resolve"}, "followed 'Quick Resolve' link for second incident");
-like($agent->content, qr/State changed from open to resolved/, "resolved the second incident");
+like(
+    $agent->content,
+    qr/Status changed from \S*open\S* to \S*resolved\S*/,
+    "resolved the second incident"
+);
 
 ir_status('resolved');
 

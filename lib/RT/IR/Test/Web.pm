@@ -182,24 +182,24 @@ sub display_ticket {
     $self->get_ok("/RTIR/Display.html?id=$id", "Loaded Display page for Ticket #$id");
 }
 
-sub ticket_state {
+sub ticket_status {
     my $self = shift;
     my $id = shift;
     
     $self->display_ticket( $id);
-    my ($got) = ($self->content =~ qr{State:\s*</td>\s*<td[^>]*?class="value"[^>]*?>\s*([\w ]+?)\s*</td>}ism);
+    my ($got) = ($self->content =~ qr{Status:\s*</td>\s*<td[^>]*?class="value"[^>]*?>\s*([\w ]+?)\s*</td>}ism);
     unless ( $got ) {
-        Test::More::diag("Error: couldn't find state value on the page, may be regexp problem");
+        Test::More::diag("Error: couldn't find status value on the page, may be regexp problem");
     }
     return $got;
 }
 
-sub ticket_state_is {
+sub ticket_status_is {
     my $self = shift;
     my $id = shift;
-    my $state = shift;
-    my $desc = shift || "State of the ticket #$id is '$state'";
-    return Test::More::is($self->ticket_state( $id), $state, $desc);
+    my $status = shift;
+    my $desc = shift || "Status of the ticket #$id is '$status'";
+    return Test::More::is($self->ticket_status( $id), $status, $desc);
 }
 
 sub ticket_is_linked_to_inc {
@@ -297,7 +297,7 @@ sub merge_ticket {
     while($self->content() !~ m|<a href="/Ticket/Display.html\?id=$id_to_merge_to">$id_to_merge_to</a>|) {
         my @ids = sort map s|<b>\s*<a href="/Ticket/Display.html?id=(\d+)">\1</a>\s*</b>|$1|, split /<td/, $self->content();
         my $max = pop @ids;
-        my $url = "Merge.html?id=$id&Order=ASC&Query=( 'CF.{State}' = 'new' OR 'CF.{State}' = 'open' AND 'id' > $max)";
+        my $url = "Merge.html?id=$id&Order=ASC&Query=( 'Status' = 'new' OR 'Status' = 'open' AND 'id' > $max)";
         my $weburl = RT->Config->Get('WebURL');
         Test::More::diag("IDs found: " . join ', ', @ids);
         Test::More::diag("Max ID: " . $max);
@@ -405,7 +405,7 @@ sub resolve_rtir_ticket {
     Test::More::is( $self->status, 200, "Attempting to resolve $type #$id" );
 
     $self->content_like(
-        qr/.*State changed from \w+ to resolved.*/,
+        qr/.*Status changed from \S*\w+\S* to \S*resolved.*/,
         "Successfully resolved $type #$id"
     );
 }
@@ -447,7 +447,7 @@ sub bulk_abandon {
 
     foreach my $id (@to_abandon) {
         $self->ok_and_content_like(
-            qr{<li>Ticket $id: State changed from \w+ to abandoned</li>}i,
+            qr{<li>Ticket $id: Status changed from \S*\w+\S* to \S*abandoned\S*</li>}i,
             "Incident $id abandoned" );
     }
 

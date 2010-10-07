@@ -52,7 +52,7 @@ $COLUMN_MAP->{'HasIncident'} = {
         my $t = shift;
         my $yesno;
 
-        my $query = "Queue = 'Incidents' AND HasMember = " . $t->Id . " AND CF.{State} != 'rejected'";
+        my $query = "Queue = 'Incidents' AND HasMember = " . $t->Id . " AND Status != 'rejected'";
         my $incidents = new RT::Tickets($session{'CurrentUser'});
         $incidents->FromSQL($query);
 

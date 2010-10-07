@@ -52,7 +52,6 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 
 <input type="hidden" name="id"           value="new" />
 <input type="hidden" name="Queue"        value="<% $QueueObj->Name       || '' %>" />
-<input type="hidden" name="Status"       value="<% $ARGS{'Status'}       || 'open' %>" />
 % if ( $ChildObj ) {
 <input type="hidden" name="Child"        value="<% $Child %>" />
 % }
@@ -79,6 +78,17 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 <td class="value"><% loc("[_1] #[_2]: [_3]", $Type, $ChildObj->Id, $ChildObj->Subject) %></td></tr>
 % }
 
+<tr>
+  <td class="label"><&|/l&>Status</&>:</td>
+  <td colspan="2">
+    <& /Elements/SelectStatus,
+        Name => 'Status',
+        QueueObj => $QueueObj,
+        DefaultValue => 0,
+        Default => 'open',
+    &>
+  </td>
+</tr>
 <tr>
     <td class="label"><&|/l&>Owner</&>:</td>
 % if ( $ChildObj ) {
@@ -199,7 +209,7 @@ unless ( exists $ARGS{'Content'} ) {
     %ARGS,
     NamePrefix => 'Investigation',
     Queue => 'Investigations',
-    Status => 'new',
+    Status => 'open',
     SkipField => { Owner => 1, Attachments => 1, DateFields => 1 },
 &>
 <& /Elements/Submit,

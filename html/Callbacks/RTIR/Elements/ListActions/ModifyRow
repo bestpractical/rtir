@@ -12,11 +12,6 @@ foreach my $item ( grep $_, @skiplist ) {
 # get out of here if we are not in RTIR space
 return unless $m->request_comp->path =~ m{^/RTIR/};
 
-# skip RT status updates
-# XXX: this doesn't work with localization
-if ( $$row =~ /^\s*(?:Ticket\s*#?\d+:\s*)?Status changed from/ ) {
-    return $$skip = 1;
-}
 </%INIT>
 
 <%ARGS>

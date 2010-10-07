@@ -28,7 +28,7 @@
 %       my $checked = (grep { $_ eq $s } @States)? 'checked': '';
 <input type="checkbox" name="States" value="<% $s %>" <% $checked %> />&nbsp;<% $s %>
 %   }
-<& /Elements/Submit, Name => 'RefineStates', Label => loc('Filter states') &>
+<& /Elements/Submit, Name => 'RefineStatus', Label => loc('Filter states') &>
 % }
 
 % if ($Delete) {

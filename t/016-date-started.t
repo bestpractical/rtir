@@ -27,7 +27,7 @@ diag "started date of an IR" if $ENV{'TEST_VERBOSE'};
 {
     my $ir_id = $agent->create_ir( {Subject => "started date"});
     $agent->display_ticket( $ir_id);
-    sleep 5;
+    sleep 1;
 
     my $inc_id = $agent->create_incident_for_ir( $ir_id, {Subject => "started date"} );
     my $inc = RT::Ticket->new( $RT::SystemUser );

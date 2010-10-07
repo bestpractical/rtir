@@ -25,7 +25,7 @@
 % while ( my $incident = $incidents->Next ) {
 % $m->out('<ul>') unless $count;
 <li>
-<a href="<% RT->Config->Get('WebPath') %>/RTIR/Display.html?id=<% $incident->Id %>"><% $incident->Id %>: <% $incident->Subject %></a> <i>( <& /RTIR/Elements/ShowRTIRField, Ticket => $incident, Name => 'State' &> )</i>
+<a href="<% RT->Config->Get('WebPath') %>/RTIR/Display.html?id=<% $incident->Id %>"><% $incident->Id %>: <% $incident->Subject %></a> <i>( <% $incident->Status %> )</i>
 % if ( $show_unlink ) {
 <a href="<% RT->Config->Get('WebPath') %>/RTIR/Display.html?id=<% $Ticket->Id %>&DeleteLink--MemberOf-<% $incident->Id %>=1">[<% loc('Unlink') %>]</a>
 % }
@@ -54,7 +54,7 @@
 
 my $count = 0;
 
-my $query = "Queue = 'Incidents' AND HasMember = " . $Ticket->Id . " AND CF.{State} != 'rejected'";
+my $query = "Queue = 'Incidents' AND HasMember = " . $Ticket->Id . " AND Status != 'rejected'";
 my $incidents = new RT::Tickets($session{'CurrentUser'});
 $incidents->FromSQL($query);
 

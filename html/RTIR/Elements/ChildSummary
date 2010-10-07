@@ -28,7 +28,7 @@
 %# XXX: why we don't use TicketList component here?
 <th><b><&|/l&>id<b></&></th>
 <th><b><&|/l&>Subject<b></&></th>
-<th><b><&|/l&>State<b></&></th>
+<th><b><&|/l&>Status<b></&></th>
 <th><b><&|/l&>Priority<b></&></th>
 <th align="right"><b><&|/l&>Actions<b></&></th>
 </tr>
@@ -45,7 +45,7 @@
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
 <td><b><a href="<%RT->Config->Get('WebPath')%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%></a></b></td>
 <td><b><a href="<%RT->Config->Get('WebPath')%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Subject%></a></b></td>
-<td><& "/RTIR/Elements/ShowRTIRField", Ticket => $Ticket, Name => 'State' &>
+<td><%$Ticket->Status%></td>
 <td><%$Ticket->Priority%></td>
 % if ($Type eq 'Incident') {
 <td align="right"><a href="<%RT->Config->Get('WebPath')%>/RTIR/Display.html?Child=<%$Ticket->Id%>&id=<%$ticket%>">[<%loc("Link")%>]</a></td>

@@ -36,8 +36,8 @@ $agent->get_ok('/RTIR/index.html', 'open rtir at glance');
     $agent->tick('SelectedTickets', $irs[0]);  
     $agent->tick('SelectedTickets', $irs[2]);
     $agent->click('BulkReject');
-    $agent->ok_and_content_like( qr{Ticket $irs[0]: State changed from \w+ to rejected}, 'reject notice');
-    $agent->ok_and_content_like( qr{Ticket $irs[2]: State changed from \w+ to rejected}, 'reject notice');
+    $agent->ok_and_content_like( qr{Ticket $irs[0]: Status changed from \S*\w+\S* to \S*rejected\S*}, 'reject notice');
+    $agent->ok_and_content_like( qr{Ticket $irs[2]: Status changed from \S*\w+\S* to \S*rejected\S*}, 'reject notice');
 
     $agent->form_number(3);
     ok($agent->value('BulkReject'), 'still on reject page');
@@ -54,11 +54,11 @@ $agent->get_ok('/RTIR/index.html', 'open rtir at glance');
     $agent->tick('SelectedTickets', $irs[1]);
     $agent->tick('SelectedTickets', $irs[3]);
     $agent->click('BulkRejectAndReturn');
-    $agent->ok_and_content_like( qr{Ticket $irs[1]: State changed from new to rejected}, 'reject notice');
-    $agent->ok_and_content_like( qr{Ticket $irs[3]: State changed from new to rejected}, 'reject notice');
+    $agent->ok_and_content_like( qr{Ticket $irs[1]: Status changed from \S*new\S* to \S*rejected\S*}, 'reject notice');
+    $agent->ok_and_content_like( qr{Ticket $irs[3]: Status changed from \S*new\S* to \S*rejected\S*}, 'reject notice');
     $agent->ok_and_content_like( qr{New unlinked Incident Reports}, 'we are on the main page');
 }
 
 foreach( @irs ) {
-    $agent->ticket_state_is( $_, 'rejected', "Ticket #$_ is rejected" );
+    $agent->ticket_status_is( $_, 'rejected', "Ticket #$_ is rejected" );
 }

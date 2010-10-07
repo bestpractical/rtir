@@ -117,7 +117,7 @@ $QueueObj => undef,
 </%ARGS>
 <%INIT>
 my %DEFAULTS = (
-    Status => 'new',
+    Status => 'open',
 );
 my $value_cb = sub {
     my $name = shift;
