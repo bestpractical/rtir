@@ -48,7 +48,7 @@ Installation instructions:
    WARNING: Do not attempt to re-initialize the database if you are
    upgrading.
 
-7) Activate RTIR extion in the RT config:
+7) Activate RTIR extension in the RT config:
 
     Set(@Plugins, 'RT::FM', 'RT::IR');
     Set(
@@ -58,6 +58,7 @@ Installation instructions:
             initial         => [ 'new', 'open' ],
             active          => [ 'open', 'stalled' ],
             inactive        => [ 'resolved', 'rejected', 'deleted' ],
+            default_inactive  => 'resolved',
 
             transitions => {
 
@@ -99,6 +100,7 @@ Installation instructions:
             initial         => ['open'],
             active          => ['open'],
             inactive        => [ 'resolved', 'abandoned' ],
+            default_inactive  => 'resolved',
 
             transitions => {
 
@@ -120,6 +122,7 @@ Installation instructions:
             initial         => [ 'new', 'open' ],
             active          => ['open'],
             inactive        => [ 'resolved', 'rejected' ],
+            default_inactive  => 'resolved',
 
             transitions => {
 
@@ -149,6 +152,7 @@ Installation instructions:
             initial         => ['open'],
             active          => ['open'],
             inactive        => ['resolved'],
+            default_inactive  => 'resolved',
 
             transitions => {
 
@@ -167,6 +171,7 @@ Installation instructions:
             initial         => ['pending activation'],
             active          => [ 'active', 'pending removal' ],
             inactive        => ['removed'],
+            default_inactive  => 'removed',
 
             transitions => {
                 'pending activation' =>
