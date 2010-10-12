@@ -241,17 +241,9 @@
        Description => 'Set the state of an Incident Report' ,                                            # loc
        ExecModule => 'RTIR_SetIncidentReportState',
     },
-    {  Name        => 'RTIR Set Investigation State',    # loc
-       Description => 'Set the state of an Investigation' ,                                            # loc
-       ExecModule => 'RTIR_SetInvestigationState',
-    },
     {  Name        => 'RTIR Set Block State',    # loc
        Description => 'Set the state of a Block' ,                                            # loc
        ExecModule => 'RTIR_SetBlockState',
-    },
-    {  Name        => 'RTIR Set Incident State',    # loc
-       Description => 'Set the state of an Incident' ,                                            # loc
-       ExecModule => 'RTIR_SetIncidentState',
     },
     {  Name        => 'RTIR Set Incident Resolution',    # loc
        Description => 'Set the default resolution of an Incident' ,                                            # loc
@@ -429,16 +421,6 @@
        Queue             => 'Incident Reports',
        ScripCondition    => 'RTIR Require State Change',
        ScripAction       => 'RTIR Set Incident Report State',
-       Template          => 'Blank', },
-    {  Description       => "SetRTIRState",
-       Queue             => 'Investigations',
-       ScripCondition    => 'RTIR Require State Change',
-       ScripAction       => 'RTIR Set Investigation State',
-       Template          => 'Blank', },
-    {  Description       => "SetRTIRState",
-       Queue             => 'Incidents',
-       ScripCondition    => 'RTIR Require State Change',
-       ScripAction       => 'RTIR Set Incident State',
        Template          => 'Blank', },
 
 # XXX: description is duplication, but set Due of the incident
