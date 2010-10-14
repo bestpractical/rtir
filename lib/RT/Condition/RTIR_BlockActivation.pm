@@ -16,20 +16,11 @@ sub IsApplicable {
     my $self = shift;
 
     my $txn = $self->TransactionObj;
-
-    my $type = $txn->Type;
-    return 1 if $type eq 'Create' && $self->TicketObj->Status eq 'active';
-    if (
-        (
-            $txn->Type eq 'Status'
-            || ( $txn->Type eq 'Set' && $txn->Field eq 'Status' )
-        )
-        && $self->TicketObj->OldStatus eq 'pending activation'
-        && $self->TicketObj->NewStatus eq 'active'
-      )
-    {
-        return 1;
-    }
+    return 1 if $txn->Type eq 'Create' && $self->TicketObj->Status eq 'active';
+    return 1 if
+        $self->IsStatusChange
+        && $txn->OldValue eq 'pending activation'
+        && $txn->NewValue eq 'active';
 
     return 0;
 }
