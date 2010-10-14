@@ -44,7 +44,7 @@
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
 <td><b><a href="<%RT->Config->Get('WebPath')%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%></a></b></td>
 <td><b><a href="<%RT->Config->Get('WebPath')%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Subject%></a></b></td>
-<td><%$Ticket->Status%></td>
+<td><% loc($Ticket->Status) %></td>
 </td>
 <td><%$Ticket->Priority%></td>
 <td align="right">

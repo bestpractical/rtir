@@ -65,7 +65,7 @@
 <table border="0">
 
 <tr><td align="right"><&|/l&>Status</&>:</td>
-<td><% $Ticket->Status %></td></tr>
+<td><% loc($Ticket->Status) %></td></tr>
 <tr><td align="right"><&|/l&>Update Type</&>:</td>
 <td><select name="UpdateType">
 % if ($CanComment) {
