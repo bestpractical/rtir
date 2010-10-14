@@ -49,14 +49,7 @@
 <table>
   <tr>
     <td class="label"><&|/l&>Status</&>:</td>
-    <td>
-      <& /Elements/SelectStatus,
-          Name => 'Status',
-          QueueObj => $Ticket->QueueObj,
-          DefaultValue => 0,
-          Default => $Ticket->Status,
-      &>
-    </td>
+    <td><% loc($Ticket->Status) %></td></tr>
   </tr>
   <tr>
     <td class="label"><&|/l&>Owner</&>:</td>
