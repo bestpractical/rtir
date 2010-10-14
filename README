@@ -128,7 +128,7 @@ Installation instructions:
 
                 # from   => [ to list ],
                 new      => [qw(open resolved rejected)],
-                open     => [qw(new resolved rejected)],
+                open     => [qw(resolved rejected)],
                 resolved => [qw(new open rejected)],
                 rejected => [qw(new open resolved)],
             },
@@ -143,8 +143,6 @@ Installation instructions:
 
                 'resolved -> open' => [ 'Re-open', 'Comment' ],
                 'rejected -> open' => [ 'Re-open', 'Comment' ],
-
-                'open -> new' => [ 'New', 'hide' ],
             },
         },
         investigations => {
@@ -177,11 +175,11 @@ Installation instructions:
                 'pending activation' =>
                   [ 'active', 'pending removal', 'removed' ],
                 active =>
-                  [ 'pending removal', 'removed', 'pending activation' ],
+                  [ 'pending removal', 'removed' ],
                 'pending removal' =>
-                  [ 'pending activation', 'removed', 'active' ],
+                  [ 'removed', 'active' ],
                 removed =>
-                  [ 'pending activation', 'active', 'pending removal' ],
+                  [ 'active', 'pending removal' ],
             },
             rights  => { '* -> *' => 'ModifyTicket', },
             actions => {
@@ -190,20 +188,14 @@ Installation instructions:
                   [ 'Pending to remove', 'Comment' ],
                 'pending activation -> removed' => [ 'Remove', 'Comment' ],
 
-                'active -> pending activation' =>
-                  [ 'Pending to activate', 'Comment' ],
                 'active -> pending removal' =>
                   [ 'Pending to remove', 'Comment' ],
                 'active -> removed' => [ 'Remove', 'Comment' ],
 
                 'pending removal -> removed' => [ 'Remove',   'Comment' ],
                 'pending removal -> active'  => [ 'Activate', 'Comment' ],
-                'pending removal -> pending activation' =>
-                  [ 'Pending to Activate', 'Comment' ],
 
                 'removed -> active' => [ 'Activate', 'Comment' ],
-                'removed -> pending activation' =>
-                  [ 'Pending to activate', 'Comment' ],
                 'removed -> pending removal' =>
                   [ 'Pending to remove', 'Comment' ],
             },
