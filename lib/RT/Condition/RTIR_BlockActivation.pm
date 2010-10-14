@@ -4,11 +4,10 @@ use strict;
 use warnings;
 
 use base 'RT::Condition::RTIR';
-use RT::CustomField;
 
 =head2 IsApplicable
 
-When state of the block changes from C<pending active> to C<active>
+When state of the block changes from C<pending activation> to C<active>
 or ticket created with C<active> state.
 
 =cut
@@ -20,6 +19,17 @@ sub IsApplicable {
 
     my $type = $txn->Type;
     return 1 if $type eq 'Create' && $self->TicketObj->Status eq 'active';
+    if (
+        (
+            $txn->Type eq 'Status'
+            || ( $txn->Type eq 'Set' && $txn->Field eq 'Status' )
+        )
+        && $self->TicketObj->OldStatus eq 'pending activation'
+        && $self->TicketObj->NewStatus eq 'active'
+      )
+    {
+        return 1;
+    }
 
     return 0;
 }
