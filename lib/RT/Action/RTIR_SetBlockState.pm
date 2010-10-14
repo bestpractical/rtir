@@ -61,7 +61,27 @@ sub GetState {
     my $txn = $self->TransactionObj;
     my $old_status = $t->Status;
 
+    if ( $txn->Type eq 'Correspond' && $txn->IsInbound && $old_status eq 'pending activation' ) {
+        if ( my $re = RT->Config->Get('RTIR_BlockAproveActionRegexp') ) {
+            my $content = $txn->Content;
+            return '' if !$content || $content !~ /$re/;
+        }
+        return 'active';
+    }
+
     return 'active' if $old_status eq 'removed';
+
+    # if block was removed (resolved/rejected) we reactivate it
+    if ( $txn->Creator != $RT::SystemUser->id ) {
+        # if a duty team member changes Status directly then we want to activate
+        if ( ($txn->Type eq 'Status' || ($txn->Type eq 'Set' && $txn->Field eq 'Status')) &&
+                $self->CreatorCurrentUser->PrincipalObj->HasRight(
+                    Right => 'ModifyTicket', Object => $t
+                )
+        ) {
+            return 'active';
+        }
+    }
 
     # next code related to requestor's correspondents
     return '' unless $txn->Type eq 'Correspond';
@@ -76,6 +96,7 @@ sub GetState {
         # switch to active state if it is reply from requestor(s)
         return 'active';
     } elsif ( $old_status eq 'pending removal' ) {
+        # switch to removed state when requestor(s) replies
         return 'removed';
     }
 
