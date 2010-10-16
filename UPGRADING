@@ -75,6 +75,18 @@ General upgrade instructions
             --prompt-for-dba-password --action insert \
             --datadir etc/upgrade/<version>
 
+Upgrading from 2.4.5 and earlier
+-------------------------
+
+SubjectTag was ignored in RTIR templates, so users could be confused.
+Find all templates with the following text:
+
+    [{$rtname} #{$Ticket->id}]
+
+And replace it with:
+
+    [{$Ticket->QueueObj->SubjectTag || $rtname} #{$Ticket->id}]
+
 Upgrading from 2.3.17 and earlier
 -------------------------
 
