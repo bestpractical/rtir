@@ -1,0 +1,106 @@
+
+@Initial = (
+
+    # IP type change
+    sub {
+        my $ip_cf = RT::CustomField->new($RT::SystemUser);
+        $ip_cf->Load('IP');
+        if ( $ip_cf->id ) {
+            $ip_cf->SetType('IPAddressRange');
+            $ip_cf->SetMaxValue(0);
+            $ip_cf->SetPattern('');
+        }
+    },
+
+    #
+    # CF.State => Status
+    sub {
+        my %state;
+        for my $queue ( 'Incidents', 'Incident Reports', 'Investigations',
+            'Blocks' )
+        {
+            my $state = RT::CustomField->new($RT::SystemUser);
+            $state->LoadByName( Name => 'State', Queue => $queue );
+            $state{$queue} = $state if $state->id;
+        }
+
+        my $Tickets = RT::Tickets->new($RT::SystemUser);
+        $Tickets->UnLimit;
+        while ( my $ticket = $Tickets->Next ) {
+            next
+              unless $ticket->QueueObj->Name =~
+                  /^(Incidents|Incident Reports|Investigations|Blocks)$/;
+            my $txns = $ticket->Transactions;
+            my %done; # in case redo search bite
+            while ( my $txn = $txns->Next ) {
+                next if $done{$txn->id}++;
+                if ( $txn->Field eq 'Status' ) {
+                    $txn->Delete;
+                }
+                elsif ($txn->Type eq 'CustomField'
+                    && $txn->Field == $state{ $ticket->QueueObj->Name }->id )
+                {
+                    $txn->__Set( Field => 'Type', Value => 'Set' );
+                    $txn->__Set( Field => 'Field', Value => 'Status' );
+                    $txn->__Set( Field => 'ReferenceType', Value => '' );
+
+                    if ( $txn->OldReference ) {
+                        $ocfv =
+                          RT::ObjectCustomFieldValue->new($RT::SystemUser);
+                        $ocfv->Load( $txn->OldReference );
+                        $txn->__Set(
+                            Field => 'OldValue',
+                            Value => $ocfv->Content
+                        );
+                        $txn->__Set( Field => 'OldReference', Value => '' );
+                        $ocfv->Delete;
+                    }
+
+                    if ( $txn->NewReference ) {
+                        $ocfv =
+                          RT::ObjectCustomFieldValue->new($RT::SystemUser);
+                        $ocfv->Load( $txn->NewReference );
+                        $txn->__Set(
+                            Field => 'NewValue',
+                            Value => $ocfv->Content
+                        );
+                        $txn->__Set( Field => 'NewReference', Value => '' );
+                        $ocfv->Delete;
+                    }
+                }
+            }
+        }
+
+        for my $queue ( keys %state ) {
+            $state{$queue}->SetDisabled(1);
+        }
+    },
+
+    # remove state scrips: 2 actions and 2 scrips
+    sub {
+        for my $name (qw/Incident Investigation/) {
+            my $queue = RT::Queue->new($RT::SystemUser);
+            $queue->Load( $name . 's' );
+            next unless $queue->id;
+
+            my $action = RT::ScripAction->new($RT::SystemUser);
+            $action->Load("RTIR Set $name State");
+            next unless $action->id;
+
+            my $scrip = RT::Scrip->new($RT::SystemUser);
+            $scrip->LoadByCols(
+                Description => 'SetRTIRState',
+                Queue       => $queue->id,
+                ScripAction => $action->id,
+            );
+
+            if ( $scrip->id ) {
+                $scrip->Delete;
+            }
+
+            # hmm, RT::ScripAction currently doesn't allow Delete
+            # so the following code doesn't actually work.
+            $action->Delete();
+        }
+    },
+);
