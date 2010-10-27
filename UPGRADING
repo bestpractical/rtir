@@ -120,6 +120,18 @@ Upgrading from 2.4.x and earlier
 2) _RTIR_*_default options in the config has been merged together
 into RTIR_CustomFieldDefaults hash. Change site config accordingly.
 
+Upgrading from 2.4.5 and earlier
+-------------------------
+
+SubjectTag was ignored in RTIR templates, so users could be confused.
+Find all templates with the following text:
+
+    [{$rtname} #{$Ticket->id}]
+
+And replace it with:
+
+    [{$Ticket->QueueObj->SubjectTag || $rtname} #{$Ticket->id}]
+
 Upgrading from 2.3.17 and earlier
 -------------------------
 

@@ -45,6 +45,15 @@ CALLBACKS
 * 'AfterRequestors' in several components
 * 'LeftColumnStart' and 'RightColumnStart' in Display.html
 
+CHANGES IN 2.4.6
+----------------
+
+BUGS
+====
+
+* respect per queue SubjectTag in templates. Read UPGRADING for
+  upgrade instructions.
+
 CHANGES IN 2.4.5
 ----------------
 
