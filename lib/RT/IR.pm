@@ -46,7 +46,7 @@
 #
 package RT::IR;
 
-our $VERSION = '2.6.0rc1';
+our $VERSION = '2.6.0rc2';
 
 use 5.008003;
 use warnings;
