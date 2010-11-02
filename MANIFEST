@@ -31,8 +31,10 @@ etc/upgrade/2.3.0/content
 etc/upgrade/2.3.9/content
 etc/upgrade/2.5.1/content
 etc/upgrade/2.5.1/update_saved_searches.pl
+etc/upgrade/2.9.0/content
 etc/upgrade/upgrade.pl
 html/Callbacks/RTIR/autohandler/Default
+html/Callbacks/RTIR/Elements/ColumnMap/Once
 html/Callbacks/RTIR/Elements/EditCustomField/EditComponentName
 html/Callbacks/RTIR/Elements/Header/Default
 html/Callbacks/RTIR/Elements/Header/Head
@@ -52,7 +54,6 @@ html/Callbacks/RTIR/Ticket/Elements/EditCustomFields/MassageCustomFields
 html/Callbacks/RTIR/Ticket/Elements/ShowHistory/SkipTransaction
 html/Callbacks/RTIR/User/Elements/Tabs/Default
 html/RTIR/Advanced.html
-html/RTIR/Block/Elements/EditState
 html/RTIR/Block/Elements/Tabs
 html/RTIR/Create.html
 html/RTIR/Display.html
@@ -172,8 +173,6 @@ lib/RT/Action/RTIR_SetDueToNow.pm
 lib/RT/Action/RTIR_SetHowReported.pm
 lib/RT/Action/RTIR_SetIncidentReportState.pm
 lib/RT/Action/RTIR_SetIncidentResolution.pm
-lib/RT/Action/RTIR_SetIncidentState.pm
-lib/RT/Action/RTIR_SetInvestigationState.pm
 lib/RT/Action/RTIR_SetStartedToNow.pm
 lib/RT/Action/RTIR_SetStartsByBizHours.pm
 lib/RT/Action/RTIR_SetStartsToNow.pm
@@ -254,5 +253,4 @@ t/incident/abandon.t
 t/incident/bulk-abandon.t
 t/incident/split.t
 t/mail/skip_notification.t
-TODO.switch_custom_fields_to_generic_RT_methods
 UPGRADING
