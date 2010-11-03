@@ -71,10 +71,18 @@ Installation instructions:
             },
             rights  => { '* -> *' => 'ModifyTicket', },
             actions => {
-                'open -> resolved'  => [ 'Resolve', 'Comment' ],
-                'open -> abandoned' => [ 'Abandon', 'Comment' ],
-                'resolved -> open'  => [ 'Re-open', 'Comment' ],
-                'abandoned -> open' => [ 'Re-open', 'Comment' ],
+                'open -> resolved'  => {
+                    label => 'Resolve', update => 'Comment',
+                    All => 1, SelectAllTickets => 1,
+                },
+                'open -> abandoned' => {
+                    label => 'Abandon', update => 'Comment',
+                    All => 1, SelectAllTickets => 1,
+                },
+                '* -> open'  => {
+                    label => 'Re-open', update => 'Comment',
+                    All => 1, SelectAllTickets => 1,
+                },
             },
         },
         incident_reports => {
@@ -94,15 +102,14 @@ Installation instructions:
             },
             rights  => { '* -> *' => 'ModifyTicket', },
             actions => {
-                'new -> open'     => [ 'Open It', 'Respond' ],
-                'new -> resolved' => [ 'Resolve', 'Comment' ],
-                'new -> rejected' => [ 'Reject',  'Respond' ],
-
-                'open -> resolved' => [ 'Resolve', 'Comment' ],
-                'open -> rejected' => [ 'Reject',  'Respond' ],
-
-                'resolved -> open' => [ 'Re-open', 'Comment' ],
-                'rejected -> open' => [ 'Re-open', 'Comment' ],
+                'new -> open'      => { label => 'Open It', update => 'Respond' },
+                '* -> resolved'    => { label => 'Resolve', update => 'Comment' },
+                '* -> resolved'    => { label => 'Quick Resolve' },
+                '* -> rejected'    =>
+                    { label => 'Reject',  update => 'Respond', TakeOrStealFirst => 1 },
+                '* -> rejected'    => { label => 'Quick Reject', TakeOrStealFirst => 1 },
+                'resolved -> open' => { label => 'Re-open', update => 'Comment' },
+                'rejected -> open' => { label => 'Re-open', update => 'Comment' },
             },
         },
         investigations => {
@@ -120,8 +127,8 @@ Installation instructions:
             },
             rights  => { '* -> *' => 'ModifyTicket', },
             actions => {
-                'open -> resolved' => [ 'Resolve', 'Comment' ],
-                'resolved -> open' => [ 'Re-open', 'Comment' ],
+                'open -> resolved' => { label => 'Resolve', update => 'Comment' },
+                'resolved -> open' => { label => 'Re-open', update => 'Comment' },
             },
         },
         blocks => {
@@ -139,21 +146,11 @@ Installation instructions:
             },
             rights  => { '* -> *' => 'ModifyTicket', },
             actions => {
-                'pending activation -> active' => [ 'Activate', 'Comment' ],
-                'pending activation -> pending removal' =>
-                  [ 'Pending to remove', 'Comment' ],
-                'pending activation -> removed' => [ 'Remove', 'Comment' ],
-
-                'active -> pending removal' =>
-                  [ 'Pending to remove', 'Comment' ],
-                'active -> removed' => [ 'Remove', 'Comment' ],
-
-                'pending removal -> removed' => [ 'Remove',   'Comment' ],
-                'pending removal -> active'  => [ 'Activate', 'Comment' ],
-
-                'removed -> active' => [ 'Activate', 'Comment' ],
-                'removed -> pending removal' =>
-                  [ 'Pending to remove', 'Comment' ],
+                '* -> active' => { label => 'Activate', update => 'Comment' },
+                '* -> removed' => { label => 'Remove', update => 'Comment' },
+                '* -> removed' => { label => 'Quick Remove' },
+                '* -> pending removal' =>
+                  { label => 'Pending Removal', update => 'Comment' },
             },
         },
     );
