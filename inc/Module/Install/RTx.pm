@@ -8,7 +8,7 @@ no warnings 'once';
 
 use Module::Install::Base;
 use base 'Module::Install::Base';
-our $VERSION = '0.24';
+our $VERSION = '0.25';
 
 use FindBin;
 use File::Glob     ();
@@ -42,15 +42,16 @@ sub RTx {
         $INC{'RT.pm'} = "$RT::LocalPath/lib/RT.pm";
     } else {
         local @INC = (
-            @INC,
             $ENV{RTHOME} ? ( $ENV{RTHOME}, "$ENV{RTHOME}/lib" ) : (),
+            @INC,
             map { ( "$_/rt3/lib", "$_/lib/rt3", "$_/lib" ) } grep $_,
             @prefixes
         );
         until ( eval { require RT; $RT::LocalPath } ) {
             warn
                 "Cannot find the location of RT.pm that defines \$RT::LocalPath in: @INC\n";
-            $_ = $self->prompt("Path to your RT.pm:") or exit;
+            $_ = $self->prompt("Path to directory containing your RT.pm:") or exit;
+            $_ =~ s/\/RT\.pm$//;
             push @INC, $_, "$_/rt3/lib", "$_/lib/rt3", "$_/lib";
         }
     }
@@ -144,7 +145,6 @@ dropdb ::
         $has_etc{acl}++;
     }
     if ( -e 'etc/initialdata' ) { $has_etc{initialdata}++; }
-    if ( -e 'etc/upgrade' ) { $has_etc{upgrade}++; }
 
     $self->postamble("$postamble\n");
     unless ( $subdirs{'lib'} ) {
@@ -173,14 +173,6 @@ dropdb ::
 .
         $self->postamble("initdb ::\n$initdb\n");
         $self->postamble("initialize-database ::\n$initdb\n");
-
-        if ( $has_etc{upgrade} ) {
-            my $cmds = <<".";
-\t\$(NOECHO) \$(PERL) -Ilib -I"$local_lib_path" -I"$lib_path" -Minc::Module::Install -e"RTxInitDB(qw(upgrade))"
-.
-            $self->postamble("upgrade ::\n$cmds\n");
-        }
-        
     }
 }
 
@@ -197,4 +189,4 @@ sub RTxInit {
 
 __END__
 
-#line 311
+#line 303
