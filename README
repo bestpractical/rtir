@@ -54,46 +54,7 @@ Installation instructions:
     Set(
         %Lifecycles,
         default => {
-            default_initial => 'new',
-            initial         => [ 'new', 'open' ],
-            active          => [ 'open', 'stalled' ],
-            inactive        => [ 'resolved', 'rejected', 'deleted' ],
-            default_inactive  => 'resolved',
-
-            transitions => {
-
-                # from   => [ to list ],
-                new      => [qw(open stalled resolved rejected deleted)],
-                open     => [qw(new stalled resolved rejected deleted)],
-                stalled  => [qw(new open rejected resolved deleted)],
-                resolved => [qw(new open stalled rejected deleted)],
-                rejected => [qw(new open stalled resolved deleted)],
-                deleted  => [qw(new open stalled rejected resolved)],
-            },
-            rights => {
-                '* -> deleted'  => 'DeleteTicket',
-                '* -> rejected' => 'ModifyTicket',
-                '* -> *'        => 'ModifyTicket',
-            },
-            actions => {
-
-                # 'from -> to'    => [action text, Respond/Comment/hide/''],
-                'new -> open'     => [ 'Open It', 'Respond' ],
-                'new -> resolved' => [ 'Resolve', 'Comment' ],
-                'new -> rejected' => [ 'Reject',  'Respond' ],
-                'new -> deleted'  => [ 'Delete',  '' ],
-
-                'open -> stalled'  => [ 'Stall',   'Comment' ],
-                'open -> resolved' => [ 'Resolve', 'Comment' ],
-                'open -> rejected' => [ 'Reject',  'Respond' ],
-                'open -> deleted'  => [ 'Delete',  'hide' ],
-
-                'stalled -> open'  => [ 'Open It',  '' ],
-                'resolved -> open' => [ 'Re-open',  'Comment' ],
-                'rejected -> open' => [ 'Re-open',  'Comment' ],
-                'deleted -> open'  => [ 'Undelete', '' ],
-                'open -> new'      => [ 'New',      'hide' ],
-            },
+            ... whatever you use in RT ...
         },
         incidents => {
             default_initial => 'open',
