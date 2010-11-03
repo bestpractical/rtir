@@ -64,11 +64,10 @@ Installation instructions:
             default_inactive  => 'resolved',
 
             transitions => {
-
                 # from   => [ to list ],
                 open      => [qw(resolved abandoned)],
-                resolved  => [qw(open abandoned)],
-                abandoned => [qw(open resolved)],
+                resolved  => [qw(open)],
+                abandoned => [qw(open)],
             },
             rights  => { '* -> *' => 'ModifyTicket', },
             actions => {
@@ -83,15 +82,15 @@ Installation instructions:
             initial         => [ 'new', 'open' ],
             active          => ['open'],
             inactive        => [ 'resolved', 'rejected' ],
-            default_inactive  => 'resolved',
+            default_inactive => 'resolved',
 
             transitions => {
 
                 # from   => [ to list ],
                 new      => [qw(open resolved rejected)],
                 open     => [qw(resolved rejected)],
-                resolved => [qw(new open rejected)],
-                rejected => [qw(new open resolved)],
+                resolved => [qw(open)],
+                rejected => [qw(open)],
             },
             rights  => { '* -> *' => 'ModifyTicket', },
             actions => {
@@ -133,14 +132,10 @@ Installation instructions:
             default_inactive  => 'removed',
 
             transitions => {
-                'pending activation' =>
-                  [ 'active', 'pending removal', 'removed' ],
-                active =>
-                  [ 'pending removal', 'removed' ],
-                'pending removal' =>
-                  [ 'removed', 'active' ],
-                removed =>
-                  [ 'active', 'pending removal' ],
+                'pending activation' => [ 'active', 'removed' ],
+                active               => [ 'pending removal', 'removed' ],
+                'pending removal'    => [ 'removed', 'active' ],
+                removed              => [ 'active' ],
             },
             rights  => { '* -> *' => 'ModifyTicket', },
             actions => {
