@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 115;
+use RT::IR::Test tests => 118;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -27,22 +27,12 @@ $agent->ticket_status_is( $block_id, 'pending activation');
 $agent->has_tag('a', 'Remove', 'we have Remove action');
 $agent->has_tag('a', 'Quick Remove', 'we have Quick Remove action');
 
-#my %state = (
-#    new      => 'pending activation',
-#    open     => 'active',
-#    stalled  => 'pending removal',
-#    resolved => 'removed',
-#    rejected => 'removed',
-#);
-#
-#foreach my $status( qw(open stalled resolved) ) {
-foreach my $status( 'pending activation', 'pending removal', 'removed' ) {
+foreach my $status( 'pending activation', 'active', 'pending removal', 'removed' ) {
     $agent->follow_link_ok({ text => "Edit" }, "Goto edit page");
     $agent->form_number(3);
     $agent->field(Status => $status);
     $agent->click('SaveChanges');
-    my $state = $status;
-    $agent->ticket_status_is( $block_id, $state);
+    $agent->ticket_status_is( $block_id, $status);
 }
 
 diag "remove using edit";
