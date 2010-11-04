@@ -39,7 +39,7 @@ for my $id ($nobody_quick, $me_quick) {
     $agent->display_ticket( $id);
     $agent->follow_link_ok({text => "Quick Reject"}, "Followed 'Quick Reject' link");
 
-    like($agent->content, qr/Status changed from \S*new\S* to \S*rejected\S*/, "site says ticket got rejected");
+    like($agent->content, qr/Status changed from \S*(?:new|open)\S* to \S*rejected\S*/, "site says ticket got rejected");
 }
 for my $id ($nobody_slow, $me_slow) {
     $agent->display_ticket( $id);
@@ -52,7 +52,7 @@ for my $id ($nobody_slow, $me_slow) {
 
     is ($agent->status, 200, "attempt to reject succeeded");
 
-    like($agent->content, qr/Status changed from \S*new\S* to \S*rejected\S*/, "site says ticket got rejected");
+    like($agent->content, qr/Status changed from \S*(?:new|open)\S* to \S*rejected\S*/, "site says ticket got rejected");
 }
 
 # we need to flush the cache, or else later the status change will not be detected
