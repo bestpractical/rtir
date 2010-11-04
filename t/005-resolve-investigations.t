@@ -29,5 +29,5 @@ is ($agent->status, 200, "attempt to resolve inv succeeded");
 
 like($agent->content, qr/Status changed from \S*open\S* to \S*resolved\S*/, "site says ticket got resolved");
 
-$agent->follow_link_ok({text => "Open"}, "Followed 'open' link");
+$agent->follow_link_ok({text => "Re-open"}, "Followed 'open' link");
 like($agent->content, qr/Status changed from \S*resolved\S* to \S*open\S*/, "site says ticket got re-opened");
