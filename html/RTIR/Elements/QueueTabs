@@ -177,70 +177,6 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
         }
     }
 
-    if ( $can{'ModifyTicket'} ) {
-        if ( $Ticket->QueueObj->IsActiveStatus( $Ticket->Status ) ) {
-            if ( $Type =~ /^(Report|Investigation)$/ ) {
-                $actions->{'Ac'} = {
-                    path  => "RTIR/Update.html?Action=Comment&DefaultStatus=resolved&id=$id",
-                    title => loc('Resolve'),
-                };
-                $actions->{'Acc'} = {
-                    path  => "RTIR/Display.html?Status=resolved&id=$id",
-                    title => loc('Quick Resolve'),
-                };
-            } elsif ( $Type eq 'Incident' ) {
-                $actions->{'Ac'} = {
-                    path  => "RTIR/Incident/Reply.html?id=$id&Action=Comment&All=1&DefaultStatus=resolved&SelectAllTickets=1",
-                    title => loc('Resolve'),
-                };
-                $actions->{'Acc'} = {
-                    path  => "RTIR/Display.html?Status=resolved&id=$id",
-                    title => loc('Quick Resolve'),
-                };
-            } elsif ( $Type eq 'Block' ) {
-                if ( $Ticket->Status ne 'active' ) {
-                    $actions->{'Ab'} = {
-                        path  => "RTIR/Update.html?Action=Comment&DefaultStatus=active&id=$id",
-                        title => loc('Activate')
-                    };
-                }
-                $actions->{'Ac'} = {
-                    path  => "RTIR/Update.html?Action=Comment&DefaultStatus=removed&id=$id",
-                    title => loc('Remove'),
-                };
-                $actions->{'Acc'} = {
-                    path  => "RTIR/Display.html?Status=removed&id=$id",
-                    title => loc('Quick Remove'),
-                };
-            }
-            if ( $Type eq 'Incident' ) {
-                $actions->{'B'} = {
-                    path =>
-                        "RTIR/Incident/Reply.html?id=$id&Action=Comment&All=1&DefaultStatus=abandoned&SelectAllTickets=1",
-                    title => loc('Abandon'),
-                };
-            }
-        } else {
-            if ( $Type eq 'Block' ) {
-                $actions->{'C'} = {
-                    path  => "RTIR/Update.html?Action=Comment&DefaultStatus=active&id=$id",
-                    title => loc('Activate')
-                };
-            } else {
-                $actions->{'C'} = {
-                    path  => "RTIR/Display.html?Status=open&id=$id",
-                    title => loc('Open')
-                };
-            }
-        }
-        if ( $Type eq 'Block' && $Ticket->Status eq 'active' ) {
-            $actions->{'Ab'} = {
-                path  => "RTIR/Update.html?Action=Respond&DefaultStatus=pending removal&id=$id",
-                title => loc('Pending Removal'),
-            };
-        }
-    }
-
     if ( $can{'OwnTicket'} ) {
         if ( $Ticket->Owner == $RT::Nobody->id ) {
             $actions->{'D'} = {
@@ -255,20 +191,46 @@ if ( $Ticket && $Ticket->QueueObj->Name eq $QueueName ) {
         }
     }
 
-    if ( ( $can{'ModifyTicket'} || $can{'OwnTicket'} )
-         &&  $Ticket->QueueObj->IsActiveStatus( $Ticket->Status ) )
-    {
-        if ( $Type eq 'Report' ) {
-            $actions->{'B'} = {
-                path => "RTIR/Update.html?Action=Comment&TakeOrStealFirst=1&DefaultStatus=rejected&id=$id",
-                 title => loc('Reject'),
-            };
+    my $i = 0;
+    my $status = $Ticket->Status;
+    my $lifecycle = $Ticket->QueueObj->lifecycle;
+    foreach my $info ( $lifecycle->actions( $status ) ) {
+        my $next = $info->{'to'};
+        next unless $lifecycle->is_transition( $status => $next );
 
-            $actions->{'Bb'} = {
-                path  => "RTIR/Display.html?Status=rejected&TakeOrStealFirst=1&id=$id",
-                title => loc('Quick Reject'),
-            };
+        my %args = (%$info, id => $id);
+        delete @args{qw(to from label update)};
+
+        # if user will be owner then he will get more rights
+        # TODO: check actually if he will get required rights
+        if ( !$args{'TakeOrStealFirst'} || $session{'CurrentUser'}->id == $Ticket->Owner ) {
+            my $check = $lifecycle->check_right( $status => $next );
+            $can{$check} = $Ticket->CurrentUserHasRight($check)
+                unless exists $can{$check};
+            next unless $can{$check};
         }
+
+        my $path = 'RTIR/';
+        $path .= 'Incident/' if $Type eq 'Incident';
+        if ( my $update = $info->{'update'} ) {
+            $path .= $Type eq 'Incident'? 'Reply.html' : 'Update.html';
+            $path .= "?". $m->comp(
+                '/Elements/QueryString',
+                %args,
+                Action        => $update,
+                DefaultStatus => $next,
+            );
+        } else {
+            $path .= "Display.html?". $m->comp(
+                '/Elements/QueryString',
+                %args,
+                Status => $next,
+            );
+        }
+        $actions->{ 'Ab'. $i++ } = {
+            path  => $path,
+            title => loc( $info->{'label'} || ucfirst($next) ),
+        };
     }
 
     if ( $can{'ModifyTicket'} || $can{'CommentOnTicket'} ) {
