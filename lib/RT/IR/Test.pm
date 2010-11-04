@@ -43,6 +43,10 @@ sub import {
 
     RT->Config->LoadConfig( File => 'RTIR_Config.pm' );
     RT->Config->Set( 'rtirname' => 'regression_tests' );
+
+    require RT::Lifecycle;
+    RT::Lifecycle->fill_cache;
+
     require RT::IR;
 }
 
