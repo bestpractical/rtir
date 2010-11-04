@@ -277,4 +277,116 @@ Set($RTIR_BlockAproveActionRegexp, undef);
 # other actions don't apply to the same matched text
 Set(@Active_MakeClicky, qw(httpurl_overwrite ip email domain));
 
+Set(
+    %Lifecycles,
+    incidents => {
+        default_initial => 'open',
+        initial         => ['open'],
+        active          => ['open'],
+        inactive        => [ 'resolved', 'abandoned' ],
+        default_inactive  => 'resolved',
+
+        transitions => {
+            # from   => [ to list ],
+            open      => [qw(resolved abandoned)],
+            resolved  => [qw(open)],
+            abandoned => [qw(open)],
+        },
+        rights  => { '* -> *' => 'ModifyTicket', },
+        actions => [
+            'open -> resolved'  => {
+                label => 'Resolve', update => 'Comment',
+                All => 1, SelectAllTickets => 1,
+            },
+            'open -> resolved'  => {
+                label => 'Quick Resolve',
+            },
+            'open -> abandoned' => {
+                label => 'Abandon', update => 'Comment',
+                All => 1, SelectAllTickets => 1,
+            },
+            '* -> open'  => {
+                label => 'Re-open',
+                All => 1, SelectAllTickets => 1,
+            },
+        ],
+    },
+    incident_reports => {
+        default_initial => 'new',
+        initial         => [ 'new', 'open' ],
+        active          => ['open'],
+        inactive        => [ 'resolved', 'rejected' ],
+        default_inactive => 'resolved',
+
+        transitions => {
+
+            # from   => [ to list ],
+            new      => [qw(open resolved rejected)],
+            open     => [qw(resolved rejected)],
+            resolved => [qw(open)],
+            rejected => [qw(open)],
+        },
+        rights  => { '* -> *' => 'ModifyTicket', },
+        actions => [
+            'new -> open'      => { label => 'Open It', update => 'Respond' },
+            '* -> resolved'    => { label => 'Resolve', update => 'Comment' },
+            '* -> resolved'    => { label => 'Quick Resolve' },
+            '* -> rejected'    =>
+                { label => 'Reject',  update => 'Respond', TakeOrStealFirst => 1 },
+            '* -> rejected'    => { label => 'Quick Reject', TakeOrStealFirst => 1 },
+            '* -> open'        => { label => 'Re-open' },
+        ],
+    },
+    investigations => {
+        default_initial => 'open',
+        initial         => ['open'],
+        active          => ['open'],
+        inactive        => ['resolved'],
+        default_inactive  => 'resolved',
+
+        transitions => {
+
+            # from   => [ to list ],
+            open     => [qw(resolved)],
+            resolved => [qw(open)],
+        },
+        rights  => { '* -> *' => 'ModifyTicket', },
+        actions => [
+            '* -> resolved'    => { label => 'Resolve', update => 'Comment' },
+            '* -> resolved'    => { label => 'Quick Resolve' },
+            'resolved -> open' => { label => 'Re-open' },
+        ],
+    },
+    blocks => {
+        default_initial => 'pending activation',
+        initial         => ['pending activation'],
+        active          => [ 'active', 'pending removal' ],
+        inactive        => ['removed'],
+        default_inactive  => 'removed',
+
+        transitions => {
+            'pending activation' => [ 'active', 'removed' ],
+            active               => [ 'pending removal', 'removed' ],
+            'pending removal'    => [ 'removed', 'active' ],
+            removed              => [ 'active' ],
+        },
+        rights  => { '* -> *' => 'ModifyTicket', },
+        actions => [
+            '* -> active'  => { label => 'Activate', update => 'Comment' },
+            '* -> removed' => { label => 'Remove', update => 'Comment' },
+            '* -> removed' => { label => 'Quick Remove' },
+            '* -> pending removal' =>
+                { label => 'Pending Removal', update => 'Comment' },
+        ],
+    },
+);
+
+Set(
+    %LifecycleMap,
+    Incidents          => 'incidents',
+    'Incident Reports' => 'incident_reports',
+    Investigations     => 'investigations',
+    Blocks             => 'blocks',
+);
+
 1;
