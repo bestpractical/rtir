@@ -6,3 +6,4 @@
 \.bak$
 ^Makefile$
 ^\.git
+^t/tmp/
