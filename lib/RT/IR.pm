@@ -600,5 +600,14 @@ sub LoadByCols {
     return $self->SUPER::LoadByCols( %args, Content => $sIP, LargeContent => $eIP );
 }
 
+=head1 AUTHOR
+
+Best Practical Solutions E<lt>sales@bestpractical.comE<gt>
+
+=head1 LICENSE
+
+GPL version 2
+
+=cut
 
 1;

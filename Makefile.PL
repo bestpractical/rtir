@@ -1,9 +1,7 @@
 use inc::Module::Install;
 
 RTx('RT-IR');
-license('GPL Version 2');
-author('Best Practical Solutions <sales@bestpractical.com>');
-version_from('lib/RT/IR.pm');
+all_from('lib/RT/IR.pm');
 
 { # check RT version
     my @v = split /\./, "$RT::VERSION";
