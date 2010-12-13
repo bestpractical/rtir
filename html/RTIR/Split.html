@@ -44,7 +44,7 @@
 &>
 
 <%INIT>
-my $TicketObj = LoadTicket( $Ticket );
+my $TicketObj = LoadTicket( $id );
 
 $m->callback(CallbackName => 'Initial', %ARGS, Ticket => $TicketObj);
 
@@ -54,7 +54,7 @@ if ( $m->comp_exists("/RTIR/$Type/Split.html") ) {
 }
 
 my $query = "Queue = 'Incidents' AND HasMember = " . $TicketObj->Id;
-my $incidents = new RT::Tickets( $session{'CurrentUser'} );
+my $incidents = RT::Tickets->new( $session{'CurrentUser'} );
 $incidents->FromSQL( $query );
 
 my $Incident;
@@ -65,5 +65,5 @@ if ( my $obj = $incidents->First ) {
 </%INIT>
 <%ARGS>
 $QuoteTransaction => undef
-$Ticket => undef
+$id => undef
 </%ARGS>
