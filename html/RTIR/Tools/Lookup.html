@@ -130,11 +130,10 @@ unless ( $server ) {
 
 my $title = loc("Lookup '[_1]' using server [_2]", $q, $server);
 
-my $max_age;
+my $max_age = -60;
+
 if ( my $tmp = RT->Config->Get('RTIR_OldestRelatedTickets') ) {
     $max_age = 0 - $tmp;
-} else {
-    $max_age = -60;
 }
 
 my $now = RT::Date->new( $session{'CurrentUser'} );
