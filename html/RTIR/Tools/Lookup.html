@@ -37,60 +37,9 @@
 % }
 
 % unless ( $HideResults ) {
-<table width="100%" border="0" cellpadding="2" cellspacing="0">
-<tr><td valign="top" width="50%">
-
-<&| /Widgets/TitleBox, title => loc('Incidents: [_1]', $q), class => 'tickets-list-incident' &>
-<& /RTIR/Elements/IncidentSummary, 
-    Type       => $TicketType, 
-    ticket     => $ticket, 
-    lookuptype => $type, 
-    q          => $q,
-&>
-</&>
-
-</td><td valign="top" width="50%">
-
-<&| /Widgets/TitleBox, title => loc('Investigations: [_1]', $q), class => 'tickets-list-investigation' &>
-<& /RTIR/Elements/ChildSummary, 
-    Queue      => 'Investigations', 
-    Type       => $TicketType, 
-    ticket     => $ticket, 
-    lookuptype => $type, 
-    q          => $q,
-&>
-</&>
-
-</td></tr><tr><td valign="top" width="50%">
-
-<&| /Widgets/TitleBox, title => loc('Incident Reports: [_1]', $q), class => 'tickets-list-report' &>
-<& /RTIR/Elements/ChildSummary,
-    Queue      => 'Incident Reports',
-    Type       => $TicketType,
-    ticket     => $ticket,
-    lookuptype => $type,
-    q          => $q,
-&>
-</&>
-
-</td><td width="50%" valign="top">
-
-% unless ( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
-<&| /Widgets/TitleBox, title => loc('Blocks: [_1]', $q), class => 'tickets-list-block' &>
-<& /RTIR/Elements/ChildSummary,
-    Queue      => 'Blocks',
-    Type       => $TicketType,
-    ticket     => $ticket,
-    lookuptype => $type,
-    q          => $q,
-&>
-</&>
+<& Elements/LookupRelatedTickets, TicketObj => $TicketObj, LookupType => $type, q => $q &>
 % }
 
-</td></tr>
-
-</table>
-% }
 
 <hr>
 
@@ -167,7 +116,6 @@ my ($TicketObj, $TicketType);
 if ( $ticket ) {
     $TicketObj = LoadTicket( $ticket );
     $ticket = $ARGS{'ticket'} = $TicketObj->id;
-    $TicketType = RT::IR::TicketType( Ticket => $TicketObj );
 }
 
 my $Format = RT->Config->Get('RTIRSearchResultFormats')->{$TicketType . 'Default'};
