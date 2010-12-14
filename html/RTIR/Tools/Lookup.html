@@ -30,13 +30,13 @@
     Title          => $title,
 &>
 
-% if ( $ticket ) {
+% if ( $TicketObj->id ) {
 <&| /Widgets/TitleBox, title => loc("Current [_1]: #[_2]", $TicketType, $ticket), class => 'ticket-info-basics' &>
 <& /Elements/TicketList, Query => "id = $ticket", Format => $Format, ShowNavigation => 0 &>
 </&>
 % }
 
-% unless ( $HideResults ) {
+% if ( ! $HideResults ) {
 <& Elements/LookupRelatedTickets, TicketObj => $TicketObj, LookupType => $type, q => $q &>
 % }
 
@@ -112,11 +112,14 @@ if ( $q ) {
     $RT::Logger->warning( $msg ) unless $val;
 }
 
-my ($TicketObj, $TicketType);
+my $TicketObj = RT::Ticket->new($session{CurrentUser});
+my $TicketType;
 if ( $ticket ) {
     $TicketObj = LoadTicket( $ticket );
     $ticket = $ARGS{'ticket'} = $TicketObj->id;
+    $TicketType = RT::IR::TicketType( Ticket => $TicketObj );
 }
+
 
 my $Format = RT->Config->Get('RTIRSearchResultFormats')->{$TicketType . 'Default'};
 
