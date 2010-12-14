@@ -60,7 +60,18 @@ $q =>  undef
 $handparse => undef
 $TicketType => undef
 $TicketObj => undef
-$WhoisError => undef
-$WhoisIterator => undef
 $WhoisServer => undef
 </%args>
+<%init>
+use Net::Whois::RIPE;
+my ($whois, $port) = split(/\s*:\s*/, $WhoisServer, 2);
+$port = 43 unless ($port || '') =~ /^\d+$/;
+my $query = Net::Whois::RIPE->new( $whois, Port => $port, Debug => 1 );
+my ($WhoisIterator, $WhoisError);
+$WhoisIterator = $query->query_iterator($q) if $query;
+unless ( $WhoisIterator ) {
+    $WhoisError = loc( "Unable to connect to WHOIS server '[_1]'", $WhoisServer);
+}
+
+
+</%init>
