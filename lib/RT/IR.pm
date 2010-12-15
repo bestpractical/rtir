@@ -146,6 +146,11 @@ sub OurQueue {
     return $TYPE{ lc $queue };
 }
 
+sub Types {
+    my $self = shift;
+    return values %TYPE;
+}
+
 =head2 TicketType
 
 Returns type of a ticket. Takes either Ticket or Queue argument.
