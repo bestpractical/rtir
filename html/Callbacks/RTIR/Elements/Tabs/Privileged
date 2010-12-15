@@ -1,0 +1,220 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%#  Copyright (c) 2002-2003 Jesse Vincent <jesse@bestpractical.com>
+%#  
+%#  This program is free software; you can redistribute it and/or modify
+%#  it under the terms of version 2 of the GNU General Public License 
+%#  as published by the Free Software Foundation.
+%# 
+%#  A copy of that license should have arrived with this
+%#  software, but in any event can be snarfed from www.gnu.org.
+%# 
+%#  This program is distributed in the hope that it will be useful,
+%#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+%#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%#  GNU General Public License for more details.
+%# 
+%# END LICENSE BLOCK
+<%INIT>
+
+my $query_string = sub {
+    my %args = @_;
+    my $u    = URI->new();
+    $u->query_form(%args);
+    return $u->query;
+};
+
+my $root = Menu->child( rtir => title => loc('RTIR'), path => '/RTIR/' );
+
+my $search = $root->child( search => title => loc('Search'), path => '/RTIR/Search/' );
+$search->child( new => title => loc('New Query'), path => '/RTIR/Search/?NewQuery=1' );
+# XXX: query string
+$search->child( build => title => loc('Build Search'), path => '/RTIR/Search/' );
+if ( $session{'CurrentSearchHash'} ) {
+    $search->child( results => title => loc('Show Results'), path => '/RTIR/Search/Results.html' );
+} else {
+
+}
+
+$root->child( incidents => title => loc('Incidents'), path => '/RTIR/Search/Results.html?Queue=Incidents' );
+$root->child( reports => title => loc('Incident Reports'), path => '/RTIR/Search/Results.html?Queue=Incident%20Reports' );
+$root->child( investigations => title => loc('Investigations'), path => '/RTIR/Search/Results.html?Queue=Investigations' );
+unless ( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
+    $root->child( blocks => title => loc('Blocks'), path => '/RTIR/Search/Results.html?Queue=Blocks' );
+}
+my $tools = $root->child( tools => title => loc('Tools'), path => '/RTIR/Tools/' );
+$tools->child( lookup => title => loc('Lookup'), path => '/RTIR/Tools/Lookup.html' );
+$tools->child( reporting => title => loc('Reporting'), path => '/RTIR/Reporting/' );
+my $scripted_actions = $tools->child( scripted_actions => title => loc('Scripted Action') );
+$scripted_actions->child( email => title => loc('By Email address'), path => '/RTIR/Tools/ScriptedAction.html' );
+$scripted_actions->child( ip => title => loc('By IP address'), path => '/RTIR/Tools/ScriptedAction.html?loop=IP' );
+
+my $request_path = $HTML::Mason::Commands::r->path_info;
+return unless $request_path =~ m{^/RTIR/};
+
+my $args = $m->request_args;
+my $re_rtir_types = '(?:'. join( '|', map "\Q$_\E", RT::IR->Types ) .')';
+
+if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$} ) {
+    my $id = $args->{'id'};
+
+    # we'll never get here unless ticket is there and it's rtir's type
+    my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
+    $ticket->Load($id);
+    $id = $ticket->id;
+
+    my $queue = $ticket->QueueObj;
+    my $type = RT::IR::TicketType( Queue => $queue );
+
+    my %can;
+    my $can = sub {
+        return $can{$_[0]} if exists $can{$_[0]};
+        return $can{$_[0]} = $ticket->CurrentUserHasRight( $_[0] );
+    };
+
+    PageMenu()->child( display => title => loc('Display'), path => "/RTIR/Display.html?id=$id" );
+    if ( $can->('ModifyTicket') ) {
+        PageMenu()->child( edit => title => loc('Edit'), path => "/RTIR/Edit.html?id=$id" );
+        PageMenu()->child( split => title => loc('Split'), path => "/RTIR/Split.html?id=$id" );
+        # XXX: we're missing query string here
+        PageMenu()->child( merge => title => loc('Merge'), path => "/RTIR/Merge.html?id=$id" );
+        PageMenu()->child( advanced => title => loc('Advanced'), path => "/RTIR/Advanced.html?id=$id" );
+    }
+
+    if ( $can->('ModifyTicket') || $can->('ReplyToTicket') ) {
+        if ( $type eq 'Incident' ) {
+            PageMenu()->child(
+                reply_reporters => title => loc('Reply to Reporters'),
+                path  => "/RTIR/Incident/Reply.html?id=$id&SelectAllTickets=1",
+            );
+            PageMenu()->child(
+                reply_all => title => loc('Reply to All'),
+                path  => "/RTIR/Incident/Reply.html?id=$id&SelectAllTickets=1&All=1",
+            );
+        } else {
+            PageMenu()->child(
+                reply => title => loc('Reply'),
+                path  => "/RTIR/Update.html?id=$id&Action=Respond",
+            );
+        }
+    }
+    if ( $can->('OwnTicket') ) {
+        if ( $ticket->Owner == $RT::Nobody->id ) {
+            PageMenu()->child(
+                take => title => loc('Take'),
+                path  => "/RTIR/Display.html?Action=Take&id=$id",
+            ) if $can->('ModifyTicket') || $can->('TakeTicket');
+        } elsif ( $ticket->Owner != $session{CurrentUser}->id ) {
+            PageMenu()->child(
+                steal => title => loc('Steal'),
+                path  => "/RTIR/Display.html?Action=Steal&id=$id",
+            ) if $can->('ModifyTicket') || $can->('StealTicket');
+        }
+    }
+
+    my $i = 0;
+    my $status = $ticket->Status;
+    my $lifecycle = $queue->Lifecycle;
+    foreach my $info ( $lifecycle->Actions( $status ) ) {
+        my $next = $info->{'to'};
+        next unless $lifecycle->IsTransition( $status => $next );
+
+        my %args = (%$info, id => $id);
+        delete @args{qw(to from label update)};
+
+        # if user will be owner then he will get more rights
+        # TODO: check actually if he will get required rights
+        if ( !$args{'TakeOrStealFirst'} || $session{'CurrentUser'}->id == $ticket->Owner ) {
+            my $check = $lifecycle->CheckRight( $status => $next );
+            next unless $can->( $check );
+        }
+
+        my $path = '/RTIR/';
+        $path .= 'Incident/' if $type eq 'Incident';
+        if ( my $update = $info->{'update'} ) {
+            $path .= $type eq 'Incident'? 'Reply.html' : 'Update.html';
+            $path .= "?". $m->comp(
+                '/Elements/QueryString',
+                %args,
+                Action        => $update,
+                DefaultStatus => $next,
+            );
+        } else {
+            $path .= "Display.html?". $m->comp(
+                '/Elements/QueryString',
+                %args,
+                Status => $next,
+            );
+        }
+        PageMenu()->child(
+            lc($info->{'label'} || $next),
+            title => loc( $info->{'label'} || ucfirst($next) ),
+            path  => $path,
+        );
+    }
+
+    if ( $can->('ModifyTicket') || $can->('CommentOnTicket') ) {
+        PageMenu()->child(
+            comment => title => loc('Comment'),
+            path  => "RTIR/Update.html?Action=Comment&id=$id",
+        );
+    }
+
+    PageMenu()->child(
+        bookmark => title => $m->scomp( '/Ticket/Elements/Bookmark', id => $id ),
+        escape_title => 0,
+        link_item    => 0,
+        sort_order   => 99
+    );
+} elsif ( $request_path =~ m{^/RTIR/Link/ToIncident/} ) {
+    my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
+    $ticket->Load( $args->{'id'} );
+    my $id = $ticket->id;
+
+    my $queue = $ticket->QueueObj;
+    my $type = RT::IR::TicketType( Queue => $queue );
+
+    my %args = (
+        id => $id,
+    );
+    my @query_fields = qw(Query Format RowPerPage Page OrderBy Order);
+    if ( my $refined = $m->notes('RefinedSearch') ) {
+        @args{ @query_fields } = @{ $refined->{'query'} }{ @query_fields };
+    } else {
+        @args{ @query_fields } = @{ $args }{ @query_fields };
+    }
+
+    PageMenu()->child(
+        link => title => loc('Show Results'),
+        path => "/RTIR/Link/ToIncident/?". $query_string->( %args ),
+    );
+    PageMenu()->child(
+        edit_search => title => loc('Edit Search'),
+        path => "/RTIR/Link/ToIncident/Refine.html?". $query_string->( %args ),
+    );
+    PageMenu()->child(
+        new_search => title => loc('New Search'),
+        path => "/RTIR/Link/ToIncident/Refine.html?id=$id&NewSearch=1",
+    );
+    PageMenu()->child(
+        new => title => loc('New Incident'),
+        path => "/RTIR/Create.html?Child=$id&Queue=Incidents",
+    );
+    PageMenu()->child(
+        back => title => loc('Back to ticket #[_1]', $id),
+        path => "/RTIR/Display.html?id=$id",
+    );
+}
+
+
+if ( $request_path =~ m{^/RTIR/(?:index\.html|)$} ) {
+    PageMenu()->child( edit => title => loc('Edit'), path => '/RTIR/Prefs/MyRT.html' )
+        if $session{'CurrentUser'}->HasRight(Right => 'ModifySelf', Object => $RT::System);
+}
+
+PageWidgets()->child('simple_search')->title( $m->scomp(
+    '/Elements/SimpleSearch',
+    SendTo => '/RTIR/index.html'
+) );
+
+</%INIT>
