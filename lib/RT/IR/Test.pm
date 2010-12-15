@@ -36,7 +36,6 @@ sub import {
     } else {
         $args{'testing'} = 'RT::IR';
     }
-    unshift @{ $args{'requires'} }, 'RT::FM';
 
     $class->SUPER::import( %args );
     $class->export_to_level(1);
