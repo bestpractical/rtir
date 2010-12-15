@@ -1,0 +1,13 @@
+<%INIT>
+return $m->comp(
+    '/RTIR/Search/Elements/RefinePage',
+    %ARGS,
+    ResultPage => 'RTIR/Link/ToIncident/?id='. $ARGS{'id'},
+    BaseQuery => RT::IR->BaseQuery(
+        Queue => 'Incidents',
+        HasNoMember => $ARGS{'id'},
+        Costituency => $ARGS{'id'},
+    ),
+);
+</%INIT>
+

@@ -27,30 +27,14 @@
     Refresh => $session{'tickets_refresh_interval'},
 &>
 
-<& '/RTIR/Search/Elements/RefineTabs',
-   Title          => $title,
-   Ticket         => $ChildObj, 
-   Queue          => $Queue,
-   BaseQuery      => $BaseQuery,
-   QueryString    => $QueryString,
+<& /Elements/Tabs &>
 
-   current_tab    => $current_tab,
-   current_subtab => "RTIR/Search/Refine.html",
-   subtabs        => {
-        _z => {
-            title => loc('New Incident'),
-            path  => "RTIR/Create.html?Child=$id&Queue=Incidents",
-        },
-   },
-&>
-
-% $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $ChildObj);
+% $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $Ticket);
 
 <form action="<% RT->Config->Get('WebPath') %>/RTIR/Incident/Display.html" method="post">
 <input type="hidden" name="Child" value="<% $id %>" />
 
 <& /RTIR/Search/Elements/ShowResults, 
-    Queue         => $Queue,
     BaseQuery     => $BaseQuery,
     Query         => $Query,
     DisplayFormat => "__RadioButton__, $Format",
@@ -59,7 +43,7 @@
     Page          => $Page,
     OrderBy       => $OrderBy,
     Order         => $Order,
-    BaseURL       => $current_tab,
+    BaseURL       => "RTIR/Link/ToIncident/?id=$id&Queue=Incidents",
     ShowNavigation  => 1,
     ShowListActions => 0,
 &>
@@ -72,42 +56,20 @@
 </form>
 
 <%INIT>
-my $ChildObj = LoadTicket($id);
+my $Ticket = LoadTicket($id);
+$ARGS{'id'} = $id = $Ticket->id;
 
-$ARGS{'id'} = $id = $ChildObj->id;
+$m->callback(CallbackName => 'Initial', %ARGS, Ticket => $Ticket);
 
-
-$m->callback(CallbackName => 'Initial', %ARGS, Ticket => $ChildObj);
-
-my $Type = RT::IR::TicketType( Ticket => $ChildObj );
+my $Type = RT::IR::TicketType( Ticket => $Ticket );
 my $title = loc( "Link [_1] #[_2] to selected Incident", $Type, $id );
 
-my $Queue = 'Incidents';
-my $BaseQuery = $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue );
-$BaseQuery = join ' AND ', map "( $_ )", grep $_,
-             $BaseQuery, "HasMember != $id";
-if ( RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject' ) {
-    $BaseQuery = join ' AND ', map "( $_ )",
-        $BaseQuery, "CustomField.{Constituency} = '".
-            $ChildObj->FirstCustomFieldValue('Constituency') ."'"
-}
-
-$Query ||= $m->comp( '/RTIR/Elements/NewQuery', Queue => $Queue );
-
-my $QueryString = $m->comp('/Elements/QueryString',
-                               Query   => $Query,
-                               Format  => $Format,
-                               Rows    => $Rows,
-                               Page    => $Page,
-                               OrderBy => $OrderBy,
-                               Order   => $Order,
-                          );
-
-my $current_tab = "RTIR/Incident/LinkToIncident.html?"
-    . $m->comp( '/Elements/QueryString',
-        id    => $id,
-        Queue => $Queue,
-    );
+my $BaseQuery = RT::IR->BaseQuery(
+    Queue => 'Incidents',
+    HasNoMember => $id,
+    Costituency => $Ticket,
+);
+$Query ||= RT::IR->NewQuery( Queue => 'Incidents' );
 
 </%INIT>
 <%ARGS>
