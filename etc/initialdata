@@ -1,12 +1,5 @@
 # Initial data for a fresh RTIR Installation.
 
-@Initial = ( sub {
-    eval { require RT::FM; };
-    if ($@) {
-        die "RTIR is built on top of RTFM; please install RTFM before continuing.\n";
-    }
-} );
-
 @Queues = (
     {
         Name              => 'Incidents',
