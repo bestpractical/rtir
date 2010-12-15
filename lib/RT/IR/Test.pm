@@ -44,7 +44,7 @@ sub import {
     RT->Config->Set( 'rtirname' => 'regression_tests' );
 
     require RT::Lifecycle;
-    RT::Lifecycle->fill_cache;
+    RT::Lifecycle->FillCache;
 
     require RT::IR;
 }
