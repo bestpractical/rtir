@@ -4,7 +4,7 @@ use warnings;
 use strict;
 
 ### after: use lib qw(@RT_LIB_PATH@);
-use lib qw(/opt/rt3/local/lib /opt/rt3/lib);
+use lib qw(/opt/rt4/local/lib /opt/rt4//lib);
 
 use RT::Interface::CLI qw(CleanEnv GetCurrentUser GetMessageContent loc); 
 use RT::Tickets; 
