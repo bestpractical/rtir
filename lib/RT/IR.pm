@@ -220,6 +220,63 @@ sub States {
     return sort grep !$seen{$_}++, @states;
 }
 
+sub NewQuery {
+    my $self = shift;
+    my %args = (
+        Queue => undef,
+        states => undef,
+        add_states => undef,
+        @_,
+    );
+    my @states = ref $args{'states'}? @{ $args{'states'} } : ( $args{'states'} );
+    @states = grep $_, @states;
+    unless( @states ) {
+        @states = RT::IR::States( %args );
+    }
+
+    my @add_states = ref $args{'add_states'}? @{ $args{'add_states'} } : ( $args{'add_states'} );
+    my %seen = ();
+    @states =  grep !$seen{$_}++, map lc, grep $_, @states, @add_states;
+
+    my $query = join " OR ",
+                map "'Status' = '$_'",
+                @states;
+    $query = "( $query )" if $query;
+    return $query;
+}
+
+
+sub BaseQuery {
+    my $self = shift;
+    my %args = (
+        Queue => undef,
+        HasNoMember => undef,
+        Constituency => undef,
+        @_
+    );
+    my $res = '';
+    if ( defined $args{'Queue'} && length $args{'Queue'} ) {
+        $res = "Queue = '$args{Queue}'";
+    }
+    if ( my $t = $args{'HasNoMember'} ) {
+        $res .= ' AND ' if $res;
+        $res .= 'HasMember != '. (ref $t? $t->id : int $t);
+    }
+    if (
+        my $t = $args{'Constituency'}
+        and RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject'
+    ) {
+        unless ( ref $t ) {
+            my $tmp = RT::Ticket->new( RT->SystemUser );
+            $tmp->Load( $t );
+            $t = $tmp;
+        }
+        $res .= ' AND ' if $res;
+        $res .= "CustomField.{Constituency} = '". $t->FirstCustomFieldValue('Constituency') ."'";
+    }
+    return $res;
+}
+
 sub GetCustomField {
     my $field = shift or return;
     return (__PACKAGE__->CustomFields( $field ))[0];
