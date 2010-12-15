@@ -43,51 +43,6 @@
 %# those contributions and any derivatives thereof.
 %#
 %# }}} END BPS TAGGED BLOCK
-<& /Elements/Header, Title => $title &>
-
-<& Elements/RefineTabs, 
-   Title => $title,
-
-   BaseQuery   => $BaseQuery,
-   QueryString => $QueryString,
-
-   current_tab           => $ResultPage,
-   current_subtab        => 'RTIR/Search/Refine.html',
-   current_subtab_active => 1,
-&>
-
-<& Elements/BuildQuery,
-    %query_state,
-
-    BaseQuery  => $BaseQuery,
-    ResultPage => $ResultPage,
-
-    actions => \@results, 
-&>
-
 <%INIT>
-
-my %query_state = $m->comp('Elements/ProcessQuery',
-    %ARGS,
-    BaseQuery  => $BaseQuery,
-    ResultPage => $ResultPage,
-);
-
-my @results = @{ delete $query_state{'results'} };
-
-my $QueryString = $m->comp( '/Elements/QueryString', %{ $query_state{'query'} } );
+return $m->comp( 'Elements/RefinePage' => %ARGS );
 </%INIT>
-
-<%ARGS>
-$title      => loc("Refine Search")
-$ResultPage => 'RTIR/Search/Results.html'
-$NewQuery   => 0
-
-$BaseQuery  => ''
-$Query      => ''
-$Format     => undef
-$Rows       => 50
-$Page       => 1
-$OrderBy    => 'id'
-$Order      => 'ASC'
-</%ARGS>

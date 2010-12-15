@@ -1,0 +1,29 @@
+<& /RTIR/Elements/Header, Title => $Title &>
+<& /Elements/Tabs &> 
+<& BuildQuery,
+    %query_state,
+
+    BaseQuery  => $BaseQuery,
+    ResultPage => $ResultPage,
+
+    actions    => \@results, 
+&>
+
+<%INIT>
+my %query_state = $m->comp('ProcessQuery',
+    %ARGS,
+    BaseQuery  => $BaseQuery,
+    ResultPage => $ResultPage,
+);
+
+$m->notes( 'RefinedSearch' => \%query_state );
+
+my @results = @{ delete $query_state{'results'} };
+
+my $QueryString = $m->comp( '/Elements/QueryString', %{ $query_state{'query'} } );
+</%INIT>
+<%ARGS>
+$Title => loc("Refine Search")
+$ResultPage => 'RTIR/Search/Results.html',
+$BaseQuery => '',
+</%ARGS>
