@@ -231,7 +231,7 @@ unless( $TicketObj->QueueObj->Name eq 'Incidents' ) {
 $ARGS{'id'} = $id = $TicketObj->Id;
 
 if( 1 ) {
-    my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $TicketObj, 'State' );
+    my $oldstate = RT::IR::Ticket::FirstCustomFieldValue( $TicketObj, 'State' ) || '';
 
     if ( $ARGS{'Action'} && $ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/ )
     {   
@@ -273,7 +273,7 @@ if( 1 ) {
         push @results, ProcessUpdateMessage( ARGSRef => \%ARGS, TicketObj => $TicketObj );
     }
 
-    my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $TicketObj, 'State' );
+    my $newstate = RT::IR::Ticket::FirstCustomFieldValue( $TicketObj, 'State' ) || '';
     if ($newstate ne $oldstate) {
         push @results, loc("State changed from [_1] to [_2]", $oldstate, $newstate );
     }
@@ -285,7 +285,7 @@ unless ( $TicketObj->CurrentUserHasRight('ShowTicket') ) {
 }
 
 my $TimeWorked = $TicketObj->TimeWorked;
-if ( $TicketObj->TimeLeft > 0 ) {
+if ( defined $TicketObj->TimeLeft && $TicketObj->TimeLeft > 0 ) {
     $TimeWorked .= '/'. $TicketObj->TimeLeft;
 }
 
