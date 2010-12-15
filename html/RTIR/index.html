@@ -23,8 +23,7 @@
 %# 
 %# END LICENSE BLOCK
 <& /RTIR/Elements/Header, Title => "RTIR at a glance", Refresh => $session{'home_refresh_interval'} &>
-<& /RTIR/Elements/Tabs, Title => "RT for Incident Response", actions => $actions, current_toptab => 'RTIR/index.html' &>
-
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 <& /Elements/MyRT, Portlets => $portlets &>
 <%INIT>
@@ -94,16 +93,6 @@ if ( $HomeRefreshInterval ) {
     $session{'home_refresh_interval'} = $HomeRefreshInterval;
     push @results, loc( 'Updated refresh interval.');
 }
-
-my $actions;
-if ($session{'CurrentUser'}->HasRight(Right => 'ModifySelf', Object => $RT::System)) {
-    $actions = {
-        A => { title => loc('Edit'),
-               path  => 'RTIR/Prefs/Home.html',
-             },
-    };
-}
-
 
 </%INIT>
 <%ARGS>
