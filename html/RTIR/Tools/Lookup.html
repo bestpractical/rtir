@@ -23,12 +23,7 @@
 %# 
 %# END LICENSE BLOCK
 <& /RTIR/Elements/Header, Title => $title &>
-<& /RTIR/Tools/Elements/Tabs, 
-    current_toptab => 'RTIR/Tools/Lookup.html',
-    current_tab    => 'RTIR/Tools/Lookup.html?NewSearch=1',
-    current_subtab => $current_subtab,
-    Title          => $title,
-&>
+<& /Elements/Tabs &>
 
 % if ( $ticket ) {
 <&| /Widgets/TitleBox, title => loc("Current [_1]: #[_2]", $TicketType, $ticket), class => 'ticket-info-basics' &>
@@ -242,10 +237,7 @@ $now->AddDays( $max_age );
 
 $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
 
-my $current_subtab = 'RTIR/Tools/Lookup.html';
 if ( $q ) {
-    $current_subtab .= '?'. $m->comp('/Elements/QueryString', q => $q, server => $server );
-
     my $query;
     if ( $type && RT::IR->CustomFields( Field => $type ) ) {
         $query = "'CF.{$type}' = '$q'"

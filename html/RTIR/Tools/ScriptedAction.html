@@ -23,11 +23,7 @@
 %# 
 %# END LICENSE BLOCK
 <& /RTIR/Elements/Header, Title => $Title &>
-<& /RTIR/Tools/Elements/Tabs, 
-    current_tab => $current_tab, 
-    current_subtab => $current_subtab, 
-    Title => $Title &>
-
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@finalresults &>
 
 <form method="get" action="ScriptedAction.html" name="ScriptedAction" enctype="multipart/form-data">
@@ -224,12 +220,6 @@ if ($incidentid) {
 }
 
 $ARGS{'loop'} = $loop if !defined $ARGS{'loop'};
-
-if ($loop eq 'address') {
-    $current_subtab = "RTIR/Tools/ScriptedAction.html",
-} else {
-    $current_subtab = 'RTIR/Tools/ScriptedAction.html?loop=IP';
-}
 
 # get the list of WHOIS servers
 my $whois_servers = RT->Config->Get('whois');
@@ -455,7 +445,5 @@ sub parse_csv {
 $incidentid => undef
 $Requestors => undef
 $server => undef
-$current_tab => "RTIR/Tools/ScriptedAction.html"; 
-$current_subtab => undef
 $loop => 'address'
 </%ARGS>
