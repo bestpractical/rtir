@@ -43,7 +43,7 @@
 
 % if ( $depth == 1 ) {
 %   unless ( $action ) {
-<b><a href="<%RT->Config->Get('WebPath')%>/RTIR/Incident/LinkToIncident.html?id=<% $Ticket->Id %>">[Link]</a></b>
+<b><a href="<%RT->Config->Get('WebPath')%>/RTIR/Link/ToIncident/?id=<% $Ticket->Id %>">[Link]</a></b>
 <b><a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Child=<% $Ticket->Id %>&Queue=Incidents">[New]</a></b>
 %   } elsif ( $action ne 'No' ) {
 <a href="<% RT->Config->Get('WebPath') %>/RTIR/Display.html?Action=<% $action %>&id=<% $Ticket->Id %>">[<% loc( $action ) %>]</a>
