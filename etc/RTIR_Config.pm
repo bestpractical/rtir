@@ -18,6 +18,36 @@ Set($MaxInlineBody, 0);
 
 Set($OverdueAfter, 7);
 
+# Which research tools should RTIR display for address/domain lookups
+#
+
+
+# For each tool listed in this section, RTIR will attempt to display
+#   share/html/RTIR/Tools/Elements/ToolForm____
+#       and
+#   share/html/RTIR/Tools/Elements/ToolResults____
+#
+# on the Tools/Lookup.html
+Set( @RTIRResearchTools, (qw(Traceroute Whois Iframe)));
+
+# One of the research tools available in RTIR allows you to
+# configure a set of search URLs that incident handlers
+# can use to open searches in IFRAMES. Entries are keyed
+# by integer in the order you'd like to see them in the dropdown
+# on the research page
+# Each entry consists of a hashref containing "FriendlyName" and "URL"
+# The URLs will be evaluated to replace __SearchTerm__ with the
+# user's current search term.
+
+ Set ($RTIRIframeResearchToolConfig, {
+   1 => { FriendlyName => 'Google', URL => 'https://encrypted.google.com/search?q=__SearchTerm__' },
+   2 => { FriendlyName => 'CVE', URL => 'http://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=__SearchTerm__'},
+    3 => { FriendlyName => 'TrustedSource.org', URL => 'http://www.trustedsource.org/query/__SearchTerm__'},
+    4 => { FriendlyName => 'McAfee SiteAdvisor', URL => 'http://www.siteadvisor.com/sites/__SearchTerm__'},
+    5 => { FriendlyName => 'BFK DNS Logger', URL => 'http://www.bfk.de/bfk_dnslogger.html?query=__SearchTerm__#result'}
+    } );
+
+
 # Set the hash of whois servers
 # Host is of the form "hostname:port"
 Set($whois, {

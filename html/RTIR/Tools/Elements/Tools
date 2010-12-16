@@ -1,5 +1,15 @@
-<& ToolFormWhois, %ARGS &>
-<& ToolFormTraceroute, %ARGS &>
-<hr>
+<%perl>
+my $tools = RT->Config->Get('RTIRResearchTools') || ();
+ for my $tool (@$tools) {
+warn $tool;
+if ($m->comp_exists('ToolForm'.$tool)) {
+    $m->comp('ToolForm'.$tool, %ARGS);
+}
+}
+for my $tool (@$tools) {
+if ($m->comp_exists('ToolResults'.$tool)) {
+    $m->comp('ToolResults'.$tool, %ARGS);
+}
+}
 
-<& ToolResultsWhois, %ARGS &>
+</%perl>
