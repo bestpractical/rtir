@@ -63,6 +63,7 @@ $TicketObj => undef
 $WhoisServer => undef
 </%args>
 <%init>
+return unless ($WhoisServer);
 use Net::Whois::RIPE;
 my ($whois, $port) = split(/\s*:\s*/, $WhoisServer, 2);
 $port = 43 unless ($port || '') =~ /^\d+$/;

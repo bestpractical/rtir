@@ -69,11 +69,6 @@ if ( $ARGS{'InvestigateTo'} ) {
     );
 }
 
-unless ( $server ) {
-    # just pick the first one
-    ($server) = map ref $servers->{$_}? $servers->{$_}->{'Host'}: $servers->{$_}, (sort keys %$servers)[0];
-}
-
 my $title = loc("Lookup '[_1]' using server [_2]", $q, $server);
 
 my $max_age = -60;
