@@ -14,7 +14,7 @@
 %   if ( $QueueObj->Id and $QueueObj->CurrentUserHasRight('CreateTicket') ) {
         | <a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Incident=<% $id %>&Queue=<% $Queue |u %>"><% $new_caption %></a> 
 %   }
-        | <a href="<%RT->Config->Get('WebPath')%>/RTIR/Incident/LinkChildren.html?id=<% $id %>&Queue=<% $Queue |u %>"><%loc("Link")%></a> |
+        | <a href="<%RT->Config->Get('WebPath')%>/RTIR/Link/FromIncident/?id=<% $id %>&Queue=<% $Queue |u %>"><%loc("Link")%></a> |
     </font></td></tr></table>
 % }
 

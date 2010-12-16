@@ -1,0 +1,16 @@
+<%INIT>
+return $m->comp(
+    '/RTIR/Search/Elements/RefinePage',
+    %ARGS,
+    ResultPage => 'RTIR/Link/FromIncident/?'. $m->comp(
+        '/Elements/QueryString',
+        id    => $ARGS{'id'},
+        Queue => $ARGS{'Queue'},
+    ),
+    BaseQuery => RT::IR->BaseQuery(
+        Queue       => $ARGS{'Queue'},
+        NotMemberOf => $ARGS{'id'},
+        Costituency => $ARGS{'id'},
+    ),
+);
+</%INIT>

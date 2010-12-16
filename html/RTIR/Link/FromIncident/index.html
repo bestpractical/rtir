@@ -22,21 +22,8 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /RTIR/Elements/Header,
-    Title => $title,
-    Refresh => $session{'tickets_refresh_interval'},
-&>
-
-<& /RTIR/Search/Elements/RefineTabs, 
-    Title             => $title,
-    Ticket            => $IncidentObj,
-    Queue             => $Queue,
-    BaseQuery         => $BaseQuery,
-    QueryString       => $QueryString,
-
-    current_tab       => $current_tab,
-    current_subtab    => 'RTIR/Search/Refine.html',
-&>
+<& /RTIR/Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
 
 <form action="Display.html" method="get">
 <input type="hidden" name="id" value="<% $id %>" />
@@ -52,13 +39,25 @@
     Page          => $Page,
     OrderBy       => $OrderBy,
     Order         => $Order,
-    BaseURL       => $current_tab,
+    BaseURL       => $base_url,
     ShowNavigation  => 1,
     ShowListActions => 0,
 &>
 
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $title, Label => loc("Link") &>
 </form>
+
+<%ARGS>
+$id          => undef
+$Queue       => undef
+
+$Query       => $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue)
+$Format      => RT->Config->Get('RTIRSearchResultFormats')->{'LinkChildren'}
+$Rows        => 50
+$Page        => 1
+$OrderBy     => 'id'
+$Order       => 'ASC'
+</%ARGS>
 
 <%INIT>
 my $IncidentObj = LoadTicket($id);
@@ -67,38 +66,13 @@ $ARGS{'id'} = $id = $IncidentObj->id;
 my $Type = RT::IR::TicketType( Queue => $Queue );
 my $title = loc("Link selected [_1] to Incident #[_2]", $Type, $id);
 
-my $QueryString = $m->comp('/Elements/QueryString',
-                               Query   => $Query,
-                               Format  => $Format,
-                               Rows    => $Rows,
-                               Page    => $Page,
-                               OrderBy => $OrderBy,
-                               Order   => $Order,
-                          );
+my $BaseQuery = RT::IR->BaseQuery(
+    Queue => $Queue,
+    NotMemberOf => $id,
+    Constituency => $IncidentObj,
+);
 
-unless ( $BaseQuery ) {
-    $BaseQuery = $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue);
-    $BaseQuery = join ' AND ', map "( $_ )", $BaseQuery, "MemberOf != $id";
-    if ( RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject' ) {
-        $BaseQuery = join ' AND ', map "( $_ )",
-            $BaseQuery, "CustomField.{Constituency} = '".
-                $IncidentObj->FirstCustomFieldValue('Constituency') ."'"
-    }
-}
-
-my $current_tab = 'RTIR/Incident/LinkChildren.html?'
+my $base_url = 'RTIR/Link/FromIncident/?'
     . $m->comp( '/Elements/QueryString', id => $id, Queue => $Queue );
 
 </%INIT>
-
-<%ARGS>
-$id          => undef
-$Queue       => undef
-$BaseQuery   => undef
-$Query       => $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue)
-$Format      => RT->Config->Get('RTIRSearchResultFormats')->{'LinkChildren'}
-$Rows        => 50
-$Page        => 1
-$OrderBy     => 'id'
-$Order       => 'ASC'
-</%ARGS>

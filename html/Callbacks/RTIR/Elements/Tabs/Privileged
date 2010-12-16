@@ -166,16 +166,18 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
         link_item    => 0,
         sort_order   => 99
     );
-} elsif ( $request_path =~ m{^/RTIR/Link/ToIncident/} ) {
+} elsif ( $request_path =~ m{^/RTIR/Link/(ToIncident|FromIncident)/} ) {
+    my $direction = $1;
+    my $queue = $args->{'Queue'};
+    my $type = RT::IR::TicketType( Queue => $queue || 'Incidents' );
+
     my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
     $ticket->Load( $args->{'id'} );
     my $id = $ticket->id;
 
-    my $queue = $ticket->QueueObj;
-    my $type = RT::IR::TicketType( Queue => $queue );
-
     my %args = (
         id => $id,
+        Queue => $queue,
     );
     my @query_fields = qw(Query Format RowPerPage Page OrderBy Order);
     if ( my $refined = $m->notes('RefinedSearch') ) {
@@ -183,22 +185,26 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
     } else {
         @args{ @query_fields } = @{ $args }{ @query_fields };
     }
+    delete $args{$_} foreach grep !defined $args{$_}, keys %args;
 
     PageMenu()->child(
         link => title => loc('Show Results'),
-        path => "/RTIR/Link/ToIncident/?". $query_string->( %args ),
+        path => "/RTIR/Link/$direction/?". $query_string->( %args ),
     );
     PageMenu()->child(
         edit_search => title => loc('Edit Search'),
-        path => "/RTIR/Link/ToIncident/Refine.html?". $query_string->( %args ),
+        path => "/RTIR/Link/$direction/Refine.html?". $query_string->( %args ),
     );
     PageMenu()->child(
         new_search => title => loc('New Search'),
-        path => "/RTIR/Link/ToIncident/Refine.html?id=$id&NewSearch=1",
+        path => "/RTIR/Link/$direction/Refine.html?id=$id&NewQuery=1",
     );
     PageMenu()->child(
-        new => title => loc('New Incident'),
-        path => "/RTIR/Create.html?Child=$id&Queue=Incidents",
+        new => title => loc("New $type"),
+        path => !$queue
+            ? "/RTIR/Create.html?Child=$id&Queue=Incidents"
+            : "/RTIR/Create.html?". $query_string->( Incident => $id, Queue => $queue )
+        ,
     );
     PageMenu()->child(
         back => title => loc('Back to ticket #[_1]', $id),
