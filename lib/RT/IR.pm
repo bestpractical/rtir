@@ -251,6 +251,7 @@ sub BaseQuery {
     my %args = (
         Queue => undef,
         HasNoMember => undef,
+        NotMemberOf => undef,
         Constituency => undef,
         @_
     );
@@ -261,6 +262,10 @@ sub BaseQuery {
     if ( my $t = $args{'HasNoMember'} ) {
         $res .= ' AND ' if $res;
         $res .= 'HasMember != '. (ref $t? $t->id : int $t);
+    }
+    if ( my $t = $args{'NotMemberOf'} ) {
+        $res .= ' AND ' if $res;
+        $res .= 'MemberOf != '. (ref $t? $t->id : int $t);
     }
     if (
         my $t = $args{'Constituency'}
