@@ -220,10 +220,10 @@ unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
 $ARGS{'id'} = $id = $Ticket->Id;
 
 $m->comp(
-    '/Ticket/Elements/MaybeRedirectForResults',
-    Actions     => \@results,
+    '/Elements/MaybeRedirectForResults',
     Path        => 'RTIR/Display.html',
-    TicketObj   => $Ticket,
+    id          => $id,
+    Actions     => \@results,
 );
 
 
