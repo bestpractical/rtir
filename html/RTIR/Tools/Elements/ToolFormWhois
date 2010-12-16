@@ -2,7 +2,7 @@
   <input type="hidden" name="ticket" value="<% $TicketObj->id %>" />
   <tr>
     <span class="label">WHOIS:</span>
-    <spanclass="input">
+    <span class="input">
       <input size="30" name="q" value="<% $q %>" /> at 
       <select name="server">
 <%PERL>
