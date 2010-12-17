@@ -85,6 +85,45 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
     };
 
     PageMenu()->child( display => title => loc('Display'), path => "/RTIR/Display.html?id=$id" );
+
+    # RT4 TODO: something wrong, this doesn't work
+    if ( $session{'tickets'} ) {
+        # we have to update session data if we get new ItemMap
+        my $updatesession = 1 unless ( $session{"tickets"}->{'item_map'} );
+        my $item_map = $session{"tickets"}->ItemMap;
+        $session{"tickets"}->PrepForSerialization
+            if $updatesession;
+
+        # Don't display prev links if we're on the first ticket
+        my $top = PageMenu();
+        if ( my $t = $item_map->{$id}->{'prev'} ) {
+            $top = $top->child(
+                previouse => path => "RTIR/Display.html?id=$id",
+                title => '< ' . loc('Prev')
+            );
+        }
+        if ( my $t = $item_map->{'first'} ) {
+            $top->child(
+                first => path  => "RTIR/Display.html?id=$t",
+                title => '<< ' . loc('First')
+            );
+        }
+
+        $top = PageMenu();
+        if ( my $t = $item_map->{$id}->{'next'} ) {
+            $top = $top->child(
+                next => path  => "RTIR/Display.html?id=$t",
+                title => loc('Next') . ' >'
+            );
+        }
+        if ( my $t = $item_map->{'last'} ) {
+            $top->child(
+                last => path  => "RTIR/Display.html?id=$t",
+                title => loc('Last') . ' >>'
+            );
+        }
+    }
+
     if ( $can->('ModifyTicket') ) {
         PageMenu()->child( edit => title => loc('Edit'), path => "/RTIR/Edit.html?id=$id" );
         PageMenu()->child( split => title => loc('Split'), path => "/RTIR/Split.html?id=$id" );
