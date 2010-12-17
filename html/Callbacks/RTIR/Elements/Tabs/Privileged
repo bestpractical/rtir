@@ -242,7 +242,9 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
     );
     PageMenu()->child(
         new_search => title => loc('New Search'),
-        path => "/RTIR/Link/$direction/Refine.html?id=$id&NewQuery=1",
+        path => "/RTIR/Link/$direction/Refine.html?". $query_string->(
+            NewQuery => 1, id => $id, Queue => $queue,
+        ),
     );
     PageMenu()->child(
         new => title => loc("New $type"),
