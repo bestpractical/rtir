@@ -23,13 +23,7 @@
 %# 
 %# END LICENSE BLOCK
 <& '/RTIR/Elements/Header', Title => $title &>
-<& '/RTIR/Search/Elements/RefineTabs',
-   Title       => $title,
-   Queue       => $Queue,
-   BaseQuery   => $BaseQuery,
-   QueryString => $QueryString,
-   current_tab => $current_tab,
-&>
+<& '/Elements/Tabs' &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -141,18 +135,8 @@ if ( $BulkReject ) {
     }
 }
 
-my $QueryString = $m->comp('/Elements/QueryString',
-    Query     => $Query,
-    Format    => $Format,
-    Rows      => $Rows,
-    Page      => $Page,
-    OrderBy   => $OrderBy,
-    Order     => $Order,
-);
-
 my $BaseURL = "RTIR/Report/BulkReject.html?"
     . $m->comp('/Elements/QueryString', Queue => $Queue);
-my $current_tab = "$BaseURL&$QueryString";
 
 </%INIT>
 <%ARGS>

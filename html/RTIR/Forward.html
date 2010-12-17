@@ -1,16 +1,5 @@
 <& /RTIR/Elements/Header, Title => $Title &>
-
-<& "/RTIR/". $Type ."/Elements/Tabs", 
-    Title          => $Title,
-    Ticket         => $TicketObj,
-    current_tab    => 'RTIR/Display.html?id='. $id,
-    appendtabs     => { _ZF => {
-        title => loc( 'Forward transaction #[_1]', $QuoteTransaction ),
-        path  => 'RTIR/Forward.html?id='. $id .'&QuoteTransaction='. $QuoteTransaction,
-    } },
-    current_subtab => 'RTIR/Forward.html?id='. $id .'&QuoteTransaction='. $QuoteTransaction,
-&>
-
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="Forward.html" name="ForwardMessage" method="post">

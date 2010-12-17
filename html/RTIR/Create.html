@@ -39,12 +39,7 @@
     current_tab    => "RTIR/Create.html?Incident=$Incident&$EscapedQueue",
 &>
 % } else {
-<& "/RTIR/".$Type."/Elements/Tabs",
-    Title          => $Title,
-    Ticket         => $TicketObj,
-    current_tab    => "RTIR/Create.html?$EscapedQueue",
-    current_subtab => "RTIR/Create.html?$EscapedQueue",
-&>
+<& "/Elements/Tabs" &>
 % }
 
 % $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Ticket => $TicketObj);

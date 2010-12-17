@@ -23,12 +23,7 @@
 %# 
 %# END LICENSE BLOCK
 <& /RTIR/Elements/Header, Title => $Title &>
-
-<& "/RTIR/".$Type."/Elements/Tabs", 
-    Ticket => $Ticket, 
-    current_tab => 'RTIR/Display.html?id='.$Ticket->id,
-    current_subtab => 'RTIR/Display.html?id='.$Ticket->id,
-    Title => $Title &>
+<& /Elements/Tabs &>
 
 % $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket);
 

@@ -23,11 +23,7 @@
 %# 
 %# END LICENSE BLOCK
 <& /RTIR/Elements/Header, Title => $Title &>
-<& '/RTIR/'.$Type.'/Elements/Tabs', 
-    Ticket => $Ticket, 
-    current_tab => "RTIR/Edit.html?id=".$Ticket->Id, 
-    current_subtab => "RTIR/Edit.html?id=".$Ticket->Id, 
-    Title => $Title &>
+<& /Elements/Tabs &>
 
 % $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket);          
 <& /Elements/ListActions, actions => \@results &>
@@ -130,7 +126,6 @@
 
 <%INIT>
 my $Ticket = LoadTicket($id);
-
 $id = $ARGS{'id'} = $Ticket->Id;
 
 $m->callback(CallbackName => 'Initial', %ARGS, Ticket => $Ticket);

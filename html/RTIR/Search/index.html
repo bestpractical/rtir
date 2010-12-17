@@ -44,15 +44,7 @@
 %#
 %# }}} END BPS TAGGED BLOCK
 <& /Elements/Header, Title => $title &>
-
-<& /RTIR/Search/Elements/Tabs,
-   Title => $title,
-
-   BaseQuery   => $BaseQuery,
-   QueryString => $QueryString,
-
-   current_tab => 'RTIR/Search/index.html',
-&>
+<& /Elements/Tabs &>
 
 <& Elements/BuildQuery,
     %query_state,
@@ -72,8 +64,6 @@ my %query_state = $m->comp('Elements/ProcessQuery',
 );
 
 my @results = @{ delete $query_state{'results'} };
-
-my $QueryString = $m->comp( '/Elements/QueryString', %{ $query_state{'query'} } );
 </%INIT>
 
 <%ARGS>

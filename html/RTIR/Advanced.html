@@ -1,10 +1,5 @@
 <& /RTIR/Elements/Header, Title => $Title &>
-<& '/RTIR/'.$Type.'/Elements/Tabs', 
-    Ticket         => $Ticket,
-    current_tab    => "RTIR/Advanced.html?id=".$Ticket->Id,
-    current_subtab => "RTIR/Advanced.html?id=".$Ticket->Id,
-    Title          => $Title,
-&>
+<& /Elements/Tabs &>
 
 <& /Elements/ListActions, actions => \@results &>
 
