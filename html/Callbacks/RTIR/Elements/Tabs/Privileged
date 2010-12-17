@@ -286,6 +286,11 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
         path => "/RTIR/Create.html?". $query_string->( Queue => $queue ),
     ) if $type;
 
+    PageMenu()->child(
+        report => title => loc('Report'),
+        path => "RTIR/Report/Reporting.html?". $query_string->( %args ),
+    );
+
     if ( $type eq 'Incident' ) {
         PageMenu()->child(
             abandon => title => loc('Bulk Abandon'),
