@@ -3,22 +3,26 @@
 @Queues = (
     {
         Name              => 'Incidents',
+        Lifecycle         => 'incidents',
         CorrespondAddress => "",
         CommentAddress    => "",
         InitialPriority   => 50,
     },
     {
         Name              => 'Incident Reports',
+        Lifecycle         => 'incident_reports',
         CorrespondAddress => "",
         CommentAddress    => "",
     },
     {
         Name              => 'Investigations',
+        Lifecycle         => 'investigations',
         CorrespondAddress => "",
         CommentAddress    => "",
     },
     {
         Name              => 'Blocks',
+        Lifecycle         => 'blocks',
         CorrespondAddress => "",
         CommentAddress    => "",
     },
