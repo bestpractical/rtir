@@ -56,7 +56,7 @@ my @inactive_states = RT::IR::States( Queue => $Queue, Active => 0, Inactive => 
 
 my $active = RT::Tickets->new( $session{'CurrentUser'} );
 $active->FromSQL(
-    $m->comp( '/RTIR/Elements/ChildrenQuery',
+    RT::IR->ChildrenQuery(
         Queue  => $Queue,
         Ticket => $IncidentObj,
         States => [ @active_states ],
@@ -65,7 +65,7 @@ $active->FromSQL(
 
 my $inactive = RT::Tickets->new( $session{'CurrentUser'} );
 $inactive->FromSQL(
-    $m->comp( '/RTIR/Elements/ChildrenQuery',
+    RT::IR->ChildrenQuery(
         Queue  => $Queue,
         Ticket => $IncidentObj,
         States => [ @inactive_states ],

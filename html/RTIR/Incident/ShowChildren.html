@@ -78,21 +78,19 @@ my $Title = loc("$Queue for Incident #[_1]: [_2]", $id, $Incident->Subject);
 my $delete = $Incident->CurrentUserHasRight('ModifyTicket') ? 1: 0;
 
 my $children = RT::Tickets->new( $session{'CurrentUser'} );
-$children->FromSQL( $m->comp( '/RTIR/Elements/ChildrenQuery',
-                              Queue  => $Queue,
-                              Ticket => $Incident,
-                              States => [@States],
-                            )
-                  );
+$children->FromSQL( RT::IR->ChildrenQuery(
+    Queue  => $Queue,
+    Ticket => $Incident,
+    States => [@States],
+) );
 
 my @possible_states = RT::IR::States( Queue => $Queue, Inactive => 1 );
 my $all_children = RT::Tickets->new( $session{'CurrentUser'} );
-$all_children->FromSQL( $m->comp( '/RTIR/Elements/ChildrenQuery',
-                                  Queue  => $Queue,
-                                  Ticket => $Incident,
-                                  States => [@possible_states],
-                                )
-                      );
+$all_children->FromSQL( RT::IR->ChildrenQuery(
+    Queue  => $Queue,
+    Ticket => $Incident,
+    States => [@possible_states],
+) );
 my $current_tab = 'RTIR/Incident/ShowChildren.html?'
     . $m->comp( '/Elements/QueryString', id => $id, Queue => $Queue );
 </%INIT>

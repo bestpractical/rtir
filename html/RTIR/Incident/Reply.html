@@ -148,6 +148,7 @@ my $ActiveStatesQuery =
 
 $Query ||= "( $ActiveStatesQuery )";
 
+# TODO: why don't we use RT::IR->ChildrenQuery ?
 my $ActiveChildrenQuery = join ' AND ', map "( $_ )", grep $_,
     "MemberOf = $id",
     $ActiveStatesQuery,
