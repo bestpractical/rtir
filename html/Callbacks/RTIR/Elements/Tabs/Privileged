@@ -55,6 +55,18 @@ return unless $request_path =~ m{^/RTIR/};
 my $args = $m->request_args;
 my $re_rtir_types = '(?:'. join( '|', map "\Q$_\E", RT::IR->Types ) .')';
 
+my $search_arguments = sub {
+    my %res = ();
+    my @query_fields = qw(Query Format RowPerPage Page OrderBy Order);
+    if ( my $refined = $m->notes('RefinedSearch') ) {
+        @res{ @query_fields } = @{ $refined->{'query'} }{ @query_fields };
+    } else {
+        @res{ @query_fields } = @{ $args }{ @query_fields };
+    }
+    delete $res{$_} foreach grep !defined $res{$_}, keys %res;
+    return %res;
+};
+
 if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$} ) {
     my $id = $args->{'id'};
 
@@ -176,16 +188,10 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
     my $id = $ticket->id;
 
     my %args = (
+        $search_arguments->(),
         id => $id,
         Queue => $queue,
     );
-    my @query_fields = qw(Query Format RowPerPage Page OrderBy Order);
-    if ( my $refined = $m->notes('RefinedSearch') ) {
-        @args{ @query_fields } = @{ $refined->{'query'} }{ @query_fields };
-    } else {
-        @args{ @query_fields } = @{ $args }{ @query_fields };
-    }
-    delete $args{$_} foreach grep !defined $args{$_}, keys %args;
 
     PageMenu()->child(
         link => title => loc('Show Results'),
@@ -210,6 +216,47 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
         back => title => loc('Back to ticket #[_1]', $id),
         path => "/RTIR/Display.html?id=$id",
     );
+} elsif ( $request_path =~ m{^/RTIR/(Search/|Incident/BulkAbandon\.html$)} ) {
+    my $queue = $args->{'Queue'} || '';
+    my $type = RT::IR::TicketType( Queue => $queue );
+
+    my %args = (
+        $search_arguments->(),
+        Queue => $queue,
+    );
+
+    PageMenu()->child(
+        link => title => loc('Show Results'),
+        path => "/RTIR/Search/Results.html?". $query_string->( %args ),
+    );
+    PageMenu()->child(
+        edit_search => title => loc('Edit Search'),
+        path => "/RTIR/Search/Refine.html?". $query_string->( %args ),
+    );
+    PageMenu()->child(
+        new_search => title => loc('New Search'),
+        path => "/RTIR/Search/Refine.html?". $query_string->(
+            NewQuery => 1,
+            Queue => $queue,
+        ),
+    );
+    PageMenu()->child(
+        new => title => loc("New $type"),
+        path => "/RTIR/Create.html?". $query_string->( Queue => $queue ),
+    ) if $type;
+
+    if ( $type eq 'Incident' ) {
+        PageMenu()->child(
+            abandon => title => loc('Bulk Abandon'),
+            path => "/RTIR/Incident/BulkAbandon.html?". $query_string->( %args ),
+        );
+    }
+    elsif ( $type eq 'Report' ) {
+        PageMenu()->child(
+            reject => title => loc('Bulk Reject'),
+            path => "RTIR/Report/BulkReject.html?". $query_string->( %args ),
+        );
+    }
 }
 
 
