@@ -1,7 +1,6 @@
 <%perl>
 my $tools = RT->Config->Get('RTIRResearchTools') || ();
  for my $tool (@$tools) {
-warn $tool;
 if ($m->comp_exists('ToolForm'.$tool)) {
     $m->comp('ToolForm'.$tool, %ARGS);
 }
