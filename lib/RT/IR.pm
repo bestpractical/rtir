@@ -269,6 +269,10 @@ sub BaseQuery {
         $res .= ' AND ' if $res;
         $res .= 'MemberOf != '. (ref $t? $t->id : int $t);
     }
+    if ( my $t = $args{'MemberOf'} ) {
+        $res .= ' AND ' if $res;
+        $res .= 'MemberOf = '. (ref $t? $t->id : int $t);
+    }
     if (
         my $t = $args{'Constituency'}
         and RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject'
