@@ -256,8 +256,10 @@ sub BaseQuery {
         @_
     );
     my $res = '';
-    if ( defined $args{'Queue'} && length $args{'Queue'} ) {
-        $res = "Queue = '$args{Queue}'";
+    if ( $args{'Queue'} ) {
+        $res = join ' OR ', map "Queue = '$_'", grep defined && length,
+            ref $args{'Queue'} ? ( @{ $args{'Queue'} } ) : ( $args{'Queue'} );
+        $res = '( $res )' if $res && $res =~ / OR /;
     }
     if ( my $t = $args{'HasNoMember'} ) {
         $res .= ' AND ' if $res;
