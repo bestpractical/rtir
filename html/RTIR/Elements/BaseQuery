@@ -1,7 +1,0 @@
-<%INIT>
-return '' unless $Queue;
-return "Queue = '$Queue'";
-</%INIT>
-<%ARGS>
-$Queue => ''
-</%ARGS>
