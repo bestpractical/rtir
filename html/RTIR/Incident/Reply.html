@@ -28,7 +28,6 @@
 
     Queue          => 'Incident Reports',
     Ticket         => $IncidentObj,
-    BaseQuery      => $BaseQuery,
     QueryString    => $QueryString,
 
     current_tab    => $current_tab,
@@ -53,7 +52,7 @@
 <& /RTIR/Search/Elements/ShowResults,
     Queue         => 'Incident Reports',
     BaseURL       => $current_tab,
-    BaseQuery     => $BaseQuery{'Incident Reports'},
+    BaseQuery     => RT::IR->BaseQuery(Queue => 'Incident Reports', MemberOf => $id),
     Query         => $Query,
     DisplayFormat => "__CheckBox.{SelectedReports}__, $Format",
     Format        => $Format,
@@ -68,7 +67,7 @@
 <& /RTIR/Search/Elements/ShowResults,
     Queue         => 'Investigations',
     BaseURL       => $current_tab,
-    BaseQuery     => $BaseQuery{'Investigations'},
+    BaseQuery     => RT::IR->BaseQuery(Queue => 'Investigations', MemberOf => $id),
     Query         => $Query,
     DisplayFormat => "__CheckBox.{SelectedInvestigations}__, $Format",
     Format        => $Format,
@@ -83,7 +82,7 @@
 <& /RTIR/Search/Elements/ShowResults,
     Queue         => 'Investigations',
     BaseURL       => $current_tab,
-    BaseQuery     => $BaseQuery{'Blocks'},
+    BaseQuery     => RT::IR->BaseQuery(Queue => 'Blocks', MemberOf => $id),
     Query         => $Query,
     DisplayFormat => "__CheckBox.{SelectedBlocks}__, $Format",
     Format        => $Format,
@@ -245,17 +244,6 @@ foreach (qw(SelectedReports SelectedInvestigations SelectedBlocks)) {
         push @{ $m->{'request_args'} }, $_ .'All' => 1;
     }
 }
-
-my ($BaseQuery, %BaseQuery) = ( '', () );
-foreach my $queue ( @queues ) {
-    my $tmp = $m->comp('/RTIR/Elements/BaseQuery', Queue => $queue);
-    $BaseQuery .= ' OR ' if $BaseQuery;
-    $BaseQuery .= "( $tmp )";
-
-    $BaseQuery{ $queue } = join ' AND ', map "( $_ )", grep $_,
-        $tmp, "MemberOf = $id";
-}
-$BaseQuery = join ' AND ', map "( $_ )", grep $_, $BaseQuery, "MemberOf = $id";
 
 my $QueryString = $m->comp( '/Elements/QueryString',
                             Query => $Query,

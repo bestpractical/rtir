@@ -16,16 +16,8 @@
 my $Type = RT::IR::TicketType( Queue => $Queue );
 $Title ||= $Type .'s';
 
-$Query ||= $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
-unless ( $BaseQuery ) {
-    my @parts;
-    push @parts, "id != $id";
-    push @parts, $m->comp('/RTIR/Elements/BaseQuery', Queue => $Queue) if $Queue;
-    push @parts, "CF.{Constituency} = '". $Ticket->FirstCustomFieldValue('Constituency') ."'"
-        if RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject'
-            && RT::IR->CustomFields(Constituency => Queue => $Queue);
-    $BaseQuery = join ' AND ', map "( $_ )", grep $_, @parts;
-}
+$Query ||= RT::IR->NewQuery( Queue => $Queue );
+$BaseQuery ||= RT::IR->BaseQuery( Queue => $Queue, Exclude => $id, Constituency => $Ticket );
 
 </%INIT>
       

@@ -1,7 +1,6 @@
 <& /Elements/Header, Title => $title &>
 <& '/RTIR/'.$Type.'/Elements/Tabs',
     Title       => $title,
-    BaseQuery   => $BaseQuery,
     QueryString => $QueryString,
 
     current_tab => $current_tab,
@@ -53,8 +52,8 @@ $ShowChart      => 0
 
 $Queue     => ''
 
-$BaseQuery => $m->comp( '/RTIR/Elements/BaseQuery', Queue => $Queue )
-$Query     => $m->comp( '/RTIR/Elements/NewQuery', Queue => $Queue )
+$BaseQuery => RT::IR->BaseQuery( Queue => $Queue )
+$Query     => RT::IR->NewQuery( Queue => $Queue )
 $Format    => undef
 $Rows      => 50
 $Page      => 1
