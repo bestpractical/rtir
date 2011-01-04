@@ -201,7 +201,7 @@ my @types = (
     },
     {
         name   => "email",
-        regex  => qr{(?:mailto:)?<?[\w\.\+-]+\@[\w\.-]+\.\w{2,3}>?},
+        regex  => qr{(?:mailto:)?<?[\w\.\+-]+\@[\w\.-]+\.\w{2,}>?},
         action => "email",
     },
     {
