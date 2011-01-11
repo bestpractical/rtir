@@ -11,6 +11,5 @@ $ResearchTool => undef
 return unless ($ResearchTool);
 my $research_tools = RT->Config->Get('RTIRIframeResearchToolConfig');
 my $url = $research_tools->{$ResearchTool}->{URL};
-warn $research_tools->{$ResearchTool}->{URL};
 $url =~ s/__SearchTerm__/$q/g;
 </%init>
