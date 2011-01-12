@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 ### after: use lib qw(@RT_LIB_PATH@);
-use lib qw(/opt/rt4/local/lib /opt/rt4//lib);
+use lib qw(/opt/rt4/local/lib /opt/rt4/lib);
 
 package RT::IR::Test;
 
