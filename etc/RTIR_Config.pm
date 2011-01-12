@@ -384,12 +384,4 @@ Set(
     },
 );
 
-Set(
-    %LifecycleMap,
-    Incidents          => 'incidents',
-    'Incident Reports' => 'incident_reports',
-    Investigations     => 'investigations',
-    Blocks             => 'blocks',
-);
-
 1;
