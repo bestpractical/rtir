@@ -94,38 +94,18 @@
 
 <%INIT>
 
-my $title;
 my $Ticket = LoadTicket($id);
-
 $id = $ARGS{'id'} = $Ticket->Id;
-
 
 $m->callback(CallbackName => 'Initial', %ARGS, Ticket => $Ticket);
 
 my $Type = RT::IR::TicketType( Ticket => $Ticket );
 
-my $name;
-if ($Type eq 'Report') {
-    $name = "Incident Report";
-} else {
-    $name = $Type;
-}
-
 $DefaultStatus ||= $ARGS{'Status'} || '';
 $ARGS{'Status'} ||= $DefaultStatus; # XXX: we should get rid of the DefaultStatus
 $DefaultStatus = 'open' if $DefaultStatus eq 'new';
 
-if ( $DefaultStatus eq 'resolved' ) {
-    $title = loc("Resolve [_1] #[_2] ([_3])", $name, $id, $Ticket->Subject);
-} elsif ( $DefaultStatus eq 'rejected' ) {
-    if ( $Type eq 'Incident' ) {
-        $title = loc("Abandon [_1] #[_2] ([_3])", $name, $id, $Ticket->Subject);
-    } else {
-        $title = loc("Reject [_1] #[_2] ([_3])", $name, $id, $Ticket->Subject);
-    }
-} else {
-    $title = loc("Update [_1] #[_2] ([_3])", $name, $id, $Ticket->Subject);
-}
+my $title = loc("Update [_1] #[_2] ([_3])", $type, $id, $Ticket->Subject);
 
 my $CanRespond = 0;
 my $CanComment = 0;
