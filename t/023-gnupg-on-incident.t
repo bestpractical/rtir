@@ -8,8 +8,6 @@ use File::Temp qw(tempdir);
 
 my @rights_backup = RT::Test->store_rights;
 
-RT::Test->set_mail_catcher;
-
 RT->Config->Set( 'GnuPG',
                  Enable => 1,
                  OutgoingMessagesFormat => 'RFC' );

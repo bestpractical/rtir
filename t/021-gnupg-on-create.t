@@ -7,8 +7,6 @@ use RT::IR::Test tests => 62;
 
 use File::Temp qw(tempdir);
 
-RT::Test->set_mail_catcher;
-
 RT->Config->Set( 'GnuPG',
                  Enable => 1,
                  OutgoingMessagesFormat => 'RFC' );

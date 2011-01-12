@@ -50,8 +50,6 @@ ok( RT::Test->add_rights(
         Right => [qw(ShowTicket CreateTicket)] },
 ), 'added rights');
 
-RT::Test->set_mail_catcher;
-
 my ($baseurl) = RT::Test->started_ok;
 my $agent = default_agent();
 my $rtir_user = rtir_user();

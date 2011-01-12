@@ -5,8 +5,6 @@ use warnings;
 
 use RT::IR::Test tests => 179;
 
-RT::Test->set_mail_catcher;
-
 use_ok('RT::IR');
 
 my ($baseurl) = RT::Test->started_ok;

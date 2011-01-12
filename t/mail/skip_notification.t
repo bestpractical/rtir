@@ -7,8 +7,6 @@ use RT::IR::Test tests => 23;
 
 RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'} = 'EDUNET';
 
-RT::Test->set_mail_catcher;
-
 my ($baseurl) = RT::Test->started_ok;
 my $agent = default_agent();
 my $rtir_user = rtir_user();
