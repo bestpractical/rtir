@@ -23,16 +23,7 @@
 %# 
 %# END LICENSE BLOCK
 <& /RTIR/Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
-<& /RTIR/Search/Elements/RefineTabs, 
-    Title          => $title,
-
-    Queue          => 'Incident Reports',
-    Ticket         => $IncidentObj,
-    QueryString    => $QueryString,
-
-    current_tab    => $current_tab,
-    current_subtab => "RTIR/Search/Refine.html",
-&>
+<& /Elements/Tabs &>
 
 % $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $IncidentObj);
 <& /Elements/ListActions, actions => \@results &>
@@ -51,7 +42,7 @@
 <h2><&|/l&>Reporters</&></h2>
 <& /RTIR/Search/Elements/ShowResults,
     Queue         => 'Incident Reports',
-    BaseURL       => $current_tab,
+    BaseURL       => $BaseURL,
     BaseQuery     => RT::IR->BaseQuery(Queue => 'Incident Reports', MemberOf => $id),
     Query         => $Query,
     DisplayFormat => "__CheckBox.{SelectedReports}__, $Format",
@@ -66,7 +57,7 @@
 <h2><&|/l&>Investigation Correspondents</&></h2>
 <& /RTIR/Search/Elements/ShowResults,
     Queue         => 'Investigations',
-    BaseURL       => $current_tab,
+    BaseURL       => $BaseURL,
     BaseQuery     => RT::IR->BaseQuery(Queue => 'Investigations', MemberOf => $id),
     Query         => $Query,
     DisplayFormat => "__CheckBox.{SelectedInvestigations}__, $Format",
@@ -81,7 +72,7 @@
 <h2><&|/l&>Blocks Correspondents</&></h2>
 <& /RTIR/Search/Elements/ShowResults,
     Queue         => 'Investigations',
-    BaseURL       => $current_tab,
+    BaseURL       => $BaseURL,
     BaseQuery     => RT::IR->BaseQuery(Queue => 'Blocks', MemberOf => $id),
     Query         => $Query,
     DisplayFormat => "__CheckBox.{SelectedBlocks}__, $Format",
@@ -245,15 +236,7 @@ foreach (qw(SelectedReports SelectedInvestigations SelectedBlocks)) {
     }
 }
 
-my $QueryString = $m->comp( '/Elements/QueryString',
-                            Query => $Query,
-                            Format => $Format,
-                            Rows => $Rows,
-                            OrderBy => $OrderBy,
-                            Order => $Order,
-                            Page => $Page);
-
-my $current_tab = "RTIR/Incident/Reply.html?".
+my $BaseURL = "RTIR/Incident/Reply.html?".
     $m->comp('/Elements/QueryString',
         id            => $id,
         All           => $All,
