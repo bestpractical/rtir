@@ -302,8 +302,8 @@ sub ChildrenQuery {
 
     my @parts;
     push @parts, $self->NewQuery(
-        Queue  => $Queue,
-        states => $arga{'States'},
+        Queue  => $args{'Queue'},
+        states => $args{'States'},
         add_states => $args{'AddStates'},
     );
     push @parts, $self->BaseQuery( Queue => $args{'Queue'} );
