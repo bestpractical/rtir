@@ -57,7 +57,7 @@ email addresses. These people <b>will</b> receive future updates.)</&></font></i
     NamePrefix => $NamePrefix,
     TicketObj  => $ARGS{'TicketObj'},
     QueueObj   => $QueueObj,
-    CFIDPrefix => $ARGS{'CFIDPrefix'},
+    CFIDPrefix => $NamePrefix,
 &></td></tr>
 % } }
 
