@@ -57,6 +57,7 @@ email addresses. These people <b>will</b> receive future updates.)</&></font></i
     NamePrefix => $NamePrefix,
     TicketObj  => $ARGS{'TicketObj'},
     QueueObj   => $QueueObj,
+    CFIDPrefix => $ARGS{'CFIDPrefix'},
 &></td></tr>
 % } }
 
@@ -152,6 +153,7 @@ if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
 <%ARGS>
 $NamePrefix => '',
 $DefaultsNamePrefix => undef
+$CFIDPrefix => ''
 </%ARGS>
 <%INIT>
 if ( defined $NamePrefix && length $NamePrefix ) {

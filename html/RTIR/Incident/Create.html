@@ -201,6 +201,7 @@ unless ( exists $ARGS{'Content'} ) {
     Queue => 'Investigations',
     Status => 'new',
     SkipField => { Owner => 1, Attachments => 1, DateFields => 1 },
+    CFIDPrefix => 'investigation-',
 &>
 <& /Elements/Submit,
     Name => 'CreateWithInvestigation',
