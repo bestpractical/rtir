@@ -1,3 +1,4 @@
+.perlcriticrc
 CHANGES
 etc/add_constituency
 etc/initialdata
@@ -135,7 +136,14 @@ html/RTIR/Search/Results.html
 html/RTIR/ShowUser
 html/RTIR/Split.html
 html/RTIR/Tools/Elements/GetEmailFromIP
+html/RTIR/Tools/Elements/LookupRelatedTickets
 html/RTIR/Tools/Elements/Tabs
+html/RTIR/Tools/Elements/ToolFormIframe
+html/RTIR/Tools/Elements/ToolFormTraceroute
+html/RTIR/Tools/Elements/ToolFormWhois
+html/RTIR/Tools/Elements/ToolResultsIframe
+html/RTIR/Tools/Elements/ToolResultsWhois
+html/RTIR/Tools/Elements/Tools
 html/RTIR/Tools/Lookup.html
 html/RTIR/Tools/ScriptedAction.html
 html/RTIR/Tools/Traceroute.html
