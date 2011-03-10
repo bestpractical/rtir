@@ -40,13 +40,7 @@ sub import {
     $class->SUPER::import( %args );
     $class->export_to_level(1);
 
-    RT->Config->LoadConfig( File => 'RTIR_Config.pm' );
     RT->Config->Set( 'rtirname' => 'regression_tests' );
-
-    require RT::Lifecycle;
-    RT::Lifecycle->FillCache;
-
-    require RT::IR;
 }
 
 our $RTIR_TEST_USER = "rtir_test_user";
