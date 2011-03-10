@@ -25,12 +25,7 @@
 <& /RTIR/Elements/Header, Title => $Title &>
 % my $EscapedQueue = $m->comp('/Elements/QueryString', Queue => $Queue );
 % if ( $Split ) {
-<& '/RTIR/'.$Type.'/Elements/Tabs', 
-    Title          => $Title,
-    Ticket         => $TicketObj,
-    current_tab    => "RTIR/Split.html?Ticket=".$TicketObj->Id,
-    current_subtab => "RTIR/Split.html?Ticket=".$TicketObj->Id,
-&>
+<& /Elements/Tabs &>
 % } elsif ( $Incident ) {
 <& "/RTIR/Search/Elements/RefineTabs",
     Title          => $Title,
