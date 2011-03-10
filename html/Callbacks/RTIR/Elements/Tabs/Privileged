@@ -109,6 +109,8 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
         return $can{$_[0]} = $ticket->CurrentUserHasRight( $_[0] );
     };
 
+    my $actions_tab = PageMenu()->child( actions => title => loc('Actions'), sort_order  => 95 );
+
     PageMenu()->child( display => title => loc('Display'), path => "/RTIR/Display.html?id=$id" );
 
     # RT4 TODO: something wrong, this doesn't work
@@ -157,34 +159,35 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
         PageMenu()->child( advanced => title => loc('Advanced'), path => "/RTIR/Advanced.html?id=$id" );
     }
 
-    if ( $can->('ModifyTicket') || $can->('ReplyToTicket') ) {
-        if ( $type eq 'Incident' ) {
-            PageMenu()->child(
-                reply_reporters => title => loc('Reply to Reporters'),
-                path  => "/RTIR/Incident/Reply.html?id=$id&SelectAllTickets=1",
-            );
-            PageMenu()->child(
-                reply_all => title => loc('Reply to All'),
-                path  => "/RTIR/Incident/Reply.html?id=$id&SelectAllTickets=1&All=1",
-            );
-        } else {
-            PageMenu()->child(
-                reply => title => loc('Reply'),
-                path  => "/RTIR/Update.html?id=$id&Action=Respond",
-            );
-        }
-    }
     if ( $can->('OwnTicket') ) {
         if ( $ticket->Owner == $RT::Nobody->id ) {
-            PageMenu()->child(
+            $actions_tab->child(
                 take => title => loc('Take'),
                 path  => "/RTIR/Display.html?Action=Take&id=$id",
             ) if $can->('ModifyTicket') || $can->('TakeTicket');
         } elsif ( $ticket->Owner != $session{CurrentUser}->id ) {
-            PageMenu()->child(
+            $actions_tab->child(
                 steal => title => loc('Steal'),
                 path  => "/RTIR/Display.html?Action=Steal&id=$id",
             ) if $can->('ModifyTicket') || $can->('StealTicket');
+        }
+    }
+
+    if ( $can->('ModifyTicket') || $can->('ReplyToTicket') ) {
+        if ( $type eq 'Incident' ) {
+            $actions_tab->child(
+                reply_reporters => title => loc('Reply to Reporters'),
+                path  => "/RTIR/Incident/Reply.html?id=$id&SelectAllTickets=1",
+            );
+            $actions_tab->child(
+                reply_all => title => loc('Reply to All'),
+                path  => "/RTIR/Incident/Reply.html?id=$id&SelectAllTickets=1&All=1",
+            );
+        } else {
+            $actions_tab->child(
+                reply => title => loc('Reply'),
+                path  => "/RTIR/Update.html?id=$id&Action=Respond",
+            );
         }
     }
 
@@ -222,7 +225,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
                 Status => $next,
             );
         }
-        PageMenu()->child(
+        $actions_tab->child(
             lc($info->{'label'} || $next),
             title => loc( $info->{'label'} || ucfirst($next) ),
             path  => $path,
