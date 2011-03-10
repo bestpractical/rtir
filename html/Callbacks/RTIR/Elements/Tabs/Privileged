@@ -233,7 +233,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
     }
 
     if ( $can->('ModifyTicket') || $can->('CommentOnTicket') ) {
-        PageMenu()->child(
+        $actions_tab->child(
             comment => title => loc('Comment'),
             path  => "/RTIR/Update.html?Action=Comment&id=$id",
         );
