@@ -8,7 +8,7 @@ no warnings 'once';
 
 use Module::Install::Base;
 use base 'Module::Install::Base';
-our $VERSION = '0.25';
+our $VERSION = '0.27';
 
 use FindBin;
 use File::Glob     ();
@@ -42,8 +42,8 @@ sub RTx {
         $INC{'RT.pm'} = "$RT::LocalPath/lib/RT.pm";
     } else {
         local @INC = (
-            @INC,
             $ENV{RTHOME} ? ( $ENV{RTHOME}, "$ENV{RTHOME}/lib" ) : (),
+            @INC,
             map { ( "$_/rt3/lib", "$_/lib/rt3", "$_/lib" ) } grep $_,
             @prefixes
         );
@@ -60,6 +60,7 @@ sub RTx {
     my $local_lib_path = "$RT::LocalPath/lib";
     print "Using RT configuration from $INC{'RT.pm'}:\n";
     unshift @INC, "$RT::LocalPath/lib" if $RT::LocalPath;
+    unshift @INC, $lib_path;
 
     $RT::LocalVarPath  ||= $RT::VarPath;
     $RT::LocalPoPath   ||= $RT::LocalLexiconPath;
@@ -189,4 +190,4 @@ sub RTxInit {
 
 __END__
 
-#line 303
+#line 304
