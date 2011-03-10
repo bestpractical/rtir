@@ -25,17 +25,14 @@ sub goto_create_rtir_ticket {
     my $self = shift;
     my $queue = shift;
 
-    my %type = (
-        'Incident Reports' => 'Report',
-        'Investigations'   => 'Investigation',
-        'Blocks'           => 'Block',
-        'Incidents'        => 'Incident'
-    );
+    my $equeue = $queue;
+    $equeue =~ s/ /%20/;
 
     $self->get_ok("/RTIR/index.html", "Loaded home page");
-    $self->follow_link_ok({text => $queue, n => "1"}, "Followed '$queue' link");
-    $self->follow_link_ok({text => "New ". $type{ $queue }, n => "1"}, "Followed 'New $type{$queue}' link");
-    
+    $self->follow_link_ok(
+        {text => "Create", url_regex => qr{RTIR/Create\.html.*(?i:$equeue)} },
+        "Followed create in '$queue' link"
+    );
 
     # set the form
     $self->form_number(3);
