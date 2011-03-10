@@ -133,7 +133,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
             $top->child(
                 first => path  => "/RTIR/Display.html?id=$t",
                 title => '<< ' . loc('First')
-            );
+            ) if $t != $id;
         }
 
         $top = PageMenu();
@@ -147,7 +147,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
             $top->child(
                 last => path  => "/RTIR/Display.html?id=$t",
                 title => loc('Last') . ' >>'
-            );
+            ) if $t != $id;
         }
     }
 
