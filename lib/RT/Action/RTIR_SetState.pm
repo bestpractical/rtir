@@ -23,16 +23,18 @@ sub Commit {
     my $self = shift;
 
     my $t = $self->TicketObj;
+
+    my $txn = $self->TransactionObj;
  
-    if ( $self->TransactionObj->Field eq 'Status' ) {
-        return 1;
-    }
+    return 1 if $txn->Type eq 'Set' && $txn->Field eq 'Status';
 
-    my $state = $self->GetState;
-    return 1 unless $state;
+    my $status = $self->GetState;
+    return 1 unless $status;
+    return 1 if $t->Status eq $status;
 
-    my ( $res, $msg ) = $t->SetStatus( $state ) unless $t->Status eq $state;
-    $RT::Logger->warning("Couldn't set status to $state: $msg") unless $res;
+    my ( $res, $msg ) = $t->SetStatus( $status );
+    $RT::Logger->warning("Couldn't set status to $status: $msg")
+        unless $res;
     return 1;
 }
 
