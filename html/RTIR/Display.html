@@ -214,13 +214,11 @@ unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
 # update id argument in the case we took merged or created new
 $ARGS{'id'} = $id = $Ticket->Id;
 
-$m->comp(
-    '/Elements/MaybeRedirectForResults',
-    Path        => 'RTIR/Display.html',
-    id          => $id,
-    Actions     => \@results,
+MaybeRedirectForResults(
+    Path      => '/RTIR/Display.html',
+    Actions   => \@results,
+    Arguments => { id => $id },
 );
-
 
 if ( $Type eq 'Report' ) {
     $name = "Incident Report";
