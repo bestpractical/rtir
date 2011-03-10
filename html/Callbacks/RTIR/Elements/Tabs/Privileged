@@ -303,6 +303,13 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
             path => "/RTIR/Report/BulkReject.html?". $query_string->( %args ),
         );
     }
+} elsif ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?Split\.html$} ) {
+    my $id = $args->{'id'};
+
+    PageMenu()->child(
+        back => title => loc('Back to ticket #[_1]', $id),
+        path => "/RTIR/Display.html?id=$id",
+    );
 }
 
 
