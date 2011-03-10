@@ -240,9 +240,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
     }
 
     PageMenu()->child(
-        bookmark => title => $m->scomp( '/Ticket/Elements/Bookmark', id => $id ),
-        escape_title => 0,
-        link_item    => 0,
+        bookmark => raw_html => $m->scomp( '/Ticket/Elements/Bookmark', id => $id ),
         sort_order   => 99
     );
 } elsif ( $request_path =~ m{^/RTIR/Link/(ToIncident|FromIncident)/} ) {
