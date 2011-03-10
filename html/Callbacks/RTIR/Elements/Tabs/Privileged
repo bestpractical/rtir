@@ -36,12 +36,37 @@ if ( $session{'CurrentSearchHash'} ) {
 
 }
 
-$root->child( incidents => title => loc('Incidents'), path => '/RTIR/Search/Results.html?Queue=Incidents' );
-$root->child( reports => title => loc('Incident Reports'), path => '/RTIR/Search/Results.html?Queue=Incident%20Reports' );
-$root->child( investigations => title => loc('Investigations'), path => '/RTIR/Search/Results.html?Queue=Investigations' );
+$root->child(
+    incidents => title => loc('Incidents'),
+    path => '/RTIR/Search/Results.html?Queue=Incidents'
+)->child(
+    create => title => loc('Create'),
+    path => '/RTIR/Create.html?Queue=Incidents',
+);
+$root->child(
+    reports => title => loc('Incident Reports'),
+    path => '/RTIR/Search/Results.html?Queue=Incident%20Reports'
+)->child(
+    create => title => loc('Create'),
+    path => '/RTIR/Create.html?Queue=Incident%20Reports',
+);
+$root->child(
+    investigations => title => loc('Investigations'),
+    path => '/RTIR/Search/Results.html?Queue=Investigations'
+)->child(
+    create => title => loc('Create'),
+    path => '/RTIR/Create.html?Queue=Investigations',
+);
 unless ( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
-    $root->child( blocks => title => loc('Blocks'), path => '/RTIR/Search/Results.html?Queue=Blocks' );
+    $root->child(
+        blocks => title => loc('Blocks'),
+        path => '/RTIR/Search/Results.html?Queue=Blocks'
+    )->child(
+        create => title => loc('Create'),
+        path => '/RTIR/Create.html?Queue=Blocks',
+    );
 }
+
 my $tools = $root->child( tools => title => loc('Tools'), path => '/RTIR/Tools/' );
 $tools->child( lookup => title => loc('Lookup'), path => '/RTIR/Tools/Lookup.html' );
 $tools->child( reporting => title => loc('Reporting'), path => '/RTIR/Reporting/' );
@@ -281,10 +306,6 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
             Queue => $queue,
         ),
     );
-    PageMenu()->child(
-        new => title => loc("New $type"),
-        path => "/RTIR/Create.html?". $query_string->( Queue => $queue ),
-    ) if $type;
 
     PageMenu()->child(
         report => title => loc('Report'),
