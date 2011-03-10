@@ -45,6 +45,7 @@
 
 <%INIT>
 my $TicketObj = LoadTicket( $id );
+$ARGS{'id'} = $id = $TicketObj->id;
 
 $m->callback(CallbackName => 'Initial', %ARGS, Ticket => $TicketObj);
 
