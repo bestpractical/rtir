@@ -105,7 +105,7 @@ $DefaultStatus ||= $ARGS{'Status'} || '';
 $ARGS{'Status'} ||= $DefaultStatus; # XXX: we should get rid of the DefaultStatus
 $DefaultStatus = 'open' if $DefaultStatus eq 'new';
 
-my $title = loc("Update [_1] #[_2] ([_3])", $type, $id, $Ticket->Subject);
+my $title = loc("Update [_1] #[_2] ([_3])", $Type, $id, $Ticket->Subject);
 
 my $CanRespond = 0;
 my $CanComment = 0;
