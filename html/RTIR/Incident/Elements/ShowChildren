@@ -1,9 +1,9 @@
 <&| /Widgets/TitleBox, 
     title       => loc( $Queue ),
-    title_href  => RT->Config->Get('WebPath') ."/RTIR/Incident/ShowChildren.html?Queue=". $EscapedQueue ."&id=".$id,
+    title_href  => RT->Config->Get('WebPath') ."/RTIR/Incident/Children/?Queue=". $EscapedQueue ."&id=".$id,
     ( $total_count > $Rows
         ? ( titleright    => loc("More... ([_1] total)", $total_count),
-            titleright_href => RT->Config->Get('WebPath') ."/RTIR/Incident/ShowChildren.html?Queue=". $EscapedQueue ."&id=".$id )
+            titleright_href => RT->Config->Get('WebPath') ."/RTIR/Incident/Children/?Queue=". $EscapedQueue ."&id=".$id )
         : (),
     ),
     class => 'tickets-list-'. lc(RT::IR::TicketType( Queue => $Queue )),

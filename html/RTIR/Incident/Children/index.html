@@ -33,7 +33,7 @@
 <h2><% loc('Total [_1]: [_2]([_3])', $Queue, $children->CountAll, $all_children->CountAll) %></h2>
 % }
 
-<form action="ShowChildren.html" method="post">
+<form action="index.html" method="post">
 <input type="hidden" name="id" value="<% $id %>" />
 <input type="hidden" name="Queue" value="<% $Queue %>" />
 
@@ -41,7 +41,7 @@
     Ticket             => $Incident,
     Queue              => $Queue,
     States             => [@States],
-    FullList           => RT->Config->Get('WebPath')."/RTIR/Incident/ShowChildren.html?Queue=$Queue&id=$id",
+    FullList           => RT->Config->Get('WebPath')."/RTIR/Incident/Children/?Queue=$Queue&id=$id",
     Delete             => $delete,
     ShowHeader         => 1,
     ShowStatesSelector => 1,
@@ -86,8 +86,6 @@ $all_children->FromSQL( RT::IR->ChildrenQuery(
     Ticket => $Incident,
     States => [@possible_states],
 ) );
-my $current_tab = 'RTIR/Incident/ShowChildren.html?'
-    . $m->comp( '/Elements/QueryString', id => $id, Queue => $Queue );
 </%INIT>
 <%ARGS>
 $id              => undef
