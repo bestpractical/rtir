@@ -51,10 +51,10 @@
 </form>
 
 <%INIT>
-my @results;
 my $Incident = LoadTicket($id);
 $id = $ARGS{'id'} = $Incident->Id;
 
+my @results;
 if( $ARGS{'Unlink'} ) {
     # translate the checkbox args to what ProcessTicketLinks expects
     $ARGS{'DeleteLink-'. $_ .'-MemberOf-'} = 1 for @SelectedTickets;
@@ -68,6 +68,15 @@ unless ( $Incident->CurrentUserHasRight('ShowTicket') ) {
     Abort("No permission to view ticket");
 }
 
+my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
+$QueueObj->Load( $Queue );
+unless ( $QueueObj->id ) {
+    Abort("Couldn't load queue '$Queue'");
+}
+
+@States = $QueueObj->Lifecycle->Valid('initial', 'active')
+    unless @States;
+
 my $Title = loc("$Queue for Incident #[_1]: [_2]", $id, $Incident->Subject);
 
 my $delete = $Incident->CurrentUserHasRight('ModifyTicket') ? 1: 0;
@@ -79,12 +88,11 @@ $children->FromSQL( RT::IR->ChildrenQuery(
     States => [@States],
 ) );
 
-my @possible_states = RT::IR::States( Queue => $Queue, Inactive => 1 );
 my $all_children = RT::Tickets->new( $session{'CurrentUser'} );
 $all_children->FromSQL( RT::IR->ChildrenQuery(
     Queue  => $Queue,
     Ticket => $Incident,
-    States => [@possible_states],
+    States => [ $QueueObj->Lifecycle->Valid ],
 ) );
 </%INIT>
 <%ARGS>
@@ -92,5 +100,5 @@ $id              => undef
 $Queue           => 'Incident Reports'
 
 @SelectedTickets => ()
-@States          => RT::IR::States( Queue => $Queue )
+@States          => ()
 </%ARGS>

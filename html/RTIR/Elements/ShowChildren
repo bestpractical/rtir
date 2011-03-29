@@ -24,7 +24,7 @@
 %# END LICENSE BLOCK
 
 % if( $ShowStatesSelector ) {
-%   foreach my $s( RT::IR::States( Queue => $Queue, Inactive => 1 ) ) {
+%   foreach my $s ( $QueueObj->Lifecycle->Valid ) {
 %       my $checked = (grep { $_ eq $s } @States)? 'checked': '';
 <input type="checkbox" name="States" value="<% $s %>" <% $checked %> />&nbsp;<% $s %>
 %   }
@@ -59,9 +59,16 @@
 % }
 
 <%INIT>
-unless( @States ) {
-    @States = ( RT::IR::States( Queue => $Queue ), 'resolved', 'removed' );
+
+my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
+$QueueObj->Load( $Queue );
+unless ( $QueueObj->id ) {
+    $RT::Logger->error("Couldn't load queue '$Queue'");
+    return;
 }
+
+@States = $QueueObj->Lifecycle->Valid('initial', 'active') unless @States;
+
 my $Type = RT::IR::TicketType( Queue => $Queue );
 
 $Format ||= RT->Config->Get('RTIRSearchResultFormats')->{'Child' . $Type};
@@ -82,10 +89,13 @@ $Queue => undef
 $Ticket => undef
 $OrderBy => 'Due'
 $Rows => 0
+
 $Delete => 0
 $FullList => undef
 $NoTicketsCaption => undef,
+
 @States => ()
+
 $ShowHeader => 0
 $ShowStatesSelector => 0
 </%ARGS>
