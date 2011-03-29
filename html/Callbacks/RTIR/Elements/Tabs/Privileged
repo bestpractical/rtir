@@ -283,6 +283,42 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
         back => title => loc('Back to ticket #[_1]', $id),
         path => "/RTIR/Display.html?id=$id",
     );
+} elsif ( $request_path =~ m{^/RTIR/Incident/Children/} ) {
+    my $queue = $args->{'Queue'} || 'Incident Reports';
+    my $type = RT::IR::TicketType( Queue => $queue );
+
+    my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
+    $ticket->Load( $args->{'id'} );
+    my $id = $ticket->id;
+
+    my %args = (
+        $search_arguments->(),
+        id => $id,
+        Queue => $queue,
+    );
+
+    PageMenu()->child(
+        link => title => loc('Show Results'),
+        path => "/RTIR/Incident/Children/?". $query_string->( %args ),
+    );
+    PageMenu()->child(
+        edit_search => title => loc('Edit Search'),
+        path => "/RTIR/Incident/Children/Refine.html?". $query_string->( %args ),
+    );
+    PageMenu()->child(
+        new_search => title => loc('New Search'),
+        path => "/RTIR/Incident/Children/Refine.html?". $query_string->(
+            NewQuery => 1, id => $id, Queue => $queue,
+        ),
+    );
+    PageMenu()->child(
+        new => title => loc("New $type"),
+        path => "/RTIR/Create.html?". $query_string->( Incident => $id, Queue => $queue ),
+    );
+    PageMenu()->child(
+        back => title => loc('Back to ticket #[_1]', $id),
+        path => "/RTIR/Display.html?id=$id",
+    );
 } elsif ( $request_path =~ m{^/RTIR/(Search/|Incident/BulkAbandon\.html$)} ) {
     my $queue = $args->{'Queue'} || '';
     my $type = RT::IR::TicketType( Queue => $queue );
