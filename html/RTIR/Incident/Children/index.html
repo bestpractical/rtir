@@ -64,6 +64,11 @@ if( $ARGS{'Unlink'} ) {
     RT->Config->Set( StrictLinkACL => $strict_acl );
 }
 
+MaybeRedirectForResults(
+    Actions   => \@results,
+    Arguments => { id => $id, Queue => $Queue },
+);
+
 unless ( $Incident->CurrentUserHasRight('ShowTicket') ) {
     Abort("No permission to view ticket");
 }
