@@ -78,29 +78,36 @@ sub Commit {
     my $self = shift;
     my $id = $self->TicketObj->Id;
 
-    my $query =  "(Queue = 'Incident Reports'"
-                ." OR Queue = 'Investigations'"
-                ." OR Queue = 'Blocks'"
-                .") AND MemberOf = " . $id
-                ." AND ("
-                # TODO: move to per queue statuses lists
-                . join(" AND ", map "Status != '$_'",
-                        RT::Queue->InactiveStatusArray )
-                .")";
+    foreach my $qname ( 'Incident Reports', 'Investigations', 'Blocks' ) {
+        next if $qname eq 'Blocks' && RT->Config->Get('RTIR_DisableBlocksQueue');
 
-    my $members = new RT::Tickets( $self->TransactionObj->CurrentUser );
-    $members->FromSQL( $query );
-    while ( my $member = $members->Next ) {
-        if ( RT::IR::Ticket::IsLinkedToActiveIncidents( $member, $self->TicketObj ) ) {
-            $member->Comment(Content => <<END);
+        my $queue = RT::Queue->new( $self->CurrentUser );
+        $queue->Load( $qname );
+        unless ( $queue->id ) {
+            $RT::Logger->error("Couldn't load '$qname' queue");
+            next;
+        }
+
+        my $cycle = $queue->Lifecycle;
+        my $query = "MemberOf = $id AND Queue = '$qname' AND "
+            . join ' AND ', map "Status != '$_'", $cycle->Inactive;
+
+        my $members = RT::Tickets->new( $self->CurrentUser );
+        $members->FromSQL( $query );
+        while ( my $member = $members->Next ) {
+            if ( RT::IR::Ticket::IsLinkedToActiveIncidents( $member, $self->TicketObj ) ) {
+                $member->Comment(Content => <<END);
 
 Linked Incident \#$id was resolved, but ticket still has unresolved linked Incidents.
 
 END
-            next;
+                next;
+            }
+            my ($res, $msg) = $member->SetStatus(
+                $cycle->DefaultStatus('on_incident_resolve') || ($cycle->Inactive)[0]
+            );
+            $RT::Logger->info( "Couldn't resolve ticket: $msg" ) unless $res;
         }
-        my ($res, $msg) = $member->Resolve;
-        $RT::Logger->info( "Couldn't resolve ticket: $msg" ) unless $res;
     }
     return 1;
 }
