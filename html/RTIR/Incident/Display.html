@@ -262,6 +262,20 @@ if ( $ARGS{'BulkLink'} || $Child ) {
         push @results, $DoLinks->( $child, $TicketObj );
     }
 }
+
+# If we deleted any links, check if what we deleted from still has children
+if ( $deleted_links ) {
+    # XXX: Can we ever get here?
+    my $children = new RT::Tickets( $session{'CurrentUser'} );
+    $children->LimitQueue( VALUE => 'Incident Reports' );
+    $children->LimitQueue( VALUE => 'Investigations' );
+    $children->LimitQueue( VALUE => 'Blocks' );
+    $children->LimitMemberOf( $id );
+    unless ( $children->Count ) {
+        push @results, loc("WARNING: Incident [_1] has no children.", $id);
+    }
+}
+
 if ( $ARGS{'BulkArticles'} && @SelectedTickets ) {
     my $ref = join " ", map "a:$_", @SelectedTickets;
     push @results, ProcessTicketLinks( TicketObj => $TicketObj, ARGSRef => {$TicketObj->Id."-RefersTo" => $ref} );
@@ -280,19 +294,6 @@ unless ( $TicketObj->CurrentUserHasRight('ShowTicket') ) {
 my $TimeWorked = $TicketObj->TimeWorked;
 if ( $TicketObj->TimeLeft > 0 ) {
     $TimeWorked .= '/'. $TicketObj->TimeLeft;
-}
-
-# If we deleted any links, check if what we deleted from still has children
-if ( $deleted_links ) {
-    # XXX: Can we ever get here?
-    my $children = new RT::Tickets( $session{'CurrentUser'} );
-    $children->LimitQueue( VALUE => 'Incident Reports' );
-    $children->LimitQueue( VALUE => 'Investigations' );
-    $children->LimitQueue( VALUE => 'Blocks' );
-    $children->LimitMemberOf( $id );
-    unless ( $children->Count ) {
-        push @results, loc("WARNING: Incident [_1] has no children.", $id);
-    }
 }
 
 my $attachments = $m->comp('/Ticket/Elements/FindAttachments', Ticket => $TicketObj);
