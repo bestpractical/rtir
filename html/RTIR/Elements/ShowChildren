@@ -31,7 +31,7 @@
 <& /Elements/Submit, Name => 'RefineStatus', Label => loc('Filter status') &>
 % }
 
-% if ($Delete) {
+% if ( $Delete && $children->Count ) {
 <i><% loc("Check box to unlink") %></i><br />
 % }
 <& /Elements/TicketList, 
