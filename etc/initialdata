@@ -729,14 +729,13 @@ for my $cf (@CustomFields) {
     my $class = RT::FM::Class->new($CurrentUser);
     $class->Load('Templates');
     unless ($class->Id) {
-        print "  Creating 'Templates' RTFM class..";
+        $RT::Logger->info("Creating 'Templates' RTFM class.");
         my ($id, $msg) = $class->Create(
             Name => 'Templates',
             Description => 'Response templates',
             HotList => 1
         );
         die $msg unless $id;
-        print "Done\n";
     }
 
     my $response = RT::CustomField->new($CurrentUser);
@@ -751,7 +750,6 @@ for my $cf (@CustomFields) {
             LookupType => RT::FM::Article->CustomFieldLookupType,
         );
         die $msg unless $id;
-        print "Done\n";
     }
 
     $response->AddToObject($class);
@@ -766,6 +764,5 @@ for my $cf (@CustomFields) {
     $group->PrincipalObj->GrantRight( Right => $_, Object => $class )
       for qw/AdminClass AdminTopics CreateArticle ModifyArticle ModifyArticleTopics SeeClass ShowArticle ShowArticleHistory DeleteArticle/;
 
-    print "Done.\n";
 } );
 
