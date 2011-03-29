@@ -278,13 +278,22 @@ if ( $deleted_links ) {
 
 if ( $ARGS{'BulkArticles'} && @SelectedTickets ) {
     my $ref = join " ", map "a:$_", @SelectedTickets;
-    push @results, ProcessTicketLinks( TicketObj => $TicketObj, ARGSRef => {$TicketObj->Id."-RefersTo" => $ref} );
+    push @results, ProcessTicketLinks(
+        TicketObj => $TicketObj,
+        ARGSRef => {$TicketObj->Id."-RefersTo" => $ref}
+    );
 }
 
 unless( $new_ticket ) {
     $ARGS{UpdateAttachments} = delete $session{'Attachments'};
     push @results, ProcessUpdateMessage( ARGSRef => \%ARGS, TicketObj => $TicketObj );
 }
+
+MaybeRedirectForResults(
+    Actions   => \@results,
+    Path      => "/RTIR/Display.html",
+    Arguments => { id => $TicketObj->id },
+);
 
 # XXX: need the way to show @results when aborting
 unless ( $TicketObj->CurrentUserHasRight('ShowTicket') ) {
