@@ -23,12 +23,7 @@
 %# 
 %# END LICENSE BLOCK
 <& /RTIR/Elements/Header, Title => $Title &>
-<& /RTIR/Search/Elements/RefineTabs, 
-    Title             => $Title,
-    Ticket            => $Incident,
-    Queue             => $Queue,
-    current_tab       => $current_tab,
-&>
+<& /Elements/Tabs &>
 
 <& /Elements/ListActions, actions => \@results &>
 
