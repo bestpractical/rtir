@@ -135,7 +135,7 @@ Set($RTIRSearchResultFormats, {
         q{'<b><a HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
           '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
           __QueueName__,
-          '__CustomField.{State}__',
+          __Status__,
           __LastUpdatedRelative__,
           __CreatedRelative__,
           __NEWLINE__,
@@ -219,19 +219,19 @@ Set($RTIRSearchResultFormats, {
     ChildReport =>
         q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
           '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
-          '__CustomField.{State}__',
+          __Status__,
           __DueRelative__},
 
     ChildInvestigation =>
         q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
           '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
-          '__CustomField.{State}__',
+          __Status__,
           __DueRelative__},
 
     ChildBlock =>
         q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
           '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
-          '__CustomField.{State}__',
+          __Status__,
            __DueRelative__},
 
 } );
