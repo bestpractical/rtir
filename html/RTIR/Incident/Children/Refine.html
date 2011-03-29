@@ -1,0 +1,13 @@
+<%INIT>
+return $m->comp(
+    '/RTIR/Search/Elements/RefinePage',
+    %ARGS,
+    ResultPage => 'RTIR/Incident/Children/?'. $m->comp('/Elements/QueryString',
+        id => $ARGS{'id'}, Queue => $ARGS{'Queue'},
+    ),
+    BaseQuery => RT::IR->BaseQuery(
+        Queue    => $ARGS{'Queue'},
+        MemberOf => $ARGS{'id'},
+    ),
+);
+</%INIT>
