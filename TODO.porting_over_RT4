@@ -1,9 +1,19 @@
-* redirect from /Ticket/Diplay.html to /RTIR/Display.html doesn't work
-
 * BulkAbandon needs a lot of love. see TODO comments
 
 * BulkAbandon misses Query arguments when updated
 
 * upgrade script that setups lifecycle column on the queues
 
+* upgrade script that unapplies State custom field
+
+* upgrade script that deletes all Status changes from 
+  transactions for RTIR's queues and turns changes of
+  the State CFs into Status changes
+
 * /Incident/Reply.html needs refine query page
+
+* on_incident_resolve - document it
+
+* /Incident/Children/ and friends use "State" all over the place,
+  anyway we break backwards compatibility, let's be consistent
+  and ditch the word
