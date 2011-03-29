@@ -232,48 +232,44 @@ unless( $TicketObj->QueueObj->Name eq 'Incidents' ) {
 }
 $ARGS{'id'} = $id = $TicketObj->Id;
 
-if( 1 ) {
+if ( $ARGS{'Action'} && $ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/ )
+{   
+    my $action = $1;
+    my ($res, $msg) = $TicketObj->$action();
+    push @results, $msg;
+    # If they succeeded in taking the ticket, they should also get a lock
+    if ($res && $action =~  /^(?:Take|Steal)$/) { $ARGS{'Lock'} = 'add'; }
 
-    if ( $ARGS{'Action'} && $ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/ )
-    {   
-        my $action = $1;
-        my ($res, $msg) = $TicketObj->$action();
-        push @results, $msg;
-        # If they succeeded in taking the ticket, they should also get a lock
-        if ($res && $action =~  /^(?:Take|Steal)$/) { $ARGS{'Lock'} = 'add'; }
-
-    }
+}
 
 
 
-    unless( $new_ticket ) {
-        push @results, ProcessTicketBasics( ARGSRef => \%ARGS, TicketObj => $TicketObj );
-    }
+unless( $new_ticket ) {
+    push @results, ProcessTicketBasics( ARGSRef => \%ARGS, TicketObj => $TicketObj );
+}
 
-    if ( $ARGS{'BulkLink'} || $Child ) {
-        my @link;
-        push @link, @SelectedTickets if $ARGS{'BulkLink'};
-        push @link, $Child if $Child;
-        foreach my $id ( grep $_, @link ) {
-            my $child = RT::Ticket->new( $session{'CurrentUser'} );
-            $child->Load( $id );
-            unless( $child->id ) {
-                push @results, loc("Couldn't load ticket #[_1] for linking.", $id);
-                next;
-            }
-            push @results, $DoLinks->( $child, $TicketObj );
+if ( $ARGS{'BulkLink'} || $Child ) {
+    my @link;
+    push @link, @SelectedTickets if $ARGS{'BulkLink'};
+    push @link, $Child if $Child;
+    foreach my $id ( grep $_, @link ) {
+        my $child = RT::Ticket->new( $session{'CurrentUser'} );
+        $child->Load( $id );
+        unless( $child->id ) {
+            push @results, loc("Couldn't load ticket #[_1] for linking.", $id);
+            next;
         }
+        push @results, $DoLinks->( $child, $TicketObj );
     }
-    if ( $ARGS{'BulkArticles'} && @SelectedTickets ) {
-        my $ref = join " ", map "a:$_", @SelectedTickets;
-        push @results, ProcessTicketLinks( TicketObj => $TicketObj, ARGSRef => {$TicketObj->Id."-RefersTo" => $ref} );
-    }
+}
+if ( $ARGS{'BulkArticles'} && @SelectedTickets ) {
+    my $ref = join " ", map "a:$_", @SelectedTickets;
+    push @results, ProcessTicketLinks( TicketObj => $TicketObj, ARGSRef => {$TicketObj->Id."-RefersTo" => $ref} );
+}
 
-    unless( $new_ticket ) {
-        $ARGS{UpdateAttachments} = delete $session{'Attachments'};
-        push @results, ProcessUpdateMessage( ARGSRef => \%ARGS, TicketObj => $TicketObj );
-    }
-
+unless( $new_ticket ) {
+    $ARGS{UpdateAttachments} = delete $session{'Attachments'};
+    push @results, ProcessUpdateMessage( ARGSRef => \%ARGS, TicketObj => $TicketObj );
 }
 
 # XXX: need the way to show @results when aborting
