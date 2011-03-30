@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 22;
+use RT::IR::Test tests => 20;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -12,12 +12,12 @@ my $ir_id  = $agent->create_ir( {Subject => "looking for rtfm"});
 
 $agent->display_ticket( $ir_id);
 
-$agent->follow_link_ok({text => "RTFM"}, "followed 'RTFM' overview link");
-$agent->title_like(qr/Overview/);
+$agent->follow_link_ok({text => "Articles"}, "followed 'Articles' overview link");
+$agent->title_like(qr/^Articles$/);
 
 $agent->back();
 
-$agent->follow_link_ok({text => "New", url_regex => qr/RTFM/}, "followed new RTFM article link");
+$agent->follow_link_ok({text => "New", url_regex => qr/Articles/}, "followed new article link");
 
 $agent->follow_link_ok({text => "in class Templates"}, "chose a class");
 
