@@ -17,3 +17,6 @@
 * /Incident/Children/ and friends use "State" all over the place,
   anyway we break backwards compatibility, let's be consistent
   and ditch the word
+
+* Some pages with forms need new nice layouts like in RT, reply
+  page comes first to mind
