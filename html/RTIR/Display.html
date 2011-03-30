@@ -61,7 +61,6 @@
 
 </&>
 
-% if ($RT::FM::VERSION) {
 <&| /Widgets/TitleBox,
     title => loc("Articles"),
     title_href => RT->Config->Get('WebPath') ."/RTIR/Advanced.html?id=".$id, 
@@ -71,20 +70,19 @@
 % if ($Ticket->CurrentUserHasRight('ModifyTicket')) {
 % my $qs = $m->comp("/Elements/QueryString", "RefersTo-new" => "t:$id", next => RT->Config->Get('WebPath')."/RTIR/Display.html?id=$id");
     <table width="100%"><tr><td align="right"><font size="-1">
-        | <a href="<%RT->Config->Get('WebPath')%>/RTFM/Article/PreCreate.html?<% $qs |n%>"><%loc('New')%></a> 
+        | <a href="<%RT->Config->Get('WebPath')%>/Articles/Article/PreCreate.html?<% $qs |n%>"><%loc('New')%></a> 
         | <a href="<%RT->Config->Get('WebPath')%>/RTIR/Incident/LinkArticles.html?id=<%$id%>"><%loc("Link")%></a> |
     </font></td></tr></table>
 % }
 
 <ul>
 % while (my $Link = $Ticket->RefersTo->Next) {
-% next unless UNIVERSAL::isa($Link->TargetURI->Object, "RT::FM::Article");
+% next unless UNIVERSAL::isa($Link->TargetURI->Object, "RT::Article");
 <li><a href="<%$Link->TargetURI->Resolver->HREF%>"><% $Link->TargetURI->Object->Name %></a></li>
 % }
 </ul>
 
 </&>
-% }
 </td> <td class="boxcontainer" valign="top">
 % $m->callback( %ARGS, Ticket => $Ticket, CallbackName => 'RightColumnStart' );
 

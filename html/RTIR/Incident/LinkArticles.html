@@ -45,7 +45,7 @@ Search: <input type="text" name="search" value="<% $search %>" />
 <ul>
 % while (my $article = $articles->Next) {
 <li><input type="checkbox" name="SelectedTickets" value="<% $article->id %>" /> 
-<a href="/RTFM/Article/Display.html?id=<% $article->id %>"><%$article->Name|| loc('(no name)')%>: <%$article->Summary%></a>
+<a href="/Articles/Article/Display.html?id=<% $article->id %>"><%$article->Name|| loc('(no name)')%>: <%$article->Summary%></a>
 </li>
 % }
 </ul>
@@ -59,8 +59,8 @@ my $IncidentObj = LoadTicket($id);
 $ARGS{'id'} = $id = $IncidentObj->id;
 my $title = loc("Link selected articles to Incident #[_1]", $id);
 
-use RT::FM::ArticleCollection;
-my $articles = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
+use RT::Articles;
+my $articles = RT::Articles->new( $session{'CurrentUser'} );
 if ( $search ) {
     $articles->LimitCustomField( VALUE => $search,
                                  ENTRYAGGREGATOR => 'OR',
