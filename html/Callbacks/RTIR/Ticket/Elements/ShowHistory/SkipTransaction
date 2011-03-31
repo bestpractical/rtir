@@ -5,20 +5,9 @@ return if $$skip;
 # Set $skip to 1 if transaction matches criteria
 # $skip is passed by reference
 
-my $type = $Transaction->Type;
-
 # skip IP changes done by system user(scrips)
-if ( $Transaction->Creator == $RT::SystemUser->id && $type eq 'CustomField' ) {
-    my $cf = RT::IR::GetCustomField('IP')
-        or return;
-    return unless $cf->id == $Transaction->Field;
-    return $$skip = 1;
-}
-
-# get out of here asap
-unless ( $type =~ /^(?:Status|Set)$/ && $Transaction->Field  eq 'Status') {
-    return;
-}
+return unless $Transaction->Type eq 'CustomField'
+    && $Transaction->Creator == $RT::SystemUser->id;
 
 # check only ticket's transactions
 my $obj = $Transaction->Object;
@@ -26,7 +15,13 @@ return unless $obj && $obj->isa( 'RT::Ticket' );
 
 # only check if it's an RTIR queue
 my $Queue = $obj->QueueObj->Name;
-return $$skip = 1 if $Queue =~ /^(?:Incidents|Incident Reports|Investigations|Blocks)$/i;
+return unless RT::IR->OurQueue( $obj->QueueObj );
+
+my $cf = RT::IR::GetCustomField('IP')
+    or return;
+return unless $cf->id == $Transaction->Field;
+return $$skip = 1;
+
 </%INIT>
 
 <%ARGS>
