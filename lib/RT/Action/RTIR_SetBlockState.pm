@@ -57,50 +57,30 @@ Returns state of the C<Block>.
 
 sub GetState {
     my $self = shift;
-    my $t = $self->TicketObj;
-    my $txn = $self->TransactionObj;
-    my $old_status = $t->Status;
 
-    if ( $txn->Type eq 'Correspond' && $txn->IsInbound && $old_status eq 'pending activation' ) {
+    my $txn = $self->TransactionObj;
+    return unless $txn->Type eq 'Correspond';
+
+    my $status = lc $self->TicketObj->Status;
+    if ( $status =~ /^pending / && $txn->IsInbound ) {
         if ( my $re = RT->Config->Get('RTIR_BlockAproveActionRegexp') ) {
             my $content = $txn->Content;
             return '' if !$content || $content !~ /$re/;
         }
-        return 'active';
-    }
 
-    return 'active' if $old_status eq 'removed';
-
-    # if block was removed (resolved/rejected) we reactivate it
-    if ( $txn->Creator != $RT::SystemUser->id ) {
-        # if a duty team member changes Status directly then we want to activate
-        if ( ($txn->Type eq 'Status' || ($txn->Type eq 'Set' && $txn->Field eq 'Status')) &&
-                $self->CreatorCurrentUser->PrincipalObj->HasRight(
-                    Right => 'ModifyTicket', Object => $t
-                )
-        ) {
+        if ( $status eq 'pending activation' ) {
+            # switch to active state if it is reply from requestor(s)
             return 'active';
+        } elsif ( $status eq 'pending removal' ) {
+            # switch to removed state when requestor(s) replies
+            return 'removed';
+        }
+        else {
+            return '';
         }
     }
 
-    # next code related to requestor's correspondents
-    return '' unless $txn->Type eq 'Correspond';
-    return '' unless $t->Requestors->HasMember( $txn->CreatorObj->PrincipalObj );
-
-    if ( my $re = RT->Config->Get('RTIR_BlockAproveActionRegexp') ) {
-        my $content = $txn->Content;
-        return '' if !$content || $content !~ /$re/;
-    }
-
-    if ( $old_status eq 'pending activation' ) {
-        # switch to active state if it is reply from requestor(s)
-        return 'active';
-    } elsif ( $old_status eq 'pending removal' ) {
-        # switch to removed state when requestor(s) replies
-        return 'removed';
-    }
-
-    return '';
+    return 'active' if $status eq 'removed';
 }
 
 eval "require RT::Action::RTIR_SetBlockState_Vendor";
