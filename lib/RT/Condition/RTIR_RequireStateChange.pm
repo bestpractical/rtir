@@ -66,7 +66,6 @@ sub IsApplicable {
 
     my $type = $self->TransactionObj->Type;
     return 1 if $type eq "Create";
-    return 1 if $self->IsStatusChange;
 
     my $field = $self->TransactionObj->Field;
     return 1 if
