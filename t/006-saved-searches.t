@@ -3,12 +3,10 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 22;
+use RT::IR::Test tests => 20;
 
 RT::Test->started_ok;
 my $agent = default_agent();
-
-$agent->follow_link_ok({text => "RT"}, "went to main RT page");
 
 $agent->follow_link_ok({text => "Tickets"}, "went to query builder");
 
