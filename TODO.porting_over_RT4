@@ -23,3 +23,7 @@
 
 * split SetState action and conditions for IRs and Blocks.
   they just have different workflow now
+
+* migrate SetIncidentReportState over lifecycles
+
+* scan code for hardcoded statuses
