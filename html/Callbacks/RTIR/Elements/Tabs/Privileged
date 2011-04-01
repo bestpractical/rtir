@@ -155,7 +155,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
         PageMenu()->child( edit => title => loc('Edit'), path => "/RTIR/Edit.html?id=$id" );
         PageMenu()->child( split => title => loc('Split'), path => "/RTIR/Split.html?id=$id" );
         # XXX: we're missing query string here
-        PageMenu()->child( merge => title => loc('Merge'), path => "/RTIR/Merge.html?id=$id" );
+        PageMenu()->child( merge => title => loc('Merge'), path => "/RTIR/Merge/?id=$id" );
         PageMenu()->child( advanced => title => loc('Advanced'), path => "/RTIR/Advanced.html?id=$id" );
     }
 
@@ -314,6 +314,34 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
     PageMenu()->child(
         new => title => loc("New $type"),
         path => "/RTIR/Create.html?". $query_string->( Incident => $id, Queue => $queue ),
+    );
+    PageMenu()->child(
+        back => title => loc('Back to ticket #[_1]', $id),
+        path => "/RTIR/Display.html?id=$id",
+    );
+} elsif ( $request_path =~ m{^/RTIR/Merge/} ) {
+    my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
+    $ticket->Load( $args->{'id'} );
+    my $id = $ticket->id;
+
+    my %args = (
+        $search_arguments->(),
+        id => $id,
+    );
+
+    PageMenu()->child(
+        link => title => loc('Merge'),
+        path => "/RTIR/Merge/?". $query_string->( %args ),
+    );
+    PageMenu()->child(
+        edit_search => title => loc('Edit Search'),
+        path => "/RTIR/Merge/Refine.html?". $query_string->( %args ),
+    );
+    PageMenu()->child(
+        new_search => title => loc('New Search'),
+        path => "/RTIR/Merge/Refine.html?". $query_string->(
+            NewQuery => 1, id => $id,
+        ),
     );
     PageMenu()->child(
         back => title => loc('Back to ticket #[_1]', $id),
