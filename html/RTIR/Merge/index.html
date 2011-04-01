@@ -121,8 +121,8 @@ my $Queue = $Ticket->QueueObj->Name;
 
 my $title = loc("Merge [_1] #[_2]: [_3]", $Type, $id, $Ticket->Subject);
 
-$Query     ||= RT::IR->NewQuery( Queue => $Queue);
-$BaseQuery ||= RT::IR->BaseQuery( Queue => $Queue, Exclude => $id, Constituency => $Ticket );
+$Query      ||= RT::IR->NewQuery( Queue => $Queue );
+my $BaseQuery = RT::IR->BaseQuery( Queue => $Queue, Exclude => $id, Constituency => $Ticket );
 
 my %defaults = (
     Format  => $Format,
@@ -157,7 +157,6 @@ if ( $Type ne 'Incident' ) {
 <%ARGS>
 $id             => undef
 
-$BaseQuery      => undef
 $Query          => undef
 $Format         => RT->Config->Get('RTIRSearchResultFormats')->{'Merge'} 
 $Rows           => 50
