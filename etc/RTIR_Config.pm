@@ -291,6 +291,7 @@ Set(
 
         transitions => {
             # from   => [ to list ],
+            ''        => [qw(open)],
             open      => [qw(resolved abandoned)],
             resolved  => [qw(open)],
             abandoned => [qw(open)],
@@ -315,15 +316,20 @@ Set(
         ],
     },
     incident_reports => {
-        default_initial => 'new',
-        initial         => [ 'new', 'open' ],
-        active          => ['open'],
+        initial         => [ 'new' ],
+        active          => [ 'open' ],
         inactive        => [ 'resolved', 'rejected' ],
-        default_inactive => 'resolved',
+
+        defaults => {
+            on_create => 'new',
+            on_merge  => 'resolved',
+            approved  => 'open',
+            denied    => 'rejected',
+        },
 
         transitions => {
-
             # from   => [ to list ],
+            ''       => [qw(new open resolved)],
             new      => [qw(open resolved rejected)],
             open     => [qw(resolved rejected)],
             resolved => [qw(open)],
@@ -341,15 +347,20 @@ Set(
         ],
     },
     investigations => {
-        default_initial => 'open',
-        initial         => ['open'],
+        initial         => [],
         active          => ['open'],
         inactive        => ['resolved'],
-        default_inactive  => 'resolved',
+
+        defaults => {
+            on_create => 'open',
+            on_merge  => 'resolved',
+            approved  => 'open',
+            denied    => 'resolved',
+        },
 
         transitions => {
-
             # from   => [ to list ],
+            ''       => [qw(new resolved)],
             open     => [qw(resolved)],
             resolved => [qw(open)],
         },
@@ -361,13 +372,19 @@ Set(
         ],
     },
     blocks => {
-        default_initial => 'pending activation',
         initial         => ['pending activation'],
         active          => [ 'active', 'pending removal' ],
         inactive        => ['removed'],
-        default_inactive  => 'removed',
+
+        defaults => {
+            on_create => 'pending activation',
+            on_merge  => 'removed',
+            approved  => 'active',
+            denied    => 'removed',
+        },
 
         transitions => {
+            ''                   => [ 'pending activation', 'active' ],
             'pending activation' => [ 'active', 'removed' ],
             active               => [ 'pending removal', 'removed' ],
             'pending removal'    => [ 'removed', 'active' ],
