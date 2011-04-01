@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 57;
+use RT::IR::Test tests => 55;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -18,8 +18,7 @@ sub tempfile {
     return $filename;
 }
 
-$agent->follow_link_ok({text => 'Incident Reports'}, "go to 'Incident Reports'");
-$agent->follow_link_ok({text => 'New Report'}, "go to 'New Report'");
+$agent->goto_create_rtir_ticket('Incident Reports');
 
 # let's try to create new IR with one attachment
 {
@@ -46,8 +45,7 @@ $agent->follow_link_ok({text => 'New Report'}, "go to 'New Report'");
     unlink $filename or die "couldn't delete file '$filename': $!";
 }
 
-$agent->follow_link_ok({text => 'Incident Reports'}, "go to 'Incident Reports'");
-$agent->follow_link_ok({text => 'New Report'}, "go to 'New Report'");
+$agent->goto_create_rtir_ticket('Incident Reports');
 
 # let's try to create new IR with two different attachments
 {
@@ -83,8 +81,7 @@ $agent->follow_link_ok({text => 'New Report'}, "go to 'New Report'");
     unlink $fn2 or die "couldn't delete file '$fn2': $!";
 }
 
-$agent->follow_link_ok({text => 'Incident Reports'}, "go to 'Incident Reports'");
-$agent->follow_link_ok({text => 'New Report'}, "go to 'New Report'");
+$agent->goto_create_rtir_ticket('Incident Reports');
 
 # let's try to create new IR
 # and add then delete attachment to see that it works as expected
@@ -117,8 +114,7 @@ $agent->follow_link_ok({text => 'New Report'}, "go to 'New Report'");
     unlink $filename or die "couldn't delete file '$filename': $!";
 }
 
-$agent->follow_link_ok({text => 'Incidents'}, "go to 'Incidents'");
-$agent->follow_link_ok({text => 'New Incident'}, "go to 'New Incident'");
+$agent->goto_create_rtir_ticket('Incidents');
 
 # let's try add attachment on Inc create page
 {
@@ -134,8 +130,7 @@ $agent->follow_link_ok({text => 'New Incident'}, "go to 'New Incident'");
     unlink $filename or die "couldn't delete file '$filename': $!";
 }
 
-$agent->follow_link_ok({text => 'Investigations'}, "go to 'Investigations'");
-$agent->follow_link_ok({text => 'New Investigation'}, "go to 'New Investigation'");
+$agent->goto_create_rtir_ticket('Investigations');
 
 # let's try add attachment on Inv create page
 {
@@ -151,12 +146,9 @@ $agent->follow_link_ok({text => 'New Investigation'}, "go to 'New Investigation'
     unlink $filename or die "couldn't delete file '$filename': $!";
 }
 
-SKIP: {
-    skip "Blocks queue is disabled", 5 if RT->Config->Get('DisableBlocksQueue');
+$agent->goto_create_rtir_ticket('Blocks');
 
-    $agent->follow_link_ok({text => 'Blocks'}, "go to 'Blocks'");
-    $agent->follow_link_ok({text => 'New Block'}, "go to 'New Block'");
-
+{
     my $content = "this is test";
     my $filename = tempfile($content);
     $agent->form_number(3);
