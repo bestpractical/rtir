@@ -207,8 +207,10 @@ sub States {
         my $queue = RT::Queue->new($RT::SystemUser);
         $queue->Load($name);
         if ( $queue->id ) {
-            push @states, $queue->Lifecycle->Active   if $arg{'Active'};
-            push @states, $queue->Lifecycle->Inactive if $arg{'Inactive'};
+            push @states, $queue->Lifecycle->Valid('initial', 'active')
+                if $arg{'Active'};
+            push @states, $queue->Lifecycle->Inactive
+                if $arg{'Inactive'};
         }
         else {
             $RT::Logger->error( "failed to load queue $name" );
