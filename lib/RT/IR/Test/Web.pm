@@ -163,6 +163,7 @@ sub ok_and_content_like {
     my $re = shift;
     my $desc = shift || "looks good";
     
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
     Test::More::is($self->status, 200, "request successful");
     #like($self->content, $re, $desc);
     $self->content_like($re, $desc);
