@@ -29,7 +29,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<% RT->Config->Get('WebPath') %>/RTIR/Merge.html" method="post">
+<form action="<% RT->Config->Get('WebPath') %>/RTIR/Merge/" method="post">
 <input type="hidden" name="id" value="<% $id %>" />
 
 % if ( $siblings_query ) {

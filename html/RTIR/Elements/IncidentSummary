@@ -52,7 +52,7 @@
 <a href="<%RT->Config->Get('WebPath')%>/RTIR/Display.html?Child=<%$ticket%>&id=<%$Ticket->Id%>">[<%loc("Link")%>]</a>
 % } elsif ($ticket and $Type eq $t) {
 %   if ($ticket ne $Ticket->Id) {
-<a href="<%RT->Config->Get('WebPath')%>/RTIR/Merge.html?id=<%$ticket%>&SelectedTicket=<%$Ticket->Id%>">[<%loc("Merge")%>]</a>
+<a href="<%RT->Config->Get('WebPath')%>/RTIR/Merge/?id=<%$ticket%>&SelectedTicket=<%$Ticket->Id%>">[<%loc("Merge")%>]</a>
 %   }
 % }
 <a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Incident=<%$Ticket->Id%>&Queue=Investigations">[<%loc("Investigate")%>]</a>

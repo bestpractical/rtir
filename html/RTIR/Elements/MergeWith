@@ -9,7 +9,7 @@
     Page          => $Page,
     OrderBy       => $OrderBy,
     Order         => $Order,
-    BaseURL       => "RTIR/Merge.html?id=$id",
+    BaseURL       => "RTIR/Merge/?id=$id",
 &>
 
 <%INIT>
