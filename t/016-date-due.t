@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 17;
+use RT::IR::Test tests => 14;
 
 my $duty_a = RT::Test->load_or_create_user(
     Name       => 'duty a',
@@ -24,12 +24,12 @@ my $customer = RT::Test->load_or_create_user(
 
 {
     my $ticket = RT::Ticket->new( $duty_a );
-    my ($id) = $ticket->Create(
+    my ($id, undef, $msg) = $ticket->Create(
         Queue => 'Incident Reports',
         Owner => $duty_a->id,
         Requestor => $customer->id,
     );
-    ok $id, 'created a ticket';
+    ok $id, 'created a ticket' or diag "error: $msg";
 
     $ticket->Load( $id );
     is $ticket->id, $id, 'loaded ticket';
