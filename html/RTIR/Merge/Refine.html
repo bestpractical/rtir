@@ -1,0 +1,14 @@
+<%INIT>
+return $m->comp(
+    '/RTIR/Search/Elements/RefinePage',
+    %ARGS,
+    ResultPage => 'RTIR/Merge/?'. $m->comp('/Elements/QueryString',
+        id => $ARGS{'id'},
+    ),
+    BaseQuery => RT::IR->BaseQuery(
+        Queue        => $ARGS{'Queue'},
+        Exclude      => $ARGS{'id'},
+        Constituency => $ARGS{'id'},
+    ),
+);
+</%INIT>
