@@ -20,3 +20,6 @@
 
 * Some pages with forms need new nice layouts like in RT, reply
   page comes first to mind
+
+* split SetState action and conditions for IRs and Blocks.
+  they just have different workflow now
