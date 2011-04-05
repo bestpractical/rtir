@@ -9,21 +9,26 @@ require RT::IR::Test;
 require Test::More;
 
 sub create_incident {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
     return (shift)->create_rtir_ticket_ok( 'Incidents', @_ );
 }
 sub create_ir {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
     return (shift)->create_rtir_ticket_ok( 'Incident Reports', @_ );
 }
 sub create_investigation {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
     return (shift)->create_rtir_ticket_ok( 'Investigations', @_ );
 }
 sub create_block {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
     return (shift)->create_rtir_ticket_ok( 'Blocks', @_ );
 }
 
 sub goto_create_rtir_ticket {
     my $self = shift;
     my $queue = shift;
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
 
     my $equeue = $queue;
     $equeue =~ s/ /%20/;
@@ -41,6 +46,8 @@ sub goto_create_rtir_ticket {
 sub create_rtir_ticket_ok {
     my $self = shift;
     my $queue = shift;
+
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
 
     my $id = $self->create_rtir_ticket( $queue, @_ );
     Test::More::ok( $id, "Created ticket #$id in queue '$queue' successfully." );
