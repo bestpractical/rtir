@@ -260,17 +260,16 @@ sub create_incident_and_investigation {
     my $cfs = shift || {};
     my $ir_id = shift;
 
-    $ir_id ? $self->display_ticket( $ir_id)
-        : $self->get_ok("/RTIR/index.html", "Loaded home page");
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
 
     if($ir_id) {
+        $self->display_ticket( $ir_id );
         # Select the "New" link from the Display page
         $self->follow_link_ok({text => "[New]"}, "Followed 'New (Incident)' link");
     }
     else 
     {
-        $self->follow_link_ok({text => "Incidents"}, "Followed 'Incidents' link");
-        $self->follow_link_ok({text => "New Incident", n => '1'}, "Followed 'New Incident' link");
+        $self->goto_create_rtir_ticket('Incidents');
     }
 
     # Fill out forms
