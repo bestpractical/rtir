@@ -360,7 +360,7 @@ Set(
 
         transitions => {
             # from   => [ to list ],
-            ''       => [qw(new resolved)],
+            ''       => [qw(open resolved)],
             open     => [qw(resolved)],
             resolved => [qw(open)],
         },
