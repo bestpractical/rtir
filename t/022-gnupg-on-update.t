@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 69;
+use RT::IR::Test tests => 68;
 use File::Temp qw(tempdir);
 
 RT->Config->Set( 'GnuPG',

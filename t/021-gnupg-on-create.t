@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 62;
+use RT::IR::Test tests => 61;
 
 use File::Temp qw(tempdir);
 
