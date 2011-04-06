@@ -1,6 +1,18 @@
-* BulkAbandon needs a lot of love. see TODO comments
+=== FEATURES
 
-* BulkAbandon misses Query arguments when updated
+* Split incident: select which IRs, Invs, Blocks go where
+
+* Incident field on Create page is a mess, sometimes it's
+  available for input, sometimes it's not, IRs can have
+  several incidents, for Blocks it's required, for Invs
+  it's only one incident.
+
+  Let's make this field free! So it's always can be changed.
+
+  Also, config option that controls: if incident is mandatory
+  for queue and if it can be more than one incident per ticket.
+
+=== UPGRADING
 
 * upgrade script that setups lifecycle column on the queues
 
@@ -10,21 +22,13 @@
   transactions for RTIR's queues and turns changes of
   the State CFs into Status changes
 
-* /Incident/Reply.html needs refine query page
-
-* on_incident_resolve - document it
-
-* /Incident/Children/ and friends use "State" all over the place,
-  anyway we break backwards compatibility, let's be consistent
-  and ditch the word
+=== BRINGING UP TO DATE
 
 * Some pages with forms need new nice layouts like in RT, reply
   page comes first to mind
 
-* split SetState action and conditions for IRs and Blocks.
-  they just have different workflow now
-
-* migrate SetIncidentReportState over lifecycles
+* IR create page: "Don't send any emails to correspondents." and hints
+  are not aligned well. Look at RT's forms and adjust accordingly.
 
 * scan code for hardcoded statuses
 
@@ -34,10 +38,31 @@
 * protection from mail loops by filtering watchers' email addresses on
   Create/PeopleModify, like we have in RT
 
-* IR create page: "Don't send any emails to correspondents." and hints
-  are not aligned well. Look at RT's forms and adjust accordingly.
+=== FIXES
+
+* BulkAbandon needs a lot of love. see TODO comments
+
+* BulkAbandon misses Query arguments when updated
+
+* /Incident/Reply.html needs refine query page
+
+=== DOCS
+
+* on_incident_resolve - document it
+
+=== CLEANUP && REFACTORING
+
+* /Incident/Children/ and friends use "State" all over the place,
+  anyway we break backwards compatibility, let's be consistent
+  and ditch the word
+
+* split SetState action and conditions for IRs and Blocks.
+  they just have different workflow now
+
+* migrate SetIncidentReportState over lifecycles
 
 * make Submit buttons names consistent with RT's
 
 * merge all RT::IR->*Query methods into one, they all equivalent,
   small differences
+
