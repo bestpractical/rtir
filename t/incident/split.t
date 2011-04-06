@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 24;
+use RT::IR::Test tests => 22;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -17,6 +17,7 @@ my $rtir_user = rtir_user();
 {
     my $id = $agent->create_incident( {Subject => "split incident"});
     $agent->display_ticket( $id);
+
     $agent->follow_link_ok({text => "Split"}, "Followed link");
     $agent->form_number(3);
     $agent->click('CreateIncident');
