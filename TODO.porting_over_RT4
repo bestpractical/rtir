@@ -27,3 +27,17 @@
 * migrate SetIncidentReportState over lifecycles
 
 * scan code for hardcoded statuses
+
+* look at attachments processing, however new cool attachments processing
+  code is only in 4.2 branch
+
+* protection from mail loops by filtering watchers' email addresses on
+  Create/PeopleModify, like we have in RT
+
+* IR create page: "Don't send any emails to correspondents." and hints
+  are not aligned well. Look at RT's forms and adjust accordingly.
+
+* make Submit buttons names consistent with RT's
+
+* merge all RT::IR->*Query methods into one, they all equivalent,
+  small differences
