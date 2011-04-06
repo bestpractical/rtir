@@ -25,12 +25,12 @@
 <& /RTIR/Elements/Header, Title => $Title &>
 <& /Elements/Tabs &>
 
-% $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Ticket => $TicketObj);
+% $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Ticket => $SplitObj);
 <& /Elements/ListActions, actions => \@results &>
 
 <%PERL>
-if ( $TicketObj && !$TicketObj->CurrentUserHasRight('ModifyTicket') ) {
-    $m->out( loc('You are not allowed to split from #[_2].', $TicketObj->id ) );
+if ( $SplitObj && !$SplitObj->CurrentUserHasRight('ModifyTicket') ) {
+    $m->out( loc('You are not allowed to split from #[_2].', $SplitObj->id ) );
     return;
 }
 if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
@@ -39,7 +39,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 }
 </%PERL>
 
-% if ( $TicketObj ) {
+% if ( $Split ) {
 <form action="Split.html" method="post" enctype="multipart/form-data">
 % } else {
 <form action="Create.html" method="post" enctype="multipart/form-data">
@@ -50,9 +50,8 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 % if ( $ChildObj ) {
 <input type="hidden" name="Child"        value="<% $Child %>" />
 % }
-% if ( $TicketObj ) {
-<input type="hidden" name="Split"        value="<% $Split %>" />
-<input type="hidden" name="Ticket"       value="<% $TicketObj->Id %>" />
+% if ( $Split ) {
+<input type="hidden" name="Split"        value="<% $SplitObj->id %>" />
 % }
 <a name="top"></a>
 
@@ -61,10 +60,10 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 <&| /Widgets/TitleBox, title => $Title, class => 'ticket-info-basics' &>
 <table border="0" cellpadding="0" cellspacing="2">
 
-% if ( $TicketObj ) {
-% my $Type = RT::IR::TicketType( Ticket => $TicketObj );
+% if ( $Split ) {
+% my $Type = RT::IR::TicketType( Ticket => $Split );
 <tr><td class="label"><% loc('Split from') %>:</td>
-<td class="value"><% loc("[_1] #[_2]: [_3]", $Type, $TicketObj->Id, $TicketObj->Subject) %></td></tr>
+<td class="value"><% loc("[_1] #[_2]: [_3]", $Type, $SplitObj->Id, $SplitObj->Subject) %></td></tr>
 % }
 
 % if ( $ChildObj ) {
@@ -100,7 +99,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 % }
 </tr>
 
-<& Elements/Create, Title => $Title, TicketObj => $TicketObj, QueueObj => $QueueObj, ChildObj => $ChildObj, %ARGS &>
+<& Elements/Create, Title => $Title, SplitObj => $SplitObj, QueueObj => $QueueObj, ChildObj => $ChildObj, %ARGS &>
 
 % if ( $gnupg_widget ) {
 <tr><td>&nbsp;</td><td>
@@ -114,8 +113,8 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 my $include_signature = 1;
 unless ( exists $ARGS{'Content'} ) {
     my $Transactions;
-    if ( $TicketObj ) {
-        $Transactions = $TicketObj->Transactions;
+    if ( $SplitObj ) {
+        $Transactions = $SplitObj->Transactions;
     } elsif ( $ChildObj ) {
         $Transactions = $ChildObj->Transactions;
     }
@@ -232,10 +231,16 @@ if ( $Child ) {
     $ARGS{'Subject'} ||= $ChildObj->Subject;
 }
 
+my $SplitObj;
+if ( $Split ) {
+    $SplitObj = LoadTicket( $Split );
+    $Split = $ARGS{'Split'} = $SplitObj->id;
+}
+
 $m->callback(
     CallbackName => 'ProcessArguments',
     ARGSRef => \%ARGS,
-    Ticket => $TicketObj,
+    Ticket => $SplitObj,
     Child => $ChildObj
 );
 
@@ -354,9 +359,7 @@ $QuoteTransaction        => undef
 $CreateWithInvestigation => 0
 $CreateIncident          => $CreateWithInvestigation
 
-$Split                   => 0
-# Split source
-$TicketObj               => undef
+$Split                   => undef
 
 $Child                   => undef
 </%ARGS>

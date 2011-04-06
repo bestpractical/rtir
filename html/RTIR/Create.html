@@ -23,24 +23,12 @@
 %# 
 %# END LICENSE BLOCK
 <& /RTIR/Elements/Header, Title => $Title &>
-% my $EscapedQueue = $m->comp('/Elements/QueryString', Queue => $Queue );
-% if ( $Split ) {
-<& /Elements/Tabs &>
-% } elsif ( $Incident ) {
-<& "/RTIR/Search/Elements/RefineTabs",
-    Title          => $Title,
-    Ticket         => $IncidentObj,
-    Queue          => $Queue,
-    current_tab    => "RTIR/Create.html?Incident=$Incident&$EscapedQueue",
-&>
-% } else {
-<& "/Elements/Tabs" &>
-% }
+<& '/Elements/Tabs' &>
 
-% $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Ticket => $TicketObj);
+% $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Ticket => $SplitObj);
 <& /Elements/ListActions, actions => \@results &>
 
-% if ( $Split && !$TicketObj->CurrentUserHasRight('ModifyTicket') ) {
+% if ( $Split && !$SplitObj->CurrentUserHasRight('ModifyTicket') ) {
 <% loc("You are not allowed to split this [_1].", $name) %>
 %    $m->abort();
 % }
@@ -53,7 +41,7 @@
 <input type="hidden" name="id" value="new" />
 <input type="hidden" name="Queue" value="<% $Queue %>" />
 % if ( $Split ) {
-<input type="hidden" name="Ticket" value="<% $TicketObj->Id %>" />
+<input type="hidden" name="Split" value="<% $SplitObj->id %>" />
 % }
 
 <a name="top"></a>
@@ -67,10 +55,10 @@
     <td align="right"><&|/l&>Incident</&>:</td>
     <td colspan="2"><% $Incident %><input type="hidden" name="Incident" value="<% $Incident || '' %>" /></td>
   </tr>
-% } elsif ( $TicketObj ) {
+% } elsif ( $SplitObj ) {
   <tr>
     <td align="right"><&|/l&>Split from</&>:</td>
-    <td colspan="2"><% $TicketObj->id %></td>
+    <td colspan="2"><% $SplitObj->id %></td>
   </tr>
 % if ( $parentvalue ) {
   <tr>
@@ -173,7 +161,7 @@
   <tr>
     <td colspan="3">
       <& /RTIR/Elements/EditCustomFields, 
-        TicketObj => $TicketObj, 
+        TicketObj => $SplitObj, 
         QueueObj => $QueueObj,
         $Split ? ( OnCreate => 1 ) : (),
         $IncidentObj ? ( IncidentObj => $IncidentObj ) : (),
@@ -199,8 +187,8 @@
 % my $include_signature = 1;
 % unless (exists $ARGS{Content}) {
 %   my $Transactions;
-%   if ($TicketObj) {
-%     $Transactions = $TicketObj->Transactions;
+%   if ($SplitObj) {
+%     $Transactions = $SplitObj->Transactions;
 %   } elsif ($IncidentObj) {
 %     $Transactions = $IncidentObj->Transactions;
 %   }
@@ -314,12 +302,18 @@ if ( $Incident ) {
 }
 $Incident = $ARGS{'Incident'} = $IncidentObj->id if $IncidentObj;
 
+my $SplitObj;
+if ( $Split ) {
+    $SplitObj = LoadTicket( $SplitObj );
+    $ARGS{'Split'} = $Split = $SplitObj->id;
+}
+
 my $parentvalue = '';
 if ( $IncidentObj ) {
     $parentvalue = $IncidentObj->Id;
-} elsif ( $TicketObj ) {
+} elsif ( $SplitObj ) {
     my $incidents = RT::Tickets->new( $session{'CurrentUser'} );
-    $incidents->FromSQL( "Queue = 'Incidents' AND HasMember = " . $TicketObj->Id );
+    $incidents->FromSQL( "Queue = 'Incidents' AND HasMember = " . $SplitObj->Id );
     while ( my $incident = $incidents->Next ) {
         $parentvalue .= ' ' if $parentvalue;
         $parentvalue .= $incident->Id;
@@ -375,7 +369,7 @@ $m->callback(
 
 unless ( $skip_create || $checks_failure ) {
     $ARGS{'new-MemberOf'} = $parentvalue if $parentvalue;
-    $m->callback(CallbackName => 'BeforeDisplay', Ticket => $TicketObj, ARGSRef => \%ARGS);
+    $m->callback(CallbackName => 'BeforeDisplay', Ticket => $SplitObj, ARGSRef => \%ARGS);
     push @{ $session{'Actions'}{''} ||= [] }, @results;
     return $m->comp( 'Display.html', %ARGS, SkipNotification => \@SkipNotification );
 }
@@ -385,7 +379,7 @@ unshift @results, loc("Creation failed:")
 
 my ($Title, $SubmitCaption);
 if ( $Split ) {
-    $Title = loc("Split [_1] #[_2]: [_3]", $name, $TicketObj->id, $TicketObj->Subject);
+    $Title = loc("Split [_1] #[_2]: [_3]", $name, $SplitObj->id, $SplitObj->Subject);
     $SubmitCaption = loc("Split");
 } else {
     if ( $Type eq 'Investigation' ) {
@@ -409,9 +403,7 @@ $QuoteTransaction => undef
 # Parent Incident
 $Incident         => undef
 
-$Split            => 0
-# Split source
-$TicketObj        => undef
+$Split            => undef
 </%ARGS>
 
 <%METHOD ProcessAttachments>

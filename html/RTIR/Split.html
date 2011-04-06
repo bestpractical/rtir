@@ -38,14 +38,13 @@
 
     %ARGS,
 
-    Split            => 1,
-    TicketObj        => $TicketObj,
-    Incident         => $Incident,
+    Split            => $Split,
+    Incident         => $incident,
 &>
 
 <%INIT>
-my $TicketObj = LoadTicket( $id );
-$ARGS{'id'} = $id = $TicketObj->id;
+my $TicketObj = LoadTicket( $Split );
+$ARGS{'Split'} = $Split = $TicketObj->id;
 
 $m->callback(CallbackName => 'Initial', %ARGS, Ticket => $TicketObj);
 
@@ -54,17 +53,15 @@ if ( $m->comp_exists("/RTIR/$Type/Split.html") ) {
     return $m->comp( "/RTIR/$Type/Split.html", %ARGS );
 }
 
-my $query = "Queue = 'Incidents' AND HasMember = " . $TicketObj->Id;
+my $incident;
 my $incidents = RT::Tickets->new( $session{'CurrentUser'} );
-$incidents->FromSQL( $query );
-
-my $Incident;
+$incidents->FromSQL( RT::IR->BaseQuery( Queue => 'Incidents', Active => 1 ) );
 if ( my $obj = $incidents->First ) {
-    $Incident = $obj->Id;
+    $incident = $obj->id;
 }
 
 </%INIT>
 <%ARGS>
 $QuoteTransaction => undef
-$id => undef
+$Split => undef
 </%ARGS>

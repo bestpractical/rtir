@@ -38,19 +38,17 @@
     %ARGS,
 
     Title            => loc("Split Incident #[_1]: [_2]", $TicketObj->id, $TicketObj->Subject),
-    Split            => 1,
-    TicketObj        => $TicketObj,
-
-    current_tab      => "RTIR/Display.html?id=".$Ticket,
-    current_subtab   => "RTIR/Split.html?Ticket=".$Ticket,
+    Split            => $Split,
 &>
 
 <%INIT>
-my $TicketObj = LoadTicket($Ticket);
+my $TicketObj = LoadTicket($Split);
+$ARGS{'Split'} = $Split = $TicketObj->id;
+
 $m->callback(CallbackName => 'Initial', %ARGS, Ticket => $TicketObj);
 </%INIT>
 
 <%ARGS>
 $QuoteTransaction => undef
-$Ticket => undef
+$Split => undef
 </%ARGS>
