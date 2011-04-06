@@ -252,6 +252,7 @@ sub BaseQuery {
     my $self = shift;
     my %args = (
         Queue        => undef,
+        Active       => undef,
         Exclude      => undef,
         HasNoMember  => undef,
         NotMemberOf  => undef,
@@ -261,9 +262,26 @@ sub BaseQuery {
     );
     my $res = '';
     if ( $args{'Queue'} ) {
-        $res = join ' OR ', map "Queue = '$_'", grep defined && length,
-            ref $args{'Queue'} ? ( @{ $args{'Queue'} } ) : ( $args{'Queue'} );
-        $res = '( $res )' if $res && $res =~ / OR /;
+        my $qname = ref $args{'Queue'} ? $args{'Queue'}->Name : $args{'Queue'};
+        $res = "Queue = '$qname'";
+        if ( defined $args{'Active'} ) {
+            my $queue = $args{'Queue'};
+            unless ( ref $args{'Queue'} ) {
+                my $queue = RT::Queue->new( RT->SystemUser );
+                $queue->Load( $args{'Queue'} );
+                unless ( $queue->id ) {
+                    $RT::Logger->error("Couldn't load queue '$args{Queue}'");
+                    $queue = undef;
+                }
+            }
+
+            if ( $queue ) {
+                my @statuses = $args{'Active'}
+                    ? $queue->ActiveStatusArray
+                    : $queue->InactiveStatusArray;
+                $res .= ' AND ('. join( ' OR ', map "Status = '$_'", @statuses ) .')';
+            }
+        }
     }
     if ( my $t = $args{'Exclude'} ) {
         $res .= ' AND ' if $res;
