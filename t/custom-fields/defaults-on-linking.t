@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 25;
+use RT::IR::Test tests => 23;
 
 my $cf_name = 'test';
 {

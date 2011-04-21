@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 84;
+use RT::IR::Test tests => 71;
 
 my $defaults = RT->Config->Get('RTIR_CustomFieldsDefaults');
 $defaults->{'How Reported'}  = 'Telephone';   # IRs

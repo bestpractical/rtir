@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 68;
+use RT::IR::Test tests => 67;
 
 # Test must be run wtih RT_SiteConfig:
 # Set(@MailPlugins, 'Auth::MailFrom');

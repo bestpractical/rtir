@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 207;
+use RT::IR::Test tests => 187;
 
 use_ok('RT::IR');
 RT->Config->Set('_RTIR_Constituency_Propagation' => 'reject');
@@ -206,7 +206,7 @@ diag "create an IR create an Incident with different constituency"
             'EDUNET', 'correct value';
     }
     $agent->get_ok(
-        $agent->rt_base_url ."/RTIR/Incident/LinkChildren.html?id=$inc_id&"
+        $agent->rt_base_url ."/RTIR/Link/ToIncident/?id=$inc_id&"
         ."Queue=Incident%20Reports&Query=id%3D$ir_id"
     );
     $agent->content_unlike(qr/incident report #$ir_id/, 'no IR on the page');
