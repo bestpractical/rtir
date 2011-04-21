@@ -66,3 +66,4 @@
 * merge all RT::IR->*Query methods into one, they all equivalent,
   small differences
 
+* move html/RTIR/Incident/LinkArticles.html -> html/RTIR/Link/Articles.html
