@@ -26,12 +26,7 @@
     Title => $title,
     Refresh => $session{'tickets_refresh_interval'},
 &>
-
-<& /RTIR/Search/Elements/RefineTabs, 
-    Title       => $title,
-    Ticket      => $IncidentObj,
-    current_tab => "RTIR/Incident/LinkArticles.html?id=$id",
-&>
+<& /Elements/Tabs &>
 
 <form action="LinkArticles.html" method="get">
 <input type="hidden" name="id" value="<%$id%>" />

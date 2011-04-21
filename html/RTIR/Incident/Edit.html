@@ -23,12 +23,7 @@
 %# 
 %# END LICENSE BLOCK
 <& /RTIR/Elements/Header, Title => loc("Edit Incident #[_1]: [_2]", $Ticket->Id, $Ticket->Subject) &>
-<& /RTIR/Incident/Elements/Tabs, 
-    Ticket => $Ticket, 
-    current_tab => "RTIR/Display.html?id=".$Ticket->Id, 
-    current_subtab => "RTIR/Edit.html?id=".$Ticket->Id, 
-    Title => loc("Edit Incident #[_1]: [_2]", 
-    $Ticket->Id, $Ticket->Subject) &>
+<& /Elements/Tabs &>
 
 % $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
