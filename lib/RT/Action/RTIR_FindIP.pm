@@ -7,7 +7,14 @@ use base qw(RT::Action::RTIR);
 
 use Regexp::Common qw(net);
 use Regexp::Common::net::CIDR ();
+use Regexp::IPv6 qw($IPv6_re);
 use Net::CIDR ();
+
+my $IPv4_mask_re = qr{3[0-2]|[1-2]?[0-9]};
+my $IPv6_mask_re = qr{12[0-8]|1[01][0-9]|[1-9]?[0-9]};
+my $IP4_re = qr[(?<![0-9.])(?!0\.0\.0\.0)($RE{net}{IPv4})(?!/$IPv4_mask_re)(?![0-9.])];
+my $IP6_re = qr[(?<![0-9a-fA-F:.])($IPv6_re)(?:/($IPv6_mask_re))?(?![0-9a-fA-F:.])];
+my $IP_re = qr{$IP6_re|$IP4_re|$RE{net}{CIDR}{IPv4}{-keep}};
 
 =head2 Prepare
 
@@ -48,25 +55,30 @@ sub Commit {
     my $spots_left = $how_many_can - keys %existing;
 
     my $content = $attach->Content || '';
-# 0.0.0.0 is illegal IP address
-    my @IPs = ( $content =~ /(?<!\d)(?!0\.0\.0\.0)($RE{net}{IPv4})(?!\d)(?!\/(?:3[0-2]|[1-2]?[0-9])(?:\D|\z))/go );
-    foreach my $ip ( @IPs ) {
-        $spots_left -= $self->AddIP(
-            IP          => $ip,
-            CustomField => $cf,
-            Skip        => \%existing,
-        );
-        return 1 unless $spots_left;
-    }
-
-# but 0.0.0.0/0 is legal CIDR
-    my @CIDRs = ( $content =~ /(?<![0-9.])$RE{net}{CIDR}{IPv4}{-keep}(?!\.?[0-9])/go );
-    while ( my ($addr, $bits) = splice @CIDRs, 0, 2 ) {
-        my $cidr = join( '.', map $_||0, (split /\./, $addr)[0..3] ) ."/$bits";
-        my $range = (Net::CIDR::cidr2range( $cidr ))[0] or next;
-        $spots_left -= $self->AddIP(
-            IP => $range, CustomField => $cf, Skip => \%existing
-        );
+    while ( $content =~ m/$IP_re/go ) {
+        if ( $1 && defined $2 ) { # IPv6/mask
+            my $range = (Net::CIDR::cidr2range( "$1/$2" ))[0] or next;
+            $spots_left -= $self->AddIP(
+                IP => $range, CustomField => $cf, Skip => \%existing
+            );
+        }
+        elsif ( $1 ) { # IPv6
+            $spots_left -= $self->AddIP(
+                IP => $1, CustomField => $cf, Skip => \%existing
+            );
+        }
+        elsif ( $3 ) { # IPv4
+            $spots_left -= $self->AddIP(
+                IP => $3, CustomField => $cf, Skip => \%existing
+            );
+        }
+        elsif ( $4 && defined $5 ) { # IPv4/mask
+            my $cidr = join( '.', map $_||0, (split /\./, $4)[0..3] ) ."/$5";
+            my $range = (Net::CIDR::cidr2range( $cidr ))[0] or next;
+            $spots_left -= $self->AddIP(
+                IP => $range, CustomField => $cf, Skip => \%existing
+            );
+        }
         return 1 unless $spots_left;
     }
 
