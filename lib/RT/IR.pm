@@ -318,6 +318,7 @@ sub DefaultConstituency {
 use Hook::LexWrap;
 use Regexp::Common qw(RE_net_IPv4);
 use Regexp::Common::net::CIDR;
+use Regexp::IPv6 qw($IPv6_re);
 require Net::CIDR;
 
 sub ParseIPRange {
@@ -326,6 +327,9 @@ sub ParseIPRange {
     if ( $arg =~ /^\s*$RE{net}{CIDR}{IPv4}{-keep}\s*$/go ) {
         my $cidr = join( '.', map $_||0, (split /\./, $1)[0..3] ) ."/$2";
         $arg = (Net::CIDR::cidr2range( $cidr ))[0] || $arg;
+    }
+    elsif ( $arg =~ /^(?:$IPv6_re|::)(?:\/\d+)?$/o ) {
+        $arg = (Net::CIDR::cidr2range( $arg ))[0] || $arg;
     }
 
     my ($sIP, $eIP);
@@ -336,6 +340,15 @@ sub ParseIPRange {
         $sIP = sprintf "%03d.%03d.%03d.%03d", split /\./, $1;
         $eIP = sprintf "%03d.%03d.%03d.%03d", split /\./, $2;
     }
+    elsif ( $arg =~ /^($IPv6_re|::)$/o ) {
+        $sIP = ParseIP( $1 );
+        $eIP = $sIP;
+    }
+    elsif ( $arg =~ /^($IPv6_re|::)-($IPv6_re|::)$/o ) {
+        ($sIP, $eIP) = ( $1, $2 );
+        $sIP = ParseIP( $sIP );
+        $eIP = ParseIP( $eIP );
+    }
     else {
         return ();
     }
@@ -345,6 +358,52 @@ sub ParseIPRange {
 }
 
 
+sub ParseIP {
+    my $value = shift or return;
+    $value = lc $value;
+    $value =~ s!^\s+!!;
+    $value =~ s!\s+$!!;
+
+    if ( $value =~ /^($RE{net}{IPv4})$/o ) {
+        return sprintf "%03d.%03d.%03d.%03d", split /\./, $1;
+    }
+    elsif ( $value =~ /^(?:$IPv6_re|::)$/o ) {
+        # up_fields are before '::'
+        # low_fields are after '::' but without v4
+        # v4_fields are the v4
+        my ( @up_fields, @low_fields, @v4_fields );
+        my $v6;
+        if ( $value =~ /(.*:)(\d+\..*)/ ) {
+            ( $v6, my $v4 ) = ( $1, $2 );
+            chop $v6 unless $v6 =~ /::$/;
+            while ( $v4 =~ /(\d+)\.(\d+)/g ) {
+                push @v4_fields, sprintf '%.2x%.2x', $1, $2;
+            }
+        }
+        else {
+            $v6 = $value;
+        }
+
+        my ( $up, $low );
+        if ( $v6 =~ /::/ ) {
+            ( $up, $low ) = split /::/, $v6;
+        }
+        else {
+            $up = $v6;
+        }
+
+        @up_fields = split /:/, $up;
+        @low_fields = split /:/, $low if $low;
+
+        my @zero_fields =
+          ('0000') x ( 8 - @v4_fields - @up_fields - @low_fields );
+        my @fields = ( @up_fields, @zero_fields, @low_fields, @v4_fields );
+
+        return join ':', map { sprintf "%.4x", hex "0x$_" } @fields;
+    }
+    return;
+}
+
 # limit formatting "%03d.%03d.%03d.%03d"
 # "= 'sIP-eIP'" => "( >=sIP AND <=eIP)"
 # "!= 'sIP-eIP'" => "( <sIP OR >eIP)"
@@ -353,10 +412,14 @@ require RT::Tickets;
 wrap 'RT::Tickets::_CustomFieldLimit',
     pre => sub {
         return if $_[2] && $_[2] =~ /^[<>]=?$/;
-        return unless $_[3] =~ /^\s*($RE{net}{IPv4})\s*(?:-\s*($RE{net}{IPv4})\s*)?$/o;
-        my ($start_ip, $end_ip) = ($1, ($2 || $1));
-        $_ = sprintf "%03d.%03d.%03d.%03d", split /\./, $_
-            for $start_ip, $end_ip;
+
+        my ($start_ip, $end_ip);
+        return unless
+            $_[3] =~ /^\s*($RE{net}{IPv4})\s*(?:-\s*($RE{net}{IPv4})\s*)?$/o
+            || $_[3] =~ /^\s*($IPv6_re|::)\s*(?:-\s*($IPv6_re|::)\s*)?$/o;
+    
+        ($start_ip, $end_ip) = ($1, ($2 || $1));
+        $_ = ParseIP( $_ ) for $start_ip, $end_ip;
         ($start_ip, $end_ip) = ($end_ip, $start_ip) if $start_ip gt $end_ip;
 
         my ($tickets, $field, $op, $value, %rest) = @_[0..($#_-1)];
@@ -400,14 +463,20 @@ wrap 'RT::Tickets::_CustomFieldLimit',
         $_[-1] = ref $_[-1]? [1]: 1;
     };
 
+my $IPv6_mask_re = qr{12[0-8]|1[01][0-9]|[1-9]?[0-9]};
+
 # "[!]= 'CIDR'" => "op 'sIP-eIP'"
 wrap 'RT::Tickets::_CustomFieldLimit',
     pre => sub {
-        return unless $_[3] =~ /^\s*$RE{net}{CIDR}{IPv4}{-keep}\s*$/o;
-        # convert incomplete 192.168/24 to 192.168.0.0/24 format
-        my $cidr = join( '.', map $_||0, (split /\./, $1)[0..3] ) ."/$2";
-        # convert to range and continue, it will be catched by next wrapper
-        $_[3] = (Net::CIDR::cidr2range( $cidr ))[0] || $_[3];
+        # convert CIDR (IP/mask) to range (IP-IP) and continue,
+        # it will be catched by next wrapper
+        if ( $_[3] =~ /^\s*$RE{net}{CIDR}{IPv4}{-keep}\s*$/o ) {
+            # convert incomplete 192.168/24 to 192.168.0.0/24 format
+            my $cidr = join( '.', map $_||0, (split /\./, $1)[0..3] ) ."/$2";
+            $_[3] = (Net::CIDR::cidr2range( $cidr ))[0] || $_[3];
+        } elsif ( $_[3] =~ m{^\s*($IPv6_re/$IPv6_mask_re)\s*$}o ) {
+            $_[3] = (Net::CIDR::cidr2range( $1 ))[0] || $_[3];
+        }
     };
 $RT::Tickets::dispatch{'CUSTOMFIELD'} = \&RT::Tickets::_CustomFieldLimit;
 
@@ -454,14 +523,21 @@ wrap 'RT::ObjectCustomFieldValue::Content',
     post => sub {
         return unless $_[-1];
         my $val = ref $_[-1]? \$_[-1][0]: \$_[-1];
-        return unless $$val =~ /^\s*($re_ip_serialized)\s*$/o;
-        $$val = sprintf "%d.%d.%d.%d", split /\./, $1;
 
-        my $large_content = $obj->__Value('LargeContent');
-        return if !$large_content
-            || $large_content !~ /^\s*($re_ip_serialized)\s*$/o;
-        my $eIP = sprintf "%d.%d.%d.%d", split /\./, $1;
-        $$val .= '-'. $eIP unless $$val eq $eIP;
+        if ( $$val =~ /^\s*($re_ip_serialized)\s*$/o ) {
+            $$val = sprintf "%d.%d.%d.%d", split /\./, $1;
+
+            my $large_content = $obj->__Value('LargeContent');
+            return if !$large_content
+                || $large_content !~ /^\s*($re_ip_serialized)\s*$/o;
+            my $eIP = sprintf "%d.%d.%d.%d", split /\./, $1;
+            $$val .= '-'. $eIP unless $$val eq $eIP;
+        } elsif ( $$val =~ /^\s*($IPv6_re)\s*$/o ) {
+            my $large_content = $obj->__Value('LargeContent');
+            return if !$large_content || $large_content eq $$val
+                || $large_content !~ /^\s*($IPv6_re)\s*$/o;
+            $$val .= '-'. $1;
+        }
         return;
     };
 }
