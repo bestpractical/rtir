@@ -153,7 +153,6 @@ if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
 <%ARGS>
 $NamePrefix => '',
 $DefaultsNamePrefix => undef
-$CFIDPrefix => ''
 </%ARGS>
 <%INIT>
 if ( defined $NamePrefix && length $NamePrefix ) {
