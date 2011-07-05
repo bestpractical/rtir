@@ -91,7 +91,7 @@ print "Base query for children: $base_query\n\n";
 my $children = RT::Tickets->new( $current_user );
 
 require File::Temp;
-my $tmp = new File::Temp; # croak on error
+my $tmp = File::Temp->new; # croak on error
 
 FetchNext( $incidents, 1 );
 while ( my $inc = FetchNext( $incidents ) ) {

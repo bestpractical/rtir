@@ -90,7 +90,7 @@ our $RTIR_TEST_USER = "rtir_test_user";
 our $RTIR_TEST_PASS = "rtir_test_pass";
 
 sub default_agent {
-    my $agent = new RT::IR::Test::Web;
+    my $agent = RT::IR::Test::Web->new;
     require HTTP::Cookies;
     $agent->cookie_jar( HTTP::Cookies->new );
     rtir_user();

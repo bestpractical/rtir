@@ -34,7 +34,7 @@ sub compile_file {
     my $text = do { local $/; <$fh> };
     close $fh or die "couldn't close '$file': $!";
 
-    my $compiler = new HTML::Mason::Compiler::ToObject;
+    my $compiler = HTML::Mason::Compiler::ToObject->new;
     $compiler->compile(
         comp_source => $text,
         name => 'my',
