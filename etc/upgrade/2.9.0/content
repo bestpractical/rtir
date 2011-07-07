@@ -1,5 +1,12 @@
-
 @Initial = (
+    sub {
+        return 1 if grep $_ eq 'RT::IR', RT->Config->Get('Plugins');
+
+        die "Please enable RT::IR plugin in the config file.\n";
+    },
+);
+
+@Final = (
 
     # IP type change
     sub {
