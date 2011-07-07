@@ -14,8 +14,7 @@ or RTIR, please contact Best Practical at sales@bestpractical.com.
 REQUIRED PACKAGES:
 ------------------
 
-o   RT 3.9.6 or later, configured, installed and tested.
-o   RTFM 2.4.1 or later, configured, installed and tested.
+o RT 4.0.0 or later, configured, installed and tested.
 
 
 Upgrade instructions:
@@ -29,11 +28,7 @@ information.
 Installation instructions:
 --------------------------
 
-1) Install RT 3.9.6 or newer following RT's regular installation instructions
-
-2) Install RTFM 2.4.1 or nerwer, following the installation instructions
-   in RTFM's README file. (Don't forget to run "make initdb" to set up the 
-   database for RTFM and activate it using @Plugins option in the RT config); 
+1) Install RT 4.0.0 or newer following RT's regular installation instructions
 
 3) Run "perl Makefile.PL" to generate a makefile for RTIR. 
 
@@ -50,7 +45,7 @@ Installation instructions:
 
 7) Activate RTIR extension in the RT config:
 
-    Set(@Plugins, 'RT::FM', 'RT::IR');
+    Set(@Plugins, 'RT::IR');
 
 8) Stop and start your web server.
 
@@ -87,8 +82,7 @@ Configuring RTIR
    RT -> Configuration -> Groups -> DutyTeam -> Members.
 
 5) You can override values in the RTIR_Config.pm in your
-   RT_SiteConfig.pm file. Just add your customizations after the "require" 
-   line mentioned above.
+   RT_SiteConfig.pm file. Just add your customizations.
 
 
 SETTING UP THE MAIL GATEWAY 
