@@ -1,6 +1,7 @@
+*.swp
+*.bak
+*.old
 Makefile
-Makefile.old
-MANIFEST.bak
 blib/
 pm_to_blib
-*.swp
+t/tmp/
