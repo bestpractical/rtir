@@ -65,3 +65,19 @@
   small differences
 
 * move html/RTIR/Incident/LinkArticles.html -> html/RTIR/Link/Articles.html
+
+
+=== TESTS
+
+Test Summary Report
+-------------------
+t/016-date-started.t                          (Wstat: 256 Tests: 68 Failed: 1)
+  Failed test:  40
+  Non-zero exit status: 1
+t/incident/bulk-abandon.t                     (Wstat: 65280 Tests: 87 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: Bad plan.  You planned 105 tests but ran 87.
+Files=36, Tests=2441, 1209 wallclock secs ( 0.78 usr  0.23 sys + 406.37 cusr 28.73 csys = 436.11 CPU)
+Result: FAIL
+Failed 2/36 test programs. 1/2441 subtests failed.
+
