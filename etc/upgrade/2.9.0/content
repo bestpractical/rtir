@@ -1,3 +1,5 @@
+my @OUR_QUEUES = ('Incidents', 'Incident Reports', 'Investigations', 'Blocks');
+
 @Initial = (
     sub {
         return 1 if grep $_ eq 'RT::IR', RT->Config->Get('Plugins');
@@ -21,7 +23,7 @@
 
     # set lifecycles on queues
     sub {
-        for my $name ( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+        for my $name ( @OUR_QUEUES ) {
             my $queue = RT::Queue->new($RT::SystemUser);
             $queue->Load( $name );
             unless ( $queue->id ) {
@@ -50,9 +52,7 @@
     # CF.State => Status
     sub {
         my %state;
-        for my $queue ( 'Incidents', 'Incident Reports', 'Investigations',
-            'Blocks' )
-        {
+        for my $queue ( @OUR_QUEUES ) {
             my $state = RT::CustomField->new($RT::SystemUser);
             $state->LoadByName( Name => 'State', Queue => $queue );
             $state{$queue} = $state if $state->id;
@@ -61,9 +61,9 @@
         my $Tickets = RT::Tickets->new($RT::SystemUser);
         $Tickets->UnLimit;
         while ( my $ticket = $Tickets->Next ) {
-            next
-              unless $ticket->QueueObj->Name =~
-                  /^(Incidents|Incident Reports|Investigations|Blocks)$/;
+            my $qname = $ticket->QueueObj->Name;
+            next unless grep lc $qname eq lc $_, @OUR_QUEUES;
+
             my $txns = $ticket->Transactions;
             my %done; # in case redo search bite
             while ( my $txn = $txns->Next ) {
