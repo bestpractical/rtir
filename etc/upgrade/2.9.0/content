@@ -110,4 +110,31 @@
             $action->Delete();
         }
     },
+
+    sub {
+        for my $name ( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+            my $queue = RT::Queue->new($RT::SystemUser);
+            $queue->Load( $name );
+            unless ( $queue->id ) {
+                $RT::Logger->error("Couldn't load queue '$name'");
+                next;
+            }
+
+            my $new_cycle = lc $name;
+            $new_cycle =~ s/ /_/;
+
+            if ( $queue->Lifecycle->Name eq $new_cycle ) {
+                $RT::Logger->debug("Queue $name already uses '$new_cycle' lifecycle");
+                next;
+            }
+
+            my ($status, $msg) = $queue->SetLifecycle( $new_cycle );
+            unless ( $status ) {
+                $RT::Logger->error("Couldn't change lifecycle: $msg");
+                next;
+            }
+
+            $RT::Logger->debug("Changed lifecycle of queue '$name' to '$new_lifecycle'");
+        }
+    },
 );
