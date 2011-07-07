@@ -14,8 +14,6 @@
 
 === UPGRADING
 
-* upgrade script that unapplies State custom field
-
 * upgrade script that deletes all Status changes from 
   transactions for RTIR's queues and turns changes of
   the State CFs into Status changes

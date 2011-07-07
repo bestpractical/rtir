@@ -123,6 +123,12 @@ my @OUR_QUEUES = ('Incidents', 'Incident Reports', 'Investigations', 'Blocks');
                 next;
             }
 
+            {
+                my ($status, $msg) = $cf->RemoveFromObject( $queue );
+                $RT::Logger->error("Couldn't unapply custom field #". $cf->id .": $msg")
+                    unless $status;
+            }
+
             unless ( $cf->Disabled ) {
                 my ($status, $msg) = $cf->SetDisabled(1);
                 $RT::Logger->error("Couldn't disable custom field #". $cf->id .": $msg")
