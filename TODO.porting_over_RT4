@@ -14,8 +14,6 @@
 
 === UPGRADING
 
-* upgrade script that setups lifecycle column on the queues
-
 * upgrade script that unapplies State custom field
 
 * upgrade script that deletes all Status changes from 
