@@ -104,11 +104,33 @@ my @OUR_QUEUES = ('Incidents', 'Incident Reports', 'Investigations', 'Blocks');
                 }
             }
         }
+    },
 
-        for my $queue ( keys %state ) {
-            $state{$queue}->SetDisabled(1);
+    # un-apply and disable State custom fields
+    sub {
+        for my $qname ( @OUR_QUEUES ) {
+            my $queue = RT::Queue->new( $RT::SystemUser );
+            $queue->Load( $qname );
+            unless ( $queue->id ) {
+                $RT::Logger->error("Couldn't load queue '$qname'");
+                next;
+            }
+
+            my $cf = RT::CustomField->new( $RT::SystemUser );
+            $cf->LoadByName( Name => 'State', Queue => $queue->id );
+            unless ( $cf->id ) {
+                $RT::Logger->error("Couldn't load State custom field applied to queue '$qname'");
+                next;
+            }
+
+            unless ( $cf->Disabled ) {
+                my ($status, $msg) = $cf->SetDisabled(1);
+                $RT::Logger->error("Couldn't disable custom field #". $cf->id .": $msg")
+                    unless $status;
+            }
         }
     },
+
 
     # remove state scrips: 2 actions and 2 scrips
     sub {
