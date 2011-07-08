@@ -49,6 +49,30 @@ my @OUR_QUEUES = ('Incidents', 'Incident Reports', 'Investigations', 'Blocks');
         }
     },
 
+    # delete tickets' Status changes (txns) in RTIR queues, in RTIR queues
+    # for variouse reasons we kept Status and State in sync with each other
+    # and were hiding these txns in the UI. Now we delete old status changes
+    # and convert State changes into Status changes
+    sub {
+        for my $qname ( @OUR_QUEUES ) {
+            my $queue = RT::Queue->new( $RT::SystemUser );
+            $queue->Load( $qname );
+            unless ( $queue->id ) {
+                $RT::Logger->error("Couldn't load queue '$qname'");
+                next;
+            }
+
+            my $query = "SELECT txn.id FROM Transactions txn JOIN Tickets t"
+                ." WHERE txn.ObjectType = 'RT::Ticket' AND txn.ObjectId = t.id"
+                ." AND t.Type = 'ticket' AND t.Queue = ?"
+                ." AND ((txn.Type = 'Set' AND txn.Field = 'Status') OR txn.Type = 'Status')"
+            ;
+            my $res = $RT::Handle->DeleteFromSelect( 'Transactions', $query, $queue->id );
+            $RT::Logger->error("Couldn't delete transactions: $res")
+                unless $res;
+        }
+    },
+
     # CF.State => Status
     sub {
         my %state;

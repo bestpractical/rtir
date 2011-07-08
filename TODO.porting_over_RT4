@@ -14,9 +14,11 @@
 
 === UPGRADING
 
-* upgrade script that deletes all Status changes from 
-  transactions for RTIR's queues and turns changes of
-  the State CFs into Status changes
+* make sure we release DBIx::SB with cud-from-select branch
+  merged and depend on it
+
+* upgrade script that turns changes of the State CFs into
+  Status changes
 
 === BRINGING UP TO DATE
 
