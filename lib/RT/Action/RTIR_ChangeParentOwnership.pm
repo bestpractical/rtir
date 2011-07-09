@@ -72,19 +72,21 @@ Change the ownership of parent incident.
 sub Commit {
     my $self = shift;
 
+    my $txn = $self->TransactionObj;
+
     # change owner of parent Incident(s)
     my $query =  "Queue = 'Incidents'"
                 ." AND HasMember = " . $self->TicketObj->Id
-                ." AND Owner != ". $self->TransactionObj->NewValue;
+                ." AND Owner != ". $txn->NewValue;
     my $parents = new RT::Tickets( $self->CreatorCurrentUser );
     $parents->FromSQL($query);
 
     while ( my $incident = $parents->Next ) {
         my ($res, $msg);
-        if ($self->TransactionObj->NewValue == $self->TransactionObj->Creator) {
+        if ($txn->NewValue == $txn->Creator) {
             ($res, $msg) = $incident->Steal;
         } else {
-            ($res, $msg) = $incident->SetOwner($self->TransactionObj->NewValue);
+            ($res, $msg) = $incident->SetOwner($txn->NewValue);
         }
         $RT::Logger->info("Couldn't set owner: $msg") unless $res;
     }
