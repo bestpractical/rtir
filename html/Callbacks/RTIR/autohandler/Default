@@ -1,7 +1,6 @@
 <%ONCE>
 eval {
     require RT::IR;
-    require RT::IR::Ticket;
 };
 if ( $@ ) {
     $RT::Logger->crit("System error. Couldn't load RTIR module(s): $@");
