@@ -82,9 +82,7 @@ while ( my $Ticket = $session{'tickets'}->Next ) {
     if ( $Ticket->QueueObj->Name eq "Incidents" ) {
         $incidents->{ $Ticket->Id } = { Ticket => $Ticket };
     } elsif ( $Ticket->QueueObj->Name eq "Incident Reports" ) {
-        my $query = "Queue = 'Incidents' AND HasMember = " . $Ticket->Id;
-        my $parents = RT::Tickets->new( $session{'CurrentUser'} );
-        $parents->FromSQL( $query );
+        my $parents = RT::IR->Incidents( $Ticket );
         while ( my $parent = $parents->Next ) {
             $incidents->{ $parent->Id } = { Ticket => $parent };
         }

@@ -16,11 +16,7 @@ sub IsApplicable {
 
     my $type = $self->TransactionObj->Type;
     if ( $type eq "Create" ) {
-        my $query = "Queue = 'Incidents'"
-            ." AND HasMember = " . $self->TicketObj->Id;
-        my $parents = RT::Tickets->new( $self->CurrentUser );
-        $parents->FromSQL( $query );
-        return $parents->Count;
+        return RT::IR->Incidents( $self->TicketObj )->Count;
     }
 
     my $field = $self->TransactionObj->Field;

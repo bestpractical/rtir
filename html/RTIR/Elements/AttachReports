@@ -19,11 +19,7 @@ my $type = RT::IR::TicketType( Ticket => $Ticket );
 if ( $type eq 'Incident' ) {
     push @parents, $Ticket->id;
 } else {
-    my $tickets = RT::Tickets->new( $Ticket->CurrentUser );
-    $tickets->FromSQL( "Queue = 'Incidents' AND HasMember = ". $Ticket->id );
-    while ( my $parent = $tickets->Next ) {
-        push @parents, $parent->id;
-    }
+    push @parents, map $_->id, @{ RT::IR->Incidents( $Ticket )->ItemsArrayRef };
 }
 return unless @parents;
 

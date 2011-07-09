@@ -120,12 +120,7 @@ my $get_incident_field = sub {
     my $t = shift;
     my $field = shift;
 
-    # find the parent incident
-    my $query = "Queue = 'Incidents' AND HasMember = ". $t->Id;
-    my $incidents = new RT::Tickets( $session{'CurrentUser'} );
-    $incidents->FromSQL( $query );
-
-    my $parent = $incidents->First;
+    my $parent = RT::IR->Incidents( $t )->First;
     return undef unless $parent;
     return RT::IR::Ticket::FirstCustomFieldValue( $parent, $field );
 };

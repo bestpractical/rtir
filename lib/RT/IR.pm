@@ -342,6 +342,22 @@ sub ChildrenQuery {
     return join " AND ", map "($_)", @parts;
 }
 
+=head2 Incidents
+
+Takes a ticket and returns collection of all incidents this ticket
+is member of.
+
+=cut
+
+sub Incidents {
+    my $self = shift;
+    my $ticket = shift;
+
+    my $res = RT::Tickets->new( $ticket->CurrentUser );
+    $res->FromSQL( "Queue = 'Incidents' AND HasMember = " . $ticket->id );
+    return $res;
+}
+
 =head2 RelevantIncidents
 
 Takes a ticket and returns collection of incidents this ticket

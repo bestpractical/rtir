@@ -312,8 +312,7 @@ my $parentvalue = '';
 if ( $IncidentObj ) {
     $parentvalue = $IncidentObj->Id;
 } elsif ( $SplitObj ) {
-    my $incidents = RT::Tickets->new( $session{'CurrentUser'} );
-    $incidents->FromSQL( "Queue = 'Incidents' AND HasMember = " . $SplitObj->Id );
+    my $incidents = RT::IR->Incidents( $SplitObj );
     while ( my $incident = $incidents->Next ) {
         $parentvalue .= ' ' if $parentvalue;
         $parentvalue .= $incident->Id;

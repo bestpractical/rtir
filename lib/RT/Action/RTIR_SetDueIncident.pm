@@ -82,8 +82,7 @@ sub Commit {
         return $self->UpdateDue( $uri->Object );
     }
 
-    my $incidents = new RT::Tickets( $self->CurrentUser );
-    $incidents->FromSQL( "Queue = 'Incidents' AND HasMember = " . $self->TicketObj->id );
+    my $incidents = RT::IR->Incidents( $self->TicketObj );
     while ( my $incident = $incidents->Next ) {
         $self->UpdateDue( $incident );
     }

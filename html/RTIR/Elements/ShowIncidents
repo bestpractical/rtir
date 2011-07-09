@@ -74,10 +74,7 @@ if ( $Ticket->Owner != $session{'CurrentUser'}->Id ) {
 
 my $show_unlink = !$action;
 if ( $show_unlink && $Ticket->QueueObj->Name eq 'Blocks' ) {
-    my $query = "Queue = 'Incidents' AND HasMember = " . $Ticket->Id;
-    my $incidents = new RT::Tickets( $session{'CurrentUser'} );
-    $incidents->FromSQL( $query );
-    $show_unlink = 0 unless $incidents->Count > 1;
+    $show_unlink = 0 unless RT::IR->Incidents( $Ticket )->Count > 1;
 }
 
 </%INIT>
