@@ -95,7 +95,7 @@ sub Commit {
         my $members = RT::Tickets->new( $self->CurrentUser );
         $members->FromSQL( $query );
         while ( my $member = $members->Next ) {
-            if ( RT::IR::Ticket::IsLinkedToActiveIncidents( $member, $self->TicketObj ) ) {
+            if ( RT::IR->IsLinkedToActiveIncidents( $member, $self->TicketObj ) ) {
                 $member->Comment(Content => <<END);
 
 Linked Incident \#$id was resolved, but ticket still has unresolved linked Incidents.

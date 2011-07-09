@@ -129,7 +129,7 @@ if ( $ARGS{'BulkAbandon'} ) {
             my $members = new RT::Tickets( $t->CurrentUser );
             $members->FromSQL( $query );
             while( my $member = $members->Next ) {
-                next if RT::IR::Ticket::IsLinkedToActiveIncidents( $member, $t );
+                next if RT::IR->IsLinkedToActiveIncidents( $member, $t );
                 push @tmp, $member;
             }
         }

@@ -185,7 +185,7 @@ if ( $SubmitTicket && !$checks_failure ) {
         $ARGS{'UpdateAttachments'} = delete $session{'Attachments'};
         push @tempresults, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
-        unless ( RT::IR::Ticket::IsLinkedToActiveIncidents( $Ticket, $IncidentObj ) ) {
+        unless ( RT::IR->IsLinkedToActiveIncidents( $Ticket, $IncidentObj ) ) {
             # XXX: we push into results directly cuz ProcessTicketBasics returns results
             # with leading 'Ticket XX:' string
             push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef
@@ -202,7 +202,7 @@ if ( $SubmitTicket && !$checks_failure ) {
         my $children = RT::Tickets->new( $session{'CurrentUser'} );
         $children->FromSQL( $ActiveChildrenQuery );
         while ( my $child = $children->Next ) {
-            next if RT::IR::Ticket::IsLinkedToActiveIncidents( $child, $IncidentObj );
+            next if RT::IR->IsLinkedToActiveIncidents( $child, $IncidentObj );
             $update_incident_state = 0;
             last;
         }

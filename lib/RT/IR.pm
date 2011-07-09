@@ -378,6 +378,32 @@ sub RelevantIncidents {
     return $res;
 }
 
+=head2 IsLinkedToActiveIncidents $ChildObj [$IncidentObj]
+
+Returns number of active incidents linked to child ticket
+(IR, Investigation, Block or other). If second argument provided
+then it's excluded from count.
+
+When function return zero that means that object has no active
+parent incidents.
+
+=cut
+
+sub IsLinkedToActiveIncidents {
+    my $self = shift;
+    my $child = shift;
+    my $parent = shift;
+
+    my $tickets = RT::Tickets->new( $child->CurrentUser );
+    $tickets->FromSQL( $self->BaseQuery(
+        Queue     => 'Incidents',
+        Status    => [ RT::Lifecycle->Load('incidents')->Valid('initial', 'active') ],
+        HasMember => $child,
+        Exclude   => $parent->id,
+    ) );
+    return $tickets->Count;
+}
+
 sub GetCustomField {
     my $field = shift or return;
     return (__PACKAGE__->CustomFields( $field ))[0];
