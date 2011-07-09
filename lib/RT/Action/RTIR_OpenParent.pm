@@ -75,20 +75,23 @@ Re-open the parent incident
 sub Commit {
     my $self = shift;
 
-    # If the child becomes not-closed, make sure the Incident is re-opened
-    if ($self->TransactionObj->NewValue ne 'rejected' &&
-        $self->TransactionObj->NewValue ne 'resolved')
-    {
-        my $query = "Queue = 'Incidents'"
-                   ." AND HasMember = " . $self->TicketObj->Id
-                   ." AND (Status = 'rejected' OR Status = 'resolved')";
+    my $txn = $self->TransactionObj;
 
-        my $parents = new RT::Tickets($self->TransactionObj->CurrentUser);
-        $parents->FromSQL($query);
-        while (my $member = $parents->Next) {
-            my ($res, $msg) = $member->Open;
-            $RT::Logger->info("Couldn't open ticket: $msg") unless $res;
-        }
+    # If the child becomes not-closed, make sure the Incident is re-opened
+
+    my $ticket = $self->TicketObj;
+    return 1 if $ticket->QueueObj->Lifecycle->IsInactive( $txn->NewValue );
+
+    my $parents = RT::Tickets->new( $txn->CurrentUser );
+    $parents->FromSQL( RT::IR->BaseQuery(
+        Queue     => 'Incidents',
+        HasMember => $ticket,
+        Status    => [ RT::Lifecycle->Load('incidents')->Inactive ],
+    ) );
+    my ($set_to) = RT::Lifecycle->Load('incidents')->Active;
+    while (my $member = $parents->Next) {
+        my ($res, $msg) = $member->SetStatus( $set_to );
+        $RT::Logger->info("Couldn't open incident: $msg") unless $res;
     }
     return 1;
 }
