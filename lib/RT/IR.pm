@@ -252,11 +252,13 @@ sub BaseQuery {
     my $self = shift;
     my %args = (
         Queue        => undef,
+        Status       => undef,
         Active       => undef,
         Exclude      => undef,
+        HasMember    => undef,
         HasNoMember  => undef,
-        NotMemberOf  => undef,
         MemberOf     => undef,
+        NotMemberOf  => undef,
         Constituency => undef,
         @_
     );
@@ -283,9 +285,17 @@ sub BaseQuery {
             }
         }
     }
+    if ( my $s = $args{'Status'} ) {
+        $res .= ' AND ' if $res;
+        $res .= '('. join( ' OR ', map "Status = '$_'", ref $s? (@$s) : ($s) ) .')';
+    }
     if ( my $t = $args{'Exclude'} ) {
         $res .= ' AND ' if $res;
         $res .= '('. join( ' AND ', map "id != '$_'", map int $_, ref $t? (@$t) : ($t) ) .')';
+    }
+    if ( my $t = $args{'HasMember'} ) {
+        $res .= ' AND ' if $res;
+        $res .= 'HasMember = '. (ref $t? $t->id : int $t);
     }
     if ( my $t = $args{'HasNoMember'} ) {
         $res .= ' AND ' if $res;
