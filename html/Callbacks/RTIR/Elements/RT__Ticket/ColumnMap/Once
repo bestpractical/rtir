@@ -51,7 +51,7 @@ $COLUMN_MAP->{'HasIncident'} = {
     value => sub {
         my $t = shift;
 
-        my $query = "Queue = 'Incidents' AND HasMember = " . $t->Id . " AND Status != 'rejected'";
+        my $query = "Queue = 'Incidents' AND HasMember = " . $t->Id . " AND Status != 'abandoned'";
         my $incidents = RT::Tickets->new($session{'CurrentUser'});
         $incidents->FromSQL($query);
 
