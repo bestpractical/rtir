@@ -54,9 +54,7 @@
 
 my $count = 0;
 
-my $query = "Queue = 'Incidents' AND HasMember = " . $Ticket->Id . " AND Status != 'abandoned'";
-my $incidents = RT::Tickets->new($session{'CurrentUser'});
-$incidents->FromSQL($query);
+my $incidents = RT::IR->RelevantIncidents( $Ticket );
 
 my $action = '';
 if ( $Ticket->Owner != $session{'CurrentUser'}->Id ) {

@@ -98,12 +98,8 @@ if ( $BulkReject ) {
             next;
         }
 
-        # warn if this IR has any incidents
-        my $query = "Queue = 'Incidents' AND HasMember = " . $t->Id . " AND
-            Status != 'rejected'";
-        my $incidents = new RT::Tickets($session{'CurrentUser'});
-        $incidents->FromSQL($query);
-        if ($incidents->Count > 0) {
+        if ( RT::IR->RelevantIncidents( $t )->Count ) {
+            # warn if this IR has any incidents
             push( @tempresults, [ $id, loc("Warning: already has incident") ] );
         }
 

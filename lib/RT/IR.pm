@@ -342,6 +342,26 @@ sub ChildrenQuery {
     return join " AND ", map "($_)", @parts;
 }
 
+=head2 RelevantIncidents
+
+Takes a ticket and returns collection of incidents this ticket
+is member of excluding abandoned incidents.
+
+=cut
+
+sub RelevantIncidents {
+    my $self = shift;
+    my $ticket = shift;
+
+    my $query = "Queue = 'Incidents'"
+        ." AND HasMember = " . $ticket->id
+        ." AND Status != 'abandoned'"
+    ;
+    my $res = RT::Tickets->new( $ticket->CurrentUser );
+    $res->FromSQL( $query );
+    return $res;
+}
+
 sub GetCustomField {
     my $field = shift or return;
     return (__PACKAGE__->CustomFields( $field ))[0];

@@ -50,13 +50,8 @@ $COLUMN_MAP->{'HasIncident'} = {
     title => 'Has Incident?',
     value => sub {
         my $t = shift;
-
-        my $query = "Queue = 'Incidents' AND HasMember = " . $t->Id . " AND Status != 'abandoned'";
-        my $incidents = RT::Tickets->new($session{'CurrentUser'});
-        $incidents->FromSQL($query);
-
         my $yesno;
-        if ($incidents->Count > 0) {
+        if ( RT::IR->RelevantIncidents( $t )->Count ) {
             $yesno = '<span class="yes">'. $t->loc('yes') .'</span>';
         }
         else {
