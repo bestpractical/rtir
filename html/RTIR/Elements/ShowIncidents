@@ -54,8 +54,8 @@
 
 my $count = 0;
 
-my $query = "Queue = 'Incidents' AND HasMember = " . $Ticket->Id . " AND Status != 'rejected'";
-my $incidents = new RT::Tickets($session{'CurrentUser'});
+my $query = "Queue = 'Incidents' AND HasMember = " . $Ticket->Id . " AND Status != 'abandoned'";
+my $incidents = RT::Tickets->new($session{'CurrentUser'});
 $incidents->FromSQL($query);
 
 my $action = '';
