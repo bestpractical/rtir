@@ -82,10 +82,6 @@ sub ConstituencyValues {
 
 }
 
-eval "require RT::Action::RTIR_SetConstituencyGroup_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_SetConstituencyGroup_Vendor.pm});
-eval "require RT::Action::RTIR_SetConstituencyGroup_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_SetConstituencyGroup_Local.pm});
+RT::Base->_ImportOverlays;
 
 1;
-

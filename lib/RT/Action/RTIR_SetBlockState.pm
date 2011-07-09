@@ -83,9 +83,6 @@ sub GetState {
     return 'active' if $status eq 'removed';
 }
 
-eval "require RT::Action::RTIR_SetBlockState_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_SetBlockState_Vendor.pm});
-eval "require RT::Action::RTIR_SetBlockState_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_SetBlockState_Local.pm});
+RT::Base->_ImportOverlays;
 
 1;

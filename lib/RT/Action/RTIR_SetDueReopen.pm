@@ -94,11 +94,6 @@ sub Commit {
     return 1;
 }
 
-# }}}
-
-eval "require RT::Action::RTIR_SetDueReopen_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_SetDueReopen_Vendor.pm});
-eval "require RT::Action::RTIR_SetDueReopen_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_SetDueReopen_Local.pm});
+RT::Base->_ImportOverlays;
 
 1;

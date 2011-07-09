@@ -77,10 +77,6 @@ sub IsApplicable {
     return 0;
 }
 
-eval "require RT::Condition::RTIR_RequireStateChange_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/RTIR_RequireStateChange_Vendor.pm});
-eval "require RT::Condition::RTIR_RequireStateChange_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/RTIR_RequireStateChange_Local.pm});
+RT::Base->_ImportOverlays;
 
 1;
-

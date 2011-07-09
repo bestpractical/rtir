@@ -61,8 +61,6 @@ sub Prepare {
     return 1;
 }
 
-# {{{ sub Commit
-
 =head2 Commit
 
 Change the ownership of parent incident.
@@ -93,11 +91,6 @@ sub Commit {
     return 1;
 }
 
-# }}}
-
-eval "require RT::Action::RTIR_ChangeParentOwnership_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_ChangeParentOwnership_Vendor.pm});
-eval "require RT::Action::RTIR_ChangeParentOwnership_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_ChangeParentOwnership_Local.pm});
+RT::Base->_ImportOverlays;
 
 1;

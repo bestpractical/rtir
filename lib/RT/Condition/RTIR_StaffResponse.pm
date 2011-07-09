@@ -70,10 +70,6 @@ sub IsApplicable {
     return $self->IsStaff;
 }
 
-eval "require RT::Condition::RTIR_StaffResponse_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/RTIR_StaffResponse_Vendor.pm});
-eval "require RT::Condition::RTIR_StaffResponse_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/RTIR_StaffResponse_Local.pm});
+RT::Base->_ImportOverlays;
 
 1;
-

@@ -69,10 +69,6 @@ sub IsApplicable {
     return 0;
 }
 
-eval "require RT::Condition::RTIR_RequireDueChange_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/RTIR_RequireDueChange_Vendor.pm});
-eval "require RT::Condition::RTIR_RequireDueChange_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/RTIR_RequireDueChange_Local.pm});
+RT::Base->_ImportOverlays;
 
 1;
-

@@ -20,9 +20,6 @@ sub IsApplicable {
     return 1;
 }
 
-eval "require RT::Condition::RTIR_Merge_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/RTIR_Merge_Vendor.pm});
-eval "require RT::Condition::RTIR_Merge_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/RTIR_Merge_Local.pm});
+RT::Base->_ImportOverlays;
 
 1;

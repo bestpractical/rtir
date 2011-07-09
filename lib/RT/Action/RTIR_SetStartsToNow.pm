@@ -87,9 +87,6 @@ sub Commit {
     return 1;
 }
 
-eval "require RT::Action::RTIR_SetStartsToNow_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_SetStartsToNow_Vendor.pm});
-eval "require RT::Action::RTIR_SetStartsToNow_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_SetStartsToNow_Local.pm});
+RT::Base->_ImportOverlays;
 
 1;

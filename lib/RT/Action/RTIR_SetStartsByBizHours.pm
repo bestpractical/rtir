@@ -85,9 +85,6 @@ sub Commit {
     return 1;
 }
 
-eval "require RT::Action::RTIR_SetStartsByBizHours_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_SetStartsByBizHours_Vendor.pm});
-eval "require RT::Action::RTIR_SetStartsByBizHours_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_SetStartsByBizHours_Local.pm});
+RT::Base->_ImportOverlays;
 
 1;

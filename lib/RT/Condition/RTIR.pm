@@ -54,4 +54,6 @@ sub IsStaff {
     return $cgm->First? 1 : 0;
 }
 
+RT::Base->_ImportOverlays;
+
 1;

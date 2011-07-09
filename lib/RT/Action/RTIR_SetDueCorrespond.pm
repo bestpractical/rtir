@@ -91,11 +91,6 @@ sub Commit {
     return 1;
 }
 
-# }}}
-
-eval "require RT::Action::RTIR_SetDueCorrespond_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_SetDueCorrespond_Vendor.pm});
-eval "require RT::Action::RTIR_SetDueCorrespond_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RTIR_SetDueCorrespond_Local.pm});
+RT::Base->_ImportOverlays;
 
 1;

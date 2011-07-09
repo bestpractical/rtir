@@ -13,5 +13,6 @@ sub CreatorCurrentUser {
     return $user;
 }
 
+RT::Base->_ImportOverlays;
 
 1;
