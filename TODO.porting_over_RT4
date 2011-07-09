@@ -17,8 +17,12 @@
 * make sure we release DBIx::SB with cud-from-select branch
   merged and depend on it
 
+* upgrade script that sets Status in tickets table from state
+  custom field
+
 * upgrade script that turns changes of the State CFs into
   Status changes
+** it's there, but we should make it faster
 
 === BRINGING UP TO DATE
 
