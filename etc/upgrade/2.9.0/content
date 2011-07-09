@@ -92,10 +92,7 @@ my @OUR_QUEUES = ('Incidents', 'Incident Reports', 'Investigations', 'Blocks');
             my %done; # in case redo search bite
             while ( my $txn = $txns->Next ) {
                 next if $done{$txn->id}++;
-                if ( $txn->Field eq 'Status' ) {
-                    $txn->Delete;
-                }
-                elsif ($txn->Type eq 'CustomField'
+                if ($txn->Type eq 'CustomField'
                     && $txn->Field == $state{ $ticket->QueueObj->Name }->id )
                 {
                     $txn->__Set( Field => 'Type', Value => 'Set' );
