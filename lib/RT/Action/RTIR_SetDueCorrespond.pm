@@ -50,7 +50,6 @@ use warnings;
 package RT::Action::RTIR_SetDueCorrespond;
 use base 'RT::Action::RTIR';
 
-# {{{ sub Commit
 
 =head2 Commit
 
