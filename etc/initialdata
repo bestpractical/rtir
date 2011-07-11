@@ -225,10 +225,6 @@
        Description => 'Open the parent Incident when a child reopens' ,                                            # loc
        ExecModule => 'RTIR_OpenParent',
     },
-    {  Name        => 'RTIR Set Incident Report State',    # loc
-       Description => 'Set the state of an Incident Report' ,                                            # loc
-       ExecModule => 'RTIR_SetIncidentReportState',
-    },
     {  Name        => 'RTIR Set Block State',    # loc
        Description => 'Set the state of a Block' ,                                            # loc
        ExecModule => 'RTIR_SetBlockState',
@@ -398,11 +394,12 @@
        ScripCondition    => 'RTIR Require State Change',
        ScripAction       => 'RTIR Set Block State',
        Template          => 'Blank', },
-    {  Description       => "SetRTIRState",
+    {  Description       => "On Linking To Incident Activate Report",
        Queue             => 'Incident Reports',
-       ScripCondition    => 'RTIR Require State Change',
-       ScripAction       => 'RTIR Set Incident Report State',
-       Template          => 'Blank', },
+       ScripCondition    => 'RTIR Linking To Incident',
+       ScripAction       => 'RTIR Activate Ticket',
+       Template          => 'Blank' },
+
 
 # XXX: description is duplication, but set Due of the incident
     {  Description       => "SetRTIRState",
