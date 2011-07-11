@@ -19,7 +19,7 @@ my $type = RT::IR::TicketType( Ticket => $Ticket );
 if ( $type eq 'Incident' ) {
     push @parents, $Ticket->id;
 } else {
-    push @parents, map $_->id, @{ RT::IR->Incidents( $Ticket )->ItemsArrayRef };
+    push @parents, map $_->id, @{ RT::IR->Incidents( $Ticket )->ItemsArrayRef || [] };
 }
 return unless @parents;
 
