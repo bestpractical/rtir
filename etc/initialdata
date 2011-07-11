@@ -181,10 +181,6 @@
        Description => 'Set the starts date to the current time' ,                                            # loc
        ExecModule => 'RTIR_SetStartsToNow',
     },
-    {  Name        => 'RTIR Set Started to Now',    # loc
-       Description => 'Set the started date to the current time' ,                                            # loc
-       ExecModule => 'RTIR_SetStartedToNow',
-    },
     {  Name        => 'RTIR Set Due by SLA',    # loc
        Description => 'Set the due date according to SLA' ,                                            # loc
        ExecModule => 'RTIR_SetDueBySLA',
@@ -351,17 +347,6 @@
        Queue             => [ 'Incident Reports', 'Investigations', 'Blocks' ],
        ScripCondition    => 'On Queue Change',
        ScripAction       => 'RTIR Set Starts by Business Hours',
-       Template          => 'Blank' },
-
-    {  Description       => "SetStarted",
-       Queue             => 'Blocks',
-       ScripCondition    => 'RTIR Block Activation',
-       ScripAction       => 'RTIR Set Started to Now',
-       Template          => 'Blank' },
-    {  Description       => "SetStarted",
-       Queue             => 'Incident Reports',
-       ScripCondition    => 'RTIR Linking To Incident',
-       ScripAction       => 'RTIR Set Started to Now',
        Template          => 'Blank' },
 
     {  Description       => "SetDue",
