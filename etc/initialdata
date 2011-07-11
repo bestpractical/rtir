@@ -253,6 +253,10 @@
        Description => 'Set group responsible for constituency' ,                                            # loc
        ExecModule  => 'RTIR_SetConstituencyGroup',
     },
+    {  Name        => 'RTIR Activate Ticket',    # loc
+       Description => 'Set status to first active possible',            # loc
+       ExecModule  => 'RTIR_Activate',
+    },
 );
 
 @ScripConditions = (
