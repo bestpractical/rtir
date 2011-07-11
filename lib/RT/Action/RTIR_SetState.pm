@@ -4,14 +4,6 @@ use warnings;
 package RT::Action::RTIR_SetState;
 use base 'RT::Action::RTIR';
 
-=head2 Prepare
-
-Always run this.
-
-=cut
-
-sub Prepare { return 1 }
-
 =head2 Commit
 
 Set the state according to the status.

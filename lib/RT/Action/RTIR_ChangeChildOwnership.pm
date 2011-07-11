@@ -50,18 +50,6 @@ use warnings;
 package RT::Action::RTIR_ChangeChildOwnership;
 use base 'RT::Action::RTIR';
 
-=head2 Prepare
-
-Always run this.
-
-=cut
-
-sub Prepare {
-    my $self = shift;
-
-    return 1;
-}
-
 =head2 Commit
 
 Change the ownership of children.

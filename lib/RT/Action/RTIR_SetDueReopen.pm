@@ -50,17 +50,6 @@ use warnings;
 package RT::Action::RTIR_SetDueReopen;
 use base 'RT::Action::RTIR';
 
-=head2 Prepare
-
-Always run this.
-
-=cut
-
-
-sub Prepare {
-    return 1;
-}
-
 # {{{ sub Commit
 
 =head2 Commit

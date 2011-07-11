@@ -4,8 +4,6 @@ use warnings;
 package RT::Action::RTIR_SetStartedToNow;
 use base 'RT::Action::RTIR';
 
-sub Prepare { return 1 }
-
 =head2 Commit
 
 Set the Started date to now.

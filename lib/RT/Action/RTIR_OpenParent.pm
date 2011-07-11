@@ -50,19 +50,6 @@ use warnings;
 package RT::Action::RTIR_OpenParent;
 use base 'RT::Action::RTIR';
 
-=head2 Prepare
-
-Always run this.
-
-=cut
-
-
-sub Prepare {
-    my $self = shift;
-
-    return 1;
-}
-
 =head2 Commit
 
 Re-open the parent incident

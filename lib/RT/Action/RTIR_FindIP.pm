@@ -8,14 +8,6 @@ use Regexp::Common qw(net);
 use Regexp::Common::net::CIDR ();
 use Net::CIDR ();
 
-=head2 Prepare
-
-Always run this.
-
-=cut
-
-sub Prepare { return 1 }
-
 =head2 Commit
 
 Search for IP addresses in the transaction's content.

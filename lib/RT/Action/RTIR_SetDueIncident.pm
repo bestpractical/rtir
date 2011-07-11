@@ -50,19 +50,6 @@ use warnings;
 package RT::Action::RTIR_SetDueIncident;
 use base 'RT::Action::RTIR';
 
-=head2 Prepare
-
-Always run this.
-
-=cut
-
-
-sub Prepare {
-    my $self = shift;
-
-    return 1;
-}
-
 # {{{ sub Commit
 
 =head2 Commit

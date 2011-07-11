@@ -60,14 +60,6 @@ Set Due date of a ticket to now.
 
 =head1 METHODS
 
-=head2 Prepare
-
-Always commit action.
-
-=cut
-
-sub Prepare { return 1 }
-
 =head2 Commit
 
 Set the Due date based on your SLA_Response settings

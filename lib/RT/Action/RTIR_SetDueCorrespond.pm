@@ -50,18 +50,6 @@ use warnings;
 package RT::Action::RTIR_SetDueCorrespond;
 use base 'RT::Action::RTIR';
 
-=head2 Prepare
-
-Always run this.
-
-=cut
-
-sub Prepare {
-    my $self = shift;
-
-    return 1;
-}
-
 # {{{ sub Commit
 
 =head2 Commit

@@ -4,6 +4,14 @@ use warnings;
 package RT::Action::RTIR;
 use base 'RT::Action';
 
+=head2 Prepare
+
+RTIR's actions don't do anything by default.
+
+=cut
+
+sub Prepare { return 1 }
+
 sub CreatorCurrentUser {
     my $self = shift;
     my $user = new RT::CurrentUser($self->TransactionObj->CurrentUser);
