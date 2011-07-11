@@ -1,8 +1,7 @@
-package RT::Action::RTIR_SetConstituencyGroup;
-
 use strict;
 use warnings;
 
+package RT::Action::RTIR_SetConstituencyGroup;
 use base 'RT::Action::RTIR';
 
 =head2 Prepare

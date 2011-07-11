@@ -44,12 +44,10 @@
 # 
 # }}} END BPS TAGGED BLOCK
 #
-package RT::Action::RTIR_SetDueToNow;
-
 use strict;
 use warnings;
 
-use RT::IR;
+package RT::Action::RTIR_SetDueToNow;
 use base 'RT::Action::RTIR';
 
 =head1 NAME

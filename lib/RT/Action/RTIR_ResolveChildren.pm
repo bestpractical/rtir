@@ -44,18 +44,17 @@
 # 
 # }}} END BPS TAGGED BLOCK
 #
-package RT::Action::RTIR_ResolveChildren;
 use strict;
-use base 'RT::Action::RTIR';
+use warnings;
 
-use RT::IR::Ticket;
+package RT::Action::RTIR_ResolveChildren;
+use base 'RT::Action::RTIR';
 
 =head2 Prepare
 
 Check if the Incident is being closed.
 
 =cut
-
 
 sub Prepare {
     my $self = shift;

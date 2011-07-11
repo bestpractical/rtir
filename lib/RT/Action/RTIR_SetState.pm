@@ -1,8 +1,7 @@
-package RT::Action::RTIR_SetState;
-
 use strict;
 use warnings;
 
+package RT::Action::RTIR_SetState;
 use base 'RT::Action::RTIR';
 
 =head2 Prepare

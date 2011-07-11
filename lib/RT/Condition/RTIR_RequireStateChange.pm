@@ -43,15 +43,10 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
- 
-
-
-package RT::Condition::RTIR_RequireStateChange;
-
-
 use strict;
 use warnings;
 
+package RT::Condition::RTIR_RequireStateChange;
 use base 'RT::Condition::RTIR';
 
 

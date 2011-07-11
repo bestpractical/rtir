@@ -1,7 +1,5 @@
-
-use warnings;
 use strict;
-use RT::IR;
+use warnings;
 
 package RT::Condition::RTIR;
 use base 'RT::Condition';

@@ -44,10 +44,10 @@
 # 
 # }}} END BPS TAGGED BLOCK
 #
-package RT::Action::RTIR_SetDueReopen;
-
 use strict;
-use RT::IR;
+use warnings;
+
+package RT::Action::RTIR_SetDueReopen;
 use base 'RT::Action::RTIR';
 
 =head2 Prepare

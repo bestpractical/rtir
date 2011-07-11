@@ -44,11 +44,10 @@
 # 
 # }}} END BPS TAGGED BLOCK
 #
-package RT::Action::RTIR_SetDueIncident;
-
-
 use strict;
+use warnings;
 
+package RT::Action::RTIR_SetDueIncident;
 use base 'RT::Action::RTIR';
 
 =head2 Prepare

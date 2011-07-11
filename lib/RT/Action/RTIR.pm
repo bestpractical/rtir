@@ -1,9 +1,7 @@
-
-use warnings;
 use strict;
-use RT::IR;
-package RT::Action::RTIR;
+use warnings;
 
+package RT::Action::RTIR;
 use base 'RT::Action';
 
 sub CreatorCurrentUser {

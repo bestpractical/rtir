@@ -44,8 +44,10 @@
 # 
 # }}} END BPS TAGGED BLOCK
 #
-package RT::Action::RTIR_ChangeParentOwnership;
 use strict;
+use warnings;
+
+package RT::Action::RTIR_ChangeParentOwnership;
 use base 'RT::Action::RTIR';
 
 =head2 Prepare

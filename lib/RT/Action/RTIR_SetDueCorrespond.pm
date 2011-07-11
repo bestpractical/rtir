@@ -44,11 +44,10 @@
 # 
 # }}} END BPS TAGGED BLOCK
 #
-package RT::Action::RTIR_SetDueCorrespond;
-
-
 use strict;
+use warnings;
 
+package RT::Action::RTIR_SetDueCorrespond;
 use base 'RT::Action::RTIR';
 
 =head2 Prepare
@@ -56,7 +55,6 @@ use base 'RT::Action::RTIR';
 Always run this.
 
 =cut
-
 
 sub Prepare {
     my $self = shift;

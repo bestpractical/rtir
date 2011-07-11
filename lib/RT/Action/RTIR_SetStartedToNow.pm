@@ -1,6 +1,7 @@
-package RT::Action::RTIR_SetStartedToNow;
-
 use strict;
+use warnings;
+
+package RT::Action::RTIR_SetStartedToNow;
 use base 'RT::Action::RTIR';
 
 sub Prepare { return 1 }

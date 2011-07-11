@@ -43,14 +43,10 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
- 
-
+use strict;
+use warnings;
 
 package RT::Condition::RTIR_ReopenTicket;
-
-
-use strict;
-
 use base 'RT::Condition::RTIR';
 
 

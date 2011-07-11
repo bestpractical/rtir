@@ -44,13 +44,13 @@
 # 
 # }}} END BPS TAGGED BLOCK
 #
+use 5.008003;
+use strict;
+use warnings;
+
 package RT::IR;
 
 our $VERSION = '2.5.7';
-
-use 5.008003;
-use warnings;
-use strict;
 
 use Business::Hours;
 use Business::SLA;

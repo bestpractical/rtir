@@ -1,8 +1,7 @@
-package RT::Condition::RTIR_LinkingToIncident;
-
 use strict;
 use warnings;
 
+package RT::Condition::RTIR_LinkingToIncident;
 use base 'RT::Condition::RTIR';
 
 =head2 IsApplicable

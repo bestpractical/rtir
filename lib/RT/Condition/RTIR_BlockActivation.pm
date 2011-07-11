@@ -1,8 +1,7 @@
-package RT::Condition::RTIR_BlockActivation;
-
 use strict;
 use warnings;
 
+package RT::Condition::RTIR_BlockActivation;
 use base 'RT::Condition::RTIR';
 
 =head2 IsApplicable

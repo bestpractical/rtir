@@ -44,9 +44,10 @@
 # 
 # }}} END BPS TAGGED BLOCK
 #
-package RT::Action::RTIR_SetHowReported;
-
 use strict;
+use warnings;
+
+package RT::Action::RTIR_SetHowReported;
 use base 'RT::Action::RTIR';
 
 =head2 Prepare

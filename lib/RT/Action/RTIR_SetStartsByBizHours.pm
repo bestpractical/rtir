@@ -44,9 +44,10 @@
 # 
 # }}} END BPS TAGGED BLOCK
 #
-package RT::Action::RTIR_SetStartsByBizHours;
-
 use strict;
+use warnings;
+
+package RT::Action::RTIR_SetStartsByBizHours;
 use base 'RT::Action::RTIR';
 
 =head2 Prepare

@@ -44,11 +44,10 @@
 # 
 # }}} END BPS TAGGED BLOCK
 #
-package RT::Action::RTIR_OpenParent;
-
 use strict;
 use warnings;
 
+package RT::Action::RTIR_OpenParent;
 use base 'RT::Action::RTIR';
 
 =head2 Prepare

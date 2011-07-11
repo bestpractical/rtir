@@ -44,12 +44,11 @@
 # 
 # }}} END BPS TAGGED BLOCK
 #
-package RT::Action::RTIR_SetDueBySLA;
-
 use strict;
 use warnings;
-use RT::Action::RTIR;
-use base qw'RT::Action::RTIR';
+
+package RT::Action::RTIR_SetDueBySLA;
+use base 'RT::Action::RTIR';
 
 =head2 Prepare
 

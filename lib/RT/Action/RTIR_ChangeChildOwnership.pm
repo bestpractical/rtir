@@ -44,8 +44,10 @@
 # 
 # }}} END BPS TAGGED BLOCK
 #
-package RT::Action::RTIR_ChangeChildOwnership;
 use strict;
+use warnings;
+
+package RT::Action::RTIR_ChangeChildOwnership;
 use base 'RT::Action::RTIR';
 
 =head2 Prepare
@@ -53,7 +55,6 @@ use base 'RT::Action::RTIR';
 Always run this.
 
 =cut
-
 
 sub Prepare {
     my $self = shift;
