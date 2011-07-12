@@ -280,7 +280,7 @@ Set(@Active_MakeClicky, qw(httpurl_overwrite ip email domain));
 Set(
     %Lifecycles,
     incidents => {
-        initial         => ['open'],
+        initial         => [],
         active          => ['open'],
         inactive        => ['resolved', 'abandoned'],
 
