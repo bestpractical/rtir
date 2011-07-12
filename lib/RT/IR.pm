@@ -422,6 +422,11 @@ wrap 'RT::Tickets::_CustomFieldLimit',
         $_ = ParseIP( $_ ) for $start_ip, $end_ip;
         ($start_ip, $end_ip) = ($end_ip, $start_ip) if $start_ip gt $end_ip;
 
+        my (@limit) = $start_ip !~ /:/
+            ? (qw(000.000.000.000 255.255.255.255))
+            : (join(':', ('0000')x8), join(':', ('ffff')x8))
+        ;
+
         my ($tickets, $field, $op, $value, %rest) = @_[0..($#_-1)];
         $tickets->_OpenParen;
         unless ( $op =~ /NOT|!=|<>/i ) { # positive equation
@@ -437,12 +442,12 @@ wrap 'RT::Tickets::_CustomFieldLimit',
             # as well limit borders so DB optimizers can use better
             # estimations and scan less rows
             $tickets->_CustomFieldLimit(
-                $field, '>=', '000.000.000.000', %rest,
+                $field, '>=', $limit[0], %rest,
                 SUBKEY          => $rest{'SUBKEY'}. '.Content',
                 ENTRYAGGREGATOR => 'AND',
             );
             $tickets->_CustomFieldLimit(
-                $field, '<=', '255.255.255.255', %rest,
+                $field, '<=', $limit[1], %rest,
                 SUBKEY          => $rest{'SUBKEY'}. '.LargeContent',
                 ENTRYAGGREGATOR => 'AND',
             );
