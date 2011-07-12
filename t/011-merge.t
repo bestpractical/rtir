@@ -30,8 +30,7 @@ diag "simple merge of IRs" if $ENV{'TEST_VERBOSE'};
 
 }
 
-diag "merge an IR into a linked IR, the product should have open state"
-    if $ENV{'TEST_VERBOSE'};
+diag "merge an IR into a linked IR, the product should have open state" if $ENV{'TEST_VERBOSE'};
 {
     my $inc_id = $agent->create_incident( {Subject => "base inc for merging"});
     my $ir1_id = $agent->create_ir( {Subject => "ir1 for merging", Incident => $inc_id});
@@ -58,6 +57,8 @@ diag "merge an IR into a linked IR, the product should have open state"
     $agent->ticket_status_is( $ir2_id, 'open' );
 }
 
+diag "merge a linked IR into an IR, the product should have open state"
+    if $ENV{'TEST_VERBOSE'};
 { # as previouse but with reversed merge operation
     my $ir1_id = $agent->create_ir( {Subject => "ir2 for merging"});
 
@@ -84,7 +85,8 @@ diag "merge an IR into a linked IR, the product should have open state"
     $agent->ticket_status_is( $ir1_id, 'open' );
 }
 
-{ # merge two IRs that are linked to different Incidents
+diag "merge two IRs that are linked to different Incidents" if $ENV{'TEST_VERBOSE'};
+{
     my $inc1_id = $agent->create_incident( {Subject => "base inc1 for merging"});
     my $ir1_id = $agent->create_ir( {Subject => "ir1 for merging", Incident => $inc1_id});
 
