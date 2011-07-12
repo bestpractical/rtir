@@ -29,7 +29,9 @@ sub IsApplicable {
         }
         return $parent->QueueObj->Name eq 'Incidents';
     }
-
+    elsif ( $type eq 'AddLink' && $field eq 'MergedInto' ) {
+        return RT::IR->Incidents( $self->TicketObj )->Count;
+    }
     return 0;
 }
 
