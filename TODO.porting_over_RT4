@@ -24,6 +24,8 @@
   Status changes
 ** it's there, but we should make it faster
 
+* upgrade script that deletes and renames scrips
+
 === BRINGING UP TO DATE
 
 * Some pages with forms need new nice layouts like in RT, reply
@@ -57,9 +59,6 @@
 * /Incident/Children/ and friends use "State" all over the place,
   anyway we break backwards compatibility, let's be consistent
   and ditch the word
-
-* split SetState action and conditions for IRs and Blocks.
-  they just have different workflow now
 
 * migrate SetIncidentReportState over lifecycles
 

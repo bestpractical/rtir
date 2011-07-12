@@ -225,9 +225,9 @@
        Description => 'Open the parent Incident when a child reopens' ,                                            # loc
        ExecModule => 'RTIR_OpenParent',
     },
-    {  Name        => 'RTIR Set Block State',    # loc
-       Description => 'Set the state of a Block' ,                                            # loc
-       ExecModule => 'RTIR_SetBlockState',
+    {  Name        => 'RTIR Set Block Status',    # loc
+       Description => 'Set the status of a Block' ,                                            # loc
+       ExecModule => 'RTIR_SetBlockStatus',
     },
     {  Name        => 'RTIR Set Incident Resolution',    # loc
        Description => 'Set the default resolution of an Incident' ,                                            # loc
@@ -276,11 +276,6 @@
        Description => 'A closed ticket is reopened' ,                                            # loc
        ApplicableTransTypes => 'Any',
        ExecModule => 'RTIR_ReopenTicket',
-    },
-    {  Name        => 'RTIR Require State Change',    # loc
-       Description => 'A ticket requires a state change' ,                                            # loc
-       ApplicableTransTypes => 'Any',
-       ExecModule => 'RTIR_RequireStateChange',
     },
     {  Name        => 'RTIR Require Due Change',    # loc
        Description => 'The due date of the parent incident must be changed',                                            # loc
@@ -389,10 +384,10 @@
        ScripAction       => 'RTIR Set How Reported',
        Template          => 'Blank' },
 
-    {  Description       => "SetRTIRState",
+    {  Description       => "On Correspond Change Status of the Block",
        Queue             => 'Blocks',
-       ScripCondition    => 'RTIR Require State Change',
-       ScripAction       => 'RTIR Set Block State',
+       ScripCondition    => 'On Correspond',
+       ScripAction       => 'RTIR Set Block Status',
        Template          => 'Blank', },
     {  Description       => "On Linking To Incident Activate Report",
        Queue             => 'Incident Reports',

@@ -43,33 +43,53 @@
 # those contributions and any derivatives thereof.
 # 
 # }}} END BPS TAGGED BLOCK
+#
 use strict;
 use warnings;
 
-package RT::Condition::RTIR_RequireStateChange;
-use base 'RT::Condition::RTIR';
+package RT::Action::RTIR_SetBlockStatus;
+use base 'RT::Action::RTIR';
 
+=head2 Commit
 
-=head2 IsApplicable
-
-If the ticket was closed
+Set the state according to the status.
 
 =cut
 
-sub IsApplicable {
+sub Commit {
     my $self = shift;
 
-    my $type = $self->TransactionObj->Type;
-    return 1 if $type eq "Create";
+    my $t = $self->TicketObj;
+    my $txn = $self->TransactionObj;
 
-    my $field = $self->TransactionObj->Field;
-    return 1 if
-        ( $type =~ /^(Add|Delete)Link$/ and $field =~ /^(MemberOf|MergedInto)$/ ) or
-        ( $type eq "Set" and $field eq "Queue" );
+    my $new;
 
-    return 1 if $type eq 'Correspond' && $self->TicketObj->QueueObj->Name eq 'Blocks';
+    my $current = lc $t->Status;
+    if ( $current =~ /^pending / && $txn->IsInbound ) {
+        if ( my $re = RT->Config->Get('RTIR_BlockAproveActionRegexp') ) {
+            my $content = $txn->Content;
+            return 1 if !$content || $content !~ /$re/;
+        }
 
-    return 0;
+        if ( $current eq 'pending activation' ) {
+            # switch to active state if it is reply from requestor(s)
+            $new = 'active';
+        } elsif ( $current eq 'pending removal' ) {
+            # switch to removed state when requestor(s) replies
+            $new = 'removed';
+        }
+    }
+    
+    if ( !$new && $t->QueueObj->Lifecycle->IsInactive( $current ) ) {
+        $new = $t->FirstActiveStatus;
+    }
+    return 1 unless $new;
+
+    my ( $res, $msg ) = $t->SetStatus( $new );
+    $RT::Logger->warning("Couldn't set status to $new: $msg")
+        unless $res;
+    return 1;
+
 }
 
 RT::Base->_ImportOverlays;
