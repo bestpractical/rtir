@@ -48,105 +48,70 @@
 
 <& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
-<&| /Widgets/TitleBox, title => $Title &>
-<table border="0" cellpadding="0" cellspacing="2">
+<div id="ticket-create-metadata">
+<&| /Widgets/TitleBox, title => loc("Basics"), class=>'ticket-info-basics' &>
+<table width="100%" border="0">
+
 % if ( $Incident ) {
-  <tr>
-    <td align="right"><&|/l&>Incident</&>:</td>
-    <td colspan="2"><% $Incident %><input type="hidden" name="Incident" value="<% $Incident || '' %>" /></td>
+  <tr class="incident">
+    <td class="label"><&|/l&>Incident</&>:</td>
+    <td class="value"><% $Incident %><input type="hidden" name="Incident" value="<% $Incident || '' %>" /></td>
   </tr>
 % } elsif ( $SplitObj ) {
-  <tr>
-    <td align="right"><&|/l&>Split from</&>:</td>
-    <td colspan="2"><% $SplitObj->id %></td>
+  <tr class="split">
+    <td class="label"><&|/l&>Split from</&>:</td>
+    <td class="value"><% $SplitObj->id %></td>
   </tr>
 % if ( $parentvalue ) {
-  <tr>
-    <td align="right"><&|/l&>Will be linked to Incident(s)</&>:</td>
-    <td colspan="2"><% $parentvalue %></td>
+  <tr class="incident">
+    <td class="label"><&|/l&>Will be linked to Incident(s)</&>:</td>
+    <td class="value"><% $parentvalue %></td>
   </tr>
 % }
 % } else {
-  <tr>
+  <tr class="incident">
     <td class="label"><&|/l&>Incident</&>:</td>
     <td class="value"><input name="Incident" size="16" maxsize="16" value="<% $Incident || '' %>" /></td>
-    <td><i><font size="-2">
+  </tr>
+  <tr>
+    <td class="label">&nbsp;</td>
+    <td class="comment">
         (<&|/l&>Id of an Incident to link a new ticket to</&>. <% $Type eq 'Block'? '<strong>'.loc('Required').'</strong>': loc('Optional') |n %>.)
-    </font></i></td>
+    </td>
   </tr>
 % }
-  <tr>
-    <td class="label"><&|/l&>Status</&>:</td>
-    <td colspan="2">
-      <& /Elements/SelectStatus,
-          Name => 'Status',
-          QueueObj => $QueueObj,
-          DefaultValue => 0,
-#          Default => 'new',
-      &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Owner</&>:</td>
-    <td colspan="2">
-      <& /Elements/SelectOwner, 
-          Name => "Owner", 
-          QueueObj => $QueueObj, 
-          Default => $ARGS{Owner}||$session{'CurrentUser'}->Id||undef &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Subject</&>:</td>
-    <td class="value" colspan="2">
-      <input name="Subject" size="60" maxsize="100" value="<% $Subject || ''%>" />
-    </td>
-  </tr>
-  <tr>
-    <td align="right" class="label"><&|/l&>Time Worked</&>:</td>
-    <td colspan="2">
-      <table>
-      <tr>
-        <td><input size="3" name="TimeWorked" value="<% $ARGS{'TimeWorked'} || '' %>" /></td>
-        <td align="right" class="label"><&|/l&>Time Left</&>:</td>
-        <td><input size="3" name="TimeLeft" value="<% $ARGS{'TimeLeft'} || '' %>" /></td>
-      </tr>
-      </table>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Correspondents</&>:</td>
-    <td class="value"><& /Elements/EmailInput,
-        Name => 'Requestors', Default => $ARGS{'Requestors'}, Size => undef,
-    &></td>
-    <td class="label">
-      <input type="checkbox" name="SkipNotification" value="Requestors" <% (grep $_ eq 'Requestors', @SkipNotification)? 'checked': '' %> />
-      <&|/l&>Don't send any emails to correspondents.</&>
-    </td>
-  </tr>
 
-% $m->callback( CallbackName => 'AfterRequestors', ARGSRef => \%ARGS );
-  <tr>
-    <td class="label"><&|/l&>Cc</&>:</td>
-    <td class="value"><& /Elements/EmailInput,
-        Name => 'Cc', Default => $ARGS{'Cc'}, Size => undef,
-    &></td>
-    <td><i><font size="-2">
-        <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)</&>
-    </font></i></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Admin Cc</&>:</td>
-    <td class="value"><& /Elements/EmailInput,
-        Name => 'AdminCc', Default => $ARGS{'AdminCc'}, Size => undef,
-    &></td>
-    <td><i><font size="-2">
-        <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)</&>
-    </font></i></td>
-  </tr>
+  <& /Ticket/Elements/EditBasics,
+    InTable => 1,
+    fields  => [
+        {
+            name => 'Status',
+            comp => '/Elements/SelectStatus',
+            args => {
+                Name         => "Status",
+                Default      => $ARGS{Status} || $QueueObj->Lifecycle->DefaultOnCreate,
+                DefaultValue => 0,
+                SkipDeleted  => 1,
+                QueueObj     => $QueueObj,
+            },
+        },
+        {
+            name => 'Owner',
+            comp => '/Elements/SelectOwner',
+            args => {
+                Name            => "Owner",
+                Default         => $ARGS{Owner} || $session{'CurrentUser'}->id || RT->Nobody->Id,
+                DefaultValue    => 0,
+                QueueObj        => $QueueObj,
+            },
+        },
+    ],
+  &>
+
 % if ( $constituency_cf ) {
   <tr>
-    <td class="labeltop"><&|/l&>Constituency</&>:</td>
-    <td class="value" colspan="2">
+    <td class="label"><&|/l&>Constituency</&>:</td>
+    <td class="value">
 % if ( !$Incident || RT->Config->Get('_RTIR_Constituency_Propagation') eq 'no' ) {
 % my $default;
 % $default = $IncidentObj->FirstCustomFieldValue('Constituency') if $Incident;
@@ -165,15 +130,66 @@
     </td>
   </tr>
 % }
+
+  <& /RTIR/Elements/EditCustomFields, 
+    TicketObj => $SplitObj, 
+    QueueObj => $QueueObj,
+    $Split ? ( OnCreate => 1 ) : (),
+    $IncidentObj ? ( IncidentObj => $IncidentObj ) : (),
+    AsTable => 1,
+  &>
+</table></&></div>
+
+<div id="ticket-create-message">
+<&| /Widgets/TitleBox, title => $Title, class => 'messagedetails' &>
+<table width="100%" border="0">
+
   <tr>
-    <td colspan="3">
-      <& /RTIR/Elements/EditCustomFields, 
-        TicketObj => $SplitObj, 
-        QueueObj => $QueueObj,
-        $Split ? ( OnCreate => 1 ) : (),
-        $IncidentObj ? ( IncidentObj => $IncidentObj ) : (),
-      &>
+    <td class="label"><&|/l&>Subject</&>:</td>
+    <td class="value" colspan="2">
+      <input name="Subject" size="60" maxsize="100" value="<% $Subject || ''%>" />
     </td>
+  </tr>
+
+  <tr>
+    <td class="label"><&|/l&>Correspondents</&>:</td>
+    <td class="value"><& /Elements/EmailInput,
+        Name => 'Requestors', Default => $ARGS{'Requestors'}, Size => undef,
+    &></td>
+  </tr>
+  <tr>
+    <td class="label">&nbsp;</td>
+    <td class="comment">
+      <input type="checkbox" name="SkipNotification" value="Requestors" <% (grep $_ eq 'Requestors', @SkipNotification)? 'checked': '' %> />
+      <&|/l&>Don't send any emails to correspondents.</&>
+    </td>
+  </tr>
+% $m->callback( CallbackName => 'AfterRequestors', ARGSRef => \%ARGS );
+
+  <tr>
+    <td class="label"><&|/l&>Cc</&>:</td>
+    <td class="value"><& /Elements/EmailInput,
+        Name => 'Cc', Default => $ARGS{'Cc'}, Size => undef,
+    &></td>
+  </tr>
+  <tr>
+    <td class="label">&nbsp;</td>
+    <td class="comment"><i><font size="-2">
+        <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)</&>
+    </font></i></td>
+  </tr>
+
+  <tr>
+    <td class="label"><&|/l&>Admin Cc</&>:</td>
+    <td class="value"><& /Elements/EmailInput,
+        Name => 'AdminCc', Default => $ARGS{'AdminCc'}, Size => undef,
+    &></td>
+  </tr>
+  <tr>
+    <td class="label">&nbsp;</td>
+    <td class="comment"><i><font size="-2">
+        <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)</&>
+    </font></i></td>
   </tr>
 
   <tr><td colspan="3"><& SELF:AttachmentsForm &></td><tr>
@@ -240,8 +256,21 @@
     </&>
     </td>
   </tr>
-</table>
-</&>
+
+  <tr>
+    <td align="right" class="label"><&|/l&>Time Worked</&>:</td>
+    <td colspan="2">
+      <table>
+      <tr>
+        <td><input size="3" name="TimeWorked" value="<% $ARGS{'TimeWorked'} || '' %>" /></td>
+        <td align="right" class="label"><&|/l&>Time Left</&>:</td>
+        <td><input size="3" name="TimeLeft" value="<% $ARGS{'TimeLeft'} || '' %>" /></td>
+      </tr>
+      </table>
+    </td>
+  </tr>
+
+</table></&></div>
 
 <& /Elements/Submit, Name => "Create", Label => $SubmitCaption &>
 </form>
