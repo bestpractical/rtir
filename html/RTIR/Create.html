@@ -115,23 +115,30 @@
   </tr>
   <tr>
     <td class="label"><&|/l&>Correspondents</&>:</td>
-    <td class="value"><input name="Requestors" value="<% $ARGS{'Requestors'} || '' %>" size="40" /></td>
+    <td class="value"><& /Elements/EmailInput,
+        Name => 'Requestors', Default => $ARGS{'Requestors'}, Size => undef,
+    &></td>
     <td class="label">
       <input type="checkbox" name="SkipNotification" value="Requestors" <% (grep $_ eq 'Requestors', @SkipNotification)? 'checked': '' %> />
       <&|/l&>Don't send any emails to correspondents.</&>
     </td>
   </tr>
+
 % $m->callback( CallbackName => 'AfterRequestors', ARGSRef => \%ARGS );
   <tr>
     <td class="label"><&|/l&>Cc</&>:</td>
-    <td class="value"><input name="Cc" value="<% $ARGS{'Cc'} || '' %>" size="40" /></td>
+    <td class="value"><& /Elements/EmailInput,
+        Name => 'Cc', Default => $ARGS{'Cc'}, Size => undef,
+    &></td>
     <td><i><font size="-2">
         <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)</&>
     </font></i></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Admin Cc</&>:</td>
-    <td class="value"><input name="AdminCc" value="<% $ARGS{'AdminCc'} || '' %>" size="40" /></td>
+    <td class="value"><& /Elements/EmailInput,
+        Name => 'AdminCc', Default => $ARGS{'AdminCc'}, Size => undef,
+    &></td>
     <td><i><font size="-2">
         <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)</&>
     </font></i></td>
