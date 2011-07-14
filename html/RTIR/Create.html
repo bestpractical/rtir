@@ -192,8 +192,6 @@
     </font></i></td>
   </tr>
 
-  <tr><td colspan="3"><& SELF:AttachmentsForm &></td><tr>
-
 % if ( $Type eq "Investigation" && $IncidentObj ) {
   <tr><td colspan="3"><& /RTIR/Elements/AttachReports, Ticket => $IncidentObj &></td><tr>
 % }
@@ -240,8 +238,10 @@
 % }
     </td>
   </tr>
-  <tr>
-    <td valign="top" colspan="3">
+
+  <& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $QueueObj &>
+
+  <tr><td colspan="2">
     <&| /Widgets/TitleBox, title => loc("Dates"), class => 'ticket-info-dates' &>
       <table border="0">
         <tr>
@@ -482,31 +482,4 @@ delete $session{'Attachments'} if $session{'Attachments'} && !%{ $session{'Attac
 
 return @results;
 </%INIT>
-</%METHOD>
-
-<%METHOD AttachmentsForm>
-
-<table>
-
-% my $has_files = exists $session{'Attachments'} && keys %{ $session{'Attachments'} };
-% if ( $has_files ) {
-<tr><td><&|/l&>Attached file</&>:</td>
-<td>
-<&|/l&>Check box to delete</&><br />
-<ul class="files">
-% foreach my $name ( keys %{$session{'Attachments'}} ) {
-<li><input type="checkbox" name="DeleteAttachments" value="<% $name %>" /><% $name %></li>
-% }
-</ul>
-</td></tr>
-% }
-
-<tr><td class="label"><&|/l&>Attach file</&>:</td>
-<td class="value">
-<input type="file" name="Attachment" />
-<input type="submit" name="AddAttachment" value="<% $has_files? loc('Add/Delete Files'): loc('Add More Files') %>" />
-</td></tr>
-
-</table>
-
 </%METHOD>

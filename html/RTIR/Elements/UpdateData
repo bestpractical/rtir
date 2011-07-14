@@ -27,7 +27,7 @@
 <& /Ticket/Elements/UpdateCc, %ARGS, TicketObj => $Ticket &>
 % }
 
-<tr><td colspan="2"><& /RTIR/Create.html:AttachmentsForm &></td></tr>
+<& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $Ticket->QueueObj &>
 
 % if ( $Ticket ) {
 <tr><td colspan="2"><& /RTIR/Elements/AttachReports, Ticket => $Ticket &></td></tr>

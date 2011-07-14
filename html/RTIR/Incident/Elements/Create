@@ -60,7 +60,7 @@
     ChildObj => $ChildObj,
 &></td></tr>
 
-<tr><td colspan="2"><& /RTIR/Create.html:AttachmentsForm &></td></tr>
+<& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $QueueObj &>
 
 <%INIT>
 my $constituency_cf = RT::IR->CustomFields( 'Constituency', Queue => $QueueObj->Name );
