@@ -450,29 +450,35 @@ $Attachment => '';
 
 my @results;
 
-$session{'Attachments'} ||= {};
-
 # deal with deleting uploaded attachments
-foreach ( grep $_ && exists $session{'Attachments'}{ $_ }, @DeleteAttachments ) {
+foreach (
+    grep $_ && exists $session{'Attachments'}{ $_ },
+    @DeleteAttachments,
+    map { /^DeleteAttach-(.*)$/; $1 } keys %ARGS,
+) {
     delete $session{'Attachments'}{ $_ };
     push @results, loc("Deleted attachment '[_1]'", $_ );
     $session{'i'}++;
 }
 
 # store the uploaded attachment in session
-if ( $Attachment ) {
-    my $filename = "$Attachment";
+foreach my $field ( 'Attach', 'Attachment' ) {
+    next unless $ARGS{ $field };
+
+    my $filename = "$ARGS{ $field }";
     $filename =~ s{^.*[\\/]}{};
 
     my $entity = MakeMIMEEntity(
         Subject             => $filename,
         Body                => '',
-        AttachmentFieldName => 'Attachment'
+        AttachmentFieldName => $field,
     );
     $session{'Attachments'}{ $filename } = $entity;
     push @results, loc("Added attachment '[_1]'", $filename );
     $session{'i'}++;
 }
+
+delete $session{'Attachments'} if $session{'Attachments'} && !%{ $session{'Attachments'} };
 
 return @results;
 </%INIT>
