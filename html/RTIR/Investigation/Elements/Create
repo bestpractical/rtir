@@ -99,10 +99,10 @@ email addresses. These people <b>will</b> receive future updates.)</&></font></i
 &><table>
 
 <tr><td class="label"><&|/l&>Starts</&>:</td>
-<td class="value"><input size="10" name="<% $NamePrefix %>Starts" value="<% $value_cb->('Starts') %>" /></td></tr>
+<td class="value"><& /Elements/SelectDate, Name => $NamePrefix .'Starts', Default => $value_cb->('Starts') || '' &></td></tr>
 
 <tr><td class="label"><&|/l&>Due</&>:</td>
-<td class="value"><input size="10" name="<% $NamePrefix %>Due" value="<% $value_cb->('Due') %>" /></td></tr>
+<td class="value"><& /Elements/SelectDate, Name => $NamePrefix .'Due', Default => $value_cb->('Due') || '' &></td></tr>
 
 </table></&></td></tr>
 % }

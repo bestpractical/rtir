@@ -174,10 +174,10 @@ unless ( exists $ARGS{'Content'} ) {
 <table border="0">
 
     <tr><td align="right"><&|/l&>Starts</&>:</td>
-    <td><input size="10" name="Starts" value="<% $ARGS{'Starts'} || '' %>" /></td></tr>
+    <td><& /Elements/SelectDate, Name => 'Starts', Default => $ARGS{'Starts'} || '' &></td></tr>
     
     <tr><td align="right"><&|/l&>Due</&>:</td>
-    <td><input size="10" name="Due" value="<% $ARGS{'Due'} || '' %>" /></td></tr>
+    <td><& /Elements/SelectDate, Name => 'Due', Default => $ARGS{'Due'} || '' &></td></tr>
 
 </table>
 </&>
