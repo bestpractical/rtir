@@ -22,7 +22,10 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /RTIR/Elements/Header, Title => $Title &>
+<& /RTIR/Elements/Header,
+    Title => $Title,
+    onload => "function () { hide('Ticket-Create-details') }",
+&>
 <& /Elements/Tabs &>
 
 % $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Ticket => $SplitObj);
@@ -46,7 +49,12 @@
 
 <a name="top"></a>
 
+% if ( $gnupg_widget ) {
 <& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
+% }
+
+<div id="Ticket-Create-basics">
+<a name="basics"></a>
 
 <div id="ticket-create-metadata">
 <&| /Widgets/TitleBox, title => loc("Basics"), class=>'ticket-info-basics' &>
@@ -145,13 +153,6 @@
 <table width="100%" border="0">
 
   <tr>
-    <td class="label"><&|/l&>Subject</&>:</td>
-    <td class="value" colspan="2">
-      <input name="Subject" size="60" maxsize="100" value="<% $Subject || ''%>" />
-    </td>
-  </tr>
-
-  <tr>
     <td class="label"><&|/l&>Correspondents</&>:</td>
     <td class="value"><& /Elements/EmailInput,
         Name => 'Requestors', Default => $ARGS{'Requestors'}, Size => undef,
@@ -192,19 +193,20 @@
     </font></i></td>
   </tr>
 
-% if ( $Type eq "Investigation" && $IncidentObj ) {
-  <tr><td colspan="3"><& /RTIR/Elements/AttachReports, Ticket => $IncidentObj &></td><tr>
-% }
+  <tr>
+    <td class="label"><&|/l&>Subject</&>:</td>
+    <td class="value"><input type="text" name="Subject" maxsize="200" value="<% $Subject || '' %>" /></td>
+  </tr>
 
 % if ( $gnupg_widget ) {
-  <tr><td>&nbsp;</td><td colspan="2">
+  <tr><td>&nbsp;</td><td class="value">
   <& /Elements/GnuPG/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &>
   </td></tr>
 % }
 
   <tr>
-    <td class="labeltop"><&|/l&>Message</&>:</td>
-    <td colspan="2">
+    <td class="label"><&|/l&>Message</&>:</td>
+    <td class="value">
 % my $include_signature = 1;
 % unless (exists $ARGS{Content}) {
 %   my $Transactions;
@@ -241,38 +243,76 @@
 
   <& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $QueueObj &>
 
-  <tr><td colspan="2">
-    <&| /Widgets/TitleBox, title => loc("Dates"), class => 'ticket-info-dates' &>
-      <table border="0">
-        <tr>
-        <td align="right"><&|/l&>Starts</&>:</td>
-          <td><input size="10" name="Starts" value="<% $ARGS{Starts} || '' %>" /></td>
-        </tr>
-        <tr>
-        <td align="right"><&|/l&>Due</&>:</td>
-        <td><input size="10" name="Due" value="<% $ARGS{Due} || '' %>" /></td>
-        </tr>
-      </table>
-    </&>
-    </td>
-  </tr>
-
-  <tr>
-    <td align="right" class="label"><&|/l&>Time Worked</&>:</td>
-    <td colspan="2">
-      <table>
-      <tr>
-        <td><input size="3" name="TimeWorked" value="<% $ARGS{'TimeWorked'} || '' %>" /></td>
-        <td align="right" class="label"><&|/l&>Time Left</&>:</td>
-        <td><input size="3" name="TimeLeft" value="<% $ARGS{'TimeLeft'} || '' %>" /></td>
-      </tr>
-      </table>
-    </td>
-  </tr>
-
-</table></&></div>
+</table></&>
 
 <& /Elements/Submit, Name => "Create", Label => $SubmitCaption &>
+</div></div>
+
+<div id="Ticket-Create-details">
+<a name="details"></a>
+
+
+<&| /Widgets/TitleBox, title => loc("Dates"), class=>'ticket-info-dates' &>
+<table width="100%" border="0">
+<& /Ticket/Elements/EditBasics,
+    InTable => 1,
+    fields  => [
+        {
+            name => 'Starts',
+            comp => '/Elements/SelectDate',
+            args => { Name => 'Starts', Default => $ARGS{'Starts'} || '' },
+        },
+        {
+            name => 'Due',
+            comp => '/Elements/SelectDate',
+            args => { Name => 'Due', Default => $ARGS{'Due'} || '' },
+        },
+    ],
+&>
+</table></&>
+
+<&| /Widgets/TitleBox, title => loc("Time"), class=>'ticket-info-time' &>
+<table width="100%" border="0">
+<& /Ticket/Elements/EditBasics,
+    InTable => 1,
+    fields  => [
+        {
+            name => 'Time Estimated',
+            comp => '/Elements/EditTimeValue',
+            args => {
+                Name    => "TimeEstimated",
+                Default => $ARGS{'TimeEstimated'} || '',
+                InUnits => $ARGS{'TimeEstimated-TimeUnits'},
+            },
+        },
+        {
+            name => 'Time Worked',
+            comp => '/Elements/EditTimeValue',
+            args => {
+                Name    => "TimeWorked",
+                Default => $ARGS{'TimeWorked'} || '',
+                InUnits => $ARGS{'TimeWorked-TimeUnits'},
+            },
+        },
+        {
+            name => 'Time Left',
+            comp => '/Elements/EditTimeValue',
+            args => {
+                Name    => "TimeLeft",
+                Default => $ARGS{'TimeLeft'} || '',
+                InUnits => $ARGS{'TimeLeft-TimeUnits'},
+            },
+        },
+    ],
+&>
+</table></&>
+
+% if ( $Type eq "Investigation" && $IncidentObj ) {
+  <& /RTIR/Elements/AttachReports, Ticket => $IncidentObj &>
+% }
+
+</div>
+
 </form>
 
 <%INIT>
@@ -425,6 +465,9 @@ if ( $Split ) {
         $SubmitCaption = loc("Create");
     }
 }
+
+PageMenu->child( basics => raw_html =>  q[<a href="#basics" onclick="return switchVisibility('Ticket-Create-basics','Ticket-Create-details');">] . loc('Basics') . q[</a>]);
+PageMenu->child( details => raw_html =>  q[<a href="#details" onclick="return switchVisibility('Ticket-Create-details','Ticket-Create-basics');">] . loc('Details') . q[</a>]);
 
 </%INIT>
 
