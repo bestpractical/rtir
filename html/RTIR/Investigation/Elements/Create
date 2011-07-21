@@ -23,9 +23,15 @@
 % unless ( $SkipField{'TimeFields'} ) {
 <tr><td colspan="2"><table><tr>
     <td align="right"><&|/l&>Time Worked</&>:</td>
-    <td><input size="3" name="<% $NamePrefix %>TimeWorked" value="<% $value_cb->('TimeWorked') %>" /></td>
+    <td><& /Elements/EditTimeValue,
+        Name => $NamePrefix .'TimeWorked',
+        Default => $value_cb->('TimeWorked') || '',
+    &></td>
     <td align="right"><&|/l&>Time Left</&>:</td>
-	<td><input size="3" name="<% $NamePrefix %>TimeLeft" value="<% $value_cb->('TimeLeft') %>" /></td>
+    <td><& /Elements/EditTimeValue,
+        Name => $NamePrefix .'TimeLeft',
+        Default => $value_cb->('TimeLeft') || '',
+    &></td>
 </tr></table></td></tr>
 % }
 

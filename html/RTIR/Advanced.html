@@ -19,24 +19,24 @@
 
   <tr>
     <td class="label"><&|/l&>Time Estimated</&>:</td>
-    <td class="value">
-      <input name="TimeEstimated" value="<% $Ticket->TimeEstimated %>" size="5" />
-      <& /Elements/SelectTimeUnits, Name =>'TimeEstimated' &>
-    </td>
+    <td class="value"><& /Elements/EditTimeValue,
+        Name => 'TimeEstimated',
+        Default => $ARGS{'TimeEstimated'} || $Ticket->TimeEstimated || '',
+    &></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Time Worked</&>:</td>
-    <td class="value">
-      <input name="TimeWorked" value="<% $Ticket->TimeWorked %>" size="5" />
-      <& /Elements/SelectTimeUnits, Name =>'TimeWorked' &>
-    </td>
+    <td class="value"><& /Elements/EditTimeValue,
+        Name => 'TimeWorked',
+        Default => $ARGS{'TimeWorked'} || $Ticket->TimeWorked || '',
+    &></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Time Left</&>:</td>
-    <td class="value">
-      <input name="TimeLeft" value="<% $Ticket->TimeLeft %>" size="5" />
-      <& /Elements/SelectTimeUnits, Name =>'TimeLeft' &>
-    </td>
+    <td class="value"><& /Elements/EditTimeValue,
+        Name => 'TimeLeft',
+        Default => $ARGS{'TimeLeft'} || $Ticket->TimeLeft || '',
+    &></td>
   </tr>
 
   <tr>

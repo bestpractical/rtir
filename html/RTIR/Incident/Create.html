@@ -160,10 +160,16 @@ unless ( exists $ARGS{'Content'} ) {
 </td></tr>
 
     <tr><td align="right"><&|/l&>Time Worked</&>:</td>
-    <td><input size="3" name="TimeWorked" value="<% $ARGS{TimeWorked} || '0' %>" /></td></tr>
+    <td class="value"><& /Elements/EditTimeValue,
+        Name => 'TimeWorked',
+        Default => $ARGS{'TimeWorked'} || '',
+    &></td></tr>
 
     <tr><td align="right"><&|/l&>Time Left</&>:</td>
-    <td><input size="3" name="TimeLeft" value="<% $ARGS{TimeLeft} || '0' %>" /></td></tr>
+    <td class="value"><& /Elements/EditTimeValue,
+        Name => 'TimeLeft',
+        Default => $ARGS{'TimeLeft'} || '',
+    &></td></tr>
 </table>
 </&>
 

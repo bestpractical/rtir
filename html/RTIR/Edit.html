@@ -78,7 +78,10 @@
   </tr>
   <tr>
     <td class="label"><&|/l&>Time Worked</&>:</td>
-    <td class="value"><input name="TimeWorked" value="<%$Ticket->TimeWorked|h%>" size="5" /></td>
+    <td class="value"><& /Elements/EditTimeValue,
+        Name => 'TimeWorked',
+        Default => $ARGS{'TimeWorked'} || $Ticket->TimeWorked || '',
+    &></td>
   </tr>
 % if ( $constituency_cf && ($constituency_propagation ne 'reject' || !$has_parent) ) {
   <tr>
