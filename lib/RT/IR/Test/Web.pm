@@ -170,8 +170,8 @@ sub create_incident_for_ir {
     
     Test::More::is ($self->status, 200, "Attempting to create new incident linked to child $ir_id");
 
-    Test::More::ok ($self->content =~ /.*Ticket (\d+) created in queue.*/g, "Incident created from child $ir_id.");
-    my $incident_id = $1;
+    my ($incident_id) = $self->content =~ /.*Ticket (\d+) created in queue.*/;
+    Test::More::ok ($incident_id, "Incident created from child $ir_id.");
 
 #    diag("incident ID is $incident_id");
     return $incident_id;
@@ -270,8 +270,8 @@ sub merge_ticket {
     
     $self->follow_link_ok({text => 'Merge', n => '1'}, "Followed 'Merge' link");
     
-    $self->content() =~ /Merge ([\w ]+) #$id:/i;
-    my $type = $1 || 'Ticket';
+    my ($type) = $self->content() =~ /Merge ([\w ]+) #$id:/i;
+    $type ||= 'Ticket';
     
 
     # Check that the desired incident occurs in the list of available incidents; if not, keep
