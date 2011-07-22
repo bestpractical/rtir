@@ -30,6 +30,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <table class="ticket-summary" width="100%"><tr><td class="boxcontainer" valign="top">
+% $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'LeftColumnStart' );
 
 <&| /Widgets/TitleBox,
     title => loc('Incident #[_1]', $id), 
@@ -67,6 +68,7 @@
 </&>
 
 </td><td class="boxcontainer" valign="top">
+% $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'RightColumnStart' );
 
 <& /RTIR/Incident/Elements/ShowChildren,
     IncidentObj => $TicketObj, 
@@ -299,7 +301,7 @@ unless ( $TicketObj->CurrentUserHasRight('ShowTicket') ) {
 }
 
 my $TimeWorked = $TicketObj->TimeWorked;
-if ( $TicketObj->TimeLeft > 0 ) {
+if ( defined $TicketObj->TimeLeft && $TicketObj->TimeLeft > 0 ) {
     $TimeWorked .= '/'. $TicketObj->TimeLeft;
 }
 

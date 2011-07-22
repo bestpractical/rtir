@@ -1,0 +1,24 @@
+<form action="Lookup.html" method="get">
+  <input type="hidden" name="ticket" value="<% $TicketObj->id %>" />
+  <tr>
+    <span class="label">WHOIS:</span>
+    <span class="input">
+      <input size="30" name="q" value="<% $q %>" /> at 
+      <select name="server">
+<%PERL>
+foreach my $s ( sort grep $servers->{ $_ }, keys %{ $servers } ) {
+    my $srv = $servers->{ $s };
+    my ($host, $name) = ref $srv?  ($srv->{'Host'}, $srv->{'FriendlyName'}): ($srv, '');
+</%PERL>
+        <option value="<% $host %>" <% $host eq $WhoisServer ? 'SELECTED' : '' %>><% $name || $host %></option>
+% }
+      </select>
+    </span>
+    <input type="submit" value="<%loc('Go')%>" />
+</form>
+<%args>
+$TicketObj => undef
+$q => undef
+$servers => undef
+$WhoisServer => undef
+</%args>

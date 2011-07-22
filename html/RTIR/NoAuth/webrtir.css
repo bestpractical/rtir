@@ -37,10 +37,13 @@ ul.userlist li:last-child::after{
 }
 
 #topactions #simple-search input.button {
-    width:10em;
 }
 
-#topactions { min-width: 44em; }
+#topactions { min-width: 44em; white-space: no-wrap; }
+
+#comp-RTIR .myrt>table>tr>td:first-child {
+    width: 80%;
+}
 
 .ticket-info-articles       .titlebox-title .left { background-color: #316531; color: #fff; }
 .tickets-list-report        .titlebox-title .left { background-color: #316531; color: #fff; }

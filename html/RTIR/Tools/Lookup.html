@@ -25,170 +25,28 @@
 <& /RTIR/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
 
-% if ( $ticket ) {
+% if ( $TicketObj->id ) {
 <&| /Widgets/TitleBox, title => loc("Current [_1]: #[_2]", $TicketType, $ticket), class => 'ticket-info-basics' &>
-<& /Elements/TicketList, Query => "id = $ticket", Format => $Format, ShowNavigation => 0 &>
+<& /Elements/TicketList, Query => "id = $ticket", Format => RT->Config->Get('RTIRSearchResultFormats')->{$TicketType . 'Default'}, ShowNavigation => 0 &>
 </&>
 % }
 
-% unless ( $HideResults ) {
-<table width="100%" border="0" cellpadding="2" cellspacing="0">
-<tr><td valign="top" width="50%">
-
-<&| /Widgets/TitleBox, title => loc('Incidents: [_1]', $q), class => 'tickets-list-incident' &>
-<& /RTIR/Elements/IncidentSummary, 
-    Type       => $TicketType, 
-    ticket     => $ticket, 
-    lookuptype => $type, 
-    q          => $q,
-&>
-</&>
-
-</td><td valign="top" width="50%">
-
-<&| /Widgets/TitleBox, title => loc('Investigations: [_1]', $q), class => 'tickets-list-investigation' &>
-<& /RTIR/Elements/ChildSummary, 
-    Queue      => 'Investigations', 
-    Type       => $TicketType, 
-    ticket     => $ticket, 
-    lookuptype => $type, 
-    q          => $q,
-&>
-</&>
-
-</td></tr><tr><td valign="top" width="50%">
-
-<&| /Widgets/TitleBox, title => loc('Incident Reports: [_1]', $q), class => 'tickets-list-report' &>
-<& /RTIR/Elements/ChildSummary,
-    Queue      => 'Incident Reports',
-    Type       => $TicketType,
-    ticket     => $ticket,
-    lookuptype => $type,
-    q          => $q,
-&>
-</&>
-
-</td><td width="50%" valign="top">
-
-% unless ( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
-<&| /Widgets/TitleBox, title => loc('Blocks: [_1]', $q), class => 'tickets-list-block' &>
-<& /RTIR/Elements/ChildSummary,
-    Queue      => 'Blocks',
-    Type       => $TicketType,
-    ticket     => $ticket,
-    lookuptype => $type,
-    q          => $q,
-&>
-</&>
-% }
-
-</td></tr>
-
-</table>
+% if ( ! $HideResults ) {
+<& Elements/LookupRelatedTickets, TicketObj => $TicketObj, LookupType => $type, q => $q &>
 % }
 
 <hr>
-
 <h2><&|/l&>Look Up Information</&></h2>
-
-<table>
-<form action="Lookup.html" method="get">
-  <input type="hidden" name="ticket" value="<% $ticket %>" />
-  <tr>
-    <td class="label">WHOIS:</td>
-    <td class="input">
-      <input size="30" name="q" value="<% $q %>" /> at 
-      <select name="server">
-<%PERL>
-foreach my $s ( sort grep $servers->{ $_ }, keys %{ $servers } ) {
-    my $srv = $servers->{ $s };
-    my ($host, $name) = ref $srv?
-        ($srv->{'Host'}, $srv->{'FriendlyName'}):
-        ($srv, '');
-
-    my $selected = '';
-    $selected = "selected" if $host eq $server;
-</%PERL>
-        <option value="<% $host %>" <% $selected %>><% $name || $host %></option>
-% }
-      </select>
-    </td>
-    <td align="left"><input type="submit" value="Go" /></td>
-  </tr>
-</form>
-
-<form action="Traceroute.html" method="get" target="_blank">
-  <tr>
-    <td class="label">Traceroute to:</td>
-    <td class="input"><input size="30" name="q" value="<% $q %>" /></td>
-    <td align="left"><input type="submit" value="Go" /></td>
-  </tr>
-</form>
-</table>
-
-<hr>
-
-% if ( $q ) {
-<h2>WHOIS Results</h2>
-% if ( $TicketObj && $TicketType eq 'Incident' ) {
-<form method="post" action="<% RT->Config->Get('WebPath') %>/RTIR/Tools/Lookup.html">
-<input type="hidden" name="incidentid" value="<% $ticket %>" />
-<input type="hidden" name="Subject" value="<% $TicketObj->Subject %>" />
-% }
-% }
-% if ( $error ) {
-<b><% $error %></b>
-% }
-<%PERL>
-my $DoInvestigate = 0;
-if ( $iterator ) {
-    while ( my $obj = $iterator->next ) {
-        my @lines_starting_with_space = grep /^(\s+)(\w+)/, $obj->content;
-        if ( $handparse || $#lines_starting_with_space >= 4 ) { #we couldn't parse that. suck
-            my $content = join "", $obj->content;
-            $m->comp( '/Elements/MakeClicky',
-                ticket        => $TicketObj,
-                lookup_params => "ticket=". $ticket ."&server=$server",
-                content       => \$content,
-            );
-            $DoInvestigate = 1 if $content =~ /Requestorbox/ig;
-</%PERL>
-<pre><% $content |n %></pre><br />
-%       } else {
-Structured RIPE whois data returned. Click <a href="Lookup.html?q=<% $q |u %>&server=<% $server |u %>&handparse=1">here</a> to manually parse this data.
-<br />Warnings <% $obj->warnings %>
-<br />errors <% $obj->errors %>
-<hr />
-%               foreach my $attribute ( $obj->attributes ) {
-%                       foreach my $value ( $obj->$attribute() ) {
-                               <b><%$attribute%></b>: 
-% $m->comp('/Elements/MakeClicky', ticket => $TicketObj, lookup_params => "ticket=".$ticket, content => \$value);
-<% $value |n %><br />
-%                       }
-%               }
-
-%       }
-% }
-% }
-
-%# Don't offer the option of Investigating to unless there are addresses
-% if ( $DoInvestigate ) {
-<& /Elements/Submit,
-    Name => "InvestigateTo",
-    Caption => loc("Investigate to selected addresses"),
-    Label => loc("Investigate"),
-&>
-<& /Elements/Submit,
-    Name => "InvestigateWithScriptedActions",
-    Caption => loc("Investigate to selected addresses"),
-    Label => loc("Investigate using scripted action"),
-&>
-% }
-
-</form>
+<& Elements/Tools, %ARGS, q => $q,
+    TicketType => $TicketType, 
+    TicketObj => $TicketObj,
+    WhoisServer => $server, 
+    handparse => $handparse,
+    servers => $servers &>
 
 <%INIT>
 
+# Redirect when necessary
 if ( $ARGS{'InvestigateTo'} ) {
     my $requestors = join ', ', map /^Requestorbox-(.*)/, keys %ARGS;
     return RT::Interface::Web::Redirect(
@@ -206,29 +64,12 @@ if ( $ARGS{'InvestigateTo'} ) {
     );
 }
 
-unless ( $server ) {
-    # just pick the first one
-    ($server) = map ref $servers->{$_}? $servers->{$_}->{'Host'}: $servers->{$_},
-        (sort keys %$servers)[0];
-}
-
 my $title = loc("Lookup '[_1]' using server [_2]", $q, $server);
 
-use Net::Whois::RIPE;
-my ($whois, $port) = split(/\s*:\s*/, $server, 2);
-$port = 43 unless ($port || '') =~ /^\d+$/;
-my $query = Net::Whois::RIPE->new( $whois, Port => $port, Debug => 1 );
-my ($iterator, $error);
-$iterator = $query->query_iterator($q) if $query;
-unless ( $iterator ) {
-    $error = loc( "Unable to connect to WHOIS server '[_1]'", $server);
-}
+my $max_age = -60;
 
-my $max_age;
 if ( my $tmp = RT->Config->Get('RTIR_OldestRelatedTickets') ) {
     $max_age = 0 - $tmp;
-} else {
-    $max_age = -60;
 }
 
 my $now = RT::Date->new( $session{'CurrentUser'} );
@@ -242,10 +83,9 @@ if ( $q ) {
     if ( $type && RT::IR->CustomFields( Field => $type ) ) {
         $query = "'CF.{$type}' = '$q'"
     } else {
-        $query = "( ContentType = 'text/plain' "
-            . "OR ContentType = 'text' "
-            . "OR ContentType = 'text/html' )"
-            . " AND Content LIKE '$q'";
+        $query = "( ContentType = 'text/plain' OR ContentType = 'text' OR ContentType = 'text/html' )"
+        . " AND Content LIKE '$q'";
+
         # apply transaction date search only if it's FTS as otherwise
         # it can ruin performance of mysql optimizer rather than help
         $query = "( $query ) AND TransactionDate > '". $now->ISO ."'"
@@ -255,14 +95,15 @@ if ( $q ) {
     $RT::Logger->warning( $msg ) unless $val;
 }
 
-my ($TicketObj, $TicketType);
+my $TicketObj = RT::Ticket->new($session{CurrentUser});
+my $TicketType;
 if ( $ticket ) {
     $TicketObj = LoadTicket( $ticket );
     $ticket = $ARGS{'ticket'} = $TicketObj->id;
     $TicketType = RT::IR::TicketType( Ticket => $TicketObj );
 }
 
-my $Format = RT->Config->Get('RTIRSearchResultFormats')->{$TicketType . 'Default'};
+
 
 </%INIT>
 <%ARGS>

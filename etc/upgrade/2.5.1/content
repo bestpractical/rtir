@@ -7,7 +7,7 @@ my %special_rename = (
 @Initial = (
     sub {
         my $cfs = RT::CustomFields->new( $RT::SystemUser );
-        $cfs->Limit( COLUMN => 'Name', OPERATOR => 'STARTSWITH', VALUE => '_RTIR_' );
+        $cfs->Limit( FIELD => 'Name', OPERATOR => 'STARTSWITH', VALUE => '_RTIR_' );
         while ( my $cf = $cfs->Next ) {
             my ($name, $new);
             $new = $name = $cf->Name;

@@ -15,6 +15,8 @@ REQUIRED PACKAGES:
 ------------------
 
 o RT 4.0.0 or later, configured, installed and tested.
+o   Net::Whois::RIPE 1.31 or OLDER, later versions broke
+    backwards compatibility
 
 
 Upgrade instructions:

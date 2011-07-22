@@ -227,7 +227,7 @@ if ( $Type eq 'Report' ) {
 my $Title = loc("[_1] #[_2]: [_3]", $name, $Ticket->Id, $Ticket->Subject);
 
 my $TimeWorked = $Ticket->TimeWorked;
-if ($Ticket->TimeLeft > 0 ) {
+if (defined $Ticket->TimeLeft && $Ticket->TimeLeft > 0 ) {
     $TimeWorked .= "/".$Ticket->TimeLeft;
 }
 

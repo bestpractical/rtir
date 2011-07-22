@@ -96,13 +96,13 @@ Upgrading from 2.4.x and earlier
    All these changes are implemented in F<etc/upgrade/2.5.1/content>
    file.
 
-2) Saved searches affected by above change and you can convert them
-   using a script provided.
+2) Saved searches are affected by above change and you can convert
+   them using a script provided.
 
        perl -I /opt/rt3/local/lib -I/opt/rt3/lib etc/upgrade/2.5.1/update_saved_searches.pl
 
 3) Some templates RTIR comes with contain code to insert values of
-   CFs into emails. This is impossible to change these templates
+   CFs into emails. It is impossible to change these templates
    automatically. You have to do it manually. To identify templates
    and/or confirm that all has been changed you can use the following
    SQL query:
@@ -119,6 +119,18 @@ Upgrading from 2.4.x and earlier
 
 2) _RTIR_*_default options in the config has been merged together
 into RTIR_CustomFieldDefaults hash. Change site config accordingly.
+
+Upgrading from 2.4.4 and earlier
+-------------------------
+
+SubjectTag was ignored in RTIR templates, so users could be confused.
+Find all templates with the following text:
+
+    [{$rtname} #{$Ticket->id}]
+
+And replace it with:
+
+    [{$Ticket->QueueObj->SubjectTag || $rtname} #{$Ticket->id}]
 
 Upgrading from 2.3.17 and earlier
 -------------------------

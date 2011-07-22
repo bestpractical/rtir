@@ -6,4 +6,5 @@
 \.old$
 \.bak$
 ^Makefile$
-^t/tmp
+^\.git
+^t/tmp/

@@ -45,6 +45,44 @@ CALLBACKS
 * 'AfterRequestors' in several components
 * 'LeftColumnStart' and 'RightColumnStart' in Display.html
 
+CHANGES IN 2.4.5
+----------------
+
+BUGS
+====
+
+* respect per queue SubjectTag in templates. Read UPGRADING for
+  upgrade instructions.
+
+CLEANUPS
+========
+
+* In ScriptedActions add requestor when we call Create instead
+  of delaying it, so "on create" scrips notify requestors
+* Updated sample WHOIS servers
+* CSS to clean up the RTIR home page a bit
+
+CHANGES IN 2.4.4
+----------------
+
+BUGS
+====
+
+* compatibility fix for RT 3.8.8 and preserve compat with older
+  versions
+* apply transaction date search only if it's full text search,
+  otherwise it may slow down things
+* avoid showing zero values when CF value is not set
+* respect LinkValueTo for RTIR custom fields
+* fixes related to handling user's signatures
+    
+CHANGES IN 2.4.3
+----------------
+
+BUGS
+====
+* RTIR 2.4.2 had syntax error that was preventing server to start
+
 CHANGES IN 2.4.2
 ----------------
 
@@ -54,10 +92,14 @@ FEATURES
 
 BUGS
 ====
-
 * don't set $$skip to zero in SkipTransaction callback as it may
   conflict with other users of this callback. Just use return and
   as well check asap if the txn is already skipped.
+* make proper overriding of WebNoAuthRegexp
+* recheck Constituency cache if $const is _none
+* adjust deserialization of IP from value with leading zeroes
+* RT::IR::States without Queue argument never worked properly
+* don't show modify user link if user can not modify the user
 
 CHANGES IN 2.4.1
 ----------------

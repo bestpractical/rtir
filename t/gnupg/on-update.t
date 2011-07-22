@@ -274,7 +274,6 @@ diag "check encrypting of attachments";
 
     $agent->select( 'UseKey-rt-test@example.com' => $fpr1 );
     $agent->click('SubmitTicket');
-    $agent->save_content('mech.html');
     $agent->content_like( qr/Message recorded/i, 'ticket updated' );
 
     my @mail = RT::Test->fetch_caught_mails;

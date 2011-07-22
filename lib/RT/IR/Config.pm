@@ -2,6 +2,8 @@ use strict;
 use warnings;
 
 package RT::IR::Config;
+use strict;
+use warnings;
 
 sub Init {
     use RT::Config;

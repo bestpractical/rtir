@@ -1,0 +1,8 @@
+<form action="Traceroute.html" method="get" target="_blank">
+    <span class="label">Traceroute to:</span>
+    <span class="input"><input size="30" name="q" value="<% $q %>" /></span>
+    <input type="submit" value="<%loc('Go')%>" />
+</form>
+<%args>
+$q => undef
+</%args>
