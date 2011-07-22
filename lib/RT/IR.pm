@@ -885,9 +885,10 @@ if ( RT::IR->HasConstituency ) {
     }
 
 
+
     # TODO SubjectTag and Encryption Keys need overriding also
-    sub CorrespondAddress { GetQueueAttribute(shift, 'CorrespondAddress') }
-    sub CommentAddress { GetQueueAttribute(shift, 'CommentAddress') }
+    sub CorrespondAddress { return GetQueueAttribute(shift, 'CorrespondAddress') }
+    sub CommentAddress { return GetQueueAttribute(shift, 'CommentAddress') }
 
     # dive down to get Queue Attributes from Incidents - EDUNET rather than Incidents
     # Populates ConstituencyCache and HasNoQueueCache, but has the same
