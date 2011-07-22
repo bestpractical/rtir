@@ -57,11 +57,14 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 
 <& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
+<div class="ticket-create">
+<a name="basics"></a>
+
 <&| /Widgets/TitleBox, title => $Title, class => 'ticket-info-basics' &>
 <table border="0" cellpadding="0" cellspacing="2">
 
 % if ( $Split ) {
-% my $Type = RT::IR::TicketType( Ticket => $Split );
+% my $Type = RT::IR::TicketType( Ticket => $SplitObj );
 <tr><td class="label"><% loc('Split from') %>:</td>
 <td class="value"><% loc("[_1] #[_2]: [_3]", $Type, $SplitObj->Id, $SplitObj->Subject) %></td></tr>
 % }
@@ -99,7 +102,46 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 % }
 </tr>
 
-<& Elements/Create, Title => $Title, SplitObj => $SplitObj, QueueObj => $QueueObj, ChildObj => $ChildObj, %ARGS &>
+% if ( my $constituency_cf = RT::IR->CustomFields( 'Constituency', Queue => $QueueObj->Name ) ) {
+<tr><td class="label"><&|/l&>Constituency</&>:</td>
+<td class="value">
+% if ( !$ChildObj || RT->Config->Get('_RTIR_Constituency_Propagation') eq 'no' ) {
+% my $default;
+% $default = $ChildObj->FirstCustomFieldValue('Constituency') if $ChildObj;
+% $default ||= RT::IR::DefaultConstituency( $QueueObj );
+% $default ||= scalar RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'};
+<& /RTIR/Elements/EditRTIRField,
+    QueueObj => $QueueObj,
+    Name     => 'Constituency',
+    Default  => $default,
+    Rows     => 1,
+&>
+% } else {
+% #TODO: hacks, we need way to define CF value on Create, but don't allow user to change it
+<input type="hidden" class="hidden" name="Constituency" value="Object-RT::Ticket--CustomField-<% $constituency_cf->id %>-Values" />
+<input type="hidden" class="hidden" name="Object-RT::Ticket--CustomField-<% $constituency_cf->id %>-Values-Magic" value="1" />
+<input type="hidden" class="hidden" name="Object-RT::Ticket--CustomField-<% $constituency_cf->id %>-Values" value="<% $ChildObj->FirstCustomFieldValue('Constituency') %>" />
+<& /RTIR/Elements/ShowRTIRField, Ticket => $ChildObj, Name => 'Constituency' &>
+% }
+</td></tr>
+% }
+
+<& /RTIR/Elements/EditCustomFields, 
+    %ARGS,
+    QueueObj => $QueueObj,
+    ChildObj => $ChildObj,
+    AsTable => 1,
+&>
+
+</table></&>
+
+<&| /Widgets/TitleBox, title => $Title, class => 'ticket-info-message' &>
+<table width="100%" border="0">
+
+  <tr>
+    <td class="label"><&|/l&>Subject</&>:</td>
+    <td class="value"><input type="text" name="Subject" maxsize="200" value="<% $ARGS{'Subject'} || '' %>" /></td>
+  </tr>
 
 % if ( $gnupg_widget ) {
 <tr><td>&nbsp;</td><td>
@@ -134,76 +176,84 @@ unless ( exists $ARGS{'Content'} ) {
     Default => $ARGS{'Content'},
     IncludeSignature => $include_signature,
 &>
-
 </td></tr>
 
-<tr><td>&nbsp;</td><td colspan="2">
+<& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $QueueObj &>
 
-<&| /Widgets/TitleBox,
-    title => loc('The Basics'),
-    class => 'ticket-info-basics',
+</table></&>
+
+<&| /Widgets/TitleBox, title => loc('Details'), class => 'ticket-info-details' &>
+<& /Ticket/Elements/EditBasics,
+    InTable => 0,
+    fields  => [
+        {
+            name => 'Priority',
+            comp => '/Elements/SelectPriority',
+            args => {
+                Name    => 'InitialPriority',
+                Default =>
+                    defined $ARGS{'InitialPriority'} && length $ARGS{'InitialPriority'}
+                    ? $ARGS{'InitialPriority'}
+                    : $QueueObj->InitialPriority
+                ,
+            },
+        },
+        {
+            name => 'Final Priority',
+            comp => '/Elements/SelectPriority',
+            args => {
+                Name    => 'FinalPriority',
+                Default =>
+                    defined $ARGS{'FinalPriority'} && length $ARGS{'FinalPriority'}
+                    ? $ARGS{'FinalPriority'}
+                    : $QueueObj->InitialPriority
+                ,
+            },
+        },
+        {
+            name => 'Time Worked',
+            comp => '/Elements/EditTimeValue',
+            args => {
+                Name    => "TimeWorked",
+                Default => $ARGS{'TimeWorked'} || '',
+            },
+        },
+        {
+            name => 'Time Left',
+            comp => '/Elements/EditTimeValue',
+            args => {
+                Name    => "TimeLeft",
+                Default => $ARGS{'TimeLeft'} || '',
+            },
+        },
+        {
+            name => 'Starts',
+            comp => '/Elements/SelectDate',
+            args => {
+                Name    => 'Starts',
+                Default => $ARGS{'Starts'} || '',
+            },
+        },
+        {
+            name => 'Due',
+            comp => '/Elements/SelectDate',
+            args => {
+                Name    => 'Due',
+                Default => $ARGS{'Due'} || '',
+            },
+        },
+    ],
 &>
-<table border="0">
-    <tr><td align="right"><&|/l&>Priority</&>:</td>
-    <td>
-<& /Elements/SelectPriority,
-    Name => "InitialPriority",
-    Default => $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->InitialPriority,
-&></td></tr>
-
-    <tr><td align="right"><&|/l&>Final Priority</&>:</td>
-    <td>
-<& /Elements/SelectPriority,
-    Name => "FinalPriority",
-    Default => $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->FinalPriority,
-&>
-</td></tr>
-
-    <tr><td align="right"><&|/l&>Time Worked</&>:</td>
-    <td class="value"><& /Elements/EditTimeValue,
-        Name => 'TimeWorked',
-        Default => $ARGS{'TimeWorked'} || '',
-    &></td></tr>
-
-    <tr><td align="right"><&|/l&>Time Left</&>:</td>
-    <td class="value"><& /Elements/EditTimeValue,
-        Name => 'TimeLeft',
-        Default => $ARGS{'TimeLeft'} || '',
-    &></td></tr>
-</table>
 </&>
 
-<&| /Widgets/TitleBox,
-    title => loc("Dates"),
-    class=> 'ticket-info-dates',
-&>
-<table border="0">
+<& /Elements/Submit, Name => 'CreateIncident', Label => $SubmitLabel &>
 
-    <tr><td align="right"><&|/l&>Starts</&>:</td>
-    <td><& /Elements/SelectDate, Name => 'Starts', Default => $ARGS{'Starts'} || '' &></td></tr>
-    
-    <tr><td align="right"><&|/l&>Due</&>:</td>
-    <td><& /Elements/SelectDate, Name => 'Due', Default => $ARGS{'Due'} || '' &></td></tr>
+</div>
 
-</table>
-</&>
-
-</td></tr>
-
-</table>
-
-</&>
-
-% if ( $Split ) {
-<& /Elements/Submit, Name => 'CreateIncident', Label => loc("Split") &>
-% } else {
-<& /Elements/Submit, Name => 'CreateIncident', Label => loc("Create") &>
-% }
 
 <&| /Widgets/TitleBox,
-    title => loc("Run Investigation"),
-    title_class=> 'inverse',
-    color => "#663366",
+    title => loc("Launch Investigation"),
+    class => '',
 &>
 <& /RTIR/Investigation/Elements/Create,
     %ARGS,
@@ -354,6 +404,14 @@ if ( !$checks_failure && $CreateIncident ) {
             ."&results=$key"
         );
     }
+}
+
+my $SubmitLabel;
+if ( $Split ) {
+    $SubmitLabel = loc('Split');
+}
+else {
+    $SubmitLabel = loc('Create');
 }
 
 </%INIT>

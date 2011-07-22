@@ -23,12 +23,7 @@
 %# 
 %# END LICENSE BLOCK
 
-<tr><td class="label"><&|/l&>Subject</&>:</td>
-<td class="value">
-<input name="Subject" size="60" maxsize="100" value="<% $Subject %>" />
-</td></tr>
-
-% if ($constituency_cf) {
+% if ( my $constituency_cf = RT::IR->CustomFields( 'Constituency', Queue => $QueueObj->Name ) ) {
 <tr><td class="label"><&|/l&>Constituency</&>:</td>
 <td class="value">
 % if ( !$ChildObj || RT->Config->Get('_RTIR_Constituency_Propagation') eq 'no' ) {
@@ -52,15 +47,13 @@
 </td></tr>
 % }
 
-<tr><td colspan="2">
-<& /RTIR/Elements/EditCustomFields,
+<& /RTIR/Elements/EditCustomFields, 
     %ARGS,
     TicketObj => $TicketObj,
     QueueObj => $QueueObj,
     ChildObj => $ChildObj,
-&></td></tr>
-
-<& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $QueueObj &>
+    AsTable => 1,
+&>
 
 <%INIT>
 my $constituency_cf = RT::IR->CustomFields( 'Constituency', Queue => $QueueObj->Name );
