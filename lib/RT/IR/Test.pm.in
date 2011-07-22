@@ -84,6 +84,7 @@ sub import {
     RT::IR::Test->export_to_level($level);
 
     RT->Config->Set( 'rtirname' => 'regression_tests' );
+    return;
 }
 
 our $RTIR_TEST_USER = "rtir_test_user";
