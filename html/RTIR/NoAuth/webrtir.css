@@ -59,7 +59,39 @@ ul.userlist li:last-child::after{
     width: 58%;
 }
 
+#ticket-create-incident input[type=text],
+#ticket-create-investigation input[type=text]
+{
+    width: 90%;
+}
 
+#ticket-create-incident .ticket-create-basics,
+#ticket-create-investigation .ticket-create-basics
+{
+    float: right;
+    width: 40%;
+    clear: right;
+}
+
+#ticket-create-incident .ticket-create-details,
+#ticket-create-investigation .ticket-create-details
+{
+    float: left;
+    width: 58%;
+    clear: left;
+}
+
+@media (max-width: 950px) {
+    #ticket-create-incident .ticket-create-basics,
+    #ticket-create-investigation .ticket-create-basics
+    #ticket-create-incident .ticket-create-details,
+    #ticket-create-investigation .ticket-create-details
+    {
+        float: none;
+        width: auto;
+        clear: both;
+    }
+}
 
 % $m->abort;
 <%INIT>

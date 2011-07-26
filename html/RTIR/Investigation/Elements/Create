@@ -2,6 +2,8 @@
 <input type="hidden" name="<% $NamePrefix . $field %>" value="<% $value_cb->( $field ) %>" />
 % }
 
+<div class="ticket-create-basics">
+<&| /Widgets/TitleBox, title => loc("Basics"), class => 'ticket-info-basics' &>
 <table width="100%" border="0">
 
 % unless ( $SkipField{'Owner'} || $HideField{'Owner'} ) {
@@ -11,13 +13,6 @@
     QueueObj => $QueueObj,
     Default  => $value_cb->('Owner') || $session{'CurrentUser'}->Id,
 &></td></tr>
-% }
-
-% unless ( $SkipField{'Subject'} || $HideField{'Subject'} ) {
-<tr><td class="label"><&|/l&>Subject</&>:</td>
-<td class="value">
-<input type="text" name="<% $NamePrefix %>Subject" size="60" maxsize="100" value="<% $value_cb->('Subject') %>" />
-</td></tr>
 % }
 
 % unless ( $SkipField{'TimeFields'} ) {
@@ -36,6 +31,40 @@
     </tr></table></td>
 </tr>
 % }
+
+% unless ( $SkipField{'DateFields'} ) {
+<tr><td>&nbsp;</td><td valign="top"><&| /Widgets/TitleBox,
+    title => loc("Dates"),
+    class=> 'ticket-info-dates',
+&><table>
+
+<tr><td class="label"><&|/l&>Starts</&>:</td>
+<td class="value"><& /Elements/SelectDate, Name => $NamePrefix .'Starts', Default => $value_cb->('Starts') || '' &></td></tr>
+
+<tr><td class="label"><&|/l&>Due</&>:</td>
+<td class="value"><& /Elements/SelectDate, Name => $NamePrefix .'Due', Default => $value_cb->('Due') || '' &></td></tr>
+
+</table></&></td></tr>
+% }
+
+% if ( ($QueueObj || $ARGS{'TicketObj'}) && !$SkipField{'CustomFields'} ) {
+<& /Ticket/Elements/EditCustomFields,
+    NamePrefix => $NamePrefix,
+    TicketObj  => $ARGS{'TicketObj'},
+    QueueObj   => $QueueObj,
+    CFIDPrefix => $NamePrefix,
+    AsTable    => 1,
+&>
+% }
+
+</table></&></div>
+
+<div class="ticket-create-details">
+<&| /Widgets/TitleBox,
+    title => loc("Launch Investigation"),
+    class => 'ticket-info-message',
+&>
+<table width="100%" border="0">
 
 % unless ( $SkipField{'Requestors'} || $HideField{'Requestors'} ) {
 <tr><td class="label"><&|/l&>Correspondents</&>:</td>
@@ -67,18 +96,11 @@ email addresses. These people <b>will</b> receive future updates.)</&></font></i
 </td></tr>
 % }
 
-% if ( ($QueueObj || $ARGS{'TicketObj'}) && !$SkipField{'CustomFields'} ) {
-<& /Ticket/Elements/EditCustomFields,
-    NamePrefix => $NamePrefix,
-    TicketObj  => $ARGS{'TicketObj'},
-    QueueObj   => $QueueObj,
-    CFIDPrefix => $NamePrefix,
-    AsTable    => 1,
-&>
-% }
-
-% unless ( $SkipField{'Attachments'} ) {
-<& /RTIR/Create.html:AttachmentsForm &>
+% unless ( $SkipField{'Subject'} || $HideField{'Subject'} ) {
+<tr><td class="label"><&|/l&>Subject</&>:</td>
+<td class="value">
+<input type="text" name="<% $NamePrefix %>Subject" size="60" maxsize="100" value="<% $value_cb->('Subject') %>" />
+</td></tr>
 % }
 
 % if ( !$SkipField{'SignEncrypt'} && RT->Config->Get('GnuPG')->{'Enable'} ) {
@@ -109,22 +131,11 @@ email addresses. These people <b>will</b> receive future updates.)</&></font></i
 &></td></tr>
 % }
 
-% unless ( $SkipField{'DateFields'} ) {
-<tr><td>&nbsp;</td><td valign="top"><&| /Widgets/TitleBox,
-    title => loc("Dates"),
-    class=> 'ticket-info-dates',
-&><table>
-
-<tr><td class="label"><&|/l&>Starts</&>:</td>
-<td class="value"><& /Elements/SelectDate, Name => $NamePrefix .'Starts', Default => $value_cb->('Starts') || '' &></td></tr>
-
-<tr><td class="label"><&|/l&>Due</&>:</td>
-<td class="value"><& /Elements/SelectDate, Name => $NamePrefix .'Due', Default => $value_cb->('Due') || '' &></td></tr>
-
-</table></&></td></tr>
+% unless ( $SkipField{'Attachments'} ) {
+<& /RTIR/Create.html:AttachmentsForm &>
 % }
 
-</table>
+</table></&></div>
 
 <%ARGS>
 $NamePrefix => ''

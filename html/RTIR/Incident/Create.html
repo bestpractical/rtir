@@ -22,7 +22,10 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /RTIR/Elements/Header, Title => $Title &>
+<& /RTIR/Elements/Header,
+    Title => $Title,
+    onload => "function () { hide('ticket-create-investigation') }",
+&>
 <& /Elements/Tabs &>
 
 % $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Ticket => $SplitObj);
@@ -57,11 +60,12 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 
 <& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
-<div class="ticket-create">
-<a name="basics"></a>
+<div id="ticket-create-incident">
+<a name="incident"></a>
 
+<div class="ticket-create-basics">
 <&| /Widgets/TitleBox, title => $Title, class => 'ticket-info-basics' &>
-<table border="0" cellpadding="0" cellspacing="2">
+<table width="100%" border="0">
 
 % if ( $Split ) {
 % my $Type = RT::IR::TicketType( Ticket => $SplitObj );
@@ -130,10 +134,13 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
     %ARGS,
     QueueObj => $QueueObj,
     ChildObj => $ChildObj,
-    AsTable => 1,
+    AsTable  => 1,
+    InTable  => 1,
 &>
 
-</table></&>
+</table></&></div>
+
+<div class="ticket-create-details">
 
 <&| /Widgets/TitleBox, title => $Title, class => 'ticket-info-message' &>
 <table width="100%" border="0">
@@ -245,16 +252,14 @@ unless ( exists $ARGS{'Content'} ) {
     ],
 &>
 </&>
+</div>
 
 <& /Elements/Submit, Name => 'CreateIncident', Label => $SubmitLabel &>
 
 </div>
 
-
-<&| /Widgets/TitleBox,
-    title => loc("Launch Investigation"),
-    class => '',
-&>
+<div id="ticket-create-investigation">
+<a name="investigation"></a>
 <& /RTIR/Investigation/Elements/Create,
     %ARGS,
     NamePrefix => 'Investigation',
@@ -266,7 +271,7 @@ unless ( exists $ARGS{'Content'} ) {
     Name => 'CreateWithInvestigation',
     Label => loc("Create Incident and run Investigation"),
 &>
-</&>
+</div>
 
 </form>
 
@@ -413,6 +418,19 @@ if ( $Split ) {
 else {
     $SubmitLabel = loc('Create');
 }
+
+PageMenu->child(
+    incident => raw_html =>
+    q{<a href="#incident"}
+    . q{onclick="return switchVisibility('ticket-create-incident','ticket-create-investigation');"}
+    . q{>} . loc('Incident') . q{</a>}
+);
+PageMenu->child(
+    investigation => raw_html =>
+    q[<a href="#investigation"]
+    . q[ onclick="return switchVisibility('ticket-create-investigation','ticket-create-incident');"]
+    . q[>] . loc('Launch Investigation') . q[</a>]
+);
 
 </%INIT>
 
