@@ -39,11 +39,11 @@
 <li>
 <&|/l&>Requestor email address</&> 
 <& /Elements/SelectMatch, Name => "RequestorOp" &>
-<input name="ValueOfRequestor" size="20" />
+<input type="text" name="ValueOfRequestor" size="20" />
 
 <li>
 <&|/l&>Subject</&> <& /Elements/SelectMatch, Name => "SubjectOp" &> 
-<input name="ValueOfSubject" size="20" />
+<input type="text" name="ValueOfSubject" size="20" />
 
 <li><&|/l&>Priority</&> <& /Elements/SelectEqualityOperator, Name => "PriorityOp" &>
 
@@ -64,7 +64,7 @@
 			    TrueVal => 'LIKE', 
 			    FalseVal => 'NOT LIKE' 
 &> 
-<input name="ValueOfAttachmentField" size="20" />
+<input type="text" name="ValueOfAttachmentField" size="20" />
 
 % while ( my $CustomField = $CustomFields->Next ) {
 <li><% $CustomField->Name %> 

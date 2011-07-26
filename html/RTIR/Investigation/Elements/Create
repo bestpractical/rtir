@@ -16,7 +16,7 @@
 % unless ( $SkipField{'Subject'} || $HideField{'Subject'} ) {
 <tr><td class="label"><&|/l&>Subject</&>:</td>
 <td class="value">
-<input name="<% $NamePrefix %>Subject" size="60" maxsize="100" value="<% $value_cb->('Subject') %>" />
+<input type="text" name="<% $NamePrefix %>Subject" size="60" maxsize="100" value="<% $value_cb->('Subject') %>" />
 </td></tr>
 % }
 
