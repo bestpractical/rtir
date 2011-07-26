@@ -57,8 +57,6 @@
   anyway we break backwards compatibility, let's be consistent
   and ditch the word
 
-* migrate SetIncidentReportState over lifecycles
-
 * make Submit buttons names consistent with RT's
 
 * merge all RT::IR->*Query methods into one, they all equivalent,
@@ -66,6 +64,17 @@
 
 * move html/RTIR/Incident/LinkArticles.html -> html/RTIR/Link/Articles.html
 
+* html/RTIR/Forward.html still uses plain inputs for addresses
+
+* make sure all <input> tags have type
+
+* re-use CSS squishing
+
+=== INVESTIGATE
+
+* we use different components for EditCustomFields
+
+* we pass OnCreate inconsistently into EditCustomFields
 
 === TESTS
 
