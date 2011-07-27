@@ -1,14 +1,4 @@
-<& /Elements/TicketList,
-    %ARGS,
-    Collection => $collection,
-    OrderBy => $OrderBy,
-    Order => $Order,
-    Rows => $Rows,
-    Page => $Page,
-    BaseURL => $BaseURL,
-    ShowNavigation => $ShowNavigation,
-    AllowSorting => $AllowSorting,
-&>
+<% $result |n %>
 
 % if ( $ShowListActions ) {
 <div align="right">
@@ -79,23 +69,33 @@ if ( $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => $RT::Sys
 
 $Query = join ' AND ', map "( $_ )", grep $_, $BaseQuery, $Query;
 
-my $collection = $session{'tickets'} || RT::Tickets->new( $session{'CurrentUser'} );
-$collection->FromSQL( $Query ) if $Query;
-$session{'tickets'} = $collection;
-
-$OrderBy = join "|", @{$OrderBy} if ref $OrderBy;
-$Order   = join "|", @{$Order}   if ref $Order;
-if ( ( $OrderBy || '' ) ne ( $session{'CurrentSearchHash'}->{'OrderBy'} || '' )
-     || ( $Order || '') ne ( $session{'CurrentSearchHash'}->{'Order'}   || '' ) )
-{
-    $session{'CurrentSearchHash'}->{'OrderBy'} = $OrderBy;
-    $session{'CurrentSearchHash'}->{'Order'}   = $Order;
-}
-
-return '' if !$ShowEmpty && !$collection->CountAll;
-
 $BaseURL = RT->Config->Get('WebPath')."/$BaseURL" unless $BaseURL =~ m{^/};
 $BaseURL .= ( $BaseURL =~ /\?/ )? '&': '?' unless $BaseURL =~ m{[&?]$};
+
+my $collection = $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
+$collection->FromSQL( $Query );
+my $result = $m->scomp( '/Elements/TicketList',
+    %ARGS,
+    Collection     => $collection,
+    OrderBy        => $OrderBy,
+    Order          => $Order,
+    Rows           => $Rows,
+    Page           => $Page,
+    BaseURL        => $BaseURL,
+    ShowNavigation => $ShowNavigation,
+    AllowSorting   => $AllowSorting,
+);
+
+$session{'CurrentSearchHash'} = {
+    Format      => $Format,
+    Query       => $Query,
+    Page        => $Page,
+    Order       => $Order,
+    OrderBy     => $OrderBy,
+    RowsPerPage => $Rows
+};
+
+return '' if !$ShowEmpty && !$result;
 
 </%INIT>
 <%ARGS>
@@ -106,8 +106,8 @@ $Query           => ''
 $Format          => ''
 $Rows            => undef
 $Page            => 1
-$OrderBy         => $session{'CurrentSearchHash'}->{'OrderBy'} || 'id'
-$Order           => $session{'CurrentSearchHash'}->{'Order'}   || 'ASC'
+$OrderBy         => 'id'
+$Order           => 'ASC'
 
 $BaseURL         => "RTIR/Search/Results.html?"
 
