@@ -151,7 +151,7 @@ sub OurQueue {
     my $self = shift;
     my $queue = shift;
     $queue = $queue->Name if ref $queue;
-    return unless $queue;
+    return undef unless $queue;
     return '' unless $QUEUES{ lc $queue };
     return $TYPE{ lc $queue };
 }
@@ -173,7 +173,7 @@ sub TicketType {
         $obj->Load( ref $arg{'Ticket'} ? $arg{'Ticket'}->id : $arg{'Ticket'} );
         $arg{'Queue'} = $obj->QueueObj->Name if $obj->id;
     }
-    return unless defined $arg{'Queue'};
+    return undef unless defined $arg{'Queue'};
 
     return $TYPE{ lc $arg{'Queue'} } if !ref $arg{'Queue'} && $arg{'Queue'} !~ /^\d+$/;
 
