@@ -80,13 +80,18 @@
 
 Test Summary Report
 -------------------
+t/009-attachments-processing.t                (Wstat: 65280 Tests: 15 Failed: 2)
+  Failed tests:  12-13
+  Non-zero exit status: 255
+  Parse errors: Bad plan.  You planned 55 tests but ran 15.
 t/016-date-started.t                          (Wstat: 256 Tests: 68 Failed: 1)
   Failed test:  40
   Non-zero exit status: 1
 t/incident/bulk-abandon.t                     (Wstat: 65280 Tests: 87 Failed: 0)
   Non-zero exit status: 255
   Parse errors: Bad plan.  You planned 105 tests but ran 87.
-Files=36, Tests=2441, 1209 wallclock secs ( 0.78 usr  0.23 sys + 406.37 cusr 28.73 csys = 436.11 CPU)
+Files=37, Tests=2440, 1512 wallclock secs ( 0.80 usr  0.36 sys + 411.18 cusr 33.56 csys = 445.90 CPU)
 Result: FAIL
-Failed 2/36 test programs. 1/2441 subtests failed.
+Failed 3/37 test programs. 3/2440 subtests failed.
+make: *** [test_dynamic] Ошибка 255
 
