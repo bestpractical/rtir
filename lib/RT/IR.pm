@@ -145,6 +145,10 @@ sub SLAInit {
 
 =head2 OurQueue
 
+Takes queue name or L<RT::Queue> object and returns its type
+(see L</TicketType>). Returns undef if argument is not valid.
+Returns empty string if queue is not one of RTIR's.
+
 =cut
 
 sub OurQueue {
