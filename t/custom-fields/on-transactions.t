@@ -31,7 +31,7 @@ my $cf;
     }
 
     RT::IR::Test->add_rights( Principal => 'everyone', Right => ['SeeCustomField', 'ModifyCustomField']);
-    RT::IR->_FlushCustomFieldsCache;
+    RT::IR->FlushCustomFieldsCache;
 }
 
 RT::Test->started_ok;

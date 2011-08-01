@@ -588,8 +588,9 @@ sub CustomFields {
     return wantarray? @list : $list[0];
 }
 
-sub _FlushCustomFieldsCache {
+sub FlushCustomFieldsCache {
     %cache = ();
+    return 1;
 } }
 
 
@@ -666,7 +667,7 @@ if ( RT::IR->HasConstituency ) {
         %RT::IR::ConstituencyCache = ();
         %RT::IR::HasNoQueueCache = ();
         RT::Queue::_FlushQueueHasRightCache();
-        RT::IR::_FlushCustomFieldsCache();
+        RT::IR::FlushCustomFieldsCache();
         RT::IR::_FlushHasConstituencyCache();
         $orig_CleanupRequest->();
     };
