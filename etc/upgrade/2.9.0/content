@@ -79,10 +79,51 @@ sub remove_scrip_condition {
         }
     },
 
-    # delete tickets' Status changes (txns) in RTIR queues, in RTIR queues
-    # for variouse reasons we kept Status and State in sync with each other
-    # and were hiding these txns in the UI. Now we delete old status changes
+    # in RTIR queues for variouse reasons we kept Status and State in
+    # sync with each other and were hiding these txns in the UI. Now
+    # we delete old status changes
     # and convert State changes into Status changes
+
+    # update tickets' Status column from ObjectCustomFieldValues table
+    sub {
+        for my $qname ( @OUR_QUEUES ) {
+            my $queue = RT::Queue->new( $RT::SystemUser );
+            $queue->Load( $qname );
+            unless ( $queue->id ) {
+                $RT::Logger->error("Couldn't load queue '$qname'");
+                next;
+            }
+
+            my $cf = RT::CustomField->new( $RT::SystemUser );
+            $cf->LoadByName( Name => 'State', Queue => $queue->id );
+            unless ( $cf->id ) {
+                $RT::Logger->error("Couldn't load State custom field applied to queue '$qname'");
+                next;
+            }
+
+            my $values = RT::ObjectCustomFieldValues->new( $RT::SystemUser );
+            $values->Limit( FIELD => 'CustomField', VALUE => $cf->id );
+            $values->Limit( FIELD => 'Disabled', VALUE => 0 );
+            my @states = grep defined && length,
+                $values->DistinctFieldValues('Content');
+
+            foreach my $state ( @states ) {
+                my $values = RT::ObjectCustomFieldValues->new( $RT::SystemUser );
+                $values->Limit( FIELD => 'CustomField', VALUE => $cf->id );
+                $values->Limit( FIELD => 'Disabled', VALUE => 0 );
+                $values->Limit( FIELD => 'Content', VALUE => $state );
+                $values->Columns('ObjectId');
+
+                my $res = $RT::Handle->SimpleUpdateFromSelect(
+                    'Tickets', { Status => $state }, $values->BuildSelectQuery
+                );
+                $RT::Logger->error("Couldn't update tickets: $res")
+                    unless $res;
+            }
+        }
+    }
+
+    # delete tickets' Status changes (txns) in RTIR queues,
     sub {
         for my $qname ( @OUR_QUEUES ) {
             my $queue = RT::Queue->new( $RT::SystemUser );
