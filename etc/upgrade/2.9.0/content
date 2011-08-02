@@ -8,6 +8,21 @@ my @OUR_QUEUES = ('Incidents', 'Incident Reports', 'Investigations', 'Blocks');
     },
 );
 
+sub remove_scrip_action {
+    my $module = shift;
+
+    my $actions = RT::ScripActions->new( $RT::SystemUser );
+    $actions->Limit( FIELD => 'ExecModule', VALUE => $module );
+    while ( my $action = $actions->Next ) {
+        my $scrips = RT::Scrips->new( $RT::SystemUser );
+        $scrips->Limit( FIELD => 'ScripAction', VALUE => $action->id );
+        while ( my $scrip = $scrips->Next ) {
+            $scrip->Delete;
+        }
+        $action->DBIx::SearchBuilder::Record::Delete();
+    }
+}
+
 @Final = (
 
     # IP type change
@@ -127,6 +142,7 @@ my @OUR_QUEUES = ('Incidents', 'Incident Reports', 'Investigations', 'Blocks');
         }
     },
 
+
     # un-apply and disable State custom fields
     sub {
         for my $qname ( @OUR_QUEUES ) {
@@ -159,32 +175,17 @@ my @OUR_QUEUES = ('Incidents', 'Incident Reports', 'Investigations', 'Blocks');
     },
 
 
-    # remove state scrips: 2 actions and 2 scrips
+    # remove no longer needed scrip actions and scrips based on them
     sub {
-        for my $name (qw/Incident Investigation/) {
-            my $queue = RT::Queue->new($RT::SystemUser);
-            $queue->Load( $name . 's' );
-            next unless $queue->id;
-
-            my $action = RT::ScripAction->new($RT::SystemUser);
-            $action->Load("RTIR Set $name State");
-            next unless $action->id;
-
-            my $scrip = RT::Scrip->new($RT::SystemUser);
-            $scrip->LoadByCols(
-                Description => 'SetRTIRState',
-                Queue       => $queue->id,
-                ScripAction => $action->id,
-            );
-
-            if ( $scrip->id ) {
-                $scrip->Delete;
-            }
-
-            # hmm, RT::ScripAction currently doesn't allow Delete
-            # so the following code doesn't actually work.
-            $action->Delete();
-        }
+        # started date is handled by lifecycles now
+        remove_scrip_action('RTIR_SetStartedToNow');
+        # IRs and Blocks has some special status treatment, but
+        # it is handled by other scrips
+        remove_scrip_action('RTIR_SetIncidentReportState');
+        remove_scrip_action('RTIR_SetBlockState');
+        # Investigations and Incidents don't need special status
+        # treatment, it was only sync with State CF
+        remove_scrip_action('RTIR_SetInvestigationState');
+        remove_scrip_action('RTIR_SetIncidentState');
     },
-
 );
