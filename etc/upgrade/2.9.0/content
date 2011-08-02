@@ -38,6 +38,42 @@ sub remove_scrip_condition {
     }
 }
 
+sub get_queue {
+    my $qname = shift;
+
+    my $queue = RT::Queue->new( $RT::SystemUser );
+    $queue->Load( $qname );
+    unless ( $queue->id ) {
+        $RT::Logger->error("Couldn't load queue '$qname'");
+        return;
+    }
+    return $queue;
+}
+
+sub get_queue_and_state_cf {
+    my $queue = get_queue( @_ );
+    return unless $queue;
+
+    my $cf = RT::CustomField->new( $RT::SystemUser );
+    $cf->LoadByName( Name => 'State', Queue => $queue->id );
+    unless ( $cf->id ) {
+        $RT::Logger->error("Couldn't load State custom field applied to queue '$qname'");
+        return;
+    }
+    return ($queue, $cf);
+}
+
+sub custom_field_real_values {
+    my $cf = shift;
+    my %args = @_;
+    my $values = RT::ObjectCustomFieldValues->new( $RT::SystemUser );
+    $values->Limit( FIELD => 'CustomField', VALUE => $cf->id );
+    $values->Limit( FIELD => 'Disabled', VALUE => 0 )
+        unless $args{'Inactive'};
+    return grep defined && length,
+        $values->DistinctFieldValues('Content');
+}
+
 @Final = (
 
     # IP type change
@@ -87,25 +123,10 @@ sub remove_scrip_condition {
     # update tickets' Status column from ObjectCustomFieldValues table
     sub {
         for my $qname ( @OUR_QUEUES ) {
-            my $queue = RT::Queue->new( $RT::SystemUser );
-            $queue->Load( $qname );
-            unless ( $queue->id ) {
-                $RT::Logger->error("Couldn't load queue '$qname'");
-                next;
-            }
+            my ($queue, $cf) = get_queue_and_state_cf( $qname );
+            next unless $queue && $cf;
 
-            my $cf = RT::CustomField->new( $RT::SystemUser );
-            $cf->LoadByName( Name => 'State', Queue => $queue->id );
-            unless ( $cf->id ) {
-                $RT::Logger->error("Couldn't load State custom field applied to queue '$qname'");
-                next;
-            }
-
-            my $values = RT::ObjectCustomFieldValues->new( $RT::SystemUser );
-            $values->Limit( FIELD => 'CustomField', VALUE => $cf->id );
-            $values->Limit( FIELD => 'Disabled', VALUE => 0 );
-            my @states = grep defined && length,
-                $values->DistinctFieldValues('Content');
+            my @states = custom_field_real_values( $cf );
 
             foreach my $state ( @states ) {
                 my $values = RT::ObjectCustomFieldValues->new( $RT::SystemUser );
@@ -202,19 +223,8 @@ sub remove_scrip_condition {
     # un-apply and disable State custom fields
     sub {
         for my $qname ( @OUR_QUEUES ) {
-            my $queue = RT::Queue->new( $RT::SystemUser );
-            $queue->Load( $qname );
-            unless ( $queue->id ) {
-                $RT::Logger->error("Couldn't load queue '$qname'");
-                next;
-            }
-
-            my $cf = RT::CustomField->new( $RT::SystemUser );
-            $cf->LoadByName( Name => 'State', Queue => $queue->id );
-            unless ( $cf->id ) {
-                $RT::Logger->error("Couldn't load State custom field applied to queue '$qname'");
-                next;
-            }
+            my ($queue, $cf) = get_queue_and_state_cf( $qname );
+            next unless $queue && $cf;
 
             {
                 my ($status, $msg) = $cf->RemoveFromObject( $queue );
