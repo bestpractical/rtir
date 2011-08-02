@@ -23,6 +23,21 @@ sub remove_scrip_action {
     }
 }
 
+sub remove_scrip_condition {
+    my $module = shift;
+
+    my $conditions = RT::ScripConditions->new( $RT::SystemUser );
+    $conditions->Limit( FIELD => 'ExecModule', VALUE => $module );
+    while ( my $condition = $conditions->Next ) {
+        my $scrips = RT::Scrips->new( $RT::SystemUser );
+        $scrips->Limit( FIELD => 'ScripCondition', VALUE => $condition->id );
+        while ( my $scrip = $scrips->Next ) {
+            $scrip->Delete;
+        }
+        $condition->DBIx::SearchBuilder::Record::Delete();
+    }
+}
+
 @Final = (
 
     # IP type change
@@ -187,5 +202,11 @@ sub remove_scrip_action {
         # treatment, it was only sync with State CF
         remove_scrip_action('RTIR_SetInvestigationState');
         remove_scrip_action('RTIR_SetIncidentState');
+    },
+
+    # remove no longer needed scrip conditions and scrips based on them
+    sub {
+        # started date is handled by lifecycles now
+        remove_scrip_condition('RTIR_RequireStateChange');
     },
 );
