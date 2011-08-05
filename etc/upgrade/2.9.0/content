@@ -141,17 +141,71 @@ our @Final = (
                     unless $res;
             }
         }
-    }
+    },
+
+    sub {
+        $RT::Logger->debug("Going to update txn's OldValue and NewValue from OCFVs table");
+        for my $qname ( @OUR_QUEUES ) {
+            my ($queue, $cf) = get_queue_and_state_cf( $qname );
+            next unless $queue && $cf;
+
+            my @states = custom_field_real_values( $cf, Inactive => 1 );
+
+            foreach my $old_new (qw(Old New)) { foreach my $state ( @states ) {
+                my $txns = RT::Transactions->new( $RT::SystemUser );
+                $txns->Limit( FIELD => ObjectType => VALUE => 'RT::Ticket' );
+                $txns->Limit( FIELD => Type => VALUE => 'CustomField' );
+                $txns->Limit( FIELD => Field => VALUE => $cf->id );
+                my $ocfv_alias = $txns->Join(
+                    ALIAS1 => 'main',
+                    FIELD1 => $old_new .'Reference',
+                    TABLE2 => 'ObjectCustomFieldValues',
+                    FIELD2 => 'id',
+                );
+                $txns->Limit( ALIAS => $ocfv_alias, FIELD => 'Content', VALUE => $state );
+                $txns->Limit( ALIAS => $ocfv_alias, FIELD => 'CustomField', VALUE => $cf->id );
+                $txns->Columns('id');
+
+                my $res = $RT::Handle->SimpleUpdateFromSelect(
+                    'Transactions', { $old_new .'Value' => $state }, $txns->BuildSelectQuery
+                );
+                $RT::Logger->error("Couldn't update transactions")
+                    unless $res;
+            } }
+        }
+    },
+
+    sub {
+        $RT::Logger->debug("Going to delete records from ObjectCustomFieldValues");
+        for my $qname ( @OUR_QUEUES ) {
+            my ($queue, $cf) = get_queue_and_state_cf( $qname );
+            next unless $queue && $cf;
+
+            foreach my $old_new (qw(Old New)) {
+                my $txns = RT::Transactions->new( $RT::SystemUser );
+                $txns->Limit( FIELD => ObjectType => VALUE => 'RT::Ticket' );
+                $txns->Limit( FIELD => Type => VALUE => 'CustomField' );
+                $txns->Limit( FIELD => Field => VALUE => $cf->id );
+                $txns->Limit(
+                    FIELD    => $old_new .'Reference',
+                    OPERATOR => 'IS NOT',
+                    VALUE    => 'NULL'
+                );
+                $txns->Columns( $old_new .'Reference' );
+
+                my $res = $RT::Handle->DeleteFromSelect(
+                    'ObjectCustomFieldValues', $txns->BuildSelectQuery
+                );
+                $RT::Logger->error("Couldn't delete ObjectCustomFieldValues")
+                    unless $res;
+            }
+        }
+    },
 
     # delete tickets' Status changes (txns) in RTIR queues,
     sub {
         for my $qname ( @OUR_QUEUES ) {
-            my $queue = RT::Queue->new( $RT::SystemUser );
-            $queue->Load( $qname );
-            unless ( $queue->id ) {
-                $RT::Logger->error("Couldn't load queue '$qname'");
-                next;
-            }
+            my $queue = get_queue( $qname ) or next;
 
             my $query = "SELECT txn.id FROM Transactions txn JOIN Tickets t"
                 ." WHERE txn.ObjectType = 'RT::Ticket' AND txn.ObjectId = t.id"
@@ -164,60 +218,36 @@ our @Final = (
         }
     },
 
-    # CF.State => Status
+    # update txns, set Type = 'Set', Field = 'Status' and flush
+    # reference fields
     sub {
-        my %state;
-        for my $queue ( @OUR_QUEUES ) {
-            my $state = RT::CustomField->new($RT::SystemUser);
-            $state->LoadByName( Name => 'State', Queue => $queue );
-            $state{$queue} = $state if $state->id;
-        }
+        for my $qname ( @OUR_QUEUES ) {
+            my ($queue, $cf) = get_queue_and_state_cf( $qname );
+            next unless $queue && $cf;
 
-        my $Tickets = RT::Tickets->new($RT::SystemUser);
-        $Tickets->UnLimit;
-        while ( my $ticket = $Tickets->Next ) {
-            my $qname = $ticket->QueueObj->Name;
-            next unless grep lc $qname eq lc $_, @OUR_QUEUES;
+            my $txns = RT::Transactions->new( $RT::SystemUser );
+            $txns->Limit( FIELD => 'ObjectType', VALUE => 'RT::Ticket' );
+            $txns->Limit( FIELD => 'Type', VALUE => 'CustomField' );
+            $txns->Limit( FIELD => 'Field', VALUE => $cf->id );
+            $txns->Columns('id');
 
-            my $txns = $ticket->Transactions;
-            my %done; # in case redo search bite
-            while ( my $txn = $txns->Next ) {
-                next if $done{$txn->id}++;
-                if ($txn->Type eq 'CustomField'
-                    && $txn->Field == $state{ $ticket->QueueObj->Name }->id )
+            $RT::Logger->error( $txns->BuildSelectQuery );
+
+            my $res = $RT::Handle->SimpleUpdateFromSelect(
+                'Transactions',
                 {
-                    $txn->__Set( Field => 'Type', Value => 'Set' );
-                    $txn->__Set( Field => 'Field', Value => 'Status' );
-                    $txn->__Set( Field => 'ReferenceType', Value => '' );
-
-                    if ( $txn->OldReference ) {
-                        $ocfv =
-                          RT::ObjectCustomFieldValue->new($RT::SystemUser);
-                        $ocfv->Load( $txn->OldReference );
-                        $txn->__Set(
-                            Field => 'OldValue',
-                            Value => $ocfv->Content
-                        );
-                        $txn->__Set( Field => 'OldReference', Value => '' );
-                        $ocfv->Delete;
-                    }
-
-                    if ( $txn->NewReference ) {
-                        $ocfv =
-                          RT::ObjectCustomFieldValue->new($RT::SystemUser);
-                        $ocfv->Load( $txn->NewReference );
-                        $txn->__Set(
-                            Field => 'NewValue',
-                            Value => $ocfv->Content
-                        );
-                        $txn->__Set( Field => 'NewReference', Value => '' );
-                        $ocfv->Delete;
-                    }
-                }
-            }
+                    Type          => 'Set',
+                    Field         => 'Status',
+                    ReferenceType => undef,
+                    OldReference  => undef,
+                    NewReference  => undef,
+                },
+                $txns->BuildSelectQuery
+            );
+            $RT::Logger->error("Couldn't update transactions")
+                unless $res;
         }
     },
-
 
     # un-apply and disable State custom fields
     sub {
