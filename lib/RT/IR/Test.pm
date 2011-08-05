@@ -66,6 +66,33 @@ sub rtir_user {
     );
 }
 
+sub import_snapshot {
+    my $self = shift;
+    my $file = shift;
+
+    my $db_type = RT->Config->Get('DatabaseType');
+
+    if ( $db_type eq 'mysql' ) {
+        my @args = ('-u', $ENV{'RT_DBA_USER'});
+        if ( length $ENV{'RT_DBA_PASSWORD'} ) {
+            push @args, '--password='. $ENV{'RT_DBA_PASSWORD'}
+        }
+        push @args, RT->Config->Get('DatabaseName');
+        my $cmd = $ENV{'RT_TEST_MYSQL_CLIENT'} || 'mysql';
+
+        Test::More::diag("About to run `". join(' ', $cmd, @args) ."`");
+
+        open my $fh, "|-", $cmd, @args
+            or die "couldn't run mysql: $!";
+        print $fh $self->file_content( ['t','data', 'snapshot', $db_type, $file] );
+        close $fh;
+
+        RT::Test::__reconnect_rt();
+    } else {
+        die "Importing snapshot is not implemented for $db_type";
+    }
+}
+
 sub get_admin_dbh {
     return _get_dbh( RT::Handle->DSN, $ENV{'RT_DBA_USER'}, $ENV{'RT_DBA_PASSWORD'} );
 }
