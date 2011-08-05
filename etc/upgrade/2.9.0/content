@@ -231,8 +231,6 @@ our @Final = (
             $txns->Limit( FIELD => 'Field', VALUE => $cf->id );
             $txns->Columns('id');
 
-            $RT::Logger->error( $txns->BuildSelectQuery );
-
             my $res = $RT::Handle->SimpleUpdateFromSelect(
                 'Transactions',
                 {
