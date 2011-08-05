@@ -66,4 +66,21 @@ sub rtir_user {
     );
 }
 
+sub get_admin_dbh {
+    return _get_dbh( RT::Handle->DSN, $ENV{'RT_DBA_USER'}, $ENV{'RT_DBA_PASSWORD'} );
+}
+
+sub _get_dbh {
+    my ($dsn, $user, $pass) = @_;
+    my $dbh = DBI->connect(
+        $dsn, $user, $pass,
+        { RaiseError => 0, PrintError => 0 },
+    );
+    unless ( $dbh ) {
+        my $msg = "Failed to connect to $dsn as user '$user': ". $DBI::errstr;
+        print STDERR $msg; exit -1;
+    }
+    return $dbh;
+}
+
 1;
