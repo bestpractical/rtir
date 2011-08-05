@@ -1,6 +1,9 @@
+use strict;
+use warnings;
+
 my @OUR_QUEUES = ('Incidents', 'Incident Reports', 'Investigations', 'Blocks');
 
-@Initial = (
+our @Initial = (
     sub {
         return 1 if grep $_ eq 'RT::IR', RT->Config->Get('Plugins');
 
@@ -57,7 +60,7 @@ sub get_queue_and_state_cf {
     my $cf = RT::CustomField->new( $RT::SystemUser );
     $cf->LoadByName( Name => 'State', Queue => $queue->id );
     unless ( $cf->id ) {
-        $RT::Logger->error("Couldn't load State custom field applied to queue '$qname'");
+        $RT::Logger->error("Couldn't load State CF applied to queue '". $queue->Name ."'");
         return;
     }
     return ($queue, $cf);
@@ -74,7 +77,7 @@ sub custom_field_real_values {
         $values->DistinctFieldValues('Content');
 }
 
-@Final = (
+our @Final = (
 
     # IP type change
     sub {
