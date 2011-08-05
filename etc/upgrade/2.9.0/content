@@ -79,8 +79,8 @@ sub custom_field_real_values {
 
 our @Final = (
 
-    # IP type change
     sub {
+        $RT::Logger->debug("Going to change type of IP custom field");
         my $ip_cf = RT::CustomField->new($RT::SystemUser);
         $ip_cf->Load('IP');
         if ( $ip_cf->id ) {
@@ -90,8 +90,8 @@ our @Final = (
         }
     },
 
-    # set lifecycles on queues
     sub {
+        $RT::Logger->debug("Going to set lifecycles for RTIR's queues");
         for my $name ( @OUR_QUEUES ) {
             my $queue = RT::Queue->new($RT::SystemUser);
             $queue->Load( $name );
@@ -114,7 +114,7 @@ our @Final = (
                 next;
             }
 
-            $RT::Logger->debug("Changed lifecycle of queue '$name' to '$new_lifecycle'");
+            $RT::Logger->info("Changed lifecycle of queue '$name' to '$new_cycle'");
         }
     },
 
@@ -123,8 +123,8 @@ our @Final = (
     # we delete old status changes
     # and convert State changes into Status changes
 
-    # update tickets' Status column from ObjectCustomFieldValues table
     sub {
+        $RT::Logger->debug("Going to update tickets' Status column from ObjectCustomFieldValues table");
         for my $qname ( @OUR_QUEUES ) {
             my ($queue, $cf) = get_queue_and_state_cf( $qname );
             next unless $queue && $cf;
