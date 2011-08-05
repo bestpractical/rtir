@@ -93,12 +93,8 @@ our @Final = (
     sub {
         $RT::Logger->debug("Going to set lifecycles for RTIR's queues");
         for my $name ( @OUR_QUEUES ) {
-            my $queue = RT::Queue->new($RT::SystemUser);
-            $queue->Load( $name );
-            unless ( $queue->id ) {
-                $RT::Logger->error("Couldn't load queue '$name'");
-                next;
-            }
+            my $queue = get_queue( $name );
+            next unless $queue;
 
             my $new_cycle = lc $name;
             $new_cycle =~ s/ /_/;
