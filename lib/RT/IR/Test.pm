@@ -93,6 +93,33 @@ sub import_snapshot {
     }
 }
 
+sub apply_upgrade {
+    my $self = shift;
+    my $base_dir = shift;
+    my @versions = @_;
+
+    my $db_type = RT->Config->Get('DatabaseType');
+    foreach my $n ( 0..$#versions ) {
+        my $v = $versions[$n];
+
+        my $datadir = "$base_dir/$v";
+        if ( -e "$datadir/schema.$db_type" ) {
+            my ( $ret, $msg ) = RT::Handle->InsertSchema( get_admin_dbh(), $datadir );
+            return ( $ret, $msg ) unless $ret;
+        }
+        if ( -e "$datadir/acl.$db_type" ) {
+            my ( $ret, $msg ) = RT::Handle->InsertACL( get_admin_dbh(), $datadir );
+            return ( $ret, $msg ) unless $ret;
+        }
+        if ( -e "$datadir/content" ) {
+            RT::Test::__reconnect_rt();
+            my ( $ret, $msg ) = $RT::Handle->InsertData( "$datadir/content" );
+            return ( $ret, $msg ) unless $ret;
+        }
+    }
+    RT::Test::__reconnect_rt();
+}
+
 sub get_admin_dbh {
     return _get_dbh( RT::Handle->DSN, $ENV{'RT_DBA_USER'}, $ENV{'RT_DBA_PASSWORD'} );
 }
