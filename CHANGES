@@ -22,6 +22,11 @@ BUGS
   after using system for a while
 * on create incident page ids of HTML elements were repeated
 
+CLEANUPS
+========
+
+* code cleanups to better follow modern perl coding guidelines
+
 CHANGES IN 2.6.0 SINCE RTIR 2.4.x
 ---------------------------------
 
