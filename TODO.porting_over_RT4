@@ -91,9 +91,6 @@
 
 Test Summary Report
 -------------------
-t/016-date-started.t                          (Wstat: 256 Tests: 68 Failed: 1)
-  Failed test:  40
-  Non-zero exit status: 1
 t/incident/bulk-abandon.t                     (Wstat: 65280 Tests: 87 Failed: 0)
   Non-zero exit status: 255
   Parse errors: Bad plan.  You planned 105 tests but ran 87.
