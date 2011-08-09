@@ -151,8 +151,30 @@ Documentation for RTIR
         The RTIR section of the community-developed RT wiki is still in its infancy.  
 
 
+DEVELOPMENT
+-----------
+
+If you would like to run RTIR's tests, you need to set a few environment
+variables:
+
+RT_DBA_USER - a user who can create a database on your RDBMS
+              (such as root on mysql)
+
+RT_DBA_PASSWORD - the password for RT_DBA_USER
+
+To run tests:
+
+$ RTHOME=/opt/my-rt perl Makefile.PL
+$ RT_DBA_USER=user RT_DBA_PASSWORD=password make test
+
+These are intended to be run before installing RTIR.  RTFM, however,
+must already be installed.
+
+Like RT, RTIR expects to be able to create a new database called rt3test
+on your system.
+
 
 REPORTING BUGS
 --------------
 
-To report a bug, send email to rtir-bugs@fsck.com.
+To report a bug, send email to rtir-bugs@bestpractical.com.

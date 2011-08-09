@@ -1,3 +1,32 @@
+CHANGES IN 2.6.1
+----------------
+
+FEATURES
+========
+
+* allow local customization of research tools, see @RTIRResearchTools
+  in the config
+* new Iframe research tool, see $RTIRIframeResearchToolConfig
+* no longer do a whois lookup by default just by visiting the
+  lookup page
+
+CALLBACKS
+=========
+
+* LeftColumnStart and RightColumnStart in Incidents' Display.html
+
+BUGS
+====
+
+* order of tickets on 'RTIR at Glance' page could become incorrect
+  after using system for a while
+* on create incident page ids of HTML elements were repeated
+
+CLEANUPS
+========
+
+* code cleanups to better follow modern perl coding guidelines
+
 CHANGES IN 2.6.0 SINCE RTIR 2.4.x
 ---------------------------------
 

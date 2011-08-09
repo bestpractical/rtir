@@ -8,7 +8,7 @@ package RT::IR::Test;
 
 our @ISA;
 BEGIN {
-    local $@;
+    local $@ = undef;
     eval { require RT::Test; 1 } or do {
         require Test::More;
         Test::More::BAIL_OUT(
