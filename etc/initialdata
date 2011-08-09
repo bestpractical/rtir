@@ -307,6 +307,11 @@
        ApplicableTransTypes => 'AddLink',
        ExecModule => 'RTIR_Merge',
     },
+    {  Name                 => 'RTIR Require IRs Activation',               # loc
+       Description          => "Whenever it's time to activate report",                                        # loc
+       ApplicableTransTypes => 'Correspond',
+       ExecModule           => 'RTIR_RequireReportActivation',
+    },
 );
 
 @Scrips = (
@@ -392,6 +397,11 @@
     {  Description       => "On Linking To Incident Activate Report",
        Queue             => 'Incident Reports',
        ScripCondition    => 'RTIR Linking To Incident',
+       ScripAction       => 'RTIR Activate Ticket',
+       Template          => 'Blank' },
+    {  Description       => "On Correspond (not every) Activate Report",
+       Queue             => 'Incident Reports',
+       ScripCondition    => 'RTIR Require IRs Activation',
        ScripAction       => 'RTIR Activate Ticket',
        Template          => 'Blank' },
 

@@ -11,6 +11,29 @@ our @Initial = (
     },
 );
 
+our @ScripConditions = (
+    {  Name                 => 'RTIR Require IRs Activation',               # loc
+       Description          => "Whenever it's time to activate report",                                        # loc
+       ApplicableTransTypes => 'Correspond',
+       ExecModule           => 'RTIR_RequireReportActivation',
+    },
+);
+
+our @ScripActions = (
+    {  Name        => 'RTIR Activate Ticket',    # loc
+       Description => 'Set status to first active possible',            # loc
+       ExecModule  => 'RTIR_Activate',
+    },
+);
+
+our @Scrips = (
+    {  Description       => "On Correspond (not every) Activate Report",
+       Queue             => 'Incident Reports',
+       ScripCondition    => 'RTIR Require IRs Activation',
+       ScripAction       => 'RTIR Activate Ticket',
+       Template          => 'Blank' },
+);
+
 sub remove_scrip_action {
     my $module = shift;
 
