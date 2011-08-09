@@ -577,8 +577,10 @@ require RT::Action::AutoOpen;
     my $prepare = RT::Action::AutoOpen->can('Prepare');
     *RT::Action::AutoOpen::Prepare = sub {
         my $self = shift;
-        return 1 if $self->TicketObj->QueueObj->Name eq 'Blocks';
-        $self->$prepare(@_);
+        my $ticket = $self->TicketObj;
+        my $type = RT::IR::TicketType( Ticket => $ticket );
+        return 1 if $type && ( $type eq 'Block' || $type eq 'Report' );
+        return $self->$prepare(@_);
     };
 }
 
