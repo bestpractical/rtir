@@ -91,10 +91,6 @@
 
 Test Summary Report
 -------------------
-t/009-attachments-processing.t                (Wstat: 65280 Tests: 15 Failed: 2)
-  Failed tests:  12-13
-  Non-zero exit status: 255
-  Parse errors: Bad plan.  You planned 55 tests but ran 15.
 t/016-date-started.t                          (Wstat: 256 Tests: 68 Failed: 1)
   Failed test:  40
   Non-zero exit status: 1
