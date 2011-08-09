@@ -17,6 +17,8 @@
 * make sure we release DBIx::SB with cud-from-select branch
   merged and depend on it
 
+* upgrade script that inserts new actions, conditions and scrips
+
 * upgrade script that renames wrongly named scrips, we have
   a few scrips that named wrongly
 
