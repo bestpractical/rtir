@@ -70,6 +70,23 @@
 
 * we pass OnCreate inconsistently into EditCustomFields
 
+* Suspect that failed custom field validation check
+  or gnupg error that returns back to create page will
+  dropp fields to defaults
+
+* Rename some fields to variants with spaces
+
+* Custom fields in Incident display are very specific and mixed with
+  generic RT properties
+
+* Description CF in Incidents had Cols => 60 argument, check if we preserve behaviour
+(update: the answer is no. and seems there's no way to do this except hacking rt's
+/Elements/EditCustomField or /Elements/EditCustomFieldFreeform)
+
+* On edit State need special treating for Blocks
+* Constituency has special treating on edit depending on constituency propagation mode
+** These two custom fields are still massaged via callback and RTIR has special editor
+
 === TESTS
 
 Test Summary Report
