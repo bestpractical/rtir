@@ -26,8 +26,8 @@
 <& /Elements/Tabs &>
 
 % $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $Ticket);
-<form action="Update.html" name="TicketUpdate" 
-    method="post" enctype="multipart/form-data">
+<form action="Update.html" name="TicketUpdate" method="post" enctype="multipart/form-data">
+<input type="hidden" name="id" value="<% $id %>" />
 <input type="hidden" name="QuoteTransaction" value="<% $ARGS{'QuoteTransaction'} || '' %>" />
 % if ( $ARGS{'Status'} ) {
 <input type="hidden" name="DefaultStatus" value="<% $DefaultStatus %>" />
@@ -38,14 +38,14 @@
 
 <& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
-<table>
-<tr><td><a href="Edit.html?id=<% $id %>"><&|/l&>Correspondents</&></a></td><td align="right" colspan=2></td></tr>
+<div id="ticket-update-metadata">
+<&|/Widgets/TitleBox, title => loc('Correspondents'), title_href => "Edit.html?id=$id" &>
 
+<table width="100%" border="0">
 
-% foreach my $type (qw(Requestors Cc AdminCc)) { 
-<tr><td>&nbsp;</td><td align="right" valign="top">
-<%loc($type)%>:
-</td><td valign="top" align="left">
+% foreach my $type (qw(Requestors Cc AdminCc)) {
+<tr><td class="label"><% loc($type) %>:</td>
+<td class="value">
 <ul class="userlist">
 % my $people = $Ticket->$type()->UserMembersObj;
 % while (my $person = $people->Next) {
@@ -56,14 +56,13 @@
 </td></tr>
 % }
 </table>
-<hr />
+</&>
 
-<table border="0">
+<&|/Widgets/TitleBox, title => loc('Ticket and Transaction') &>
+<table width="100%" border="0">
 
-<tr><td align="right"><&|/l&>Status</&>:</td>
-<td><% loc($Ticket->Status) %></td></tr>
-<tr><td align="right"><&|/l&>Update Type</&>:</td>
-<td><select name="UpdateType">
+<tr><td class="label"><&|/l&>Update Type</&>:</td>
+<td class="value"><select name="UpdateType">
 % if ($CanComment) {
   <option value="private" <% $CommentDefault || '' %>><&|/l&>Comments (Not sent to requestors)</&></option>
 % }
@@ -72,27 +71,57 @@
 % }
 </select>
 </td></tr>
-<tr><td class="label">
-<&|/l&>Owner</&>:  
-</td><td>
-<& /Elements/SelectOwner, 
-    Name=>"Owner", 
-    Default => ($ARGS{Owner}||$Ticket->Owner()||$session{'CurrentUser'}->Id||undef), 
-    QueueObj => $Ticket->QueueObj, 
-    TicketObj => $Ticket &>
-<&|/l&>Worked</&>: <& /Elements/EditTimeValue,
-    Name    => 'UpdateTimeWorked',
-    Default => $ARGS{'UpdateTimeWorked'} || $Ticket->TimeWorked || '',
+
+<tr>
+    <td class="label"><&|/l&>Status</&>:</td>
+    <td class="value"><% loc($Ticket->Status) %></td>
+</tr>
+
+<& /Ticket/Elements/EditBasics,
+    TicketObj => $Ticket,
+    InTable   => 1,
+    fields    => [
+        {   name => 'Owner',
+            comp => '/Elements/SelectOwner',
+            args => {
+                Name         => "Owner",
+                TicketObj    => $Ticket,
+                QueueObj     => $Ticket->QueueObj,
+                DefaultLabel => loc("[_1] (Unchanged)", $m->scomp(
+                    '/Elements/ShowUser', User => $Ticket->OwnerObj
+                ) ),
+                Default      => $ARGS{'Owner'} || $Ticket->Owner
+                    || $session{'CurrentUser'}->id,
+            }
+        },
+        {   name => 'Worked',
+            comp => '/Elements/EditTimeValue',
+            args => {
+                Name => 'UpdateTimeWorked',
+                Default => $ARGS{UpdateTimeWorked}||'',
+                InUnits => $ARGS{'UpdateTimeWorked-TimeUnits'}||'minutes',
+            }
+        },
+    ],
 &>
-</td></tr>
-<tr><td align="right"><&|/l&>Subject</&>:</td><td> <input type="text" name="UpdateSubject" size="60" value="<% $Subject || '' %>" /></td></tr>
+
+</table></&></div>
+
+<div id="ticket-update-message">
+<&|/Widgets/TitleBox, title => loc('Message'), class => 'messagedetails' &>
+<table width="100%" border="0">
+
+<tr>
+    <td class="label"><&|/l&>Subject</&>:</td>
+    <td class="value"><input type="text" name="UpdateSubject" value="<% $Subject || '' %>" /></td>
+</tr>
 
 <& /RTIR/Elements/UpdateData, %ARGS, Ticket => $Ticket, Type => 'Incident', GnuPGWidget => $gnupg_widget &>
 
-<input type="hidden" name="id" value="<% $id %>" /><br />
-</table>
-
 <& /Elements/Submit, Name => 'SubmitTicket' &>
+
+</table></&></div>
+
 </form>
 
 <%INIT>
