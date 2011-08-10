@@ -20,6 +20,139 @@ Set the name of the RTIR application.
 
 Set( $rtirname, RT->Config->Get('rtname') );
 
+=item C<%Lifecycles>
+
+RTIR defines four lifecycles for each its queue: 'incidents',
+'incident_reports', 'investigations' and 'blocks'.
+
+Read F<etc/RT_Config.pm> which describes this option in details.
+
+=cut
+
+Set(
+    %Lifecycles,
+    incidents => {
+        initial         => [],
+        active          => ['open'],
+        inactive        => ['resolved', 'abandoned'],
+
+        defaults => {
+            on_create => 'open',
+            on_merge  => 'resolved',
+        },
+
+        transitions => {
+            # from   => [ to list ],
+            ''        => [qw(open)],
+            open      => [qw(resolved abandoned)],
+            resolved  => [qw(open)],
+            abandoned => [qw(open)],
+        },
+        rights  => { '* -> *' => 'ModifyTicket', },
+        actions => [
+            'open -> resolved'  => {
+                label => 'Resolve', update => 'Comment',
+                All => 1, SelectAllTickets => 1,
+            },
+            'open -> resolved'  => {
+                label => 'Quick Resolve',
+            },
+            'open -> abandoned' => {
+                label => 'Abandon', update => 'Comment',
+                All => 1, SelectAllTickets => 1,
+            },
+            '* -> open'  => {
+                label => 'Re-open',
+                All => 1, SelectAllTickets => 1,
+            },
+        ],
+    },
+    incident_reports => {
+        initial         => [ 'new' ],
+        active          => [ 'open' ],
+        inactive        => [ 'resolved', 'rejected' ],
+
+        defaults => {
+            on_create => 'new',
+            on_merge  => 'resolved',
+            approved  => 'open',
+            denied    => 'rejected',
+        },
+
+        transitions => {
+            # from   => [ to list ],
+            ''       => [qw(new open resolved)],
+            new      => [qw(open resolved rejected)],
+            open     => [qw(resolved rejected)],
+            resolved => [qw(open)],
+            rejected => [qw(open)],
+        },
+        rights  => { '* -> *' => 'ModifyTicket', },
+        actions => [
+            'new -> open'      => { label => 'Open It', update => 'Respond' },
+            '* -> resolved'    => { label => 'Resolve', update => 'Comment' },
+            '* -> resolved'    => { label => 'Quick Resolve' },
+            '* -> rejected'    =>
+                { label => 'Reject',  update => 'Respond', TakeOrStealFirst => 1 },
+            '* -> rejected'    => { label => 'Quick Reject', TakeOrStealFirst => 1 },
+            '* -> open'        => { label => 'Re-open' },
+        ],
+    },
+    investigations => {
+        initial         => [],
+        active          => ['open'],
+        inactive        => ['resolved'],
+
+        defaults => {
+            on_create => 'open',
+            on_merge  => 'resolved',
+            approved  => 'open',
+            denied    => 'resolved',
+        },
+
+        transitions => {
+            # from   => [ to list ],
+            ''       => [qw(open resolved)],
+            open     => [qw(resolved)],
+            resolved => [qw(open)],
+        },
+        rights  => { '* -> *' => 'ModifyTicket', },
+        actions => [
+            '* -> resolved'    => { label => 'Resolve', update => 'Comment' },
+            '* -> resolved'    => { label => 'Quick Resolve' },
+            'resolved -> open' => { label => 'Re-open' },
+        ],
+    },
+    blocks => {
+        initial         => ['pending activation'],
+        active          => [ 'active', 'pending removal' ],
+        inactive        => ['removed'],
+
+        defaults => {
+            on_create => 'pending activation',
+            on_merge  => 'removed',
+            approved  => 'active',
+            denied    => 'removed',
+        },
+
+        transitions => {
+            ''                   => [ 'pending activation', 'active' ],
+            'pending activation' => [ 'active', 'removed' ],
+            active               => [ 'pending removal', 'removed' ],
+            'pending removal'    => [ 'removed', 'active' ],
+            removed              => [ 'active' ],
+        },
+        rights  => { '* -> *' => 'ModifyTicket', },
+        actions => [
+            '* -> active'  => { label => 'Activate', update => 'Comment' },
+            '* -> removed' => { label => 'Remove', update => 'Comment' },
+            '* -> removed' => { label => 'Quick Remove' },
+            '* -> pending removal' =>
+                { label => 'Pending Removal', update => 'Comment' },
+        ],
+    },
+);
+
 =back
 
 =head1 Web Interface Configuration
@@ -459,129 +592,4 @@ Set($SLA_Reopen_OutOfHours, 'Full service: out of hours');
 =back
 
 =cut
-
-Set(
-    %Lifecycles,
-    incidents => {
-        initial         => [],
-        active          => ['open'],
-        inactive        => ['resolved', 'abandoned'],
-
-        defaults => {
-            on_create => 'open',
-            on_merge  => 'resolved',
-        },
-
-        transitions => {
-            # from   => [ to list ],
-            ''        => [qw(open)],
-            open      => [qw(resolved abandoned)],
-            resolved  => [qw(open)],
-            abandoned => [qw(open)],
-        },
-        rights  => { '* -> *' => 'ModifyTicket', },
-        actions => [
-            'open -> resolved'  => {
-                label => 'Resolve', update => 'Comment',
-                All => 1, SelectAllTickets => 1,
-            },
-            'open -> resolved'  => {
-                label => 'Quick Resolve',
-            },
-            'open -> abandoned' => {
-                label => 'Abandon', update => 'Comment',
-                All => 1, SelectAllTickets => 1,
-            },
-            '* -> open'  => {
-                label => 'Re-open',
-                All => 1, SelectAllTickets => 1,
-            },
-        ],
-    },
-    incident_reports => {
-        initial         => [ 'new' ],
-        active          => [ 'open' ],
-        inactive        => [ 'resolved', 'rejected' ],
-
-        defaults => {
-            on_create => 'new',
-            on_merge  => 'resolved',
-            approved  => 'open',
-            denied    => 'rejected',
-        },
-
-        transitions => {
-            # from   => [ to list ],
-            ''       => [qw(new open resolved)],
-            new      => [qw(open resolved rejected)],
-            open     => [qw(resolved rejected)],
-            resolved => [qw(open)],
-            rejected => [qw(open)],
-        },
-        rights  => { '* -> *' => 'ModifyTicket', },
-        actions => [
-            'new -> open'      => { label => 'Open It', update => 'Respond' },
-            '* -> resolved'    => { label => 'Resolve', update => 'Comment' },
-            '* -> resolved'    => { label => 'Quick Resolve' },
-            '* -> rejected'    =>
-                { label => 'Reject',  update => 'Respond', TakeOrStealFirst => 1 },
-            '* -> rejected'    => { label => 'Quick Reject', TakeOrStealFirst => 1 },
-            '* -> open'        => { label => 'Re-open' },
-        ],
-    },
-    investigations => {
-        initial         => [],
-        active          => ['open'],
-        inactive        => ['resolved'],
-
-        defaults => {
-            on_create => 'open',
-            on_merge  => 'resolved',
-            approved  => 'open',
-            denied    => 'resolved',
-        },
-
-        transitions => {
-            # from   => [ to list ],
-            ''       => [qw(open resolved)],
-            open     => [qw(resolved)],
-            resolved => [qw(open)],
-        },
-        rights  => { '* -> *' => 'ModifyTicket', },
-        actions => [
-            '* -> resolved'    => { label => 'Resolve', update => 'Comment' },
-            '* -> resolved'    => { label => 'Quick Resolve' },
-            'resolved -> open' => { label => 'Re-open' },
-        ],
-    },
-    blocks => {
-        initial         => ['pending activation'],
-        active          => [ 'active', 'pending removal' ],
-        inactive        => ['removed'],
-
-        defaults => {
-            on_create => 'pending activation',
-            on_merge  => 'removed',
-            approved  => 'active',
-            denied    => 'removed',
-        },
-
-        transitions => {
-            ''                   => [ 'pending activation', 'active' ],
-            'pending activation' => [ 'active', 'removed' ],
-            active               => [ 'pending removal', 'removed' ],
-            'pending removal'    => [ 'removed', 'active' ],
-            removed              => [ 'active' ],
-        },
-        rights  => { '* -> *' => 'ModifyTicket', },
-        actions => [
-            '* -> active'  => { label => 'Activate', update => 'Comment' },
-            '* -> removed' => { label => 'Remove', update => 'Comment' },
-            '* -> removed' => { label => 'Quick Remove' },
-            '* -> pending removal' =>
-                { label => 'Pending Removal', update => 'Comment' },
-        ],
-    },
-);
-
 1;
