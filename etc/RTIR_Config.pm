@@ -331,6 +331,14 @@ on the edit screen.
 
 Set($DisplayAfterEdit, 1);
 
+=item C<$SimplifiedRecipients>
+
+Set to show list of recipients above reply box.
+
+=cut
+
+Set( $SimplifiedRecipients, 1 );
+
 =item C<@RTIR_HomepageComponents>
 
 Components that available to add on the first page of the RTIR.
