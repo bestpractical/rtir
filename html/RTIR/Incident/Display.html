@@ -61,9 +61,10 @@
     <td class="label"><&|/l&>Time Worked</&>:</td>
     <td class="value"><%loc('[_1] min', $TimeWorked)%></td>
   </tr>
-</table>
 
-<& /Elements/ShowCustomFields, Object => $TicketObj &>
+  <& /Elements/ShowCustomFields, Object => $TicketObj, Table => 0 &>
+
+</table>
 
 </&>
 
