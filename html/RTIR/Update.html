@@ -92,6 +92,10 @@
 
 <& /Ticket/Elements/ShowSimplifiedRecipients, %ARGS, TicketObj => $Ticket &>
 
+% if (my $recips = $m->notes("DryRun-Recipients-".$Ticket->Id)) {
+<input type="hidden" name="TxnRecipients" value="<% join ",",sort keys %{$recips} %>" />
+% }
+
 <&|/Widgets/TitleBox, title => loc('Message'), class => 'messagedetails' &>
 <table width="100%" border="0">
 
@@ -174,7 +178,7 @@ if ( $ARGS{'SubmitTicket'} ) {
 
 if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {
     my %checked = map {$_ => 1} grep {defined} @TxnSendMailTo;
-    my @squelchlist = grep {not $checked{$_}} split /,/, ($ARGS{'TxnRecipients'}||'');
+    my @squelchlist = grep {not $checked{$_}} split /,/, $TxnRecipients;
     $ARGS{'SquelchMailTo'} = \@squelchlist if @squelchlist;
 }
 
@@ -191,4 +195,5 @@ $id => undef
 $DefaultStatus => undef
 $Action => undef
 @TxnSendMailTo => ()
+$TxnRecipients => ''
 </%ARGS>
