@@ -5,12 +5,11 @@
     class          => 'ticket-info-articles',
 &>
 
-<ul>
-% while (my $Link = $Ticket->RefersTo->Next) {
-% next unless UNIVERSAL::isa($Link->TargetURI->Object, "RT::Article");
-<li><a href="<%$Link->TargetURI->Resolver->HREF%>"><% $Link->TargetURI->Object->Name %></a></li>
-% }
-</ul>
+<& /Elements/CollectionList,
+    Collection   => $articles,
+    Format       => $format,
+    ShowHeader   => 0,
+&>
 
 </&>
 <%ARGS>
@@ -18,6 +17,15 @@ $Ticket
 </%ARGS>
 <%INIT>
 my $id = $Ticket->id;
+
+my $articles = RT::Articles->new( $session{'CurrentUser'} );
+$articles->LimitReferredToBy( $Ticket->URI );
+
+my $format = q{
+    '<a href="__WebPath__/Articles/Article/Display.html?id=__id__">__id__</a>/TITLE:#',
+    '<a href="__WebPath__/Articles/Article/Display.html?id=__id__">__Name__</a>/TITLE:Name',
+    __Summary__,
+};
 
 my $box_actions = '';
 if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
