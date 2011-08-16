@@ -65,32 +65,7 @@
   <& /Elements/ShowCustomFields, Object => $TicketObj, Table => 0 &>
 
 </table>
-
 </&>
-
-</td><td class="boxcontainer" valign="top">
-% $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'RightColumnStart' );
-
-<& /RTIR/Incident/Elements/ShowChildren,
-    IncidentObj => $TicketObj, 
-    Queue       => 'Incident Reports',
-&>
-
-</td></tr><tr><td class="boxcontainer" valign="top">
-
-<& /RTIR/Incident/Elements/ShowChildren,
-    IncidentObj => $TicketObj, 
-    Queue       => 'Investigations',
-&>
-
-</td><td class="boxcontainer" valign="top">
-
-<& /RTIR/Incident/Elements/ShowChildren,
-    IncidentObj => $TicketObj, 
-    Queue       => 'Blocks',
-&>
-
-</td></tr><tr><td class="boxcontainer" valign="top">
 
 <&| /Widgets/TitleBox,
     title => loc("Dates"),
@@ -100,12 +75,19 @@
 <& /RTIR/Elements/ShowDates, Ticket => $TicketObj &>
 </&>
 
-<br />
 
 <& /Ticket/Elements/ShowAttachments, Ticket => $TicketObj, Attachments => $attachments &>
 <& /Ticket/Elements/ShowRequestor, Ticket => $TicketObj, DisplayPath => "/RTIR/Display.html" &>
 
 </td><td class="boxcontainer" valign="top">
+% $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'RightColumnStart' );
+
+% foreach my $queue ( 'Incident Reports', 'Investigations', 'Blocks' ) {
+<& /RTIR/Incident/Elements/ShowChildren,
+    IncidentObj => $TicketObj,
+    Queue       => $Queue,
+&>
+% }
 
 <& /RTIR/Elements/ShowArticles, Ticket => $TicketObj &>
 
