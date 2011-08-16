@@ -28,6 +28,9 @@
 % $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket);
 
 <& /Elements/ListActions, actions => \@results &>
+
+<div class="summary"><&| /Widgets/TitleBox, title => loc('Ticket metadata') &>
+
 <table class="ticket-summary" width="100%">
 <tr>
 <td class="boxcontainer" valign="top">
@@ -94,6 +97,9 @@
   </td>
 </tr>
 </table>
+
+</&></div>
+
 <& /Ticket/Elements/ShowHistory,
     Ticket         => $Ticket,
     Collapsed      => $ARGS{'Collapsed'}, 
