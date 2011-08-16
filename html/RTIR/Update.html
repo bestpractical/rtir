@@ -173,6 +173,12 @@ if ( $ARGS{'SubmitTicket'} ) {
 }
 
 if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {
+    my %checked = map {$_ => 1} grep {defined} @TxnSendMailTo;
+    my @squelchlist = grep {not $checked{$_}} split /,/, ($ARGS{'TxnRecipients'}||'');
+    $ARGS{'SquelchMailTo'} = \@squelchlist if @squelchlist;
+}
+
+if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {
     $m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Ticket => $Ticket);
 
     return $m->comp('/RTIR/Display.html', %ARGS);
@@ -184,4 +190,5 @@ if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {
 $id => undef
 $DefaultStatus => undef
 $Action => undef
+@TxnSendMailTo => ()
 </%ARGS>
