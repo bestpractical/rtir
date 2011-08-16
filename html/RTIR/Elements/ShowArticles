@@ -1,0 +1,34 @@
+<&| /Widgets/TitleBox,
+    title          => loc("Articles"),
+    title_href     => RT->Config->Get('WebPath') ."/RTIR/Advanced.html?id=".$id, 
+    titleright_raw => $box_actions,
+    class          => 'ticket-info-articles',
+&>
+
+<ul>
+% while (my $Link = $Ticket->RefersTo->Next) {
+% next unless UNIVERSAL::isa($Link->TargetURI->Object, "RT::Article");
+<li><a href="<%$Link->TargetURI->Resolver->HREF%>"><% $Link->TargetURI->Object->Name %></a></li>
+% }
+</ul>
+
+</&>
+<%ARGS>
+$Ticket
+</%ARGS>
+<%INIT>
+my $id = $Ticket->id;
+
+my $box_actions = '';
+if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
+    my $web_path = RT->Config->Get('WebPath');
+    my $qs = $m->comp("/Elements/QueryString",
+        "RefersTo-new" => "t:$id",
+        next => $web_path."/RTIR/Display.html?id=$id"
+    );
+    $box_actions = join '&nbsp;'x3,
+        qq{<a href="$web_path/Articles/Article/PreCreate.html?$qs">}. loc('New') .q{</a>},
+        qq{<a href="$web_path/RTIR/Incident/LinkArticles.html?id=$id">}. loc('Link') .q{</a>},
+    ;
+}
+</%INIT>
