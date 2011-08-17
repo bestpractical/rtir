@@ -49,6 +49,7 @@
 
 % if ( ($QueueObj || $ARGS{'TicketObj'}) && !$SkipField{'CustomFields'} ) {
 <& /RTIR/Elements/EditCustomFields,
+    %ARGS,
     NamePrefix => $NamePrefix,
     TicketObj  => $ARGS{'TicketObj'},
     QueueObj   => $QueueObj,

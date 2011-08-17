@@ -140,6 +140,7 @@
 % }
 
   <& /RTIR/Elements/EditCustomFields, 
+    %ARGS,
     TicketObj => $SplitObj, 
     QueueObj => $QueueObj,
     $Split ? ( OnCreate => 1 ) : (),
