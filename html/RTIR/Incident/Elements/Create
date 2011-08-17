@@ -52,7 +52,6 @@
     TicketObj => $TicketObj,
     QueueObj => $QueueObj,
     ChildObj => $ChildObj,
-    AsTable => 1,
 &>
 
 <%INIT>

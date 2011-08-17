@@ -26,6 +26,7 @@
   TicketObj => $TicketObj, 
   QueueObj => $QueueObj,
   %ARGS,
+  InTable => 1,
 &>
 
 <%INIT>

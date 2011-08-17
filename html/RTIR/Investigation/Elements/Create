@@ -54,7 +54,6 @@
     TicketObj  => $ARGS{'TicketObj'},
     QueueObj   => $QueueObj,
     CFIDPrefix => $NamePrefix,
-    AsTable    => 1,
 &>
 % }
 
