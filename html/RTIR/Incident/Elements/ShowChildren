@@ -37,8 +37,8 @@ return if $Queue eq 'Blocks' && RT->Config->Get('RTIR_DisableBlocksQueue');
 my $id = $IncidentObj->id;
 my $EscapedQueue = $m->interp->apply_escapes( $Queue, 'u' );
 
-my @active_states = RT::IR::States( Queue => $Queue );
-my @inactive_states = RT::IR::States( Queue => $Queue, Active => 0, Inactive => 1 );
+my @active_states = RT::IR->Statuses( Queue => $Queue );
+my @inactive_states = RT::IR->Statuses( Queue => $Queue, Initial => 0, Active => 0, Inactive => 1 );
 
 my $active = RT::Tickets->new( $session{'CurrentUser'} );
 $active->FromSQL(
