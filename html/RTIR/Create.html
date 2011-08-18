@@ -140,11 +140,10 @@
 % }
 
   <& /RTIR/Elements/EditCustomFields, 
-    TicketObj => $SplitObj, 
+    %ARGS,
+    TicketOnj => undef,
     QueueObj => $QueueObj,
-    $Split ? ( OnCreate => 1 ) : (),
-    $IncidentObj ? ( IncidentObj => $IncidentObj ) : (),
-    AsTable => 1,
+    DefaultsFrom => $SplitObj || $IncidentObj,
   &>
 </table></&></div>
 

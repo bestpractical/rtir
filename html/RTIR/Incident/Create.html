@@ -132,10 +132,9 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 
 <& /RTIR/Elements/EditCustomFields, 
     %ARGS,
-    QueueObj => $QueueObj,
-    ChildObj => $ChildObj,
-    AsTable  => 1,
-    InTable  => 1,
+    TicketObj    => undef,
+    QueueObj     => $QueueObj,
+    DefaultsFrom => $SplitObj || $ChildObj,
 &>
 
 </table></&></div>

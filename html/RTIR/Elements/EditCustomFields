@@ -26,25 +26,24 @@
   TicketObj => $TicketObj, 
   QueueObj => $QueueObj,
   %ARGS,
+  InTable => 1,
 &>
 
 <%INIT>
 unless ( $TicketObj && $TicketObj->Id ) {
     # no ticket, we need to find defaults of cfs
-    $QueueObj ||= $TicketObj->QueueObj();
     my $CustomFields = $QueueObj->TicketCustomFields();
     my %Defaults = RT->Config->Get('RTIR_CustomFieldsDefaults');
     while ( my $CustomField = $CustomFields->Next ) {
         my $name = $CustomField->Name;
 
-        if ( $ChildObj || $IncidentObj ) {
-            my $linking_to = $ChildObj || $IncidentObj;
-            my ($link_cf) = RT::IR->CustomFields( Field => $name, Ticket => $linking_to );
+        if ( $DefaultsFrom ) {
+            my ($link_cf) = RT::IR->CustomFields( Field => $name, Ticket => $DefaultsFrom );
             if ( $link_cf ) {
 # XXX: if CF can have only one value then we should use only first value
                 $ARGS{"CustomField-".$CustomField->Id} = join "\n",
                     grep defined && length, map $_->Content,
-                    @{ $linking_to->CustomFieldValues( $link_cf->id )->ItemsArrayRef };
+                    @{ $DefaultsFrom->CustomFieldValues( $link_cf->id )->ItemsArrayRef };
                 next;
             }
         }
@@ -73,6 +72,5 @@ unless ( $TicketObj && $TicketObj->Id ) {
 <%ARGS>
 $TicketObj => undef
 $QueueObj => undef
-$ChildObj => undef
-$IncidentObj => undef
+$DefaultsFrom => undef
 </%ARGS>

@@ -47,13 +47,14 @@
 </table></&></td></tr>
 % }
 
-% if ( ($QueueObj || $ARGS{'TicketObj'}) && !$SkipField{'CustomFields'} ) {
-<& /Ticket/Elements/EditCustomFields,
+% if ( ($QueueObj || $TicketObj) && !$SkipField{'CustomFields'} ) {
+<& /RTIR/Elements/EditCustomFields,
+    %ARGS,
+    TicketObj  => undef,
     NamePrefix => $NamePrefix,
-    TicketObj  => $ARGS{'TicketObj'},
     QueueObj   => $QueueObj,
+    DefaultsFrom => $TicketObj,
     CFIDPrefix => $NamePrefix,
-    AsTable    => 1,
 &>
 % }
 
@@ -140,6 +141,7 @@ email addresses. These people <b>will</b> receive future updates.)</&></font></i
 <%ARGS>
 $NamePrefix => ''
 $QueueObj => undef
+$TicketObj => undef
 %HideField => ()
 %SkipField => ()
 </%ARGS>
