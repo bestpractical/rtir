@@ -49,9 +49,9 @@
 
 <& /RTIR/Elements/EditCustomFields,
     %ARGS,
-    TicketObj => undef,
-    QueueObj => $QueueObj,
-    ChildObj => $ChildObj,
+    TicketObj    => undef,
+    QueueObj     => $QueueObj,
+    DefaultsFrom => $ChildObj,
 &>
 
 <%INIT>

@@ -143,8 +143,7 @@
     %ARGS,
     TicketOnj => undef,
     QueueObj => $QueueObj,
-    $Split ? ( OnCreate => 1 ) : (),
-    $IncidentObj ? ( IncidentObj => $IncidentObj ) : (),
+    DefaultsFrom => $SplitObj || $IncidentObj,
   &>
 </table></&></div>
 
