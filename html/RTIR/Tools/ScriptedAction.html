@@ -83,7 +83,7 @@ foreach my $entry ( map $whois_servers->{ $_ }, sort keys %{$whois_servers} ) {
       <&|/l&>Contact Field</&>:
     </td>
     <td>
-      <input name="field" value="<% $ARGS{'field'} %>" />
+      <input type="text" name="field" value="<% $ARGS{'field'} %>" />
     </td>
   </tr>
   <tr>
@@ -125,7 +125,7 @@ foreach my $entry ( map $whois_servers->{ $_ }, sort keys %{$whois_servers} ) {
     <&|/l&>Argument</&>:
   </td>
   <td>
-    <input name="TemplateArg" size="60" value="<% $ARGS{'TemplateArg'} %>" />
+    <input type="text" name="TemplateArg" size="60" value="<% $ARGS{'TemplateArg'} %>" />
   </td>
 </tr>
   <tr>
@@ -160,7 +160,7 @@ foreach my $entry ( map $whois_servers->{ $_ }, sort keys %{$whois_servers} ) {
       <&|/l&>Subject</&>:
     </td>
     <td>
-      <input size="60" name="Subject" value="<%$ARGS{'Subject'} || $Incident->Subject%>" />
+      <input type="text" size="60" name="Subject" value="<%$ARGS{'Subject'} || $Incident->Subject%>" />
     </td>
   </tr>
 % }

@@ -3,7 +3,7 @@
   <tr>
     <span class="label">WHOIS:</span>
     <span class="input">
-      <input size="30" name="q" value="<% $q %>" /> at 
+      <input type="text" size="30" name="q" value="<% $q %>" /> at 
       <select name="server">
 <%PERL>
 foreach my $s ( sort grep $servers->{ $_ }, keys %{ $servers } ) {

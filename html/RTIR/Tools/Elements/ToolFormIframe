@@ -2,7 +2,7 @@
   <input type="hidden" name="ticket" value="<% $TicketObj->id %>" />
     <span class="label"><%loc('Research Tool')%>:</span>
     <span class="input">
-      <input size="30" name="q" value="<% $q %>" /> at
+      <input type="text" size="30" name="q" value="<% $q %>" /> at
       <select name="ResearchTool">
 % for my $tool (grep {defined } keys %$research_tools) {
         <option value="<%$tool%>" <%$tool eq $ResearchTool ? 'SELECTED' : ''%>><% $research_tools->{$tool}->{FriendlyName} %></option>
