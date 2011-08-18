@@ -32,8 +32,6 @@
 
 * scan code for hardcoded statuses
 
-* use ShowSimplifiedRecipients
-
 * tranasaction custom fields
 
 * protection from mail loops by filtering watchers' email addresses on
@@ -68,19 +66,13 @@
 
 * html/RTIR/Forward.html still uses plain inputs for addresses
 
-* make sure all <input> tags have type
-
 * re-use CSS squishing
 
+* Elements/ChildSummary and Elements/IncidentSummary share the same query
+
+* use latest simple search API in html/RTIR/index.html
+
 === INVESTIGATE
-
-* we use different components for EditCustomFields
-
-* we pass OnCreate inconsistently into EditCustomFields
-
-* Suspect that failed custom field validation check
-  or gnupg error that returns back to create page will
-  dropp fields to defaults
 
 * Rename some fields to variants with spaces
 
