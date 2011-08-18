@@ -32,7 +32,6 @@
 <%INIT>
 unless ( $TicketObj && $TicketObj->Id ) {
     # no ticket, we need to find defaults of cfs
-    $QueueObj ||= $TicketObj->QueueObj();
     my $CustomFields = $QueueObj->TicketCustomFields();
     my %Defaults = RT->Config->Get('RTIR_CustomFieldsDefaults');
     while ( my $CustomField = $CustomFields->Next ) {
