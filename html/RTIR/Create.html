@@ -141,7 +141,7 @@
 
   <& /RTIR/Elements/EditCustomFields, 
     %ARGS,
-    TicketObj => $SplitObj, 
+    TicketOnj => undef,
     QueueObj => $QueueObj,
     $Split ? ( OnCreate => 1 ) : (),
     $IncidentObj ? ( IncidentObj => $IncidentObj ) : (),

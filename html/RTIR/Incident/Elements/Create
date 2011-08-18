@@ -47,9 +47,9 @@
 </td></tr>
 % }
 
-<& /RTIR/Elements/EditCustomFields, 
+<& /RTIR/Elements/EditCustomFields,
     %ARGS,
-    TicketObj => $TicketObj,
+    TicketObj => undef,
     QueueObj => $QueueObj,
     ChildObj => $ChildObj,
 &>
@@ -60,7 +60,6 @@ my $constituency_cf = RT::IR->CustomFields( 'Constituency', Queue => $QueueObj->
 <%ARGS>
 $NamePrefix => ''
 $QueueObj   => undef
-$TicketObj  => undef
 $ChildObj   => undef
 $Subject    => ''
 </%ARGS>
