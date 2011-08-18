@@ -321,24 +321,6 @@ sub BaseQuery {
     return $res;
 }
 
-sub ChildrenQuery {
-    my $self = shift;
-    my %args = (
-        @_
-    );
-
-    my @parts;
-    push @parts, $self->NewQuery(
-        Queue  => $args{'Queue'},
-        states => $args{'States'},
-        add_states => $args{'AddStates'},
-    );
-    push @parts, $self->BaseQuery( Queue => $args{'Queue'} );
-    push @parts, "MemberOf = ". $args{'Ticket'}->id if $args{'Ticket'};
-
-    return join " AND ", map "($_)", @parts;
-}
-
 =head2 Incidents
 
 Takes a ticket and returns collection of all incidents this ticket
