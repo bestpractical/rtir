@@ -80,7 +80,7 @@ if ( $ARGS{'q'} ) {
         # Any search on queue name or subject will be for new/open tickets only.
         $query = join ' AND ',
                  "Subject LIKE '$query'",
-                 $m->comp( '/RTIR/Elements/NewQuery', Queue => 'Incidents' );
+                 RT::IR->NewQuery( Queue => 'Incidents' );
     }
     return $m->comp(
         '/RTIR/Search/Results.html',

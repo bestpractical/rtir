@@ -51,7 +51,7 @@
 $id          => undef
 $Queue       => undef
 
-$Query       => $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue)
+$Query       => RT::IR->NewQuery( Queue => $Queue )
 $Format      => RT->Config->Get('RTIRSearchResultFormats')->{'LinkChildren'}
 $Rows        => 50
 $Page        => 1

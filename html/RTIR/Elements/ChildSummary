@@ -81,7 +81,7 @@
 </table>
 
 <%INIT>
-my $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
+my $Query = RT::IR->NewQuery( Queue => $Queue );
 my @conditions = ();
 my $lookup_cf_not_applies = 0;
 if ( defined $q && length $q ) {

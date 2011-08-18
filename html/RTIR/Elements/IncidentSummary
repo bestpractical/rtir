@@ -89,7 +89,7 @@ while ( my $Ticket = $session{'tickets'}->Next ) {
     }
 }
 
-my $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => 'Incidents');
+my $Query = RT::IR->NewQuery(Queue => 'Incidents');
 my @conditions = ();
 my $lookup_cf_not_applies = 0;
 if ( defined $q && length $q ) {

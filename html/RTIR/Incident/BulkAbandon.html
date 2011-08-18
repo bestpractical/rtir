@@ -156,8 +156,8 @@ my $BaseURL = "RTIR/Incident/BulkAbandon.html?"
 $Status          => 'abandoned'
 $Queue           => 'Incidents'
 
-$Query           => $m->comp( '/RTIR/Elements/NewQuery', Queue => $Queue );
-$Format          => RT->Config->Get('RTIRSearchResultFormats')->{'AbandonIncidents'};
+$Query           => RT::IR->NewQuery( Queue => $Queue )
+$Format          => RT->Config->Get('RTIRSearchResultFormats')->{'AbandonIncidents'}
 $Rows            => 50
 $Page            => 1
 $OrderBy         => 'id'
