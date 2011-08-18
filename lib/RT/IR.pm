@@ -278,24 +278,9 @@ sub BaseQuery {
     if ( $args{'Queue'} ) {
         my $qname = ref $args{'Queue'} ? $args{'Queue'}->Name : $args{'Queue'};
         $res = "Queue = '$qname'";
-        if ( defined $args{'Active'} ) {
-            my $queue = $args{'Queue'};
-            unless ( ref $args{'Queue'} ) {
-                my $queue = RT::Queue->new( RT->SystemUser );
-                $queue->Load( $args{'Queue'} );
-                unless ( $queue->id ) {
-                    $RT::Logger->error("Couldn't load queue '$args{Queue}'");
-                    $queue = undef;
-                }
-            }
-
-            if ( $queue ) {
-                my @statuses = $args{'Active'}
-                    ? $queue->ActiveStatusArray
-                    : $queue->InactiveStatusArray;
-                $res .= ' AND ('. join( ' OR ', map "Status = '$_'", @statuses ) .')';
-            }
-        }
+    }
+    if ( !$args{'Status'} && ( $args{'Initial'} || $args{'Active'} || $args{'Inactive'} ) ) {
+        $args{'Status'} = [ $self->Statuses( %args ) ];
     }
     if ( my $s = $args{'Status'} ) {
         $res .= ' AND ' if $res;
