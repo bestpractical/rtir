@@ -47,10 +47,7 @@
 <%INIT>
 my $title = loc("New unlinked Incident Reports...");
 
-unless( $Query ) {
-    $Query = RT::IR->NewQuery( Queue => $Queue, states => [ 'new' ] );
-    $Query = join ' AND ', $Query, 'MemberOf IS NULL';
-}
+$Query ||= RT::IR->BaseQuery( Queue => $Queue, Initial => 1 );
 
 my $QueryString = $m->comp('/Elements/QueryString',
     Queue   => $Queue,
