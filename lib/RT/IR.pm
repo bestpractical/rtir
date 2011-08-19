@@ -272,6 +272,7 @@ sub BaseQuery {
         MemberOf     => undef,
         NotMemberOf  => undef,
         Constituency => undef,
+        And          => undef,
         @_
     );
     my $res = '';
@@ -317,6 +318,10 @@ sub BaseQuery {
         }
         $res .= ' AND ' if $res;
         $res .= "CustomField.{Constituency} = '". $t->FirstCustomFieldValue('Constituency') ."'";
+    }
+    if ( my $c = $args{'And'} ) {
+        $res .= ' AND ' if $res;
+        $res .= join ' AND ', ref $c? @$c : ($c);
     }
     return $res;
 }
