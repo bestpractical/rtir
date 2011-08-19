@@ -255,9 +255,9 @@ sub BaseQuery {
     );
     my @res;
     if ( $args{'Queue'} ) {
-        my @queues = ref $arg{'Queue'} && !blessed $arg{'Queue'}
-            ? @{ $arg{'Queue'} }
-            : ( $arg{'Queue'} )
+        my @queues = ref $args{'Queue'} && !blessed $args{'Queue'}
+            ? @{ $args{'Queue'} }
+            : ( $args{'Queue'} )
         ;
         push @res, map "($_)", join ' OR ', map "Queue = '$_'",
             map blessed $_? $_->Name : $_,
