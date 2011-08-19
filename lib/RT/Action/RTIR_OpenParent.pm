@@ -70,7 +70,7 @@ sub Commit {
     $parents->FromSQL( RT::IR->BaseQuery(
         Queue     => 'Incidents',
         HasMember => $ticket,
-        Status    => [ RT::Lifecycle->Load('incidents')->Inactive ],
+        Inactive  => 1,
     ) );
     my ($set_to) = RT::Lifecycle->Load('incidents')->Active;
     while (my $member = $parents->Next) {
