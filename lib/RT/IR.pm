@@ -354,9 +354,8 @@ sub IsLinkedToActiveIncidents {
     my $parent = shift;
 
     my $tickets = RT::Tickets->new( $child->CurrentUser );
-    $tickets->FromSQL( $self->Query(
+    $tickets->FromSQL( $self->ActiveQuery(
         Queue     => 'Incidents',
-        Status    => [ RT::Lifecycle->Load('incidents')->Valid('initial', 'active') ],
         HasMember => $child,
         Exclude   => $parent->id,
     ) );
