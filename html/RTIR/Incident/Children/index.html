@@ -81,14 +81,14 @@ my $delete = $Incident->CurrentUserHasRight('ModifyTicket') ? 1: 0;
     unless @States;
 
 my $children = RT::Tickets->new( $session{'CurrentUser'} );
-$children->FromSQL( RT::IR->BaseQuery(
+$children->FromSQL( RT::IR->Query(
     Queue    => $Queue,
     MemberOf => $Incident,
     Status   => [@States],
 ) );
 
 my $all_children = RT::Tickets->new( $session{'CurrentUser'} );
-$all_children->FromSQL( RT::IR->BaseQuery(
+$all_children->FromSQL( RT::IR->Query(
     Queue    => $Queue,
     MemberOf => $Incident,
 ) );

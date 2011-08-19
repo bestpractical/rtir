@@ -104,7 +104,7 @@ if ( defined $q && length $q ) {
         push @conditions, "Content LIKE '$q'";
     }
 }
-my $Query = RT::IR->NewQuery( Queue => 'Incidents', And => \@conditions );
+my $Query = RT::IR->ActiveQuery( Queue => 'Incidents', And => \@conditions );
 
 my $QueryString = $m->comp('/Elements/QueryString',
     Query => $Query,

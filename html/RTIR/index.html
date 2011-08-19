@@ -68,7 +68,7 @@ if ( $ARGS{'q'} ) {
         $query ||= 'id = 0';
     }
     elsif ( $query =~ /^\s*($RE{net}{IPv4})\s*$/o && RT::IR->CustomFields('IP') ) {
-        $query = RT::IR->BaseQuery(
+        $query = RT::IR->Query(
             Queue => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
             And => "'CustomField.{IP}' = '$1'",
         );
@@ -79,7 +79,7 @@ if ( $ARGS{'q'} ) {
     }
     else {
         # Any search on queue name or subject will be for new/open tickets only.
-        $query = RT::IR->NewQuery( Queue => 'Incidents', And => "Subject LIKE '$query'" );
+        $query = RT::IR->ActiveQuery( Queue => 'Incidents', And => "Subject LIKE '$query'" );
     }
     return $m->comp(
         '/RTIR/Search/Results.html',

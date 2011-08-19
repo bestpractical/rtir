@@ -233,11 +233,11 @@ sub Statuses {
     return grep !$seen{$_}++, @initial, @active, @inactive;
 }
 
-sub NewQuery {
-    return (shift)->BaseQuery( Initial => 1, Active => 1, @_ );
+sub ActiveQuery {
+    return (shift)->Query( Initial => 1, Active => 1, @_ );
 }
 
-sub BaseQuery {
+sub Query {
     my $self = shift;
     my %args = (
         Queue        => undef,
@@ -313,7 +313,7 @@ sub Incidents {
     my $ticket = shift;
 
     my $res = RT::Tickets->new( $ticket->CurrentUser );
-    $res->FromSQL( $self->BaseQuery( Queue => 'Incidents', HasMember => $ticket ) );
+    $res->FromSQL( $self->Query( Queue => 'Incidents', HasMember => $ticket ) );
     return $res;
 }
 
@@ -354,7 +354,7 @@ sub IsLinkedToActiveIncidents {
     my $parent = shift;
 
     my $tickets = RT::Tickets->new( $child->CurrentUser );
-    $tickets->FromSQL( $self->BaseQuery(
+    $tickets->FromSQL( $self->Query(
         Queue     => 'Incidents',
         Status    => [ RT::Lifecycle->Load('incidents')->Valid('initial', 'active') ],
         HasMember => $child,

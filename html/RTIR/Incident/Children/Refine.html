@@ -5,7 +5,7 @@ return $m->comp(
     ResultPage => 'RTIR/Incident/Children/?'. $m->comp('/Elements/QueryString',
         id => $ARGS{'id'}, Queue => $ARGS{'Queue'},
     ),
-    BaseQuery => RT::IR->BaseQuery(
+    BaseQuery => RT::IR->Query(
         Queue    => $ARGS{'Queue'},
         MemberOf => $ARGS{'id'},
     ),

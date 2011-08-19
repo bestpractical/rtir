@@ -69,8 +69,8 @@ my $title = loc("Results");
 my $Type = RT::IR::TicketType( Queue => $Queue ) || '';
 $Format ||= RT->Config->Get('RTIRSearchResultFormats')->{ $Type . 'Default' };
 if ( $Type ) {
-    $BaseQuery ||= RT::IR->BaseQuery( Queue => $Queue );
-    $Query     ||= RT::IR->NewQuery( Queue => $Queue );
+    $BaseQuery ||= RT::IR->Query( Queue => $Queue );
+    $Query     ||= RT::IR->ActiveQuery( Queue => $Queue );
 }
 
 my $BaseURL = "RTIR/Search/Results.html";

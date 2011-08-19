@@ -67,7 +67,7 @@ sub Commit {
     return 1 if $ticket->QueueObj->Lifecycle->IsInactive( $txn->NewValue );
 
     my $parents = RT::Tickets->new( $txn->CurrentUser );
-    $parents->FromSQL( RT::IR->BaseQuery(
+    $parents->FromSQL( RT::IR->Query(
         Queue     => 'Incidents',
         HasMember => $ticket,
         Inactive  => 1,

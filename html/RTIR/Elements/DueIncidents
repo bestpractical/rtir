@@ -59,8 +59,8 @@ my $QueryString = $m->comp('/Elements/QueryString',
 </%INIT>
 <%ARGS>
 $Title           => loc("Most due incidents")
-$BaseQuery       => RT::IR->BaseQuery( Queue => 'Incidents' )
-$Query           => RT::IR->NewQuery( Queue => 'Incidents' )
+$BaseQuery       => RT::IR->Query( Queue => 'Incidents' )
+$Query           => RT::IR->ActiveQuery( Queue => 'Incidents' )
 $Format          => RT->Config->Get('RTIRSearchResultFormats')->{'DueIncidents'}
 $Rows            => RT->Config->Get('DefaultSummaryRows', $session{'CurrentUser'})
 $Page            => 1

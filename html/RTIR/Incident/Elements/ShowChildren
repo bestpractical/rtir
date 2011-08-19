@@ -41,14 +41,14 @@ my @active_states = RT::IR->Statuses( Queue => $Queue );
 my @inactive_states = RT::IR->Statuses( Queue => $Queue, Initial => 0, Active => 0, Inactive => 1 );
 
 my $active = RT::Tickets->new( $session{'CurrentUser'} );
-$active->FromSQL( RT::IR->BaseQuery(
+$active->FromSQL( RT::IR->Query(
     Queue    => $Queue,
     MemberOf => $IncidentObj,
     Status   => \@active_states,
 ));
 
 my $inactive = RT::Tickets->new( $session{'CurrentUser'} );
-$inactive->FromSQL( RT::IR->BaseQuery(
+$inactive->FromSQL( RT::IR->Query(
     Queue    => $Queue,
     MemberOf => $IncidentObj,
     Status   => \@inactive_states,

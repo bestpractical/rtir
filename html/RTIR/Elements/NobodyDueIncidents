@@ -1,7 +1,7 @@
 <& /RTIR/Elements/DueIncidents, %ARGS, Title => $Title, Query => $Query &>
 <%INIT>
 my $Title = loc( "Most due unowned incidents" );
-$Query ||= RT::IR->NewQuery( Queue => 'Incidents', And => 'Owner.id = '. $RT::Nobody->id );
+$Query ||= RT::IR->ActiveQuery( Queue => 'Incidents', And => 'Owner.id = '. $RT::Nobody->id );
 </%INIT>
 <%ARGS>
 $Query => undef

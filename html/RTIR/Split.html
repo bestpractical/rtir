@@ -55,7 +55,7 @@ if ( $m->comp_exists("/RTIR/$Type/Split.html") ) {
 
 my $incident;
 my $incidents = RT::Tickets->new( $session{'CurrentUser'} );
-$incidents->FromSQL( RT::IR->NewQuery( Queue => 'Incidents', HasMember => $TicketObj ) );
+$incidents->FromSQL( RT::IR->ActiveQuery( Queue => 'Incidents', HasMember => $TicketObj ) );
 if ( my $obj = $incidents->First ) {
     $incident = $obj->id;
 }

@@ -47,7 +47,7 @@
 <%INIT>
 my $title = loc("New unlinked Incident Reports...");
 
-$Query ||= RT::IR->BaseQuery( Queue => $Queue, Initial => 1 );
+$Query ||= RT::IR->Query( Queue => $Queue, Initial => 1 );
 
 my $QueryString = $m->comp('/Elements/QueryString',
     Queue   => $Queue,
@@ -70,7 +70,7 @@ my $BulkQS = $m->comp('/Elements/QueryString',
 
 <%ARGS>
 $Queue     => 'Incident Reports'
-$BaseQuery => RT::IR->BaseQuery( Queue => $Queue )
+$BaseQuery => RT::IR->Query( Queue => $Queue )
 $Query     => undef
 $Format    => RT->Config->Get('RTIRSearchResultFormats')->{'NewReports'}
 $Rows      => RT->Config->Get('DefaultSummaryRows', $session{'CurrentUser'})
