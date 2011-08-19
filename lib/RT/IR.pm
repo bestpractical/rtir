@@ -255,8 +255,13 @@ sub BaseQuery {
     );
     my @res;
     if ( $args{'Queue'} ) {
-        my $qname = ref $args{'Queue'} ? $args{'Queue'}->Name : $args{'Queue'};
-        push @res, "Queue = '$qname'";
+        my @queues = ref $arg{'Queue'} && !blessed $arg{'Queue'}
+            ? @{ $arg{'Queue'} }
+            : ( $arg{'Queue'} )
+        ;
+        push @res, map "($_)", join ' OR ', map "Queue = '$_'",
+            map blessed $_? $_->Name : $_,
+            @queues;
     }
     if ( !$args{'Status'} && ( $args{'Initial'} || $args{'Active'} || $args{'Inactive'} ) ) {
         $args{'Status'} = [ $self->Statuses( %args ) ];
