@@ -72,10 +72,13 @@ sub Commit {
         HasMember => $ticket,
         Inactive  => 1,
     ) );
-    my ($set_to) = RT::Lifecycle->Load('incidents')->Active;
-    while (my $member = $parents->Next) {
-        my ($res, $msg) = $member->SetStatus( $set_to );
-        $RT::Logger->info("Couldn't open incident: $msg") unless $res;
+    while ( my $parent = $parents->Next ) {
+        my $status = $parent->FirstActiveStatus;
+        next unless $status;
+
+        my ($res, $msg) = $parent->SetStatus( $status );
+        $RT::Logger->info("Couldn't open incident: $msg")
+            unless $res;
     }
     return 1;
 }
