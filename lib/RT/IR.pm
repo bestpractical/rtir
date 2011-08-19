@@ -253,37 +253,31 @@ sub BaseQuery {
         And          => undef,
         @_
     );
-    my $res = '';
+    my @res;
     if ( $args{'Queue'} ) {
         my $qname = ref $args{'Queue'} ? $args{'Queue'}->Name : $args{'Queue'};
-        $res = "Queue = '$qname'";
+        push @res, "Queue = '$qname'";
     }
     if ( !$args{'Status'} && ( $args{'Initial'} || $args{'Active'} || $args{'Inactive'} ) ) {
         $args{'Status'} = [ $self->Statuses( %args ) ];
     }
     if ( my $s = $args{'Status'} ) {
-        $res .= ' AND ' if $res;
-        $res .= '('. join( ' OR ', map "Status = '$_'", ref $s? (@$s) : ($s) ) .')';
+        push @res, '('. join( ' OR ', map "Status = '$_'", ref $s? (@$s) : ($s) ) .')';
     }
     if ( my $t = $args{'Exclude'} ) {
-        $res .= ' AND ' if $res;
-        $res .= '('. join( ' AND ', map "id != '$_'", map int $_, ref $t? (@$t) : ($t) ) .')';
+        push @res, '('. join( ' AND ', map "id != '$_'", map int $_, ref $t? (@$t) : ($t) ) .')';
     }
     if ( my $t = $args{'HasMember'} ) {
-        $res .= ' AND ' if $res;
-        $res .= 'HasMember = '. (ref $t? $t->id : int $t);
+        push @res, 'HasMember = '. (ref $t? $t->id : int $t);
     }
     if ( my $t = $args{'HasNoMember'} ) {
-        $res .= ' AND ' if $res;
-        $res .= 'HasMember != '. (ref $t? $t->id : int $t);
+        push @res, 'HasMember != '. (ref $t? $t->id : int $t);
     }
     if ( my $t = $args{'NotMemberOf'} ) {
-        $res .= ' AND ' if $res;
-        $res .= 'MemberOf != '. (ref $t? $t->id : int $t);
+        push @res, 'MemberOf != '. (ref $t? $t->id : int $t);
     }
     if ( my $t = $args{'MemberOf'} ) {
-        $res .= ' AND ' if $res;
-        $res .= 'MemberOf = '. (ref $t? $t->id : int $t);
+        push @res, 'MemberOf = '. (ref $t? $t->id : int $t);
     }
     if (
         my $t = $args{'Constituency'}
@@ -294,14 +288,12 @@ sub BaseQuery {
             $tmp->Load( $t );
             $t = $tmp;
         }
-        $res .= ' AND ' if $res;
-        $res .= "CustomField.{Constituency} = '". $t->FirstCustomFieldValue('Constituency') ."'";
+        push @res, "CustomField.{Constituency} = '". $t->FirstCustomFieldValue('Constituency') ."'";
     }
     if ( my $c = $args{'And'} ) {
-        $res .= ' AND ' if $res;
-        $res .= join ' AND ', ref $c? @$c : ($c);
+        push @res, ref $c? @$c : ($c);
     }
-    return $res;
+    return join ' AND ', @res;
 }
 
 =head2 Incidents
