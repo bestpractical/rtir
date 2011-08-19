@@ -234,30 +234,8 @@ sub Statuses {
 }
 
 sub NewQuery {
-    my $self = shift;
-    my %args = (
-        Queue => undef,
-        states => undef,
-        add_states => undef,
-        @_,
-    );
-    my @states = ref $args{'states'}? @{ $args{'states'} } : ( $args{'states'} );
-    @states = grep $_, @states;
-    unless( @states ) {
-        @states = $self->Statuses( %args );
-    }
-
-    my @add_states = ref $args{'add_states'}? @{ $args{'add_states'} } : ( $args{'add_states'} );
-    my %seen = ();
-    @states =  grep !$seen{$_}++, map lc, grep $_, @states, @add_states;
-
-    my $query = join " OR ",
-                map "'Status' = '$_'",
-                @states;
-    $query = "( $query )" if $query;
-    return $query;
+    return (shift)->BaseQuery( Initial => 1, Active => 1, @_ );
 }
-
 
 sub BaseQuery {
     my $self = shift;
@@ -338,7 +316,7 @@ sub Incidents {
     my $ticket = shift;
 
     my $res = RT::Tickets->new( $ticket->CurrentUser );
-    $res->FromSQL( "Queue = 'Incidents' AND HasMember = " . $ticket->id );
+    $res->FromSQL( $self->BaseQuery( Queue => 'Incidents', HasMember => $ticket ) );
     return $res;
 }
 
