@@ -215,8 +215,8 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
             $path .= "?". $m->comp(
                 '/Elements/QueryString',
                 %args,
-                Action        => $update,
-                DefaultStatus => $next,
+                Action => $update,
+                Status => $next,
             );
         } else {
             $path .= "Display.html?". $m->comp(

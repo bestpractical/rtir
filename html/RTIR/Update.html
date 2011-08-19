@@ -29,10 +29,7 @@
 <form action="Update.html" name="TicketUpdate" method="post" enctype="multipart/form-data">
 <input type="hidden" name="id" value="<% $id %>" />
 <input type="hidden" name="QuoteTransaction" value="<% $ARGS{'QuoteTransaction'} || '' %>" />
-% if ( $ARGS{'Status'} ) {
-<input type="hidden" name="DefaultStatus" value="<% $DefaultStatus %>" />
-<input type="hidden" name="Status" value="<% $DefaultStatus %>" />
-% }
+<input type="hidden" name="Status" value="<% $Status || '' %>" />
 <input type="hidden" name="Action" value="<% $Action || '' %>" />
 <input type="hidden" name="TakeOrStealFirst" value="<% $ARGS{TakeOrStealFirst} || '' %>" />
 
@@ -123,10 +120,6 @@ $m->callback(CallbackName => 'Initial', %ARGS, Ticket => $Ticket);
 
 my $Type = RT::IR::TicketType( Ticket => $Ticket );
 
-$DefaultStatus ||= $ARGS{'Status'} || '';
-$ARGS{'Status'} ||= $DefaultStatus; # XXX: we should get rid of the DefaultStatus
-$DefaultStatus = 'open' if $DefaultStatus eq 'new';
-
 my $title = loc("Update [_1] #[_2] ([_3])", $Type, $id, $Ticket->Subject);
 
 my $CanRespond = 0;
@@ -192,7 +185,7 @@ if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {
 
 <%ARGS>
 $id => undef
-$DefaultStatus => undef
+$Status => undef
 $Action => undef
 @TxnSendMailTo => ()
 $TxnRecipients => ''

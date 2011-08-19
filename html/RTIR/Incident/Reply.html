@@ -30,7 +30,6 @@
 
 <form action="Reply.html" method="get">
 <input type="hidden" name="id" value="<% $id %>" />
-<input type="hidden" name="DefaultStatus" value="<% $DefaultStatus %>" />
 <input type="hidden" name="Status" value="<% $Status %>" />
 <input type="hidden" name="All" value="<% $All %>" />
 <input type="hidden" name="Query" value="<% $Query %>" />
@@ -107,15 +106,12 @@ $id = $ARGS{'id'} = $IncidentObj->id;
 
 $m->callback( %ARGS, CallbackName => 'Initial', Ticket => $IncidentObj );
 
-# XXX: we should get rid of DefaultStatus argument at all. use Status
-$Status ||= $DefaultStatus; $DefaultStatus ||= $Status;
-
 my ($title, $SubmitCaption, $SubmitLabel);
-if ($DefaultStatus eq 'resolved') {
+if ($Status eq 'resolved') {
     $title = loc("Resolve Incident #[_1] (including children)", $id);
     $SubmitCaption = loc("Resolve Incident");
     $SubmitLabel = loc("Resolve");
-} elsif ($DefaultStatus eq 'abandoned') {
+} elsif ($Status eq 'abandoned') {
     $title = loc("Abandon Incident #[_1] (including children)", $id);
     $SubmitCaption = loc("Abandon Incident");
     $SubmitLabel = loc("Abandon");
@@ -187,14 +183,14 @@ if ( $SubmitTicket && !$checks_failure ) {
             # XXX: we push into results directly cuz ProcessTicketBasics returns results
             # with leading 'Ticket XX:' string
             push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef
-=> { %ARGS, $ARGS{Status} eq 'abandoned' ? ( Status => 'rejected' ) : () } );
+=> { %ARGS, $Status eq 'abandoned' ? ( Status => 'rejected' ) : () } );
         }
 
         push @results, map { loc("Ticket [_1]: [_2]", $id, $_) } @tempresults;
     }
 
     my $update_incident_state = 1;
-    if ( $DefaultStatus =~ /^(abandoned|resolved)$/) {
+    if ( $Status =~ /^(abandoned|resolved)$/ ) {
         # if we are going to resolve/reject incident then do it only when we've
         # rejected all children that are not linked to another active incident(s)
         my $children = RT::Tickets->new( $session{'CurrentUser'} );
@@ -236,10 +232,10 @@ foreach (qw(SelectedReports SelectedInvestigations SelectedBlocks)) {
 
 my $BaseURL = "RTIR/Incident/Reply.html?".
     $m->comp('/Elements/QueryString',
-        id            => $id,
-        All           => $All,
-        DefaultStatus => $DefaultStatus,
-        Action        => $Action,
+        id     => $id,
+        All    => $All,
+        Status => $Status,
+        Action => $Action,
     );
 
 </%INIT>
@@ -247,8 +243,7 @@ my $BaseURL = "RTIR/Incident/Reply.html?".
 <%ARGS>
 $id              => undef
 $All             => 0
-$DefaultStatus   => ''
-$Status          => $DefaultStatus,
+$Status          => ''
 $Action          => 'Correspond'
 
 $Query           => ''
