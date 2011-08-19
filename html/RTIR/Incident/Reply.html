@@ -95,7 +95,7 @@
     GnuPGWidget => $gnupg_widget,
 &>
 
-<& /Elements/Submit, Name => "SubmitTicket", Caption => $SubmitCaption, Label => $SubmitLabel &>
+<& /Elements/Submit, Name => "SubmitTicket", Label => loc("Update Incident") &>
 </form>
 
 <%INIT>
@@ -106,18 +106,12 @@ $id = $ARGS{'id'} = $IncidentObj->id;
 
 $m->callback( %ARGS, CallbackName => 'Initial', Ticket => $IncidentObj );
 
-my ($title, $SubmitCaption, $SubmitLabel);
+my $title;
 if ($Status eq 'resolved') {
     $title = loc("Resolve Incident #[_1] (including children)", $id);
-    $SubmitCaption = loc("Resolve Incident");
-    $SubmitLabel = loc("Resolve");
 } elsif ($Status eq 'abandoned') {
     $title = loc("Abandon Incident #[_1] (including children)", $id);
-    $SubmitCaption = loc("Abandon Incident");
-    $SubmitLabel = loc("Abandon");
 } else {
-    $SubmitCaption = loc("Reply to selected correspondents");
-    $SubmitLabel = loc("Reply");
     if ($All) {
         $title = loc("Incident #[_1]: Reply to All", $id);
     } else {
