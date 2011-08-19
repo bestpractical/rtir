@@ -67,15 +67,18 @@ sub Commit {
     return 1 if $ticket->QueueObj->Lifecycle->IsInactive( $txn->NewValue );
 
     my $parents = RT::Tickets->new( $txn->CurrentUser );
-    $parents->FromSQL( RT::IR->BaseQuery(
+    $parents->FromSQL( RT::IR->Query(
         Queue     => 'Incidents',
         HasMember => $ticket,
-        Status    => [ RT::Lifecycle->Load('incidents')->Inactive ],
+        Inactive  => 1,
     ) );
-    my ($set_to) = RT::Lifecycle->Load('incidents')->Active;
-    while (my $member = $parents->Next) {
-        my ($res, $msg) = $member->SetStatus( $set_to );
-        $RT::Logger->info("Couldn't open incident: $msg") unless $res;
+    while ( my $parent = $parents->Next ) {
+        my $status = $parent->FirstActiveStatus;
+        next unless $status;
+
+        my ($res, $msg) = $parent->SetStatus( $status );
+        $RT::Logger->info("Couldn't open incident: $msg")
+            unless $res;
     }
     return 1;
 }

@@ -64,12 +64,12 @@ $m->callback(CallbackName => 'Initial', %ARGS, Ticket => $Ticket);
 my $Type = RT::IR::TicketType( Ticket => $Ticket );
 my $title = loc( "Link [_1] #[_2] to selected Incident", $Type, $id );
 
-my $BaseQuery = RT::IR->BaseQuery(
+my $BaseQuery = RT::IR->Query(
     Queue => 'Incidents',
     HasNoMember => $id,
     Costituency => $Ticket,
 );
-$Query ||= RT::IR->NewQuery( Queue => 'Incidents' );
+$Query ||= RT::IR->ActiveQuery( Queue => 'Incidents' );
 
 </%INIT>
 <%ARGS>

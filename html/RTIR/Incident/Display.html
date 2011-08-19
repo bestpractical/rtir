@@ -86,7 +86,7 @@
 % foreach my $queue ( 'Incident Reports', 'Investigations', 'Blocks' ) {
 <& /RTIR/Incident/Elements/ShowChildren,
     IncidentObj => $TicketObj,
-    Queue       => $Queue,
+    Queue       => $queue,
 &>
 % }
 

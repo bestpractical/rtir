@@ -73,31 +73,24 @@ unless ( $Incident->CurrentUserHasRight('ShowTicket') ) {
     Abort("No permission to view ticket");
 }
 
-my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
-$QueueObj->Load( $Queue );
-unless ( $QueueObj->id ) {
-    Abort("Couldn't load queue '$Queue'");
-}
-
-@States = $QueueObj->Lifecycle->Valid('initial', 'active')
-    unless @States;
-
 my $Title = loc("$Queue for Incident #[_1]: [_2]", $id, $Incident->Subject);
 
 my $delete = $Incident->CurrentUserHasRight('ModifyTicket') ? 1: 0;
 
+@States = RT::IR->Statuses( Queue => $Queue )
+    unless @States;
+
 my $children = RT::Tickets->new( $session{'CurrentUser'} );
-$children->FromSQL( RT::IR->ChildrenQuery(
-    Queue  => $Queue,
-    Ticket => $Incident,
-    States => [@States],
+$children->FromSQL( RT::IR->Query(
+    Queue    => $Queue,
+    MemberOf => $Incident,
+    Status   => [@States],
 ) );
 
 my $all_children = RT::Tickets->new( $session{'CurrentUser'} );
-$all_children->FromSQL( RT::IR->ChildrenQuery(
-    Queue  => $Queue,
-    Ticket => $Incident,
-    States => [ $QueueObj->Lifecycle->Valid ],
+$all_children->FromSQL( RT::IR->Query(
+    Queue    => $Queue,
+    MemberOf => $Incident,
 ) );
 </%INIT>
 <%ARGS>

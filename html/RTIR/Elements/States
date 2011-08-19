@@ -1,3 +1,0 @@
-<%INIT>
-return RT::IR::States( %ARGS );
-</%INIT>

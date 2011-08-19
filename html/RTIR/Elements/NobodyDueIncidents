@@ -1,13 +1,7 @@
 <& /RTIR/Elements/DueIncidents, %ARGS, Title => $Title, Query => $Query &>
 <%INIT>
 my $Title = loc( "Most due unowned incidents" );
-unless ( $Query ) {
-    $Query = $m->comp( '/RTIR/Elements/NewQuery', Queue => 'Incidents' );
-    $Query = join ' AND ', map "( $_ )", grep $_,
-             $Query,
-             '( Owner.id = '. $RT::Nobody->id .' )';
-}
-
+$Query ||= RT::IR->ActiveQuery( Queue => 'Incidents', And => 'Owner.id = '. $RT::Nobody->id );
 </%INIT>
 <%ARGS>
 $Query => undef

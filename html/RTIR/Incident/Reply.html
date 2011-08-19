@@ -43,7 +43,7 @@
 <& /RTIR/Search/Elements/ShowResults,
     Queue         => 'Incident Reports',
     BaseURL       => $BaseURL,
-    BaseQuery     => RT::IR->BaseQuery(Queue => 'Incident Reports', MemberOf => $id),
+    BaseQuery     => RT::IR->Query(Queue => 'Incident Reports', MemberOf => $id),
     Query         => $Query,
     DisplayFormat => "__CheckBox.{SelectedReports}__, $Format",
     Format        => $Format,
@@ -58,7 +58,7 @@
 <& /RTIR/Search/Elements/ShowResults,
     Queue         => 'Investigations',
     BaseURL       => $BaseURL,
-    BaseQuery     => RT::IR->BaseQuery(Queue => 'Investigations', MemberOf => $id),
+    BaseQuery     => RT::IR->Query(Queue => 'Investigations', MemberOf => $id),
     Query         => $Query,
     DisplayFormat => "__CheckBox.{SelectedInvestigations}__, $Format",
     Format        => $Format,
@@ -73,7 +73,7 @@
 <& /RTIR/Search/Elements/ShowResults,
     Queue         => 'Investigations',
     BaseURL       => $BaseURL,
-    BaseQuery     => RT::IR->BaseQuery(Queue => 'Blocks', MemberOf => $id),
+    BaseQuery     => RT::IR->Query(Queue => 'Blocks', MemberOf => $id),
     Query         => $Query,
     DisplayFormat => "__CheckBox.{SelectedBlocks}__, $Format",
     Format        => $Format,
@@ -132,9 +132,7 @@ if ($DefaultStatus eq 'resolved') {
 my @queues = ('Incident Reports', 'Investigations');
 push @queues, 'Blocks' unless RT->Config->Get('RTIR_DisableBlocksQueue');
 
-my $ActiveStatesQuery =
-    join ' OR ', map "Status = '$_'",
-    RT::IR::States( Queue => \@queues );
+my $ActiveStatesQuery = RT::IR->ActiveQuery( Queue => \@queues );
 
 $Query ||= "( $ActiveStatesQuery )";
 

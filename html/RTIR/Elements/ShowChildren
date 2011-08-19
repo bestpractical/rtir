@@ -74,10 +74,10 @@ my $Type = RT::IR::TicketType( Queue => $Queue );
 $Format ||= RT->Config->Get('RTIRSearchResultFormats')->{'Child' . $Type};
 
 my $children = RT::Tickets->new( $session{'CurrentUser'} );
-$children->FromSQL( RT::IR->ChildrenQuery(
-    Queue  => $Queue,
-    Ticket => $Ticket,
-    States => [@States],
+$children->FromSQL( RT::IR->Query(
+    Queue    => $Queue,
+    MemberOf => $Ticket,
+    Status   => [@States],
 ));
 
 </%INIT>

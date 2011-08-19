@@ -55,6 +55,7 @@ our $VERSION = '2.6.1rc1';
 
 use Business::Hours;
 use Business::SLA;
+use Scalar::Util qw(blessed);
 
 
 # XXX: we push config metadata into RT, but we need
@@ -184,136 +185,104 @@ sub TicketType {
     return;
 }
 
-=head2 States
+=head2 Statuses
 
-Return sorted list of unique states for one, many or all RTIR queues.
+Return sorted list of unique statuses for one, many or all RTIR queues.
 
 Takes arguments 'Queue', 'Active' and 'Inactive'. By default returns
-only active states. Queue can be an array reference to list several
+initial and active statuses. Queue can be an array reference to list several
 queues.
 
 Examples:
 
-    States()
-    States( Queue => 'Blocks' );
-    States( Queue => [ 'Blocks', 'Incident Reports' ] );
-    States( Active => 0, Inactive => 1 );
+    RT::IR->Statuses()
+    RT::IR->Statuses( Queue => 'Blocks' );
+    RT::IR->Statuses( Queue => [ 'Blocks', 'Incident Reports' ] );
+    RT::IR->Statuses( Active => 0, Inactive => 1 );
 
 =cut
 
-sub States {
-    my %arg = ( Queue => undef, Active => 1, Inactive => 0, @_ );
-
-    my @queues = !$arg{'Queue'} ? (@QUEUES)
-        : ref $arg{'Queue'}? @{ $arg{'Queue'} } : ( $arg{'Queue'} );
-    
-    my @states;
-    foreach my $name (@queues) {
-        my $queue = RT::Queue->new($RT::SystemUser);
-        $queue->Load($name);
-        if ( $queue->id ) {
-            push @states, $queue->Lifecycle->Valid('initial', 'active')
-                if $arg{'Active'};
-            push @states, $queue->Lifecycle->Inactive
-                if $arg{'Inactive'};
-        }
-        else {
-            $RT::Logger->error( "failed to load queue $name" );
-        }
-
-    }
-
-    my %seen = ();
-    @states = sort grep !$seen{$_}++, @states;
-    return @states;
-}
-
-sub NewQuery {
+sub Statuses {
     my $self = shift;
-    my %args = (
-        Queue => undef,
-        states => undef,
-        add_states => undef,
-        @_,
-    );
-    my @states = ref $args{'states'}? @{ $args{'states'} } : ( $args{'states'} );
-    @states = grep $_, @states;
-    unless( @states ) {
-        @states = RT::IR::States( %args );
+    my %arg = ( Queue => undef, Initial => 1, Active => 1, Inactive => 0, @_ );
+
+    my @queues = !$arg{'Queue'} 
+        ? (@QUEUES)
+        : ref $arg{'Queue'} && !blessed $arg{'Queue'}
+        ? @{ $arg{'Queue'} }
+        : ( $arg{'Queue'} );
+
+    my (@initial, @active, @inactive);
+    foreach my $queue (@queues) {
+        unless ( blessed $queue ) {
+            my $tmp = RT::Queue->new($RT::SystemUser);
+            $tmp->Load( $queue );
+            $RT::Logger->error( "failed to load queue $queue" )
+                unless $tmp->id;
+            $queue = $tmp;
+        }
+        next unless $queue->id;
+
+        my $cycle = $queue->Lifecycle;
+        push @initial, $cycle->Initial if $arg{'Initial'};
+        push @active, $cycle->Active if $arg{'Active'};
+        push @inactive, $cycle->Inactive if $arg{'Inactive'};
     }
 
-    my @add_states = ref $args{'add_states'}? @{ $args{'add_states'} } : ( $args{'add_states'} );
     my %seen = ();
-    @states =  grep !$seen{$_}++, map lc, grep $_, @states, @add_states;
-
-    my $query = join " OR ",
-                map "'Status' = '$_'",
-                @states;
-    $query = "( $query )" if $query;
-    return $query;
+    return grep !$seen{$_}++, @initial, @active, @inactive;
 }
 
+sub ActiveQuery {
+    return (shift)->Query( Initial => 1, Active => 1, @_ );
+}
 
-sub BaseQuery {
+sub Query {
     my $self = shift;
     my %args = (
         Queue        => undef,
         Status       => undef,
         Active       => undef,
+        Inactive     => undef,
         Exclude      => undef,
         HasMember    => undef,
         HasNoMember  => undef,
         MemberOf     => undef,
         NotMemberOf  => undef,
         Constituency => undef,
+        And          => undef,
         @_
     );
-    my $res = '';
+    my @res;
     if ( $args{'Queue'} ) {
-        my $qname = ref $args{'Queue'} ? $args{'Queue'}->Name : $args{'Queue'};
-        $res = "Queue = '$qname'";
-        if ( defined $args{'Active'} ) {
-            my $queue = $args{'Queue'};
-            unless ( ref $args{'Queue'} ) {
-                my $queue = RT::Queue->new( RT->SystemUser );
-                $queue->Load( $args{'Queue'} );
-                unless ( $queue->id ) {
-                    $RT::Logger->error("Couldn't load queue '$args{Queue}'");
-                    $queue = undef;
-                }
-            }
-
-            if ( $queue ) {
-                my @statuses = $args{'Active'}
-                    ? $queue->ActiveStatusArray
-                    : $queue->InactiveStatusArray;
-                $res .= ' AND ('. join( ' OR ', map "Status = '$_'", @statuses ) .')';
-            }
-        }
+        my @queues = ref $args{'Queue'} && !blessed $args{'Queue'}
+            ? @{ $args{'Queue'} }
+            : ( $args{'Queue'} )
+        ;
+        push @res, map "($_)", join ' OR ', map "Queue = '$_'",
+            map blessed $_? $_->Name : $_,
+            @queues;
+    }
+    if ( !$args{'Status'} && ( $args{'Initial'} || $args{'Active'} || $args{'Inactive'} ) ) {
+        $args{'Status'} = [ $self->Statuses( %args ) ];
     }
     if ( my $s = $args{'Status'} ) {
-        $res .= ' AND ' if $res;
-        $res .= '('. join( ' OR ', map "Status = '$_'", ref $s? (@$s) : ($s) ) .')';
+        push @res, '('. join( ' OR ', map "Status = '$_'", ref $s? (@$s) : ($s) ) .')';
     }
     if ( my $t = $args{'Exclude'} ) {
-        $res .= ' AND ' if $res;
-        $res .= '('. join( ' AND ', map "id != '$_'", map int $_, ref $t? (@$t) : ($t) ) .')';
+        push @res, '('. join( ' AND ', map "id != '$_'", map int $_, ref $t? (@$t) : ($t) ) .')';
     }
     if ( my $t = $args{'HasMember'} ) {
-        $res .= ' AND ' if $res;
-        $res .= 'HasMember = '. (ref $t? $t->id : int $t);
+        push @res, 'HasMember = '. (ref $t? $t->id : int $t);
     }
     if ( my $t = $args{'HasNoMember'} ) {
-        $res .= ' AND ' if $res;
-        $res .= 'HasMember != '. (ref $t? $t->id : int $t);
+        push @res, 'HasMember != '. (ref $t? $t->id : int $t);
     }
     if ( my $t = $args{'NotMemberOf'} ) {
-        $res .= ' AND ' if $res;
-        $res .= 'MemberOf != '. (ref $t? $t->id : int $t);
+        push @res, 'MemberOf != '. (ref $t? $t->id : int $t);
     }
     if ( my $t = $args{'MemberOf'} ) {
-        $res .= ' AND ' if $res;
-        $res .= 'MemberOf = '. (ref $t? $t->id : int $t);
+        push @res, 'MemberOf = '. (ref $t? $t->id : int $t);
     }
     if (
         my $t = $args{'Constituency'}
@@ -324,28 +293,12 @@ sub BaseQuery {
             $tmp->Load( $t );
             $t = $tmp;
         }
-        $res .= ' AND ' if $res;
-        $res .= "CustomField.{Constituency} = '". $t->FirstCustomFieldValue('Constituency') ."'";
+        push @res, "CustomField.{Constituency} = '". $t->FirstCustomFieldValue('Constituency') ."'";
     }
-    return $res;
-}
-
-sub ChildrenQuery {
-    my $self = shift;
-    my %args = (
-        @_
-    );
-
-    my @parts;
-    push @parts, $self->NewQuery(
-        Queue  => $args{'Queue'},
-        states => $args{'States'},
-        add_states => $args{'AddStates'},
-    );
-    push @parts, $self->BaseQuery( Queue => $args{'Queue'} );
-    push @parts, "MemberOf = ". $args{'Ticket'}->id if $args{'Ticket'};
-
-    return join " AND ", map "($_)", @parts;
+    if ( my $c = $args{'And'} ) {
+        push @res, ref $c? @$c : ($c);
+    }
+    return join ' AND ', @res;
 }
 
 =head2 Incidents
@@ -360,7 +313,7 @@ sub Incidents {
     my $ticket = shift;
 
     my $res = RT::Tickets->new( $ticket->CurrentUser );
-    $res->FromSQL( "Queue = 'Incidents' AND HasMember = " . $ticket->id );
+    $res->FromSQL( $self->Query( Queue => 'Incidents', HasMember => $ticket ) );
     return $res;
 }
 
@@ -401,7 +354,7 @@ sub IsLinkedToActiveIncidents {
     my $parent = shift;
 
     my $tickets = RT::Tickets->new( $child->CurrentUser );
-    $tickets->FromSQL( $self->BaseQuery(
+    $tickets->FromSQL( $self->Query(
         Queue     => 'Incidents',
         Status    => [ RT::Lifecycle->Load('incidents')->Valid('initial', 'active') ],
         HasMember => $child,

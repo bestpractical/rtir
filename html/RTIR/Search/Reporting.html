@@ -52,8 +52,8 @@ $ShowChart      => 0
 
 $Queue     => ''
 
-$BaseQuery => RT::IR->BaseQuery( Queue => $Queue )
-$Query     => RT::IR->NewQuery( Queue => $Queue )
+$BaseQuery => RT::IR->Query( Queue => $Queue )
+$Query     => RT::IR->ActiveQuery( Queue => $Queue )
 $Format    => undef
 $Rows      => 50
 $Page      => 1

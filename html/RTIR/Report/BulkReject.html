@@ -139,8 +139,8 @@ my $BaseURL = "RTIR/Report/BulkReject.html?"
 $Status              => 'rejected'
 $Queue               => 'Incident Reports'
 
-$BaseQuery           => RT::IR->BaseQuery( Queue => $Queue )
-$Query               => RT::IR->NewQuery( Queue => $Queue )
+$BaseQuery           => RT::IR->Query( Queue => $Queue )
+$Query               => RT::IR->ActiveQuery( Queue => $Queue )
 $Format              => RT->Config->Get('RTIRSearchResultFormats')->{'RejectReports'}
 $Rows                => 50
 $Page                => 1

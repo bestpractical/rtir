@@ -81,7 +81,6 @@
 </table>
 
 <%INIT>
-my $Query = $m->comp('/RTIR/Elements/NewQuery', Queue => $Queue);
 my @conditions = ();
 my $lookup_cf_not_applies = 0;
 if ( defined $q && length $q ) {
@@ -97,7 +96,7 @@ if ( defined $q && length $q ) {
         push @conditions, "Content LIKE '$q'";
     }
 }
-$Query = join ' AND ', map "( $_ )", grep $_, $Query, @conditions;
+my $Query = RT::IR->ActiveQuery( Queue => $Queue, And => \@conditions );
 
 my $QueryString = $m->comp('/Elements/QueryString',
     Query   => $Query,

@@ -42,9 +42,8 @@ Description => loc('RTIR queues summary')
 my @queues = ('Incidents', 'Incident Reports', 'Investigations');
 push @queues, 'Blocks' unless RT->Config->Get('DisableBlocksQueue');
 my %states;
-$states{$_} = [ RT::IR::States( Queue => $_ ) ] foreach @queues;
-my %seen;
-my @states = sort grep !$seen{$_}++, map @$_, values %states;
+$states{$_} = [ RT::IR->Statuses( Queue => $_ ) ] foreach @queues;
+my @states = RT::IR->Statuses( Queue => \@queues );
 </%ONCE>
 <%INIT>
 my $Tickets = RT::Tickets->new($session{'CurrentUser'});

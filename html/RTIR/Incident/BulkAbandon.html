@@ -35,7 +35,7 @@
 my $result_set = $m->scomp('/RTIR/Search/Elements/ShowResults',
     Queue         => $Queue,
     BaseURL       => $BaseURL,
-    BaseQuery     => RT::IR->BaseQuery( Queue => $Queue ),
+    BaseQuery     => RT::IR->Query( Queue => $Queue ),
     Query         => $Query,
     DisplayFormat => "__CheckBox__, $Format",
     Format        => $Format,
@@ -156,8 +156,8 @@ my $BaseURL = "RTIR/Incident/BulkAbandon.html?"
 $Status          => 'abandoned'
 $Queue           => 'Incidents'
 
-$Query           => $m->comp( '/RTIR/Elements/NewQuery', Queue => $Queue );
-$Format          => RT->Config->Get('RTIRSearchResultFormats')->{'AbandonIncidents'};
+$Query           => RT::IR->ActiveQuery( Queue => $Queue )
+$Format          => RT->Config->Get('RTIRSearchResultFormats')->{'AbandonIncidents'}
 $Rows            => 50
 $Page            => 1
 $OrderBy         => 'id'

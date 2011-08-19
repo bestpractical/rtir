@@ -7,7 +7,7 @@ return $m->comp(
         id    => $ARGS{'id'},
         Queue => $ARGS{'Queue'},
     ),
-    BaseQuery => RT::IR->BaseQuery(
+    BaseQuery => RT::IR->Query(
         Queue       => $ARGS{'Queue'},
         NotMemberOf => $ARGS{'id'},
         Costituency => $ARGS{'id'},
