@@ -1,13 +1,7 @@
 <& /RTIR/Elements/DueIncidents, %ARGS, Title => $Title, Query => $Query &>
 <%INIT>
 my $Title = loc( "Most due incidents owned by [_1]", $Owner->Name );
-unless ( $Query ) {
-    $Query = RT::IR->NewQuery( Queue => 'Incidents' );
-    $Query = join ' AND ', map "( $_ )", grep $_,
-             $Query,
-             '( Owner.id = '. $Owner->id .')';
-}
-
+$Query ||= RT::IR->NewQuery( Queue => 'Incidents', And => 'Owner.id = '. $Owner->id );
 </%INIT>
 <%ARGS>
 $Owner => $session{'CurrentUser'}

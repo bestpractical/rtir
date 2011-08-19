@@ -132,9 +132,7 @@ if ($DefaultStatus eq 'resolved') {
 my @queues = ('Incident Reports', 'Investigations');
 push @queues, 'Blocks' unless RT->Config->Get('RTIR_DisableBlocksQueue');
 
-my $ActiveStatesQuery = RT::IR->BaseQuery(
-    Status => [ RT::IR->Statuses( Queue => \@queues ) ],
-);
+my $ActiveStatesQuery = RT::IR->NewQuery( Queue => \@queues );
 
 $Query ||= "( $ActiveStatesQuery )";
 
