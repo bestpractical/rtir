@@ -184,7 +184,7 @@ if ( $SubmitTicket && !$checks_failure ) {
     }
 
     my $update_incident_state = 1;
-    if ( $Status =~ /^(abandoned|resolved)$/ ) {
+    if ( $Status && $IncidentObj->QueueObj->Lifecycle->IsInactive( $Status ) ) {
         # if we are going to resolve/reject incident then do it only when we've
         # rejected all children that are not linked to another active incident(s)
         my $children = RT::Tickets->new( $session{'CurrentUser'} );
