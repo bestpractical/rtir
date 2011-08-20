@@ -119,7 +119,8 @@ if ($Status eq 'resolved') {
     }
 }
 
-my @queues = ('Incident Reports', 'Investigations');
+my @queues = ('Incident Reports');
+push @queues, 'Investigations' if $All;
 push @queues, 'Blocks' unless RT->Config->Get('RTIR_DisableBlocksQueue');
 
 $Query ||= RT::IR->ActiveQuery( Queue => \@queues );
