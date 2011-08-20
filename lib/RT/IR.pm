@@ -337,6 +337,16 @@ sub RelevantIncidents {
     return $res;
 }
 
+sub IncidentChildren {
+    my $self = shift;
+    my $ticket = shift;
+    my %args = (Queue => \@QUEUES, @_);
+
+    my $res = RT::Tickets->new( $ticket->CurrentUser );
+    $res->FromSQL( $self->Query( %args, MemberOf => $ticket->id ) );
+    return $res;
+}
+
 =head2 IncidentHasActiveChildren
 
 =cut
