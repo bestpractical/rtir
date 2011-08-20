@@ -159,18 +159,18 @@ if ( $SubmitTicket && !$checks_failure ) {
     foreach my $Ticket ( @selected_children ) {
         my $id = $Ticket->id;
 
-        my @tempresults;
         $ARGS{'UpdateAttachments'} = delete $session{'Attachments'};
-        push @tempresults, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS );
+        push @results, map { loc("Ticket [_1]: [_2]", $id, $_) },
+            ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
         unless ( RT::IR->IsLinkedToActiveIncidents( $Ticket, $IncidentObj ) ) {
             # XXX: we push into results directly cuz ProcessTicketBasics returns results
             # with leading 'Ticket XX:' string
-            push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef
-=> { %ARGS, $Status eq 'abandoned' ? ( Status => 'rejected' ) : () } );
+            push @results, ProcessTicketBasics(
+                TicketObj => $Ticket,
+                ARGSRef => { %ARGS, $Status eq 'abandoned' ? ( Status => 'rejected' ) : () },
+            );
         }
-
-        push @results, map { loc("Ticket [_1]: [_2]", $id, $_) } @tempresults;
     }
 
     my $update_incident_state = 1;
