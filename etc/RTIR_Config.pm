@@ -151,6 +151,71 @@ Set(
                 { label => 'Pending Removal', update => 'Comment' },
         ],
     },
+    __maps__ => {
+        'incidents -> incident_reports' => {
+            'open'      => 'open',
+            'resolved'  => 'resolved',
+            'abandoned' => 'rejected',
+        },
+        'incidents -> investigations' => {
+            'open'      => 'open',
+            'resolved'  => 'resolved',
+            'abandoned' => 'resolved',
+        },
+        'incidents -> blocks' => {
+            'open'      => 'active',
+            'resolved'  => 'removed',
+            'abandoned' => 'removed',
+        },
+        'incident_reports -> incidents' => {
+            'new'      => 'open',
+            'open'     => 'open',
+            'resolved' => 'resolved',
+            'rejected' => 'abandoned',
+        },
+        'incident_reports -> investigations' => {
+            'new'      => 'open',
+            'open'     => 'open',
+            'resolved' => 'resolved',
+            'rejected' => 'resolved',
+        },
+        'incident_reports -> blocks' => {
+            'new'      => 'pending activation',
+            'open'     => 'active',
+            'resolved' => 'removed',
+            'rejected' => 'removed',
+        },
+        'investigations -> incidents' => {
+            'open'     => 'open',
+            'resolved' => 'resolved',
+        },
+        'investigations -> incident_reports' => {
+            'open'     => 'open',
+            'resolved' => 'resolved',
+        },
+        'investigations -> blocks' => {
+            'open'     => 'active',
+            'resolved' => 'removed',
+        },
+        'blocks -> incidents' => {
+            'pending activation' => 'open',
+            'active'             => 'open',
+            'pending removal'    => 'open',
+            'removed'            => 'resolved',
+        },
+        'blocks -> incident_reports' => {
+            'pending activation' => 'new',
+            'active'             => 'open',
+            'pending removal'    => 'open',
+            'removed'            => 'resolved',
+        },
+        'blocks -> investigations' => {
+            'pending activation' => 'open',
+            'active'             => 'open',
+            'pending removal'    => 'open',
+            'removed'            => 'resolved',
+        },
+    },
 );
 
 =back
