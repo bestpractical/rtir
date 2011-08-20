@@ -101,6 +101,8 @@ $id = $ARGS{'id'} = $IncidentObj->id;
 
 $m->callback( %ARGS, CallbackName => 'Initial', Ticket => $IncidentObj );
 
+$Status = '' if $Status && $Status eq $IncidentObj->Status;
+
 my $title;
 if ($Status eq 'resolved') {
     $title = loc("Resolve Incident #[_1] (including children)", $id);
