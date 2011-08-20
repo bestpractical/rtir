@@ -337,6 +337,23 @@ sub RelevantIncidents {
     return $res;
 }
 
+=head2 IncidentHasActiveChildren
+
+=cut
+
+sub IncidentHasActiveChildren {
+    my $self = shift;
+    my $incident = shift;
+
+    my $children = RT::Tickets->new( $incident->CurrentUser );
+    $children->FromSQL( $self->ActiveQuery( Queue => \@QUEUES, MemberOf => $incident->id ) );
+    while ( my $child = $children->Next ) {
+        next if $self->IsLinkedToActiveIncidents( $child, $incident );
+        return 1;
+    }
+    return 0;
+}
+
 =head2 IsLinkedToActiveIncidents $ChildObj [$IncidentObj]
 
 Returns number of active incidents linked to child ticket
