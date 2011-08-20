@@ -133,14 +133,20 @@ $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
     self => $gnupg_widget,
     QueueObj => $IncidentObj->QueueObj,
 );
+
+my @selected_children;
+foreach my $id( @SelectedReports, @SelectedInvestigations, @SelectedBlocks ) {
+    my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
+    $ticket->Load( $id );
+    unless( $ticket->id ) {
+        push @results, loc( "Ticket [_1]: Couldn't load ticket.", $id );
+        next;
+    }
+    push @children, $ticket;
+}
+
 if ( $SubmitTicket && $gnupg_widget ) {
-    foreach my $id( @SelectedReports, @SelectedInvestigations, @SelectedBlocks ) {
-        my $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
-        $Ticket->Load( $id );
-        unless( $Ticket->id ) {
-            push @results, loc( "Ticket [_1]: Couldn't load ticket.", $id );
-            next;
-        }
+    foreach my $Ticket ( @selected_children ) {
         my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
             self      => $gnupg_widget,
             TicketObj => $Ticket,
@@ -150,14 +156,8 @@ if ( $SubmitTicket && $gnupg_widget ) {
 }
 
 if ( $SubmitTicket && !$checks_failure ) {
-    foreach my $id( @SelectedReports, @SelectedInvestigations, @SelectedBlocks ) {
-        my $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
-        $Ticket->Load( $id );
-        unless( $Ticket->id ) {
-            push @results, loc( "Ticket [_1]: Couldn't load ticket.", $id );
-            next;
-        }
-        $id = $Ticket->id;
+    foreach my $Ticket ( @selected_children ) {
+        my $id = $Ticket->id;
 
         my @tempresults;
         $ARGS{'UpdateAttachments'} = delete $session{'Attachments'};
