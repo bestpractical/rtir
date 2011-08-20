@@ -36,8 +36,6 @@
 
 <& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
-% my $recipients = 0;
-
 <h2><&|/l&>Reporters</&></h2>
 <& /RTIR/Search/Elements/ShowResults,
     Queue         => 'Incident Reports',
@@ -51,7 +49,6 @@
     OrderBy       => $OrderBy,
     Order         => $Order,
 &>
-% $recipients += $session{'tickets'}->CountAll;
 % if ( $All ) {
 <h2><&|/l&>Investigation Correspondents</&></h2>
 <& /RTIR/Search/Elements/ShowResults,
@@ -66,7 +63,6 @@
     OrderBy       => $OrderBy,
     Order         => $Order,
 &>
-% $recipients += $session{'tickets'}->CountAll;
 % unless( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
 <h2><&|/l&>Blocks Correspondents</&></h2>
 <& /RTIR/Search/Elements/ShowResults,
@@ -81,11 +77,10 @@
     OrderBy       => $OrderBy,
     Order         => $Order,
 &>
-% $recipients += $session{'tickets'}->CountAll;
 % }
 % }
 
-% if ($recipients == 0) {
+% unless ( $candidates ) {
 <h2 class="no-recipients">Warning: no recipients!</h2>
 % }
 
@@ -216,6 +211,8 @@ my $BaseURL = "RTIR/Incident/Reply.html?".
         Status => $Status,
         Action => $Action,
     );
+
+my $candidates = RT::IR->IncidentChildren( $IncidentObj, Queue => \@queues )->Count;
 
 </%INIT>
 
