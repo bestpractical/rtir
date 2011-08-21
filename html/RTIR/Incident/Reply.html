@@ -103,25 +103,6 @@ $m->callback( %ARGS, CallbackName => 'Initial', Ticket => $IncidentObj );
 
 $Status = '' if $Status && $Status eq $IncidentObj->Status;
 
-my $title;
-if ($Status eq 'resolved') {
-    $title = loc("Resolve Incident #[_1] (including children)", $id);
-} elsif ($Status eq 'abandoned') {
-    $title = loc("Abandon Incident #[_1] (including children)", $id);
-} else {
-    if ($All) {
-        $title = loc("Incident #[_1]: Reply to All", $id);
-    } else {
-        $title = loc("Incident #[_1]: Reply to Reporters", $id);
-    }
-}
-
-my @queues = ('Incident Reports');
-push @queues, 'Investigations' if $All;
-push @queues, 'Blocks' unless RT->Config->Get('RTIR_DisableBlocksQueue');
-
-$Query ||= RT::IR->ActiveQuery( Queue => \@queues );
-
 $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 
 my $checks_failure = 0;
@@ -205,6 +186,25 @@ foreach (qw(SelectedReports SelectedInvestigations SelectedBlocks)) {
         push @{ $m->{'request_args'} }, $_ .'All' => 1;
     }
 }
+
+my $title;
+if ($Status eq 'resolved') {
+    $title = loc("Resolve Incident #[_1] (including children)", $id);
+} elsif ($Status eq 'abandoned') {
+    $title = loc("Abandon Incident #[_1] (including children)", $id);
+} else {
+    if ($All) {
+        $title = loc("Incident #[_1]: Reply to All", $id);
+    } else {
+        $title = loc("Incident #[_1]: Reply to Reporters", $id);
+    }
+}
+
+my @queues = ('Incident Reports');
+push @queues, 'Investigations' if $All;
+push @queues, 'Blocks' unless RT->Config->Get('RTIR_DisableBlocksQueue');
+
+$Query ||= RT::IR->ActiveQuery( Queue => \@queues );
 
 my $BaseURL = "RTIR/Incident/Reply.html?".
     $m->comp('/Elements/QueryString',
