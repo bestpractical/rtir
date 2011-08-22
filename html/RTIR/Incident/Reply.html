@@ -121,7 +121,7 @@ foreach my $id( @SelectedReports, @SelectedInvestigations, @SelectedBlocks ) {
         push @results, loc( "Ticket [_1]: Couldn't load ticket.", $id );
         next;
     }
-    push @children, $ticket;
+    push @selected_children, $ticket;
 }
 
 if ( $SubmitTicket && $gnupg_widget ) {
@@ -135,25 +135,38 @@ if ( $SubmitTicket && $gnupg_widget ) {
 }
 
 if ( $SubmitTicket && !$checks_failure ) {
+    $ARGS{'UpdateAttachments'} = delete $session{'Attachments'};
+
+    my $incident_cycle = $IncidentObj->QueueObj->Lifecycle;
     foreach my $Ticket ( @selected_children ) {
         my $id = $Ticket->id;
 
-        $ARGS{'UpdateAttachments'} = delete $session{'Attachments'};
-        push @results, map { loc("Ticket [_1]: [_2]", $id, $_) },
+        push @results, map { loc("Ticket [_1]: [_2]", $id, $_) }
             ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
+        my %additional;
+        if ( $Status ) {
+            $additional{'Status'} = $incident_cycle->MoveMap(
+                $Ticket->QueueObj->Lifecycle
+            )->{ $Status };
+            unless ( $additional{'Status'} ) {
+                RT->Logger->error(
+                    "No mapping for $Status in Incidents queue"
+                    .' to status in '. $Ticket->QueueObj->Name .' queue'
+                );
+            }
+        }
+
         unless ( RT::IR->IsLinkedToActiveIncidents( $Ticket, $IncidentObj ) ) {
-            # XXX: we push into results directly cuz ProcessTicketBasics returns results
-            # with leading 'Ticket XX:' string
             push @results, ProcessTicketBasics(
                 TicketObj => $Ticket,
-                ARGSRef => { %ARGS, $Status eq 'abandoned' ? ( Status => 'rejected' ) : () },
+                ARGSRef => { %ARGS, %additional },
             );
         }
     }
 
     my $update_incident_state = 1;
-    if ( $Status && $IncidentObj->QueueObj->Lifecycle->IsInactive( $Status ) ) {
+    if ( $Status && $incident_cycle->IsInactive( $Status ) ) {
         # if we are going to resolve/reject incident then do it only when we've
         # rejected all children that are not linked to another active incident(s)
         $update_incident_state = 0 if RT::IR->IncidentHasActiveChildren( $IncidentObj );
