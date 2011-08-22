@@ -173,8 +173,12 @@ if ( $SubmitTicket && !$checks_failure ) {
     }
 
     if ( $update_incident_state ) {
-        push @results, ProcessObjectCustomFieldUpdates( Object => $IncidentObj, ARGSRef => \%ARGS);
-        push @results, ProcessTicketBasics( TicketObj => $IncidentObj, ARGSRef => \%ARGS );
+        push @results, ProcessObjectCustomFieldUpdates(
+            Object => $IncidentObj, ARGSRef => \%ARGS
+        );
+        push @results, ProcessTicketBasics(
+            TicketObj => $IncidentObj, ARGSRef => { %ARGS, Status => $Status },
+        );
     } else {
         push @results, loc("Status of the Incident left unchanged; not all children were updated");
     }
