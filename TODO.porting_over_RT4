@@ -86,6 +86,10 @@
 
 === TESTS
 
+* add tests to make sure attachments attached to all selected Children when
+  replying via Incident
+
+
 Test Summary Report
 -------------------
 t/incident/bulk-abandon.t                     (Wstat: 65280 Tests: 87 Failed: 0)
