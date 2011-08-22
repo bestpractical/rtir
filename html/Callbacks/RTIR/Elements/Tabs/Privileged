@@ -92,7 +92,7 @@ my $search_arguments = sub {
     return %res;
 };
 
-if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$} ) {
+if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Reply)\.html$} ) {
     my $id = $args->{'id'};
 
     # we'll never get here unless ticket is there and it's rtir's type
