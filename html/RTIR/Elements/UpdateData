@@ -42,7 +42,7 @@
 </td></tr>
 % }
 
-<tr><td align="right" valign="top"><&|/l&>Message</&>:</td><td>
+<tr><td class="label" valign="top"><&|/l&>Message</&>:</td><td>
 % $m->callback( %ARGS, CallbackPage => '/Ticket/Update.html', CallbackName => 'BeforeMessageBox' );
 % if ( exists $ARGS{'UpdateContent'} ) {
 % delete $ARGS{'QuoteTransaction'};

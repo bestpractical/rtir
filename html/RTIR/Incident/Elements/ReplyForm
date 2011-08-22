@@ -1,10 +1,11 @@
 <&| /Widgets/TitleBox, title => $Title &>
 
-<table>
-<tr><td align="right"><&|/l&>Subject</&>:</td>
-<td><i>(<&|/l&>uses subjects from tickets</&>)</i></td></tr>
+<table width="100%">
+<tr class="subject"><td class="label"><&|/l&>Subject</&>:</td>
+<td class="value"><i>(<&|/l&>uses subjects from tickets</&>)</i></td></tr>
 
-<tr><td align="right"><&|/l&>Update Type</&>:</td><td>
+<tr><td class="label"><&|/l&>Update Type</&>:</td>
+<td class="value">
 <select name="UpdateType">
 % if( $AllowComment ) {
   <option value="private" <% $CommentDefault %>><&|/l&>Comments (Not sent to requestors)</&></option>
@@ -30,7 +31,8 @@
 &></td></tr>
 % }
 
-<tr><td class="label"><&|/l&>Owner</&>:</td><td>
+<tr class="owner"><td class="label"><&|/l&>Owner</&>:</td>
+<td class="value">
 <& /Elements/SelectOwner,
     Name    => "Owner",
     Default => $Owner || $session{'CurrentUser'}->Id || undef,
