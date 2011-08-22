@@ -128,10 +128,6 @@ foreach my $entry ( map $whois_servers->{ $_ }, sort keys %{$whois_servers} ) {
     <input type="text" name="TemplateArg" size="60" value="<% $ARGS{'TemplateArg'} %>" />
   </td>
 </tr>
-  <tr>
-    <td align="right" colspan="2">
-    </td>
-  </tr>
 </table>
 % if ($loop eq "IP") {
 <& /Elements/Submit, Name => "TestAddresses", Caption => loc("Test email addresses"), Label => loc("Test")&>
