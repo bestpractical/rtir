@@ -86,7 +86,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
         Name => 'Status',
         QueueObj => $QueueObj,
         DefaultValue => 0,
-        Default => 'open',
+        Default => $ARGS{Status} || $QueueObj->Lifecycle->DefaultOnCreate,
     &>
   </td>
 </tr>
