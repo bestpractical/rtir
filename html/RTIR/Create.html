@@ -329,14 +329,9 @@ if ( $m->comp_exists("/RTIR/$Type/Create.html") ) {
     return $m->comp( "/RTIR/$Type/Create.html", %ARGS );
 }
 
-my ($Status, $name);
+my ($name);
 if ( $Type eq 'Report' ) {
     $name = 'Incident Report';
-    $Status = 'new';
-} elsif ( $Type eq 'Investigation' ) {
-    $Status = 'open';
-} elsif ( $Type eq 'Block' ) {
-    $Status = 'active';
 }
 $name ||= $Type;
 
