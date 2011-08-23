@@ -73,5 +73,5 @@ $AllowResponse => 1,
 $Owner         => undef,
 
 $TicketObj     => undef,
-$Status        => 'open',
+$Status        => '',
 </%ARGS>
