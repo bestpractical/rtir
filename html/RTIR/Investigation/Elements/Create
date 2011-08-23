@@ -1,6 +1,5 @@
-% foreach my $field( qw(Queue Status) ) {
-<input type="hidden" name="<% $NamePrefix . $field %>" value="<% $value_cb->( $field ) %>" />
-% }
+<input type="hidden" name="<% $NamePrefix %>Queue" value="<% $QueueObj->id %>" />
+<input type="hidden" name="<% $NamePrefix %>Status" value="<% $ARGS{ $NamePrefix .'Status' } || $QueueObj->Lifecycle->DefaultOnCreate %>" />
 
 <div class="ticket-create-basics">
 <&| /Widgets/TitleBox, title => loc("Basics"), class => 'ticket-info-basics' &>
@@ -146,16 +145,12 @@ $TicketObj => undef
 %SkipField => ()
 </%ARGS>
 <%INIT>
-my %DEFAULTS = (
-    Status => 'open',
-);
 my $value_cb = sub {
     my $name = shift;
     my $full_name = $NamePrefix . $name;
     my $value;
     $value = $ARGS{     $full_name };
     $value = $ARGS{     $name } unless defined $value;
-    $value = $DEFAULTS{ $name } unless defined $value;
     $value = ''                 unless defined $value;
     return $value;
 };
@@ -166,6 +161,7 @@ unless ( $QueueObj ) {
         $QueueObj->Load( $queue );
     }
 }
+
 if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
     foreach ( qw(Sign Encrypt) ) {
         $ARGS{ $NamePrefix . $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
