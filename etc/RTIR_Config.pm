@@ -416,12 +416,14 @@ Set(@RTIR_HomepageComponents, qw(
     MyAdminQueues
     MySupportQueues
     MyReminders
+    RefreshHomepage
+    Dashboards
+    SavedSearches
     /RTIR/Elements/NewReports
     /RTIR/Elements/UserDueIncidents
     /RTIR/Elements/NobodyDueIncidents
     /RTIR/Elements/DueIncidents
     /RTIR/Elements/QueueSummary
-    RefreshHomepage
 ));
 
 =item C<@Active_MakeClicky>
