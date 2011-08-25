@@ -134,19 +134,16 @@ my %defaults = (
 
 my $siblings_query = '';
 if ( $Type ne 'Incident' ) {
-    my $parents_query = '';
-
-    my $parents = RT::IR->Incidents( $Ticket );
-    while ( my $parent = $parents->Next ) {
-        $parents_query .= ' OR ' if $parents_query;
-        $parents_query .= "MemberOf = ". $parent->id;
-    }
-    if ( $parents_query ) {
-        $siblings_query .= "( $parents_query )";
-        my $queue_query = "Queue = '$Queue'";
-        $queue_query .= " OR Queue = 'Investigations'" if $Type eq 'Report';
-        $queue_query .= " OR Queue = 'Incident Reports'" if $Type eq 'Investigation';
-        $siblings_query .= " AND ( $queue_query )";
+    my @parents = @{ RT::IR->Incidents( $Ticket )->ItemsArrayRef || [] };
+    if ( @parents ) {
+        my @queues = ($Queue);
+        push @queues, 'Investigations' if $Type eq 'Report';
+        push @queues, 'Incident Reports' if $Type eq 'Investigation';
+        $siblings_query = RT::IR->Query(
+            Queue    => \@queues,
+            MemberOf => \@parents,
+            Exclude  => $id
+        );
     }
 }
 

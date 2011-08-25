@@ -24,10 +24,11 @@ if ( $type eq 'Incident' ) {
 return unless @parents;
 
 my $siblings = RT::Tickets->new( $Ticket->CurrentUser );
-my $query = "Queue = 'Incident Reports'"
-    ." AND (". join( ' OR ', map "MemberOf = $_", @parents ) . ")";
-$query .= " AND id != ". $Ticket->id if $type eq 'Report';
-$siblings->FromSQL( $query );
+$siblings->FromSQL( RT::IR->Query(
+    Queue    => 'Incident Reports',
+    MemberOf => \@parents,
+    Exclude  => $Ticket,
+) );
 $siblings->_DoSearch;
 return unless $siblings->Count;
 

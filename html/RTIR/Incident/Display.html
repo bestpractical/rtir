@@ -145,9 +145,7 @@ my $DoLinks = sub {
     # Blocks or Incedent Reports can have multiple incidents
     my $Type = RT::IR::TicketType( Ticket => $child );
     unless( $Type eq 'Block' || $Type eq 'Report' ) {
-        my $query = "Queue = 'Incidents' AND HasMember = ". $child->Id ." AND id != ". $parent->id;
-        my $incidents = RT::Tickets->new( $session{'CurrentUser'} );
-        $incidents->FromSQL( $query );
+        my $incidents = RT::IR->Incidents( $child, Exclude => $parent );
         while ( my $incident = $incidents->Next ) {
             $deleted_links = 1;
             $args{'DeleteLink-'. $child->id .'-MemberOf-'. $incident->id } = '';

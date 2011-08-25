@@ -125,12 +125,7 @@ my $constituency_cf = RT::IR->CustomFields( Constituency => Ticket => $Ticket );
 my $constituency_propagation = RT->Config->Get('_RTIR_Constituency_Propagation');
 my $has_children = 0;
 if ( $constituency_cf && $constituency_propagation eq 'reject' ) {
-    my $query = "( Queue = 'Incident Reports' OR Queue = 'Investigations' OR Queue = 'Blocks' )"
-        ." AND MemberOf = ". $Ticket->id;
-    my $tickets = RT::Tickets->new( $RT::SystemUser );
-    $tickets->FromSQL( $query );
-    $tickets->RowsPerPage(1);
-    $has_children = $tickets->First ? 1 : 0;
+    $has_children = RT::IR->IncidentChildren( $Ticket )->Count;
 }
 
 my @results;
