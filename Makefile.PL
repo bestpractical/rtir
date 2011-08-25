@@ -33,6 +33,8 @@ requires('Net::Whois::RIPE');
 # IP searching
 requires('Hook::LexWrap');
 requires('Regexp::Common');
+# queries parsing
+requires('Parse::BooleanLogic');
 
 # for tests
 build_requires('Test::More');

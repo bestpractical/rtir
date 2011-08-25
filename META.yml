@@ -29,6 +29,7 @@ requires:
   DBIx::SearchBuilder: 1.51
   Hook::LexWrap: 0
   Net::Whois::RIPE: 0
+  Parse::BooleanLogic: 0
   Regexp::Common: 0
   perl: 5.8.3
 resources:

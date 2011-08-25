@@ -74,6 +74,9 @@ my %TYPE = (
     'blocks'           => 'Block',
 );
 
+use Parse::BooleanLogic;
+my $ticket_sql_parser = Parse::BooleanLogic->new;
+
 =head1 FUNCTIONS
 
 =head2 BusinessHours
@@ -299,6 +302,32 @@ sub Query {
         push @res, ref $c? @$c : ($c);
     }
     return join ' AND ', @res;
+}
+
+sub OurQuery {
+    my $self = shift;
+    my $query = shift;
+
+    my ($has_our, $has_other, @queues) = (0, 0);
+    $ticket_sql_parser->walk(
+        RT::SQL::ParseToArray( $query ),
+        { operand => sub {
+            return undef unless $_[0]->{'key'} =~ /^Queue(?:\z|\.)/;
+            my $queue = RT::Queue->new( RT->SystemUser );
+            $queue->Load( $_[0]->{'value'} );
+            my $our = $self->OurQueue( $queue );
+            my ($negative) = RT::Tickets->ClassifySQLOperation( $_[0]->{'op'} );
+            if ( $our && !$negative ) {
+                $has_our = 1;
+                push @queues, $queue->Name;
+            } else {
+                $has_other = 1;
+            }
+        } },
+    );
+    return unless $has_our && !$has_other;
+    return 1 unless wantarray;
+    return (1, @queues);
 }
 
 =head2 Incidents
