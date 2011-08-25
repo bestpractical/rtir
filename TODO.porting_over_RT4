@@ -22,6 +22,9 @@
 * upgrade script that renames wrongly named scrips, we have
   a few scrips that named wrongly
 
+* replace /RTIR/Elements/QueueSummary with RT's QuickSearch
+  in user's settings for RTIR's home page
+
 === BRINGING UP TO DATE
 
 * Some pages with forms need new nice layouts like in RT, reply
