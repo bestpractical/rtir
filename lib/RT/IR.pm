@@ -327,6 +327,10 @@ sub OurQuery {
     );
     return unless $has_our && !$has_other;
     return 1 unless wantarray;
+
+    my %seen;
+    @queues = grep !$seen{ lc $_ }++, @queues;
+
     return (1, @queues);
 }
 
