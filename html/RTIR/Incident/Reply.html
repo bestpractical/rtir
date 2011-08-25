@@ -144,18 +144,9 @@ if ( $SubmitTicket && !$checks_failure ) {
         push @results, map { loc("Ticket [_1]: [_2]", $id, $_) }
             ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
-        my %additional;
-        if ( $Status ) {
-            $additional{'Status'} = $incident_cycle->MoveMap(
-                $Ticket->QueueObj->Lifecycle
-            )->{ $Status };
-            unless ( $additional{'Status'} ) {
-                RT->Logger->error(
-                    "No mapping for $Status in Incidents queue"
-                    .' to status in '. $Ticket->QueueObj->Name .' queue'
-                );
-            }
-        }
+        my %additional = (
+            Status => RT::IR->MapStatus( $Status, $incident_cycle => $Ticket ),
+        );
 
         unless ( RT::IR->IsLinkedToActiveIncidents( $Ticket, $IncidentObj ) ) {
             push @results, ProcessTicketBasics(

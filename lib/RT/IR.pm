@@ -418,6 +418,40 @@ sub IsLinkedToActiveIncidents {
     return $tickets->Count;
 }
 
+sub MapStatus {
+    my $self = shift;
+    my ($status, $from, $to) = @_;
+    return unless $status;
+
+    foreach my $e ($from, $to) {
+        if ( blessed $e ) {
+            if ( $e->isa('RT::Queue') ) {
+                $e = $e->Lifecycle;
+            }
+            elsif ( $e->isa('RT::Ticket') ) {
+                $e = $e->QueueObj->Lifecycle;
+            }
+            elsif ( !$e->isa('RT::Lifecycle') ) {
+                $e = undef;
+            }
+        }
+        else {
+            my $queue = RT::Queue->new( RT->SystemUser );
+            $queue->Load( $e );
+            $e = $queue->Lifecycle;
+        }
+        return unless $e;
+    }
+    my $res = $from->MoveMap( $to )->{ $status };
+    unless ( $res ) {
+        RT->Logger->warning(
+            "No mapping for $status in ". $from->Name .' lifecycle'
+            .' to status in '. $to->Name .' lifecycle'
+        );
+    }
+    return $res;
+}
+
 sub GetCustomField {
     my $field = shift or return;
     return (__PACKAGE__->CustomFields( $field ))[0];
