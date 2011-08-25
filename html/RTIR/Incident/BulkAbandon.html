@@ -33,9 +33,9 @@
 <%PERL>
 # XXX: cache result set to check if get empty results
 my $result_set = $m->scomp('/RTIR/Search/Elements/ShowResults',
-    Queue         => $Queue,
-    BaseURL       => $BaseURL,
-    BaseQuery     => RT::IR->Query( Queue => $Queue ),
+    Queue         => 'Incidents',
+    BaseURL       => 'RTIR/Incident/BulkAbandon.html',
+    BaseQuery     => RT::IR->Query( Queue => 'Incidents' ),
     Query         => $Query,
     DisplayFormat => "__CheckBox__, $Format",
     Format        => $Format,
@@ -81,6 +81,7 @@ my @CheckBox = (
 );
 my $title = loc('Abandon Incidents');
 my $SubmitCaption = loc("Abandon selected incidents");
+my $Status = 'abandoned';
 
 my ( @results );
 
@@ -152,15 +153,10 @@ if ( $ARGS{'BulkAbandon'} ) {
     # force redo search if we changed tickets
     $session{'tickets'}->RedoSearch if $session{'tickets'};
 }
-my $BaseURL = "RTIR/Incident/BulkAbandon.html?"
-    . $m->comp('/Elements/QueryString', Queue => $Queue, Status => $Status);
 
 </%INIT>
 <%ARGS>
-$Status          => 'abandoned'
-$Queue           => 'Incidents'
-
-$Query           => RT::IR->ActiveQuery( Queue => $Queue )
+$Query           => RT::IR->ActiveQuery( Queue => 'Incidents' )
 $Format          => RT->Config->Get('RTIRSearchResultFormats')->{'AbandonIncidents'}
 $Rows            => 50
 $Page            => 1
