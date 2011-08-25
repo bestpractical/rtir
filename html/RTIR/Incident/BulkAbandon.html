@@ -22,7 +22,7 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<& /RTIR/Elements/Header, Title => $title &>
+<& /RTIR/Elements/Header, Title => loc('Abandon Incidents') &>
 <& /Elements/Tabs &>
 
 <& /Elements/ListActions, actions => \@results &>
@@ -64,8 +64,8 @@ my $result_set = $m->scomp('/RTIR/Search/Elements/ShowResults',
 
 <& /Elements/Submit,
     Name => "BulkAbandon",
-    Caption => $SubmitCaption,
-    Label => loc("Reject"),
+    Caption => loc("Abandon selected incidents"),
+    Label => loc("Abandon"),
     CheckAll => 1, ClearAll => 1,
     CheckboxName => 'SelectedTickets',
 &>
@@ -79,8 +79,6 @@ my @CheckBox = (
     { Value => 'Incident Reports', Title => loc("Reply to all reports") },
     { Value => 'Investigations',   Title => loc("Reply to all investigations") },
 );
-my $title = loc('Abandon Incidents');
-my $SubmitCaption = loc("Abandon selected incidents");
 my $Status = 'abandoned';
 
 my ( @results );
