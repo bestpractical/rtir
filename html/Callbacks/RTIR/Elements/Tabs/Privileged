@@ -398,10 +398,14 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Reply)\.
     );
 }
 
-
-if ( $request_path =~ m{^/RTIR/(?:index\.html|)$} ) {
-    PageMenu()->child( edit => title => loc('Edit'), path => '/RTIR/Prefs/MyRT.html' )
-        if $session{'CurrentUser'}->HasRight(Right => 'ModifySelf', Object => $RT::System);
+if ( $session{'CurrentUser'}->HasRight(Right => 'ModifySelf', Object => $RT::System) ) {
+    if ( $request_path =~ m{^/RTIR/(?:index\.html|)$} ) {
+        PageMenu()->child( edit => title => loc('Edit'), path => '/RTIR/Prefs/Home.html' )
+    }
+    Menu->child('preferences')->child('settings')->child(
+        rtir_home_page => title => loc('RTIR at a glance'),
+        path => '/RTIR/Prefs/Home.html',
+    );
 }
 
 PageWidgets()->child('simple_search')->title( $m->scomp(

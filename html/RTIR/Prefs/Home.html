@@ -1,5 +1,5 @@
-<& /Elements/Header, Title => $title &>
-<& /User/Elements/Tabs, current_tab => 'RTIR/Prefs/Home.html', Title => $title &>
+<& /Elements/Header, Title => loc("Customize '[_1]'", loc("RTIR home page") ) &>
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
 <& /Widgets/SelectionBox:header, nojs => 1 &>
@@ -16,7 +16,6 @@
 # XXX: copy&past of the similar RT's page
 
 my @results;
-my $title = loc("Customize '[_1]'", loc("RTIR home page") );
 my $user = $session{'CurrentUser'}->UserObj;
 
 unless (exists $session{'my_rtir_portlets'}) {

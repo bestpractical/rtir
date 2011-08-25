@@ -1,9 +1,0 @@
-<%ARGS>
-$tabs => {}
-</%ARGS>
-<%INIT>
-$tabs->{ra} = {
-    title => loc('RTIR Home'),
-    path  => 'RTIR/Prefs/Home.html',
-};
-</%INIT>
