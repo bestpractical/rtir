@@ -44,8 +44,6 @@
 
 * Don't see Articles on IR's Update.html
 
-* BulkAbandon needs a lot of love. see TODO comments
-
 * BulkAbandon misses Query arguments when updated
 
 * /Incident/Reply.html needs refine query page
@@ -91,15 +89,4 @@
 
 * add tests to make sure attachments attached to all selected Children when
   replying via Incident
-
-
-Test Summary Report
--------------------
-t/incident/bulk-abandon.t                     (Wstat: 65280 Tests: 87 Failed: 0)
-  Non-zero exit status: 255
-  Parse errors: Bad plan.  You planned 105 tests but ran 87.
-Files=37, Tests=2440, 1512 wallclock secs ( 0.80 usr  0.36 sys + 411.18 cusr 33.56 csys = 445.90 CPU)
-Result: FAIL
-Failed 3/37 test programs. 3/2440 subtests failed.
-make: *** [test_dynamic] Ошибка 255
 

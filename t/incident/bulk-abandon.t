@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 105;
+use RT::IR::Test tests => 112;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -63,12 +63,13 @@ foreach my $id (@incident_ids) {
 	$agent->ticket_status_is( $id, 'abandoned', "Incident $id is abandoned");
 }
 
-foreach my $id (@ir_ids ) {
-	diag("IR #$id state is " . $agent->ticket_status( $id)) if($ENV{'TEST_VERBOSE'});
+foreach my $id ($ir_ids[0]) {
+    $agent->ticket_status_is( $id, 'resolved', 'correct status' );
+}
+foreach my $id (@ir_ids[ 1 .. $#invests ] ) {
+    $agent->ticket_status_is( $id, 'rejected', 'correct status' );
 }
 foreach my $id (@invests) {
-	diag("IR #$id state is " . $agent->ticket_status( $id)) if($ENV{'TEST_VERBOSE'});
+    $agent->ticket_status_is( $id, 'resolved', 'correct status' );
 }
-
-
 

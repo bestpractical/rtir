@@ -87,6 +87,8 @@ my ( @results );
 $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 
 if ( $ARGS{'BulkAbandon'} ) {
+    $ARGS{'UpdateAttachments'} = delete $session{'Attachments'};
+
     my @tempresults;
     foreach my $id ( @SelectedTickets ) {
         $m->out('<!--  Processing <% $t->id %> -->'); $m->flush_buffer;
@@ -105,38 +107,41 @@ if ( $ARGS{'BulkAbandon'} ) {
         }
 
         # process replies
-        if( scalar @ReplyToAll ) {
-            # XXX: why do we limit to open?
-            # RT4 TODO
-            my $query = "Status = 'open' AND MemberOf = $id";
-            $query .= " AND (". join(' OR ', map "Queue = '$_'", @ReplyToAll) .")";
-            my $members = RT::Tickets->new( $t->CurrentUser );
-            $members->FromSQL( $query );
-            while( my $member = $members->Next ) {
-                $ARGS{'UpdateAttachments'} = delete $session{'Attachments'} if $session{'Attachments'};
-                push @tempresults, ProcessUpdateMessage(TicketObj => $member, ARGSRef => \%ARGS );
+        if ( @ReplyToAll ) {
+            my $children = RT::IR->IncidentChildren(
+                $t, Queue => \@ReplyToAll, Initial => 1, Active => 1,
+            );
+            while ( my $child = $children->Next ) {
+                push @tempresults, ProcessUpdateMessage(
+                    TicketObj => $child, ARGSRef => \%ARGS,
+                );
             }
         }
 
         # process status updates
-        my @tmp;
         {
-            # RT4 TODO
-            my $query = "MemberOf = $id"
-                ." AND ( ". join(" OR ", map "Status = '$_'", RT->Config->Get('ActiveStatus') ) ." )"
-                ." AND ( Queue = 'Incident Reports' OR Queue = 'Blocks' OR Queue = 'Investigations' )";
+            my $children = RT::IR->IncidentChildren(
+                $t, Initial => 1, Active => 1,
+            );
+            while ( my $child = $children->Next ) {
+                next if RT::IR->IsLinkedToActiveIncidents( $child, $t );
 
-            my $members = new RT::Tickets( $t->CurrentUser );
-            $members->FromSQL( $query );
-            while( my $member = $members->Next ) {
-                next if RT::IR->IsLinkedToActiveIncidents( $member, $t );
-                push @tmp, $member;
+                push @tempresults, ProcessTicketBasics(
+                    TicketObj => $child,
+                    ARGSRef => {
+                        %ARGS,
+                        Status => RT::IR->MapStatus( $Status, $t => $child ),
+                    },
+                );
             }
         }
 
-        push @tmp, $t;
-        foreach my $t( @tmp ) {
-            push @tempresults, ProcessTicketBasics( ARGSRef => \%ARGS, TicketObj => $t );
+        unless ( RT::IR->IncidentHasActiveChildren( $t ) ) {
+            push @tempresults, ProcessTicketBasics(
+                TicketObj => $t, ARGSRef => { %ARGS, Status => $Status },
+            );
+        } else {
+            push @tempresults, [$t->id, loc("Status of the Incident left unchanged; not all children were updated")];
         }
     }
 
@@ -152,7 +157,6 @@ my $BaseURL = "RTIR/Incident/BulkAbandon.html?"
 
 </%INIT>
 <%ARGS>
-# RT4 TODO
 $Status          => 'abandoned'
 $Queue           => 'Incidents'
 
