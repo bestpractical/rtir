@@ -1,7 +1,16 @@
 <%INIT>
 return unless RT::IR->OurQueue( $QueueObj );
-$m->subexec( '/RTIR/Create.html', %$ARGSRef, Queue => $QueueObj->Name );
-$m->abort;
+
+if ( grep !/^(id|results|Queue)$/, keys %$ARGSRef ) {
+    # for something complex use subexec
+    $m->subexec( '/RTIR/Create.html', %$ARGSRef, Queue => $QueueObj->Name );
+    $m->abort;
+}
+
+my $url = RT->Config->Get('WebURL') .'RTIR/Create.html?'
+    . $m->comp('/Elements/QueryString', %$ARGSRef, Queue => $QueueObj->Name )
+;
+RT::Interface::Web::Redirect( $url );
 </%INIT>
 <%ARGS>
 $QueueObj => undef
