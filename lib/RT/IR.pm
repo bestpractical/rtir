@@ -205,15 +205,20 @@ Examples:
 
 =cut
 
+my $flat = sub {
+    my ($arg, $method) = @_;
+    my @list = blessed $arg ? ($arg) : ref $arg ? @$arg : ($arg);
+    if ( $method ) {
+        $_ = $_->$method() foreach grep blessed($_), @list;
+    }
+    return @list;
+};
+
 sub Statuses {
     my $self = shift;
     my %arg = ( Queue => undef, Initial => 1, Active => 1, Inactive => 0, @_ );
 
-    my @queues = !$arg{'Queue'} 
-        ? (@QUEUES)
-        : ref $arg{'Queue'} && !blessed $arg{'Queue'}
-        ? @{ $arg{'Queue'} }
-        : ( $arg{'Queue'} );
+    my @queues = $flat->( $arg{'Queue'} || \@QUEUES );
 
     my (@initial, @active, @inactive);
     foreach my $queue (@queues) {
@@ -256,36 +261,32 @@ sub Query {
         And          => undef,
         @_
     );
+
     my @res;
     if ( $args{'Queue'} ) {
-        my @queues = ref $args{'Queue'} && !blessed $args{'Queue'}
-            ? @{ $args{'Queue'} }
-            : ( $args{'Queue'} )
-        ;
         push @res, map "($_)", join ' OR ', map "Queue = '$_'",
-            map blessed $_? $_->Name : $_,
-            @queues;
+            $flat->( $args{'Queue'}, 'Name' );
     }
     if ( !$args{'Status'} && ( $args{'Initial'} || $args{'Active'} || $args{'Inactive'} ) ) {
         $args{'Status'} = [ $self->Statuses( %args ) ];
     }
     if ( my $s = $args{'Status'} ) {
-        push @res, '('. join( ' OR ', map "Status = '$_'", ref $s? (@$s) : ($s) ) .')';
+        push @res, join ' OR ', map "Status = '$_'", $flat->( $s );
     }
     if ( my $t = $args{'Exclude'} ) {
-        push @res, '('. join( ' AND ', map "id != '$_'", map int $_, ref $t? (@$t) : ($t) ) .')';
+        push @res, join ' AND ', map "id != '$_'", map int $_, $flat->( $t, 'id' );
     }
     if ( my $t = $args{'HasMember'} ) {
-        push @res, 'HasMember = '. (ref $t? $t->id : int $t);
+        push @res, join ' OR ', map "HasMember = $_", map int $_, $flat->( $t, 'id' );
     }
     if ( my $t = $args{'HasNoMember'} ) {
-        push @res, 'HasMember != '. (ref $t? $t->id : int $t);
-    }
-    if ( my $t = $args{'NotMemberOf'} ) {
-        push @res, 'MemberOf != '. (ref $t? $t->id : int $t);
+        push @res, join ' AND ', map "HasMember != $_", map int $_, $flat->( $t, 'id' );
     }
     if ( my $t = $args{'MemberOf'} ) {
-        push @res, 'MemberOf = '. (ref $t? $t->id : int $t);
+        push @res, join ' OR ', map "MemberOf = $_", map int $_, $flat->( $t, 'id' );
+    }
+    if ( my $t = $args{'NotMemberOf'} ) {
+        push @res, join ' AND ', map "MemberOf != $_", map int $_, $flat->( $t, 'id' );
     }
     if (
         my $t = $args{'Constituency'}
@@ -301,7 +302,7 @@ sub Query {
     if ( my $c = $args{'And'} ) {
         push @res, ref $c? @$c : ($c);
     }
-    return join ' AND ', @res;
+    return join ' AND ', map { /\b(?:AND|OR)\b/? "( $_ )" : $_ } @res;
 }
 
 sub OurQuery {
