@@ -28,7 +28,10 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="<%RT->Config->Get('WebPath')%>/RTIR/Incident/BulkAbandon.html" method="post">
-<input type="hidden" name="Status" value="<% $Status %>" />
+% foreach my $arg (qw(Query Format Rows Page OrderBy Order) ) {
+% next unless defined $ARGS{ $arg } && length $ARGS{ $arg };
+<input type="hidden" name="<% $arg %>" value="<% $ARGS{ $arg } %>" />
+% }
 
 <%PERL>
 # XXX: cache result set to check if get empty results
