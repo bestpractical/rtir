@@ -349,7 +349,11 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Reply)\.
     );
 } elsif ( $request_path =~ m{^/RTIR/(Search/|Incident/BulkAbandon\.html$)} ) {
     my $queue = $args->{'Queue'} || '';
-    my $type = RT::IR::TicketType( Queue => $queue );
+    unless ( $queue ) {
+        my (undef, @queues) = RT::IR->OurQuery( $args->{'Query'} );
+        $queue = $queues[0] if @queues == 1;
+    }
+    my $type = RT::IR::TicketType( Queue => $queue ) || '';
 
     my %args = (
         $search_arguments->(),
