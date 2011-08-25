@@ -73,26 +73,18 @@ Resolve all children.
 
 sub Commit {
     my $self = shift;
-    my $id = $self->TicketObj->Id;
+    my $incident = $self->TicketObj;
+    my $id = $incident->Id;
 
     foreach my $qname ( 'Incident Reports', 'Investigations', 'Blocks' ) {
         next if $qname eq 'Blocks' && RT->Config->Get('RTIR_DisableBlocksQueue');
 
-        my $queue = RT::Queue->new( $self->CurrentUser );
-        $queue->Load( $qname );
-        unless ( $queue->id ) {
-            $RT::Logger->error("Couldn't load '$qname' queue");
-            next;
-        }
-
-        my $cycle = $queue->Lifecycle;
-        my $query = "MemberOf = $id AND Queue = '$qname' AND "
-            . join ' AND ', map "Status != '$_'", $cycle->Inactive;
-
-        my $members = RT::Tickets->new( $self->CurrentUser );
-        $members->FromSQL( $query );
+        my $members = RT::IR->IncidentChildren(
+            $incident, Queue => $qname,
+            Initial => 1, Active => 1,
+        );
         while ( my $member = $members->Next ) {
-            if ( RT::IR->IsLinkedToActiveIncidents( $member, $self->TicketObj ) ) {
+            if ( RT::IR->IsLinkedToActiveIncidents( $member, $incident ) ) {
                 $member->Comment(Content => <<END);
 
 Linked Incident \#$id was resolved, but ticket still has unresolved linked Incidents.
@@ -100,10 +92,12 @@ Linked Incident \#$id was resolved, but ticket still has unresolved linked Incid
 END
                 next;
             }
-            my ($res, $msg) = $member->SetStatus(
-                $cycle->DefaultStatus('on_incident_resolve') || ($cycle->Inactive)[0]
-            );
-            $RT::Logger->info( "Couldn't resolve ticket: $msg" ) unless $res;
+            my $set_to = RT::IR->MapStatus( $incident->Status, $incident => $qname );
+            next unless $set_to;
+            next if $member->Status eq $set_to;
+
+            my ($res, $msg) = $member->SetStatus( $set_to );
+            RT->Logger->info( "Couldn't resolve ticket: $msg" ) unless $res;
         }
     }
     return 1;
