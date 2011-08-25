@@ -350,6 +350,14 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Reply)\.
 } elsif ( $request_path =~ m{^/RTIR/(Search/|Incident/BulkAbandon\.html$)} ) {
     my $queue = $args->{'Queue'} || '';
     unless ( $queue ) {
+        if ( $request_path =~ /Incident/ ) {
+            $queue = 'Incidents';
+        }
+        elsif ( $request_path =~ /Report/ ) {
+            $queue = 'Incident Reports';
+        }
+    }
+    unless ( $queue ) {
         my (undef, @queues) = RT::IR->OurQuery( $args->{'Query'} );
         $queue = $queues[0] if @queues == 1;
     }
