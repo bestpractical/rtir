@@ -347,7 +347,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Reply)\.
         back => title => loc('Back to ticket #[_1]', $id),
         path => "/RTIR/Display.html?id=$id",
     );
-} elsif ( $request_path =~ m{^/RTIR/(Search/|Incident/BulkAbandon\.html$)} ) {
+} elsif ( $request_path =~ m{^/RTIR/(Search/|Incident/BulkAbandon\.html$|Report/BulkReject\.html$)} ) {
     my $queue = $args->{'Queue'} || '';
     unless ( $queue ) {
         if ( $request_path =~ /Incident/ ) {
