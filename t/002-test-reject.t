@@ -94,7 +94,7 @@ diag "test that after reject links to incidents are still there" if $ENV{'TEST_V
     $agent->display_ticket( $inc_id);
     $agent->follow_link_ok({text => "Incident Reports", n => 2}, "Followed 'Incident Reports' link");
     $agent->form_number(3);
-    $agent->tick( States => 'rejected' );
+    $agent->tick( Statuses => 'rejected' );
     $agent->click('RefineStatus');
 
     $agent->has_tag('a', "$id", 'we have link to ticket');
@@ -124,7 +124,7 @@ diag "test that after quick reject links to incidents are still there" if $ENV{'
     $agent->display_ticket( $inc_id);
     $agent->follow_link_ok({text => "Incident Reports", n => 2}, "Followed 'Incident Reports' link");
     $agent->form_number(3);
-    $agent->tick( States => 'rejected' );
+    $agent->tick( Statuses => 'rejected' );
     $agent->click('RefineStatus');
 
     $agent->has_tag('a', "$id", 'we have link to ticket');
@@ -163,7 +163,7 @@ diag "test that after bulk reject links to incidents are still there" if $ENV{'T
     $agent->display_ticket( $inc_id);
     $agent->follow_link_ok({text => "Incident Reports", n => 2}, "Followed 'Incident Reports' link");
     $agent->form_number(3);
-    $agent->tick( States => 'rejected' );
+    $agent->tick( Statuses => 'rejected' );
     $agent->click('RefineStatus');
 
     $agent->has_tag('a', "$id", 'we have link to ticket');

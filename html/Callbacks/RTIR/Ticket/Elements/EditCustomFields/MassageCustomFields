@@ -7,7 +7,7 @@ $QueueObj => undef
 my $queue = $QueueObj || $TicketObj->QueueObj;
 return unless RT::IR->OurQueue( $queue );
 
-# We never want to see the RTIR custom fields State and Constituency in the edity ui
+# We never want to see the RTIR's custom field Constituency in the edity ui
 $CustomFields->_OpenParen('RTIR');
 $CustomFields->Limit( SUBCLAUSE => 'RTIR', ENTRYAGGREGATOR => 'AND', FIELD => 'Name', OPERATOR => '!=', VALUE => 'Constituency');
 $CustomFields->_CloseParen('RTIR');

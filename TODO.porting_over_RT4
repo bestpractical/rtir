@@ -49,10 +49,6 @@
 
 === CLEANUP && REFACTORING
 
-* /Incident/Children/ and friends use "State" all over the place,
-  anyway we break backwards compatibility, let's be consistent
-  and ditch the word
-
 * make Submit buttons names consistent with RT's
 
 * move html/RTIR/Incident/LinkArticles.html -> html/RTIR/Link/Articles.html

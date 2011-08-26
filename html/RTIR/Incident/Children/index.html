@@ -38,13 +38,13 @@
 <input type="hidden" name="Queue" value="<% $Queue %>" />
 
 <& /RTIR/Elements/ShowChildren,
-    Ticket             => $Incident,
-    Queue              => $Queue,
-    States             => [@States],
-    FullList           => RT->Config->Get('WebPath')."/RTIR/Incident/Children/?Queue=$Queue&id=$id",
-    Delete             => $delete,
-    ShowHeader         => 1,
-    ShowStatesSelector => 1,
+    Ticket               => $Incident,
+    Queue                => $Queue,
+    Statuses             => [@Statuses],
+    FullList             => RT->Config->Get('WebPath')."/RTIR/Incident/Children/?Queue=$Queue&id=$id",
+    Delete               => $delete,
+    ShowHeader           => 1,
+    ShowStatusesSelector => 1,
 &>
 
 <& /Elements/Submit, Name => 'Unlink', Label => loc('Unlink Report') &>
@@ -77,14 +77,14 @@ my $Title = loc("$Queue for Incident #[_1]: [_2]", $id, $Incident->Subject);
 
 my $delete = $Incident->CurrentUserHasRight('ModifyTicket') ? 1: 0;
 
-@States = RT::IR->Statuses( Queue => $Queue )
-    unless @States;
+@Statuses = RT::IR->Statuses( Queue => $Queue )
+    unless @Statuses;
 
 my $children = RT::Tickets->new( $session{'CurrentUser'} );
 $children->FromSQL( RT::IR->Query(
     Queue    => $Queue,
     MemberOf => $Incident,
-    Status   => [@States],
+    Status   => [@Statuses],
 ) );
 
 my $all_children = RT::Tickets->new( $session{'CurrentUser'} );
@@ -98,5 +98,5 @@ $id              => undef
 $Queue           => 'Incident Reports'
 
 @SelectedTickets => ()
-@States          => ()
+@Statuses        => ()
 </%ARGS>
