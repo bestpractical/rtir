@@ -25,22 +25,20 @@
 <table>
   <tr>
     <td class="label"><&|/l&>Starts</&>:</td>
-    <td class="entry"><& /Elements/SelectDate, menu_prefix => 'Starts', current => 0 &> 
+    <td class="entry"><& /Elements/SelectDate, menu_prefix => 'Starts', Default => $Starts_Date &>
         (<% $TicketObj->StartsObj->AsString %>)</td>
   </tr>
   <tr>
-    <td class="label">
-      <&|/l&>Last Contact</&>:
-    </td>
+    <td class="label"><&|/l&>Last Contact</&>:</td>
     <td class="entry">
-      <& /Elements/SelectDate, menu_prefix => 'Told', current => 0 &> (<% $TicketObj->ToldObj->AsString %>)
+      <& /Elements/SelectDate, menu_prefix => 'Told', Default => $Told_Date &> (<% $TicketObj->ToldObj->AsString %>)
     </td>
   </tr>
 % if ($qname eq 'Incident Reports' || $qname eq 'Investigations' || $qname eq 'Blocks') {
   <tr>
     <td class="label"><&|/l&>Started</&>:</td>
     <td class="entry">
-      <& /Elements/SelectDate, menu_prefix => 'Started', current => 0 &> (<% $TicketObj->DueObj->AsString %>)
+      <& /Elements/SelectDate, menu_prefix => 'Started', Default => $Started_Date &> (<% $TicketObj->DueObj->AsString %>)
     </td>
   </tr>
 % }
@@ -48,7 +46,7 @@
   <tr>
     <td class="label"><&|/l&>Due</&>:</td>
     <td class="entry">
-      <& /Elements/SelectDate, menu_prefix => 'Due', current => 0 &> (<% $TicketObj->DueObj->AsString %>)
+      <& /Elements/SelectDate, menu_prefix => 'Due', Default => $Due_Date &> (<% $TicketObj->DueObj->AsString %>)
     </td>
   </tr>
 % }
@@ -57,6 +55,11 @@
 </table>
 <%ARGS>
 $TicketObj => undef
+
+$Starts_Date => undef
+$Told_Date => undef
+$Started_Date => undef
+$Due_Date => undef
 </%ARGS>
 <%INIT>
 my $qname = $TicketObj->QueueObj->Name;
