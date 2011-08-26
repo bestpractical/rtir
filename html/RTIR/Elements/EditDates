@@ -25,27 +25,27 @@
 <table>
   <tr>
     <td class="label"><&|/l&>Starts</&>:</td>
-    <td class="entry"><& /Elements/SelectDate, menu_prefix => 'Starts', Default => $Starts_Date &>
+    <td class="value"><& /Elements/SelectDate, menu_prefix => 'Starts', Default => $Starts_Date &>
         (<% $TicketObj->StartsObj->AsString %>)</td>
   </tr>
 % if ($qname eq 'Incident Reports' || $qname eq 'Investigations' || $qname eq 'Blocks') {
   <tr>
     <td class="label"><&|/l&>Started</&>:</td>
-    <td class="entry">
+    <td class="value">
       <& /Elements/SelectDate, menu_prefix => 'Started', Default => $Started_Date &> (<% $TicketObj->DueObj->AsString %>)
     </td>
   </tr>
 % }
   <tr>
     <td class="label"><&|/l&>Last Contact</&>:</td>
-    <td class="entry">
+    <td class="value">
       <& /Elements/SelectDate, menu_prefix => 'Told', Default => $Told_Date &> (<% $TicketObj->ToldObj->AsString %>)
     </td>
   </tr>
 % if ($qname ne 'Incidents') {
   <tr>
     <td class="label"><&|/l&>Due</&>:</td>
-    <td class="entry">
+    <td class="value">
       <& /Elements/SelectDate, menu_prefix => 'Due', Default => $Due_Date &> (<% $TicketObj->DueObj->AsString %>)
     </td>
   </tr>
