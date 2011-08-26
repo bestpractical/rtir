@@ -28,6 +28,7 @@
     <td class="value"><& /Elements/SelectDate,
         menu_prefix => 'Starts',
         Default     => $Starts_Date,
+        current     => 0,
     &> (<% $TicketObj->StartsObj->AsString %>)
     </td>
   </tr>
@@ -38,6 +39,7 @@
     <td class="value"><& /Elements/SelectDate,
         menu_prefix => 'Started',
         Default => $Started_Date,
+        current => 0,
     &> (<% $TicketObj->StartedObj->AsString %>)
     </td>
   </tr>
@@ -47,6 +49,7 @@
     <td class="value"><& /Elements/SelectDate,
         menu_prefix => 'Told',
         Default => $Told_Date,
+        current => 0,
     &> (<% $TicketObj->ToldObj->AsString %>)
     </td>
   </tr>
@@ -56,6 +59,7 @@
     <td class="value"><& /Elements/SelectDate,
         menu_prefix => 'Due',
         Default => $Due_Date,
+        current => 0,
     &> (<% $TicketObj->DueObj->AsString %>)
     </td>
   </tr>
@@ -66,10 +70,10 @@
 <%ARGS>
 $TicketObj => undef
 
-$Starts_Date => undef
-$Told_Date => undef
-$Started_Date => undef
-$Due_Date => undef
+$Starts_Date  => ''
+$Told_Date    => ''
+$Started_Date => ''
+$Due_Date     => ''
 </%ARGS>
 <%INIT>
 my $qname = $TicketObj->QueueObj->Name;
