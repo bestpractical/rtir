@@ -310,4 +310,52 @@ our @Final = (
         # started date is handled by lifecycles now
         remove_scrip_condition('RTIR_RequireStateChange');
     },
+
+    sub {
+        my ($d_portlets) = RT::System->new( RT->SystemUser )
+            ->Attributes->Named('RTIR_HomepageSettings');
+        my $content = $d_portlets->Content;
+        if ( process_home_page_settings( $content ) ) {
+            my ($status, $msg) = $d_portlets->SetContent( $content );
+            $RT::Logger->error("Couldn't update content: $msg")
+                unless $status;
+        }
+
+        my $attrs = RT::Attributes->new( RT->SystemUser );
+        $attrs->Limit( FIELD => 'ObjectType', VALUE => 'RT::User' );
+        $attrs->Limit( FIELD => 'Name', VALUE => 'Pref-RTIR_HomepageSettings' );
+        while ( my $attr = $attrs->Next ) {
+            my $content = $attr->Content;
+            if ( process_home_page_settings( $content ) ) {
+                my ($status, $msg) = $attr->SetContent( $content );
+                $RT::Logger->error("Couldn't update content: $msg")
+                    unless $status;
+            }
+        }
+    },
 );
+
+
+sub process_home_page_settings {
+    my $content = shift || {};
+    my $found = 0;
+    my $has_quicksearch =
+        grep $_->{'type'} eq 'component' && $_->{'name'} eq 'Quicksearch',
+        map @$_, grep $_, values %$content
+    ;
+    foreach my $a ( grep $_, values %$content ) {
+        foreach my $e ( splice @$a ) {
+            if (
+                $e->{type} eq 'component'
+                && $e->{name} eq '/RTIR/Elements/QueueSummary'
+            ) {
+                $found = 1;
+                $e->{name} = 'Quicksearch';
+                next if $has_quicksearch;
+            }
+            push @$a, $e;
+        }
+    }
+    return $found;
+}
+
