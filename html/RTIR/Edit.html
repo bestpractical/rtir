@@ -149,13 +149,6 @@ if ($Type eq 'Report') {
     $name = $Type;
 }
 
-my ($CanRespond, $CanComment) = ( 0, 0 );
-$CanRespond = 1 if ( $Ticket->CurrentUserHasRight('ReplyToTicket') or
-                     $Ticket->CurrentUserHasRight('ModifyTicket') ); 
-
-$CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
-                     $Ticket->CurrentUserHasRight('ModifyTicket') );
-
 my $constituency_cf = RT::IR->CustomFields( Constituency => Ticket => $Ticket );
 my $constituency_propagation = RT->Config->Get('_RTIR_Constituency_Propagation');
 
