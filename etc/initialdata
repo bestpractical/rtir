@@ -405,9 +405,7 @@
        ScripAction       => 'RTIR Activate Ticket',
        Template          => 'Blank' },
 
-
-# XXX: description is duplication, but set Due of the incident
-    {  Description       => "SetRTIRState",
+    {  Description       => "Set Due Date On Incident",
        Queue             => ['Incident Reports', 'Investigations', 'Blocks' ],
        ScripCondition    => 'RTIR Require Due Change',
        ScripAction       => 'RTIR Set Incident Due',

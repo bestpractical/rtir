@@ -347,6 +347,24 @@ our @Final = (
             }
         }
     },
+
+    sub {
+        my $scrips = RT::Scrips->new( RT->SystemUser );
+        my $alias = $scrips->Join(
+            FIELD1 => 'ScripAction',
+            TABLE2 => 'ScripActions',
+            FIELD2 => 'id',
+        );
+        $scrips->Limit( FIELD => 'ExecModule', VALUE => 'RTIR_SetDueIncident' );
+        while ( my $scrip = $scrips->Next ) {
+            my $value = 'Set Due Date On Incident';
+            next if $scrip->Name eq $value;
+
+            my ($status, $msg) = $scrip->SetName( $value );
+            $RT::Logger->error("Couldn't set scrip's name: $msg")
+                unless $status;
+        }
+    },
 );
 
 
