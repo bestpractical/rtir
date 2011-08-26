@@ -36,9 +36,7 @@
       <& /Elements/SelectDate, menu_prefix => 'Told', current => 0 &> (<% $TicketObj->ToldObj->AsString %>)
     </td>
   </tr>
-% if ($TicketObj->QueueObj->Name eq 'Incident Reports' ||
-%     $TicketObj->QueueObj->Name eq 'Investigations' ||
-%     $TicketObj->QueueObj->Name eq 'Blocks') {
+% if ($qname eq 'Incident Reports' || $qname eq 'Investigations' || $qname eq 'Blocks') {
   <tr>
     <td class="label"><&|/l&>Started</&>:</td>
     <td class="entry">
@@ -46,7 +44,7 @@
     </td>
   </tr>
 % }
-% if ($TicketObj->QueueObj->Name ne 'Incidents') {
+% if ($qname ne 'Incidents') {
   <tr>
     <td class="label"><&|/l&>Due</&>:</td>
     <td class="entry">
@@ -60,4 +58,6 @@
 <%ARGS>
 $TicketObj => undef
 </%ARGS>
-
+<%INIT>
+my $qname = $TicketObj->QueueObj->Name;
+</%INIT>
