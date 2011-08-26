@@ -31,7 +31,8 @@
     &> (<% $TicketObj->StartsObj->AsString %>)
     </td>
   </tr>
-% if ($qname eq 'Incident Reports' || $qname eq 'Investigations' || $qname eq 'Blocks') {
+
+% if ($qname ne 'Incidents') {
   <tr>
     <td class="label"><&|/l&>Started</&>:</td>
     <td class="value"><& /Elements/SelectDate,
