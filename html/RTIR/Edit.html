@@ -142,21 +142,6 @@ if ( $m->comp_exists("/RTIR/$Type/Edit.html") ) {
 
 my @results;
 
-my $name;
-if ($Type eq 'Report') {
-    $name = "Incident Report";
-} else {
-    $name = $Type;
-}
-
-my $constituency_cf = RT::IR->CustomFields( Constituency => Ticket => $Ticket );
-my $constituency_propagation = RT->Config->Get('_RTIR_Constituency_Propagation');
-
-my $has_parent = 0;
-if ( $constituency_propagation eq 'reject' ) {
-    $has_parent = RT::IR->Incidents( $Ticket )->Count;
-}
-
 if ( $SaveChanges && !$OnlySearchForPeople ) {
     my $checks_failure = 0;
     push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS );
@@ -187,7 +172,22 @@ if ( $SaveChanges && !$OnlySearchForPeople ) {
         return $m->comp("/RTIR/Display.html", %ARGS, id => $id);
     }
 }
- 
+
+my $name;
+if ($Type eq 'Report') {
+    $name = "Incident Report";
+} else {
+    $name = $Type;
+}
+
+my $constituency_cf = RT::IR->CustomFields( Constituency => Ticket => $Ticket );
+my $constituency_propagation = RT->Config->Get('_RTIR_Constituency_Propagation');
+
+my $has_parent = 0;
+if ( $constituency_propagation eq 'reject' ) {
+    $has_parent = RT::IR->Incidents( $Ticket )->Count;
+}
+
 # If they've gone and moved the ticket to somewhere they can't see, etc...
 # TODO: display the results, even if we can't display the ticket.
 
