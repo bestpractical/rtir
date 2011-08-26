@@ -20,6 +20,10 @@ our @ScripConditions = (
 );
 
 our @ScripActions = (
+    {  Name        => 'RTIR Set Block Status',    # loc
+       Description => 'Set the status of a Block' ,                                            # loc
+       ExecModule => 'RTIR_SetBlockStatus',
+    },
     {  Name        => 'RTIR Activate Ticket',    # loc
        Description => 'Set status to first active possible',            # loc
        ExecModule  => 'RTIR_Activate',
@@ -27,6 +31,16 @@ our @ScripActions = (
 );
 
 our @Scrips = (
+    {  Description       => "On Correspond Change Status of the Block",
+       Queue             => 'Blocks',
+       ScripCondition    => 'On Correspond',
+       ScripAction       => 'RTIR Set Block Status',
+       Template          => 'Blank', },
+    {  Description       => "On Linking To Incident Activate Report",
+       Queue             => 'Incident Reports',
+       ScripCondition    => 'RTIR Linking To Incident',
+       ScripAction       => 'RTIR Activate Ticket',
+       Template          => 'Blank' },
     {  Description       => "On Correspond (not every) Activate Report",
        Queue             => 'Incident Reports',
        ScripCondition    => 'RTIR Require IRs Activation',
