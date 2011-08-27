@@ -45,6 +45,10 @@
 
 <table>
   <tr>
+    <td class="label"><&|/l&>Subject</&>:</td>
+    <td class="value"><input type="text" name="Subject" value="<% $ARGS{'Subject'} || $Ticket->Subject %>" size="50" /></td>
+  </tr>
+  <tr>
     <td class="label"><&|/l&>Status</&>:</td>
     <td class="value" colspan="2">
 % unless ( $Type eq 'Block' ) {
@@ -58,10 +62,6 @@
       &>
 % }
     </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Subject</&>:</td>
-    <td class="value"><input type="text" name="Subject" value="<% $ARGS{'Subject'} || $Ticket->Subject %>" size="50" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Owner</&>:</td>
