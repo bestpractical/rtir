@@ -39,11 +39,7 @@
 <table border="0" cellspacing="2" cellpadding="0" width="100%">
 <tr>
 <td valign="top" width="50%">
-<&| /Widgets/TitleBox, 
-    title => loc("The Basics"),
-    class => 'ticket-info-basics',
-    width => "100%",
-&>
+<&| /Widgets/TitleBox, title => loc("The Basics"), class => 'ticket-info-basics' &>
 
 <table>
   <tr>
@@ -105,7 +101,7 @@
 <tr>
 <td valign="top" width="50%">
 
-<&| /Widgets/TitleBox, title => loc('Dates'),  width => "100%", class => 'ticket-info-dates'  &>
+<&| /Widgets/TitleBox, title => loc('Dates'), class => 'ticket-info-dates'  &>
 <& /RTIR/Elements/EditDates, %ARGS, TicketObj => $Ticket &>
 </&>
 
@@ -115,7 +111,7 @@
 <br />
 
 
-<&| /Widgets/TitleBox, title => loc('People'),width => "100%", class => 'ticket-info-people' &>
+<&| /Widgets/TitleBox, title => loc('People'), class => 'ticket-info-people' &>
 <& /RTIR/Elements/EditPeople, %ARGS, Ticket => $Ticket &>
 </&>
 
