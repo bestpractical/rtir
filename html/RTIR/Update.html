@@ -26,6 +26,8 @@
 <& /Elements/Tabs &>
 
 % $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $Ticket);
+<& /Elements/ListActions, actions => \@results &>
+
 <form action="Update.html" name="TicketUpdate" method="post" enctype="multipart/form-data">
 <input type="hidden" name="id" value="<% $id %>" />
 <input type="hidden" name="QuoteTransaction" value="<% $ARGS{'QuoteTransaction'} || '' %>" />
@@ -154,14 +156,14 @@ $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
 
 $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 
-my $checks_failure;
+my (@results, $checks_failure);
 
 my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
 $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
     self => $gnupg_widget,
     TicketObj => $Ticket,
 );
-if ( $ARGS{'SubmitTicket'} ) {
+if ( $SubmitTicket ) {
     my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
         self      => $gnupg_widget,
         TicketObj => $Ticket,
@@ -169,13 +171,21 @@ if ( $ARGS{'SubmitTicket'} ) {
     $checks_failure = 1 unless $status;
 }
 
-if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {
+if ( $SubmitTicket ) {
+    $checks_failure += RT::IR->FilterRTAddresses(
+        ARGSRef => \%ARGS,
+        Fields => { UpdateCc => 'Cc', UpdateBcc => 'Bcc' },
+        results => \@results,
+    );
+}
+
+if ( !$checks_failure && $SubmitTicket ) {
     my %checked = map {$_ => 1} grep {defined} @TxnSendMailTo;
     my @squelchlist = grep {not $checked{$_}} split /,/, $TxnRecipients;
     $ARGS{'SquelchMailTo'} = \@squelchlist if @squelchlist;
 }
 
-if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {
+if ( !$checks_failure && $SubmitTicket ) {
     $m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Ticket => $Ticket);
 
     return $m->comp('/RTIR/Display.html', %ARGS);
@@ -189,4 +199,6 @@ $Status => undef
 $Action => undef
 @TxnSendMailTo => ()
 $TxnRecipients => ''
+
+$SubmitTicket => undef
 </%ARGS>

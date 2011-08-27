@@ -426,6 +426,14 @@ unless ( $skip_create ) {
     }
 }
 
+unless ( $skip_create ) {
+    $checks_failure += RT::IR->FilterRTAddresses(
+        ARGSRef => \%ARGS,
+        Fields => { Requestors => 'Requestor', Cc => 'Cc', AdminCc => 'AdminCc' },
+        results => \@results,
+    );
+}
+
 # for RTFM and other things
 $m->callback(
     CallbackName => 'BeforeCreate', CallbackPage => '/Ticket/Create.html',

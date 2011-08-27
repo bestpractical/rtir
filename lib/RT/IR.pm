@@ -531,6 +531,29 @@ sub _FlushCustomFieldsCache {
     %cache = ()
 } }
 
+
+sub FilterRTAddresses {
+    my $self = shift;
+    my %args = (ARGSRef => undef, Fields => {}, results => [], @_);
+
+    my $cu = do { no warnings 'once'; $HTML::Mason::Commands::session{'CurrentUser'} };
+
+    my $found = 0;
+    while ( my ($field, $display) = each %{ $args{'Fields'} } ) {
+        my $value = $args{'ARGSRef'}{ $field };
+        next unless defined $value && length $value;
+
+        my @emails = Email::Address->parse( $value );
+        foreach my $email ( grep RT::EmailParser->IsRTAddress($_->address), @emails ) {
+            push @{ $args{'results'} }, $cu->loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $email->format, $cu->loc($display) );
+            $found = 1;
+            $email = undef;
+        }
+        $args{'ARGSRef'}{ $field } = join ', ', map $_->format, grep defined, @emails;
+    }
+    return $found;
+}
+
 { my $cache;
 sub HasConstituency {
     return $cache if defined $cache;

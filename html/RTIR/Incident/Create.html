@@ -343,6 +343,24 @@ if ( $CreateIncident ) {
         $checks_failure = 1;
     }
 
+    $checks_failure += RT::IR->FilterRTAddresses(
+        ARGSRef => \%ARGS,
+        Fields => { Requestors => 'Requestor', Cc => 'Cc', AdminCc => 'AdminCc' },
+        results => \@results,
+    );
+
+    if ( $CreateWithInvestigation ) {
+        $checks_failure += RT::IR->FilterRTAddresses(
+            ARGSRef => \%ARGS,
+            Fields => {
+                InvestigationRequestors => 'Requestor',
+                InvestigationCc => 'Cc',
+                InvestigationAdminCc => 'AdminCc',
+            },
+            results => \@results,
+        );
+    }
+
     if ( $CreateWithInvestigation && !$ARGS{'InvestigationRequestors'} ) {
         push @results, loc( "You must enter a correspondent for the investigation" );
         $checks_failure = 1;

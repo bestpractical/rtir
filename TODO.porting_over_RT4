@@ -29,9 +29,6 @@
 
 * tranasaction custom fields
 
-* protection from mail loops by filtering watchers' email addresses on
-  Create/PeopleModify, like we have in RT
-
 === FIXES
 
 * Don't see Articles on IR's Update.html

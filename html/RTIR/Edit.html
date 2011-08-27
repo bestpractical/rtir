@@ -152,6 +152,17 @@ if ( $SaveChanges ) {
     $checks_failure = 1 unless $status;
 }
 
+if ( $SaveChanges ) {
+    $checks_failure += RT::IR->FilterRTAddresses(
+        ARGSRef => \%ARGS,
+        Fields => {
+            map { ("WatcherAddressEmail$_" => $ARGS{"WatcherTypeEmail$_"}) }
+            grep $ARGS{"WatcherTypeEmail$_"}, 1..3
+        },
+        results => \@results,
+    );
+}
+
 # XXX: process even if checks failed as EditPeople doesn't preserve state
 if ( $SaveChanges && !$OnlySearchForPeople ) {
 
