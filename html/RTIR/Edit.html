@@ -154,6 +154,14 @@ if ( $SaveChanges ) {
 
 # XXX: process even if checks failed as EditPeople doesn't preserve state
 if ( $SaveChanges && !$OnlySearchForPeople ) {
+
+    # XXX: ProcessTicketWatchers doesn't like WatcherTypeEmailX with
+    # empty WatcherAddressEmailX
+    delete $ARGS{"WatcherTypeEmail$_"} foreach
+        grep !$ARGS{"WatcherAddressEmail$_"} && $ARGS{"WatcherTypeEmail$_"},
+        1..3
+    ;
+
     push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS );
 }
 
