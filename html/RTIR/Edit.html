@@ -70,10 +70,12 @@
         TicketObj => $Ticket, QueueObj => $Ticket->QueueObj,
     &></td>
   </tr>
+% if ( $Type ne 'Incident' ) {
   <tr>
     <td class="label"><%loc("Incident")%>:</td>
     <td class="value"><& /RTIR/Elements/ShowIncidents, Ticket => $Ticket &></td>
   </tr>
+% }
   <tr>
     <td class="label"><&|/l&>Time Worked</&>:</td>
     <td class="value"><& /Elements/EditTimeValue,
@@ -81,7 +83,13 @@
         Default => $ARGS{'TimeWorked'} || $Ticket->TimeWorked || '',
     &></td>
   </tr>
-% if ( $constituency_cf && ( $constituency_propagation ne 'reject' || !$has_parent ) ) {
+% if ( $Type eq 'Incident' ) {
+  <tr>
+    <td class="label"><&|/l&>Priority</&>:</td>
+    <td class="value"><&/Elements/SelectPriority, Name => 'Priority', Default => $ARGS{'Priority'} || $Ticket->Priority &></td>
+  </tr>
+% }
+% if ( $constituency_cf && ( $constituency_propagation ne 'reject' || !$is_linked ) ) {
   <tr>
     <td class="label"><&|/l&>Constituency</&>:</td>
     <td class="value">
@@ -113,10 +121,11 @@
 </table>
 <br />
 
-
+% if ( $Type ne 'Incident' ) {
 <&| /Widgets/TitleBox, title => loc('People'), class => 'ticket-info-people' &>
 <& /RTIR/Elements/EditPeople, %ARGS, Ticket => $Ticket &>
 </&>
+% }
 
 <& /Elements/Submit, Name => 'SaveChanges', Label => loc('Save Changes'),
     Caption => loc("If you've updated anything above, be sure to"), color => "#333399",
@@ -206,9 +215,12 @@ if ($Type eq 'Report') {
 my $constituency_cf = RT::IR->CustomFields( Constituency => Ticket => $Ticket );
 my $constituency_propagation = RT->Config->Get('_RTIR_Constituency_Propagation');
 
-my $has_parent = 0;
-if ( $constituency_propagation eq 'reject' ) {
-    $has_parent = RT::IR->Incidents( $Ticket )->Count;
+my $is_linked = 0;
+if ( $constituency_cf && $constituency_propagation eq 'reject' ) {
+    $is_linked = $Type eq 'Incident'
+        ? RT::IR->IncidentChildren( $Ticket )->Count
+        : RT::IR->Incidents( $Ticket )->Count
+    ;
 }
 
 # If they've gone and moved the ticket to somewhere they can't see, etc...
