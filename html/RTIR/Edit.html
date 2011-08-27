@@ -141,11 +141,23 @@ if ( $m->comp_exists("/RTIR/$Type/Edit.html") ) {
 }
 
 my @results;
+my $checks_failure = 0;
 
+if ( $SaveChanges ) {
+    my $status = $m->comp('/Elements/ValidateCustomFields',
+        CustomFields => $Ticket->QueueObj->TicketCustomFields,
+        NamePrefix   => "Object-RT::Ticket-$id-CustomField-",
+        ARGSRef      => \%ARGS,
+    );
+    $checks_failure = 1 unless $status;
+}
+
+# XXX: process even if checks failed as EditPeople doesn't preserve state
 if ( $SaveChanges && !$OnlySearchForPeople ) {
-    my $checks_failure = 0;
     push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS );
+}
 
+if ( $SaveChanges && !$checks_failure && !$OnlySearchForPeople ) {
     my $strict_acl = RT->Config->Set( StrictLinkACL => 0 );
     push @results, ProcessTicketLinks(    TicketObj => $Ticket, ARGSRef => \%ARGS );
     RT->Config->Set( StrictLinkACL => $strict_acl );
@@ -157,16 +169,9 @@ if ( $SaveChanges && !$OnlySearchForPeople ) {
     push @results, ProcessUpdateMessage(  TicketObj => $Ticket, ARGSRef=>\%ARGS );
     push @results, ProcessTicketBasics(   TicketObj => $Ticket, ARGSRef => \%ARGS );
 
-    my ($status, @msg) = $m->comp('/Elements/ValidateCustomFields',
-        CustomFields => $Ticket->QueueObj->TicketCustomFields,
-        NamePrefix   => "Object-RT::Ticket-$id-CustomField-",
-        ARGSRef      => \%ARGS,
-    );
-    # we don't use messages as later ProcessTicketCustomFieldUpdates do that for us
-    $checks_failure = 1 unless $status;
     push @results, ProcessTicketCustomFieldUpdates( ARGSRef => \%ARGS );
 
-    if ( !$checks_failure && RT->Config->Get('DisplayAfterEdit', $session{'CurrentUser'}) ) {
+    if ( RT->Config->Get('DisplayAfterEdit', $session{'CurrentUser'}) ) {
         $m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Ticket => $Ticket);
         push @{ $session{'Actions'}{''} ||= [] }, @results;
         return $m->comp("/RTIR/Display.html", %ARGS, id => $id);
