@@ -46,7 +46,7 @@
     <td class="label"><&|/l&>Status</&>:</td>
     <td class="value" colspan="2">
 % unless ( $Type eq 'Block' ) {
-      <% $Ticket->Status %>
+      <% loc($Ticket->Status) %>
 % } else {
       <& /Elements/SelectStatus,
           Name => 'Status',
