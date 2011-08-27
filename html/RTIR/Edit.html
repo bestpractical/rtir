@@ -56,19 +56,19 @@
           Name => 'Status',
           QueueObj => $Ticket->QueueObj,
           DefaultValue => 0,
-          Default => $Ticket->Status,
+          Default => $ARGS{'Status'} || $Ticket->Status,
       &>
 % }
     </td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Subject</&>:</td>
-    <td class="value"><input type="text" name="Subject" value="<%$Ticket->Subject|h%>" size="50" /></td>
+    <td class="value"><input type="text" name="Subject" value="<% $ARGS{'Subject'} || $Ticket->Subject %>" size="50" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Owner</&>:</td>
     <td><& /Elements/SelectOwner,
-        Name => 'Owner', Default => $Ticket->Owner,
+        Name => 'Owner', Default => $ARGS{'Owner'} || $Ticket->Owner,
         TicketObj => $Ticket, QueueObj => $Ticket->QueueObj,
     &></td>
   </tr>
@@ -106,7 +106,7 @@
 <td valign="top" width="50%">
 
 <&| /Widgets/TitleBox, title => loc('Dates'),  width => "100%", class => 'ticket-info-dates'  &>
-<& /RTIR/Elements/EditDates, TicketObj => $Ticket &>
+<& /RTIR/Elements/EditDates, %ARGS, TicketObj => $Ticket &>
 </&>
 
 </td>
@@ -116,7 +116,7 @@
 
 
 <&| /Widgets/TitleBox, title => loc('People'),width => "100%", class => 'ticket-info-people' &>
-<& /RTIR/Elements/EditPeople, Ticket => $Ticket, UserField => $UserField, UserString => $UserString, UserOp => $UserOp &>
+<& /RTIR/Elements/EditPeople, %ARGS, Ticket => $Ticket &>
 </&>
 
 <br />
@@ -204,8 +204,4 @@ $id                  => undef
 
 $SaveChanges         => 0
 $OnlySearchForPeople => undef
-
-$UserField           => undef
-$UserOp              => undef
-$UserString          => undef
 </%ARGS>
