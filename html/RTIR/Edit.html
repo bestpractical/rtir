@@ -28,13 +28,13 @@
 % $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket);          
 <& /Elements/ListActions, actions => \@results &>
 
-% if (!$Ticket->CurrentUserHasRight('ModifyTicket')) {
-<%loc("You are not allowed to edit this [_1].", $name)%>
+% unless ($Ticket->CurrentUserHasRight('ModifyTicket')) {
+<% loc("You are not allowed to edit this [_1].", $name) %>
 %    return;
 % }
 
 <form method="post" action="Edit.html" enctype="multipart/form-data">
-<input type="hidden" name="id" value="<%$Ticket->Id%>" />
+<input type="hidden" name="id" value="<% $id %>" />
 
 <table border="0" cellspacing="2" cellpadding="0" width="100%">
 <tr>
@@ -81,7 +81,7 @@
   </tr>
 % if ( $constituency_cf && ($constituency_propagation ne 'reject' || !$has_parent) ) {
   <tr>
-    <td class="labeltop"><&|/l&>Constituency</&>:</td>
+    <td class="label"><&|/l&>Constituency</&>:</td>
     <td class="value">
       <& /RTIR/Elements/EditRTIRField, 
          TicketObj => $Ticket,
