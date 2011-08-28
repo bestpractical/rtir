@@ -72,13 +72,3 @@
 
 * add tests to make sure attachments attached to all selected Children when
   replying via Incident
-
-Test Summary Report
--------------------
-t/004-rtfm-in-rtir.t                          (Wstat: 1280 Tests: 20 Failed: 5)
-  Failed tests:  15-16, 18-20
-  Non-zero exit status: 5
-Files=38, Tests=2505, 986 wallclock secs ( 0.79 usr  0.22 sys + 413.24 cusr 27.77 csys = 442.02 CPU)
-Result: FAIL
-Failed 1/38 test programs. 5/2505 subtests failed.
-

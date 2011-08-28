@@ -17,7 +17,7 @@ $agent->title_like(qr/^Articles$/);
 
 $agent->back();
 
-$agent->follow_link_ok({text => "New", url_regex => qr/Articles/}, "followed new article link");
+$agent->follow_link_ok({text => "Create", url_regex => qr/Articles/}, "followed new article link");
 
 $agent->follow_link_ok({text => "in class Templates"}, "chose a class");
 
