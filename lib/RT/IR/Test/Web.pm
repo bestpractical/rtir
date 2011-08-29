@@ -258,51 +258,6 @@ sub LinkChildToIncident {
     return;
 }
 
-
-sub merge_ticket {
-    my $self = shift;
-    my $id = shift;
-    my $id_to_merge_to = shift;
-    
-    $self->display_ticket( $id);
-    
-    $self->timeout(600);
-    
-    $self->follow_link_ok({text => 'Merge', n => '1'}, "Followed 'Merge' link");
-    
-    my ($type) = $self->content() =~ /Merge ([\w ]+) #$id:/i;
-    $type ||= 'Ticket';
-    
-
-    # Check that the desired incident occurs in the list of available incidents; if not, keep
-    # going to the next page until you find it (or get to the last page and don't find it,
-    # whichever comes first)
-    while($self->content() !~ m|<a href="/Ticket/Display.html\?id=$id_to_merge_to">$id_to_merge_to</a>|) {
-        my @ids = sort map s|<b>\s*<a href="/Ticket/Display.html?id=(\d+)">\1</a>\s*</b>|$1|, split /<td/, $self->content();
-        my $max = pop @ids;
-        my $url = "Merge.html?id=$id&Order=ASC&Query=( 'Status' = 'new' OR 'Status' = 'open' AND 'id' > $max)";
-        my $weburl = RT->Config->Get('WebURL');
-        Test::More::diag("IDs found: " . join ', ', @ids);
-        Test::More::diag("Max ID: " . $max);
-        Test::More::diag ("URL: " . $url);
-        $self->get("$weburl/RTIR/$url");
-        last unless $self->content() =~ qr|<b>\s*<a href="/Ticket/Display.html?id=(\d+)">\1</a>\s*</b>|sm;
-    }
-    
-    
-    $self->form_number(3);
-    
-    
-    $self->field("SelectedTicket", $id_to_merge_to);
-    $self->click_button(value => 'Merge');
-    
-    Test::More::is ($self->status, 200, "Attempting to merge $type #$id to ticket #$id_to_merge_to");
-    
-    return $self->content_like(qr{.*<ul class="action-results">\s*<li>Merge Successful</li>.*}i, 
-        "Successfully merged $type #$id to ticket #$id_to_merge_to");
-}
-
-
 sub create_incident_and_investigation {
     my $self = shift;
     my $fields = shift || {};
