@@ -74,7 +74,7 @@ my $current_user = GetCurrentUser();
 my $incidents = RT::Tickets->new( $current_user );
 my $incidents_query = 
     "Queue = 'Incidents' AND Due <= '1970-01-02'"
-    ." AND ( ". join( ' OR ', map "Status = '$_'", RT::Queue->ActiveStatusArray() ) ." )";
+    ." AND ( ". join( ' OR ', map { "Status = '$_'" } RT::Queue->ActiveStatusArray() ) ." )";
 $incidents->FromSQL( $incidents_query );
 
 print "\n\nGoing to update due dates of Incidents where it's not set\n";
@@ -82,7 +82,7 @@ print "\n\nGoing to update due dates of Incidents where it's not set\n";
 print "Query for incidents: $incidents_query\n\n";
 
 my $base_query = "( Queue = 'Incident Reports' OR Queue = 'Investigations' OR Queue = 'Blocks' )"
-    ." AND ( ". join( ' OR ', map "Status = '$_'", RT::Queue->ActiveStatusArray() ) ." )"
+    ." AND ( ". join( ' OR ', map { "Status = '$_'" } RT::Queue->ActiveStatusArray() ) ." )"
     ." AND Due > '1970-01-02'";
 
 print "Base query for children: $base_query\n\n";

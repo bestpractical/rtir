@@ -574,14 +574,14 @@ sub CustomFields {
     if ( $type ) {
         @list = (@{ $cache{'Global'} }, @{ $cache{$type} });
     } else {
-        @list = (@{ $cache{'Global'} }, map @$_, @cache{values %TYPE});
+        @list = (@{ $cache{'Global'} }, map { @$_ } @cache{values %TYPE});
     }
 
     if ( my $field = $arg{'Field'} ) {
         if ( $field =~ /\D/ ) {
-            @list = grep lc $_->Name eq lc $field, @list;
+            @list = grep { lc $_->Name eq lc $field } @list;
         } else {
-            @list = grep $_->id == $field, @list;
+            @list = grep { $_->id == $field } @list;
         }
     }
 
@@ -650,7 +650,7 @@ sub DefaultConstituency {
         push @values, substr $pqueue->__Value('Name'), length("$name - ");
     }
     my $default = RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'} || '';
-    return $default if grep lc $_ eq lc $default, @values;
+    return $default if grep { lc $_ eq lc $default } @values;
     return shift @values;
 }
 
@@ -970,7 +970,7 @@ if ( RT::IR->HasConstituency ) {
             if ( $tmp ) {
                 chomp $tmp;
                 $tmp = undef unless
-                    grep lc $_->Name eq lc $tmp, @{ $cf->Values->ItemsArrayRef };
+                    grep { lc $_->Name eq lc $tmp } @{ $cf->Values->ItemsArrayRef };
             }
             $value = $tmp;
             RT->Logger->debug("Found Constituency '$tmp' in email") if $tmp;

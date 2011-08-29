@@ -63,7 +63,7 @@ sub Prepare {
     my @inactive = $self->TicketObj->QueueObj->InactiveStatusArray;
     my $new_status = $self->TransactionObj->NewValue;
 
-    return 0 unless grep $_ eq $new_status, @inactive;
+    return 0 unless grep { $_ eq $new_status } @inactive;
     return 1;
 }
 

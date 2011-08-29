@@ -113,7 +113,7 @@ sub ConstituencyValues {
             RT->Logger->crit("Couldn't load constituency field");
             return 0;
         }
-        @constituencies = map $_->Name, @{ $cf->Values->ItemsArrayRef };
+        @constituencies = map { $_->Name } @{ $cf->Values->ItemsArrayRef };
     }
     return @constituencies;
 }

@@ -351,7 +351,7 @@ sub bulk_abandon {
     my $self       = shift;
     my @to_abandon = @_;
 
-    Test::More::diag "going to bulk abandon incidents " . join ',', map "#$_",
+    Test::More::diag "going to bulk abandon incidents " . join ',', map { "#$_" }
       @to_abandon
       if $ENV{'TEST_VERBOSE'};
 

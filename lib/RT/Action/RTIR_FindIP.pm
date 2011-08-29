@@ -135,7 +135,7 @@ sub Commit {
             );
         }
         elsif ( $4 && defined $5 ) { # IPv4/mask
-            my $cidr = join( '.', map $_||0, (split /\./, $4)[0..3] ) ."/$5";
+            my $cidr = join( '.', map { $_||0 } (split /\./, $4)[0..3] ) ."/$5";
             my $range = (Net::CIDR::cidr2range( $cidr ))[0] or next;
             $spots_left -= $self->AddIP(
                 IP => $range, CustomField => $cf, Skip => \%existing
