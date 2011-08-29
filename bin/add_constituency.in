@@ -71,6 +71,7 @@ sub debug {
     return if $opt{'quiet'};
     print @_;
     print "\n" if $_[-1] && $_[-1] !~ /\n$/s;
+    return 1;
 };
 
 use Getopt::Long;
