@@ -1021,6 +1021,18 @@ sub HandleRtirrequestor {
 
 package RT::IR;
 
-RT::Base->_ImportOverlays;
+sub ImportOverlays {
+    my $class = shift;
+    my ($package,undef,undef) = caller();
+    $package =~ s|::|/|g;
+    for my $type (qw(Overlay Vendor Local)) {
+        my $filename = $package."_".$type.".pm";
+        eval { require $filename };
+        die $@ if ($@ && $@ !~ qr{^Can't locate $filename});
+    }
+    return;
+}
+
+__PACKAGE__->ImportOverlays();
 
 1;

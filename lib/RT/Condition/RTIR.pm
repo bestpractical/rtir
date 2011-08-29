@@ -72,6 +72,6 @@ sub IsStaff {
     return RT::IR->IsStaff($actor_id);
 }
 
-RT::Base->_ImportOverlays;
+RT::IR->ImportOverlays;
 
 1;

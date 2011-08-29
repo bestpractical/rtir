@@ -76,6 +76,6 @@ sub IsApplicable {
     return !$self->IsStaff;
 }
 
-RT::Base->_ImportOverlays;
+RT::IR->ImportOverlays;
 
 1;
