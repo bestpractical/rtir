@@ -45,12 +45,12 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
-use strict;
-use warnings;
-
 package RT::Condition::RTIR;
+use warnings;
+use strict;
 use base 'RT::Condition';
+
+use RT::IR;
 
 =head1 NAME
 

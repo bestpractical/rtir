@@ -45,11 +45,9 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
+package RT::Condition::RTIR_LinkingToIncident;
 use strict;
 use warnings;
-
-package RT::Condition::RTIR_LinkingToIncident;
 use base 'RT::Condition::RTIR';
 
 =head2 IsApplicable

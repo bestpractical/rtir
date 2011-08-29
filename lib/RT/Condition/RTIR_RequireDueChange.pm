@@ -46,12 +46,10 @@
 #
 # END BPS TAGGED BLOCK }}}
 
+package RT::Condition::RTIR_RequireDueChange;
 use strict;
 use warnings;
-
-package RT::Condition::RTIR_RequireDueChange;
 use base 'RT::Condition::RTIR';
-
 
 =head2 IsApplicable
 

@@ -45,11 +45,9 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
+package RT::IR::Test::Web;
 use strict;
 use warnings;
-
-package RT::IR::Test::Web;
 use base qw(RT::Test::Web);
 
 require RT::IR::Test;

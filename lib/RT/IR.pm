@@ -45,12 +45,10 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
+package RT::IR;
 use 5.008003;
 use strict;
 use warnings;
-
-package RT::IR;
 
 our $VERSION = '3.3.HEAD';
 

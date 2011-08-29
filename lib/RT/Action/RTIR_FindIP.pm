@@ -46,10 +46,9 @@
 #
 # END BPS TAGGED BLOCK }}}
 
+package RT::Action::RTIR_FindIP;
 use strict;
 use warnings;
-
-package RT::Action::RTIR_FindIP;
 use base qw(RT::Action::RTIR);
 
 use Regexp::Common qw(net);

@@ -60,6 +60,8 @@ RTIR's actions don't do anything by default.
 
 sub Prepare { return 1 }
 
+use RT::IR;
+
 sub CreatorCurrentUser {
     my $self = shift;
     my $user = RT::CurrentUser->new($self->TransactionObj->CurrentUser);

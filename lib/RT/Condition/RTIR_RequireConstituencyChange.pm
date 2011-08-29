@@ -45,11 +45,9 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
+package RT::Condition::RTIR_RequireConstituencyChange;
 use strict;
 use warnings;
-
-package RT::Condition::RTIR_RequireConstituencyChange;
 use base 'RT::Condition::RTIR';
 
 =head2 IsApplicable

@@ -46,11 +46,10 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-use strict;
-use warnings;
-
 package RT::Action::RTIR_Activate;
 use base 'RT::Action::RTIR';
+use strict;
+use warnings;
 
 =head2 Commit
 

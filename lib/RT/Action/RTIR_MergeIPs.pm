@@ -45,11 +45,9 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
+package RT::Action::RTIR_MergeIPs;
 use strict;
 use warnings;
-
-package RT::Action::RTIR_MergeIPs;
 use base 'RT::Action::RTIR';
 
 =head2 Commit
