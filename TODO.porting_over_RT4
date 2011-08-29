@@ -22,9 +22,6 @@
 * Some pages with forms need new nice layouts like in RT, reply
   page comes first to mind
 
-* IR create page: "Don't send any emails to correspondents." and hints
-  are not aligned well. Look at RT's forms and adjust accordingly.
-
 * scan code for hardcoded statuses
 
 * tranasaction custom fields
