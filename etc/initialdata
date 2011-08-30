@@ -726,6 +726,16 @@ for my $cf (@CustomFields) {
             HotList => 1
         );
         die $msg unless $id;
+
+        foreach my $qname ( map $_->{'Name'}, @Queues ) {
+            my $queue = RT::Queue->new( $CurrentUser );
+            $queue->Load( $qname );
+            next unless $queue->id;
+
+            my ($status, $msg) = $class->AddToObject( $queue );
+            $RT::Logger->error("Couldn't apply class to queue '$qname'")
+                unless $status;
+        }
     }
 
     require RT::Article;
