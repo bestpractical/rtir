@@ -120,6 +120,9 @@ email addresses. These people <b>will</b> receive future updates.)</&></font></i
 % unless ( $SkipField{'Content'} || $HideField{'Content'} ) {
 <tr><td class="labeltop"><&|/l&>Message</&>:</td>
 <td>
+% if ( RT->Config->Get('ArticleOnTicketCreate')) {
+<& /Articles/Elements/BeforeMessageBox, %ARGS, QueueObj => $QueueObj, MessageBoxName => $NamePrefix .'Content' &>
+% }
 % $m->callback( %ARGS, MessageBoxName => $NamePrefix .'Content',
 %    CallbackPage => '/Ticket/Create.html', CallbackName => 'BeforeMessageBox' );
 % my $content = $value_cb->('Content');

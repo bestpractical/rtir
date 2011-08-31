@@ -43,9 +43,9 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 </%PERL>
 
 % if ( $Split ) {
-<form action="Split.html" method="post" enctype="multipart/form-data">
+<form action="Split.html" method="post" enctype="multipart/form-data" name="TicketCreate">
 % } else {
-<form action="Create.html" method="post" enctype="multipart/form-data">
+<form action="Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
 % }
 
 <input type="hidden" name="id"           value="new" />

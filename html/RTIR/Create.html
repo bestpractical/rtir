@@ -37,9 +37,9 @@
 % }
 
 % unless ( $Split ) {
-<form action="<% RT->Config->Get('WebPath') %>/RTIR/Create.html" method="post" enctype="multipart/form-data">
+<form action="<% RT->Config->Get('WebPath') %>/RTIR/Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
 % } else {
-<form action="<% RT->Config->Get('WebPath') %>/RTIR/Split.html" method="post" enctype="multipart/form-data">
+<form action="<% RT->Config->Get('WebPath') %>/RTIR/Split.html" method="post" enctype="multipart/form-data" name="TicketCreate">
 % }
 <input type="hidden" name="id" value="new" />
 <input type="hidden" name="Queue" value="<% $Queue %>" />
@@ -230,6 +230,9 @@
 %   }
 % } else {
 %   $include_signature = 0;
+% }
+% if ( RT->Config->Get('ArticleOnTicketCreate')) {
+<& /Articles/Elements/BeforeMessageBox, %ARGS &>
 % }
 % $m->callback( %ARGS, CallbackPage => '/Ticket/Create.html', CallbackName => 'BeforeMessageBox' );
 % if ( $ARGS{Content} ) {
