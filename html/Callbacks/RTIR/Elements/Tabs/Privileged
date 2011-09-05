@@ -92,7 +92,7 @@ my $search_arguments = sub {
     return %res;
 };
 
-if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Reply)\.html$} ) {
+if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$} ) {
     my $id = $args->{'id'};
 
     # we'll never get here unless ticket is there and it's rtir's type
@@ -177,11 +177,11 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Reply)\.
         if ( $type eq 'Incident' ) {
             $actions_tab->child(
                 reply_reporters => title => loc('Reply to Reporters'),
-                path  => "/RTIR/Incident/Reply.html?id=$id&SelectAllTickets=1",
+                path  => "/RTIR/Incident/Reply/?id=$id&SelectAllTickets=1",
             );
             $actions_tab->child(
                 reply_all => title => loc('Reply to All'),
-                path  => "/RTIR/Incident/Reply.html?id=$id&SelectAllTickets=1&All=1",
+                path  => "/RTIR/Incident/Reply/?id=$id&SelectAllTickets=1&All=1",
             );
         } else {
             $actions_tab->child(
@@ -211,7 +211,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Reply)\.
         my $path = '/RTIR/';
         $path .= 'Incident/' if $type eq 'Incident';
         if ( my $update = $info->{'update'} ) {
-            $path .= $type eq 'Incident'? 'Reply.html' : 'Update.html';
+            $path .= $type eq 'Incident'? 'Reply/' : 'Update.html';
             $path .= "?". $m->comp(
                 '/Elements/QueryString',
                 %args,
@@ -340,6 +340,37 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Reply)\.
     PageMenu()->child(
         new_search => title => loc('New Search'),
         path => "/RTIR/Merge/Refine.html?". $query_string->(
+            NewQuery => 1, id => $id,
+        ),
+    );
+    PageMenu()->child(
+        back => title => loc('Back to ticket #[_1]', $id),
+        path => "/RTIR/Display.html?id=$id",
+    );
+} elsif ( $request_path =~ m{^/RTIR/Incident/Reply/} ) {
+    my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
+    $ticket->Load( $args->{'id'} );
+    my $id = $ticket->id;
+
+    my %args = (
+        $search_arguments->(),
+        id => $id,
+        All => $args->{'All'},
+        Status => $args->{'Status'},
+        Action => $args->{'Action'},
+    );
+
+    PageMenu()->child(
+        link => title => loc('Reply'),
+        path => "/RTIR/Incident/Reply/?". $query_string->( %args ),
+    );
+    PageMenu()->child(
+        edit_search => title => loc('Edit Search'),
+        path => "/RTIR/Incident/Reply/Refine.html?". $query_string->( %args ),
+    );
+    PageMenu()->child(
+        new_search => title => loc('New Search'),
+        path => "/RTIR/Incident/Reply/Refine.html?". $query_string->(
             NewQuery => 1, id => $id,
         ),
     );

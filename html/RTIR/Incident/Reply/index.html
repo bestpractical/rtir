@@ -28,7 +28,7 @@
 % $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $IncidentObj);
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="Reply.html" name="TicketUpdate" method="get">
+<form action="index.html" name="TicketUpdate" method="get">
 <input type="hidden" name="id" value="<% $id %>" />
 <input type="hidden" name="Status" value="<% $Status %>" />
 <input type="hidden" name="All" value="<% $All %>" />
@@ -84,7 +84,7 @@
 <h2 class="no-recipients">Warning: no recipients!</h2>
 % }
 
-<& Elements/ReplyForm, %ARGS,
+<& ../Elements/ReplyForm, %ARGS,
     TicketObj   => $IncidentObj,
     Status      => $Status,
     GnuPGWidget => $gnupg_widget,
@@ -214,7 +214,7 @@ push @queues, 'Blocks' unless RT->Config->Get('RTIR_DisableBlocksQueue');
 
 $Query ||= RT::IR->ActiveQuery( Queue => \@queues );
 
-my $BaseURL = "RTIR/Incident/Reply.html?".
+my $BaseURL = "RTIR/Incident/Reply/?".
     $m->comp('/Elements/QueryString',
         id     => $id,
         All    => $All,

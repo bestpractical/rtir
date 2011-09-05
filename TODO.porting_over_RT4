@@ -26,10 +26,6 @@
 
 * tranasaction custom fields
 
-=== FIXES
-
-* /Incident/Reply.html needs refine query page
-
 === DOCS
 
 * document why maps are required

@@ -52,6 +52,7 @@ foreach my $queue ( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' 
     $agent->form_name('TicketUpdate');
     like( $agent->field('UpdateContent'), qr/this is a content/ );
 
+    $agent->goto_ticket( $id );
     $agent->follow_link_ok({text => "$reply_text"}, "followed '$reply_text' link");
     $agent->form_name('TicketUpdate');
     is( $agent->field('UpdateContent'), '' );
@@ -60,6 +61,7 @@ foreach my $queue ( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' 
     $agent->form_name('TicketUpdate');
     like( $agent->field('UpdateContent'), qr/this is a content/ );
 
+    $agent->goto_ticket( $id );
     $agent->follow_link_ok({text => "$reply_text"}, "followed '$reply_text' link");
     $agent->form_name('TicketUpdate');
     is( $agent->field('UpdateContent'), '' );
