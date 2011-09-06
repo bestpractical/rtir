@@ -28,7 +28,7 @@
 % $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $IncidentObj);
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="index.html" name="TicketUpdate" method="get">
+<form action="index.html" name="TicketUpdate" method="post" enctype="multipart/form-data">
 <input type="hidden" name="id" value="<% $id %>" />
 <input type="hidden" name="Status" value="<% $Status %>" />
 <input type="hidden" name="All" value="<% $All %>" />
