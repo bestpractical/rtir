@@ -514,8 +514,6 @@ foreach my $field ( 'Attach', 'Attachment' ) {
     $filename =~ s{^.*[\\/]}{};
 
     my $entity = MakeMIMEEntity(
-        Subject             => $filename,
-        Body                => '',
         AttachmentFieldName => $field,
     );
     $session{'Attachments'}{ $filename } = $entity;
