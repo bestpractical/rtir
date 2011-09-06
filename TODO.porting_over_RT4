@@ -34,8 +34,6 @@
 
 * make Submit buttons names consistent with RT's
 
-* move html/RTIR/Incident/LinkArticles.html -> html/RTIR/Link/Articles.html
-
 * html/RTIR/Forward.html still uses plain inputs for addresses
 
 * re-use CSS squishing

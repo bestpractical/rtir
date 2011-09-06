@@ -36,7 +36,7 @@ if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
     );
     $box_actions = join '&nbsp;'x3,
         qq{<a href="$web_path/Articles/Article/PreCreate.html?$qs">}. loc('Create') .q{</a>},
-        qq{<a href="$web_path/RTIR/Incident/LinkArticles.html?id=$id">}. loc('Link') .q{</a>},
+        qq{<a href="$web_path/RTIR/Link/Articles.html?id=$id">}. loc('Link') .q{</a>},
     ;
 }
 </%INIT>
