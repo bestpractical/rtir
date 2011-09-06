@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 55;
+use RT::IR::Test tests => 77;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -187,6 +187,42 @@ $agent->goto_create_rtir_ticket('Blocks');
         text      => "Download $filename",
     );
     ok($attachment_link, "has link to attachment");
+
+    unlink $filename or die "couldn't delete file '$filename': $!";
+}
+
+# incident reply page, make sure attachments attached to all tickets
+{
+
+    my $inc_id = $agent->create_incident( {Subject => "ir1 for merging"} );
+    my $ir1_id = $agent->create_ir( {Subject => "ir1 for merging", Incident => $inc_id} );
+    my $ir2_id = $agent->create_ir( {Subject => "ir1 for merging", Incident => $inc_id} );
+
+    $agent->display_ticket( $inc_id);
+    $agent->follow_link_ok({text => 'Reply to Reporters'}, "go to 'Reply'");
+
+    my $content = "this is test";
+    my $filename = tempfile($content);
+    $agent->form_number(3);
+    $agent->field('Attach', $filename);
+    $agent->click('AddMoreAttach');
+    is($agent->status, 200, "request successful");
+    $agent->content_like( qr/\Q$filename/, "has file name on the page");
+
+    $agent->form_number(3);
+    ok($agent->value('SubmitTicket'), "we still on the create page");
+    $agent->click('SubmitTicket');
+    is($agent->status, 200, "request successful");
+
+    foreach my $tid ( $ir1_id, $ir2_id ) {
+        $agent->display_ticket( $tid );
+        my $attachment_link = $agent->find_link(
+            tag       => 'a',
+            url_regex => qr/\Q$filename/,
+            text      => "Download $filename",
+        );
+        ok($attachment_link, "has link to attachment");
+    }
 
     unlink $filename or die "couldn't delete file '$filename': $!";
 }

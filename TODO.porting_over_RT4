@@ -57,7 +57,3 @@
 * Constituency has special treating on edit depending on constituency propagation mode
 ** These two custom fields are still massaged via callback and RTIR has special editor
 
-=== TESTS
-
-* add tests to make sure attachments attached to all selected Children when
-  replying via Incident
