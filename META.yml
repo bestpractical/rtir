@@ -26,7 +26,7 @@ no_index:
 requires:
   Business::Hours: 0
   Business::SLA: 0
-  DBIx::SearchBuilder: 1.51
+  DBIx::SearchBuilder: 1.61
   Hook::LexWrap: 0
   Net::Whois::RIPE: 0
   Parse::BooleanLogic: 0

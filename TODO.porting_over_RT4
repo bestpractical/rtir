@@ -12,11 +12,6 @@
   Also, config option that controls: if incident is mandatory
   for queue and if it can be more than one incident per ticket.
 
-=== UPGRADING
-
-* make sure we release DBIx::SB with cud-from-select branch
-  merged and depend on it
-
 === BRINGING UP TO DATE
 
 * Some pages with forms need new nice layouts like in RT, reply

@@ -21,8 +21,8 @@ unshift @INC, $local_lib_path, $lib_path;
 # is not ready for that
 #requires('RT::FM');
 
-# RTIR needs this version of SB cuz of bug-fix
-requires('DBIx::SearchBuilder', 1.51);
+# RTIR needs this version of SB because of cud-from-select
+requires('DBIx::SearchBuilder', 1.61);
 
 # work hours
 requires('Business::Hours');
