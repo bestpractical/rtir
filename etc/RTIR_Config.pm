@@ -25,6 +25,13 @@ Set( $rtirname, RT->Config->Get('rtname') );
 RTIR defines four lifecycles for each its queue: 'incidents',
 'incident_reports', 'investigations' and 'blocks'.
 
+Note that all four lifecycles are mapped to each other, so
+in theory it's possible to move tickets between queues, but
+importantly it's required to perform certain operations.
+For example when user abandons Incident all its children
+should be inactivated as well, to figure out which status
+set on a child the map is used.
+
 Read F<etc/RT_Config.pm> which describes this option in details.
 
 =cut

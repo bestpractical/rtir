@@ -21,10 +21,6 @@
 
 * tranasaction custom fields
 
-=== DOCS
-
-* document why maps are required
-
 === CLEANUP && REFACTORING
 
 * make Submit buttons names consistent with RT's
