@@ -14,20 +14,14 @@
   <td class="value"><% $TicketObj->Subject %></td>
 </tr>
 
-<tr class="to">
-  <td class="label"><&|/l&>To</&>:</td>
-  <td class="value"><input type="text" name="To" size="60" value="<% $ARGS{'To'} %>" /></td>
+% foreach my $field (To Cc Bcc) {
+<tr class="<% lc $field %>">
+  <td class="label"><% loc($field) %>:</td>
+  <td class="value"><& /Elements/EmailInput,
+    Name => $field, Default => $ARGS{ $field }, Size => undef,
+  &></td>
 </tr>
-
-<tr class="cc">
-  <td class="label"><&|/l&>Cc</&>:</td>
-  <td class="value"><input type="text" name="Cc" size="60" value="<% $ARGS{'Cc'} %>" /></td>
-</tr>
-
-<tr class="bcc">
-  <td class="label"><&|/l&>BCc</&>:</td>
-  <td class="value"><input type="text" name="Bcc" size="60" value="<% $ARGS{'Bcc'} %>" /></td>
-</tr>
+% }
 
 </table>
 

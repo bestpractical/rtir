@@ -23,9 +23,6 @@
 
 * make Submit buttons names consistent with RT's
 
-* html/RTIR/Forward.html still uses plain inputs for addresses
-
 * re-use CSS squishing
 
 * use latest simple search API in html/RTIR/index.html
-
