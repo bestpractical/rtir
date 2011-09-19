@@ -29,15 +29,3 @@
 
 * use latest simple search API in html/RTIR/index.html
 
-=== INVESTIGATE
-
-* Rename some fields to variants with spaces
-
-* Description CF in Incidents had Cols => 60 argument, check if we preserve behaviour
-(update: the answer is no. and seems there's no way to do this except hacking rt's
-/Elements/EditCustomField or /Elements/EditCustomFieldFreeform)
-
-* On edit State need special treating for Blocks
-* Constituency has special treating on edit depending on constituency propagation mode
-** These two custom fields are still massaged via callback and RTIR has special editor
-
