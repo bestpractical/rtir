@@ -21,8 +21,6 @@
 
 === CLEANUP && REFACTORING
 
-* make Submit buttons names consistent with RT's
-
 * re-use CSS squishing
 
 * use latest simple search API in html/RTIR/index.html
