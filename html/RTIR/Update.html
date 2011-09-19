@@ -85,6 +85,10 @@
     ],
 &>
 
+<& /Ticket/Elements/EditTransactionCustomFields,
+    %ARGS, TicketObj => $Ticket, InTable => 1,
+&>
+
 </table></&></div>
 
 <div id="ticket-update-message">
@@ -169,6 +173,18 @@ if ( $SubmitTicket ) {
         TicketObj => $Ticket,
     );
     $checks_failure = 1 unless $status;
+}
+
+if ( $SubmitTicket ) {
+    my $status = $m->comp('/Elements/ValidateCustomFields',
+        CustomFields => $Ticket->QueueObj->TicketTransactionCustomFields,
+        ARGSRef      => \%ARGS,
+        NamePrefix   => "Object-RT::Transaction--CustomField-",
+    );
+    unless ( $status ) {
+        push @results, loc( "Invalid value(s) of the custom fields" );
+        $checks_failure = 1;
+    }
 }
 
 if ( $SubmitTicket ) {

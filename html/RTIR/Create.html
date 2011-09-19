@@ -145,6 +145,9 @@
     QueueObj => $QueueObj,
     DefaultsFrom => $SplitObj || $IncidentObj,
   &>
+  <& /Ticket/Elements/EditTransactionCustomFields,
+    %ARGS, QueueObj => $QueueObj, InTable => 1,
+  &>
 </table></&></div>
 
 <div id="ticket-create-message">
@@ -413,18 +416,20 @@ unless ( $skip_create ) {
         push @results, loc( "You must enter an Incident ID" );
         $checks_failure = 1;
     }
+}
 
-    my $TicketCFs = $QueueObj->TicketCustomFields;
-    my ($status, @msg) = $m->comp('/Elements/ValidateCustomFields',
-        CustomFields => $TicketCFs,
+unless ( $skip_create ) {
+    my $ticket_status = $m->comp('/Elements/ValidateCustomFields',
+        CustomFields => $QueueObj->TicketCustomFields,,
         ARGSRef      => \%ARGS,
     );
-    unless ( $status ) {
-        push @results, loc( "Invalid value(s) of the custom fields:" );
-        while (my $CF = $TicketCFs->Next) {
-            my $msg = $m->notes('InvalidField-' . $CF->Id) or next;
-            push @results, $CF->Name . ': ' . $msg;
-        }
+    my $txn_status = $m->comp('/Elements/ValidateCustomFields',
+        CustomFields => $QueueObj->TicketTransactionCustomFields,
+        ARGSRef      => \%ARGS,
+        NamePrefix   => "Object-RT::Transaction--CustomField-",
+    );
+    unless ( $ticket_status && $txn_status ) {
+        push @results, loc( "Invalid value(s) of the custom fields" );
         $checks_failure = 1;
     }
 }

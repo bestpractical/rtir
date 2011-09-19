@@ -19,8 +19,6 @@
 
 * scan code for hardcoded statuses
 
-* tranasaction custom fields
-
 === CLEANUP && REFACTORING
 
 * make Submit buttons names consistent with RT's
