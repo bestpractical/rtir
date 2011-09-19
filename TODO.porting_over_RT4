@@ -33,9 +33,6 @@
 
 * Rename some fields to variants with spaces
 
-* Custom fields in Incident display are very specific and mixed with
-  generic RT properties
-
 * Description CF in Incidents had Cols => 60 argument, check if we preserve behaviour
 (update: the answer is no. and seems there's no way to do this except hacking rt's
 /Elements/EditCustomField or /Elements/EditCustomFieldFreeform)
