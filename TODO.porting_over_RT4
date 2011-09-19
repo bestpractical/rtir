@@ -29,8 +29,6 @@
 
 * re-use CSS squishing
 
-* Elements/ChildSummary and Elements/IncidentSummary share the same query
-
 * use latest simple search API in html/RTIR/index.html
 
 === INVESTIGATE
