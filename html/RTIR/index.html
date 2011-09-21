@@ -37,54 +37,15 @@ unless ( exists $session{'my_rtir_portlets'} ) {
 }
 my $portlets = $session{'my_rtir_portlets'};
 
-use Regexp::Common qw(RE_net_IPv4);
-
-if ( $ARGS{'q'} ) {
-    my $query = $ARGS{'q'};
-
-    if ( $query =~ m/^\s*(\d+)\s*$/ ) {
-        return RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."RTIR/Display.html?id=$query");
-    }
-
-    return if $m->callback(
-        %ARGS,
-        CallbackName => 'SearchPreFilter',
-        query        => $query,
+if ( defined $q && length $q ) {
+    my $query = RT::IR->ParseSimpleSearch(
+        Query => $q,
+        CurrentUser => $session{'CurrentUser'},
     );
 
-    # Incidents don't have requestors, but children do
-    if ( $query =~ m/\@/ ) {
-        my $children = new RT::Tickets($session{'CurrentUser'});
-        $children->FromSQL( "( Queue = 'Incident Reports' OR
-                               Queue = 'Investigations' OR
-                               Queue = 'Blocks'
-                             ) AND Requestor LIKE '$query'"
-                          );
-        $query = '';
-        while ( my $child = $children->Next ) {
-            $query .= " OR " if $query;
-            $query .= "HasMember = " . $child->Id;
-        }
-        $query ||= 'id = 0';
-    }
-    elsif ( $query =~ /^\s*($RE{net}{IPv4})\s*$/o && RT::IR->CustomFields('IP') ) {
-        $query = RT::IR->Query(
-            Queue => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
-            And => "'CustomField.{IP}' = '$1'",
-        );
-        return $m->comp(
-            '/RTIR/Search/Results.html',
-            Query => $query,
-        );
-    }
-    else {
-        # Any search on queue name or subject will be for new/open tickets only.
-        $query = RT::IR->ActiveQuery( Queue => 'Incidents', And => "Subject LIKE '$query'" );
-    }
-    return $m->comp(
-        '/RTIR/Search/Results.html',
-        Queue => 'Incidents',
-        Query => $query,
+    return RT::Interface::Web::Redirect(
+        RT->Config->Get('WebURL') .'RTIR/Search/Results.html?Query='
+        . $m->interp->apply_escapes( $query, 'u' )
     );
 }
 
@@ -97,4 +58,5 @@ if ( $HomeRefreshInterval ) {
 <%ARGS>
 @results => ()
 $HomeRefreshInterval => undef
+$q => undef
 </%ARGS>

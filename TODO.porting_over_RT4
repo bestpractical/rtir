@@ -23,7 +23,5 @@
 
 * re-use CSS squishing
 
-* use latest simple search API in html/RTIR/index.html
-
 * stop abusing $session{'tickets'} so we can get working
   First, Prev, Next and Last links in RTIR.

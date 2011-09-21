@@ -305,6 +305,34 @@ sub Query {
     return join ' AND ', map { /\b(?:AND|OR)\b/? "( $_ )" : $_ } @res;
 }
 
+use Regexp::Common qw(RE_net_IPv4);
+our @SIMPLE_SEARCH_GUESS = (
+    [ 11 => sub { return "rtirrequestor" if /\@/ } ],
+    [ 12 => sub {
+        return "Rtirip" if /^\s*$RE{net}{IPv4}\s*$/o
+            && RT::IR->CustomFields('IP')
+    } ],
+);
+sub ParseSimpleSearch {
+    my $self = shift;
+    my %args = @_;
+
+    local @RT::Search::Googleish::GUESS = (
+        @RT::Search::Googleish::GUESS,
+        @SIMPLE_SEARCH_GUESS,
+    );
+
+    my $search = RT::Search::Googleish->new(
+        Argument => $args{'Query'},
+        TicketsObj => RT::Tickets->new( $args{'CurrentUser'} ),
+    );
+    my $res = $search->QueryToSQL;
+    if ( $res && $res !~ /\bQueue\b/ ) {
+        $res = "Queue = 'Incidents' AND ($res)";
+    }
+    return $res;
+}
+
 sub OurQuery {
     my $self = shift;
     my $query = shift;
@@ -773,6 +801,38 @@ if ( RT::IR->HasConstituency ) {
         $_[-1] = \@res;
     };
 }
+
+require RT::Search::Googleish;
+package RT::Search::Googleish;
+
+sub HandleRtirip {
+    return 'RTIR IP' => RT::IR->Query(
+        Queue => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
+        And => "'CustomField.{IP}' = '$_[1]'",
+    );
+}
+
+sub HandleRtirrequestor {
+    my $self = shift;
+    my $value = shift;
+
+    my $children = RT::Tickets->new( $self->TicketsObj->CurrentUser );
+    $children->FromSQL(
+        "( Queue = 'Incident Reports' OR
+           Queue = 'Investigations' OR
+           Queue = 'Blocks'
+         ) AND Requestor LIKE '$value'"
+    );
+    my $query = '';
+    while ( my $child = $children->Next ) {
+        $query .= " OR " if $query;
+        $query .= "HasMember = " . $child->Id;
+    }
+    $query ||= 'id = 0';
+    return 'RTIR Requestor' => "Queue = 'Incidents' AND ($query)";
+}
+
+package RT::IR;
 
 RT::Base->_ImportOverlays;
 
