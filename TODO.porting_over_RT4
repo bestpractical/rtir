@@ -25,3 +25,7 @@
 
 * stop abusing $session{'tickets'} so we can get working
   First, Prev, Next and Last links in RTIR.
+
+=== TESTS
+
+There is no single test for .../Link/FromIncident/index.html
