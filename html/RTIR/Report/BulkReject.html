@@ -122,13 +122,21 @@ if ( $BulkReject ) {
     $session{'tickets'}->RedoSearch if $session{'tickets'};
 
     if ( $BulkRejectAndReturn ) {
-        my $key = Digest::MD5::md5_hex( rand(1024) );
-        push @{ $session{"Actions"}{ $key } ||= [] }, @results;
-        $session{'i'}++;
-        return RT::Interface::Web::Redirect(
-            RT->Config->Get('WebURL') ."/RTIR/index.html?results=".$key
+        MaybeRedirectForResults(
+            Actions => \@results,
+            Path    => '/RTIR/',
+            Force   => 1,
         );
     }
+
+    MaybeRedirectForResults(
+        Actions   => \@results,
+        Arguments => {
+            map { $_ => $ARGS{ $_ } }
+            grep defined $ARGS{ $_ } && length $ARGS{ $_ },
+            qw(Status Queue Query Format Rows Page OrderBy Order)
+        },
+    );
 }
 
 my $BaseURL = "RTIR/Report/BulkReject.html?"

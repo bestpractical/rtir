@@ -93,8 +93,6 @@ if ( $ARGS{'BulkAbandon'} ) {
 
     my @tempresults;
     foreach my $id ( @SelectedTickets ) {
-        $m->out('<!--  Processing <% $t->id %> -->'); $m->flush_buffer;
-
         my $t = RT::Ticket->new( $session{'CurrentUser'} );
         $t->Load( $id );
         unless( $t->id ) {
@@ -151,8 +149,14 @@ if ( $ARGS{'BulkAbandon'} ) {
          map { ref($_)? loc( "Ticket [_1]: [_2]", $_->[0], $_->[1] ): $_ }
          @tempresults;
 
-    # force redo search if we changed tickets
-    $session{'tickets'}->RedoSearch if $session{'tickets'};
+    MaybeRedirectForResults(
+        Actions   => \@results,
+        Arguments => {
+            map { $_ => $ARGS{ $_ } }
+            grep defined $ARGS{ $_ } && length $ARGS{ $_ },
+            qw(Query Format Rows Page OrderBy Order)
+        },
+    );
 }
 
 </%INIT>

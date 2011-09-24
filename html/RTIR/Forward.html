@@ -46,6 +46,11 @@ if ( $ARGS{'Forward'} ) {
     require RT::Interface::Email;
     my ($status, $msg) = RT::Interface::Email::ForwardTransaction( $txn, %ARGS );
     push @results, $msg;
+
+    MaybeRedirectForResults(
+        Actions   => \@results,
+        Arguments => { id => $Ticket->id, QuoteTransaction => $QuoteTransaction },
+    );
 }
 
 my $Title = loc('Forward message');

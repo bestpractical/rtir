@@ -87,4 +87,5 @@ foreach my $pane ( sort keys %$portlets ) {
 
 $m->comp ('/Widgets/SelectionBox:process', %ARGS, self => $_, nojs => 1) for @boxes;
 
+MaybeRedirectForResults( Actions => \@results );
 </%INIT>

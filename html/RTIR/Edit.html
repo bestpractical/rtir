@@ -198,11 +198,19 @@ if ( $SaveChanges && !$checks_failure && !$OnlySearchForPeople ) {
 
     push @results, ProcessTicketCustomFieldUpdates( ARGSRef => \%ARGS );
 
-    if ( RT->Config->Get('DisplayAfterEdit', $session{'CurrentUser'}) ) {
-        $m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Ticket => $Ticket);
-        push @{ $session{'Actions'}{''} ||= [] }, @results;
-        return $m->comp("/RTIR/Display.html", %ARGS, id => $id);
-    }
+    $m->callback(
+        CallbackName => 'AfterProcessing',
+        ARGSRef => \%ARGS, Ticket => $Ticket, results => \@results,
+    );
+
+    MaybeRedirectForResults(
+        Actions   => \@results,
+        Path      => RT->Config->Get('DisplayAfterEdit', $session{'CurrentUser'})
+            ? "/RTIR/Display.html"
+            : "/RTIR/Edit.html"
+        ,
+        Arguments => { id => $id },
+    );
 }
 
 my $name;

@@ -70,13 +70,19 @@ if ( $ARGS{'SaveChanges'} ) {
     push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
     push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
 
-    if ( RT->Config->Get('DisplayAfterEdit', $session{'CurrentUser'}) ) {
-        push @{ $session{"Actions"}{''} ||= [] }, @results;
-        $session{'i'}++;
+    $m->callback(
+        CallbackName => 'AfterProcessing',
+        ARGSRef => \%ARGS, Ticket => $Ticket, results => \@results,
+    );
 
-        $m->comp("/RTIR/Display.html", %ARGS);
-        return;;
-    }
+    MaybeRedirectForResults(
+        Actions   => \@results,
+        Path      => RT->Config->Get('DisplayAfterEdit', $session{'CurrentUser'})
+            ? "/RTIR/Display.html"
+            : "/RTIR/Advanced.html"
+        ,
+        Arguments => { id => $Ticket->id },
+    );
 }
 
 unless ($Ticket->CurrentUserHasRight('ShowTicket')) {

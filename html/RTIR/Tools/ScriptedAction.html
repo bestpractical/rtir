@@ -414,6 +414,15 @@ if ( $ARGS{'SubmitAction'} ) {
     # restore back arguments
     $ARGS{'Subject'} = $original_subject;
     $ARGS{'Content'} = $original_content;
+
+    MaybeRedirectForResults(
+        Actions   => \@finalresults,
+        Arguments => {
+            map { $_ => $ARGS{ $_ } }
+            grep defined $ARGS{ $_ } && length $ARGS{ $_ },
+            qw(incidentid loop server)
+        },
+    );
 }
 
 sub parse_csv {
@@ -435,7 +444,6 @@ sub parse_csv {
 
 <%ARGS>
 $incidentid => undef
-$Requestors => undef
 $server => undef
 $loop => 'address'
 </%ARGS>
