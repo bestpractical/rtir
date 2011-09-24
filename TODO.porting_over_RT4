@@ -18,6 +18,16 @@
   page comes first to mind
 
 * scan code for hardcoded statuses
+** html/RTIR/Tools/ScriptedAction.html uses open, probably it should
+   be deleted, we create new investigations and incidents with First
+   available status
+
+=== FIX
+
+* html/RTIR/Search/Reporting.html still uses old tabs
+
+* html/RTIR/Search/Results.html has results argument
+  that is passed into ListActions, get rid of it
 
 === CLEANUP && REFACTORING
 
@@ -26,6 +36,11 @@
 * stop abusing $session{'tickets'} so we can get working
   First, Prev, Next and Last links in RTIR.
 
+* code for getting default whois server is repeated
+
 === TESTS
 
-There is no single test for .../Link/FromIncident/index.html
+There is no single test for:
+    .../Link/FromIncident/index.html
+    .../Search/Reporting.html
+
