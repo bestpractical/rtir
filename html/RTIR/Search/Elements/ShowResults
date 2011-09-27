@@ -1,4 +1,3 @@
-<% $result |n %>
 <%INIT>
 
 $Query = join ' AND ', map "( $_ )", grep $_, $BaseQuery, $Query;
@@ -8,9 +7,11 @@ $BaseURL .= ( $BaseURL =~ /\?/ )? '&': '?' unless $BaseURL =~ m{[&?]$};
 
 my $collection = $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
 $collection->FromSQL( $Query );
+
 my $result = $m->scomp( '/Elements/TicketList',
     %ARGS,
     Collection     => $collection,
+    Query          => $Query,
     OrderBy        => $OrderBy,
     Order          => $Order,
     Rows           => $Rows,
@@ -29,8 +30,15 @@ $session{'CurrentSearchHash'} = {
     RowsPerPage => $Rows
 };
 
-return '' if !$ShowEmpty && !$result;
-
+my $found = $collection->Count;
+if ( $found || $ShowEmpty ) {
+    $m->out( $result );
+}
+else {
+    $m->out( $m->interp->apply_escapes($EmptyLabel, 'h') )
+        if $EmptyLabel;
+}
+return $found;
 </%INIT>
 <%ARGS>
 $Queue           => ''
@@ -46,6 +54,7 @@ $Order           => 'ASC'
 $BaseURL         => "RTIR/Search/Results.html?"
 
 $ShowEmpty       => 0
+$EmptyLabel      => ''
 $ShowNavigation  => 0
 $AllowSorting    => 1
 </%ARGS>
