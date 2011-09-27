@@ -40,7 +40,7 @@
 my $found = $m->comp( '/RTIR/Search/Elements/ShowResults',
     Queue           => $Queue,
     BaseURL         => $BaseURL,
-    BaseQuery       => $BaseQuery,
+    BaseQuery       => RT::IR->ActiveQuery( Queue => $Queue ),
     Query           => $Query,
     DisplayFormat   => "__CheckBox__, $Format",
     Format          => $Format,
@@ -146,8 +146,7 @@ my $BaseURL = "RTIR/Report/BulkReject.html?"
 $Status              => 'rejected'
 $Queue               => 'Incident Reports'
 
-$BaseQuery           => RT::IR->Query( Queue => $Queue )
-$Query               => RT::IR->ActiveQuery( Queue => $Queue )
+$Query               => ''
 $Format              => RT->Config->Get('RTIRSearchResultFormats')->{'RejectReports'}
 $Rows                => 50
 $Page                => 1

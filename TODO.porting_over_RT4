@@ -29,8 +29,6 @@
 * html/RTIR/Search/Results.html has results argument
   that is passed into ListActions, get rid of it
 
-* for bulk reject and abandon base query should be active and query empty
-
 === CLEANUP && REFACTORING
 
 * re-use CSS squishing

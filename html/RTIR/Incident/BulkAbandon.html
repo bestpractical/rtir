@@ -37,7 +37,7 @@
 my $found = $m->comp('/RTIR/Search/Elements/ShowResults',
     Queue         => 'Incidents',
     BaseURL       => 'RTIR/Incident/BulkAbandon.html',
-    BaseQuery     => RT::IR->Query( Queue => 'Incidents' ),
+    BaseQuery     => RT::IR->ActiveQuery( Queue => 'Incidents' ),
     Query         => $Query,
     DisplayFormat => "__CheckBox__, $Format",
     Format        => $Format,
@@ -157,7 +157,7 @@ if ( $ARGS{'BulkAbandon'} ) {
 
 </%INIT>
 <%ARGS>
-$Query           => RT::IR->ActiveQuery( Queue => 'Incidents' )
+$Query           => ''
 $Format          => RT->Config->Get('RTIRSearchResultFormats')->{'AbandonIncidents'}
 $Rows            => 50
 $Page            => 1
