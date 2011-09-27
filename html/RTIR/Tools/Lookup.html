@@ -45,7 +45,6 @@
 <& Elements/Tools, %ARGS, q => $q,
     TicketType => $TicketType, 
     TicketObj => $TicketObj,
-    WhoisServer => $server, 
 &>
 
 <%INIT>
@@ -68,7 +67,7 @@ if ( $ARGS{'InvestigateTo'} ) {
     );
 }
 
-my $title = loc("Lookup '[_1]' using server [_2]", $q, $server);
+my $title = loc("Lookup '[_1]'", $q);
 
 my $max_age = -60;
 
@@ -84,7 +83,7 @@ $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
 
 my $current_subtab = 'RTIR/Tools/Lookup.html';
 if ( $q ) {
-    $current_subtab .= '?'. $m->comp('/Elements/QueryString', q => $q, server => $server );
+    $current_subtab .= '?'. $m->comp('/Elements/QueryString', q => $q );
 
     my $query;
     if ( $type && RT::IR->CustomFields( Field => $type ) ) {
@@ -114,7 +113,6 @@ if ( $ticket ) {
 
 </%INIT>
 <%ARGS>
-$server    => undef
 $q         => undef
 $type      => undef
 $ticket    => undef

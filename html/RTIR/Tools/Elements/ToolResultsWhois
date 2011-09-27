@@ -61,9 +61,12 @@ $handparse => undef
 $TicketType => undef
 $TicketObj => undef
 $WhoisServer => undef
+$server => undef
 </%args>
 <%init>
+$WhoisServer = $server unless defined $WhoisServer;
 return unless ($WhoisServer);
+
 use Net::Whois::RIPE;
 my ($whois, $port) = split(/\s*:\s*/, $WhoisServer, 2);
 $port = 43 unless ($port || '') =~ /^\d+$/;
