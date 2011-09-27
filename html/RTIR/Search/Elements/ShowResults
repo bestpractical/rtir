@@ -47,6 +47,5 @@ $BaseURL         => "RTIR/Search/Results.html?"
 
 $ShowEmpty       => 0
 $ShowNavigation  => 0
-$ShowListActions => $ShowNavigation
 $AllowSorting    => 1
 </%ARGS>
