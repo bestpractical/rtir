@@ -19,6 +19,8 @@ foreach my $s ( sort grep $servers->{ $_ }, keys %{ $servers } ) {
 <%args>
 $TicketObj => undef
 $q => undef
-$servers => undef
 $WhoisServer => undef
 </%args>
+<%INIT>
+my $servers = RT->Config->Get('whois');
+</%INIT>
