@@ -65,7 +65,13 @@ $server => undef
 </%args>
 <%init>
 $WhoisServer = $server unless defined $WhoisServer;
-return unless ($WhoisServer);
+unless ($WhoisServer) {
+    return unless RT->Config->Get('RunWhoisRequestByDefault');
+
+    my $servers = RT->Config->Get('whois');
+    ($WhoisServer) = map ref $servers->{$_}? $servers->{$_}->{'Host'}: $servers->{$_},
+        (sort keys %$servers)[0];
+}
 
 use Net::Whois::RIPE;
 my ($whois, $port) = split(/\s*:\s*/, $WhoisServer, 2);
