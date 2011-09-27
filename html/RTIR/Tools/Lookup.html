@@ -46,7 +46,6 @@
     TicketType => $TicketType, 
     TicketObj => $TicketObj,
     WhoisServer => $server, 
-    handparse => $handparse,
     servers => $servers &>
 
 <%INIT>
@@ -117,7 +116,6 @@ if ( $ticket ) {
 <%ARGS>
 $servers   => RT->Config->Get('whois')
 $server    => undef
-$handparse => 1
 $q         => undef
 $type      => undef
 $ticket    => undef
