@@ -82,7 +82,7 @@ my $re_rtir_types = '(?:'. join( '|', map "\Q$_\E", RT::IR->Types ) .')';
 
 my $search_arguments = sub {
     my %res = ();
-    my @query_fields = qw(Query Format RowPerPage Page OrderBy Order);
+    my @query_fields = qw(Query Format RowsPerPage Page OrderBy Order);
     if ( my $refined = $m->notes('RefinedSearch') ) {
         @res{ @query_fields } = @{ $refined->{'query'} }{ @query_fields };
     } else {
@@ -379,6 +379,8 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
         path => "/RTIR/Display.html?id=$id",
     );
 } elsif ( $request_path =~ m{^/RTIR/(Search/|Incident/BulkAbandon\.html$|Report/BulkReject\.html$)} ) {
+    my %args = $search_arguments->();
+
     my $queue = $args->{'Queue'} || '';
     unless ( $queue ) {
         if ( $request_path =~ /Incident/ ) {
@@ -389,15 +391,12 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
         }
     }
     unless ( $queue ) {
-        my (undef, @queues) = RT::IR->OurQuery( $args->{'Query'} );
+        my (undef, @queues) = RT::IR->OurQuery( $args{'Query'} );
         $queue = $queues[0] if @queues == 1;
     }
     my $type = RT::IR::TicketType( Queue => $queue ) || '';
 
-    my %args = (
-        $search_arguments->(),
-        Queue => $queue,
-    );
+    $args{'Queue'} = $queue if $queue;
 
     PageMenu()->child(
         link => title => loc('Show Results'),
@@ -430,6 +429,49 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
         PageMenu()->child(
             reject => title => loc('Bulk Reject'),
             path => "/RTIR/Report/BulkReject.html?". $query_string->( %args ),
+        );
+    }
+    PageMenu()->child(
+        chart => title => loc('Chart'),
+        path => "/Search/Chart.html?". $query_string->( %args ),
+    );
+
+    my $more = PageMenu->child( more => title => loc('Feeds') );
+    $more->child(
+        spreadsheet => title => loc('Spreadsheet'),
+        path => "/Search/Results.tsv?". $query_string->( %args ),
+    );
+
+    my $RSSPath = join '/', map $m->interp->apply_escapes( $_, 'u' ),
+        $session{'CurrentUser'}->UserObj->Name,
+        $session{'CurrentUser'}->UserObj->GenerateAuthString(
+            join '', map $args{$_}, qw(Query Order OrderBy)
+        )
+    ;
+    $more->child(
+        rss => title => loc('RSS'),
+        path => "/NoAuth/rss/$RSSPath/?". $query_string->(
+            Query => $args{Query}, Order => $args{Order}, OrderBy => $args{OrderBy}
+        ),
+    );
+
+    my $ical_path = join '/', map $m->interp->apply_escapes($_, 'u'),
+        $session{'CurrentUser'}->UserObj->Name,
+        $session{'CurrentUser'}->UserObj->GenerateAuthString( $args{Query} ),
+        $args{Query}
+    ;
+    $more->child( ical => title => loc('iCal') => path => '/NoAuth/iCal/'.$ical_path);
+
+    if ( $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => RT->System ) ) {
+        my $shred_args = $query_string->(
+            search          => 1,
+            plugin          => 'Tickets',
+            'Tickets:query' => $args{'Query'},
+            'Tickets:limit' => $args{'RowsPerPage'},
+        );
+        $more->child(
+            shredder => title => loc('Shredder'),
+            path => '/Admin/Tools/Shredder/?' . $shred_args
         );
     }
 } elsif ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?Split\.html$} ) {
