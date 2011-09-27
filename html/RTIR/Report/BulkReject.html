@@ -36,7 +36,8 @@
 <input type="hidden" name="OrderBy" value="<% $OrderBy %>" />
 <input type="hidden" name="Order"   value="<% $Order %>" />
 
-<& /RTIR/Search/Elements/ShowResults,
+<%PERL>
+my $found = $m->comp( '/RTIR/Search/Elements/ShowResults',
     Queue           => $Queue,
     BaseURL         => $BaseURL,
     BaseQuery       => $BaseQuery,
@@ -48,9 +49,10 @@
     OrderBy         => $OrderBy,
     Order           => $Order,
     ShowNavigation  => 1,
-&>
+);
+</%PERL>
 
-% if ( $session{'tickets'}->Count ) {
+% if ( $found ) {
 <& /Elements/Submit,
     Name => "BulkReject",
     Caption => loc("Reject selected incident reports"),

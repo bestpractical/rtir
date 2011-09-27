@@ -34,8 +34,7 @@
 % }
 
 <%PERL>
-# XXX: cache result set to check if get empty results
-my $result_set = $m->scomp('/RTIR/Search/Elements/ShowResults',
+my $found = $m->comp('/RTIR/Search/Elements/ShowResults',
     Queue         => 'Incidents',
     BaseURL       => 'RTIR/Incident/BulkAbandon.html',
     BaseQuery     => RT::IR->Query( Queue => 'Incidents' ),
@@ -46,13 +45,12 @@ my $result_set = $m->scomp('/RTIR/Search/Elements/ShowResults',
     OrderBy       => $OrderBy,
     Order         => $Order,
     Page          => $Page,
+    EmptyLabel    => loc("no incidents"),
     ShowNavigation  => 1,
 );
 </%PERL>
 
-% if( $session{'tickets'}->Count ) {
-% $m->out( $result_set );
-
+% if ( $found ) {
 <&| /Widgets/TitleBox, title => loc("Select recipients") &>
 % foreach my $box( @CheckBox ) {
 % my $checked = (scalar grep $_ && $box->{'Value'}, @ReplyToAll )? ' checked' : '';
@@ -71,9 +69,8 @@ my $result_set = $m->scomp('/RTIR/Search/Elements/ShowResults',
     CheckAll => 1, ClearAll => 1,
     CheckboxName => 'SelectedTickets',
 &>
-% } else {
-<i><% loc("no incidents") %></i>
 % }
+
 </form>
 
 <%INIT>
