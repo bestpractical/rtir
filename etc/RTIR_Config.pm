@@ -599,6 +599,16 @@ Set($whois, {
     },
 } );
 
+=item C<$RunWhoisRequestByDefault>
+
+RTIR prior to 2.6.1 was running whois request by default on lookup.
+Now it requires user interaction. Set C<$RunWhoisRequestByDefault>
+to true value return back old behaviour.
+
+=cut
+
+Set($RunWhoisRequestByDefault, 0);
+
 =back
 
 =head1 Service Level Agreements (SLA)

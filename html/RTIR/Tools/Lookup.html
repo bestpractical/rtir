@@ -37,12 +37,12 @@
 
 <hr>
 <h2><&|/l&>Look Up Information</&></h2>
-<& Elements/Tools, %ARGS, q => $q,
-    TicketType => $TicketType, 
+<& Elements/Tools,
+    %ARGS,
+    q => $q,
     TicketObj => $TicketObj,
-    WhoisServer => $server, 
-    handparse => $handparse,
-    servers => $servers &>
+    PassArguments => [qw(ticket type HideResults)],
+&>
 
 <%INIT>
 
@@ -64,7 +64,7 @@ if ( $ARGS{'InvestigateTo'} ) {
     );
 }
 
-my $title = loc("Lookup '[_1]' using server [_2]", $q, $server);
+my $title = loc("Lookup '[_1]'", $q);
 
 my $max_age = -60;
 
@@ -103,13 +103,8 @@ if ( $ticket ) {
     $TicketType = RT::IR::TicketType( Ticket => $TicketObj );
 }
 
-
-
 </%INIT>
 <%ARGS>
-$servers   => RT->Config->Get('whois')
-$server    => undef
-$handparse => 1
 $q         => undef
 $type      => undef
 $ticket    => undef
