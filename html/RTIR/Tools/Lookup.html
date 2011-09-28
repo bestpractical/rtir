@@ -25,7 +25,7 @@
 <& /RTIR/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
 
-% if ( $TicketObj->id ) {
+% if ( $TicketObj ) {
 <&| /Widgets/TitleBox, title => loc("Current [_1]: #[_2]", $TicketType, $ticket), class => 'ticket-info-basics' &>
 <& /Elements/TicketList, Query => "id = $ticket", Format => RT->Config->Get('RTIRSearchResultFormats')->{$TicketType . 'Default'}, ShowNavigation => 0 &>
 </&>
@@ -66,8 +66,7 @@ if ( $ARGS{'InvestigateTo'} ) {
 
 my $title = loc("Lookup '[_1]'", $q);
 
-my $TicketObj = RT::Ticket->new($session{CurrentUser});
-my $TicketType;
+my ($TicketObj, $TicketType);
 if ( $ticket ) {
     $TicketObj = LoadTicket( $ticket );
     $ticket = $ARGS{'ticket'} = $TicketObj->id;
