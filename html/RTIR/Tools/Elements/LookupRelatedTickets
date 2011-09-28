@@ -3,7 +3,6 @@
 
 <&| /Widgets/TitleBox, title => loc('Incidents: [_1]', $q), class => 'tickets-list-incident' &>
 <& /RTIR/Elements/IncidentSummary, 
-    Type       => $TicketType, 
     ticket     => $TicketObj->id, 
     lookuptype => $LookupType, 
     q          => $q,
@@ -15,7 +14,6 @@
 <&| /Widgets/TitleBox, title => loc('Investigations: [_1]', $q), class => 'tickets-list-investigation' &>
 <& /RTIR/Elements/ChildSummary, 
     Queue      => 'Investigations', 
-    Type       => $TicketType, 
     ticket     => $TicketObj->id, 
     lookuptype => $LookupType, 
     q          => $q,
@@ -27,7 +25,6 @@
 <&| /Widgets/TitleBox, title => loc('Incident Reports: [_1]', $q), class => 'tickets-list-report' &>
 <& /RTIR/Elements/ChildSummary,
     Queue      => 'Incident Reports',
-    Type       => $TicketType,
     ticket     => $TicketObj->id,
     lookuptype => $LookupType,
     q          => $q,
@@ -40,7 +37,6 @@
 <&| /Widgets/TitleBox, title => loc('Blocks: [_1]', $q), class => 'tickets-list-block' &>
 <& /RTIR/Elements/ChildSummary,
     Queue      => 'Blocks',
-    Type       => $TicketType,
     ticket     => $TicketObj->id,
     lookuptype => $LookupType,
     q          => $q,
@@ -56,8 +52,6 @@ $LookupType => undef
 $q => undef
 </%args>
 <%init>
-my $TicketType = RT::IR::TicketType( Ticket => $TicketObj );
-
 my $max_age = -60;
 
 if ( my $tmp = RT->Config->Get('RTIR_OldestRelatedTickets') ) {
