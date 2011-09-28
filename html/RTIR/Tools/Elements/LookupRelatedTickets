@@ -34,22 +34,22 @@ $q => undef
 </%args>
 <%init>
 
+return unless defined $q && length $q;
+
 my $query;
-if ( $q ) {
-    if ( $LookupType && RT::IR->CustomFields( Field => $LookupType ) ) {
-        $query = "'CF.{$LookupType}' = '$q'"
-    } else {
-        $query = join ' OR ', map "ContentType = '$_'",
-            qw(text/plain text/html text);
-        $query = "( $query ) AND Content LIKE '$q'";
+if ( $LookupType && RT::IR->CustomFields( Field => $LookupType ) ) {
+    $query = "'CF.{$LookupType}' = '$q'"
+} else {
+    $query = join ' OR ', map "ContentType = '$_'",
+        qw(text/plain text/html text);
+    $query = "( $query ) AND Content LIKE '$q'";
 
-        # apply transaction date search only if it's FTS as otherwise
-        # it can ruin performance of mysql optimizer rather than help
-        my $age = RT::Date->new( $session{'CurrentUser'} );
-        $age->SetToNow;
-        $age->AddDays( 0 - (RT->Config->Get('RTIR_OldestRelatedTickets') || 60) );
+    # apply transaction date search only if it's FTS as otherwise
+    # it can ruin performance of mysql optimizer rather than help
+    my $age = RT::Date->new( $session{'CurrentUser'} );
+    $age->SetToNow;
+    $age->AddDays( 0 - (RT->Config->Get('RTIR_OldestRelatedTickets') || 60) );
 
-        $query = "$query AND TransactionDate > '". $age->ISO ."'"
-    }
+    $query = "$query AND TransactionDate > '". $age->ISO ."'"
 }
 </%init>
