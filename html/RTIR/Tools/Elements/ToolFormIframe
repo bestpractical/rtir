@@ -1,5 +1,7 @@
 <form action="Lookup.html" method="get">
-  <input type="hidden" name="ticket" value="<% $TicketObj->id %>" />
+% foreach my $arg ( grep exists $ARGS{$_}, @PassArguments ) {
+  <input type="hidden" name="<% $arg %>" value="<% $ARGS{ $arg } %>" />
+% }
     <span class="label"><%loc('Research Tool')%>:</span>
     <span class="input">
       <input size="30" name="q" value="<% $q %>" /> at
@@ -12,9 +14,9 @@
     <input type="submit" value="<%loc('Go')%>" />
 </form>
 <%args>
-$TicketObj => undef
 $q => undef
 $ResearchTool => undef
+@PassArguments => ()
 </%args>
 <%INIT>
 my $unique_id = time().rand();
