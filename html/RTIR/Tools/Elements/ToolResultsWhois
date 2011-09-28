@@ -1,6 +1,6 @@
 % if ( $q ) {
 <h2>WHOIS Results</h2>
-% if ( $TicketObj && $TicketType eq 'Incident' ) {
+% if ( $TicketObj && RT::IR::TicketType( Ticket => $TicketObj ) eq 'Incident' ) {
 <form method="post" action="<% RT->Config->Get('WebPath') %>/RTIR/Tools/Lookup.html">
 <input type="hidden" name="incidentid" value="<% $TicketObj->id %>" />
 <input type="hidden" name="Subject" value="<% $TicketObj->Subject %>" />
@@ -58,7 +58,6 @@ Structured RIPE whois data returned. Click <a href="Lookup.html?q=<% $q |u %>&se
 <%args>
 $q =>  undef
 $handparse => 1
-$TicketType => undef
 $TicketObj => undef
 $WhoisServer => undef
 $server => undef
