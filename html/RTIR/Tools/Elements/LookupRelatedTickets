@@ -2,45 +2,26 @@
 <tr><td valign="top" width="50%">
 
 <&| /Widgets/TitleBox, title => loc('Incidents: [_1]', $q), class => 'tickets-list-incident' &>
-<& /RTIR/Elements/IncidentSummary, 
-    ticket     => $TicketObj->id, 
-    lookuptype => $LookupType, 
-    q          => $q,
-&>
+<& IncidentSummary, %ARGS, Query => $query &>
 </&>
 
 </td><td valign="top" width="50%">
 
 <&| /Widgets/TitleBox, title => loc('Investigations: [_1]', $q), class => 'tickets-list-investigation' &>
-<& /RTIR/Elements/ChildSummary, 
-    Queue      => 'Investigations', 
-    ticket     => $TicketObj->id, 
-    lookuptype => $LookupType, 
-    q          => $q,
-&>
+<& ChildSummary, %ARGS, Queue => 'Investigations', Query => $query &>
 </&>
 
 </td></tr><tr><td valign="top" width="50%">
 
 <&| /Widgets/TitleBox, title => loc('Incident Reports: [_1]', $q), class => 'tickets-list-report' &>
-<& /RTIR/Elements/ChildSummary,
-    Queue      => 'Incident Reports',
-    ticket     => $TicketObj->id,
-    lookuptype => $LookupType,
-    q          => $q,
-&>
+<& ChildSummary, %ARGS, Queue => 'Incident Reports', Query => $query &>
 </&>
 
 </td><td width="50%" valign="top">
 
 % unless ( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
 <&| /Widgets/TitleBox, title => loc('Blocks: [_1]', $q), class => 'tickets-list-block' &>
-<& /RTIR/Elements/ChildSummary,
-    Queue      => 'Blocks',
-    ticket     => $TicketObj->id,
-    lookuptype => $LookupType,
-    q          => $q,
-&>
+<& ChildSummary, %ARGS, Queue => 'Blocks', Query => $query &>
 </&>
 % }
 
