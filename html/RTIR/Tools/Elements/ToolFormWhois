@@ -1,5 +1,7 @@
 <form action="Lookup.html" method="get">
-  <input type="hidden" name="ticket" value="<% $TicketObj->id %>" />
+% foreach my $arg ( grep exists $ARGS{$_}, @PassArguments ) {
+  <input type="hidden" name="<% $arg %>" value="<% $ARGS{ $arg } %>" />
+% }
   <tr>
     <span class="label">WHOIS:</span>
     <span class="input">
@@ -17,8 +19,8 @@ foreach my $s ( sort grep $servers->{ $_ }, keys %{ $servers } ) {
     <input type="submit" value="<%loc('Go')%>" />
 </form>
 <%args>
-$TicketObj => undef
 $q => undef
 $servers => undef
 $WhoisServer => undef
+@PassArguments => ()
 </%args>

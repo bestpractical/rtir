@@ -42,10 +42,12 @@
 
 <hr>
 <h2><&|/l&>Look Up Information</&></h2>
-<& Elements/Tools, %ARGS, q => $q,
-    TicketType => $TicketType, 
+<& Elements/Tools,
+    %ARGS,
+    q => $q,
     TicketObj => $TicketObj,
     WhoisServer => $server, 
+    PassArguments => [qw(ticket type HideResults)],
     handparse => $handparse,
     servers => $servers &>
 
@@ -110,8 +112,6 @@ if ( $ticket ) {
     $ticket = $ARGS{'ticket'} = $TicketObj->id;
     $TicketType = RT::IR::TicketType( Ticket => $TicketObj );
 }
-
-
 
 </%INIT>
 <%ARGS>
