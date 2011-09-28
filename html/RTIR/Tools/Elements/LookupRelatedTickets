@@ -52,32 +52,23 @@ $LookupType => undef
 $q => undef
 </%args>
 <%init>
-my $max_age = -60;
 
-if ( my $tmp = RT->Config->Get('RTIR_OldestRelatedTickets') ) {
-    $max_age = 0 - $tmp;
-}
-
-my $now = RT::Date->new( $session{'CurrentUser'} );
-$now->SetToNow;
-$now->AddDays( $max_age );
-
-$session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
-
+my $query;
 if ( $q ) {
-    my $query;
     if ( $type && RT::IR->CustomFields( Field => $type ) ) {
         $query = "'CF.{$type}' = '$q'"
     } else {
-        $query = "( ContentType = 'text/plain' OR ContentType = 'text' OR ContentType = 'text/html' )"
-        . " AND Content LIKE '$q'";
+        $query = join ' OR ', map "ContentType = '$_'",
+            qw(text/plain text/html text);
+        $query = "( $query ) AND Content LIKE '$q'";
 
         # apply transaction date search only if it's FTS as otherwise
         # it can ruin performance of mysql optimizer rather than help
-        $query = "( $query ) AND TransactionDate > '". $now->ISO ."'"
-    }
+        my $age = RT::Date->new( $session{'CurrentUser'} );
+        $age->SetToNow;
+        $age->AddDays( 0 - (RT->Config->Get('RTIR_OldestRelatedTickets') || 60) );
 
-    my ($val, $msg) = $session{'tickets'}->FromSQL( $query );
-    $RT::Logger->warning( $msg ) unless $val;
+        $query = "$query AND TransactionDate > '". $age->ISO ."'"
+    }
 }
 </%init>
