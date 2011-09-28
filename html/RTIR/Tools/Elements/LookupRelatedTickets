@@ -37,8 +37,8 @@ $q => undef
 
 my $query;
 if ( $q ) {
-    if ( $type && RT::IR->CustomFields( Field => $type ) ) {
-        $query = "'CF.{$type}' = '$q'"
+    if ( $LookupType && RT::IR->CustomFields( Field => $LookupType ) ) {
+        $query = "'CF.{$LookupType}' = '$q'"
     } else {
         $query = join ' OR ', map "ContentType = '$_'",
             qw(text/plain text/html text);
