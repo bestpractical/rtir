@@ -26,6 +26,8 @@ CLEANUPS
 ========
 
 * code cleanups to better follow modern perl coding guidelines
+* config file is now has POD instead of comments and options are
+  in better ordered
 
 CHANGES IN 2.6.0 SINCE RTIR 2.4.x
 ---------------------------------
