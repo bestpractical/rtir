@@ -42,10 +42,11 @@
     q          => $q,
 &>
 </&>
+% }
+
 </td></tr>
 
 </table>
-% }
 <%args>
 $TicketObj
 $LookupType => undef
