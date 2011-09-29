@@ -7,22 +7,16 @@
 
 </td><td valign="top" width="50%">
 
-<&| /Widgets/TitleBox, title => loc('Investigations: [_1]', $q), class => 'tickets-list-investigation' &>
 <& ChildSummary, %ARGS, Queue => 'Investigations', Query => $query &>
-</&>
 
 </td></tr><tr><td valign="top" width="50%">
 
-<&| /Widgets/TitleBox, title => loc('Incident Reports: [_1]', $q), class => 'tickets-list-report' &>
 <& ChildSummary, %ARGS, Queue => 'Incident Reports', Query => $query &>
-</&>
 
 </td><td width="50%" valign="top">
 
 % unless ( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
-<&| /Widgets/TitleBox, title => loc('Blocks: [_1]', $q), class => 'tickets-list-block' &>
 <& ChildSummary, %ARGS, Queue => 'Blocks', Query => $query &>
-</&>
 % }
 
 </td></tr>
