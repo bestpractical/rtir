@@ -22,104 +22,65 @@
 %# 
 %# 
 %# END LICENSE BLOCK
-<table width="100%" border="0" cellpadding="2" cellspacing="0">
-
-<tr>
-%# XXX: why we don't use TicketList component here?
-<th><b><&|/l&>id<b></&></th>
-<th><b><&|/l&>Subject<b></&></th>
-<th><b><&|/l&>Status<b></&></th>
-<th><b><&|/l&>Priority<b></&></th>
-<th align="right"><b><&|/l&>Actions<b></&></th>
-</tr>
 
 % if ( $lookup_cf_not_applies ) {
-<tr><td colspan="5"><% loc("Custom field '[_1]' doesn't applies to this queue", loc($lookuptype) ) %></td></tr>
+<i><% loc("Custom field '[_1]' doesn't applies to this queue", loc($LookupType) ) %></i>
+% } else {
+<& /RTIR/Search/Elements/ShowResults,
+    Queue         => $Queue,
+    BaseQuery     => RT::IR->Query( Queue => $Queue ),
+    Query         => $Query,
+    Format        => $Format,
+    AllowSorting  => 0,
+    EmptyLabel    => loc("(no $Queue)"),
+&>
 % }
 
-% my $i=0;
-% while (my $Ticket = $session{'tickets'}->Next) {
-% next unless ($Ticket->QueueObj->Name eq $Queue);
-% $i++;
-% my $t = RT::IR::TicketType( Ticket => $Ticket );
-<tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
-<td><b><a href="<%RT->Config->Get('WebPath')%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%></a></b></td>
-<td><b><a href="<%RT->Config->Get('WebPath')%>/RTIR/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Subject%></a></b></td>
-<td><% loc( $Ticket->Status ) %></td>
-<td><%$Ticket->Priority%></td>
-% if ($Type eq 'Incident') {
-<td align="right"><a href="<%RT->Config->Get('WebPath')%>/RTIR/Display.html?Child=<%$Ticket->Id%>&id=<%$ticket%>">[<%loc("Link")%>]</a></td>
-% } elsif ($Type eq $t) {
-% if ($ticket ne $Ticket->Id) {
-<td align="right"><a href="<%RT->Config->Get('WebPath')%>/RTIR/Merge/?id=<%$ticket%>&SelectedTicket=<%$Ticket->Id%>">[<%loc("Merge")%>]</a></td>
-% } else {
-<td>&nbsp;</td>
-% }
-% } else {
-<td>&nbsp;</td>
-% }
-</tr>
-% }
-% if ($i == 0) {
-<tr><td colspan="5"><i><%loc("(no [_1])", $Queue)%></i></td></tr>
-% }
+<table width="100%" border="0" cellpadding="2" cellspacing="0">
 <tr>
 <td colspan="5">
 [<a href="<%RT->Config->Get('WebPath')%>/RTIR/Search/Refine.html?Queue=<% $Queue |uhn %>&<% $QueryString %>"><% loc("Refine Search") %></a>]
-% if ($Type eq 'Incident') {
-% if ($Queue) {
-[<a href="<%RT->Config->Get('WebPath')%>/RTIR/Incident/LinkChildren.html?Queue=<% $Queue |uhn %>&Query=<% 'Content LIKE "$q"' |uhn %>&id=<% $ticket %>"><%loc("Bulk Link")%></a>]
-% }
-%   if ($Queue eq 'Investigations' && $lookuptype eq 'email') {
-<br />[<a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Incident=<%$ticket%>&Requestors=<%$q%>&Queue=Investigations"><%loc("Launch new: [_1]", $q)%></a>]
-%   } elsif ( $Queue eq 'Blocks' && $lookuptype eq 'ip' && !RT->Config->Get('RTIR_DisableBlocksQueue') ) {
-<br />[<a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Incident=<%$ticket%>&Queue=Blocks&IP-Value=<%$q%>"><%loc("New Block: [_1]", $q)%></a>]
+
+% if ( $TicketObj && RT::IR::TicketType( Ticket => $TicketObj ) eq 'Incident' ) {
+[<a href="<%RT->Config->Get('WebPath')%>/RTIR/Incident/LinkChildren.html?Queue=<% $Queue |uhn %>&Query=<% 'Content LIKE "$q"' |uhn %>&id=<% $TicketObj->id %>"><%loc("Bulk Link")%></a>]
+%   if ($Queue eq 'Investigations' && $LookupType eq 'email') {
+<br />[<a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Incident=<%$TicketObj->id%>&Requestors=<%$q%>&Queue=Investigations"><%loc("Launch new: [_1]", $q)%></a>]
+%   } elsif ( $Queue eq 'Blocks' && $LookupType eq 'ip' && !RT->Config->Get('RTIR_DisableBlocksQueue') ) {
+<br />[<a href="<%RT->Config->Get('WebPath')%>/RTIR/Create.html?Incident=<%$TicketObj->id%>&Queue=Blocks&IP-Value=<%$q%>"><%loc("New Block: [_1]", $q)%></a>]
 %   }
 % }
+
 </td>
 </tr>
 </table>
 
 <%INIT>
-my @conditions = ();
 my $lookup_cf_not_applies = 0;
-if ( defined $q && length $q ) {
-    if ( $lookuptype && RT::IR->CustomFields( Field => $lookuptype ) ) {
-        my @this = RT::IR->CustomFields( Field => $lookuptype, Queue => $Queue );
-        if ( @this ) {
-            push @conditions, "'CF.{$lookuptype}' = '$q'";
-        } else {
-            $lookup_cf_not_applies = 1;
-            push @conditions, "id = 0";
-        }
-    } else {
-        push @conditions, "Content LIKE '$q'";
-    }
+if ( $LookupType && RT::IR->CustomFields( Field => $LookupType )
+    && !RT::IR->CustomFields( Field => $LookupType, Queue => $Queue )
+) {
+    $lookup_cf_not_applies = 1;
 }
-my $Query = RT::IR->ActiveQuery( Queue => $Queue, And => \@conditions );
 
 my $QueryString = $m->comp('/Elements/QueryString',
     Query   => $Query,
-    Format  => $Format,
-    Rows    => $Rows,
-    OrderBy => $OrderBy,
-    Order   => $Order,
-    Page    => $Page,
 );
+
+my $Format = RT->Config->Get('RTIRSearchResultFormats')->{'LookupTool'};
+if ( $TicketObj ) {
+    my @show;
+    push @show, 'link' if RT::IR::TicketType( Ticket => $TicketObj ) eq 'Incident';
+    push @show, 'merge' if $Queue eq $TicketObj->QueueObj->Name;
+    $Format .= ", '__LookupToolChildrenActions.{". join(',', $TicketObj->id, @show ) ."}__'";
+}
 
 </%INIT>
 
 <%ARGS>
+$Query => undef
 $Queue => undef
-$Type => undef
-$ticket => undef
-$q => undef
-$lookuptype => undef
-$Format => undef 
-$HideResults => 0
-$Rows => 50
-$Page => 1
-$OrderBy => 'id'
-$Order => 'ASC'
-</%ARGS>
+$TicketObj => undef
 
+$q => undef
+$LookupType => undef
+</%ARGS>

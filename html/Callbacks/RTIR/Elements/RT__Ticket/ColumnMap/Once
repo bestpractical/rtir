@@ -39,6 +39,33 @@ $COLUMN_MAP->{'HasIncident'} = {
         return \$yesno;
     },
 };
+$COLUMN_MAP->{'LookupToolChildrenActions'} = {
+    title => 'Actions',
+    value => sub {
+        my $t = shift;
+        my ($lid, $show) = split /,/, pop(), 2;
+        my %show = map { lc($_) => 1 } split /,/, $show;
+
+        my @res;
+        if ( $show{'link'} ) {
+            push @res, \'<a href="',
+                RT->Config->Get('WebPath') .'/RTIR/Display.html?Child='. $t->id .'&id='. $lid,
+                \'">',
+                '[' . $t->loc("Link") .']',
+                \'</a>'
+            ;
+        }
+        elsif ( $lid != $t->id && $show{'merge'} ) {
+            push @res, \'<a href="',
+                RT->Config->Get('WebPath') .'/RTIR/Merge/?SelectedTicket='. $t->id .'&id='. $lid,
+                \'">',
+                '[' . $t->loc("Merge") .']',
+                \'</a>'
+            ;
+        }
+        return @res;
+    },
+};
 
 </%INIT>
 <%ARGS>
