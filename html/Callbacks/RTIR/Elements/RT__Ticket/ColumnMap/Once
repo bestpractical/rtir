@@ -55,7 +55,7 @@ $COLUMN_MAP->{'LookupToolChildrenActions'} = {
                 \'</a>'
             ;
         }
-        elsif ( $lid != $t->id && $show{'merge'} ) {
+        if ( $lid != $t->id && $show{'merge'} ) {
             push @res, \'<a href="',
                 RT->Config->Get('WebPath') .'/RTIR/Merge/?SelectedTicket='. $t->id .'&id='. $lid,
                 \'">',
@@ -63,6 +63,39 @@ $COLUMN_MAP->{'LookupToolChildrenActions'} = {
                 \'</a>'
             ;
         }
+        return @res;
+    },
+};
+$COLUMN_MAP->{'LookupToolIncidentActions'} = {
+    title => 'Actions',
+    value => sub {
+        my $t = shift;
+        my ($lid, $show) = split /,/, pop(), 2;
+        my %show = map { lc($_) => 1 } split /,/, $show;
+
+        my @res;
+        if ( $show{'link'} ) {
+            push @res, \'<a href="',
+                RT->Config->Get('WebPath') .'/RTIR/Display.html?Child='. $lid .'&id='. $t->id,
+                \'">',
+                '[' . $t->loc("Link") .']',
+                \'</a>'
+            ;
+        }
+        if ( $lid != $t->id && $show{'merge'} ) {
+            push @res, \'<a href="',
+                RT->Config->Get('WebPath') .'/RTIR/Merge/?SelectedTicket='. $lid .'&id='. $t->id,
+                \'">',
+                '[' . $t->loc("Merge") .']',
+                \'</a>'
+            ;
+        }
+        push @res, \'<a href="',
+            RT->Config->Get('WebPath') .'/RTIR/Create.html?Queue=Investigations&Incident='. $t->id,
+            \'">',
+            '[' . $t->loc("Investigate") .']',
+            \'</a>'
+        ;
         return @res;
     },
 };
