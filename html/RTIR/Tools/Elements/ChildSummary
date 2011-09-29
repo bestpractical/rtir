@@ -49,16 +49,17 @@ if ( $LookupType && RT::IR->CustomFields( Field => $LookupType )
     $lookup_cf_not_applies = 1;
 }
 
-my $QueryString = $m->comp('/Elements/QueryString',
-    Query   => $Query,
-);
-
 my $Format = RT->Config->Get('RTIRSearchResultFormats')->{'LookupTool'};
 if ( $TicketObj ) {
+    my $type = RT::IR::TicketType( Ticket => $TicketObj );
+
     my @show;
-    push @show, 'link' if RT::IR::TicketType( Ticket => $TicketObj ) eq 'Incident';
+    push @show, 'link' if ($Queue eq 'Incidents' && $type ne 'Incident')
+        || ($Queue ne 'Incidents' && $type eq 'Incident');
     push @show, 'merge' if $Queue eq $TicketObj->QueueObj->Name;
-    $Format .= ", '__LookupToolChildrenActions.{". join(',', $TicketObj->id, @show ) ."}__'";
+
+    my $column = $Queue eq 'Incidents'? 'Incident' : 'Children';
+    $Format .= ", '__LookupTool${column}Actions.{". join(',', $TicketObj->id, @show ) ."}__'";
 }
 
 my @box_actions;
@@ -69,7 +70,9 @@ push @box_actions, {
         Query => $Query,
     ),
 };
-if ( $TicketObj && RT::IR::TicketType( Ticket => $TicketObj ) eq 'Incident' ) {
+if ( $TicketObj && RT::IR::TicketType( Ticket => $TicketObj ) eq 'Incident'
+    && $Queue ne 'Incidents'
+) {
     push @box_actions, {
         title => loc('Link'),
         path => "/RTIR/Link/ToIncident/?". $m->comp('/Elements/QueryString', 
@@ -97,6 +100,17 @@ if ( $TicketObj && RT::IR::TicketType( Ticket => $TicketObj ) eq 'Incident' ) {
             ),
         };
     }
+}
+elsif ( $TicketObj && RT::IR::TicketType( Ticket => $TicketObj ) ne 'Incident'
+    && $Queue eq 'Incidents'
+) {
+    push @box_actions, {
+        title => loc('Create'),
+        path => "/RTIR/Create.html?". $m->comp('/Elements/QueryString',
+            Child => $TicketObj->id,
+            Queue => $Queue,
+        ),
+    };
 }
 my $box_actions = join '&nbsp;'x3,
     map qq{<a href="}. RT->Config->Get('WebPath') . $_->{'path'} .q{">}
