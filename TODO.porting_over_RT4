@@ -24,8 +24,6 @@
 
 === FIX
 
-* html/RTIR/Search/Reporting.html still uses old tabs
-
 * html/RTIR/Search/Results.html has results argument
   that is passed into ListActions, get rid of it
 

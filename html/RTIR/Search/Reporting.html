@@ -1,10 +1,5 @@
 <& /Elements/Header, Title => $title &>
-<& '/RTIR/'.$Type.'/Elements/Tabs',
-    Title       => $title,
-    QueryString => $QueryString,
-
-    current_tab => $current_tab,
-&>
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="get" action="<% RT->Config->Get('WebPath') %>/RTIR/Search/Reporting.html">
@@ -29,20 +24,8 @@
 <%INIT>
 my $title = loc('Reporting');
 
-my $Type = RT::IR::TicketType( Queue => $Queue );
-
 my $FullQuery = join ' AND ', map "( $_ )", grep $_, $BaseQuery, $Query;
 
-my $QueryString = $m->comp( '/Elements/QueryString',
-                            Query     => $Query,
-                            Format    => $Format,
-                            Rows      => $Rows,
-                            Page      => $Page,
-                            OrderBy   => $OrderBy,
-                            Order     => $Order,
-                          );
-my $BaseURL = "RTIR/Search/Reporting.html?". $m->comp( '/Elements/QueryString', Queue => $Queue );
-my $current_tab = "$BaseURL&$QueryString";
 </%INIT>
 
 <%ARGS>
