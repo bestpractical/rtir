@@ -22,11 +22,6 @@
    be deleted, we create new investigations and incidents with First
    available status
 
-=== FIX
-
-* html/RTIR/Search/Results.html has results argument
-  that is passed into ListActions, get rid of it
-
 === CLEANUP && REFACTORING
 
 * re-use CSS squishing

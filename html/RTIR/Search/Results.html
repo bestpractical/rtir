@@ -45,8 +45,7 @@
 %# }}} END BPS TAGGED BLOCK
 <& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} || 0 &>
 <& /Elements/Tabs &>
-
-<& /Elements/ListActions, actions => \@results &>
+<& /Elements/ListActions &>
 
 <& Elements/ShowResults,
     %ARGS,
@@ -88,6 +87,4 @@ $Rows      => 50
 $Page      => 1
 $OrderBy   => 'id'
 $Order     => 'ASC'
-
-@results   => ()
 </%ARGS>

@@ -1,6 +1,6 @@
 <& /Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
-<& /Elements/ListActions, actions => \@results &>
+<& /Elements/ListActions &>
 
 <form method="get" action="<% RT->Config->Get('WebPath') %>/RTIR/Search/Reporting.html">
 % my %hiddens = (Queue => $Queue, Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order);
@@ -42,7 +42,4 @@ $Rows      => 50
 $Page      => 1
 $OrderBy   => 'id'
 $Order     => 'ASC'
-
-@results   => ()
-
 </%ARGS>
