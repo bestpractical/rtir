@@ -18,9 +18,6 @@
   page comes first to mind
 
 * scan code for hardcoded statuses
-** html/RTIR/Tools/ScriptedAction.html uses open, probably it should
-   be deleted, we create new investigations and incidents with First
-   available status
 
 === CLEANUP && REFACTORING
 
