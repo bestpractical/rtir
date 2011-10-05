@@ -1,6 +1,0 @@
-<%ARGS>
-$pages => []
-</%ARGS>
-<%INIT>
-push @$pages, 'RTIR';
-</%INIT>
