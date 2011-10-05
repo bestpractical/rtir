@@ -414,12 +414,12 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
         ),
     );
 
-    PageMenu()->child(
-        report => title => loc('Report'),
-        path => "/RTIR/Report/Reporting.html?". $query_string->( %args ),
-    );
-
     if ( $type eq 'Incident' ) {
+        PageMenu()->child(
+            report => title => loc('Report'),
+            path => "/RTIR/Reporting/",
+        );
+
         PageMenu()->child(
             abandon => title => loc('Bulk Abandon'),
             path => "/RTIR/Incident/BulkAbandon.html?". $query_string->( %args ),
