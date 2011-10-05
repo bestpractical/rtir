@@ -21,8 +21,6 @@
 
 === CLEANUP && REFACTORING
 
-* re-use CSS squishing
-
 * stop abusing $session{'tickets'} so we can get working
   First, Prev, Next and Last links in RTIR.
 
