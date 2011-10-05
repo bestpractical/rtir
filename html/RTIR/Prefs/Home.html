@@ -41,7 +41,7 @@ foreach my $comp ( grep !$seen{$_}++, (RT->Config->Get('RTIR_HomepageComponents'
 my $sys = RT::System->new($session{'CurrentUser'});
 my @objs = ($sys);
 
-push @objs, RT::SavedSearches->new( $session{'CurrentUser'} )->_PrivacyObjects
+push @objs, RT::SavedSearch->new( $session{'CurrentUser'} )->_PrivacyObjects
     if $session{'CurrentUser'}->HasRight( Right  => 'LoadSavedSearch',
                                           Object => $RT::System );
 
