@@ -377,7 +377,7 @@ $Incident = $ARGS{'Incident'} = $IncidentObj->id if $IncidentObj;
 
 my $SplitObj;
 if ( $Split ) {
-    $SplitObj = LoadTicket( $SplitObj );
+    $SplitObj = LoadTicket( $Split );
     $ARGS{'Split'} = $Split = $SplitObj->id;
 }
 
