@@ -44,7 +44,7 @@
 &>
 </td></tr>
 
-<& /RTIR/Elements/UpdateData, %ARGS, Ticket => $TicketObj &>
+<& /RTIR/Elements/UpdateData, %ARGS, Ticket => $TicketObj, QueueObj => $queue &>
 
 </table>
 
@@ -58,6 +58,13 @@ if ( $Action eq 'Comment' || $UpdateType eq 'private' ) {
     $CommentDefault = "selected";
 } else {
     $ResponseDefault = "selected";
+}
+
+my $queue;
+$queue = $TicketObj->QueueObj if $TicketObj;
+unless ( $queue ) {
+    $queue = RT::Queue->new( $session{'CurrentUser'} );
+    $queue->Load('Incidents');
 }
 
 </%INIT>
