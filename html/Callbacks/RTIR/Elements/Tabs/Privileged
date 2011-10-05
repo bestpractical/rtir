@@ -442,27 +442,35 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
         path => "/Search/Results.tsv?". $query_string->( %args ),
     );
 
-    my $RSSPath = join '/', map $m->interp->apply_escapes( $_, 'u' ),
-        $session{'CurrentUser'}->UserObj->Name,
-        $session{'CurrentUser'}->UserObj->GenerateAuthString(
-            join '', map $args{$_}, qw(Query Order OrderBy)
-        )
-    ;
-    $more->child(
-        rss => title => loc('RSS'),
-        path => "/NoAuth/rss/$RSSPath/?". $query_string->(
-            Query => $args{Query}, Order => $args{Order}, OrderBy => $args{OrderBy}
-        ),
-    );
+    # other paths need query defined
+    $args{'Query'} = RT::IR->Query( Queue => $args{'Queue'} )
+        if !$args{'Query'} && $args{'Queue'};
 
-    my $ical_path = join '/', map $m->interp->apply_escapes($_, 'u'),
-        $session{'CurrentUser'}->UserObj->Name,
-        $session{'CurrentUser'}->UserObj->GenerateAuthString( $args{Query} ),
-        $args{Query}
-    ;
-    $more->child( ical => title => loc('iCal') => path => '/NoAuth/iCal/'.$ical_path);
+    if ( $args{'Query'} ) {
+        my $RSSPath = join '/', map $m->interp->apply_escapes( $_, 'u' ),
+            $session{'CurrentUser'}->UserObj->Name,
+            $session{'CurrentUser'}->UserObj->GenerateAuthString(
+                join '', map $args{$_}, qw(Query Order OrderBy)
+            )
+        ;
+        $more->child(
+            rss => title => loc('RSS'),
+            path => "/NoAuth/rss/$RSSPath/?". $query_string->(
+                Query => $args{Query}, Order => $args{Order}, OrderBy => $args{OrderBy}
+            ),
+        );
 
-    if ( $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => RT->System ) ) {
+        my $ical_path = join '/', map $m->interp->apply_escapes($_, 'u'),
+            $session{'CurrentUser'}->UserObj->Name,
+            $session{'CurrentUser'}->UserObj->GenerateAuthString( $args{Query} ),
+            $args{Query}
+        ;
+        $more->child( ical => title => loc('iCal') => path => '/NoAuth/iCal/'.$ical_path);
+    }
+
+    if ( $args{'Query'} && $session{'CurrentUser'}->HasRight(
+        Right => 'SuperUser', Object => RT->System
+    ) ) {
         my $shred_args = $query_string->(
             search          => 1,
             plugin          => 'Tickets',
