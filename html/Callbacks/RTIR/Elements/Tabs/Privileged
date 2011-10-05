@@ -433,7 +433,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
     }
     PageMenu()->child(
         chart => title => loc('Chart'),
-        path => "/Search/Chart.html?". $query_string->( %args ),
+        path => "/RTIR/Search/Reporting.html?". $query_string->( %args ),
     );
 
     my $more = PageMenu->child( more => title => loc('Feeds') );
