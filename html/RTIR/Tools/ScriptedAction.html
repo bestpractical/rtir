@@ -59,18 +59,14 @@
     </td>
   </tr>
   <tr>
-    <td class="label">
-      <&|/l&>Contact Field</&>:
-    </td>
-    <td class="value">
-      <input type="text" name="field" value="<% $ARGS{'field'} %>" />
-    </td>
+    <td class="label"><&|/l&>Contact Field</&>:</td>
+    <td class="value"><input type="text" name="field" value="<% $ARGS{'field'} %>" /></td>
   </tr>
   <tr>
-    <td class="labeltop">
+    <td class="label">
       <&|/l&>IP Addresses</&>:<br /><small>arg: <i>_IP_</i></small>
     </td>
-    <td colspan="5">
+    <td class="value">
 % if (exists $ARGS{IPs}) {
       <& /Elements/MessageBox, Name=>"IPs", Width => 30, Default=>$ARGS{IPs}, IncludeSignature => 0, %ARGS&>
 % } else {
@@ -80,10 +76,8 @@
   </tr>
 % } else {
   <tr>
-    <td class="labeltop">
-      <&|/l&>Addresses</&>:<br /><small>arg: <i>_ADDR_</i></small>
-    </td>
-    <td colspan="5">
+    <td class="label"><&|/l&>Addresses</&>:<br /><small>arg: <i>_ADDR_</i></small></td>
+    <td class="value">
 % if (exists $ARGS{Addresses}) {
       <& /Elements/MessageBox, Name=>"Addresses", Width => 30, Default=>$ARGS{Addresses}, IncludeSignature => 0, %ARGS&>
 % } else {
@@ -93,18 +87,14 @@
   </tr>
 % }
 <tr>
-  <td class="label">
-    <&|/l&>Template</&>:
-  </td>
-  <td>
+  <td class="label"><&|/l&>Template</&>:</td>
+  <td class="value">
     <& /Admin/Elements/SelectTemplate, Name => "Template", Default => $ARGS{'Template'}, Queue => $investigationq->Id &>
   </td>
 </tr>
 <tr>
-  <td class="label">
-    <&|/l&>Argument</&>:
-  </td>
-  <td>
+  <td class="label"><&|/l&>Argument</&>:</td>
+  <td class="value">
     <input type="text" name="TemplateArg" size="60" value="<% $ARGS{'TemplateArg'} %>" />
   </td>
 </tr>
