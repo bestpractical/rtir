@@ -82,14 +82,14 @@ if ( $ARGS{'HTMLReport'} || $ARGS{'TextReport'} || $ARGS{'SpreadsheetReport'} ) 
     $m->redirect($url);
 }
 
-my $QueueObj = new RT::Queue($session{'CurrentUser'});
+my $QueueObj = RT::Queue->new($session{'CurrentUser'});
 $QueueObj->Load('Incidents');
 
-my $now = new RT::Date($RT::SystemUser);
+my $now = RT::Date->new($RT::SystemUser);
 $now->SetToNow();
-my $end = new RT::Date($RT::SystemUser);
+my $end = RT::Date->new($RT::SystemUser);
 $end->SetToNow();
-my $start = new RT::Date($RT::SystemUser);
+my $start = RT::Date->new($RT::SystemUser);
 $start->SetToNow();
 $start->AddDays(0-30);
 

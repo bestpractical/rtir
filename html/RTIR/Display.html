@@ -112,7 +112,7 @@
 &>
 <%INIT>
 my ($name);
-my $Ticket = new RT::Ticket( $session{'CurrentUser'} );
+my $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
 
 my $QueueObj;
 unless ( $id eq 'new' ) {
@@ -122,7 +122,7 @@ unless ( $id eq 'new' ) {
     }
     $QueueObj = $Ticket->QueueObj;
 } else {
-    $QueueObj = new RT::Queue( $session{'CurrentUser'} );
+    $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
     $QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
 }
 

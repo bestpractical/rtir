@@ -67,7 +67,7 @@ if ( $UserString ) {
     );
 }
 
-$Groups = new RT::Groups( $session{'CurrentUser'} );
+$Groups = RT::Groups->new( $session{'CurrentUser'} );
 $Groups->LimitToUserDefinedGroups;
 
 </%INIT>

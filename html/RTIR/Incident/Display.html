@@ -230,7 +230,7 @@ if ( $ARGS{'BulkLink'} || $Child ) {
 # If we deleted any links, check if what we deleted from still has children
 if ( $deleted_links ) {
     # XXX: Can we ever get here?
-    my $children = new RT::Tickets( $session{'CurrentUser'} );
+    my $children = RT::Tickets->new( $session{'CurrentUser'} );
     $children->LimitQueue( VALUE => 'Incident Reports' );
     $children->LimitQueue( VALUE => 'Investigations' );
     $children->LimitQueue( VALUE => 'Blocks' );

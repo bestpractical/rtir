@@ -148,9 +148,9 @@ $ReportAs = 'TSV' if $SpreadsheetReport;
 
 my $start = ParseDateToISO( $StartDate );
 my $end = ParseDateToISO( $EndDate );
-my $rtstart = new RT::Date( $session{'CurrentUser'} );
+my $rtstart = RT::Date->new( $session{'CurrentUser'} );
 $rtstart->Set( Format => 'ISO', Value => $start );
-my $rtend = new RT::Date( $session{'CurrentUser'} );
+my $rtend = RT::Date->new( $session{'CurrentUser'} );
 $rtend->Set( Format => 'ISO', Value => $end );
 
 # of new reports created during the period broken down by function

@@ -169,7 +169,7 @@ foreach my $arg (keys %ARGS) {
 }
 
 if ($incidentid) {
-    $Incident = new RT::Ticket($session{'CurrentUser'});
+    $Incident = RT::Ticket->new($session{'CurrentUser'});
     $Incident->Load($incidentid);
 
     if (!exists $ARGS{Content}) {
@@ -189,19 +189,19 @@ if ($incidentid) {
 $ARGS{'loop'} = $loop if !defined $ARGS{'loop'};
 
 # Load the Incidents Queue
-my $incidentq = new RT::Queue($session{'CurrentUser'});
+my $incidentq = RT::Queue->new($session{'CurrentUser'});
 unless ( $incidentq->Load('Incidents') ) {
     Abort('Queue not found');
 }
 
 # Load the Investigations Queue
-my $investigationq = new RT::Queue($session{'CurrentUser'});        
+my $investigationq = RT::Queue->new($session{'CurrentUser'});        
 unless ($investigationq->Load('Investigations')) {
     Abort('Queue not found');
 }
 
 # Load the Incident Reports Queue
-my $reportq = new RT::Queue($session{'CurrentUser'});        
+my $reportq = RT::Queue->new($session{'CurrentUser'});        
 unless ($reportq->Load('Incident Reports')) {
     Abort('Queue not found');
 }
