@@ -135,7 +135,7 @@ my $CanComment = 0;
 # for the convenience:
 
 my ($CommentDefault, $ResponseDefault);
-if (($Action eq 'Comment') or ($ARGS{'UpdateType'} eq 'private')) {
+if ( $Action eq 'Comment' || ($ARGS{'UpdateType'}||'') eq 'private' ) {
     $CommentDefault = "SELECTED"; 
 } else {
     $ResponseDefault = "SELECTED";
@@ -212,7 +212,7 @@ if ( !$checks_failure && $SubmitTicket ) {
 <%ARGS>
 $id => undef
 $Status => undef
-$Action => undef
+$Action => ''
 @TxnSendMailTo => ()
 $TxnRecipients => ''
 
