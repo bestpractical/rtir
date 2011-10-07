@@ -78,7 +78,7 @@ sub Commit {
                 ." OR Queue = 'Blocks'"
                 .") AND MemberOf = ". $self->TicketObj->Id
                 ." AND Owner != ". $transaction->NewValue;
-    my $members = new RT::Tickets( $actor );
+    my $members = RT::Tickets->new( $actor );
     $members->FromSQL( $query );
 
     while ( my $member = $members->Next ) {

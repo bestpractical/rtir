@@ -14,7 +14,7 @@ sub Prepare { return 1 }
 
 sub CreatorCurrentUser {
     my $self = shift;
-    my $user = new RT::CurrentUser($self->TransactionObj->CurrentUser);
+    my $user = RT::CurrentUser->new($self->TransactionObj->CurrentUser);
     $user->Load($self->TransactionObj->Creator);
     return $user;
 }

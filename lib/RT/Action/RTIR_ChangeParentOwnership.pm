@@ -65,7 +65,7 @@ sub Commit {
     my $query =  "Queue = 'Incidents'"
                 ." AND HasMember = " . $self->TicketObj->Id
                 ." AND Owner != ". $txn->NewValue;
-    my $parents = new RT::Tickets( $self->CreatorCurrentUser );
+    my $parents = RT::Tickets->new( $self->CreatorCurrentUser );
     $parents->FromSQL($query);
 
     while ( my $incident = $parents->Next ) {

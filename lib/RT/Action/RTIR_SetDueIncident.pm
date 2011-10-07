@@ -62,7 +62,7 @@ sub Commit {
 
     my $type = $self->TransactionObj->Type;
     if ( $type eq 'DeleteLink' ) {
-        my $uri = new RT::URI( $self->CurrentUser );
+        my $uri = RT::URI->new( $self->CurrentUser );
         $uri->FromURI( $self->TransactionObj->OldValue );
         return $self->UpdateDue( $uri->Object );
     }
@@ -89,7 +89,7 @@ sub UpdateDue {
                 . join( " OR ", map "Status = '$_'",
                         RT::Queue->ActiveStatusArray )
                 .")";
-    my $children = new RT::Tickets($self->CurrentUser);
+    my $children = RT::Tickets->new($self->CurrentUser);
     $children->FromSQL( $query );
     $children->OrderBy( FIELD => 'Due', ORDER => 'ASC' );
     $children->RowsPerPage(1);
