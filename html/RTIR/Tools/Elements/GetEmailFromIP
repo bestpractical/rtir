@@ -27,23 +27,20 @@
 
 $$address = loc("ADDRESS_UNKNOWN");
 
-use Net::Whois::RIPE;
-my $whois = Net::Whois::RIPE->new( $server, Debug => 1 );
-unless ( $whois ) {
-    $$error = loc("Unable to connect to whois server '[_1]'", $server);
-    return;
-}
-
-my @query = grep defined, $whois->query($q);
-unless ( @query ) {
-    $$error = loc("Unable to connect to whois server '[_1]'", $server);
+my ($iterator, $msg) = RT::IR->WhoisLookup(
+    Server => $server,
+    Query => $q,
+    CurrentUser => $session{'CurrentUser'},
+);
+unless ( $iterator ) {
+    $$error = $msg;
     return;
 }
 
 $field ||= 'notify';
 
 my @res;
-foreach my $query ( @query ) {
+while ( my $query = $iterator->next ) {
     foreach my $attr ( grep lc $_ eq lc $field, $query->attributes ) {
         push @res, $query->$attr();
     }

@@ -485,6 +485,40 @@ sub MapStatus {
     return $res;
 }
 
+sub FirstWhoisServer {
+    my $self = shift;
+    my $servers = RT->Config->Get('whois');
+    my ($res) = map ref $servers->{$_}? $servers->{$_}->{'Host'}: $servers->{$_},
+        (sort keys %$servers)[0];
+    return $res;
+}
+
+sub WhoisLookup {
+    my $self = shift;
+    my %args = (
+        Server => undef,
+        Query  => undef,
+        @_
+    );
+
+    my $server = $args{'Server'} || $self->FirstWhoisServer;
+    return (undef, $args{'CurrentUser'}->loc("No whois servers configured"))
+        unless $server;
+
+    my ($host, $port) = split /\s*:\s*/, $server, 2;
+    $port = 43 unless ($port || '') =~ /^\d+$/;
+
+    use Net::Whois::RIPE;
+    my $whois = Net::Whois::RIPE->new( $host, Port => $port, Debug => 1 );
+    my $iterator;
+    $iterator = $whois->query_iterator( $args{'Query'} )
+        if $whois;
+    return (undef, $args{'CurrentUser'}->loc("Unable to connect to WHOIS server '[_1]'", $server) )
+        unless $iterator;
+
+    return $iterator;
+}
+
 sub GetCustomField {
     my $field = shift or return;
     return (__PACKAGE__->CustomFields( $field ))[0];

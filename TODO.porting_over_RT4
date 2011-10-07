@@ -24,7 +24,6 @@
 * stop abusing $session{'tickets'} so we can get working
   First, Prev, Next and Last links in RTIR.
 
-* code for getting default whois server is repeated
 
 === TESTS
 

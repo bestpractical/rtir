@@ -1,0 +1,16 @@
+<select name="<% $Name %>">
+<%PERL>
+foreach my $s ( sort grep $servers{ $_ }, keys %servers ) {
+    my $srv = $servers{ $s };
+    my ($host, $name) = ref $srv?  ($srv->{'Host'}, $srv->{'FriendlyName'}): ($srv, '');
+</%PERL>
+    <option value="<% $host %>" <% $host eq $Default ? 'selected' : '' %>><% $name || $host %></option>
+% }
+</select>
+<%ARGS>
+$Name => 'WhoisServer'
+$Default => ''
+</%ARGS>
+<%INIT>
+my %servers = %{ RT->Config->Get('whois') || {} };
+</%INIT>

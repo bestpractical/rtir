@@ -18,7 +18,7 @@ if ( $WhoisIterator ) {
             my $content = join "", $obj->content;
             $m->comp( '/Elements/MakeClicky',
                 ticket        => $TicketObj,
-                lookup_params => "ticket=". $TicketObj->id ."&server=$WhoisServer",
+                lookup_params => "ticket=". ($TicketObj? $TicketObj->id : 0) ."&server=$WhoisServer",
                 content       => \$content,
             );
             $DoInvestigate = 1 if $content =~ /Requestorbox/ig;
@@ -66,21 +66,13 @@ $server => undef
 $WhoisServer = $server unless defined $WhoisServer;
 unless ($WhoisServer) {
     return unless RT->Config->Get('RunWhoisRequestByDefault');
-
-    my $servers = RT->Config->Get('whois');
-    ($WhoisServer) = map ref $servers->{$_}? $servers->{$_}->{'Host'}: $servers->{$_},
-        (sort keys %$servers)[0];
+    $WhoisServer = RT::IR->FirstWhoisServer;
 }
 
-use Net::Whois::RIPE;
-my ($whois, $port) = split(/\s*:\s*/, $WhoisServer, 2);
-$port = 43 unless ($port || '') =~ /^\d+$/;
-my $query = Net::Whois::RIPE->new( $whois, Port => $port, Debug => 1 );
-my ($WhoisIterator, $WhoisError);
-$WhoisIterator = $query->query_iterator($q) if $query;
-unless ( $WhoisIterator ) {
-    $WhoisError = loc( "Unable to connect to WHOIS server '[_1]'", $WhoisServer);
-}
-
+my ($WhoisIterator, $WhoisError) = RT::IR->WhoisLookup(
+    Server => $WhoisServer,
+    Query => $q,
+    CurrentUser => $session{'CurrentUser'},
+);
 
 </%init>

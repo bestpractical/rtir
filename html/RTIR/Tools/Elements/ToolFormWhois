@@ -2,21 +2,12 @@
 % foreach my $arg ( grep exists $ARGS{$_}, @PassArguments ) {
   <input type="hidden" name="<% $arg %>" value="<% $ARGS{ $arg } %>" />
 % }
-  <tr>
-    <span class="label">WHOIS:</span>
-    <span class="input">
-      <input type="text" size="30" name="q" value="<% $q %>" /> at 
-      <select name="WhoisServer">
-<%PERL>
-foreach my $s ( sort grep $servers->{ $_ }, keys %{ $servers } ) {
-    my $srv = $servers->{ $s };
-    my ($host, $name) = ref $srv?  ($srv->{'Host'}, $srv->{'FriendlyName'}): ($srv, '');
-</%PERL>
-        <option value="<% $host %>" <% $host eq $WhoisServer ? 'SELECTED' : '' %>><% $name || $host %></option>
-% }
-      </select>
-    </span>
-    <input type="submit" value="<%loc('Go')%>" />
+  <span class="label">WHOIS:</span>
+  <span class="input">
+    <input type="text" size="30" name="q" value="<% $q %>" /> at 
+    <& SelectWhoisServer, Name => 'WhoisServer', Default => $WhoisServer &>
+  </span>
+  <input type="submit" value="<%loc('Go')%>" />
 </form>
 <%args>
 $q => undef
@@ -25,8 +16,6 @@ $server => undef
 @PassArguments => ()
 </%args>
 <%INIT>
-my $servers = RT->Config->Get('whois');
-
 $WhoisServer = $server unless defined $WhoisServer;
 $WhoisServer ||= '';
 </%INIT>

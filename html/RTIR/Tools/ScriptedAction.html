@@ -54,35 +54,15 @@
 % if ($loop eq 'IP') {
   <tr>
     <td class="label">WHOIS:</td>
-  <td>
-  <table>
-  <tr>
-    <td class="input">
-      <select name="server">
-<%PERL>
-foreach my $entry ( map $whois_servers->{ $_ }, sort keys %{$whois_servers} ) {
-    next unless $entry;
-
-    my ($host, $name) = ref($entry)
-        ? ($entry->{'Host'}, $entry->{'FriendlyName'})
-        : ($entry, $entry);
-    next unless $host;
-
-    my $selected = "";
-    $selected = " selected" if $host eq $server;
-</%PERL>
-        <option value="<% $host %>" <% $selected %>><% $name || $host %></option>
-% }
-      </select>
-  </tr>
-  </table>
-  </td>
+    <td class="value">
+        <& Elements/SelectWhoisServer, Name => 'server', Default => $server &>
+    </td>
   </tr>
   <tr>
     <td class="label">
       <&|/l&>Contact Field</&>:
     </td>
-    <td>
+    <td class="value">
       <input type="text" name="field" value="<% $ARGS{'field'} %>" />
     </td>
   </tr>
@@ -129,6 +109,7 @@ foreach my $entry ( map $whois_servers->{ $_ }, sort keys %{$whois_servers} ) {
   </td>
 </tr>
 </table>
+
 % if ($loop eq "IP") {
 <& /Elements/Submit, Name => "TestAddresses", Caption => loc("Test email addresses"), Label => loc("Test")&>
 % }
@@ -216,16 +197,6 @@ if ($incidentid) {
 }
 
 $ARGS{'loop'} = $loop if !defined $ARGS{'loop'};
-
-# get the list of WHOIS servers
-my $whois_servers = RT->Config->Get('whois');
-unless ( $server ) {
-    ($server) =
-        grep defined && length,
-        map ref( $_ )? $_->{'Host'} : $_,
-        map $whois_servers->{ $_ },
-        sort keys %$whois_servers;
-}
 
 # Load the Incidents Queue
 my $incidentq = new RT::Queue($session{'CurrentUser'});
