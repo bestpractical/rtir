@@ -3,15 +3,15 @@ return if $ARGSRef->{'NoRedirect'};
 
 my $Queue;
 if ( $TicketObj ) {
-    my $tmp = RT::Ticket->new( $RT::SystemUser );
+    my $tmp = RT::Ticket->new( RT->SystemUser );
     $tmp->Load( $TicketObj->id );
     $Queue = $tmp->QueueObj->Name;
 } elsif ( $ARGSRef->{'id'} && $ARGSRef->{'id'} ne 'new' ) {
-    my $tmp = RT::Ticket->new( $RT::SystemUser );
+    my $tmp = RT::Ticket->new( RT->SystemUser );
     $tmp->Load( $ARGSRef->{'id'} );
     $Queue = $tmp->QueueObj->Name;
 } elsif ( $ARGSRef->{'Queue'} ) {
-    my $QueueObj = RT::Queue->new( $RT::SystemUser );
+    my $QueueObj = RT::Queue->new( RT->SystemUser );
     $QueueObj->Load( $ARGSRef->{'Queue'} );
     $Queue = $QueueObj->Name;
 }

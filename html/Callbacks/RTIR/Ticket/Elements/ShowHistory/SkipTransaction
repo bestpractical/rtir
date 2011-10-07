@@ -7,7 +7,7 @@ return if $$skip;
 
 # skip IP changes done by system user(scrips)
 return unless $Transaction->Type eq 'CustomField'
-    && $Transaction->Creator == $RT::SystemUser->id;
+    && $Transaction->Creator == RT->SystemUser->id;
 
 # check only ticket's transactions
 my $obj = $Transaction->Object;

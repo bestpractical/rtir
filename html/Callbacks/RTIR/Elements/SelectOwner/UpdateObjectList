@@ -12,7 +12,7 @@ my @new_objects;
 foreach my $object (@$objects) {
     next unless ($object->__Value('Name')||'') =~ /^(?:Incidents|Investigations|Incident Reports|Blocks)$/;
 
-    my $queues = RT::Queues->new( $RT::SystemUser );
+    my $queues = RT::Queues->new( RT->SystemUser );
     $queues->Limit(
         FIELD =>'Name',
         OPERATOR => 'STARTSWITH',

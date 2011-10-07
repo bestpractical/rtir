@@ -59,7 +59,7 @@ Set the Due date accordingly.
 sub Commit {
     my $self = shift;
 
-    my $date = RT::Date->new($RT::SystemUser);
+    my $date = RT::Date->new(RT->SystemUser);
     $date->Set(Format => 'unix', Value=> 0);
     $self->TicketObj->SetDue( $date->ISO );
 

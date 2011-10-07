@@ -36,7 +36,7 @@ sub Commit {
         }
     }
     if ( !$required_group_there && $constituency ) {
-        my $group = RT::Group->new( $RT::SystemUser );
+        my $group = RT::Group->new( RT->SystemUser );
         $group->LoadUserDefinedGroup("DutyTeam $constituency");
         unless ( $group->id ) {
             $RT::Logger->warning("Couldn't load group 'DutyTeam $constituency'");
@@ -59,7 +59,7 @@ sub ConstituencyValues {
     my $self = shift;
     my $value = shift or return 0;
     unless ( @constituencies ) {
-        my $cf = RT::CustomField->new( $RT::SystemUser );
+        my $cf = RT::CustomField->new( RT->SystemUser );
         $cf->Load('Constituency');
         unless ( $cf->id ) {
             $RT::Logger->crit("Couldn't load constituency field");

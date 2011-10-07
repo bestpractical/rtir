@@ -81,7 +81,7 @@ Set the Starts date to now.
 sub Commit {
     my $self = shift;
 
-    my $date = RT::Date->new($RT::SystemUser);
+    my $date = RT::Date->new(RT->SystemUser);
     $date->SetToNow;
     $self->TicketObj->SetStarts($date->ISO);
 

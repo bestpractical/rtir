@@ -173,7 +173,7 @@ sub TicketType {
     my %arg = ( Queue => undef, Ticket => undef, @_);
 
     if ( defined $arg{'Ticket'} && !defined $arg{'Queue'} ) {
-        my $obj = RT::Ticket->new( $RT::SystemUser );
+        my $obj = RT::Ticket->new( RT->SystemUser );
         $obj->Load( ref $arg{'Ticket'} ? $arg{'Ticket'}->id : $arg{'Ticket'} );
         $arg{'Queue'} = $obj->QueueObj->Name if $obj->id;
     }
@@ -181,7 +181,7 @@ sub TicketType {
 
     return $TYPE{ lc $arg{'Queue'} } if !ref $arg{'Queue'} && $arg{'Queue'} !~ /^\d+$/;
 
-    my $obj = RT::Queue->new( $RT::SystemUser );
+    my $obj = RT::Queue->new( RT->SystemUser );
     $obj->Load( ref $arg{'Queue'}? $arg{'Queue'}->id : $arg{'Queue'} );
     return $TYPE{ lc $obj->Name } if $obj->id;
 
@@ -223,7 +223,7 @@ sub Statuses {
     my (@initial, @active, @inactive);
     foreach my $queue (@queues) {
         unless ( blessed $queue ) {
-            my $tmp = RT::Queue->new($RT::SystemUser);
+            my $tmp = RT::Queue->new(RT->SystemUser);
             $tmp->Load( $queue );
             $RT::Logger->error( "failed to load queue $queue" )
                 unless $tmp->id;
@@ -544,7 +544,7 @@ sub CustomFields {
             my $type = TicketType( Queue => $qname );
             $cache{$type} = [];
 
-            my $queue = RT::Queue->new( $RT::SystemUser );
+            my $queue = RT::Queue->new( RT->SystemUser );
             $queue->Load( $qname );
             unless ($queue->id) {
                 $RT::Logger->error("Couldn't load queue '$qname'");
@@ -552,7 +552,7 @@ sub CustomFields {
                 return;
             }
 
-            my $cfs = RT::CustomFields->new( $RT::SystemUser );
+            my $cfs = RT::CustomFields->new( RT->SystemUser );
             $cfs->LimitToLookupType( 'RT::Queue-RT::Ticket' );
             $cfs->LimitToQueue( $queue->id );
             while ( my $cf = $cfs->Next ) {
@@ -561,7 +561,7 @@ sub CustomFields {
         }
 
         $cache{'Global'} = [];
-        my $cfs = RT::CustomFields->new( $RT::SystemUser );
+        my $cfs = RT::CustomFields->new( RT->SystemUser );
         $cfs->LimitToLookupType( 'RT::Queue-RT::Ticket' );
         $cfs->LimitToGlobal;
         while ( my $cf = $cfs->Next ) {
@@ -630,7 +630,7 @@ sub DefaultConstituency {
 
     my @values;
 
-    my $queues = RT::Queues->new( $RT::SystemUser );
+    my $queues = RT::Queues->new( RT->SystemUser );
     $queues->Limit( FIELD => 'Name', OPERATOR => 'STARTSWITH', VALUE => "$name - " );
     while ( my $pqueue = $queues->Next ) {
         next unless $pqueue->HasRight( Principal => $queue->CurrentUser, Right => "ShowTicket" );
@@ -665,19 +665,19 @@ if ( RT::IR->HasConstituency ) {
     wrap 'RT::Ticket::ACLEquivalenceObjects', pre => sub {
         my $self = shift;
 
-        my $queue = RT::Queue->new($RT::SystemUser);
+        my $queue = RT::Queue->new(RT->SystemUser);
         $queue->Load($self->__Value('Queue'));
 
         # We do this, rather than fall through to the orignal sub, as that
         # interacts poorly with our overloaded QueueObj below
-        if ( $self->CurrentUser->id == $RT::SystemUser->id ) {
+        if ( $self->CurrentUser->id == RT->SystemUser->id ) {
             $_[-1] =  [$queue];
             return;
         }
         if ( UNIVERSAL::isa( $self, 'RT::Ticket' ) ) {
             my $const = $RT::IR::ConstituencyCache{ $self->id };
             if (!$const || $const eq '_none' ) {
-                my $systicket = RT::Ticket->new($RT::SystemUser);
+                my $systicket = RT::Ticket->new(RT->SystemUser);
                 $systicket->Load( $self->id );
                 $const = $RT::IR::ConstituencyCache{ $self->id } =
                     $systicket->FirstCustomFieldValue('Constituency')
@@ -686,7 +686,7 @@ if ( RT::IR->HasConstituency ) {
             return if $const eq '_none';
             return if $RT::IR::HasNoQueueCache{ $const };
 
-            my $new_queue = RT::Queue->new($RT::SystemUser);
+            my $new_queue = RT::Queue->new(RT->SystemUser);
             $new_queue->LoadByCols(
                 Name => $queue->Name . " - " . $const
             );
@@ -738,7 +738,7 @@ if ( RT::IR->HasConstituency ) {
         my %args = (@_[1..(@_-2)]);
         $args{'Principal'} ||= $_[0]->CurrentUser;
 
-        my $queues = RT::Queues->new( $RT::SystemUser );
+        my $queues = RT::Queues->new( RT->SystemUser );
         $queues->Limit( FIELD => 'Name', OPERATOR => 'STARTSWITH', VALUE => "$name - " );
         my $has_right = $args{'Principal'}->HasRight(
             %args,
@@ -762,13 +762,13 @@ if ( RT::IR->HasConstituency ) {
         if ( ( my $id = $queue->{'_for_ticket'} ) ) {
             my $const = $RT::IR::ConstituencyCache{$id};
             if (!$const || $const eq '_none' ) {
-                my $ticket = RT::Ticket->new($RT::SystemUser);
+                my $ticket = RT::Ticket->new(RT->SystemUser);
                 $ticket->Load($id);
                 $const = $RT::IR::ConstituencyCache{$ticket->id}
                     = $ticket->FirstCustomFieldValue('Constituency') || '_none';
             }
             if ($const ne '_none' && !$RT::IR::HasNoQueueCache{$const} ) {
-                my $new_queue = RT::Queue->new($RT::SystemUser);
+                my $new_queue = RT::Queue->new(RT->SystemUser);
                 $new_queue->LoadByCols(
                     Name => $queue->Name . " - " . $const );
                 if ( $new_queue->id ) {
@@ -799,7 +799,7 @@ if ( RT::IR->HasConstituency ) {
         return if $args{ 'CustomField-'. $cf->id };
 
         # get out of here if it's not RTIR queue
-        my $QueueObj = RT::Queue->new( $RT::SystemUser );
+        my $QueueObj = RT::Queue->new( RT->SystemUser );
         if ( ref $args{'Queue'} eq 'RT::Queue' ) {
             $QueueObj->Load( $args{'Queue'}->Id );
         }

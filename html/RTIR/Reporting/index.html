@@ -85,11 +85,11 @@ if ( $ARGS{'HTMLReport'} || $ARGS{'TextReport'} || $ARGS{'SpreadsheetReport'} ) 
 my $QueueObj = RT::Queue->new($session{'CurrentUser'});
 $QueueObj->Load('Incidents');
 
-my $now = RT::Date->new($RT::SystemUser);
+my $now = RT::Date->new(RT->SystemUser);
 $now->SetToNow();
-my $end = RT::Date->new($RT::SystemUser);
+my $end = RT::Date->new(RT->SystemUser);
 $end->SetToNow();
-my $start = RT::Date->new($RT::SystemUser);
+my $start = RT::Date->new(RT->SystemUser);
 $start->SetToNow();
 $start->AddDays(0-30);
 

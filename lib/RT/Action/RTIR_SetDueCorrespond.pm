@@ -64,7 +64,7 @@ sub Commit {
 
     my $bizhours = RT::IR::BusinessHours();
 	
-    my $date = RT::Date->new( $RT::SystemUser );
+    my $date = RT::Date->new( RT->SystemUser );
     my $due = ( $self->TicketObj->QueueObj->DefaultDueIn || (RT->Config->Get('OverdueAfter')) || 7 ) ;
     $date->SetToNow;
     $date->AddDays( $due );

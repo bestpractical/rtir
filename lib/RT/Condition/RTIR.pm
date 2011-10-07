@@ -37,7 +37,7 @@ sub IsStaff {
     my $self = shift;
 
     my $actor_id = $self->TransactionObj->Creator;
-    my $cgm = RT::CachedGroupMembers->new( $RT::SystemUser );
+    my $cgm = RT::CachedGroupMembers->new( RT->SystemUser );
     $cgm->Limit(FIELD => 'MemberId', VALUE => $actor_id );
     my $group_alias = $cgm->Join(
         FIELD1 => 'GroupId', TABLE2 => 'Groups', FIELD2 => 'id'

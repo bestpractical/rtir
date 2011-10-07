@@ -82,7 +82,7 @@ sub Commit {
     # TODO: specify a start date, but default to now
     my $due = $SLAObj->Due( $time, $SLAObj->SLA( $time ) );
 
-    my $date = RT::Date->new( $RT::SystemUser );
+    my $date = RT::Date->new( RT->SystemUser );
     $date->Set( Format => 'unix', Value => $due );
     $self->TicketObj->SetDue( $date->ISO );
 

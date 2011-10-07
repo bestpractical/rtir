@@ -51,7 +51,7 @@ sub InheritConstituency {
     my $type = $self->TransactionObj->Type;
     if ( $type eq 'AddLink' ) {
         # inherit from parent on linking
-        my $tickets = RT::Tickets->new( $RT::SystemUser );
+        my $tickets = RT::Tickets->new( RT->SystemUser );
         $tickets->FromSQL( $query ." AND HasMember = ". $ticket->Id );
         $tickets->RowsPerPage( 1 );
         if ( my $parent = $tickets->First ) {
@@ -67,7 +67,7 @@ sub InheritConstituency {
 
     # propagate to members
     foreach my $link_type (qw(MemberOf HasMember)) {
-        my $tickets = RT::Tickets->new( $RT::SystemUser );
+        my $tickets = RT::Tickets->new( RT->SystemUser );
         $tickets->FromSQL( $query ." AND $link_type = ". $ticket->Id );
         while ( my $t = $tickets->Next ) {
             $RT::Logger->debug(
@@ -135,7 +135,7 @@ sub GetConstituencyFromAttachment {
 
 sub GetConstituencyFromParent {
     my $self = shift;
-    my $parents = RT::Tickets->new( $RT::SystemUser );
+    my $parents = RT::Tickets->new( RT->SystemUser );
     $parents->FromSQL( "HasMember = ". $self->TicketObj->id );
     $parents->OrderByCols( { FIELD => 'LastUpdated', ORDER => 'DESC' } );
     $parents->RowsPerPage(1);
@@ -151,7 +151,7 @@ sub IsValidConstituency {
     my $self = shift;
     my $value = shift or return 0;
     unless ( keys %constituency ) {
-        my $cf = RT::CustomField->new( $RT::SystemUser );
+        my $cf = RT::CustomField->new( RT->SystemUser );
         $cf->Load('Constituency');
         unless ( $cf->id ) {
             $RT::Logger->crit("Couldn't load constituency field");

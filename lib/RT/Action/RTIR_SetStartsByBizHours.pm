@@ -74,7 +74,7 @@ Look up the SLA and set the Starts date to the next time during Business Hours
 sub Commit {
     my $self = shift;
 
-    my $date = RT::Date->new($RT::SystemUser);
+    my $date = RT::Date->new(RT->SystemUser);
     $date->SetToNow;
 
     my $bizhours = RT::IR::BusinessHours();
