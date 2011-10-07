@@ -92,8 +92,3 @@ ul.userlist li:last-child::after{
         clear: both;
     }
 }
-
-% $m->abort;
-<%INIT>
-$r->content_type('text/css');
-</%INIT>
