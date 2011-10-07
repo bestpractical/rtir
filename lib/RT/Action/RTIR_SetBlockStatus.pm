@@ -86,7 +86,7 @@ sub Commit {
     return 1 unless $new;
 
     my ( $res, $msg ) = $t->SetStatus( $new );
-    $RT::Logger->warning("Couldn't set status to $new: $msg")
+    RT->Logger->warning("Couldn't set status to $new: $msg")
         unless $res;
     return 1;
 

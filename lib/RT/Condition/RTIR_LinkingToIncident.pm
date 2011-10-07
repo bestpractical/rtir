@@ -24,7 +24,7 @@ sub IsApplicable {
             URI => $self->TransactionObj->NewValue
         );
         unless ( $parent && $parent->id ) {
-            $RT::Logger->error( "Couldn't load linked ticket #". $self->TransactionObj->NewValue );
+            RT->Logger->error( "Couldn't load linked ticket #". $self->TransactionObj->NewValue );
             return 0;
         }
         return $parent->QueueObj->Name eq 'Incidents';

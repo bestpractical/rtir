@@ -83,7 +83,7 @@ sub Commit {
 
     while ( my $member = $members->Next ) {
         my ($res, $msg) = $action_cb->( $member );
-        $RT::Logger->info( "Couldn't change owner: $msg" ) unless $res;
+        RT->Logger->info( "Couldn't change owner: $msg" ) unless $res;
     }
     return 1;
 }

@@ -225,7 +225,7 @@ sub Statuses {
         unless ( blessed $queue ) {
             my $tmp = RT::Queue->new(RT->SystemUser);
             $tmp->Load( $queue );
-            $RT::Logger->error( "failed to load queue $queue" )
+            RT->Logger->error( "failed to load queue $queue" )
                 unless $tmp->id;
             $queue = $tmp;
         }
@@ -547,7 +547,7 @@ sub CustomFields {
             my $queue = RT::Queue->new( RT->SystemUser );
             $queue->Load( $qname );
             unless ($queue->id) {
-                $RT::Logger->error("Couldn't load queue '$qname'");
+                RT->Logger->error("Couldn't load queue '$qname'");
                 delete $cache{$type};
                 return;
             }
@@ -696,7 +696,7 @@ if ( RT::IR->HasConstituency ) {
             }
             $_[-1] =  [$queue, $new_queue];
         } else {
-            $RT::Logger->crit("$self is not a ticket object like I expected");
+            RT->Logger->crit("$self is not a ticket object like I expected");
         }
     };
 }
@@ -773,7 +773,7 @@ if ( RT::IR->HasConstituency ) {
                     Name => $queue->Name . " - " . $const );
                 if ( $new_queue->id ) {
                     my $val = $new_queue->_Value($attr) || $queue->_Value($attr);
-                    $RT::Logger->debug("Overriden $attr is $val for ticket #$id according to constituency $const");
+                    RT->Logger->debug("Overriden $attr is $val for ticket #$id according to constituency $const");
                     return $val;
                 } else {
                     $RT::IR::HasNoQueueCache{$const} = 1;
@@ -823,7 +823,7 @@ if ( RT::IR->HasConstituency ) {
                     grep lc $_->Name eq lc $tmp, @{ $cf->Values->ItemsArrayRef };
             }
             $value = $tmp;
-            $RT::Logger->debug("Found Constituency '$tmp' in email") if $tmp;
+            RT->Logger->debug("Found Constituency '$tmp' in email") if $tmp;
         }
         $value ||= RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'};
         return unless $value;

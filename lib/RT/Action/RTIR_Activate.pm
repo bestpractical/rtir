@@ -20,7 +20,7 @@ sub Commit {
 
     my ($status, $msg) = $ticket->SetStatus( $new );
     unless ( $status ) {
-        $RT::Logger->error( "Couldn't activate ticket: $msg" );
+        RT->Logger->error( "Couldn't activate ticket: $msg" );
         return 0;
     }
 

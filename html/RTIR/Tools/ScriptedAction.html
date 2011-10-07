@@ -324,7 +324,7 @@ if ( $ARGS{'SubmitAction'} ) {
         my $TemplateObj = RT::Template->new( $session{'CurrentUser'} );
         if ( $ARGS{'Template'} ) {
             $TemplateObj->Load( $ARGS{'Template'} );
-            $RT::Logger->error("Couldn't load template '$ARGS{'Template'}'")
+            RT->Logger->error("Couldn't load template '$ARGS{'Template'}'")
                 unless $TemplateObj->id;
         }
 
@@ -349,7 +349,7 @@ if ( $ARGS{'SubmitAction'} ) {
                 TransactionObj => $transaction,
             );
             unless ( $result ) {
-                $RT::Logger->error("Couldn't parse template: $message");
+                RT->Logger->error("Couldn't parse template: $message");
             }
 
             # add the template's MIMEObj to the Attachments list

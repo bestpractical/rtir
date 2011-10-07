@@ -225,7 +225,7 @@ if ( ($DefaultsNamePrefix||'') ne $NamePrefix ) {
             unless ( $src_cf->id ) {
                 $cf_map{ $cf_id } = 0;
                 delete $ARGS{ $k };
-                $RT::Logger->error("Couldn't load CF #$cf_id");
+                RT->Logger->error("Couldn't load CF #$cf_id");
                 next;
             }
 
@@ -239,7 +239,7 @@ if ( ($DefaultsNamePrefix||'') ne $NamePrefix ) {
             unless ( $dst_cf && $dst_cf->id ) {
                 $cf_map{ $cf_id } = 0;
                 delete $ARGS{ $k };
-                $RT::Logger->debug( $src_cf->Name .' is not applied. skipping.' );
+                RT->Logger->debug( $src_cf->Name .' is not applied. skipping.' );
                 next;
             }
             $cf_map{ $cf_id } = $dst_cf->id;

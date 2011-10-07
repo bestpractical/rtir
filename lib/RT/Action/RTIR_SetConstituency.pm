@@ -55,12 +55,12 @@ sub InheritConstituency {
         $tickets->FromSQL( $query ." AND HasMember = ". $ticket->Id );
         $tickets->RowsPerPage( 1 );
         if ( my $parent = $tickets->First ) {
-            $RT::Logger->debug( "Ticket #". $ticket->id ." inherits constituency from ticket #". $parent->id );
+            RT->Logger->debug( "Ticket #". $ticket->id ." inherits constituency from ticket #". $parent->id );
             my ($res, $msg) = $ticket->AddCustomFieldValue(
                 Field => 'Constituency',
                 Value => $constituency,
             );
-            $RT::Logger->warning( "Couldn't set CF: $msg" ) unless $res;
+            RT->Logger->warning( "Couldn't set CF: $msg" ) unless $res;
             return 1;
         }
     }
@@ -70,7 +70,7 @@ sub InheritConstituency {
         my $tickets = RT::Tickets->new( RT->SystemUser );
         $tickets->FromSQL( $query ." AND $link_type = ". $ticket->Id );
         while ( my $t = $tickets->Next ) {
-            $RT::Logger->debug(
+            RT->Logger->debug(
                 "Ticket #". $t->id ." inherits constituency"
                 ." from ticket #". $ticket->id
             );
@@ -78,7 +78,7 @@ sub InheritConstituency {
                 Field => 'Constituency',
                 Value => $constituency,
             );
-            $RT::Logger->warning( "Couldn't set CF: $msg" ) unless $res;
+            RT->Logger->warning( "Couldn't set CF: $msg" ) unless $res;
         }
     }
     return 1;
@@ -95,7 +95,7 @@ sub SetConstituencyOnCreate {
         if ( $propagation eq 'inherit' ) {
             $value = $tmp;
         } elsif ( $propagation eq 'reject' && ($current||'') ne $tmp ) {
-            $RT::Logger->error(
+            RT->Logger->error(
                 "Constituency propagation algorithm is 'reject', but "
                 . "ticket ". $ticket->id ." has constituency '$current'"
                 . " when its parent incident has '$tmp'"
@@ -110,7 +110,7 @@ sub SetConstituencyOnCreate {
         Field => 'Constituency',
         Value => $value,
     );
-    $RT::Logger->warning( "Couldn't set CF: $msg" ) unless $status;
+    RT->Logger->warning( "Couldn't set CF: $msg" ) unless $status;
     return $status || 0;
 }
 
@@ -129,7 +129,7 @@ sub GetConstituencyFromAttachment {
 
     my $value = $attachment->GetHeader('X-RT-Mail-Extension');
     return undef unless $self->IsValidConstituency( $value );
-    $RT::Logger->debug( "Got constituency from attachment". ($value||'(no value)') );
+    RT->Logger->debug( "Got constituency from attachment". ($value||'(no value)') );
     return $value;
 }
 
@@ -141,7 +141,7 @@ sub GetConstituencyFromParent {
     $parents->RowsPerPage(1);
     return unless my $parent = $parents->First;
     my $value = $parent->FirstCustomFieldValue('Constituency');
-    $RT::Logger->debug( "Got constituency from parent: ". ($value||'(no value)') );
+    RT->Logger->debug( "Got constituency from parent: ". ($value||'(no value)') );
     return $value;
 }
 
@@ -154,7 +154,7 @@ sub IsValidConstituency {
         my $cf = RT::CustomField->new( RT->SystemUser );
         $cf->Load('Constituency');
         unless ( $cf->id ) {
-            $RT::Logger->crit("Couldn't load constituency field");
+            RT->Logger->crit("Couldn't load constituency field");
             return 0;
         }
         %constituency = map { lc $_->Name => $_->Name } @{ $cf->Values->ItemsArrayRef };

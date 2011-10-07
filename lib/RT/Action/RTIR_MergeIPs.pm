@@ -19,7 +19,7 @@ sub Commit {
     my $uri_obj = RT::URI->new( $self->CurrentUser );
     my ($status) = $uri_obj->FromURI( $uri );
     unless ( $status && $uri_obj->Resolver && $uri_obj->Scheme ) {
-        $RT::Logger->error( "Couldn't resolve '$uri' into a URI." );
+        RT->Logger->error( "Couldn't resolve '$uri' into a URI." );
         return 1;
     }
 
@@ -39,7 +39,7 @@ sub Commit {
             Value => $ip,
             Field => 'IP',
         );
-        $RT::Logger->error("Couldn't add IP address: $msg")
+        RT->Logger->error("Couldn't add IP address: $msg")
             unless $status;
     }
 

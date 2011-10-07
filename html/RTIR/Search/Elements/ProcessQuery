@@ -95,7 +95,7 @@ foreach my $arg ( keys %ARGS ) {
         @ops    = ( $ARGS{ $field . 'Op' } );
         @values = ( $ARGS{ 'ValueOf' . $field } );
     }
-    $RT::Logger->error("Bad Parameters passed into Query Builder")
+    RT->Logger->error("Bad Parameters passed into Query Builder")
         unless @ops == @values;
 
     for ( my $i = 0; $i < @ops; $i++ ) {

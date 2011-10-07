@@ -77,7 +77,7 @@ sub Commit {
         next unless $status;
 
         my ($res, $msg) = $parent->SetStatus( $status );
-        $RT::Logger->info("Couldn't open incident: $msg")
+        RT->Logger->info("Couldn't open incident: $msg")
             unless $res;
     }
     return 1;

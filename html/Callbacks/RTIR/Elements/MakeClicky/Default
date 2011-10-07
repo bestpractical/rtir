@@ -146,6 +146,6 @@ ${$ARGS{handle}} = sub {
 %{$ARGS{actions}} = ( %{$ARGS{actions}}, %actions );
 push @{$ARGS{types}}, @types;
 
-$RT::Logger->info("Finished adding callbacks");
+RT->Logger->info("Finished adding callbacks");
 
 </%init>

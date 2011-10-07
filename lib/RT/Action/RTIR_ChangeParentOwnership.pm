@@ -75,7 +75,7 @@ sub Commit {
         } else {
             ($res, $msg) = $incident->SetOwner($txn->NewValue);
         }
-        $RT::Logger->info("Couldn't set owner: $msg") unless $res;
+        RT->Logger->info("Couldn't set owner: $msg") unless $res;
     }
     return 1;
 }

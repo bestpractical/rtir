@@ -81,9 +81,9 @@ sub Commit {
     my $date = RT::Date->new(RT->SystemUser);
     $date->Set( Format => 'unix', Value => $due );
     my ($status, $msg) = $self->TicketObj->SetDue( $date->ISO );
-    $RT::Logger->error($msg) unless $status;
+    RT->Logger->error($msg) unless $status;
 
-    $RT::Logger->debug( "Set Due to now: ". $date->ISO );
+    RT->Logger->debug( "Set Due to now: ". $date->ISO );
 
     return 1;
 }

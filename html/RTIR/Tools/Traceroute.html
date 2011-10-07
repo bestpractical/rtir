@@ -52,7 +52,7 @@ my $title = loc("Traceroute to '[_1]'", $q);
 
 my $cmd = RT->Config->Get('TracerouteCommand') || '/usr/sbin/traceroute';
 unless ( -f $cmd && -x _ ) {
-    $RT::Logger->error(
+    RT->Logger->error(
         "'$cmd' doesn't exist or it's not executable."
         ."Setup \$TracerouteCommand option"
     );

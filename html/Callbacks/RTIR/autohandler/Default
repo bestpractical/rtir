@@ -3,6 +3,6 @@ eval {
     require RT::IR;
 };
 if ( $@ ) {
-    $RT::Logger->crit("System error. Couldn't load RTIR module(s): $@");
+    RT->Logger->crit("System error. Couldn't load RTIR module(s): $@");
 }
 </%ONCE>

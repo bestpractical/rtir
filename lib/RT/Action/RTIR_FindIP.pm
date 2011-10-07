@@ -32,7 +32,7 @@ sub Commit {
     }
 
     if ( $how_many_can && $how_many_can <= keys %existing ) {
-        $RT::Logger->debug("Ticket #". $ticket->id ." already has maximum number of IPs, skipping" );
+        RT->Logger->debug("Ticket #". $ticket->id ." already has maximum number of IPs, skipping" );
         return 1;
     }
 
@@ -74,7 +74,7 @@ sub AddIP {
         Value => $arg{'IP'},
         Field => $arg{'CustomField'},
     );
-    $RT::Logger->error("Couldn't add IP address: $msg") unless $status;
+    RT->Logger->error("Couldn't add IP address: $msg") unless $status;
 
     return 1;
 }

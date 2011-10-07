@@ -37,7 +37,7 @@ sub Commit {
     return 1 if $t->FirstCustomFieldValue( $cf->id );
 
     my ($res, $msg) = $t->AddCustomFieldValue( Field => $cf->id, Value => $value );
-    $RT::Logger->warning("Couldn't add custom field value: $msg") unless $res;
+    RT->Logger->warning("Couldn't add custom field value: $msg") unless $res;
     return 1;
 }
 
