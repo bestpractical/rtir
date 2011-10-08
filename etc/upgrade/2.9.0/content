@@ -326,6 +326,29 @@ our @Final = (
         remove_scrip_condition('RTIR_BlockActivation');
     },
 
+    # replace conditions with RT's StatusChange
+    sub {
+        my %map = (
+            RTIR_ReopenTicket => 'old: inactive; new: initial, active',
+            RTIR_CloseTicket => 'old: initial, active; new: inactve',
+        );
+        while ( my ($module, $argument) = each %map ) {
+            my $conditions = RT::ScripConditions->new( $RT::SystemUser );
+            $conditions->Limit( FIELD => 'ExecModule', VALUE => $module );
+            while ( my $condition = $conditions->Next ) {
+                my ($status, $msg) = $condition->SetExecModule('StatusChange');
+                RT->Logger->error("Couldn't change scrip condition: $msg")
+                    unless $status;
+                ($status, $msg) = $condition->SetApplicableTransTypes('Status,Set');
+                RT->Logger->error("Couldn't change scrip condition: $msg")
+                    unless $status;
+                ($status, $msg) = $condition->SetArgument( $argument );
+                RT->Logger->error("Couldn't change scrip condition: $msg")
+                    unless $status;
+            }
+        }
+    },
+
     sub {
         my ($d_portlets) = RT::System->new( RT->SystemUser )
             ->Attributes->Named('RTIR_HomepageSettings');
