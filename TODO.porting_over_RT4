@@ -17,8 +17,6 @@
 * Some pages with forms need new nice layouts like in RT, reply
   page comes first to mind
 
-* scan code for hardcoded statuses
-
 === CLEANUP && REFACTORING
 
 * stop abusing $session{'tickets'} so we can get working
