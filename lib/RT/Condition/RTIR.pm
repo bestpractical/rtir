@@ -10,22 +10,6 @@ RT::Condition::RTIR - generic checks
 
 =head1 METHODS
 
-=head2 IsStatusChange
-
-Returns true if it's status change of a ticket.
-
-=cut
-
-sub IsStatusChange {
-    my $self = shift;
-    my $type = $self->TransactionObj->Type;
-    return 1 if $type eq "Status" or
-        ( $type eq "Set" and
-          $self->TransactionObj->Field eq "Status" );
-
-    return 0;
-}
-
 =head2 IsStaff
 
 Returns true if creator of a transaction is a staff member. By staff member
