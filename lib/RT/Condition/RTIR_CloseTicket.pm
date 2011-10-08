@@ -62,7 +62,7 @@ sub IsApplicable {
     my $self = shift;
 
     return 0 unless $self->IsStatusChange;
-    return 0 unless $self->TicketObj->QueueObj->IsActiveStatus( $self->TransactionObj->OldValue );
+    return 0 if $self->TicketObj->QueueObj->IsInactiveStatus( $self->TransactionObj->OldValue );
     return 0 unless $self->TicketObj->QueueObj->IsInactiveStatus( $self->TransactionObj->NewValue );
 
     return 1;
