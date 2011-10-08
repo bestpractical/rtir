@@ -292,11 +292,6 @@
        ApplicableTransTypes => 'Any',
        ExecModule => 'RTIR_RequireConstituencyGroupChange',
     },
-    {  Name        => 'RTIR Block Activation',    # loc
-       Description => 'A block was activated or created in active state',                                            # loc
-       ApplicableTransTypes => 'Create,CustomField',
-       ExecModule => 'RTIR_BlockActivation',
-    },
     {  Name        => 'RTIR Linking To Incident',    # loc
        Description => 'Whenever ticket is linked to incident or created with link',                                 # loc
        ApplicableTransTypes => 'Create,AddLink',

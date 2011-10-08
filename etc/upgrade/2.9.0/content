@@ -323,6 +323,7 @@ our @Final = (
     sub {
         # started date is handled by lifecycles now
         remove_scrip_condition('RTIR_RequireStateChange');
+        remove_scrip_condition('RTIR_BlockActivation');
     },
 
     sub {
