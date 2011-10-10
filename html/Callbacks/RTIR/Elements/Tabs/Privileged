@@ -21,7 +21,7 @@ my $query_string = sub {
     my %args = @_;
     my $u    = URI->new();
     $u->query_form(%args);
-    return $u->query;
+    return $u->query || '';
 };
 
 my $root = Menu->child( rtir => title => loc('RTIR'), path => '/RTIR/' );
@@ -450,7 +450,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
         my $RSSPath = join '/', map $m->interp->apply_escapes( $_, 'u' ),
             $session{'CurrentUser'}->UserObj->Name,
             $session{'CurrentUser'}->UserObj->GenerateAuthString(
-                join '', map $args{$_}, qw(Query Order OrderBy)
+                join '', map $args{$_}||'', qw(Query Order OrderBy)
             )
         ;
         $more->child(

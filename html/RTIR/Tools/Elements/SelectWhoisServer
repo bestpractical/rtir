@@ -13,4 +13,5 @@ $Default => ''
 </%ARGS>
 <%INIT>
 my %servers = %{ RT->Config->Get('whois') || {} };
+$Default ||= '';
 </%INIT>
