@@ -379,7 +379,11 @@ our @Final = (
             TABLE2 => 'ScripActions',
             FIELD2 => 'id',
         );
-        $scrips->Limit( FIELD => 'ExecModule', VALUE => 'RTIR_SetDueIncident' );
+        $scrips->Limit(
+            ALIAS => $alias,
+            FIELD => 'ExecModule',
+            VALUE => 'RTIR_SetDueIncident',
+        );
         while ( my $scrip = $scrips->Next ) {
             my $value = 'Set Due Date On Incident';
             next if $scrip->Name eq $value;
