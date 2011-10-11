@@ -18,7 +18,7 @@ Mailgate help: rt/bin/rt-mailgate --help
 
 =head3 Encrypting Mail with GnuPG
 
-See L<RT::Crypt::GnuPg> and L<AdministrationTutorial/GnuPG Encryption>
+See L<RT::Crypt::GnuPG> and L<AdministrationTutorial/GnuPG Encryption>
 
 =head3 Create new block via web-interface
 
