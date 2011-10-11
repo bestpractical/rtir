@@ -60,12 +60,7 @@
 <&| /Widgets/TitleBox, title => loc("Basics"), class=>'ticket-info-basics' &>
 <table width="100%" border="0">
 
-% if ( $Incident ) {
-  <tr class="incident">
-    <td class="label"><&|/l&>Incident</&>:</td>
-    <td class="value"><% $Incident %><input type="hidden" name="Incident" value="<% $Incident || '' %>" /></td>
-  </tr>
-% } elsif ( $SplitObj ) {
+% if ( $SplitObj ) {
   <tr class="split">
     <td class="label"><&|/l&>Split from</&>:</td>
     <td class="value"><% $SplitObj->id %></td>
@@ -76,7 +71,7 @@
     <td class="value"><% $parentvalue %></td>
   </tr>
 % }
-% } else {
+% elsif ( $Incident ) {
   <tr class="incident">
     <td class="label"><&|/l&>Incident</&>:</td>
     <td class="value"><input type="text" name="Incident" size="16" maxsize="16" value="<% $Incident || '' %>" /></td>
