@@ -97,7 +97,8 @@ sub UpdateDue {
     my $old = $incident->DueObj->ISO;
     return 1 if $new eq $old;
 
-    $incident->SetDue( $new );
+    my ($status, $msg) = $incident->SetDue( $new );
+    $RT::Logger->error( "Couldn't set due date: $msg" ) unless $status;
 
     return 1;
 }
