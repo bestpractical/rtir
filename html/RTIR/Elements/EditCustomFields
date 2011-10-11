@@ -51,12 +51,8 @@ unless ( $TicketObj && $TicketObj->Id ) {
         if ( $ARGS{"$name-Value"} ) {
             $ARGS{"CustomField-".$CustomField->Id} = $ARGS{"$name-Value"};
         }
-        elsif ( $name eq 'SLA' ) {
-            $ARGS{"CustomField-".$CustomField->Id} = RT::IR::DefaultSLA();
-        }
         elsif ( defined $Defaults{ $name } ) {
-# if $Defaults{$name} is ref, it should be treated carefully, like the 'SLA'
-# above
+# if $Defaults{$name} is ref, it should be treated carefully
             unless ( ref $Defaults{ $name } ) {
                 $ARGS{"CustomField-".$CustomField->Id} = $Defaults{ $name };
             }
