@@ -85,16 +85,10 @@ sub UpdateDue {
     return 1 unless $incident;
     return 1 unless $incident->QueueObj->Name eq 'Incidents';
 
-    my $query =  "(Queue = 'Incident Reports'"
-                ." OR Queue = 'Investigations'"
-                ." OR Queue = 'Blocks'"
-                .") AND MemberOf = " . $incident->Id
-                ." AND ("
-                . join( " OR ", map "Status = '$_'",
-                        RT::Queue->ActiveStatusArray )
-                .")";
-    my $children = RT::Tickets->new($self->CurrentUser);
-    $children->FromSQL( $query );
+    my $children = RT::IR->IncidentChildren(
+        $incident, Initial => 1, Active => 1,
+        And => "Due > '1970-01-02 00:00:00'",
+    );
     $children->OrderBy( FIELD => 'Due', ORDER => 'ASC' );
     $children->RowsPerPage(1);
     my $mostdue = $children->First;
