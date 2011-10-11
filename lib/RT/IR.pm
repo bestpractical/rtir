@@ -79,65 +79,6 @@ my $ticket_sql_parser = Parse::BooleanLogic->new;
 
 =head1 FUNCTIONS
 
-=head2 BusinessHours
-
-Returns L<Business::Hours> object initilized with information from
-the config file. See option 'BusinessHours'.
-
-=cut
-
-sub BusinessHours {
-    my $bizhours = new Business::Hours;
-    if ( RT->Config->Get('BusinessHours') ) {
-        $bizhours->business_hours( %{ RT->Config->Get('BusinessHours') } );
-    }
-
-    return $bizhours;
-}
-
-=head2 DefaultSLA
-
-TODO: Not yet described.
-
-=cut
-
-sub DefaultSLA {
-    my $SLAObj = SLAInit();
-    return $SLAObj->SLA( time );
-}
-
-=head2 SLAInit
-
-Returns an object of L<Business::SLA> class or class defined in SLAModule
-config option.
-
-See also the following options: SLAModule, RTIR_CustomFieldsDefaults and SLA.
-
-=cut
-
-sub SLAInit {
-
-    my $class = RT->Config->Get('SLAModule') || 'Business::SLA';
-
-    my $SLAObj = $class->new();
-    $SLAObj->SetInHoursDefault( RT->Config->Get('RTIR_CustomFieldsDefaults')->{'SLA'}{'InHours'} );
-    $SLAObj->SetOutOfHoursDefault( RT->Config->Get('RTIR_CustomFieldsDefaults')->{'SLA'}{'OutOfHours'} );
-
-    my $bh = RT::IR::BusinessHours();
-    $SLAObj->SetBusinessHours($bh);
-
-    my $SLA = RT->Config->Get('SLA');
-    foreach my $key( keys %$SLA ) {
-        if ( $SLA->{ $key } =~ /^\d+$/ ) {
-            $SLAObj->Add( $key, ( BusinessMinutes => $SLA->{ $key } ) );
-        } else {
-            $SLAObj->Add( $key, %{ $SLA->{ $key } } );
-        }
-    }
-
-    return $SLAObj;
-}
-
 =head2 OurQueue
 
 Takes queue name or L<RT::Queue> object and returns its type
