@@ -231,17 +231,6 @@ Set(
 
 =over 4
 
-=item C<$WebNoAuthRegex>
-
-RTIR serves URLs with F</RTIR/NoAuth/> paths that shouldn't
-be protected by authentication. If you customize this option
-make sure to include this path as well.
-
-=cut
-
-my $rt_no_auth = RT->Config->Get('WebNoAuthRegex');
-Set($WebNoAuthRegex, qr{ (?: $rt_no_auth | ^/+RTIR/+NoAuth/ ) }x);
-
 =item C<$MaxInlineBody>
 
 By default, RT only displays text attachments inline up to
@@ -470,10 +459,6 @@ Set the defaults for RTIR custom fields. Values are case-sensitive.
 
 Set(
     %RTIR_CustomFieldsDefaults,
-    SLA => {
-        InHours    => 'Full service',
-        OutOfHours => 'Full service: out of hours',
-    },
     'How Reported'  => "",
     'Reporter Type' => "",
     IP              => "",
