@@ -326,6 +326,8 @@ our @Final = (
         remove_scrip_action('RTIR_SetDueReopen');
         remove_scrip_action('RTIR_SetDueToNow');
         remove_scrip_action('RTIR_UnsetDue');
+        remove_scrip_action('RTIR_SetStartsByBizHours');
+        remove_scrip_action('RTIR_SetStartsToNow');
     },
 
     # remove no longer needed scrip conditions and scrips based on them
