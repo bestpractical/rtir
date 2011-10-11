@@ -59,9 +59,17 @@ If a child had a Due Date change or changes parents.
 sub IsApplicable {
     my $self = shift;
 
-    my $type = $self->TransactionObj->Type;
+    my $txn = $self->TransactionObj;
+    my $type = $txn->Type;
+    my $field = $txn->Field;
+
     return 1 if $type eq 'DeleteLink' || $type eq "AddLink";
-    return 1 if $type eq "Set" && $self->TransactionObj->Field eq "Due";
+    return 1 if $type eq "Set" && $field eq "Due";
+    if ( $type eq 'Status' || ($type eq 'Set' && $field eq 'Status') ) {
+        my $lifecycle = $self->TicketObj->QueueObj->Lifecycle;
+        return 1 if !$lifecycle->IsInactive( $txn->OldValue )
+            && $lifecycle->IsInactive( $txn->NewValue );
+    }
 
     return 0;
 }
