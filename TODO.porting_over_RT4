@@ -1,3 +1,13 @@
+=== DOCS
+
+* UPGRADING-TO-3.0.0
+
+* walk through every change in etc/upgrade/2.9.0/content and
+  make sure documention for upgrading references everything
+
+* document how to switch over SLA extension, document Due
+  rules for incidents
+
 === FEATURES
 
 * Split incident: select which IRs, Invs, Blocks go where
@@ -16,12 +26,16 @@
 
 * Some pages with forms need new nice layouts like in RT, reply
   page comes first to mind
+** go over most common pages and look at layouts
 
 === CLEANUP && REFACTORING
 
 * stop abusing $session{'tickets'} so we can get working
   First, Prev, Next and Last links in RTIR.
 
+=== FIXES
+
+* html/RTIR/Reporting/Report.html references SLA
 
 === TESTS
 
