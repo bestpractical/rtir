@@ -309,14 +309,23 @@ our @Final = (
     sub {
         # started date is handled by lifecycles now
         remove_scrip_action('RTIR_SetStartedToNow');
+
         # IRs and Blocks has some special status treatment, but
         # it is handled by other scrips
         remove_scrip_action('RTIR_SetIncidentReportState');
         remove_scrip_action('RTIR_SetBlockState');
+
         # Investigations and Incidents don't need special status
         # treatment, it was only sync with State CF
         remove_scrip_action('RTIR_SetInvestigationState');
         remove_scrip_action('RTIR_SetIncidentState');
+
+        # SLA extension has saner Due management
+        remove_scrip_action('RTIR_SetDueBySLA');
+        remove_scrip_action('RTIR_SetDueCorrespond');
+        remove_scrip_action('RTIR_SetDueReopen');
+        remove_scrip_action('RTIR_SetDueToNow');
+        remove_scrip_action('RTIR_UnsetDue');
     },
 
     # remove no longer needed scrip conditions and scrips based on them

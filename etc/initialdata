@@ -172,38 +172,9 @@
 );
 
 @ScripActions = (
-
-    {  Name        => 'RTIR Set Due to Now',    # loc
-       Description => 'Set the due date to the current time' ,                                            # loc
-       ExecModule => 'RTIR_SetDueToNow',
-    },
-    {  Name        => 'RTIR Set Starts to Now',    # loc
-       Description => 'Set the starts date to the current time' ,                                            # loc
-       ExecModule => 'RTIR_SetStartsToNow',
-    },
-    {  Name        => 'RTIR Set Due by SLA',    # loc
-       Description => 'Set the due date according to SLA' ,                                            # loc
-       ExecModule => 'RTIR_SetDueBySLA',
-    },
-    {  Name        => 'RTIR Set Due Correspond',    # loc
-       Description => 'Set the due date for correspondence' ,                                            # loc
-       ExecModule => 'RTIR_SetDueCorrespond',
-    },
-    {  Name        => 'RTIR Set Due Reopen',    # loc
-       Description => 'Set the due date for a reopened ticket' ,                                            # loc
-       ExecModule => 'RTIR_SetDueReopen',
-    },
     {  Name        => 'RTIR Set Incident Due',    # loc
        Description => 'Set the due date of parent Incident' ,                                            # loc
        ExecModule => 'RTIR_SetDueIncident',
-    },
-    {  Name        => 'RTIR Unset Due',    # loc
-       Description => 'Unset the due date' ,                                            # loc
-       ExecModule => 'RTIR_UnsetDue',
-    },
-    {  Name        => 'RTIR Set Starts by Business Hours',    # loc
-       Description => 'Set the starts date according to Business Hours' ,                                            # loc
-       ExecModule => 'RTIR_SetStartsByBizHours',
     },
     {  Name        => 'RTIR Set How Reported',    # loc
        Description => 'Set how the Incident Report was reported' ,                                            # loc
@@ -312,74 +283,6 @@
 );
 
 @Scrips = (
-    {  Description       => "DetectUserResponse",
-       Queue             => [ 'Incident Reports', 'Investigations', 'Blocks' ],
-       ScripCondition    => 'RTIR Customer Response',
-       ScripAction       => 'RTIR Set Due to Now',
-       Template          => 'Blank' },
-
-    {  Description       => "DetectStaffResponse",
-       Queue             => [ 'Incident Reports', 'Investigations', 'Blocks' ],
-       ScripCondition    => 'RTIR Staff Response',
-       ScripAction       => 'RTIR Set Due Correspond',
-       Template          => 'Blank' },
-
-    {  Description       => "SetStartsDate",
-       Queue             => 'Incidents',
-       ScripCondition    => 'On Create',
-       ScripAction       => 'RTIR Set Starts to Now',
-       Template          => 'Blank' },
-    {  Description       => "SetStarts",
-       Queue             => [ 'Incident Reports', 'Investigations', 'Blocks' ],
-       ScripCondition    => 'On Create',
-       ScripAction       => 'RTIR Set Starts by Business Hours',
-       Template          => 'Blank' },
-
-    {  Description       => "SetStartsDateOnQueueChange",
-       Queue             => 'Incidents',
-       ScripCondition    => 'On Queue Change',
-       ScripAction       => 'RTIR Set Starts to Now',
-       Template          => 'Blank' },
-    {  Description       => "SetStartsDateOnQueueChange",
-       Queue             => [ 'Incident Reports', 'Investigations', 'Blocks' ],
-       ScripCondition    => 'On Queue Change',
-       ScripAction       => 'RTIR Set Starts by Business Hours',
-       Template          => 'Blank' },
-
-    {  Description       => "SetDue",
-       Queue             => 'Incident Reports',
-       ScripCondition    => 'On Create',
-       ScripAction       => 'RTIR Set Due by SLA',
-       Template          => 'Blank' },
-    {  Description       => "SetDue",
-       Queue             => [ 'Investigations', 'Blocks' ],
-       ScripCondition    => 'On Create',
-       ScripAction       => 'RTIR Set Due Correspond',
-       Template          => 'Blank' },
-
-    {  Description       => "SetDueOnQueueChange",
-       Queue             => 'Incident Reports',
-       ScripCondition    => 'On Queue Change',
-       ScripAction       => 'RTIR Set Due by SLA',
-       Template          => 'Blank' },
-    {  Description       => "SetDueOnQueueChange",
-       Queue             => [ 'Investigations', 'Blocks' ],
-       ScripCondition    => 'On Queue Change',
-       ScripAction       => 'RTIR Set Due Correspond',
-       Template          => 'Blank' },
-
-    {  Description       => "UnsetDue",
-       Queue             => [ 'Incident Reports', 'Investigations', 'Blocks' ],
-       ScripCondition    => 'RTIR Close Ticket',
-       ScripAction       => 'RTIR Unset Due',
-       Template          => 'Blank' },
-
-    {  Description       => "SetDueReopen",
-       Queue             => [ 'Incident Reports', 'Investigations', 'Blocks' ],
-       ScripCondition    => 'RTIR Reopen Ticket',
-       ScripAction       => 'RTIR Set Due Reopen',
-       Template          => 'Blank' },
-
     {  Description       => "SetHowReported",
        Queue             => 'Incident Reports',
        ScripCondition    => 'On Create',
