@@ -91,9 +91,13 @@ sub UpdateDue {
     );
     $children->OrderBy( FIELD => 'Due', ORDER => 'ASC' );
     $children->RowsPerPage(1);
-    my $mostdue = $children->First;
 
-    $incident->SetDue( $mostdue? $mostdue->DueObj->ISO: '1970-01-01 00:00:00' );
+    my $mostdue = $children->First;
+    my $new = $mostdue? $mostdue->DueObj->ISO: '1970-01-01 00:00:00';
+    my $old = $incident->DueObj->ISO;
+    return 1 if $new eq $old;
+
+    $incident->SetDue( $new );
 
     return 1;
 }
