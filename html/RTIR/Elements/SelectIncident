@@ -1,0 +1,25 @@
+% if ( $SplitObj ) {
+  <tr class="split">
+    <td class="label"><&|/l&>Split from</&>:</td>
+    <td class="value"><% $SplitObj->id %></td>
+  </tr>
+% if ( $parentvalue ) {
+  <tr class="incident">
+    <td class="label"><&|/l&>Will be linked to Incident(s)</&>:</td>
+    <td class="value"><% $parentvalue %></td>
+  </tr>
+% }
+% elsif ( $Incident ) {
+  <tr class="incident">
+    <td class="label"><&|/l&>Incident</&>:</td>
+    <td class="value"><input type="text" name="Incident" size="16" maxsize="16" value="<% $Incident || '' %>" /></td>
+  </tr>
+  <tr>
+    <td class="label">&nbsp;</td>
+    <td class="comment">
+        (<&|/l&>Id of an Incident to link a new ticket to</&>. <% $Type eq 'Block'? '<strong>'.loc('Required').'</strong>': loc('Optional') |n %>.)
+    </td>
+  </tr>
+% }
+
+
