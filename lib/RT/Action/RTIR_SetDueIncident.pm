@@ -60,6 +60,10 @@ Set the Due date based on the most due child.
 sub Commit {
     my $self = shift;
 
+    if ( $self->TicketObj->QueueObj->Name eq 'Incidents' ) {
+        return $self->UpdateDue( $self->TicketObj );
+    }
+
     my $type = $self->TransactionObj->Type;
     if ( $type eq 'DeleteLink' ) {
         my $uri = RT::URI->new( $self->CurrentUser );
