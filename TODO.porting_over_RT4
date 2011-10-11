@@ -8,9 +8,14 @@
 * document how to switch over SLA extension, document Due
   rules for incidents
 
-=== FEATURES
+* we delete a lot of scrip actions and a few scrip conditions.
+  Warn that ALL scrips that use these will be deleted.
 
-* Split incident: select which IRs, Invs, Blocks go where
+* Delete scrips' descriptions from tutorials we have.
+
+* Review tutorials in context of lifecycles.
+
+=== FEATURES
 
 * Incident field on Create page is a mess, sometimes it's
   available for input, sometimes it's not, IRs can have
@@ -44,3 +49,8 @@ We walk the web, but there is no single functionality test for:
     .../Search/Reporting.html
     .../Reporting/index.html
     .../Split.html
+
+=== ABANDONED FEATURES
+
+* Split incident: select which IRs, Invs, Blocks go where
+
