@@ -61,18 +61,6 @@
         ],
     },
     {
-        Name        => 'SLA',
-        Type        => 'SelectSingle',
-        Queue       => 'Incident Reports',
-        Disabled    => 0,
-        Description => 'SLA for Incident Reports RTIR queue',
-        Values      => [
-            { Name => 'Full service',               SortOrder => 1 },
-            { Name => 'Full service: out of hours', SortOrder => 2 },
-            { Name => 'Reduced service',            SortOrder => 3 },
-        ],
-    },
-    {
         Name        => 'Function',
         Type        => 'SelectSingle',
         Queue       => 'Incidents',
