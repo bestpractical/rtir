@@ -225,6 +225,26 @@ Set(
     },
 );
 
+
+=item C<%RTIR_IncidentChildren>
+
+=cut
+
+Set(%RTIR_IncidentChildren,
+    Report => {
+        Multiple => 1,
+        Required => 0,
+    },
+    Investigation => {
+        Multiple => 0,
+        Required => 0,
+    },
+    Block => {
+        Multiple => 0,
+        Required => 1,
+    },
+);
+
 =back
 
 =head1 Web Interface Configuration
