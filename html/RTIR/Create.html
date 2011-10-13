@@ -369,6 +369,11 @@ foreach my $id ( grep $_, @Incident ) {
 }
 @Incident = map $_->id, @IncidentObj;
 
+if ( @Incident > 1 && !RT->Config->Get('RTIR_IncidentChildren')->{ $Type }{'Multiple'} ) {
+    push @{ $m->{'request_args'} }, Incident => $Incident[-1];
+    @Incident = ($Incident[-1]);
+}
+
 $Subject ||= $IncidentObj[0]->Subject if @IncidentObj;
 
 push @results, $m->comp( 'SELF:ProcessAttachments', %ARGS );
