@@ -11,9 +11,20 @@
         ShowHeader    => 0,
     &>
 % }
+% if ( $hide ) {
+    <input type="hidden" name="<% $Name %>" value="<% $potential[0] %>" />
+% }
     <input type="text" name="<% $Name %>" size="16" maxsize="16" value="" />
-% if ( $config->{'Multiple'} ) {
-    <input type="submit" name="<% "More$Name" %>" value="<% loc('More') %>" class="button" />
+% if ( $config->{'Multiple'} || @potential ) {
+    <input type="submit" name="<% "More$Name" %>" value="<% $config->{'Multiple'}? loc('More') : loc('Other') %>" class="button" />
+% }
+
+% if ( !$config->{'Required'} && $dformat =~ /RadioButton/ ) {
+<script type="text/javascript">
+//<![CDATA[
+jQuery(function(){ jQuery('input[type="radio"][name="<% $Name %>"]').uncheckable() });
+//]]>
+</script>
 % }
   </td>
 </tr>
@@ -43,6 +54,12 @@ my $query = RT::IR->Query(
     And => join ' OR ', map "id = $_", @potential
 );
 my $format = RT->Config->Get('RTIRSearchResultFormats')->{'LinkIncident'};
-my $dformat = '\'__'. ($config->{'Multiple'}? 'CheckBox' : 'RadioButton') .".{$Name}__\', "
-    . $format;
+my ($dformat, $hide);
+if ( $config->{'Multiple'} ) {
+    $dformat = "'__CheckBox.{$Name}__', $format";
+} elsif ( @potential > 1 || !$config->{'Required'} ) {
+    $dformat = "'__RadioButton.{$Name}__', $format";
+} else {
+    ($dformat, $hide) = ($format, 1);
+}
 </%INIT>
