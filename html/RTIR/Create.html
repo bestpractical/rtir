@@ -67,18 +67,15 @@
   </tr>
 % }
 
+  <& /RTIR/Elements/SelectIncident,
+    Type         => $Type,
+    Default      => \@Incident,
+    SplitObj     => $SplitObj,
+  &>
+
   <& /Ticket/Elements/EditBasics,
     InTable => 1,
     fields  => [
-        {
-            name => 'Status',
-            comp => '/Elements/SelectIncident',
-            args => {
-                Name         => 'Incident',
-                Default      => @Incident,
-                QueueObj     => $QueueObj,
-            },
-        },
         {
             name => 'Status',
             comp => '/Elements/SelectStatus',
