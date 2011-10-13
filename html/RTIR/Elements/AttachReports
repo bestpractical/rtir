@@ -25,7 +25,7 @@ foreach my $e ( @Ticket ) {
 }
 return unless @parents;
 
-my $siblings = RT::Tickets->new( $Ticket->CurrentUser );
+my $siblings = RT::Tickets->new( $Ticket[0]->CurrentUser );
 $siblings->FromSQL( RT::IR->Query(
     Queue    => 'Incident Reports',
     MemberOf => \@parents,
