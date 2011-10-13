@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 80;
+use RT::IR::Test tests => 81;
 
 my $cf_name = 'test';
 my $cf;
@@ -38,6 +38,7 @@ RT::Test->started_ok;
 my $agent = default_agent();
 
 my $inc_id = $agent->create_incident( { Subject => "incident" } );
+ok $inc_id, "created an incident";
 
 my @tickets;
 foreach my $qname ('Incident Reports', 'Investigations', 'Blocks') {
