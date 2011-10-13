@@ -8,10 +8,11 @@
 &>
 </&>
 <%ARGS>
-@Ticket => ()
+$Ticket => undef
 $Name   => 'AttachTickets'
 </%ARGS>
 <%INIT>
+my @Ticket = grep defined, ref($Ticket) eq 'ARRAY'? @$Ticket : $Ticket;
 return unless @Ticket;
 
 my @parents;
