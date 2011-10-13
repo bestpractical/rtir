@@ -77,6 +77,8 @@ my %TYPE = (
 use Parse::BooleanLogic;
 my $ticket_sql_parser = Parse::BooleanLogic->new;
 
+RT->AddJavaScript('jquery.uncheckable-radio-0.1.js');
+
 =head1 FUNCTIONS
 
 =head2 OurQueue
