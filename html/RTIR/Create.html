@@ -60,6 +60,13 @@
 <&| /Widgets/TitleBox, title => loc("Basics"), class=>'ticket-info-basics' &>
 <table width="100%" border="0">
 
+% if ( $SplitObj ) {
+  <tr class="split">
+    <td class="label"><&|/l&>Split from</&>:</td>
+    <td class="value"><% $SplitObj->id %></td>
+  </tr>
+% }
+
   <& /Ticket/Elements/EditBasics,
     InTable => 1,
     fields  => [
