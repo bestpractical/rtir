@@ -351,18 +351,18 @@ foreach my $id ( grep $_, @Incident ) {
     my $error = 1;
 
     my $inc = RT::Ticket->new( $session{'CurrentUser'} );
-    $inc->Load( $Incident );
+    $inc->Load( $id );
     unless ( $inc->id ) {
-        push @results, loc("Couldn't load incident #[_1]", $Incident );
+        push @results, loc("Couldn't load incident #[_1]", $id );
     }
     elsif ( $inc->QueueObj->Name ne 'Incidents' ) {
-        push @results, loc('Ticket #[_1] is not an Incident', $Incident );
+        push @results, loc('Ticket #[_1] is not an Incident', $id );
     }
     elsif ( !$skip_create && $constituency_field 
         && RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject'
         && lc $ARGS{$constituency_field} ne lc $inc->FirstCustomFieldValue('Constituency') )
     {
-        push @results, loc('Incident #[_1] has constituency [_2], choose the same value for a new ticket or use another Incident', $Incident, $inc->FirstCustomFieldValue('Constituency') );
+        push @results, loc('Incident #[_1] has constituency [_2], choose the same value for a new ticket or use another Incident', $id, $inc->FirstCustomFieldValue('Constituency') );
     }
     else {
         push @IncidentObj, $inc;
