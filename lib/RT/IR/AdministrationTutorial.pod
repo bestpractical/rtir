@@ -163,6 +163,20 @@ to 'active'.
 As well, take a look at C<$RTIR_BlockAproveActionRegexp> option
 in the config.
 
+=item On Linking To Incident Activate Report
+
+=item On Correspond (not every) Activate Report
+
+IRs are activated (status changed to first possible active,
+by default 'open') only when they are linked to an incident.
+These two scrips take care of that.
+
+RT's default L<RT::Action::AutoOpen> is disabled for IRs to avoid
+unwanted changes of status when IR is not linked. When an IR is
+linked to an Incident, L<RT::Condition::RTIR_RequireReportActivation>
+checks everything what RT's AutoOpen checks and scrip behaves in
+the same way.
+
 =item ResolveAllChildren
 
 Applies to the IncidentsQueue.
