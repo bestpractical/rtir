@@ -52,7 +52,10 @@ use base 'RT::Condition::RTIR';
 
 =head2 IsApplicable
 
-If a child had a Due Date change or changes parents.
+Fires scrip if this ticket had a Due date change,
+changes parents or was inactivated.
+
+See also L<RT::Action::RTIR_SetDueIncident>.
 
 =cut
 

@@ -50,10 +50,24 @@ use warnings;
 package RT::Action::RTIR_SetDueIncident;
 use base 'RT::Action::RTIR';
 
+=head1 NAME
+
+RT::Action::RTIR_SetDueIncident - set the Due date based on the most due child
+
+=head1 DESCRIPTION
+
+Set the Due date based on the most due child. Only takes into
+account active children.
+
+Can be applied not only to Incidents queue, but to children's
+as well. In the latter case all incidents the current ticket
+is linked to are updated.
+
+=head1 METHODS
 
 =head2 Commit
 
-Set the Due date based on the most due child.
+Performs update.
 
 =cut
 

@@ -177,6 +177,14 @@ linked to an Incident, L<RT::Condition::RTIR_RequireReportActivation>
 checks everything what RT's AutoOpen checks and scrip behaves in
 the same way.
 
+=item Set Due Date On Incident
+
+Keeps Due date of incidents in sync with the most due child.
+
+See L</Service Level Agreements> below for details on automating
+Due dates and L<RT::Action::RTIR_SetDueIncident> for details
+about action of the scrip.
+
 =item ResolveAllChildren
 
 Applies to the IncidentsQueue.
