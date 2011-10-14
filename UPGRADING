@@ -10,20 +10,11 @@ General upgrade instructions
 
 0) Make a backup of the database. It's very important.
 
-1) Layout of files in RT's directories have been changed in RT 3.8.0.
-   Each extension is installed in its own directory and is activated
-   using Plugins option.
+1) It's very recommended to use fresh directory for RT 4.0.
+   A lot of files have been deleted and moved around in RTIR 3.0,
+   so don't copy old RTIR's files.
 
-   Also, some files have been renamed and delete, if you leave old
-   files around, you can hurt functionality of the new version.
-
-   If you're upgrading from RTIR 2.4 or newer, so RTIR is already
-   is in local/plugins/RT-IR directory, then you can move it before
-   proceding. Otherwise it's better to start from a new directory
-   for this installtion instead of using directories with previous
-   RT and extensions.
-
-2) Install and upgrade database to the RT 3.8.4 or newer following
+2) Install and upgrade database to the RT 4.0.3 or newer following
    its upgrade instructions.
 
 2.1) Test how RT upgrade went. You should be able to start server,
@@ -32,15 +23,9 @@ General upgrade instructions
 2.2) Make another backup of the DB, so you can return to this step
      if something goes wrong.
 
-3) Install or upgrade RTFM 2.4.0 or newer.
+3) Install the new version of RTIR. (DO NOT RUN "make initdb")
 
-3.1) Enable it in the RT config using @Plugins option
-
-3.2) Test RT and RTFM again
-
-4) Install the new version of RTIR. (DO NOT RUN "make initdb")
-
-5) Update RTIR's database.
+4) Update RTIR's database.
 
     Type:
 
@@ -77,6 +62,110 @@ General upgrade instructions
         /opt/rt3/sbin/rt-setup-database --dba <dba> \
             --prompt-for-dba-password --action insert \
             --datadir etc/upgrade/<version>
+
+Upgrading from 2.6.x and earlier
+--------------------------------
+
+0) Primary and very dangerous update steps are implemented
+   in F<etc/upgrade/2.9.0/content>. It's highly recommended
+   to backup before applying this script.
+
+1) RT 4.0 introduces new feature, lifecycles, what allowed us to
+   replace RTIR's four State custom fields with four RTIR
+   specific lifecycles, delete these custom fields and use
+   RT's Status field.
+
+   This means that you have to review all customizations and
+   replace use of State custom field with Status, check
+   templates, scrips' conditions and actions.
+
+   For example the following code should be replaced:
+
+        $ticket->FirstCustomFieldValue('State');
+
+   With:
+
+        $ticket->Status;
+
+   Almost every format string in $RTIRSearchResultFormats option
+   had '__CustomField.{State}__' that is replaced with __Status__.
+   You should update config if you have customizations.
+
+   Read more about lifecycles in RT's and RTIR's configs.
+
+2) To keep history intact upgrade script turns changes of
+   the custom fields into changes of Status field. It's a big
+   change to Tickets, Transactions and ObjectCustomFieldValues
+   tables with updates and deletes mostly. Backup is really
+   required. Don't forget to re-analyze and optimize tables after
+   upgrade.
+
+3) Several scrip actions are not required anymore because of
+   switch to lifecycles, so modules of these action and
+   all scrips based on them are deleted from directories and
+   the DB.
+
+   Started date is properly handled by lifecycles now, no need
+   in RTIR_SetStartedToNow scrip action.
+
+   IRs and Blocks still has some special status treatment, but
+   it is handled by new scrips, so no need in
+   RTIR_SetIncidentReportState and RTIR_SetBlockState actions.
+
+   Investigations and Incidents don't need any special status
+   treatment, so RTIR_SetInvestigationState and RTIR_SetIncidentState
+   are deleted.
+
+4) Situation with scrip conditions is similar to above with
+   actions.
+
+   RTIR_RequireStateChange condition gets deleted.
+
+   RTIR_BlockActivation gets deleted as well, however if you
+   use it in custom scrips then you can replace it with StatusChange
+   condition that is part of RT. See example in the upgrade script
+   where RTIR's RTIR_ReopenTicket and RTIR_CloseTicket conditions
+   get replaced with StatusChange.
+
+5) /RTIR/Elements/QueueSummary portlet deleted and replaced with
+   RT's Quicksearch. Update config in case you have custom setting
+   for RTIR_HomepageSettings. Users' preferences updated automatically.
+
+6) Code from RTIR to support IP custom field has been merged
+   into RT 4.0 and extended to support IPv6. Upgrade script
+   changes type of the IP field.
+
+7) RTIR had simple Service Level Agreements (SLA) implementation.
+   RT::Extension::SLA was prototyped on it, but heavily improved.
+   In RTIR 3.0 we delete this basic implementation in favor of
+   the extension. SLA custom field stays as extension uses it as well.
+   However, dependency on the extension is not mandatory and there is
+   no default config for it. Read tutorial for administrators for
+   more info.
+
+   The following scrip actions and scrips that use them are deleted:
+
+        RTIR_SetDueBySLA
+        RTIR_SetDueCorrespond
+        RTIR_SetDueReopen
+        RTIR_SetDueToNow
+        RTIR_UnsetDue
+        RTIR_SetStartsByBizHours
+        RTIR_SetStartsToNow
+
+   The following config options are no longer valid:
+
+        $SLAModule
+        $SLA
+        $BusinessHours
+        $SLA_Response_InHours
+        $SLA_Response_OutOfHours
+        $SLA_Reopen_InHours
+        $SLA_Reopen_OutOfHours
+        SLA key in %RTIR_CustomFieldsDefaults
+
+8) New format strings in $RTIRSearchResultFormats: ListIncidents
+   and LookupTool.
 
 Upgrading from 2.4.x and earlier
 --------------------------------
@@ -117,8 +206,8 @@ Upgrading from 2.4.x and earlier
 
         find dir/ | xargs grep '_RTIR_'
 
-2) _RTIR_*_default options in the config has been merged together
-into RTIR_CustomFieldDefaults hash. Change site config accordingly.
+4) _RTIR_*_default options in the config has been merged together
+   into RTIR_CustomFieldDefaults hash. Change site config accordingly.
 
 Upgrading from 2.4.4 and earlier
 -------------------------

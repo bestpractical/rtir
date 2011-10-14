@@ -1,19 +1,17 @@
 === DOCS
 
-* UPGRADING-TO-3.0.0
-
-* walk through every change in etc/upgrade/2.9.0/content and
-  make sure documention for upgrading references everything
-
 * document how to switch over SLA extension, document Due
   rules for incidents
-
-* we delete a lot of scrip actions and a few scrip conditions.
-  Warn that ALL scrips that use these will be deleted.
 
 * Delete scrips' descriptions from tutorials we have.
 
 * Review tutorials in context of lifecycles.
+
+=== UPGRADING
+
+* replace '__CustomField.{State}__/TITLE:State' with __Status__
+  in saved searches
+** document it in upgrading?
 
 === BRINGING UP TO DATE
 
