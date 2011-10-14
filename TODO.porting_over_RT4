@@ -15,18 +15,6 @@
 
 * Review tutorials in context of lifecycles.
 
-=== FEATURES
-
-* Incident field on Create page is a mess, sometimes it's
-  available for input, sometimes it's not, IRs can have
-  several incidents, for Blocks it's required, for Invs
-  it's only one incident.
-
-  Let's make this field free! So it's always can be changed.
-
-  Also, config option that controls: if incident is mandatory
-  for queue and if it can be more than one incident per ticket.
-
 === BRINGING UP TO DATE
 
 * Some pages with forms need new nice layouts like in RT, reply

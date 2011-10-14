@@ -77,6 +77,8 @@ my %TYPE = (
 use Parse::BooleanLogic;
 my $ticket_sql_parser = Parse::BooleanLogic->new;
 
+RT->AddJavaScript('jquery.uncheckable-radio-0.1.js');
+
 =head1 FUNCTIONS
 
 =head2 OurQueue
@@ -327,16 +329,21 @@ is member of excluding abandoned incidents.
 
 =cut
 
+sub RelevantIncidentsQuery {
+    my $self = shift;
+    my $ticket = shift;
+
+    return "Queue = 'Incidents' AND HasMember = ". $ticket->id
+        ." AND Status != 'abandoned'"
+    ;
+}
+
 sub RelevantIncidents {
     my $self = shift;
     my $ticket = shift;
 
-    my $query = "Queue = 'Incidents'"
-        ." AND HasMember = " . $ticket->id
-        ." AND Status != 'abandoned'"
-    ;
     my $res = RT::Tickets->new( $ticket->CurrentUser );
-    $res->FromSQL( $query );
+    $res->FromSQL( $self->RelevantIncidentsQuery( $ticket, @_ ) );
     return $res;
 }
 

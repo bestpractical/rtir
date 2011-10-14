@@ -12,22 +12,24 @@ $Ticket => undef
 $Name   => 'AttachTickets'
 </%ARGS>
 <%INIT>
-return unless $Ticket;
+my @Ticket = grep defined, ref($Ticket) eq 'ARRAY'? @$Ticket : $Ticket;
+return unless @Ticket;
 
 my @parents;
-my $type = RT::IR::TicketType( Ticket => $Ticket );
-if ( $type eq 'Incident' ) {
-    push @parents, $Ticket->id;
-} else {
-    push @parents, map $_->id, @{ RT::IR->Incidents( $Ticket )->ItemsArrayRef || [] };
+foreach my $e ( @Ticket ) {
+    if ( RT::IR::TicketType( Ticket => $e ) eq 'Incident' ) {
+        push @parents, $e->id;
+    } else {
+        push @parents, map $_->id, @{ RT::IR->Incidents( $e )->ItemsArrayRef || [] };
+    }
 }
 return unless @parents;
 
-my $siblings = RT::Tickets->new( $Ticket->CurrentUser );
+my $siblings = RT::Tickets->new( $Ticket[0]->CurrentUser );
 $siblings->FromSQL( RT::IR->Query(
     Queue    => 'Incident Reports',
     MemberOf => \@parents,
-    Exclude  => $Ticket,
+    Exclude  => \@Ticket,
 ) );
 $siblings->_DoSearch;
 return unless $siblings->Count;

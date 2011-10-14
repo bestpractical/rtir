@@ -60,34 +60,18 @@
 <&| /Widgets/TitleBox, title => loc("Basics"), class=>'ticket-info-basics' &>
 <table width="100%" border="0">
 
-% if ( $Incident ) {
-  <tr class="incident">
-    <td class="label"><&|/l&>Incident</&>:</td>
-    <td class="value"><% $Incident %><input type="hidden" name="Incident" value="<% $Incident || '' %>" /></td>
-  </tr>
-% } elsif ( $SplitObj ) {
+% if ( $SplitObj ) {
   <tr class="split">
     <td class="label"><&|/l&>Split from</&>:</td>
     <td class="value"><% $SplitObj->id %></td>
   </tr>
-% if ( $parentvalue ) {
-  <tr class="incident">
-    <td class="label"><&|/l&>Will be linked to Incident(s)</&>:</td>
-    <td class="value"><% $parentvalue %></td>
-  </tr>
 % }
-% } else {
-  <tr class="incident">
-    <td class="label"><&|/l&>Incident</&>:</td>
-    <td class="value"><input type="text" name="Incident" size="16" maxsize="16" value="<% $Incident || '' %>" /></td>
-  </tr>
-  <tr>
-    <td class="label">&nbsp;</td>
-    <td class="comment">
-        (<&|/l&>Id of an Incident to link a new ticket to</&>. <% $Type eq 'Block'? '<strong>'.loc('Required').'</strong>': loc('Optional') |n %>.)
-    </td>
-  </tr>
-% }
+
+  <& /RTIR/Elements/SelectIncident,
+    Type         => $Type,
+    Default      => \@Incident,
+    SplitObj     => $SplitObj,
+  &>
 
   <& /Ticket/Elements/EditBasics,
     InTable => 1,
@@ -120,9 +104,9 @@
   <tr>
     <td class="label"><&|/l&>Constituency</&>:</td>
     <td class="value">
-% if ( !$Incident || RT->Config->Get('_RTIR_Constituency_Propagation') eq 'no' ) {
+% if ( !$Incident[0] || RT->Config->Get('_RTIR_Constituency_Propagation') eq 'no' ) {
 % my $default;
-% $default = $IncidentObj->FirstCustomFieldValue('Constituency') if $Incident;
+% $default = $IncidentObj[0]->FirstCustomFieldValue('Constituency') if $Incident[0];
 % $default ||= RT::IR::DefaultConstituency( $QueueObj );
 % $default ||= scalar RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'};
       <& /RTIR/Elements/EditRTIRField, 
@@ -132,8 +116,8 @@
 % } else {
 % #TODO: hacks, we need way to define CF value on Create, but don't allow user to change it
       <input type="hidden" class="hidden" name="<% $constituency_field %>-Magic" value="1" />
-      <input type="hidden" class="hidden" name="<% $constituency_field %>" value="<% $IncidentObj->FirstCustomFieldValue('Constituency') %>" />
-      <& /RTIR/Elements/ShowRTIRField, Ticket => $IncidentObj, Name => 'Constituency' &>
+      <input type="hidden" class="hidden" name="<% $constituency_field %>" value="<% $IncidentObj[0]->FirstCustomFieldValue('Constituency') %>" />
+      <& /RTIR/Elements/ShowRTIRField, Ticket => $IncidentObj[0], Name => 'Constituency' &>
 % }
     </td>
   </tr>
@@ -143,7 +127,7 @@
     %ARGS,
     TicketOnj => undef,
     QueueObj => $QueueObj,
-    DefaultsFrom => $SplitObj || $IncidentObj,
+    DefaultsFrom => $SplitObj || $IncidentObj[0],
   &>
   <& /Ticket/Elements/EditTransactionCustomFields,
     %ARGS, QueueObj => $QueueObj, InTable => 1,
@@ -214,8 +198,8 @@
 %   my $Transactions;
 %   if ($SplitObj) {
 %     $Transactions = $SplitObj->Transactions;
-%   } elsif ($IncidentObj) {
-%     $Transactions = $IncidentObj->Transactions;
+%   } elsif (@IncidentObj) {
+%     $Transactions = $IncidentObj[0]->Transactions;
 %   }
 %
 %   if ($Transactions) {
@@ -309,8 +293,8 @@
 &>
 </table></&>
 
-% if ( $Type eq "Investigation" && $IncidentObj ) {
-  <& /RTIR/Elements/AttachReports, Ticket => $IncidentObj &>
+% if ( $Type eq "Investigation" && @IncidentObj ) {
+  <& /RTIR/Elements/AttachReports, Ticket => \@IncidentObj &>
 % }
 
 </div>
@@ -350,47 +334,49 @@ $constituency_field =
     'Object-RT::Ticket--CustomField-' . $constituency_cf->id .'-Values'
         if $constituency_cf;
 
-my $IncidentObj;
-if ( $Incident ) {
-    $IncidentObj = RT::Ticket->new( $session{'CurrentUser'} );
-    $IncidentObj->Load( $Incident );
-    unless ( $IncidentObj->id ) {
-        push @results, loc("Couldn't load incident #[_1]", $Incident );
-        ($checks_failure, $IncidentObj, $Incident) = (1, undef, undef);
-    }
-    elsif ( $IncidentObj->QueueObj->Name ne 'Incidents' ) {
-        push @results, loc('Ticket #[_1] is not an Incident', $Incident );
-        ($checks_failure, $IncidentObj, $Incident) = (1, undef, undef);
-    }
-    elsif ( !$skip_create && $constituency_field 
-        && RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject'
-        && lc $ARGS{$constituency_field} ne lc $IncidentObj->FirstCustomFieldValue('Constituency') )
-    {
-        push @results, loc('Incident #[_1] has constituency [_2], choose the same value for a new ticket or use another Incident', $Incident, $IncidentObj->FirstCustomFieldValue('Constituency') );
-        ($checks_failure, $IncidentObj, $Incident) = (1, undef, undef);
-    }
-    else {
-        $Subject ||= $IncidentObj->Subject;
-    }
-}
-$Incident = $ARGS{'Incident'} = $IncidentObj->id if $IncidentObj;
-
 my $SplitObj;
 if ( $Split ) {
     $SplitObj = LoadTicket( $Split );
     $ARGS{'Split'} = $Split = $SplitObj->id;
+
+    @Incident = map $_->id, @{ RT::IR->Incidents( $SplitObj )->ItemsArrayRef || [] }
+        unless @Incident;
 }
 
-my $parentvalue = '';
-if ( $IncidentObj ) {
-    $parentvalue = $IncidentObj->Id;
-} elsif ( $SplitObj ) {
-    my $incidents = RT::IR->Incidents( $SplitObj );
-    while ( my $incident = $incidents->Next ) {
-        $parentvalue .= ' ' if $parentvalue;
-        $parentvalue .= $incident->Id;
+my @IncidentObj;
+foreach my $id ( grep $_, @Incident ) {
+    my $error = 1;
+
+    my $inc = RT::Ticket->new( $session{'CurrentUser'} );
+    $inc->Load( $id );
+    unless ( $inc->id ) {
+        push @results, loc("Couldn't load incident #[_1]", $id );
     }
+    elsif ( $inc->QueueObj->Name ne 'Incidents' ) {
+        push @results, loc('Ticket #[_1] is not an Incident', $id );
+    }
+    elsif ( !$skip_create && $constituency_field 
+        && RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject'
+        && lc $ARGS{$constituency_field} ne lc $inc->FirstCustomFieldValue('Constituency') )
+    {
+        push @results, loc('Incident #[_1] has constituency [_2], choose the same value for a new ticket or use another Incident', $id, $inc->FirstCustomFieldValue('Constituency') );
+    }
+    else {
+        push @IncidentObj, $inc;
+        $error = 0;
+    }
+    $checks_failure += $error;
 }
+@Incident = map $_->id, @IncidentObj;
+
+my $children_config = RT->Config->Get('RTIR_IncidentChildren')->{ $Type };
+
+if ( @Incident > 1 && !$children_config->{'Multiple'} ) {
+    push @{ $m->{'request_args'} }, Incident => $Incident[-1];
+    @Incident = ($Incident[-1]);
+}
+
+$Subject ||= $IncidentObj[0]->Subject if @IncidentObj;
 
 push @results, $m->comp( 'SELF:ProcessAttachments', %ARGS );
 
@@ -412,7 +398,8 @@ unless ( $skip_create ) {
     if ( $Type eq 'Investigation' && !$ARGS{'Requestors'} ) {
         push @results, loc( "You must enter a correspondent" );
         $checks_failure = 1;
-    } elsif ( $Type eq 'Block' and not $IncidentObj ) {
+    }
+    if ( $children_config->{'Required'} && !@IncidentObj ) {
         push @results, loc( "You must enter an Incident ID" );
         $checks_failure = 1;
     }
@@ -450,7 +437,7 @@ $m->callback(
 );
 
 unless ( $skip_create || $checks_failure ) {
-    $ARGS{'new-MemberOf'} = $parentvalue if $parentvalue;
+    $ARGS{'new-MemberOf'} = join ', ', @Incident;
     $m->callback(CallbackName => 'BeforeDisplay', Ticket => $SplitObj, ARGSRef => \%ARGS);
     push @{ $session{'Actions'}{''} ||= [] }, @results;
     return $m->comp( 'Display.html', %ARGS, SkipNotification => \@SkipNotification );
@@ -485,8 +472,8 @@ $Queue            => undef
 $Subject          => undef
 $QuoteTransaction => undef
 
-# Parent Incident
-$Incident         => undef
+# Parent Incident(s)
+@Incident         => ()
 
 $Split            => undef
 </%ARGS>

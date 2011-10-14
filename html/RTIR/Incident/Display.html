@@ -144,7 +144,8 @@ my $DoLinks = sub {
 
     # Blocks or Incedent Reports can have multiple incidents
     my $Type = RT::IR::TicketType( Ticket => $child );
-    unless( $Type eq 'Block' || $Type eq 'Report' ) {
+    my $config = RT->Config->Get('RTIR_IncidentChildren')->{$Type};
+    unless( $config->{'Multiple'} ) {
         my $incidents = RT::IR->Incidents( $child, Exclude => $parent );
         while ( my $incident = $incidents->Next ) {
             $deleted_links = 1;

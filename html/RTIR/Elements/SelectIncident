@@ -1,0 +1,65 @@
+<tr class="incident">
+  <td class="label"><&|/l&>Incident</&>:</td>
+  <td class="value">
+% if ( @potential ) {
+    <& /RTIR/Search/Elements/ShowResults,
+        Query         => $query,
+        Rows          => 0,
+        Format        => $format,
+        DisplayFormat => $dformat,
+        AllowSorting  => 0,
+        ShowHeader    => 0,
+    &>
+% }
+% if ( $hide ) {
+    <input type="hidden" name="<% $Name %>" value="<% $potential[0] %>" />
+% }
+    <input type="text" name="<% $Name %>" size="16" maxsize="16" value="" />
+% if ( $config->{'Multiple'} || @potential ) {
+    <input type="submit" name="<% "More$Name" %>" value="<% $config->{'Multiple'}? loc('More') : loc('Other') %>" class="button" />
+% }
+
+% if ( !$config->{'Required'} && $dformat =~ /RadioButton/ ) {
+<script type="text/javascript">
+//<![CDATA[
+jQuery(function(){ jQuery('input[type="radio"][name="<% $Name %>"]').uncheckable() });
+//]]>
+</script>
+% }
+  </td>
+</tr>
+<tr>
+  <td class="label">&nbsp;</td>
+  <td class="comment">
+      (<&|/l&>Id of an Incident to link a new ticket to</&>.
+      <% $config->{'Required'}? '<strong>'.loc('Required').'</strong>': loc('Optional') |n %>.)
+  </td>
+</tr>
+<%ARGS>
+$Type
+$Name     => 'Incident'
+$SplitObj => undef
+@Default  => ()
+</%ARGS>
+<%INIT>
+my @potential = @Default;
+if ( $SplitObj ) {
+    push @potential, map $_->id, @{ RT::IR->Incidents( $SplitObj )->ItemsArrayRef || [] };
+}
+
+my $config = RT->Config->Get('RTIR_IncidentChildren')->{ $Type };
+
+my $query = RT::IR->Query(
+    Queue => 'Incidents',
+    And => join ' OR ', map "id = $_", @potential
+);
+my $format = RT->Config->Get('RTIRSearchResultFormats')->{'LinkIncident'};
+my ($dformat, $hide);
+if ( $config->{'Multiple'} ) {
+    $dformat = "'__CheckBox.{$Name}__', $format";
+} elsif ( @potential > 1 || !$config->{'Required'} ) {
+    $dformat = "'__RadioButton.{$Name}__', $format";
+} else {
+    ($dformat, $hide) = ($format, 1);
+}
+</%INIT>
