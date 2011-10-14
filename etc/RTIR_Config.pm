@@ -558,6 +558,8 @@ When requestor replies on the block in pending state RTIR
 changes state, you can set regular expresion so state would
 be changed only when content matches the regexp.
 
+See also L<RT::Action::RTIR_SetBlockStatus/DESCRIPTION>.
+
 =cut
 
 Set($RTIR_BlockAproveActionRegexp, undef);

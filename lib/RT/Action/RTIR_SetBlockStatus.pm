@@ -50,9 +50,30 @@ use warnings;
 package RT::Action::RTIR_SetBlockStatus;
 use base 'RT::Action::RTIR';
 
+=head1 NAME
+
+RT::Action::RTIR_SetBlockStatus - sets status of the block acording to a few rules
+
+=head1 DESCRIPTION
+
+If transaction is inbound and status is pending then
+change it to corresponding not pending status. This
+rule can be protected with C<$RTIR_BlockAproveActionRegexp>
+option. Content of the transaction should match the regexp
+if it's defined. Statuses are hardcoded and can not be
+changed or this will not work properly.
+
+If block is in an inactive status (by default 'removed')
+then status changed to first possible active status
+for blocks' lifecycle (by default 'active').
+
+In all other cases status left unchanged.
+
+=head1
+
 =head2 Commit
 
-Set the state according to the status.
+Applies rules described above in L</DESCRIPTION> section.
 
 =cut
 
@@ -79,7 +100,7 @@ sub Commit {
             $new = 'removed';
         }
     }
-    
+
     if ( !$new && $t->QueueObj->Lifecycle->IsInactive( $current ) ) {
         $new = $t->FirstActiveStatus;
     }

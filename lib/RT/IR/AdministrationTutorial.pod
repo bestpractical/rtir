@@ -139,6 +139,18 @@ Applies to the Incident Reports queue.
 On Ticket creation, set the HowReported Custom Field to a default
 value of Email if it wasn't otherwise specified.
 
+=item On Correspond Change Status of the Block
+
+On replies changes status of blocks according to a few rules
+that are described in L<RT::Action::RTIR_SetBlockStatus/DESCRIPTION>.
+
+RT's default L<RT::Action::AutoOpen> is disabled for blocks to
+avoid unwanted changes of status from 'pending activation'
+to 'active'.
+
+As well, take a look at C<$RTIR_BlockAproveActionRegexp> option
+in the config.
+
 =item ResolveAllChildren
 
 Applies to the IncidentsQueue.
