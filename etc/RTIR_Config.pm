@@ -228,6 +228,32 @@ Set(
 
 =item C<%RTIR_IncidentChildren>
 
+Option controls relations between an incident and
+reports, investigations and blocks. Each entry
+of the hash is a pair where key is type of child
+and value is hash with Multiple and Required keys
+and boolean values, for example:
+
+    Set(%RTIR_IncidentChildren,
+        Report => {
+            Multiple => 1,
+            Required => 0,
+        },
+        ...
+    );
+
+So each entry defines if ticket of particular type
+can be linked to Multiple incidents or only one.
+Also, whether it's required to link ticket to
+an Incident on creation in UI or it's optional.
+
+By default IRs can be linked to many incident and
+it's not required to link them right away.
+Investigations can be linked only to one incident
+and it can be done later. Blocks can not be created
+without incident, however can be linked to many of
+them.
+
 =cut
 
 Set(%RTIR_IncidentChildren,
