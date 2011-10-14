@@ -240,7 +240,7 @@ Set(%RTIR_IncidentChildren,
         Required => 0,
     },
     Block => {
-        Multiple => 0,
+        Multiple => 1,
         Required => 1,
     },
 );
