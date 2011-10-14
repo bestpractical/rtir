@@ -228,16 +228,8 @@ if ( $ARGS{'BulkLink'} || $Child ) {
 }
 
 # If we deleted any links, check if what we deleted from still has children
-if ( $deleted_links ) {
-    # XXX: Can we ever get here?
-    my $children = RT::Tickets->new( $session{'CurrentUser'} );
-    $children->LimitQueue( VALUE => 'Incident Reports' );
-    $children->LimitQueue( VALUE => 'Investigations' );
-    $children->LimitQueue( VALUE => 'Blocks' );
-    $children->LimitMemberOf( $id );
-    unless ( $children->Count ) {
-        push @results, loc("WARNING: Incident [_1] has no children.", $id);
-    }
+if ( $deleted_links && !RT::IR->IncidentChildren( $TicketObj )->Count ) {
+    push @results, loc("WARNING: Incident [_1] has no children.", $id);
 }
 
 if ( $ARGS{'BulkArticles'} && @SelectedTickets ) {
