@@ -6,6 +6,18 @@ You may disable the Blocks by putting the following into your RTIR config:
 
     Set($RTIR_DisableBlocksQueue, 1);
 
+=head2 Status
+
+The various states an incident, IR, investigation, or block can be in, such as
+'open', 'stalled', 'abandoned', etc.
+
+This field represent custom status of tickets and values are different in
+different queues. Controlled with C<%Lifecycles> option in the config.
+Critical field for functionality.
+
+Read description in the F<RTIR_Config.pm> and description of L</Scrips>
+below.
+
 =head2 Custom Fields
 
 When RTIR is installed several custom fields are created and applied
