@@ -329,16 +329,21 @@ is member of excluding abandoned incidents.
 
 =cut
 
+sub RelevantIncidentsQuery {
+    my $self = shift;
+    my $ticket = shift;
+
+    return "Queue = 'Incidents' AND HasMember = ". $ticket->id
+        ." AND Status != 'abandoned'"
+    ;
+}
+
 sub RelevantIncidents {
     my $self = shift;
     my $ticket = shift;
 
-    my $query = "Queue = 'Incidents'"
-        ." AND HasMember = " . $ticket->id
-        ." AND Status != 'abandoned'"
-    ;
     my $res = RT::Tickets->new( $ticket->CurrentUser );
-    $res->FromSQL( $query );
+    $res->FromSQL( $self->RelevantIncidentsQuery( $ticket, @_ ) );
     return $res;
 }
 
