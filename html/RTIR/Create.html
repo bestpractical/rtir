@@ -398,7 +398,8 @@ unless ( $skip_create ) {
     if ( $Type eq 'Investigation' && !$ARGS{'Requestors'} ) {
         push @results, loc( "You must enter a correspondent" );
         $checks_failure = 1;
-    } elsif ( $children_config->{'Required'} && !@IncidentObj ) {
+    }
+    if ( $children_config->{'Required'} && !@IncidentObj ) {
         push @results, loc( "You must enter an Incident ID" );
         $checks_failure = 1;
     }
