@@ -358,6 +358,11 @@ Set($RTIRSearchResultFormats, {
           '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
           __OwnerName__, __CreatedRelative__},
 
+    ListIncidents =>
+        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
+          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+          __Status__},
+
     RejectReports =>
         q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',
           '<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>/TITLE:Subject',
