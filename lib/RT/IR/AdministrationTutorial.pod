@@ -337,4 +337,19 @@ A missing passphrase occurs when GPG Agent is unresponsive or the passphrase
 was mis-set in RTIR_SiteConfig.pm. Note that you can use either GPG Agent or
 set the passphrase in the site config, you need not do both.
 
+=head2 Service Level Agreements (SLA)
+
+RTIR used to have simple Service Level Agreements (SLA) implementation.
+L<RT::Extension::SLA> was prototyped on it, but heavily improved. In RTIR 3.0
+we got rid of SLA implementation in the core of RTIR that was in conflict
+with the extension.
+
+One thing still is in RTIR. Due date of Incidents is synchronized with
+the most due active children. This is done with scrips described above
+and can be disabled if really required.
+
+As due date of incidents is controlled by RTIR's scrips then using extension
+for Incidents queue is wrong and result in race. If you don't set default
+service level for the queue in the extension's config then you are safe.
+
 =cut

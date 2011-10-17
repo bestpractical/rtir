@@ -657,8 +657,7 @@ Set($RunWhoisRequestByDefault, 0);
 
 =head1 Service Level Agreements (SLA)
 
-RTIR comes with very basic SLA implementation. Depending on the following
-options Due date of tickets is maintained.
+Read L<RT::IR::AdministrationTutorial>.
 
 =cut
 
