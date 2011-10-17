@@ -7,12 +7,6 @@
 
 * Review tutorials in context of lifecycles.
 
-=== UPGRADING
-
-* replace '__CustomField.{State}__/TITLE:State' with __Status__
-  in saved searches
-** document it in upgrading?
-
 === BRINGING UP TO DATE
 
 * Some pages with forms need new nice layouts like in RT, reply

@@ -383,6 +383,7 @@ our @Final = (
         }
     },
 
+    # fix description of a few scrips, it doesn't match meaning
     sub {
         my $scrips = RT::Scrips->new( RT->SystemUser );
         my $alias = $scrips->Join(
@@ -401,6 +402,22 @@ our @Final = (
 
             my ($status, $msg) = $scrip->SetName( $value );
             $RT::Logger->error("Couldn't set scrip's name: $msg")
+                unless $status;
+        }
+    },
+
+    # replace State CF in format strings of saved searches with status
+    sub {
+        my $searches = RT::Attributes->new( RT->SystemUser );
+        $searches->Limit(FIELD => 'Name', VALUE => 'SavedSearch');
+        while ( my $search = $searches->Next ) {
+            my $props = $search->Content;
+            next unless $props && ref($props) eq 'HASH' && $props->{'Format'};
+
+            next unless $props->{'Format'} =~ s{'__CustomField\.{State}__(?:/TITLE:State)?'}{__Status__}g;
+
+            my ($status, $msg) = $search->SetContent( $props );
+            RT->Logger->error("Couldn't update saved search: $msg")
                 unless $status;
         }
     },

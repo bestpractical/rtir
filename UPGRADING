@@ -91,6 +91,10 @@ Upgrading from 2.6.x and earlier
    had '__CustomField.{State}__' that is replaced with __Status__.
    You should update config if you have customizations.
 
+   Format strings of all saved searches are updated with
+   with above change, but regular expression is trvial and
+   may skip some edge cases.
+
    Read more about lifecycles in RT's and RTIR's configs.
 
 2) To keep history intact upgrade script turns changes of
