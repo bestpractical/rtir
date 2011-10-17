@@ -29,8 +29,3 @@ We walk the web, but there is no single functionality test for:
     .../Search/Reporting.html
     .../Reporting/index.html
     .../Split.html
-
-=== ABANDONED FEATURES
-
-* Split incident: select which IRs, Invs, Blocks go where
-
