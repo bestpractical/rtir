@@ -1,5 +1,18 @@
 # Initial data for a fresh RTIR Installation.
 
+@Initial = (
+    sub {
+        # put fake lifecycles for initiialization to succed
+        my $lc = RT->Config->Get('Lifecycles') || {};
+        foreach my $name (qw(incidents incident_reports investigations blocks)) {
+            $lc->{ $name } ||= $lc->{'default'} || {};
+        }
+        RT->Config->Set(Lifecycles => %$lc);
+        RT::Lifecycle->FillCache;
+        return 1;
+    },
+);
+
 @Queues = (
     {
         Name              => 'Incidents',
