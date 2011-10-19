@@ -83,7 +83,7 @@ ul.userlist li:last-child::after{
 
 @media (max-width: 950px) {
     #ticket-create-incident .ticket-create-basics,
-    #ticket-create-investigation .ticket-create-basics
+    #ticket-create-investigation .ticket-create-basics,
     #ticket-create-incident .ticket-create-details,
     #ticket-create-investigation .ticket-create-details
     {
