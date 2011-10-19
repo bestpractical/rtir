@@ -8,11 +8,6 @@
   page comes first to mind
 ** go over most common pages and look at layouts
 
-=== CLEANUP && REFACTORING
-
-* stop abusing $session{'tickets'} so we can get working
-  First, Prev, Next and Last links in RTIR.
-
 === FIXES
 
 * html/RTIR/Reporting/Report.html references SLA
