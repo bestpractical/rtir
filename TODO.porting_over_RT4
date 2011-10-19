@@ -8,10 +8,6 @@
   page comes first to mind
 ** go over most common pages and look at layouts
 
-=== FIXES
-
-* html/RTIR/Reporting/Report.html references SLA
-
 === TESTS
 
 We walk the web, but there is no single functionality test for:

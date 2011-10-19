@@ -71,43 +71,6 @@ foreach my $incident_type( @functions ) {
         Body  => \@table,
     );
 
-    foreach my $service_level( @sla_levels ) {
-        my $class_tix = RT::Tickets->new( $session{'CurrentUser'} );
-        $class_tix->FromSQL(
-            "Queue = 'Incident Reports'"
-            ." AND Created > '$start' AND Created < '$end'"
-            ." AND CustomField.{SLA} = '$service_level'"
-        );
-        my $mytix = $filter_by_incident_field->(
-            $filter_by_incident_field->(
-                $class_tix,
-                'Constituency',
-                $Constituency
-            ),
-            'Function',
-            $incident_type,
-        );
-
-        my $myoutstanding = $filter_by_incident_field->(
-            $filter_by_incident_field->(
-                $outstanding,
-                'Constituency',
-                $Constituency
-            ),
-            'Function',
-            $incident_type,
-        ); 
-        $m->comp("SELF:Heading$ReportAs",
-            Level => 3,
-            Text  => $service_level,
-        );
-        $m->comp( 'Elements/SLASummary',
-            ReportAs => $ReportAs,
-            class_tix => $mytix, outstanding => $myoutstanding, 
-            service_level => $service_level,
-            start => $rtstart, end => $rtend,
-        );
-    }
 }
 
 $m->abort if $TextReport || $SpreadsheetReport;
@@ -174,17 +137,6 @@ my @classifications;
         push @classifications, $value->Name;
     }
     push @classifications, 'Unclassified';
-}
-
-# of new reports created during the period broken down by SLA level
-my @sla_levels;
-{
-    my $cf = RT::CustomField->new( $session{'CurrentUser'} );
-    $cf->LoadByNameAndQueue( Queue => 'Incidents', Name => 'SLA' );
-    my $values = $cf->Values;
-    while ( my $value = $values->Next ) {
-        push @sla_levels, $value->Name;
-    }
 }
 
 # of new reports outstanding at start of the period
