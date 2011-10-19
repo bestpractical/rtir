@@ -293,7 +293,7 @@ and linking them to this IR by clicking the "[New]" button next to the
 =head4 Linking Incidents to IRs, Investigations, etc.
 
 You may link Incidents with existing Incident Responses, Investigations,
-Blocks, and RTFM articles. On the Incident display page there are sections for
+Blocks, and Articles. On the Incident display page there are sections for
 each of these, each with a C<Link> button and the list of already-linked
 tickets. Clicking on C<Link> lets you link one or more tickets of that type to
 the Incident.

@@ -8,7 +8,7 @@ use RT::IR::Test tests => 20;
 RT::Test->started_ok;
 my $agent = default_agent();
 
-my $ir_id  = $agent->create_ir( {Subject => "looking for rtfm"});
+my $ir_id  = $agent->create_ir( {Subject => "looking for articles"});
 
 $agent->display_ticket( $ir_id);
 
@@ -31,7 +31,7 @@ $agent->submit();
 
 is($agent->status, 200, "attempt to create succeeded");
 
-like($agent->content, qr/Incident Report #\d+: looking for rtfm/, "back on IR page");
+like($agent->content, qr/Incident Report #\d+: looking for articles/, "back on IR page");
 
 $agent->follow_link_ok({text => $article_name}, "back to article");
 like($agent->content, qr/this is a summary/, "found the summary of the article");

@@ -620,7 +620,7 @@ for my $cf (@CustomFields) {
     my $class = RT::Class->new($CurrentUser);
     $class->Load('Templates');
     unless ($class->Id) {
-        $RT::Logger->info("Creating 'Templates' RTFM class.");
+        $RT::Logger->info("Creating 'Templates' Article class.");
         my ($id, $msg) = $class->Create(
             Name => 'Templates',
             Description => 'Response templates',
@@ -643,7 +643,7 @@ for my $cf (@CustomFields) {
     my $response = RT::CustomField->new($CurrentUser);
     $response->Load('Response');
     unless ($response->Id and $response->LookupType eq RT::Article->CustomFieldLookupType) {
-        $RT::Logger->info("Creating 'Response' RTFM custom field.");
+        $RT::Logger->info("Creating 'Response' Article custom field.");
         my ($id, $msg) = $response->Create(
             Name => 'Response',
             Type => 'Text',

@@ -12,7 +12,7 @@ my $inv_id  = $agent->create_investigation( {Subject => "i want to quick-resolve
 
 $agent->display_ticket( $inv_id);
 
-$agent->follow_link_ok({text => "Quick Resolve"}, "followed 'RTFM' overview link");
+$agent->follow_link_ok({text => "Quick Resolve"}, "followed 'Quick Resolve' link");
 like($agent->content, qr/Status changed from \S*open\S* to \S*resolved\S*/, "it got resolved");
 
 $inv_id = $agent->create_investigation( {Subject => "resolve me slower"});
