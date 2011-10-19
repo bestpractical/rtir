@@ -17,10 +17,6 @@ my ($lib_path) = $INC{'RT.pm'} =~ /^(.*)[\\\/]/;
 my $local_lib_path = "$RT::LocalPath/lib";
 unshift @INC, $local_lib_path, $lib_path;
 
-# XXX: we can not depend on RT::FM as new plugin system
-# is not ready for that
-#requires('RT::FM');
-
 # RTIR needs this version of SB because of cud-from-select
 requires('DBIx::SearchBuilder', 1.61);
 
