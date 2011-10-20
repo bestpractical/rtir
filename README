@@ -114,19 +114,19 @@ Documentation for RTIR
         Instructions for users upgrading from 1.0 or 2.0
 
    * perldoc lib/RT/IR/DocIndex.pod 
-        ( also at http://svn.bestpractical.com/cgi-bin/index.cgi/bps/view/rtir/branches/2.3-EXPERIMENTAL/lib/RT/IR/DocIndex.pod )
+        ( also at https://github.com/bestpractical/rtir/blob/2.9-trunk/lib/RT/IR/DocIndex.pod )
         Links to documentation specific to RTIR
 
    * perldoc lib/RT/IR/Tutorial.pod 
-        ( also at http://svn.bestpractical.com/cgi-bin/index.cgi/bps/view/rtir/branches/2.3-EXPERIMENTAL/lib/RT/IR/Tutorial.pod )
+        ( also at https://github.com/bestpractical/rtir/blob/2.9-trunk/lib/RT/IR/Tutorial.pod )
         Extended information about ticket merging
 
    * perldoc lib/RT/IR/Constituencies.pod 
-        ( also at http://svn.bestpractical.com/cgi-bin/index.cgi/bps/view/rtir/branches/2.3-EXPERIMENTAL/lib/RT/IR/Constituencies.pod )
+        ( also at https://github.com/bestpractical/rtir/blob/2.9-trunk/lib/RT/IR/Constituencies.pod )
         Information about setting up RTIR with multiple user constituencies
 
    * perldoc lib/RT/IR/AdministrationTutorial.pod 
-        ( also at http://svn.bestpractical.com/cgi-bin/index.cgi/bps/view/rtir/branches/2.3-EXPERIMENTAL/lib/RT/IR/AdministrationTutorial.pod )
+        ( also at https://github.com/bestpractical/rtir/blob/2.9-trunk/lib/RT/IR/AdministrationTutorial.pod )
         Information about setting up RTIR for Administrators
         
    * install extension RT-OnlineDocs to give SuperUsers access to the RT::IR and RT API
@@ -134,11 +134,11 @@ Documentation for RTIR
      mentioned above.
 
    * perldoc RT::Extension::TicketAging
-        (also at http://svn.bestpractical.com/cgi-bin/index.cgi/bps/view/RT-Extension-TicketAging/lib/RT/Extension/TicketAging.pm )
+        (also at https://metacpan.org/module/RT::Extension::TicketAging )
         Information about configuring and using RT and RTIR Ticket Aging.
 
    * perldoc RT::Extension::TicketLocking
-        (also at http://svn.bestpractical.com/cgi-bin/index.cgi/bps/view/RT-Extension-TicketLocking/lib/RT/Extension/TicketLocking.pm )
+        (also at https://metacpan.org/module/RT::Extension::TicketLocking )
         Information about configuring and using RT and RTIR Ticket Locking.
 
    * etc/RTIR_Config.pm  
