@@ -51,11 +51,15 @@ Installation instructions:
 
 8) Stop and start your web server.
 
-9) If you want to enable ticket/incident aging, install RT::Extension::TicketAging
-   following the installation instructions in that extension's INSTALL and README 
-   files.
+9) To maintain Due date of Reports, Investigations and Blocks install
+   RT::Extension::SLA following the installation instructions in that
+   extension's README files.
 
-10) If you want to enable ticket locking, install RT::Extension::TicketLocking
+10) If you want to enable ticket/incident aging, install RT::Extension::TicketAging
+    following the installation instructions in that extension's INSTALL and README
+    files.
+
+11) If you want to enable ticket locking, install RT::Extension::TicketLocking
     following the installation instructions in that extension's README file.
 
 
