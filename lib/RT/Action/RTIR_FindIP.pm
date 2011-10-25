@@ -79,7 +79,8 @@ sub Commit {
     my $content = $attach->Content || '';
     while ( $content =~ m/$IP_re/go ) {
         if ( $1 && defined $2 ) { # IPv6/mask
-            my $range = (Net::CIDR::cidr2range( "$1/$2" ))[0] or next;
+            my $range = $2 == 128 ? $1 : (Net::CIDR::cidr2range( "$1/$2" ))[0]
+                or next;
             $spots_left -= $self->AddIP(
                 IP => $range, CustomField => $cf, Skip => \%existing
             );
