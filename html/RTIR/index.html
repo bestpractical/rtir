@@ -39,6 +39,7 @@ unless ( exists $session{'my_rtir_portlets'} ) {
 my $portlets = $session{'my_rtir_portlets'};
 
 use Regexp::Common qw(RE_net_IPv4);
+use Regexp::IPv6 qw($IPv6_re);
 
 if ( $ARGS{'q'} ) {
     my $query = $ARGS{'q'};
@@ -68,7 +69,7 @@ if ( $ARGS{'q'} ) {
         }
         $query ||= 'id = 0';
     }
-    elsif ( $query =~ /^\s*($RE{net}{IPv4})\s*$/o && RT::IR->CustomFields('IP') ) {
+    elsif ( $query =~ /^\s*($RE{net}{IPv4}|$IPv6_re)\s*$/o && RT::IR->CustomFields('IP') ) {
 
         $query = join ' OR ', map "Queue = '$_'", ('Incidents', 'Incident Reports', 'Investigations', 'Blocks');
         $query = "($query) AND 'CustomField.{IP}' = '$1'";

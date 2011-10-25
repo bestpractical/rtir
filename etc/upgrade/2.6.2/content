@@ -1,0 +1,21 @@
+use Regexp::Common qw(net);
+use Regexp::Common::net::CIDR();
+use Regexp::IPv6 qw($IPv6_re);
+my $ip_pattern = qr{(?#IP/IP-IP/CIDR)^(?:|\s*$RE{net}{IPv4}(?:\s*-\s*$RE{net}{IPv4})?\s*|$RE{net}{CIDR}{IPv4}|$IPv6_re(?:\/\d+)?|$IPv6_re-$IPv6_re)$};
+
+@Final = (
+    sub {
+        my $cf = RT::CustomField->new( $RT::SystemUser );
+        $cf->Load('IP');
+        unless ( $cf->id ) {
+            $RT::Logger->error("Couldn't load IP custom field");
+            return;
+        }
+
+        my ($status, $msg) = $cf->SetPattern("$ip_pattern");
+        unless ( $status ) {
+            $RT::Logger->error("Couldn't change pattern: $msg");
+        }
+        return $status;
+    },
+);
