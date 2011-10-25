@@ -264,7 +264,8 @@ diag "check that IPs in messages don't add duplicates" if $ENV{'TEST_VERBOSE'};
     my %has;
     $has{ $_->Content }++ foreach @{ $values->ItemsArrayRef };
     is(scalar values %has, 1, "one IP were added");
-    ok(!grep( $_ != 1, values %has ), "no duplicated values");
+    ok(!grep( $_ != 1, values %has ), "no duplicated values")
+        or diag "duplicates: ". join ',', grep $has{$_}>1, keys %has;
     ok($has{ $valid{ 'abcd::192.168.1.1' } }, "IP is there")
             or diag "but has values ". join ", ", keys %has;
 }
