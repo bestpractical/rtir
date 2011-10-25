@@ -7,14 +7,36 @@ use base qw(RT::Action::RTIR);
 
 use Regexp::Common qw(net);
 use Regexp::Common::net::CIDR ();
-use Regexp::IPv6 qw($IPv6_re);
+use Regexp::IPv6 qw();
 use Net::CIDR ();
 
 my $IPv4_mask_re = qr{3[0-2]|[1-2]?[0-9]};
+my $IPv4_prefix_check_re = qr{(?<![0-9.])};
+my $IPv4_sufix_check_re = qr{(?!\.?[0-9])};
+my $IPv4_CIDR_re = qr{
+    $IPv4_prefix_check_re
+    $RE{net}{CIDR}{IPv4}{-keep}
+    $IPv4_sufix_check_re
+}x;
+my $IPv4_re = qr[
+    $IPv4_prefix_check_re
+    (?!0\.0\.0\.0)
+    ($RE{net}{IPv4})
+    (?!/$IPv4_mask_re)
+    $IPv4_sufix_check_re
+]x;
+
 my $IPv6_mask_re = qr{12[0-8]|1[01][0-9]|[1-9]?[0-9]};
-my $IP4_re = qr[(?<![0-9.])(?!0\.0\.0\.0)($RE{net}{IPv4})(?!/$IPv4_mask_re)(?![0-9.])];
-my $IP6_re = qr[(?<![0-9a-fA-F:.])($IPv6_re)(?:/($IPv6_mask_re))?(?![0-9a-fA-F:.])];
-my $IP_re = qr{$IP6_re|$IP4_re|$RE{net}{CIDR}{IPv4}{-keep}};
+my $IPv6_prefix_check_re = qr{(?<![0-9a-fA-F:.])};
+my $IPv6_sufix_check_re = qr{(?!(?:\:{0,2}|\.)[0-9a-fA-F])};
+my $IPv6_re = qr[
+    $IPv6_prefix_check_re
+    ($Regexp::IPv6::IPv6_re)
+    (?:/($IPv6_mask_re))?
+    $IPv6_sufix_check_re
+]x;
+
+my $IP_re = qr{$IPv6_re|$IPv4_re|$IPv4_CIDR_re};
 
 =head2 Prepare
 
