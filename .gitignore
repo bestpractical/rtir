@@ -5,3 +5,4 @@ Makefile
 blib/
 pm_to_blib
 t/tmp/
+MYMETA.yml
