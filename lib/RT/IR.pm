@@ -249,10 +249,11 @@ sub Query {
 }
 
 use Regexp::Common qw(RE_net_IPv4);
+use Regexp::IPv6 qw($IPv6_re);
 our @SIMPLE_SEARCH_GUESS = (
     [ 11 => sub { return "rtirrequestor" if /\@/ } ],
     [ 12 => sub {
-        return "Rtirip" if /^\s*$RE{net}{IPv4}\s*$/o
+        return "Rtirip" if /^\s*(?:$RE{net}{IPv4}|$IPv6_re)\s*$/o
             && RT::IR->CustomFields('IP')
     } ],
 );
