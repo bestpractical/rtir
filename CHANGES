@@ -1,3 +1,35 @@
+CHANGES IN 3.0.0
+----------------
+
+* RTIR 3.0 is primarily port over RT 4.0 and
+  clean up release. More than 2500 lines of
+  code were deleted, replaced with RT's modern
+  solutions.
+
+* Switched over lifecycles that replaced four RTIR's
+  State custom fields with RT's Status field. Database
+  grows slower, performance improvement, much less
+  magic. It's now possible to add new statuses and
+  customize workflow.
+
+* Switched over RT's IP custom fields implementation
+  that brings in IPv6.
+
+* New %RTIR_IncidentChildren option in the config that
+  allows admins to control whether incident required
+  or not when child created and if child can be linked
+  to more than one incident.
+
+* Made Incident field on Create/Split pages more flexible.
+  Users allowed to change value, enter multiple incidents
+  when it's allowed by config, pick particular incidents
+  on split, additional incidents' info displayed.
+
+* RTIR's SLA implementation have been dropped in favor
+  of RT::Extension::SLA.
+
+* Numerouse bug fixes.
+
 CHANGES IN 2.6.1
 ----------------
 
