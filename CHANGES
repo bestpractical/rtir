@@ -36,15 +36,6 @@ CHANGES IN 2.6.1
 FEATURES
 ========
 
-* IPv6 support in IP custom field. Extraction from emails, ranges,
-  searches, everything that applies to IPv4 support.
-
-CHANGES IN 2.6.1
-----------------
-
-FEATURES
-========
-
 * allow local customization of research tools, see @RTIRResearchTools
   in the config
 * new Iframe research tool, see $RTIRIframeResearchToolConfig
