@@ -60,7 +60,7 @@
   </tr>
   <tr>
     <td class="label"><&|/l&>Contact Field</&>:</td>
-    <td class="value"><input type="text" name="field" value="<% $ARGS{'field'} %>" /></td>
+    <td class="value"><input type="text" name="field" value="<% $ARGS{'field'} || '' %>" /></td>
   </tr>
   <tr>
     <td class="label">
@@ -89,13 +89,13 @@
 <tr>
   <td class="label"><&|/l&>Template</&>:</td>
   <td class="value">
-    <& /Admin/Elements/SelectTemplate, Name => "Template", Default => $ARGS{'Template'}, Queue => $investigationq->Id &>
+    <& /Admin/Elements/SelectTemplate, Name => "Template", Default => $ARGS{'Template'} || 0, Queue => $investigationq->Id &>
   </td>
 </tr>
 <tr>
   <td class="label"><&|/l&>Argument</&>:</td>
   <td class="value">
-    <input type="text" name="TemplateArg" size="60" value="<% $ARGS{'TemplateArg'} %>" />
+    <input type="text" name="TemplateArg" size="60" value="<% $ARGS{'TemplateArg'} || '' %>" />
   </td>
 </tr>
 </table>
@@ -404,7 +404,7 @@ sub parse_csv {
 </%INIT>
 
 <%ARGS>
-$incidentid => undef
+$incidentid => 0
 $server => undef
 $loop => 'address'
 </%ARGS>
