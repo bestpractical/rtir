@@ -344,12 +344,11 @@ L<RT::Extension::SLA> was prototyped on it, but heavily improved. In RTIR 3.0
 we got rid of SLA implementation in the core of RTIR that was in conflict
 with the extension.
 
-One thing still is in RTIR. Due date of Incidents is synchronized with
-the most due active children. This is done with scrips described above
-and can be disabled if really required.
-
-As due date of incidents is controlled by RTIR's scrips then using extension
-for Incidents queue is wrong and result in race. If you don't set default
-service level for the queue in the extension's config then you are safe.
+If you install and configure L<RT::Extension::SLA> do not apply it to
+the Incidents Queue.  You will encounter a race condition between the
+extension and the RTIR Scrips that synchronize due dates between
+an Incident and its most due active child.  If you need to manage
+Incident due dates using the SLA extension, you can disable the RTIR
+Scrips that manage Due dates on the Incidents Queue.
 
 =cut
