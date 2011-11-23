@@ -22,8 +22,6 @@ requires('DBIx::SearchBuilder', 1.61);
 
 # work hours
 requires('Business::Hours');
-# service level agreement
-requires('Business::SLA');
 # whois tool
 requires('Net::Whois::RIPE');
 # IP searching
