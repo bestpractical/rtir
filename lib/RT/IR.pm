@@ -50,7 +50,7 @@ use warnings;
 
 package RT::IR;
 
-our $VERSION = '2.6.1';
+our $VERSION = '3.0.0rc1';
 
 
 use Business::Hours;
