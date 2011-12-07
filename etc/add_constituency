@@ -205,7 +205,7 @@ sub prompt_yN {
 
 sub get_cf {
     my $cf = RT::CustomField->new( $RT::SystemUser );
-    $cf->Load( "_RTIR_Constituency" );
+    $cf->Load( "Constituency" );
     unless ( $cf->id ) {
         die "Couldn't load the constituency custom field";
     }
