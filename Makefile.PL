@@ -20,10 +20,6 @@ unshift @INC, $local_lib_path, $lib_path;
 # RTIR needs this version of SB because of cud-from-select
 requires('DBIx::SearchBuilder', 1.61);
 
-# work hours
-requires('Business::Hours');
-# service level agreement
-requires('Business::SLA');
 # whois tool
 requires('Net::Whois::RIPE');
 # IP searching

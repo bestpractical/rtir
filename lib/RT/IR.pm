@@ -53,8 +53,6 @@ package RT::IR;
 our $VERSION = '3.0.0rc1';
 
 
-use Business::Hours;
-use Business::SLA;
 use Scalar::Util qw(blessed);
 
 

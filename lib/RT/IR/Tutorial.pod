@@ -9,8 +9,8 @@ Reports, Incidents, Investigations and Blocks.
 
 Incident Reports is where new reports appear. When a user sends email to the
 address you set up, RTIR automatically creates an Incident Report (IR), and
-sets its due date according to your organization's SLA rules. New Incident
-Reports appear on the RTIR main page, ordered by due date.
+sets its due date according to SLA rules configured by your Administrator.
+New Incident Reports appear on the RTIR main page, ordered by due date.
 
 =head3 Incidents
 
