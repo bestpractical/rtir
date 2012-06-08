@@ -49,7 +49,7 @@ if ( $ARGS{'Forward'} ) {
 
     MaybeRedirectForResults(
         Actions   => \@results,
-        Arguments => { id => $Ticket->id, QuoteTransaction => $QuoteTransaction },
+        Arguments => { id => $TicketObj->id, QuoteTransaction => $QuoteTransaction },
     );
 }
 
