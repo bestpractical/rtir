@@ -14,7 +14,7 @@
   <td class="value"><% $TicketObj->Subject %></td>
 </tr>
 
-% foreach my $field (To Cc Bcc) {
+% foreach my $field (qw(To Cc Bcc)) {
 <tr class="<% lc $field %>">
   <td class="label"><% loc($field) %>:</td>
   <td class="value"><& /Elements/EmailInput,
