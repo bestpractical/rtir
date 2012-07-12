@@ -544,10 +544,18 @@ wrap 'RT::ObjectCustomFieldValue::Content',
             my $eIP = sprintf "%d.%d.%d.%d", split /\./, $1;
             $$val .= '-'. $eIP unless $$val eq $eIP;
         } elsif ( $$val =~ /^\s*($IPv6_re)\s*$/o ) {
+            my @values = ($$val);
+
             my $large_content = $obj->__Value('LargeContent');
-            return if !$large_content || $large_content eq $$val
-                || $large_content !~ /^\s*($IPv6_re)\s*$/o;
-            $$val .= '-'. $1;
+            push @values, $large_content if $large_content && $large_content ne $$val
+                && $large_content =~ /^\s*($IPv6_re)\s*$/o;
+
+            foreach my $v (@values) {
+                $v = lc $v;
+                $v =~ s/(:|^)0+(?=[a-f0-9]+(:|$))/$1/g;
+                $v =~ s/(:|^)(0(:0){$_})(:|$)/::/ and last foreach reverse 1..7;
+            }
+            $$val = join "-", @values;
         }
         return;
     };
