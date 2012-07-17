@@ -1,4 +1,4 @@
-CHANGES IN 2.6.1
+CHANGES IN 2.6.2
 ----------------
 
 FEATURES
@@ -6,6 +6,12 @@ FEATURES
 
 * IPv6 support in IP custom field. Extraction from emails, ranges,
   searches, everything that applies to IPv4 support.
+
+FIXES
+=====
+
+* add_constituency was still using _RTIR_ prefix
+* fix CF name in Action::RTIR_SetHowReported
 
 CHANGES IN 2.6.1
 ----------------
