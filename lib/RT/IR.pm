@@ -50,7 +50,7 @@ use 5.008003;
 use warnings;
 use strict;
 
-our $VERSION = '2.6.1';
+our $VERSION = '2.6.2rc1';
 
 
 use Business::Hours;
