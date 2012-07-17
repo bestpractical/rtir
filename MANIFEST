@@ -32,6 +32,7 @@ etc/upgrade/2.3.0/content
 etc/upgrade/2.3.9/content
 etc/upgrade/2.5.1/content
 etc/upgrade/2.5.1/update_saved_searches.pl
+etc/upgrade/2.6.2/content
 etc/upgrade/upgrade.pl
 html/Callbacks/RTIR/autohandler/Default
 html/Callbacks/RTIR/Elements/EditCustomField/EditComponentName
@@ -210,7 +211,6 @@ lib/RT/IR/Ticket.pm
 lib/RT/IR/Tutorial.pod
 Makefile.PL
 MANIFEST			This list of files
-MANIFEST.SKIP
 META.yml
 po/README
 po/rtir.pot
@@ -246,6 +246,7 @@ t/constituency/propagation-reject.t
 t/custom-fields/defaults-config.t
 t/custom-fields/defaults-on-linking.t
 t/custom-fields/ip.t
+t/custom-fields/ipv6.t
 t/data/gnupg/keys/general-at-example.com.2.public.key
 t/data/gnupg/keys/general-at-example.com.2.secret.key
 t/data/gnupg/keys/general-at-example.com.public.key
