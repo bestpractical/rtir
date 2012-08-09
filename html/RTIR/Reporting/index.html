@@ -70,9 +70,9 @@
 
 <%INIT>
 if ( $ARGS{'HTMLReport'} || $ARGS{'TextReport'} || $ARGS{'SpreadsheetReport'} ) {
-    if ( $ARGS{'Constituency'} ) {
-        delete $ARGS{ 'Object-RT::Ticket--'. $ARGS{'Constituency'} .'-Magic' };
-        $ARGS{'Constituency'} = delete $ARGS{ 'Object-RT::Ticket--'. $ARGS{'Constituency'} };
+    unless ( $ARGS{'Constituency'} ) {
+        my $constituency_cf = RT::IR::GetCustomField('Constituency');
+        $ARGS{'Constituency'} = delete $ARGS{ 'Object-RT::Ticket--CustomField-'. $constituency_cf->Id .'-Values' };
     }
     my $ext = 'html';
     $ext = 'txt' if $ARGS{'TextReport'};
