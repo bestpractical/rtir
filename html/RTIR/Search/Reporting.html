@@ -15,8 +15,8 @@
 <input type="hidden" class="hidden" name="<% $key %>" value="<% $val %>" />
 % }
 <&|/l&>Show chart</&>
-<&|/l, $m->scomp('/Search/Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $FullQuery) &>grouped by [_1]</&>
-<&|/l, $m->scomp('/Search/Elements/SelectChartType', Name => 'ChartStyle') &>style: [_1]</&>
+<&|/l_unsafe, $m->scomp('/Search/Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $FullQuery) &>grouped by [_1]</&>
+<&|/l_unsafe, $m->scomp('/Search/Elements/SelectChartType', Name => 'ChartStyle') &>style: [_1]</&>
 <input type="submit" class="button" name="ShowChart" value="<% loc('Go')%>" />
 </form>
 
