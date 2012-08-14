@@ -10,6 +10,10 @@ FEATURES
 FIXES
 =====
 
+* compatibility with RT 3.8.13 and older versions patched
+  with security fixes
+* ensure that reports are passed the Constituency selected
+  on the index.html
 * add_constituency was still using _RTIR_ prefix
 * fix CF name in Action::RTIR_SetHowReported
 
