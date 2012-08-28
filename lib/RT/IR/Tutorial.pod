@@ -107,7 +107,7 @@ are joined with respective properties of ticket #2: TimeEstimated,
 TimeWorked, TimeLeft, Requestors, Cc and AdminCc and links.
 Duplicated links or watchers will be condensed, also if there
 were links between tickets #1 and #2 then RT will drop them.
-Other fields from ticket #1 are ignored, such as state, queue or
+Other fields from ticket #1 are ignored, such as status, queue or
 custom fields of single value type. By default RTIR shows only
 active tickets as candidates for the merge, so you have no way
 to merge a ticket into one that's been resolved or rejected,
@@ -154,7 +154,7 @@ When you open a ticket's display page there is a 'Reject' tab. You click
 it and see 'reject Incident Report' page with a box for message and other
 common input fields. You can write a message and choose whether it would be
 comment or response, by default correspondents don't receive comments.
-You submit the form and RTIR sets state of the ticket, records the message
+You submit the form and RTIR sets status of the ticket, records the message
 and unlink the IR from any Incidents.
 
 If you don't want to write any comment or change any properties of an IR
@@ -164,8 +164,8 @@ the reject form.
 
 =head4 Rejecting many IRs at once (bulk reject)
 
-On the RTIR home page at the bottom of 'New unlinked Incident Reports' box
-you can see 'Bulk Reject' link. Following that link you can open interface
+On the RTIR home page at the top right corner of 'New unlinked Incident Reports'
+box you can see 'Reject' link. Following that link you can open interface
 for rejecting many tickets at once. The interface has a buttons to
 check/uncheck all tickets on the page or you can select particular IRs
 with checkboxes. To reject tickets you submit the form with 'reject' or
@@ -173,9 +173,9 @@ with checkboxes. To reject tickets you submit the form with 'reject' or
 'bulk reject' page, while the latter one returns you to the RTIR home page
 where you could continue your work.
 
-As well, link to 'Bulk Reject' operation exist at the bottom of searches for
-'Incident Reports', so you can go to RTIR's 'Incident Reports' menu, refine
-search conditions if you like to, and from the page with results go to
+As well, link to 'Bulk Reject' operation exist in the page menu of searches
+for 'Incident Reports', so you can go to RTIR's 'Incident Reports' menu,
+refine search conditions if you like to, and from the page with results go to
 'Bulk Reject' operation.
 
 Using this interface you can reject IRs that have links to Incident(s) what
@@ -292,13 +292,13 @@ and linking them to this IR by clicking the "[New]" button next to the
 
 =head4 Linking Incidents to IRs, Investigations, etc.
 
-You may link Incidents with existing Incident Responses, Investigations,
+You may link Incidents with existing Incident Reports, Investigations,
 Blocks, and Articles. On the Incident display page there are sections for
 each of these, each with a C<Link> button and the list of already-linked
 tickets. Clicking on C<Link> lets you link one or more tickets of that type to
 the Incident.
 
-Clicking on C<New> (or in the case of Investigations, C<Launch>) lets you
+Clicking on C<Create> (or in the case of Investigations, C<Launch>) lets you
 create a new tickets and link it to the Incident automatically.
 
 =head3 Resolution
@@ -331,8 +331,7 @@ fill in a message or time worked, attach files, and so on.
 =head4 Launching an Investigation
 
 To launch a new Investigatin, create a new ticket in the Investigation queue.
-You will be required to link the Investigation to an Incident, and provide one
-or more correspondents.
+You will be required to provide one or more correspondents.
 
 =head3 Blocks
 
@@ -356,20 +355,9 @@ if you need wider one-column layout.
 
 =item QuickSearch
 
-Lists RT's queues with summary on numbers of active tickets in those.
+Lists queues with summary on numbers of active tickets in those.
 Allows you to quickly jump to all active tickets in a queue or to tickets
 with particular status.
-
-Note that RTIR's queues are hidden from the list as QuickSearch box
-is not flexible enough to build desired report by RTIR's states.
-New/open/stalled statuses just don't make much sense in RTIR, so we
-hide RTIR's queues. Use /RTIR/Elements/QueueSummary portlet instead.
-
-=item /RTIR/Elements/QueueSummary
-
-Lists RTIR's queues with summary on numbers of active tickets in those.
-Allows you to quickly jump to all active tickets in a queue or to tickets
-with particular state.
 
 =item Other
 
