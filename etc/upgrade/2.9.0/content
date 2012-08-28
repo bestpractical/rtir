@@ -398,10 +398,10 @@ our @Final = (
         );
         while ( my $scrip = $scrips->Next ) {
             my $value = 'Set Due Date On Incident';
-            next if $scrip->Name eq $value;
+            next if $scrip->Description eq $value;
 
-            my ($status, $msg) = $scrip->SetName( $value );
-            $RT::Logger->error("Couldn't set scrip's name: $msg")
+            my ($status, $msg) = $scrip->SetDescription( $value );
+            $RT::Logger->error("Couldn't set scrip's description: $msg")
                 unless $status;
         }
     },
