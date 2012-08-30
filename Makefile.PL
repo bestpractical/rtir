@@ -5,12 +5,7 @@ license('GPL Version 2');
 author('Best Practical Solutions <sales@bestpractical.com>');
 version_from('lib/RT/IR.pm');
 
-{ # check RT version
-    my @v = split /\./, "$RT::VERSION";
-    unless ($v[0]>=4) {
-        die "RTIR 2.9.x and newer needs RT 4.0 at least, you have $RT::VERSION";
-    }
-}
+requires_rt('4.0.6');
 
 # XXX: This should be reported by M::I::RTx
 my ($lib_path) = $INC{'RT.pm'} =~ /^(.*)[\\\/]/;
