@@ -6,8 +6,6 @@ $BaseURL = RT->Config->Get('WebPath')."/$BaseURL" unless $BaseURL =~ m{^/};
 $BaseURL .= ( $BaseURL =~ /\?/ )? '&': '?' unless $BaseURL =~ m{[&?]$};
 
 my $collection = RT::Tickets->new( $session{'CurrentUser'} );
-$session{'tickets'} = $collection if $UpdateSession;
-
 $collection->FromSQL( $Query );
 
 my $result = $m->scomp( '/Elements/TicketList',
@@ -23,14 +21,17 @@ my $result = $m->scomp( '/Elements/TicketList',
     AllowSorting   => $AllowSorting,
 );
 
-$session{'CurrentSearchHash'} = {
-    Format      => $Format,
-    Query       => $Query,
-    Page        => $Page,
-    Order       => $Order,
-    OrderBy     => $OrderBy,
-    RowsPerPage => $Rows
-};
+if ( $UpdateSession ) {
+    $session{'tickets'} = $collection;
+    $session{'CurrentSearchHash'} = {
+        Format      => $Format,
+        Query       => $Query,
+        Page        => $Page,
+        Order       => $Order,
+        OrderBy     => $OrderBy,
+        RowsPerPage => $Rows
+    };
+}
 
 my $found = $collection->Count;
 if ( $found || $ShowEmpty ) {
