@@ -36,7 +36,7 @@
     Default => $Owner || $session{'CurrentUser'}->Id || undef,
 &>
 <&|/l&>Worked</&>:
-<input size="4" name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked} %>" />
+<input size="4" name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked} || '' %>" />
 <& /Elements/SelectTimeUnits, Name => 'UpdateTimeWorked-TimeUnits' &>
 </td></tr>
 
