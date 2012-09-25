@@ -72,7 +72,7 @@ $Query = join ' AND ', map "( $_ )", grep $_, $BaseQuery, $Query;
 $BaseURL = RT->Config->Get('WebPath')."/$BaseURL" unless $BaseURL =~ m{^/};
 $BaseURL .= ( $BaseURL =~ /\?/ )? '&': '?' unless $BaseURL =~ m{[&?]$};
 
-my $collection = $session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
+my $collection = RT::Tickets->new( $session{'CurrentUser'} );
 $collection->FromSQL( $Query );
 my $result = $m->scomp( '/Elements/TicketList',
     %ARGS,
@@ -86,14 +86,17 @@ my $result = $m->scomp( '/Elements/TicketList',
     AllowSorting   => $AllowSorting,
 );
 
-$session{'CurrentSearchHash'} = {
-    Format      => $Format,
-    Query       => $Query,
-    Page        => $Page,
-    Order       => $Order,
-    OrderBy     => $OrderBy,
-    RowsPerPage => $Rows
-};
+if ( $UpdateSession ) {
+    $session{'tickets'} = $collection;
+    $session{'CurrentSearchHash'} = {
+        Format      => $Format,
+        Query       => $Query,
+        Page        => $Page,
+        Order       => $Order,
+        OrderBy     => $OrderBy,
+        RowsPerPage => $Rows
+    };
+}
 
 return '' if !$ShowEmpty && !$result;
 
@@ -115,4 +118,5 @@ $ShowEmpty       => 0
 $ShowNavigation  => 0
 $ShowListActions => $ShowNavigation
 $AllowSorting    => 1
+$UpdateSession   => 0
 </%ARGS>
