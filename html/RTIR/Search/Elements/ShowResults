@@ -98,6 +98,10 @@ if ( $UpdateSession ) {
     };
 }
 
+if (ref $Count) {
+    $$Count = $collection->Count;
+}
+
 return '' if !$ShowEmpty && !$result;
 
 </%INIT>
@@ -119,4 +123,5 @@ $ShowNavigation  => 0
 $ShowListActions => $ShowNavigation
 $AllowSorting    => 1
 $UpdateSession   => 0
+$Count           => undef
 </%ARGS>
