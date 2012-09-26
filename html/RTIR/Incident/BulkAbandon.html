@@ -38,6 +38,7 @@
 
 <%PERL>
 # XXX: cache result set to check if get empty results
+my $count = 0;
 my $result_set = $m->scomp('/RTIR/Search/Elements/ShowResults',
     Queue         => $Queue,
     BaseURL       => $BaseURL,
@@ -50,11 +51,12 @@ my $result_set = $m->scomp('/RTIR/Search/Elements/ShowResults',
     Order         => $Order,
     Page          => $Page,
     ShowNavigation  => 1,
-    ShowListActions => 0
+    ShowListActions => 0,
+    Count         => \$count
 );
 </%PERL>
 
-% if( $session{'tickets'}->Count ) {
+% if( $count ) {
 % $m->out( $result_set );
 
 <&| /Widgets/TitleBox, title => loc("Select recipients") &>
@@ -156,8 +158,6 @@ if ( $ARGS{'BulkAbandon'} ) {
          map { ref($_)? loc( "Ticket [_1]: [_2]", $_->[0], $_->[1] ): $_ }
          @tempresults;
 
-    # force redo search if we changed tickets
-    $session{'tickets'}->RedoSearch if $session{'tickets'};
 }
 
 # We can only reject new tickets, so set the states.

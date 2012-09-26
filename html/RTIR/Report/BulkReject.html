@@ -42,6 +42,7 @@
 <input type="hidden" name="OrderBy" value="<% $OrderBy %>" />
 <input type="hidden" name="Order"   value="<% $Order %>" />
 
+% my $count = 0;
 <& /RTIR/Search/Elements/ShowResults,
     Queue           => $Queue,
     BaseURL         => $BaseURL,
@@ -55,9 +56,10 @@
     Order           => $Order,
     ShowNavigation  => 1,
     ShowListActions => 0,
+    Count           => \$count,
 &>
 
-% if ( $session{'tickets'}->Count ) {
+% if ( $count ) {
 <& /Elements/Submit,
     Name => "BulkReject",
     Caption => loc("Reject selected incident reports"),
@@ -135,8 +137,6 @@ if ( $BulkReject ) {
     }
     push @results, map { ref($_)? loc( "Ticket [_1]: [_2]", $_->[0], $_->[1] ): $_ }
                    @tempresults;
-    # force redo search if we changed state
-    $session{'tickets'}->RedoSearch if $session{'tickets'};
 
     if ( $BulkRejectAndReturn ) {
         my $key = Digest::MD5::md5_hex( rand(1024) );
