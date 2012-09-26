@@ -74,11 +74,8 @@
 </table>
 
 <%INIT>
-$session{'tickets'} ||= RT::Tickets->new( $session{'CurrentUser'} );
-$session{'tickets'}->GotoFirstItem;
-
 my $incidents;
-while ( my $Ticket = $session{'tickets'}->Next ) {
+while ( my $Ticket = $tickets->Next ) {
     if ( $Ticket->QueueObj->Name eq "Incidents" ) {
         $incidents->{ $Ticket->Id } = { Ticket => $Ticket };
     } elsif ( $Ticket->QueueObj->Name eq "Incident Reports" ) {
@@ -124,6 +121,7 @@ $Type => undef
 $ticket => undef
 $lookuptype => undef
 $q => undef
+$tickets => undef
 
 $Format => undef 
 $Rows => 50

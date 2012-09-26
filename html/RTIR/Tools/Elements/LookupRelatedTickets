@@ -7,6 +7,7 @@
     ticket     => $TicketObj->id, 
     lookuptype => $LookupType, 
     q          => $q,
+    tickets    => $tickets,
 &>
 </&>
 
@@ -19,6 +20,7 @@
     ticket     => $TicketObj->id, 
     lookuptype => $LookupType, 
     q          => $q,
+    tickets    => $tickets,
 &>
 </&>
 
@@ -31,6 +33,7 @@
     ticket     => $TicketObj->id,
     lookuptype => $LookupType,
     q          => $q,
+    tickets    => $tickets,
 &>
 </&>
 
@@ -44,6 +47,7 @@
     ticket     => $TicketObj->id,
     lookuptype => $LookupType,
     q          => $q,
+    tickets    => $tickets,
 &>
 </&>
 </td></tr>
@@ -54,6 +58,7 @@
 $TicketObj
 $LookupType => undef
 $q => undef
+$tickets => undef
 </%args>
 <%init>
 my $TicketType = RT::IR::TicketType( Ticket => $TicketObj );

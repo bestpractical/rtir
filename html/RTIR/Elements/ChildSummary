@@ -38,7 +38,7 @@
 % }
 
 % my $i=0;
-% while (my $Ticket = $session{'tickets'}->Next) {
+% while ( my $Ticket = $tickets->Next ) {
 % next unless ($Ticket->QueueObj->Name eq $Queue);
 % $i++;
 % my $t = RT::IR::TicketType( Ticket => $Ticket );
@@ -114,6 +114,7 @@ my $QueryString = $m->comp('/Elements/QueryString',
 $Queue => undef
 $Type => undef
 $ticket => undef
+$tickets => undef
 $q => undef
 $lookuptype => undef
 $Format => undef 

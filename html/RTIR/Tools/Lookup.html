@@ -37,7 +37,7 @@
 % }
 
 % if ( ! $HideResults ) {
-<& Elements/LookupRelatedTickets, TicketObj => $TicketObj, LookupType => $type, q => $q &>
+<& Elements/LookupRelatedTickets, TicketObj => $TicketObj, LookupType => $type, q => $q, tickets => $tickets &>
 % }
 
 <hr>
@@ -81,7 +81,7 @@ my $now = RT::Date->new( $session{'CurrentUser'} );
 $now->SetToNow;
 $now->AddDays( $max_age );
 
-$session{'tickets'} = RT::Tickets->new( $session{'CurrentUser'} );
+my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
 
 my $current_subtab = 'RTIR/Tools/Lookup.html';
 if ( $q ) {
@@ -99,7 +99,7 @@ if ( $q ) {
         $query = "( $query ) AND TransactionDate > '". $now->ISO ."'"
     }
 
-    my ($val, $msg) = $session{'tickets'}->FromSQL( $query );
+    my ($val, $msg) = $tickets->FromSQL( $query );
     $RT::Logger->warning( $msg ) unless $val;
 }
 
