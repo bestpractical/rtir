@@ -23,7 +23,6 @@
 %# 
 %# END LICENSE BLOCK
 <form method="get">
-<input type="hidden" name="Bookmark" value="<% $session{'tickets'}->FreezeLimits()|u %>" />
 <input type="hidden" name="Queue" value="<%$ARGS{'Queue'}%>" />
 <&| /Widgets/TitleBox, title => loc('Refine search')&>
 <input type="hidden" name="id" value="<%$ARGS{'id'}%>" />
