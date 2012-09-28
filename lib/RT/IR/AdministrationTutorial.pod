@@ -1,8 +1,23 @@
 =head1 RTIR Administrative Tutorial
 
+=head2 General Configuration
+
+RT and RTIR store many configuration items in configuration files
+on the file system in the etc directory in your RT directory.
+F<RT_Config.pm> and F<RTIR_Config.pm> provide documentation on all available
+configuration options and also set system defaults. You can view these
+files to see what configuration options are available, but don't edit
+these files to change configuration values. The F<RT_SiteConfig.pm> file
+is specifically provided to store your site-specific configurations.
+
+To change a configuration value, copy the Set code from F<RT_Config.pm>
+or F<RTIR_Config.pm> and add it to your F<RT_SiteConfig.pm>. Then set
+your custom configuration values there.
+
 =head2 Blocks Queue
 
-You may disable the Blocks by putting the following into your RTIR config:
+You may disable the Blocks queue by putting the following into your
+RT_SiteConfig.pm config:
 
     Set($RTIR_DisableBlocksQueue, 1);
 
@@ -11,12 +26,15 @@ You may disable the Blocks by putting the following into your RTIR config:
 The various states an incident, IR, investigation, or block can be in, such as
 'open', 'stalled', 'abandoned', etc.
 
-This field represent custom status of tickets and values are different in
-different queues. Controlled with C<%Lifecycles> option in the config.
-Critical field for functionality.
+This field contains custom statuses for tickets, and values are different in
+different queues. The status values are set via the C<%Lifecycles> option in
+the RTIR configuration file. You can read more about Lifecycles in the
+F<RT_Config.pm> file.
 
-Read description in the F<RTIR_Config.pm> and description of L</Scrips>
-below.
+Status is a critical field for functionality.
+
+For more information, read the description in F<RTIR_Config.pm> and description
+of L</Scrips> below.
 
 =head2 Custom Fields
 
@@ -33,72 +51,72 @@ The constituency of an incident, IR, investigation, or block.
 
 Additional quite heavy automation is tied to this field. This
 is described in L<Constituencies> doc. Don't rename this field
-if you want to use this functionality. If you don't need this
-feature then name custom field differently.
+if you want to use this functionality.
 
 =item Description
 
-Short description of an Incident
+Short description of an Incident.
 
 =item Resolution
 
-How an Incident was or wasn't resolved
+How an Incident was or wasn't resolved.
 
 =item Function
 
-Who is handling the Incident
+Who is handling the Incident.
 
 =item Classification
 
-The type of Incident, such as system compromise or denial of service
+The type of Incident, such as system compromise or denial of service.
 
-=item HowReported
+=item How Reported
 
-How the IR got into RTIR
+How the IR got into RTIR.
 
 =item ReporterType
 
-Who reported the IR, such as the police or another ISP
+Context for the incident reporter, such as the police, other ISP,
+or external individual.
 
 =item IP
 
 IP addresses related to the incident, IR, investigation, or block.
 
-Don't rename this custom field or it will loose all magic. It's
-possible to change this CF from multiple values to single value.
+Don't rename this custom field or it will lose all associated features.
+It's possible to change this CF from multiple values to single value.
 
-End user documentation is in L<Tutorial/'IP'>.
+See L<Tutorial/'IP'> for more information.
 
 See also L</SetIPFromContent> below.
 
 =item Netmask
 
-Network mask for a Block
+Network mask for a Block.
 
 =item Port
 
-Port for a Block
+Port for a Block.
 
-=item WhereBlocked
+=item Where Blocked
 
-Where the block is placed
+Where the block is placed.
 
 =item Customer
 
-Customer for an IR or Investigation
+Customer for an IR or Investigation.
 
 =back
 
-=head2 Managing "RT at Glance" and "RTIR home" pages
+=head2 Managing "RT at a glance" and "RTIR at a glance" pages
 
-In the config you can set @RTIR_HomepageComponents option to control
+In the config you can set the @RTIR_HomepageComponents option to control
 allowed portlets people can add to thier workspace. RT has its own
 option $HomepageComponents so you can list different sets for RT and
-RTIR. Read more about different portlets in L<Tutorial>.
+RTIR. See L<Tutorial> for more information.
 
 =head2 Notifications
 
-Almost all email notifications in RT/RTIR are constrolled via scrips.
+Almost all email notifications in RT/RTIR are controlled via scrips.
 
 There are three default base actions you can use to notify users:
 
@@ -106,130 +124,142 @@ There are three default base actions you can use to notify users:
 
 =item Notify
 
-Sends a notification to users, reply-to field will be set
-according to correspond address. As well, NotifyActor option
-influence set of recipients.
+Sends a notification to users. The reply-to field is set
+based on the correspond address. The NotifyActor option also
+influences the set of recipients.
 
 =item Notify As Comment
 
-Similar to 'Notify', but reply-to field is set according to
-comment address.
+Similar to 'Notify', but the reply-to field is set based on
+the comment address.
 
 =item Autoreply
 
-Is a variation of 'Notify' action which sends email even if NotifyActor
-option is disabled.
+A variation of the 'Notify' action which sends email even if the
+NotifyActor option is disabled.
 
 =back
 
-Above actions have multiple variants with different list of recipients,
-for example 'Notify Owner' or 'Notify Requestors'. List of recipients
+The above actions have multiple variants with different list of recipients,
+for example 'Notify Owner' or 'Notify Requestors'. The list of recipients
 may contain the following values: 'Requestors', 'Owner', 'Ccs', 'AdminCcs'
 and 'Other Recipients'. 'Other Recipients' is the only special case,
-these are users who are listed as one-time recipients on ticket's
+these are users who are listed as one-time recipients on the ticket's
 reply/comment pages. All other entries are watchers of a ticket.
-The list can be combination of values like 'Owner, Ccs, AdminCcs'.
+The list can be a combination of values like 'Owner, Ccs, AdminCcs'.
 
-Here is several examples:
+Here are several examples:
 
     On Correspond Notify Requestors and Ccs with template Correspondence
     On Create Autoreply To Requestors with template Autoreply
     On Owner Change Notify Owner with template Transaction
 
-Text of notifications is controlled using templates where queue's template
-can override global one. For example you can create template 'Correspondence'
-in a queue and all notifications (global or queue specific) will be using
-this template instead of global.
+Text of notifications is controlled using templates where a queue's template
+can override the global one. For example you can create a template 'Correspondence'
+in a queue and all notifications (global or queue specific) will use
+that template instead of the global template.
 
 =head2 Scrips
+
+Scrips run for every transaction on a ticket in RT and RTIR,
+sometimes changing values based on the transaction being
+performed. Transactions are any change to a ticket, whether
+updating a status or replying to a requestor.
 
 =over 4
 
 =item SetHowReported
 
 Applies to the Incident Reports queue.
-On Ticket creation, set the HowReported Custom Field to a default
-value of Email if it wasn't otherwise specified.
+On ticket creation, sets the HowReported custom field to a default
+value of Email if it isn't otherwise specified.
 
 =item On Correspond Change Status of the Block
 
-On replies changes status of blocks according to a few rules
+On replies, changes the status of blocks according to a few rules
 that are described in L<RT::Action::RTIR_SetBlockStatus/DESCRIPTION>.
 
 RT's default L<RT::Action::AutoOpen> is disabled for blocks to
 avoid unwanted changes of status from 'pending activation'
 to 'active'.
 
-As well, take a look at C<$RTIR_BlockAproveActionRegexp> option
+See also the C<$RTIR_BlockAproveActionRegexp> option
 in the config.
 
 =item On Linking To Incident Activate Report
 
 =item On Correspond (not every) Activate Report
 
-IRs are activated (status changed to first possible active,
+IRs are activated (status changed to first possible active status,
 by default 'open') only when they are linked to an incident.
 These two scrips take care of that.
 
 RT's default L<RT::Action::AutoOpen> is disabled for IRs to avoid
-unwanted changes of status when IR is not linked. When an IR is
+unwanted changes of status when an IR is not linked. When an IR is
 linked to an Incident, L<RT::Condition::RTIR_RequireReportActivation>
-checks everything what RT's AutoOpen checks and scrip behaves in
+checks everything that RT's AutoOpen checks and the scrip behaves in
 the same way.
 
 =item Set Due Date On Incident
 
-Keeps Due date of incidents in sync with the most due child.
+Keeps the Due date of incidents in sync with the most due child.
 
 See L</Service Level Agreements> below for details on automating
-Due dates and L<RT::Action::RTIR_SetDueIncident> for details
+Due dates, and L<RT::Action::RTIR_SetDueIncident> for details
 about action of the scrip.
 
 =item ResolveAllChildren
 
-Applies to the IncidentsQueue.
-If the Status of an Incident is changes to an Inactive Status,
-looks for linked Tickets in the Incident Report, Investigation or Blocks
-Queues and Resolves them.  If any of these linked Tickets are linked
-to other ongoing Incidents, a comment is left and they are left unresolved.
+Applies to the Incidents queue.
+
+If an incident is changed to an inactive status,
+looks for linked tickets in the Incident Reports, Investigations or Blocks
+queues and resolves them.  If any of these linked tickets are linked
+to other ongoing incidents, a comment is added and they remain unresolved.
 
 =item FixOwnership
 
-Applies to the Incidents Queue.
-When the Owner of an Incident is changed, the Owner of linked children
+Applies to the Incidents queue.
+
+When the Owner of an incident is changed, the Owner of linked children
 tickets are changed to the same owner.
 
 Applies to the Incident Reports, Blocks and Investigations queues.
-When the Owner of a Ticket in these Queues is changed, that change
-is also applied to the linked Incident
+
+When the Owner of a ticket in these queues is changed, that change
+is also applied to the linked incident.
 
 =item ReopenIncident
 
 Applies to the Incident Reports, Blocks and Investigations queues.
-If the status of a Ticket in these Queues is changed from rejected or
-resolved, the linked parent Incident ticket is marked as Open.
+
+If the status of a ticket in these queues is changed from rejected or
+resolved, the linked parent incident ticket status is set to open.
 
 =item SetDefaultIncidentResolution
 
-Applies to the Incident Queue.
-When an Incident's Status is changed, if it is changed from an
-Inactive Status to an Active Status, the Resolution Custom Field
-is removed.  If it is changed from an Active Status to an Inactive Status
-and the Resolution Custom Field wasn't set manually, it is set
-to the value according %RTIR_CustomFieldsDefaults in your
+Applies to the Incidents queue.
+
+When an incident's status is changed, if it is changed from an
+inactive status to an active status, the Resolution custom field
+is cleared. If it is changed from an active status to an inactive status
+and the Resolution custom field isn't set manually, it is set
+to the value set in %RTIR_CustomFieldsDefaults in your
 F<RTIR_Config.pm>.
 
 =item NotifyOnClose
 
-Applies to the Blocks Queue.
-When a Block Ticket is moved from an Active Status to an Inactive
-Status (closed), the Requestors on the Block are notified using the
-L<Templates/BlockRemoved in Blocks queue> Template
+Applies to the Blocks queue.
+
+When a block ticket is moved from an active status to an inactive
+status (closed), the requestors on the block are notified using the
+L<Templates/BlockRemoved in Blocks queue> template.
 
 =item SetIPFromContent
 
 Applies to the Incident Reports, Blocks, Incidents and Investigations queues.
-Updates the Ticket Custom Field IP to have a list of all IP and IP Ranges
+
+Updates the ticket custom field IP to have a list of all IPs and IP ranges
 found in the body of the ticket during Create and Correspond.
 
 If configuration of the CF allows only one value then only first IP
@@ -240,21 +270,23 @@ It's OK to disable this scrip.
 =item SetConstituency
 
 Applies to the Incident Reports, Blocks, Incidents and Investigations queues.
+
 Uses the Constituency algorithms discussed in L<RT::IR::Constituencies> to 
-set and propagate changes to the Constituency Custom Field.  On Ticket
-creation, Constituency is set based on the checking the parent Ticket, the 
+set and propagate changes to the Constituency custom field.  On ticket
+creation, Constituency is set based on the parent ticket, the 
 X-RT-Mail-Extension header (see L<RT::IR::Constituencies>) or the default set 
 in your F<RTIR_Config.pm>
 
-When linking tickets or changing the Constituency Custom Field, this
-Scrip ensures that the change is propagated based on your choice of 
+When linking tickets or changing the Constituency custom field, this
+scrip ensures that the change is propagated based on your choice of 
 _RTIR_Constituency_Propagation in your F<RTIR_Config.pm>
 
 =item SetConstituencyGroup
 
 Applies to the Incident Reports, Blocks, Incidents and Investigations queues.
-When Tickets are Created, or the Constituency Custom Field is updated,
-this Scrip manages the assignment of DutyTeam groups as AdminCcs.
+
+When tickets are created, or the Constituency custom field is updated,
+this scrip manages the assignment of DutyTeam groups as AdminCcs.
 It makes sure that for a Constituency EDUNET, a DutyTeam group
 named 'DutyTeam EDUNET' is assigned as AdminCc and removes other DutyTeam
 groups from the AdminCc.  L<RT::IR::Constituencies/ACLs> discusses
@@ -292,9 +324,11 @@ See the documentation for L<RT::Extension::TicketAging>
 
 During normal operation RT/RTIR never deletes data from the database.
 Since RT 3.7 the RTx::Shredder extension has been integrated into
-RT.  This extension can remove data such as Users or Tickets
+RT.  This extension can remove data such as users or tickets
 from the RT/RTIR system. You can find documentation for this 
-extension in in L<RT::Shredder>  by running `perldoc lib/RT/Shredder.pm`
+extension in L<RT::Shredder> by running `perldoc lib/RT/Shredder.pm`
+or on the Best Practical website at
+L<http://bestpractical.com/rt/docs/latest/RT/Shredder.html>.
 RT::Shredder's documentation includes information on restoring deleted data
 from backups. RT::Shredder provides SQL commands to reverse any delete
 operations, so any data that it deletes may be restored.
@@ -302,14 +336,14 @@ operations, so any data that it deletes may be restored.
 =head2 GnuPG support
 
 GnuPG integration is now a feature of RT.  Configuration
-can be done in your RT_SiteConfig.pm.
+can be done in your F<RT_SiteConfig.pm>.
 See also the documentation in L<RT::Crypt::GnuPG>.
 
 =head3 Reverification
 
 RTIR supports reverification of incoming email. If a user sends signed mail
 but RTIR doesn't have his public key (or if some other error occurs), then his
-message will be still be processed, but there will be "This message is
+message will be be processed, but there will be "This message is
 unverified" warnings in the UI. Afterwards, RTIR will automatically attempt to
 reverify that message whenever someone views it.
 
@@ -334,21 +368,21 @@ it will detect this and avoid sending any email. The user will be asked to
 notify a system administrator.
 
 A missing passphrase occurs when GPG Agent is unresponsive or the passphrase
-was mis-set in RTIR_SiteConfig.pm. Note that you can use either GPG Agent or
+is wrong in F<RTIR_SiteConfig.pm>. Note that you can use either GPG Agent or
 set the passphrase in the site config, you need not do both.
 
 =head2 Service Level Agreements (SLA)
 
-RTIR used to have simple Service Level Agreements (SLA) implementation.
-L<RT::Extension::SLA> was prototyped on it, but heavily improved. In RTIR 3.0
-we got rid of SLA implementation in the core of RTIR that was in conflict
+RTIR used to have a simple Service Level Agreements (SLA) implementation.
+L<RT::Extension::SLA> was prototyped on it, but vastly improved. In RTIR 3.0
+we removed the SLA implementation in the core of RTIR that was in conflict
 with the extension.
 
 If you install and configure L<RT::Extension::SLA> do not apply it to
-the Incidents Queue.  You will encounter a race condition between the
-extension and the RTIR Scrips that synchronize due dates between
-an Incident and its most due active child.  If you need to manage
-Incident due dates using the SLA extension, you can disable the RTIR
-Scrips that manage Due dates on the Incidents Queue.
+the Incidents queue.  You will encounter a race condition between the
+extension and the RTIR scrips that synchronize due dates between
+an incident and its most due active child.  If you need to manage
+incident due dates using the SLA extension, you can disable the RTIR
+scrips that manage due dates on the Incidents queue.
 
 =cut
