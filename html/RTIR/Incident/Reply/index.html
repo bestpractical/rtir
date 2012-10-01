@@ -88,6 +88,7 @@
     TicketObj   => $IncidentObj,
     Status      => $Status,
     GnuPGWidget => $gnupg_widget,
+    Owner       => $IncidentObj->OwnerObj->Id,
 &>
 
 <& /Elements/Submit, Name => "SubmitTicket", Label => loc("Update Incident") &>
