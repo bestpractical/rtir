@@ -18,7 +18,13 @@ my %special_rename = (
             $new = $special_rename{ lc $new } || $new;
 
             my ($status, $msg) = $cf->SetName( $new );
-            $RT::Logger->error("Couldn't rename custom field '$name': $msg");
+
+            if ( $status ){
+                $RT::Logger->warning("RTIR custom field $name renamed: $msg");
+            }
+            else{
+                $RT::Logger->error("Couldn't rename custom field '$name': $msg");
+            }
         }
     },
 );
