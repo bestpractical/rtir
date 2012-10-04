@@ -1,221 +1,267 @@
-=head1 REQUIREMENTS for Multiple Constituency functionality
+=head1 Multiple Constituency Functionality
 
-Demand exists to provide services for more than one constituency.
-For a variety of reasons, it makes sense to separate these
-constituencies, particularly when handling incidents. However,
-it also makes sense to use the same tools when
+In some cases, your incident response team may provide
+services to multiple different "customers" or constituent
+groups. For example, you my provide incident support for both
+educational and governemental institutions.
+You may have different contact mechanisms for members
+of these groups including different email addresses for reporting
+incidents. For a variety of reasons, it makes sense to identify and
+separately track interactions with these individual constituencies,
+particularly when handling incidents.
+
+However, it also makes sense to use the same tools when
 working on these separate sources of data. Depending on the
-constituency different users may wish to work on incidents within
+constituency, different users may wish to work on incidents within
 different queues or have access to incident data held within different
-queues. Therefore, access is required, which allows user privileges
-depending on the constituency. RTIR does not support this out of
-the box. Of course it would be possible to install one separate
-instance of RTIR per constituency. But this is somewhat cumbersome,
-as a lot of the configuration is identical on all instances, hence
-error-prone.  A better solution would be to integrate the facility
-of handling several constituencies within the same instances of
-RTIR.
+queues. Members on the education response team may not have privileges
+to see information on government incidents, so you need to be able to
+assign user privileges depending on the constituency.
+
+With some additional configuration, RTIR provides a flexible system
+that supports setting up multiple constituencies with different
+incident handling and access rules. These configurations all run
+in a single RTIR instance with shared workflows and global
+configuration that applies to all constituencies. This guide
+will help you configure RTIR to manage multiple constituencies.
 
 =head2 Definitions 
 
-  A constituency is defined by:
-  * It's name.
-  * Its correspondence email address.
-  * Associated ACLs.
-  * Assigning a constituency to a ticket:
-  ** On new incoming incident report, the constituency is preset
-     automatically according the email address the email is sent to.
-  ** Any new incidents created from incident reports, or blocks and
-     investigations, created from incidents inherit the constituency
-     from the launching ticket.
-  ** Manually assign the constituency to any new tickets created from
-     within RTIR, not yet related to any other ticket.
-  ** Manually change the constituency of a ticket and all its related
-     tickets.
+A constituency is defined by:
+
+=over
+
+=item  *
+
+Its name.
+
+=item  *
+
+Its correspondence email address.
+
+=item *
+  Associated ACLs (rights and permissions for queues, tickets, etc.)
+
+=back
+
+A ticket is assigned a constituency in a few different ways:
+
+=over
+
+=item *
+
+On new incoming incident report, the constituency is preset
+automatically based on the email address the email is sent to
+(the correspond address).
+
+=item *
+
+Any new incidents created from incident reports, or blocks and
+investigations created from incidents, inherit the constituency
+from the launching ticket.
+
+=item *
+
+You can manually assign the constituency to any new tickets created
+in the RTIR web interface.
+
+=item *
+
+You can manually change the constituency of a ticket and all its
+related tickets.
+
+=back
 
 Of course the last two points require that the user has the right to do so,
 according to the ACLs. All tickets must belong to a constituency.
 
-=head1 IMPLEMENTATION DETAILS
+=head1 Implementation Details
 
 =head2 Mandatory
 
-The constituency field is a mandatory field, so users must select value for
-the field during creation of tickets in RTIR's queues.
+The constituency field is a mandatory field, so users must select a value
+when creating RTIR tickets.
 
-=head2 Constituency values
+=head2 Constituency Values
 
-Constituency is a custom field that applies to all RTIR's queues. Administrator
-can manage the field and its values via the web interface: RT -> Configuration ->
-Custom Fields -> click on 'Constituency' record in the list. At the bottom
-of the page there is control elements to add, delete and rename values of
-the constituency field.
+Constituency is a custom field that applies to all RTIR queues. The RTIR
+administrator can manage the field and its values via the web interface at
+Tools -> Configuration -> Custom Fields -> click on Constituency custom field.
+At the bottom of the page in the Values section, you can add, delete, and
+rename values, and change the sort order.
 
 However, to get advanced control over constituencies you have to create additional
-objects in the system. We'll describe steps below, but as well admins may use the
-F<add_constituency> script in the etc directory which helps add and new constituency
-values, along with their associated groups and queues.
+objects in the system. The steps below describe how to do this manually. An
+F<add_constituency> script is also provided which helps add new constituency
+values, along with their associated groups and queues. You'll find this in the
+F<etc> directory in your RTIR distribution.
 
-=head2 Managing constituency values
+=head2 Managing Constituency Values
 
-In some simple configurations,administrators may use the web interface
-to add/delete or rename values to the 'Constituency' field, however
+In some simple configurations, administrators may use the web interface
+to add, delete, or rename values for the 'Constituency' field, however
 if you need the advanced access control RTIR's Constituencies system
 provides, you need to create several queues and groups for each
-value. To simplify this task you can used the F<add_constituency>
-script. You can find it in the etc directory of RTIR's distribution.
-This script adds new values to the field and creates several objects
-in the system if those don't exist. It also grants basic constituency
-rights.
+value.
 
-For example the following objects affect the rights users can have to the constituency 'EDUNET':
+For example the following objects affect the rights users can have to
+the constituency 'EDUNET':
 
-=over 4
+=over
 
 =item * Queue 'Incident Reports - EDUNET'
+
 =item * Queue 'Incidents - EDUNET'
+
 =item * Queue 'Inestigations - EDUNET'
+
 =item * Queue 'Blocks - EDUNET'
+
 =item * Group 'DutyTeam EDUNET'
 
 =back
 
-These queues are used as sources of LIMITED information for
-per-constituency information for tickets in the master queue.  You
-can set constituency base correspond and comment addresses. You'll
-find more details about that later.
+These queues are used to store limited per-constituency information for
+tickets in the master queue. For example, you
+can set the constituency base correspond and comment addresses.
 
-Read more about granting rights using special queues and groups below in 
-the ACL section.
+See L</"Access Control (ACLs)"> below for more about granting rights using
+special queues and groups.
 
-=head2 Value propagation algorithms
+=head2 Constituency Propagation
 
-An administrator can use the C<$_RTIR_Constituency_Propagation> config option to
-choose RTIR's behaviour on constituency inheritance between linked tickets.
-There are three algorithms at the moment: 'no', 'inherit' and 'reject'.
-These algorithms are defined in L</Changing the value>
+The C<$_RTIR_Constituency_Propagation> config option determines
+how constituency values are inherited between linked tickets.
+There are three option: 'no', 'inherit' and 'reject'.
+These algorithms are defined in L</Constituency Propagation Options>.
 
 =head3 Introduction
 
-Before we start discussing algorithms in depth let's look at the primary ways of
-setting and changing value of the 'Constituency' field:
+Before discussing constituency propagation in depth let's look at
+the primary ways of setting and changing the Constituency field.
 
-=over 4
+=over
 
-=item Creating a new ticket without links.
+=item Creating a new ticket without links
 
-The simplest case. User creates a new ticket and there is no reference to
-another ticket which already exists in the system. For example user creates
-an IR using the Web UI by clicking RTIR -> Incident Reports -> New Report,
-fills in values, leaves the Incident input blank. In this case default value
-from the config is used, however user can change constituency.
+This is the simplest case. A user creates a new ticket and there is no reference
+to an existing ticket. For example, the user creates
+an IR using the web UI by clicking RTIR -> Incident Reports -> Create,
+fills in values, and leaves the Incident input blank. In this case
+Constituency will be set to the default, set in C<%RTIR_CustomFieldsDefaults>
+in the RTIR configuration, or to the value the user
+selects.
 
-A similar situation happens when ticket is created using the email interface.
-Find out more about that in the 'Presetting constituency according to mail
-traffic' section below.
-
-=item Creating a new ticket with a link.
+=item Creating a new ticket with a link
 
 RTIR allows users to create new tickets and link them with another
 as a single step. For example a user can create a new IR from an Incident
-or launch an Investigation from it. When user is looking at a creation
-page we already know all information about the ticket he's creating a new
-one from, so we select default constituency value based on the ticket the user
-is going to link to. This is one of situations where the option plays
-its role. Depending on the configuration, we can allow user to change 
-constituency of the new ticket or not.
+or launch an Investigation from it. When a ticket is created based on an
+existing ticket, we can use the core information from the existing ticket,
+including the constituency value. In this case, the configuration option
+defines whether the user is allowed to manually change the constituency
+value.
 
-There is another scenario you should be aware of: when user is creating
-a ticket he can enter the ID of an Incident into an input field. In this case
-we don't know anything about the incident beforehand and operation may
-be interrupted later on - at the form submit.
+=item Creating a new ticket with Incident Id
 
-=item Changing the value
+This case is similar to the first case, but the user provides
+an Incident Id in the Incident field. Since the new ticket references
+and existing ticket, constituency logic can come into play as
+noted in the second case.
 
-Changing constituency of a ticket can affect linked tickets as well.
+=item Updating an existing ticket
+
+Users can edit an existing ticket and change the Constituency value,
+and this can affect linked tickets as well. This case in
+particular is controlled by the propagation option you set.
 
 =back
 
-The three propagation algorithms:
+=head3 Constituency Propagation Options
+
+The three propagation algorithms are available:
 
 =head3 no
 
 This is the default algorithm. Any combinations are allowed. Users can link
-tickets with different constituencies, changing the value of a ticket doesn't
-affect linked tickets. However, reasonable defaults are suggested. For example
+tickets with different constituencies. Changing the value on a ticket doesn't
+affect linked tickets. However, reasonable defaults are still used. For example
 when a user creates a new ticket from another one we select constituency of the
-latter ticket by default instead of using the default value from the config.
+existing ticket by default instead of using the default value from the config.
 
 =head3 reject
 
-This algorithm doesn't allow user to link tickets with different values of
-the 'constituency' field.
+This algorithm doesn't allow a user to link tickets with different Constituency
+values.
 
-Users can not change the 'constituency' field's value when create a new ticket from another one.
+Users cannot change the Constituency value when creating a new ticket from
+another one.
 
-During linking tickets together, the list of possible candidates is restricted by
-constituency of the former ticket, so user may not choose targets with different
+When linking tickets together, the list of possible constituencies is restricted by
+the constituency of the former ticket, so the user may not choose targets with different
 constituencies.
 
-Changing constituency value through the 'Edit' page is possible ONLY if
+The Constituency value on an existing ticket can be changed only if
 the ticket is not linked to any other tickets.
 
 =head3 inherit
 
-This algorithm is something in between of the above two. Operations are not
-rejected, instead we prefer the value of a new incident when user links tickets
+This algorithm is something in between no and reject. Operations are not
+rejected; instead we prefer the value of a new incident when a user links tickets
 together.
 
-If the user uses 'New' or 'Launch' links on the main view of an incident,
-investigation, incident report or block to create new linked ticket then
-the creation page contains a predefined value for constituency and can't be
+If the user uses New or Launch links on the main view of an incident,
+investigation, incident report or block to create a new linked ticket then
+the creation page contains a predefined value for Constituency and can't be
 changed at this point.
 
-Changing constituency value is possible through the 'Edit' page. RTIR
-updates all related tickets during this action, so all continue to have
+The Constituency value can be changed on existing tickets, even if
+the ticket has other tickets linked to it. In this case, RTIR
+updates all related tickets during the update, so all continue to have
 the same value.
 
 Note that while linking tickets together, the list of possible candidates
 is not restricted by the constituency of the initial ticket, so a user may
 choose targets with different constituencies. In the latter case the incident's
-constituency value is always preferred.
+Constituency value is always preferred.
 
-=head3 Linking tickets using the 'Advanced' tab
+=head3 Advanced Linking
 
-The Advanced tab RTIR has allows people to do things that generic RTIR
-interfaces don't, so you can merge random tickets, move tickets between
-queues and what is B<most important> in regards to constitiencies it
-allows users to link tickets with different constituencies even if
-propagation algorithm is 'reject'.
+The Advanced tab allows you to do things that generic RTIR
+interfaces don't, so you can merge arbitrary tickets, move tickets between
+queues and, most important for constitiencies, it
+allows you to link tickets with different constituencies even if
+the propagation algorithm is set to 'reject'.
 
-ALCs are still applied to such operations, but administrators should
-remember that by default links don't require bi-directional ACL checking.
-This behavior can be changed using $StrictLinkACL option in the RT's
-config.
+Permissions (ACLs) are still applied to such operations, but administrators
+should note that by default links don't require bi-directional ACL checking.
+This means a user does not need the ModifyTicket right on the ticket they
+are linking to in order to set up a link. This behavior can be changed using
+the C<$StrictLinkACL> option in RT's configuration.
 
-=head2 Outgoing mail: "CorrespondAddress" and "CommentAddress"
+=head2 Outgoing Mail: "CorrespondAddress" and "CommentAddress"
 
-If you create queues as described in the L</Managing constituency values>
-section, their correspondence and comment addresses will override
+If you create queues as described in L</Managing Constituency Values>,
+the queue correspondence and comment addresses will override
 the original queue's where possible.
 
-For example an user replies to an IR with constituency EDUNET and RTIR
-sends notifications then correspond address of 'Incident Reports - EDUNET'
-queue is used in notifications, but only if it's not empty. If the field
-is empty then correspond address of 'Incident Reports' queue is used
-unless it's empty too. The last resort is $CorrespondAddress in the RT's
-config file.
+For example, if a user replies to an IR with constituency EDUNET and RTIR
+sends notifications, the correspond address of the 'Incident Reports - EDUNET'
+queue is used in notifications, if one is set. If the field
+is empty, the correspond address of the 'Incident Reports' queue is used
+unless it's also empty. The last fallback address is the C<$CorrespondAddress>
+in the RT's configuration file.
 
-It is important to note that these additional rights do NOT also
+It is important to note that these additional rights do not also
 add new mailing rules.  
 
-=head2 Presetting constituency according to mail traffic
+=head2 Presetting Constituency from Email
 
 Many mail transfer agents (MTAs) allow you to specify a flag on any incoming
-email message by appending "+flag" after an email address. (This option
+email message by appending "+flag" after an email address. This option
 is supported by postfix, sendmail, qmail, exim and others, though the "+" delimiter
 has different defaults on some systems and can be customized by a site's systems
-administrator)
+administrator.
 
 RTIR's multiple constituency support uses this extension mechanism to allow
 a single queue to receive mail for multiple constituencies. If you have two
@@ -226,87 +272,88 @@ address as follows in /etc/aliases:
     gov: abuse+govnet
     abuse: "|/path/to/rt-mailgate ...mailgate options..."
 
-The rt-mailgate script expect that MTA sets the EXTENSION environment variable
-with value of "flag". The script adds this value to the incoming message in
-the 'X-RT-Mail-Extension' header's field. If an incoming mail has
-'X-RT-Mail-Extension: <valid constituency value>' header field then new
-ticket is created and constituency set according to field value.
+The rt-mailgate script expects the MTA to set the EXTENSION environment variable
+with a value of "flag." The script adds this value to the incoming message in
+the 'X-RT-Mail-Extension' header field. If an incoming mail has
+'X-RT-Mail-Extension: <valid constituency value>' header field then a new
+ticket is created with Constituency set accordingly.
 
-The constituency field is mandatory so if the mail gate is not configured
+The Constituency field is mandatory so if the mail gate is not configured
 then the default value from the config is used.
 
-=head2 ACLs
+=head2 Access Control (ACLs)
 
 RTIR allows you to grant additional rights to tickets based on their
 constituency by means of "pseudo" queues ("Incidents - EDUNET" for
-the EDUNET constituency on the Incidents queue, for example.)
+the EDUNET constituency on the Incidents queue, for example).
 
 For example, assume you have two constituencies "EDUNET" and "GOVNET".
 Your RTIR instance consists of four queues: Incident Reports,
-Incidents, Investigations and Blocks.  To grant the user "Edward"
+Incidents, Investigations and Blocks. To grant the user Edward
 the right to work with EDUNET Incident Reports, you'll need to
-create a new queue, "Incident Reports - EDUNET".  Make "Edward" an
+create a new queue, "Incident Reports - EDUNET". Make Edward an
 AdminCc of the new queue, either directly or as a member of a group
 like "DutyTeam EDUNET".
 
 You should grant that user or group the rights you want them to
 have to tickets in the "Incident Reports" queue. It is important
-that you NOT grant the user or group "queue-wide" rights such as
+that you I<not> grant the user or group "queue-wide" rights such as
 "See Queue" or "Create Ticket" in the pseudo-queue as the system
 will apply those rights to the pseudo-queue "Incident Reports -
-EUDNET" and NOT to the "Incident Reports" queue.
+EUDNET" and I<not> to the "Incident Reports" queue.
 
 Note that templates, custom fields and scrips can still be applied to
 pseudo queues, but in the current implementation these objects have
 no effect on the RTIR behavior. This may be changed in the future.
 
-=head3 Constituency specific groups
+=head3 Constituency Specific Groups
 
-For each constituency value admin can create a group
-'DutyTeam constituency_value' using either the web UI or the script.
+For each Constituency value, the RTIR admin can create a group
+'DutyTeam [constituency_value]' using either the web UI or the script.
 
-We've added a little bit automation for such groups. Those groups
-are added as AdminCc to a ticket according to value of the field.
-And you can grant additional rights using this fact. For example
-if you grant 'TakeTicket' right to AdminCc role of IR queue
-then users that are members of 'DutyTeam EDUNET' group will have
+We've added some automation for such groups. Those groups
+are added as an AdminCc to a ticket according to value of the field
+and you can grant additional rights using this assignment. For example
+if you grant the 'TakeTicket' right to the AdminCc role on the IR queue
+then users that are members of the 'DutyTeam EDUNET' group will have
 this rights on all EDUNET tickets.
 
 Note that this method has some limitations and caveats. Users who
-has enough privileges still can add other users and groups as
+have enough privileges still can add other users and groups as
 AdminCcs of a ticket and these principals will get the same set of
-additional rights constituency specific group get via AdminCc role.
-As you use AdminCc role only then you can not use it to grant one
-set of rights to group X and another set to group Y.
+additional rights that constituency-specific groups get via the AdminCc
+role. Since this uses the AdminCc role to grant constituency rights,
+you cannot use the role to grant one set of rights to group X and
+another set to group Y.
 
-As well, by default AdminCcs are notified on many actions that happens
-with tickets, so this feature can be a little bit noisy. You either
+Also, by default AdminCcs are notified on many ticket actions,
+so this feature can be a little bit noisy for members. You either
 can disable notifications of AdminCcs or disable this functionality.
 
 If you want to disable this functionality you just have to disable
 "SetConstituencyGroup" scrips in RTIR's queues. These scrips add or
-replace group in the AdminCc list when people set or change ticket's
+replace group in the AdminCc list when people set or change the ticket's
 constituency. If you still need more control over ACLs then you
-can use the pseudo-queues to reach the same and much more.
+can use the pseudo-queues to add this control.
 
-=head3 DutyTeam group vs. constituency specific group
+=head3 DutyTeam Group vs. Constituency Specific Group
 
-By default DutyTeam has almost all rights on all RTIR's queues, rights
-this group has applies to tickets with all constituencies, so if you
-want to give access to group 'DutyTeam EDUNET' on EDUNET tickets only
-then it's not good idea make this group member of DutyTeam.
+By default DutyTeam has almost all rights on all RTIR's queues. This
+group's rights apply to tickets with all constituencies, so if you
+want to give access to group 'DutyTeam EDUNET' on EDUNET tickets only,
+then you don't want to make this group a member of DutyTeam.
 
-In RT/RTIR you can not deny right for a subgroup of a group if the latter
-has it, so you should avoid adding groups into groups with higher
-privileges. We suggest leave DutyTeam and constituency specific group
+In RT/RTIR you cannot deny a right for a subgroup of a group if the
+parent group has it, so you should avoid adding groups into groups with higher
+privileges. We suggest leaving DutyTeam and constituency specific groups
 on the same level, however, you can join them using a new top level
 group.
 
-The same rules applies to user members of groups. Rights of all groups
-a user is member of are summed up and if he is member of DutyTeam with
+The same rules apply to user members of groups. Rights of all groups
+a user is a member of are summed up and if he is a member of DutyTeam with
 default of rights then he has more rights than any member of
-constituency specific group (who is not member of other groups).
-Considering above suggestion a good way to deal with users is to place
-each user into constituency specific groups user should have access to
-and place her into DutyTeam only if he should work with all constituencies.
+a constituency specific group (who is not member of other groups).
+Considering the above suggestion, a good way to manage users is to place
+each user in a constituency specific groups based on their access needs.
+Place users into DutyTeam only if they should work with all constituencies.
 

@@ -531,8 +531,9 @@ Set(
 Set constituency propagation algorithm. Valid values are 'no',
 'inherit' and 'reject', by default 'no' propagation happens.
 
-Read more about constituencies in F<lib/RT/IR/Constituency.pod>.
-Algorithms are described in 'Changing the value' chapter.
+Read more about constituencies in F<lib/RT/IR/Constituencies.pod>.
+Algorithms are described in
+L<Constituencies/"Constituency Propagation Options">.
 
 =cut
 
