@@ -10,6 +10,8 @@ FEATURES
 FIXES
 =====
 
+* RTIR now requires RT 3.8.6 in order to take advantage of custom field
+  rendering bugfixes
 * compatibility with RT 3.8.13 and older versions patched
   with security fixes
 * ensure that reports are passed the Constituency selected
