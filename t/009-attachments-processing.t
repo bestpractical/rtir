@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 77;
+use RT::IR::Test tests => 80;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -199,7 +199,14 @@ $agent->goto_create_rtir_ticket('Blocks');
     my $ir2_id = $agent->create_ir( {Subject => "ir1 for merging", Incident => $inc_id} );
 
     $agent->display_ticket( $inc_id);
-    $agent->follow_link_ok({text => 'Reply to Reporters'}, "go to 'Reply'");
+    $agent->follow_link_ok({text => 'Reply to Reporters'}, "go to 'Reply to Reporters'");
+    $agent->content_contains( "<input type=\"checkbox\" name=\"SelectedReportsAll\" value=\"1\" checked=\"checked\"",
+                              'Checkboxes checked for reply all');
+
+    $agent->follow_link_ok({text => 'Reply'}, "Confirm 'Reply' link returns here in same state");
+
+    $agent->content_contains( "<input type=\"checkbox\" name=\"SelectedReportsAll\" value=\"1\" checked=\"checked\"",
+                              'Checkboxes checked for reply all');
 
     my $content = "this is test";
     my $filename = tempfile($content);
@@ -226,4 +233,3 @@ $agent->goto_create_rtir_ticket('Blocks');
 
     unlink $filename or die "couldn't delete file '$filename': $!";
 }
-

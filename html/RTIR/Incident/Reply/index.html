@@ -188,15 +188,6 @@ if ( $SubmitTicket && !$checks_failure ) {
     );
 }
 
-# XXX, BLOODY-DIRTY-EVIL HACK: when we load the page first time we should
-# select all children by default, but we have no way to do that right now
-# without something like this
-foreach (qw(SelectedReports SelectedInvestigations SelectedBlocks)) {
-    if ( !exists $ARGS{ $_ } && !exists $ARGS{ $_ .'All'} ) {
-        push @{ $m->{'request_args'} }, $_ .'All' => 1;
-    }
-}
-
 my $title;
 if ($Status eq 'resolved') {
     $title = loc("Resolve Incident #[_1] (including children)", $id);
