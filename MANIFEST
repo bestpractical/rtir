@@ -53,6 +53,7 @@ html/Callbacks/RTIR/Ticket/Display.html/Initial
 html/Callbacks/RTIR/Ticket/Elements/EditCustomFields/MassageCustomFields
 html/Callbacks/RTIR/Ticket/Elements/ShowHistory/SkipTransaction
 html/Callbacks/RTIR/User/Elements/Tabs/Default
+html/l_unsafe
 html/RTIR/Advanced.html
 html/RTIR/Block/Elements/EditState
 html/RTIR/Block/Elements/Tabs
