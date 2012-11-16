@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 38;
+use RT::IR::Test tests => 39;
 
 RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'} = 'EDUNET';
 
@@ -131,7 +131,7 @@ diag "GOV user creates an IR under EDUNET, check addresses";
 {
     RT::Test->clean_caught_mails;
 
-    $agent->login('govhandler', 'govhandler');
+    ok($agent->login('govhandler', 'govhandler', logout => 1 ));
     my $id = $agent->create_ir(
         
         { Subject => "test", Requestors => $rtir_user->EmailAddress },
