@@ -59,18 +59,21 @@ Set(
         actions => [
             'open -> resolved'  => {
                 label => 'Resolve', update => 'Comment',
-                All => 1, SelectAllTickets => 1,
+                All => 1,
+                SelectedReportsAll => 1, SelectedInvestigationsAll => 1, SelectedBlocksAll => 1,
             },
             'open -> resolved'  => {
                 label => 'Quick Resolve',
             },
             'open -> abandoned' => {
                 label => 'Abandon', update => 'Comment',
-                All => 1, SelectAllTickets => 1,
+                All => 1,
+                SelectedReportsAll => 1, SelectedInvestigationsAll => 1, SelectedBlocksAll => 1,
             },
             '* -> open'  => {
                 label => 'Re-open',
-                All => 1, SelectAllTickets => 1,
+                All => 1,
+                SelectedReportsAll => 1, SelectedInvestigationsAll => 1, SelectedBlocksAll => 1,
             },
         ],
     },

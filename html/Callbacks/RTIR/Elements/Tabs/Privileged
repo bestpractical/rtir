@@ -177,11 +177,11 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update)\.html$}
         if ( $type eq 'Incident' ) {
             $actions_tab->child(
                 reply_reporters => title => loc('Reply to Reporters'),
-                path  => "/RTIR/Incident/Reply/?id=$id&SelectAllTickets=1&SelectedReportsAll=1",
+                path  => "/RTIR/Incident/Reply/?id=$id&SelectedReportsAll=1",
             );
             $actions_tab->child(
                 reply_all => title => loc('Reply to All'),
-                path  => "/RTIR/Incident/Reply/?id=$id&SelectAllTickets=1&All=1&SelectedReportsAll=1&SelectedInvestigationsAll=1&SelectedBlocksAll=1",
+                path  => "/RTIR/Incident/Reply/?id=$id&All=1&SelectedReportsAll=1&SelectedInvestigationsAll=1&SelectedBlocksAll=1",
             );
         } else {
             $actions_tab->child(
