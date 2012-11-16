@@ -12,6 +12,7 @@ find( {
     no_chdir => 1,
     wanted   => sub {
         return if /\.(?:jpe?g|png|gif)$/i;
+        return if m{/\.[^/]+\.swp$}; # vim swap files
 	return if /\.svn/i;
         return unless -f $_;
         diag "testing $_" if $ENV{'TEST_VERBOSE'};
