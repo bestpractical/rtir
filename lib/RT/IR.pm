@@ -617,7 +617,10 @@ if ( RT::IR->HasConstituency ) {
 
         # We do this, rather than fall through to the orignal sub, as that
         # interacts poorly with our overloaded QueueObj below
-        if ( $self->CurrentUser->id == RT->SystemUser->id ) {
+        # Don't try and load Constituencies outside of RTIR.  It results
+        # in a lot of useless checks.
+        if ( ( $self->CurrentUser->id == RT->SystemUser->id ) ||
+             ( $queue->Name !~ /^(Incidents|Incident Reports|Investigations|Blocks)$/i ) ) {
             $_[-1] =  [$queue];
             return;
         }
