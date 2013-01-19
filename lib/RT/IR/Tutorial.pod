@@ -23,34 +23,34 @@ link all of these reports to the same parent Incident, to keep them together.
 =head3 Investigation
 
 From an existing Incident, you can launch an Investigation to an outside party,
-asking them to look into and/or fix the problem. Once again, relevant
+asking them to look into and/or fix a problem. Once again, relevant
 information from the Incident is filled in when you create the new
 Investigation, so there's no need to cut-and-paste.
 
 =head3 Blocks
 
-Blocks are used to track the blocks placed on the borders of the network. You
+Blocks are used to track any blocks placed on the borders of the network. You
 can create them from an existing Incident. Some sites don't require blocks, so
-they may be disabled by your Administrator.  Blocks have several states: pending
-activation, active, pending removal, removed.  These states can be set from
+they may be disabled by your Administrator. Blocks have several states: pending
+activation, active, pending removal, removed. These states can be set from
 sub-menu items on ticket display pages.
 
-=head2 Operations with tickets
+=head2 Operations with Tickets
 
-=head3 Creating tickets
+=head3 Creating Tickets
 
-=head4 Suppress sending emails
+=head4 Suppress Sending Emails
 
-During creating of a ticket in RTIR, user may check box next to 
-"Don't send any emails to correspondents" phrase, this will
+When creating a ticket in RTIR, you can check the
+"Don't send any emails to correspondents" checkbox, which will
 suppress all outgoing emails to all correspondents. Note that
-this works only during creation and later user will recieve other
-emails according to configuration of notifications.
+this works only during creation, and users added later will receive
+emails as normal based on the system configuration.
 
-=head3 Merging tickets
+=head3 Merging Tickets
 
 If it turns out that two Incidents are actually the same
-(which can occur when, e.g., dynamic IP addresses are
+(which can occur when, for example, dynamic IP addresses are
 involved), they may be merged. The merge operation effectively
 makes one ticket out of two, containing the data and
 correspondence of both. Only tickets within the same queue
@@ -59,25 +59,22 @@ Incident Report into an Investigation when a correspondent's
 reply accidentally could not be recognized as such and thus
 got misfiled as new Incident Report.
 
-When a user opens a ticket's display page there is a 'Merge'
-option in the page's tabs. The Merge page is split into two
-blocks. The first one is a list of other children of the parent
+You can find the Merge link on the ticket display page.
+The Merge page is split into two
+sections. The first one is a list of other children of the parent
 Incident(s) of the current ticket. It's empty if the ticket is
 not linked to any Incidents or if there is no candidate to
 merge into. By default this page contains only active tickets.
 
-The second box contains other tickets you can merge into,
-tickets are grouped by queue, if it's possible to merge the
-ticket into a ticket in another queue. (for example, you can
-merge an IR into an Investigation). Note that if a user
-merges an IR into an Investigation then Investigation is always
-used as the target ticket.
+The second box contains other tickets you can merge into.
+Tickets are grouped by queue, if it's possible to merge the
+ticket into a ticket in another queue. For example, you can
+merge an IR into an Investigation. Note that if you
+merge an IR into an Investigation, the Investigation will always
+be used as the target ticket.
 
-You have to select one ticket from the list and submit the form.
 If the merge completes successfully, you'll be redirected to the 
-target ticket's main page. The action may fail because of lack of
-permissions or a system error, in this case you'll see an error
-message, consult to your system administrator.
+target ticket's display page.
 
 When the merge page doesn't have the ticket you're looking for,
 you can click 'Refine' to adjust the search conditions before
@@ -85,15 +82,13 @@ returning to the merge page by clicking the 'Merge' tab.
 
 After the merge, the IDs of both tickets point to the target
 ticket, so you can still use the old ticket's ID in the subject
-of replies, but RTIR will send new notifications with an ID of
+of replies, but RTIR will send new notifications with the ID of
 the merged into ticket.
 
 The merge operation B<can't be reversed> and should be used with
 caution.
 
-=head4 Technical details
-
-There are some technical details users may be interested in.
+=head4 Technical Details
 
 The merge operation is pretty straight forward, everything that
 RT can merge from the source ticket is added to the target ticket.
@@ -104,89 +99,89 @@ as "merge ticket #2 into #1".
 
 When you merge ticket #1 into #2 some properties of ticket #1
 are joined with respective properties of ticket #2: TimeEstimated,
-TimeWorked, TimeLeft, Requestors, Cc and AdminCc and links.
-Duplicated links or watchers will be condensed, also if there
+TimeWorked, TimeLeft, Requestors, Cc and AdminCc and Links.
+Duplicated links or watchers will be condensed; if there
 were links between tickets #1 and #2 then RT will drop them.
 Other fields from ticket #1 are ignored, such as status, queue or
-custom fields of single value type. By default RTIR shows only
-active tickets as candidates for the merge, so you have no way
-to merge a ticket into one that's been resolved or rejected,
-but you should note that merging into a resolved ticket (you can
-change search conditions via refine tab) is not the same as
-resolving ticket and RTIR will not send notifications in this case.
+custom fields of single value type.
+
+By default RTIR shows only active tickets as candidates for the
+merge, so you typically will not merge a ticket into one that's
+been resolved or rejected. However, you can use the Refine Search
+option to find an inactive ticket. If you do so, note that merging
+into a resolved ticket is not the same as explicitly resolving the
+ticket and RTIR will not send notifications or run other scrips.
 
 Users can merge tickets only if they have the right 'ModifyTicket'
 on both tickets.
 
-You, also, can access RT's generic merge from an RTIR ticket's
-'Advanced' tab. This option allows user to merge any ticket into
-any avoiding 'the same queue' and other restrictions RTIR has.
-For example you can merge an Investigation into an IR, or an IR
-into a ticket in non RTIR's queues. ACL checks still apply.
-In the normal course of work, this operation should be avoided.
+You can also access RT's standard merge from an RTIR ticket's
+'Advanced' tab. This option allows you to merge any ticket into
+any other, avoiding 'the same queue' and other RTIR restrictions.
+For example, you can merge an Investigation into an IR, or an IR
+into a ticket in non-RTIR queues. Access checks and permissions still
+apply. In the normal course of work, this operation should be avoided.
 
-=head3 Splitting tickets
+=head3 Splitting Tickets
 
-The Split operation allows user to create a new ticket from an existing one.
-When a user selects the 'Split' tab he will see a new ticket creation form 
+The Split operation allows you to create a new ticket from an existing one.
+When you click the Split tab, you get a new ticket creation form 
 with information pre-filled from the original ticket, for example Subject, 
 Owner, Correspondents(Requestors), Ccs, AdminCs, as well as the original ticket's
-history, formatted as text in the message box. The user can change any and all
+history, formatted as text in the message box. You can change any and all
 values before splitting off the new ticket.
 
-"Split" tickets can only be created in the same queue as the ticket they're
+Split tickets can only be created in the same queue as the ticket they're
 split from.
 
-Note that the split action is implemented over "create" function and if
-your RTIR is configured to notify requestors (correspondents) then mail(s)
-would be send after split. However you can use "Don't send any emails to
+Note that the split action is implemented with the "create" function and if
+your RTIR is configured to notify requestors (correspondents) then email
+will be sent after the split. However you can use "Don't send any emails to
 correspondents" checkbox from the split page to avoid notifications.
 
 =head3 Rejecting an IR
 
-Rejecting means "we're not going to work on the ticket". There are several
+Rejecting means "we're not going to work on this report." There are several
 reasons to do this: the ticket is spam, problem wouldn't be solved, it's
-out of scope or something else. Rejected tickets are still available for
+out of scope, etc. Rejected tickets are still available for
 searches and can be reopened, but RTIR's default interfaces are designed
 to hide such tickets, so people can concentrate on new and open tickets.
 
-When you open a ticket's display page there is a 'Reject' tab. You click
-it and see 'reject Incident Report' page with a box for message and other
+When you click the Reject tab on the ticket display page you'll see
+the 'Reject Incident Report' page with a box for a message and other
 common input fields. You can write a message and choose whether it would be
-comment or response, by default correspondents don't receive comments.
-You submit the form and RTIR sets status of the ticket, records the message
-and unlink the IR from any Incidents.
+comment or response. By default correspondents don't receive comments.
+You submit the form and RTIR sets the status of the ticket, records the message
+and unlinks the IR from any Incidents.
 
 If you don't want to write any comment or change any properties of an IR
-during reject action then you can submit the reject form immediately or
-use 'Quick Reject' tab and reject the current IR without even opening
+when rejecting, you can submit the reject form immediately or
+use the Quick Reject tab and reject the current IR without even opening
 the reject form.
 
-=head4 Rejecting many IRs at once (bulk reject)
+=head4 Rejecting Many IRs at Once (Bulk Reject)
 
 On the RTIR home page at the top right corner of 'New unlinked Incident Reports'
-box you can see 'Reject' link. Following that link you can open interface
-for rejecting many tickets at once. The interface has a buttons to
-check/uncheck all tickets on the page or you can select particular IRs
-with checkboxes. To reject tickets you submit the form with 'reject' or
-'reject and return' buttons, by clicking the former one you stay on the
-'bulk reject' page, while the latter one returns you to the RTIR home page
-where you could continue your work.
+you'll find a Bulk Reject link, which allows you to reject many tickets
+at once. On the Bulk Reject page, you can check/uncheck all tickets displayed
+or you can select individual IRs. Click the Reject button to reject the selected
+tickets and remain on the Bulk Reject page or click Reject and Return to reject
+the selected tickets and return to the RTIR home page.
 
-As well, link to 'Bulk Reject' operation exist in the page menu of searches
-for 'Incident Reports', so you can go to RTIR's 'Incident Reports' menu,
-refine search conditions if you like to, and from the page with results go to
-'Bulk Reject' operation.
+A link to Bulk Reject is also available in the menu of searches
+for Incident Reports, so you can go to RTIR's Incident Reports menu,
+refine search conditions, and go to Bulk Reject from the search results
+page.
 
-Using this interface you can reject IRs that have links to Incident(s) what
-may be undesired, so search results on 'Bulk Reject' page have column
-'Has Incident?' which indicates wether a IR linked to Incident or not.
-However this column is only informative and you still can reject IRs
+Using this interface you might unknowingly reject IRs that have links
+to Incidents, so the search results on the Bulk Reject page have a
+'Has Incident?' column which indicates whether an IR is linked to an Incident.
+However this column is informative only and you still can reject IRs
 that are linked to an Incident.
 
-Note that you can't reject IRs that are owned by somebody else (you can,
-however, reject unowned IRs) with the bulk reject interface. IRs owned by
-others will be skipped with a warning even if you selected them.
+Using the Bulk Reject interface, you can reject IRs you own or that are
+unowned, but you can't reject IRs that are owned by someone else.
+IRs owned by others will be skipped with a warning even if you selected them.
 
 =head3 Abandoning Incidents
 
@@ -195,41 +190,40 @@ abandoning an Incident you also reject IRs, resolve Investigations and
 remove Blocks linked to it.
 
 Once you open the Abandon page under the Incidents tab you see a list of its
-children grouped by queue. You can select children with checkboxes, only
+children grouped by queue. You can select children with checkboxes and only
 children you've selected will be rejected, resolved or removed.
 
-Resolution of the Incident is set according to C<%RTIR_CustomFieldsDefaults>
-config option and by default its value is "no resolution reached", however,
+The Incident's Resolution is set according to the C<%RTIR_CustomFieldsDefaults>
+config option. By default its value is "no resolution reached," however,
 you can choose any value you'd like to.
 
-You can write a message that that will be added to the selected children as
-a comment or response according to value of 'Update Type' field.
+You can write a message that will be added to the selected children as
+a comment or response according to value of the 'Update Type' field.
 
-Once user submit the form RTIR updates selected tickets and then checks
-state of children of the Incident to decide whether it's OK to abandon it
+When you submit the form, RTIR updates the selected tickets and then checks
+the state of the Incident's children to decide whether it's OK to abandon it
 or not. In the simplest case the Incident you're abandoning has children
-that aren't linked to another open Incident, RTIR marks the Incident
-as abandoned if all children are closed(resolved, rejected or removed)
+that aren't linked to any other open Incident. RTIR marks the Incident
+as abandoned if all children are inactive (resolved, rejected or removed)
 otherwise you see a notice "State of the Incident left unchanged; not
-all children were updated". The latter case may happen when the user's
-selected not all children.
+all children were updated."
 
 RTIR supports IRs linked to many Incidents and in this case abandoning is
 a little bit trickier. When you're abandoning an Incident linked to an IR
-that is linked to another open Incident, RTIR doesn't reject IR, but adds
-a comment to the IR telling that the Incident has been abandoned while
-this ticket is still linked to open Incident and left unchanged. In such
-situation the Incident is abandoned.
+that is linked to another open Incident, RTIR doesn't reject the IR, but adds
+a comment to the IR noting that the Incident has been abandoned while
+this ticket is still linked to an open Incident and left unchanged. In this
+situation the original Incident is successfully abandoned.
 
-=head4 Abandoning many Incidents at once (bulk abandon)
+=head4 Abandoning Many Incidents at Once (Bulk Abandon)
 
-Use a bulk abandon subtab under the Incidents tab to abandon multiple
-Incidents at once.
+The Bulk Abandon subtab under the Incidents tab allows you to abandon
+multiple Incidents at once.
 
 =head3 Locking
 
-B<Note> that this functionality is available only when L<RT::Extension::TicketLocking>
-extension is installed.
+B<Note> that this functionality is available only when the
+L<RT::Extension::TicketLocking> extension is installed.
 
 An automatic lock is created whenever a user performs an action on a ticket that
 takes multiple steps (unless a hard lock is already in place for that ticket).
@@ -287,7 +281,7 @@ When creating a new IR, you may enter the ID number of an Incident in the
 
 If you have an existing IR, you can link it to an Incident by clicking the
 "[Link]" button next to the "Incident" field. You may also create new Incidents
-and linking them to this IR by clicking the "[New]" button next to the
+and link them to the IR by clicking the "[New]" button next to the
 "Incident" field in the "The Basics" section of the IR display.
 
 =head4 Linking Incidents to IRs, Investigations, etc.
@@ -299,38 +293,38 @@ tickets. Clicking on C<Link> lets you link one or more tickets of that type to
 the Incident.
 
 Clicking on C<Create> (or in the case of Investigations, C<Launch>) lets you
-create a new tickets and link it to the Incident automatically.
+create a new ticket and link it to the Incident automatically.
 
 =head3 Resolution
 
 =head4 Resolving an Incident
 
 Once you open the Resolve page under the Incidents tab you see a list of its
-children grouped by queue and common update form. You can select children
-with checkboxes. Only children you've selected will be resolved.
+children grouped by queue and an update form. The children you select
+will be resolved with the incident.
 
 You can write a message that will be added to the selected children as
-a comment or response according to value of 'Update Type' field.
+a comment or response based on the value of the 'Update Type' field.
 
-Once a user tries to resolve an Incident, RTIR checks the state of that
+When you try to resolve an Incident, RTIR checks the state of that
 Incident's children to decide whether it's OK to resolve it or not. In the
-simplest case the Incident you're resolving has children that aren't linked to
-another open Incident, RTIR marks the Incident as resolved if all children are
-closed(resolved, rejected or removed) otherwise you see a notice "State of the
-Incident left unchanged; not all children were updated". The latter case may
-happen when the user's selected not all children.
+simplest case, the Incident you're resolving has children that aren't linked to
+any other open Incident. RTIR marks the Incident as resolved if all children are
+inactive (resolved, rejected or removed) otherwise you see a notice "State of the
+Incident left unchanged; not all children were updated."
 
 =head4 Quick Resolve
 
-Incidents and IRs have a "Quick Resolve" feature. Clicking Quick Resolve will
-change a ticket's status to 'resolved' immediately. You won't be asked to
-fill in a message or time worked, attach files, and so on.
+Incidents and IRs have a "Quick Resolve" feature which changes
+a ticket's status to 'resolved' immediately. No intermediate form is
+presented and you don't need to provide a message, note time worked,
+attach files, etc.
 
 =head3 Investigation
 
 =head4 Launching an Investigation
 
-To launch a new Investigatin, create a new ticket in the Investigation queue.
+To launch a new Investigation, create a new ticket in the Investigations queue.
 You will be required to provide one or more correspondents.
 
 =head3 Blocks
@@ -340,32 +334,33 @@ You will be required to provide one or more correspondents.
 To create a new Block, create a new ticket in the Blocks queue. You will be
 required to link the Block to an Incident.
 
-=head2 Managing 'RT at Glance' and 'RTIR home' pages
+=head2 Managing 'RT at glance' and 'RTIR at a glance' Pages
 
-You can add/delete or reorder portlets on those pages using preferences.
-Either you can click 'Edit' link or Preferences and then goto subtab
-you're interested in.
+You can add, delete, or reorder portlets on the RT and RTIR at a glance
+pages using preferences. You can either click 'Edit' on the portlets
+or go to Logged in user -> Settings and then go to the section you want
+to customize.
 
-Page is splitted into two columns, however you can leave one column empty
-if you need wider one-column layout.
+The default home pages are split into two columns, however you can leave
+one column empty if you need a wider one-column layout.
 
-=head3 Available portlets
+=head3 Available Portlets
 
 =over 4
 
 =item QuickSearch
 
-Lists queues with summary on numbers of active tickets in those.
+Lists queues with the number of active tickets in them.
 Allows you to quickly jump to all active tickets in a queue or to tickets
-with particular status.
+with a particular status.
 
 =item Other
 
-There are more portlets you use which names are quite self-descriptive.
+There are more portlets you can use with self-descriptive names.
 
 =back
 
-=head2 Custom fields
+=head2 Custom Fields
 
 =head3 IP
 
@@ -375,27 +370,27 @@ You can enter information in several formats:
 * IP - single IP with decimal units separated by dot;
 
 * IP range - interval separated with C<->, for example C<192.168.20.0-192.168.20.255>,
-both ends of the interval are included range;
+both ends of the interval are included in the range;
 
 * CIDR block - IP range in the CIDR format, for example C<172.16/24>, as you
 can see short form is also supported, RTIR converts ranges in this format
-to IP-IP form.
+to the IP range form.
 
-You can set value of the custom field on create or later through edit page of a
-ticket. You can enter several values at once, one per line or comma-separated,
-as well you could mix different formats. Create or update action fail if you
-enter incorrect values with an error message, you should fix the problem and
-resubmit the form. On creation, IPs and CIDR blocks are also parsed from the
-body of the message and added to the ticket.
+You can set the value of the custom field on create or later with an edit.
+You can enter several values at once, one per line, or comma-separated,
+or you can mix different formats. Values are validated for proper format when
+you submit and any errors are reported. When tickets are created, IPs and CIDR
+blocks are also parsed from the body of the message and added to the ticket.
 
 =head4 Searching by IP
 
 You can use the same input formats to search by IP, CIDR or range. On a query
-builder page you can see input box for IP condition, enter an IP, range or CIDR
-and add the condition to the current query, return back to search results.
+builder page you can use the IP field to enter an IP, range or CIDR
+and add the condition to the current query or return back to search results.
 You should see tickets that have at least one IP from the range. But you
 should note that validation of the input is not implemented in the query
-builder and you may enter incorrect value, be careful.
+builder so you may enter invalid values. Double check the format if you
+don't see the tickets you expect in search results.
 
 =head2 Glossary
 
@@ -403,13 +398,29 @@ builder and you may enter incorrect value, be careful.
 
 =item active ticket
 
-Within RTIR a ticket is C<active> if its state is C<new>, C<open>, C<pending
-activation>, C<active> or C<pending removal>. See also C<inactive ticket>.
+An active ticket in RTIR is a ticket with a status that indicates work will
+still be done on it. RTIR uses this to determine what tickets should be shown
+by default in various searches and pages in the user interface.
+
+The available active statuses are defined as part of the
+RTIR configuration and differ for each queue (see C<%Lifecycles> in
+F<RTIR_Config.pm> and F<RT_Config.pm> for more information). Active tickets
+in the incidents queue, for example, are those with a status of C<open>. In
+the blocks queue, tickets can be C<active> or C<pending removal>. These values
+are configurable and may be different on your system.
 
 =item inactive ticket
 
-Within RTIR a ticket is C<inactive> if its state is C<resolved>, C<rejected>,
-C<abandoned> or C<removed>. See also C<active ticket>.
+An inactive ticket in RTIR is a ticket with a status that indicates work on it
+is complete. RTIR uses this to filter tickets out of various searches and pages
+in the user interface, although the tickets can still be found with searches.
+
+Inactive statuses are defined as part of the
+RTIR configuration and differ for each queue (see C<%Lifecycles> in
+F<RTIR_Config.pm> and F<RT_Config.pm> for more information). Inactive tickets
+in the incidents queue, for example, can be C<resolved> or C<abandoned>. In
+the blocks queue, tickets can have a status of C<removed>. These values
+are configurable and may be different on your system.
 
 =back
 

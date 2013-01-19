@@ -3,18 +3,18 @@ incident-handling tool designed to provide a simple, effective
 workflow for members of CERT and CSIRT teams. It allows team members
 to track, respond to and deal with reported incidents and features a
 number of tools to make common operations quick and easy.  RTIR is
-built on top of "RT," which is also available for free from Best
+built on top of RT, which is also available for free from Best
 Practical Solutions at http://www.bestpractical.com/rt/.
 
-To purchase commercials support, training or custom development for RT
-or RTIR, please contact Best Practical at sales@bestpractical.com.
-
+RT and RTIR are commercially-supported software. To purchase support,
+training, custom development, or professional services, please get in
+touch with us at <sales@bestpractical.com>.
 
 
 REQUIRED PACKAGES:
 ------------------
 
-o RT 4.0.0 or later, configured, installed and tested.
+o   RT 4.0.0 or later, configured, installed and tested.
 o   Net::Whois::RIPE 1.31 or OLDER, later versions broke
     backwards compatibility
 
@@ -32,35 +32,44 @@ Installation instructions:
 
 1) Install RT 4.0.0 or newer following RT's regular installation instructions
 
-3) Run "perl Makefile.PL" to generate a makefile for RTIR. 
+2) Run "perl Makefile.PL" to generate a makefile for RTIR.
 
-4) Install any extra Perl modules RTIR needs that aren't already
-   installed.
+3) Install any extra Perl modules RTIR needs that aren't already
+   installed. The output from the previous step will list new
+   modules needed, or if existing modules need to be upgraded to a
+   newer version.
 
-5) Type "make install".
+4) Type "make install".
 
-6) If you are installing RTIR for the first time, initialize the RTIR
-   database by typing "make initdb".
+5a) If you are installing RTIR for the first time, initialize the RTIR
+    database by typing "make initdb".
 
-   WARNING: Do not attempt to re-initialize the database if you are
-   upgrading.
+    WARNING: Do not attempt to re-initialize the database if you are
+    upgrading.
 
-7) Activate RTIR extension in the RT config:
+5b) If you are UPGRADING from a previous installation, read the
+    UPGRADING file for instructions on how to upgrade your
+    database.
+
+6) Activate the RTIR extension in the RT_SiteConfig.pm file:
 
     Set(@Plugins, 'RT::IR');
 
-8) Stop and start your web server.
+7) Stop and start your web server.
 
-9) To maintain Due date of Reports, Investigations and Blocks install
+
+Additional Extensions:
+----------------------
+
+o  To maintain Due date for Reports, Investigations and Blocks, install
    RT::Extension::SLA following the installation instructions in that
-   extension's README files.
+   extension's README file.
 
-10) If you want to enable ticket/incident aging, install RT::Extension::TicketAging
-    following the installation instructions in that extension's INSTALL and README
-    files.
+o  If you want to enable ticket/incident aging, install RT::Extension::TicketAging
+   following the instructions in that extension's INSTALL and README files.
 
-11) If you want to enable ticket locking, install RT::Extension::TicketLocking
-    following the installation instructions in that extension's README file.
+o  If you want to enable ticket locking, install RT::Extension::TicketLocking
+   following the installation instructions in that extension's README file.
 
 
 Configuring RTIR
@@ -76,13 +85,11 @@ Configuring RTIR
    RT -> Queues -> <Select RTIR's Queue> -> Templates.
    RT -> Global -> Templates.
 
-
 3) By default, RT ships with a number of global Scrips.  You should use 
    RT's configuration interface to look through them, and disable any 
    that aren't apropriate in your environment.
    RT -> Queues -> <Select RTIR's Queue> -> Scrips.
    RT -> Global -> Scrips.
-
 
 4) Add staff members who handle incidents to the DutyTeam group.
    RT -> Configuration -> Groups -> DutyTeam -> Members.
@@ -94,20 +101,20 @@ Configuring RTIR
 SETTING UP THE MAIL GATEWAY 
 ---------------------------
 
-An alias for the Incident Reports  queue will need to be made in either 
-your global mail aliases file (if you are using NIS) or locally on your
-machine.
- 
-Add the following lines to /etc/aliases (or your local equivalent) :
+An alias for the Incident Reports queue will need to be configured.
+Add the following lines to /etc/aliases (or your local equivalent):
 
-rtir:         "|/opt/rt3/bin/rt-mailgate --queue 'Incident Reports' --action correspond --url http://localhost/"
+rtir:         "|/opt/rt4/bin/rt-mailgate --queue 'Incident Reports' --action correspond --url http://localhost/"
 
 You should substitute the URL for RT's web interface for "http://localhost/".
 
-** If you're configuring RTIR with support for multiple constituencies, please
-refer to the instructions in the file lib/RT/IR/Constituencies.pod
+o  If your webserver uses SSL, rt-mailgate will require several new
+   Perl libraries. See the RT README for more details on this option.
 
-** Use "perldoc /opt/rt3/bin/rt-mailgate" to get more info about mailgate script.
+o  See "perldoc /opt/rt4/bin/rt-mailgate" for more info about the rt-mailgate script.
+
+o  If you're configuring RTIR with support for multiple constituencies, please
+   refer to the instructions in the file lib/RT/IR/Constituencies.pod
 
 Documentation for RTIR
 ----------------------
