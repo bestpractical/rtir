@@ -21,6 +21,10 @@ RT_SiteConfig.pm config:
 
     Set($RTIR_DisableBlocksQueue, 1);
 
+You will probably also want to disable the Queue using the RT
+Administrative interface.  Tools -> Configuration -> Queues -> Blocks,
+uncheck Enabled and click Save Changes.
+
 =head2 Status
 
 The various states an incident, IR, investigation, or block can be in, such as

@@ -101,10 +101,7 @@ Configuring RTIR
 SETTING UP THE MAIL GATEWAY 
 ---------------------------
 
-An alias for the Incident Reports queue will need to be made in either
-your global mail aliases file (if you are using NIS) or locally on your
-machine.
-
+An alias for the Incident Reports queue will need to be configured.
 Add the following lines to /etc/aliases (or your local equivalent):
 
 rtir:         "|/opt/rt4/bin/rt-mailgate --queue 'Incident Reports' --action correspond --url http://localhost/"

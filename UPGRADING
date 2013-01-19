@@ -13,7 +13,7 @@ General upgrade instructions
    make a backup and something doesn't go as planned, you may
    lose data.
 
-1) Upgrade your RT installation to RT 4.0.3 or newer following
+1) Upgrade your RT installation to RT 4.0.6 or newer following
    its upgrade instructions. Make sure you follow all of the
    steps and upgrade both the code and the database.
 
