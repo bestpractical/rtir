@@ -3,7 +3,8 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 27;
+use RT::IR::Test tests => 28;
+use Test::Warn;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -51,7 +52,9 @@ $agent->display_ticket( $ir);
     my $inv = RT::Ticket->new( $RT::SystemUser );
     $inv->Load( $inv_id );
     ok $inv->id, 'loaded investigation';
-    is $inv->FirstCustomFieldValue('Classification'), undef, 'no classification CF for Invs';
+    warning_like {
+        is $inv->FirstCustomFieldValue('Classification'), undef, 'no classification CF for Invs';
+    } qr/Couldn't load custom field by 'Classification' identifier/, "Loading a non-applied CF warns";
     is $inv->FirstCustomFieldValue('IP'), '172.16.0.1', 'IP is here';
 }
 

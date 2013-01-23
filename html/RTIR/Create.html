@@ -213,7 +213,7 @@
 %      Type => 'messages',
 %      Include => {'Create', 'Correspond'},
 %      QuoteText => $quote);
-%      $ARGS{Content} =~ s/\&gt;/>/g;
+%      $ARGS{Content} =~ s/\&gt;/>/g if $ARGS{Content};
 %   }
 % } else {
 %   $include_signature = 0;
