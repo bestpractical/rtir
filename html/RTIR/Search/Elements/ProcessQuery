@@ -168,7 +168,7 @@ my ( $AvailableColumns, $CurrentFormat );
 ( $query{'Format'}, $AvailableColumns, $CurrentFormat ) = $m->comp(
     '/Search/Elements/BuildFormatString',
     %ARGS,
-    cfqueues => $queues,
+    queues => $queues,
     Format => $query{'Format'},
 );
 

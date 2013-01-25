@@ -52,7 +52,7 @@
 <input type="hidden" class="hidden" name="Query" value="<% $query{'Query'} %>" />
 <input type="hidden" class="hidden" name="Format" value="<% $query{'Format'} %>" />
 
-<div id="pick-criteria"><& /Search/Elements/PickCriteria, cfqueues => $queues &></div>
+<div id="pick-criteria"><& /Search/Elements/PickCriteria, queues => $queues &></div>
 
 <& /Elements/Submit, Label => loc('Add these terms'), Name => 'AddClause' &>
 <& /Elements/Submit, Label => loc('Add these terms and Search'), Name => 'DoSearch' &>
@@ -71,7 +71,7 @@
 </div>
 
 <span id="display-options">
-<& /Search/Elements/DisplayOptions, %ARGS, %query, cfqueues => $queues &>
+<& /Search/Elements/DisplayOptions, %ARGS, %query, queues => $queues &>
 </span>
 
 <& /Elements/Submit,
