@@ -1,4 +1,6 @@
 <%INIT>
+# I'm not sure why this isn't just "Only run on */Refine.html"
+# That would make the intent clearer.
 my $path = $m->request_comp->path;
 return unless $path =~ m{^/RTIR};
 return if $path =~ m{^/RTIR/Search/index.html};
