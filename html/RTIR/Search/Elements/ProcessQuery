@@ -156,13 +156,6 @@ if ( $BaseQuery ) {
     $queues = { %$queues, %{ $tree->GetReferencedQueues } };
 }
 
-# XXX: dequote queues hash
-# why we should do this? may be it's bug.
-foreach my $q ( keys %$queues ) {
-    next unless $q =~ /^['"](.*)['"]$/;
-    $queues->{ $1 } = delete $queues->{ $q };
-}
-
 # {{{ Deal with format changes
 my ( $AvailableColumns, $CurrentFormat );
 ( $query{'Format'}, $AvailableColumns, $CurrentFormat ) = $m->comp(
