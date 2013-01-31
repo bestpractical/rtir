@@ -552,6 +552,16 @@ sub FilterRTAddresses {
         my $value = $args{'ARGSRef'}{ $field };
         next unless defined $value && length $value;
 
+        if ( ref $value ) {
+            RT->Logger->warning("FilterRTAddresses received a reference for $field".ref $value);
+            if ( ref $value eq 'ARRAY' ) {
+                $value = join(", ",@$value);
+            } else {
+                RT->Logger->warning("Not an arrayref, nothing good can come from this, bailing");
+                next;
+            }
+        }
+
         my @emails = Email::Address->parse( $value );
         foreach my $email ( grep RT::EmailParser->IsRTAddress($_->address), @emails ) {
             push @{ $args{'results'} }, $cu->loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $email->format, $cu->loc($display) );
