@@ -45,6 +45,7 @@
     {
         Name        => 'Constituency',
         Type        => 'SelectSingle',
+        RenderType  => 'Dropdown',
         Queue       => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
         Disabled    => 0,
         Description => 'Constituency for RTIR queues',
@@ -63,6 +64,7 @@
     {
         Name        => 'Resolution',
         Type        => 'SelectSingle',
+        RenderType  => 'Dropdown',
         Queue       => 'Incidents',
         Disabled    => 0,
         Description => 'Resolution for Incidents RTIR queue',
@@ -76,6 +78,7 @@
     {
         Name        => 'Function',
         Type        => 'SelectSingle',
+        RenderType  => 'Dropdown',
         Queue       => 'Incidents',
         Disabled    => 0,
         Description => 'Function for Incidents RTIR queue',
@@ -87,6 +90,7 @@
     {
         Name        => 'Classification',
         Type        => 'SelectSingle',
+        RenderType  => 'Dropdown',
         Queue       => 'Incidents',
         Disabled    => 0,
         Description => 'Classification for Incidents RTIR queue',
@@ -102,6 +106,7 @@
     {
         Name        => 'How Reported',
         Type        => 'SelectSingle',
+        RenderType  => 'Dropdown',
         Queue       => 'Incident Reports',
         Disabled    => 0,
         Description => 'How the incident was reported for Incident Reports RTIR queue',
@@ -114,6 +119,7 @@
     {
         Name        => 'Reporter Type',
         Type        => 'SelectSingle',
+        RenderType  => 'Dropdown',
         Queue       => 'Incident Reports',
         Disabled    => 0,
         Description => 'Reporter type for Incident Reports RTIR queue',
@@ -165,6 +171,7 @@
     {
         Name        => 'Customer',
         Type        => 'SelectSingle',
+        RenderType  => 'Dropdown',
         Queue       => 'Investigations',
         Disabled    => 0,
         Values      => [ ],
