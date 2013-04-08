@@ -8,13 +8,13 @@ no warnings 'once';
 
 use Module::Install::Base;
 use base 'Module::Install::Base';
-our $VERSION = '0.30';
+our $VERSION = '0.31';
 
 use FindBin;
 use File::Glob     ();
 use File::Basename ();
 
-my @DIRS = qw(etc lib html bin sbin po var);
+my @DIRS = qw(etc lib html static bin sbin po var);
 my @INDEX_DIRS = qw(lib bin sbin);
 
 sub RTx {
@@ -62,10 +62,11 @@ sub RTx {
     unshift @INC, "$RT::LocalPath/lib" if $RT::LocalPath;
     unshift @INC, $lib_path;
 
-    $RT::LocalVarPath  ||= $RT::VarPath;
-    $RT::LocalPoPath   ||= $RT::LocalLexiconPath;
-    $RT::LocalHtmlPath ||= $RT::MasonComponentRoot;
-    $RT::LocalLibPath  ||= "$RT::LocalPath/lib";
+    $RT::LocalVarPath    ||= $RT::VarPath;
+    $RT::LocalPoPath     ||= $RT::LocalLexiconPath;
+    $RT::LocalHtmlPath   ||= $RT::MasonComponentRoot;
+    $RT::LocalStaticPath ||= $RT::StaticPath;
+    $RT::LocalLibPath    ||= "$RT::LocalPath/lib";
 
     my $with_subdirs = $ENV{WITH_SUBDIRS};
     @ARGV = grep { /WITH_SUBDIRS=(.*)/ ? ( ( $with_subdirs = $1 ), 0 ) : 1 }
@@ -208,4 +209,4 @@ sub requires_rt {
 
 __END__
 
-#line 328
+#line 329

@@ -34,7 +34,7 @@ sub RTxInitDB {
         "--action"      => $action,
         "--datadir"     => "etc",
         (($action eq 'insert') ? ("--datafile"    => "etc/initialdata") : ()),
-        "--dba"         => $RT::DatabaseUser,
+        "--dba"         => $RT::DatabaseAdmin || $RT::DatabaseUser,
         "--prompt-for-dba-password" => '',
         (RT::System->can('AddUpgradeHistory') ? ("--package" => $name, "--ext-version" => $version) : ()),
     );
