@@ -13,7 +13,7 @@ my $cf;
         Name       => $cf_name,
         LookupType => 'RT::Queue-RT::Ticket-RT::Transaction',
         Type       => 'FreeformSingle',
-        Pattern    => qr/(?#not a magic)^(?!magic).*$/,
+        Pattern    => '(?#not a magic)^(?!magic).*$',
     );
     ok( $id, "created custom field" ) or diag "error: $msg";
 
