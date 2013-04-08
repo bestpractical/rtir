@@ -88,7 +88,7 @@ email addresses. These people <b>will</b> receive future updates.)</&></font></i
 % unless ( $SkipField{'AdminCc'} && $HideField{'AdminCc'} ) {
 <tr><td class="label"><&|/l&>Admin Cc</&>:</td>
 <td class="value"><& /Elements/EmailInput,
-    Name => $NamePrefix .'Cc', Default => $value_cb->('Cc'), Size => undef,
+    Name => $NamePrefix .'AdminCc', Default => $value_cb->('AdminCc'), Size => undef,
 &></td></tr>
 <tr><td>&nbsp;</td><td class="comment">
 <i><font size="-2"><&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative
