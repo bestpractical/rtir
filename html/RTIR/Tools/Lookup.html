@@ -64,7 +64,7 @@ if ( $ARGS{'InvestigateTo'} ) {
     );
 }
 
-my $title = loc("Lookup '[_1]'", $q);
+my $title = $q ? loc("Lookup '[_1]'", $q) : loc("Lookup");
 
 my ($TicketObj, $TicketType);
 if ( $ticket ) {
