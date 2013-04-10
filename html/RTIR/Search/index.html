@@ -63,6 +63,11 @@ my %query_state = $m->comp('Elements/ProcessQuery',
     ResultPage => $ResultPage,
 );
 
+unless ( keys %{$query_state{queues}} ) {
+    # needs a Blocks unless turned off check to do this, and a bunch of testing
+    $query_state{queues} = {map { $_ => 1 } ('Incidents','Incident Reports','Investigations')};
+}
+
 my @results = @{ delete $query_state{'results'} };
 </%INIT>
 
