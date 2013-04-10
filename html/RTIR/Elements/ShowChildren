@@ -35,6 +35,7 @@
 <i><% loc("Check box to unlink") %></i><br />
 % }
 <& /Elements/TicketList, 
+   %ARGS,
    Collection     => $children,
    DisplayFormat  => ($Delete? "__CheckBox__, $Format": $Format),
    Format         => $Format,
@@ -42,6 +43,8 @@
    ShowHeader     => $ShowHeader,
    OrderBy        => $OrderBy,
    ShowNavigation => 0,
+   AllowSorting   => $AllowSorting,
+   PassArguments  => $PassArguments,
 &>
 % unless( $children->Count ) {
 %   if ( $NoTicketsCaption ) {
@@ -97,4 +100,7 @@ $NoTicketsCaption => undef,
 
 $ShowHeader => 0
 $ShowStatusesSelector => 0
+
+$AllowSorting => undef
+$PassArguments => undef
 </%ARGS>
