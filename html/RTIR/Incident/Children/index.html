@@ -61,6 +61,7 @@
 <input type="hidden" name="Lifecycle" value="<% $Lifecycle %>" />
 
 <& /RTIR/Elements/ShowChildren,
+    %ARGS,
     Ticket               => $Incident,
     Lifecycle            => $Lifecycle,
     Statuses             => [@Statuses],
@@ -68,6 +69,8 @@
     Delete               => $delete,
     ShowHeader           => 1,
     ShowStatusesSelector => 1,
+    AllowSorting         => 1,
+    PassArguments        => [qw(Query Format Rows Page Order OrderBy Queue id SelectedTicekts Statuses)],
 &>
 
 <& /Elements/Submit, Name => 'Unlink', Label => loc('Unlink Report') &>
