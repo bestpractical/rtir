@@ -41,13 +41,13 @@
   <tr>
     <td class="label"><&|/l&>Start Date:</&></td>
     <td class="input">
-      <input type="text" size="30" name="StartDate" value="<% $start->AsString %>" />
+      <& /Elements/SelectDate, Name => 'StartDate', Default => $start->AsString &>
     </td>
   </tr>
   <tr>
     <td class="label"><&|/l&>End Date:</&></td>
     <td class="input">
-      <input type="text" size="30" name="EndDate" value="<% $end->AsString %>" />
+      <& /Elements/SelectDate, Name => 'EndDate', Default => $end->AsString &>
     </td>
   </tr>
 </table>
