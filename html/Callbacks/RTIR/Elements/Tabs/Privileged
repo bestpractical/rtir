@@ -75,6 +75,7 @@ $scripted_actions->child( email => title => loc('By Email address'), path => '/R
 $scripted_actions->child( ip => title => loc('By IP address'), path => '/RTIR/Tools/ScriptedAction.html?loop=IP' );
 
 my $request_path = $HTML::Mason::Commands::r->path_info;
+$request_path =~ s!/{2,}!/!g;
 return unless $request_path =~ m{^/RTIR/};
 
 my $args = $m->request_args;
