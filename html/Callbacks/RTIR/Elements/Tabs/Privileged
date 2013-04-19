@@ -57,7 +57,7 @@ $root->child(
     create => title => loc('Create'),
     path => '/RTIR/Create.html?Queue=Investigations',
 );
-unless ( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
+unless ( RT::IR->BlocksQueueIsDisabled($session{'CurrentUser'}) ) {
     $root->child(
         blocks => title => loc('Blocks'),
         path => '/RTIR/Search/Results.html?Queue=Blocks'

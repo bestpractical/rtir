@@ -16,14 +16,11 @@ your custom configuration values there.
 
 =head2 Blocks Queue
 
-You may disable the Blocks queue by putting the following into your
-RT_SiteConfig.pm config:
-
-    Set($RTIR_DisableBlocksQueue, 1);
-
-You will probably also want to disable the Queue using the RT
-Administrative interface.  Tools -> Configuration -> Queues -> Blocks,
-uncheck Enabled and click Save Changes.
+If the Blocks functionality doesn't fit your workflow, you can disable
+it by disabling the Blocks queue in RT. Log in as an admin and go to
+Tools -> Configuration -> Queues -> Blocks, uncheck Enabled and click Save Changes.
+This will also hide all references to the Blocks features in the RTIR
+interface.
 
 =head2 Status
 

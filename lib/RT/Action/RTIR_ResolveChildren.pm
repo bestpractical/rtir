@@ -77,7 +77,7 @@ sub Commit {
     my $id = $incident->Id;
 
     foreach my $qname ( 'Incident Reports', 'Investigations', 'Blocks' ) {
-        next if $qname eq 'Blocks' && RT->Config->Get('RTIR_DisableBlocksQueue');
+        next if $qname eq 'Blocks' && RT::IR->BlocksQueueIsDisabled($incident->CurrentUser);
 
         my $members = RT::IR->IncidentChildren(
             $incident, Queue => $qname,

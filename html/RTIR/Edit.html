@@ -141,8 +141,8 @@ $m->callback(CallbackName => 'Initial', %ARGS, Ticket => $Ticket);
 my $Type = RT::IR::TicketType( Ticket => $Ticket );
 
 return $m->comp( '/Ticket/Display.html', %ARGS ) unless $Type;
-if( $Type eq 'Block' && RT->Config->Get('RTIR_DisableBlocksQueue') ) {
-    Abort(loc("Blocks queue is disabled via config file"));
+if( $Type eq 'Block' && RT::IR->BlocksQueueIsDisabled($session{'CurrentUser'}) ) {
+    Abort(loc("Blocks queue is currently disabled"));
 }
 if ( $m->comp_exists("/RTIR/$Type/Edit.html") ) {
     return $m->comp("/RTIR/$Type/Edit.html", %ARGS);

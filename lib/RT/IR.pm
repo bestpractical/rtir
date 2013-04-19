@@ -398,10 +398,22 @@ sub IsLinkedToActiveIncidents {
     return $tickets->Count;
 }
 
-sub MapStatus {
+=head2 BlockQueueIsDisabled
+
+Returns true if the Blocks queue is disabled.
+
+=cut
+
+sub BlocksQueueIsDisabled {
     my $self = shift;
-    my ($status, $from, $to) = @_;
-    return unless $status;
+    my $CurrentUser = shift;
+
+    my $blocks_queue = RT::Queue->new($CurrentUser);
+    $blocks_queue->Load('Blocks');
+    return $blocks_queue->Disabled;
+}
+
+sub MapStatus { my $self = shift; my ($status, $from, $to) = @_; return unless $status;
 
     foreach my $e ($from, $to) {
         if ( blessed $e ) {

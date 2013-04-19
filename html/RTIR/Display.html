@@ -129,8 +129,8 @@ unless ( $id eq 'new' ) {
 my $Type = RT::IR::TicketType( Queue => $QueueObj );
 return $m->comp( '/Ticket/Display.html', %ARGS ) unless $Type;
 
-if ($Type eq 'Block' && RT->Config->Get('RTIR_DisableBlocksQueue') ) {
-    Abort(loc("Blocks queue is disabled via config file"));
+if ($Type eq 'Block' && RT::IR->BlocksQueueIsDisabled($session{'CurrentUser'}) ) {
+    Abort(loc("Blocks queue is currently disabled"));
 }
 if ( $m->comp_exists("/RTIR/$Type/Display.html") ) {
     return $m->comp("/RTIR/$Type/Display.html", %ARGS);

@@ -32,7 +32,7 @@ $OrderBy => 'Due'
 $Rows  => 8
 </%ARGS>
 <%INIT>
-return if $Queue eq 'Blocks' && RT->Config->Get('RTIR_DisableBlocksQueue');
+return if $Queue eq 'Blocks' && RT::IR->BlocksQueueIsDisabled($session{'CurrentUser'});
 
 my $id = $IncidentObj->id;
 my $EscapedQueue = $m->interp->apply_escapes( $Queue, 'u' );

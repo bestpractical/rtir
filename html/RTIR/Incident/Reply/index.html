@@ -63,7 +63,7 @@
     OrderBy       => $OrderBy,
     Order         => $Order,
 &>
-% unless( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
+% unless( RT::IR->BlocksQueueIsDisabled($session{'CurrentUser'}) ) {
 <h2><&|/l&>Blocks Correspondents</&></h2>
 <& /RTIR/Search/Elements/ShowResults,
     Queue         => 'Investigations',
@@ -203,7 +203,7 @@ if ($Status eq 'resolved') {
 
 my @queues = ('Incident Reports');
 push @queues, 'Investigations' if $All;
-push @queues, 'Blocks' unless RT->Config->Get('RTIR_DisableBlocksQueue');
+push @queues, 'Blocks' unless RT::IR->BlocksQueueIsDisabled($session{'CurrentUser'});
 
 $Query ||= RT::IR->ActiveQuery( Queue => \@queues );
 

@@ -550,11 +550,12 @@ Set( $_RTIR_Constituency_Propagation,    'no' );
 
 =item C<$RTIR_DisableBlocksQueue>
 
-If true then Blocks queue functionality inactive and disabled.
-
-=cut
-
-Set($RTIR_DisableBlocksQueue, 0);
+In RTIR before version 3.0, this option was used to hide or disable some of
+the functionality of the Blocks queue for users who didn't need
+it. However, the queue itself was still present and active, and would
+appear in places like the "New Ticket In" dropdown. You can now disable
+the Blocks features by disabling the Blocks queue. See
+L<RT::IR::AdministrationTutorial/"Blocks Queue"> for details.
 
 =item C<$RTIR_BlockAproveActionRegexp>
 

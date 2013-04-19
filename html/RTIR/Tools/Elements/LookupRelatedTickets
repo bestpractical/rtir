@@ -13,7 +13,7 @@
 
 </td><td width="50%" valign="top">
 
-% unless ( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
+% unless ( RT::IR->BlocksQueueIsDisabled($session{'CurrentUser'}) ) {
 <& LookupSummary, %ARGS, Queue => 'Blocks', Query => $query &>
 % }
 

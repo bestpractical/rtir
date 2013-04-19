@@ -37,7 +37,7 @@ my %actions;
         $args{host} ||= $args{value};
         my $result .= qq{[<a href="$web_path/RTIR/Tools/Lookup.html?$args{lookup_params}type=ip&q=$args{host}">}
                       .loc('lookup IP') .q{</a>]};
-        if ( $args{incident} && !RT->Config->Get('RTIR_DisableBlocksQueue') ) {
+        if ( $args{incident} && !RT::IR->BlocksQueueIsDisabled($session{'CurrentUser'}) ) {
             $result .= qq{[<a href="$web_path/RTIR/Create.html?Incident=$args{incident}&Queue=Blocks&IP-Value=$args{host}">block</a>]};
         }
         if ( $args{'ticket'} && $args{'ticket'}->id ) {

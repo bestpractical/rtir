@@ -28,6 +28,10 @@ CHANGES IN 3.0.0
 * RTIR's SLA implementation have been dropped in favor
   of RT::Extension::SLA.
 
+* The $RTIR_DisableBlocksQueue configuration option has been
+  deprecated. To turn off Blocks features, just disable the queue
+  in RT and all Blocks features will be hidden.
+
 * Numerouse bug fixes.
 
 CHANGES IN 2.6.1
