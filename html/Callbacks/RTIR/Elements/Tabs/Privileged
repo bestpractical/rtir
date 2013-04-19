@@ -54,7 +54,7 @@ $root->child(
     investigations => title => loc('Investigations'),
     path => '/RTIR/Search/Results.html?Queue=Investigations'
 )->child(
-    create => title => loc('Create'),
+    launch => title => loc('Launch'),
     path => '/RTIR/Create.html?Queue=Investigations',
 );
 unless ( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
