@@ -1,0 +1,25 @@
+use strict;
+use warnings;
+
+our @Final = (
+
+    sub {
+        $RT::Logger->debug("Going to make IP custom fields link to Lookup");
+        my $ip_cf = RT::CustomField->new(RT->SystemUser);
+        my ($ok, $msg) = $ip_cf->Load('IP');
+        if ( $ip_cf->Id ) {
+            if ( $ip_cf->LinkValueTo ){
+                $RT::Logger->warning("IP custom field link value already set, skipping");
+            }
+            else{
+                $ip_cf->SetLinkValueTo('__WebPath__/RTIR/Tools/Lookup.html?type=ip&q=__CustomField__&ticket=__id__');
+            }
+        }
+        else{
+            $RT::Logger->error("IP custom field not found: $msg");
+        }
+    },
+
+);
+
+1;
