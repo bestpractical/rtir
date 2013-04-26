@@ -484,8 +484,8 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
 
         if ( $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => RT->System ) ) {
             my $shred_args = $query_string->(
-                search          => 1,
-                plugin          => 'Tickets',
+                Search          => 1,
+                Plugin          => 'Tickets',
                 'Tickets:query' => $args{'Query'},
                 'Tickets:limit' => $args{'RowsPerPage'},
             );
