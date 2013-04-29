@@ -8,3 +8,4 @@
 ^Makefile$
 ^\.git
 ^t/tmp/
+^MYMETA\.*
