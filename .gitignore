@@ -6,3 +6,6 @@ blib/
 pm_to_blib
 t/tmp/
 MYMETA.*
+/etc/add_constituency
+/etc/upgrade/upgrade.pl
+/lib/RT/IR/Test.pm

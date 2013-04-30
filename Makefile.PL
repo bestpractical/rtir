@@ -34,6 +34,7 @@ auto_install();
 substitute( {
         RT_LIB_PATH => join( ' ', $local_lib_path, $lib_path ),
     },
+    { sufix => '.in' },
     'etc/upgrade/upgrade.pl',
     'etc/add_constituency',
     'lib/RT/IR/Test.pm',
