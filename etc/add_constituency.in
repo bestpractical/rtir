@@ -1,4 +1,5 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
+### before: #!@PERL@
 
 =head1 NAME
 

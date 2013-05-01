@@ -12,6 +12,14 @@ my ($lib_path) = $INC{'RT.pm'} =~ /^(.*)[\\\/]/;
 my $local_lib_path = "$RT::LocalPath/lib";
 unshift @INC, $local_lib_path, $lib_path;
 
+# Straight from perldoc perlvar
+use Config;
+my $secure_perl_path = $Config{perlpath};
+if ($^O ne 'VMS') {
+    $secure_perl_path .= $Config{_exe}
+    unless $secure_perl_path =~ m/$Config{_exe}$/i;
+}
+
 # RTIR needs this version of SB because of cud-from-select
 requires('DBIx::SearchBuilder', 1.61);
 
@@ -33,7 +41,9 @@ auto_install();
 
 substitute( {
         RT_LIB_PATH => join( ' ', $local_lib_path, $lib_path ),
+        PERL        => $ENV{PERL} || $secure_perl_path,
     },
+    { sufix => '.in' },
     'etc/upgrade/upgrade.pl',
     'etc/add_constituency',
     'lib/RT/IR/Test.pm',
