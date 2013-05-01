@@ -79,10 +79,12 @@ sub goto_create_rtir_ticket {
 
     my $equeue = $queue;
     $equeue =~ s/ /%20/;
+    my $link_text = "Create";
+    $link_text = "Launch" if $queue eq 'Investigations';
 
     $self->get_ok("/RTIR/index.html", "Loaded home page");
     $self->follow_link_ok(
-        {text => "Create", url_regex => qr{RTIR/Create\.html.*(?i:$equeue)} },
+        {text => $link_text, url_regex => qr{RTIR/Create\.html.*(?i:$equeue)} },
         "Followed create in '$queue' link"
     );
 
