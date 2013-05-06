@@ -5,7 +5,7 @@
 RTIR automatically creates four RT queues for tracking incidents: Incident
 Reports, Incidents, Investigations and Blocks.
 
-=head3 Incident Reports 
+=head3 Incident Reports
 
 Incident Reports is where new reports appear. When a user sends email to the
 address you set up, RTIR automatically creates an Incident Report (IR), and
@@ -73,7 +73,7 @@ merge an IR into an Investigation. Note that if you
 merge an IR into an Investigation, the Investigation will always
 be used as the target ticket.
 
-If the merge completes successfully, you'll be redirected to the 
+If the merge completes successfully, you'll be redirected to the
 target ticket's display page.
 
 When the merge page doesn't have the ticket you're looking for,
@@ -125,8 +125,8 @@ apply. In the normal course of work, this operation should be avoided.
 =head3 Splitting Tickets
 
 The Split operation allows you to create a new ticket from an existing one.
-When you click the Split tab, you get a new ticket creation form 
-with information pre-filled from the original ticket, for example Subject, 
+When you click the Split tab, you get a new ticket creation form
+with information pre-filled from the original ticket, for example Subject,
 Owner, Correspondents(Requestors), Ccs, AdminCs, as well as the original ticket's
 history, formatted as text in the message box. You can change any and all
 values before splitting off the new ticket.

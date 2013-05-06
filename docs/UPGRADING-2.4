@@ -1,0 +1,158 @@
+=head1 Upgrading to 2.4
+
+The following describes some of the key components of the upgrade
+to RTIR 2.4 from all previous versions of RTIR.
+
+The F<etc/upgrade/upgrade.pl> script is mentioned several times
+for different versions. You only need to run it once and the most
+recent version is now included in the RTIR distribution.
+
+=head1 Upgrading from 2.3.17 and Earlier
+
+=head2 RT Extension Location
+
+The layout of files in RT's directories was changed in RT 3.8.0.
+Each extension is now installed in its own directory and is activated
+using the @Plugins option in the RT config.
+
+=head2 RTFM's Response Custom Field
+
+RTFM's Response custom field could be created with MaxValues = 0,
+which is incorrect and should be changed to 1. Run the following query to
+update the DB.
+
+    UPDATE CustomFields SET MaxValues = 1 WHERE
+            Name = 'Response'
+            AND Type = 'Text'
+            AND LookupType = 'RT::FM::Class-RT::FM::Article'
+            AND MaxValues = 0;
+
+=head1 Upgrading from 2.3.15 and Earlier
+
+There was an error in an earlier version of the F<etc/upgrade/upgrade.pl>
+script where it could skip some incidents during upgrade. Run the new version
+of this script, especially if you never ran it or ran with earlier versions
+of RTIR.
+
+This script updates Due dates on active incidents where it's not set and
+sets it to the most recent due date of the active children.
+
+=head1 Applying Changes from upgrade/2.3.0
+
+Run the upgrade scripts where we split out incidents owned by Nobody and
+the Current User on the most-due views on the homepage.
+
+=head1 Applying Changes from upgrade/2.1.1
+
+Run the upgrade scripts where we add several scrips that set 'Started'
+date of tickets in RTIR.
+
+=head1 Applying Changes from upgrade/2.1.0
+
+Run the upgrade scripts where we do following:
+
+=over
+
+=item 1
+
+Apply the _RTIR_IP CF to all RTIR's queues and convert it to
+multiple type. Also, we add several scrips to parse IP addresses
+from incomming mails and to fill those into the CF.
+
+=item 2
+
+The constituency field we apply to all RTIR's queues too and
+and add several scrips to track values of the field.
+
+=back
+
+=head1 Applying Changes from upgrade/1.9.0
+
+Run the upgrade scripts where we do following:
+
+=over
+
+=item 1
+
+The LaunchMessage template in the Investigations queue
+has been renamed to Autoreply without any changes of the content.
+This upgrade step is automated, but may fail if you've changed
+the LaunchMessage template.
+
+=item 2
+
+In the Blocks queue an Autoreply template has been added. This is
+a replacement for the NewMessage template. The automated step
+doesn't delete the old template. You have to check that the new
+template suits your needs, maybe copy customizations from the old
+one, then delete the NewMessage template.
+
+=item 3
+
+NotifyOnLaunch and NotifyOnCreate scrips have been deleted in
+the Implementations and the Blocks queues respectively. You have to
+use the default RT's Autoreply scrip instead or create autoreply
+scrips in these queues if the global one is disabled or doesn't exist.
+You need the following scrip in the queues:
+
+    On Create AutoReply to Requestors with Template Autoreply
+
+=item 4
+
+The new 'BlockRemoved' template has been added in the Blocks
+queue. Check its content.
+
+=back
+
+=head1 Applying Changes from upgrade/1.1.3
+
+Run the upgrade scripts where we install several new actions,
+conditions and scrips that had been introduced in RTIR 1.1.3.
+Also, we change the action for 'SetDueReopen' scrips.
+
+=head1 Applying Changes from upgrade/1.1.1
+
+Run the upgrade scripts where we do following:
+
+=over
+
+=item 1
+
+Switch from 'UserDefined' actions and conditions
+to modules, so all code is in the lib directory. If you changed
+the code of the scrips then you have to port changes.
+
+=item 2
+
+Run the F<etc/upgrade/upgrade.pl> script. This script updates Due Dates
+on active incidents where they are not set and sets them to the most
+recent due date of the active children.
+
+=back
+
+=head1 Applying Changes from upgrade/1.0.3
+
+Run the upgrade scripts where we grant the ShowTemplate right to
+the DutyTeam group.
+
+=head1 Upgrading from RTIR 1.0.0
+
+RTIR now installs in RT's local/plugins/RT-IR directory rather than
+local/html, making local modifications to RTIR easier. Do the following:
+
+=over
+
+=item 1
+
+IMPORTANT! Back up any modifications that you've made to the
+F</opt/rt3/local/html/RTIR> directory.
+
+=item 2
+
+Remove the old RTIR files and install everything into clean directory
+as described in the install instructions. B<Do not> run the database
+init step.
+
+=back
+
+=cut

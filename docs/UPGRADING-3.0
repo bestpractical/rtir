@@ -1,0 +1,142 @@
+=head1 Upgrading to 3.0
+
+The following describes some of the key components of the upgrade
+to RTIR 3.0 from previous versions of RTIR, specifically
+from RTIR 2.6. The other UPGRADING documents contain details
+for previous versions.
+
+=head2 Database
+
+The update steps implemented in the upgrade script
+F<etc/upgrade/2.9.0/content> make significant changes to the
+database and its data. It's highly recommended that you save
+a DB backup before applying this script.
+
+=head2 Lifecycles
+
+RT 4.0 introduces a new feature, lifecycles, which allowed
+us to replace RTIR's four State custom fields with four RTIR-specific
+lifecycles, delete the previous custom fields, and use
+RT's standard Status field.
+
+This means that you have to review all customizations and
+replace any reference to State custom fields with Status.
+You should check templates, and scrips' conditions and actions.
+
+For example the following code:
+
+    $ticket->FirstCustomFieldValue('State');
+
+should be replaced with:
+
+    $ticket->Status;
+
+Almost every format string in the $RTIRSearchResultFormats option
+had '__CustomField.{State}__' replaced with __Status__.
+Note this change as you port over your previous configuration
+files, and update your config if you have customizations.
+
+Format strings of all saved searches are updated with
+with above change, but the regular expression doesn't attempt
+to be too clever and may skip some edge cases.
+
+You can read more about lifecycles in RT's and RTIR's configuration
+files.
+
+=head2 Search Result Formats
+
+In addition to the changes for Status, new format strings are
+provided for $RTIRSearchResultFormats: ListIncidents and LookupTool.
+
+=head2 Changes to Ticket History
+
+To keep history intact, the upgrade script turns changes of
+the previous State custom fields into Status field changes. This
+a big change to the Tickets, Transactions and ObjectCustomFieldValues
+tables with updates and deletes mostly. Again, it's important
+to have a known good backup.
+
+=head2 Retired Scrip Actions
+
+Several scrip actions are no longer required because of
+the new lifecycles features, so these action modules and
+all scrips based on them are deleted from directories and
+the DB.
+
+Started date is properly handled by lifecycles now, so the
+RTIR_SetStartedToNow scrip action is no longer needed.
+
+IRs and Blocks still have some special status treatment, but
+it is handled by new scrips, so RTIR_SetIncidentReportState
+and RTIR_SetBlockState actions are not needed.
+
+Investigations and Incidents don't need any special status
+treatment, so RTIR_SetInvestigationState and RTIR_SetIncidentState
+are deleted.
+
+=head2 Retired Scrip Conditions
+
+Just as some scrip actions have been removed, several scrip
+conditions also are no longer needed.
+
+The RTIR_RequireStateChange condition gets deleted.
+
+RTIR_BlockActivation gets deleted as well, however if you
+use it in custom scrips then you can replace it with a StatusChange
+condition that is part of RT. See the example in the upgrade script
+where RTIR's RTIR_ReopenTicket and RTIR_CloseTicket conditions
+get replaced with StatusChange.
+
+=head2 RTIR Queue Summary Portlet
+
+The /RTIR/Elements/QueueSummary portlet is deleted and replaced with
+RT's Quicksearch. Update your config in case you have a custom setting
+for RTIR_HomepageSettings. Users' preferences are updated automatically.
+
+=head2 IP Custom Field
+
+Code from RTIR to support the IP custom field has been merged
+into RT 4.0 and extended to support IPv6. The upgrade script
+changes the type of the IP field.
+
+=head2 SLA Support
+
+RTIR had a simple Service Level Agreements (SLA) implementation.
+L<RT::Extension::SLA> was prototyped from it, but vastly improved.
+In RTIR 3.0 we delete this basic implementation in favor of
+the extension. The SLA custom field stays as the extension uses it as
+well. However, the dependency on the extension is not mandatory and there
+is no default config for it. Read the tutorial for administrators for
+more info L<AdministrationTutorial/"Service Level Agreements (SLA)">.
+
+The following scrip actions and scrips that use them are deleted:
+
+    RTIR_SetDueBySLA
+    RTIR_SetDueCorrespond
+    RTIR_SetDueReopen
+    RTIR_SetDueToNow
+    RTIR_UnsetDue
+    RTIR_SetStartsByBizHours
+    RTIR_SetStartsToNow
+
+The following config options are no longer valid:
+
+    $SLAModule
+    $SLA
+    $BusinessHours
+    $SLA_Response_InHours
+    $SLA_Response_OutOfHours
+    $SLA_Reopen_InHours
+    $SLA_Reopen_OutOfHours
+    SLA key in %RTIR_CustomFieldsDefaults
+
+The upgrade process itself won't modify any existing due dates, but
+if you are using the older SLA configuration, you need to install
+L<RT::Extension::SLA> and port over your current SLA configuration to
+the new module. If you are installing the module for the first time,
+you will need to run the 'make initdb' step to get the proper scrips
+installed. You should then test with the new SLA configurations in
+a dev environment to verify that due dates are being properly set
+for all relevant actions (create, respond, resolve, etc.).
+
+=cut

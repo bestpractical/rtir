@@ -208,7 +208,7 @@ the same way.
 
 Keeps the Due date of incidents in sync with the most due child.
 
-See L</Service Level Agreements> below for details on automating
+See L</"Service Level Agreements (SLAs)"> below for details on automating
 Due dates, and L<RT::Action::RTIR_SetDueIncident> for details
 about action of the scrip.
 
@@ -275,14 +275,14 @@ It's OK to disable this scrip.
 
 Applies to the Incident Reports, Blocks, Incidents and Investigations queues.
 
-Uses the Constituency algorithms discussed in L<RT::IR::Constituencies> to 
+Uses the Constituency algorithms discussed in L<RT::IR::Constituencies> to
 set and propagate changes to the Constituency custom field.  On ticket
-creation, Constituency is set based on the parent ticket, the 
-X-RT-Mail-Extension header (see L<RT::IR::Constituencies>) or the default set 
+creation, Constituency is set based on the parent ticket, the
+X-RT-Mail-Extension header (see L<RT::IR::Constituencies>) or the default set
 in your F<RTIR_Config.pm>
 
 When linking tickets or changing the Constituency custom field, this
-scrip ensures that the change is propagated based on your choice of 
+scrip ensures that the change is propagated based on your choice of
 _RTIR_Constituency_Propagation in your F<RTIR_Config.pm>
 
 =item SetConstituencyGroup
@@ -329,7 +329,7 @@ See the documentation for L<RT::Extension::TicketAging>
 During normal operation RT/RTIR never deletes data from the database.
 Since RT 3.7 the RTx::Shredder extension has been integrated into
 RT.  This extension can remove data such as users or tickets
-from the RT/RTIR system. You can find documentation for this 
+from the RT/RTIR system. You can find documentation for this
 extension in L<RT::Shredder> by running `perldoc lib/RT/Shredder.pm`
 or on the Best Practical website at
 L<http://bestpractical.com/rt/docs/latest/RT/Shredder.html>.
@@ -362,7 +362,7 @@ automatically choose it instead of asking the user.
 If a user has no trusted keys, then the web interface will warn and refuse to
 send him an encrypted message. This is ultimately due to limitations in GnuPG:
 we cannot encrypt a message with an untrusted key.  Managing the trust levels
-of keys must be done outside of RT as there is not currently key management 
+of keys must be done outside of RT as there is not currently key management
 support available.
 
 =head3 Missing passphrase
@@ -375,7 +375,7 @@ A missing passphrase occurs when GPG Agent is unresponsive or the passphrase
 is wrong in F<RTIR_SiteConfig.pm>. Note that you can use either GPG Agent or
 set the passphrase in the site config, you need not do both.
 
-=head2 Service Level Agreements (SLA)
+=head2 Service Level Agreements (SLAs)
 
 RTIR used to have a simple Service Level Agreements (SLA) implementation.
 L<RT::Extension::SLA> was prototyped on it, but vastly improved. In RTIR 3.0
