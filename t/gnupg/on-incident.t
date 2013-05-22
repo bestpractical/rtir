@@ -6,8 +6,6 @@ use warnings;
 use RT::IR::Test tests => 40;
 use File::Temp qw(tempdir);
 
-my @rights_backup = RT::Test->store_rights;
-
 RT->Config->Set( 'GnuPG',
                  Enable => 1,
                  OutgoingMessagesFormat => 'RFC' );
@@ -105,6 +103,3 @@ diag "check that things don't work if there is no key";
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails';
 }
-
-RT::Test->restore_rights( @rights_backup );
-
