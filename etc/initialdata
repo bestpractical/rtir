@@ -132,6 +132,7 @@
         Queue       => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
         Disabled    => 0,
         Description => 'IP address for RTIR queues',
+        LinkValueTo => '__WebPath__/RTIR/Tools/Lookup.html?type=ip&q=__CustomField__&ticket=__id__'
     },
     {
         Name        => 'Netmask',
