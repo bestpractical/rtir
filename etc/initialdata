@@ -534,6 +534,10 @@ for my $queue (map {$_->{Name}} @Queues) {
       GroupDomain => 'UserDefined',
       Queue => $queue,
       Right  => 'Watch', },
+    { GroupId => 'DutyTeam',      # - principalId
+      GroupDomain => 'UserDefined',
+      Queue => $queue,
+      Right  => 'ShowOutgoingEmail', },
 );}
 
 push @ACL, (

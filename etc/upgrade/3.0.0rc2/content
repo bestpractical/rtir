@@ -1,5 +1,24 @@
 use strict;
 use warnings;
+my @OUR_QUEUES = ('Incidents', 'Incident Reports', 'Investigations', 'Blocks');
+
+our @Initial = (
+    sub {
+        return 1 if grep $_ eq 'RT::IR', RT->Config->Get('Plugins');
+
+        die "Please enable RT::IR plugin in the config file.\n";
+    },
+);
+
+our @ACL;
+foreach my $queue (@OUR_QUEUES) {
+    push @ACL, (
+    { GroupId => 'DutyTeam',
+      GroupDomain => 'UserDefined',
+      Queue => $queue,
+      Right  => 'ShowOutgoingEmail', },
+ );
+}
 
 our @Final = (
 
