@@ -2,6 +2,12 @@
 use Regexp::Common qw(RE_net_IPv4);
 use URI::URL;
 
+my $escaper = sub {
+    my $content = shift;
+    RT::Interface::Web::EscapeUTF8( \$content );
+    return $content;
+};
+
 my $web_path = RT->Config->Get('WebPath');
 
 my %super = %{$ARGS{actions}};
@@ -10,15 +16,17 @@ my %actions;
 %actions = (
     default => sub {
         my %args = @_;
+        $args{value} = $escaper->($args{value});
         return qq{<a href="$web_path/RTIR/Tools/Lookup.html?$args{lookup_params}q=$args{value}">$args{value}</a>};
     },
     url => sub {
         my %args = @_;
 
         my $host = $args{'all_matches'}[3];
-        my $super = $super{url} ? $super{url}->(%args) : $args{value};
+        my $escaped_host = $escaper->($host);
+        my $super = $super{url} ? $super{url}->(%args) : $escaper->($args{value});
 
-        my $result = qq{[<a href="$web_path/RTIR/Tools/Lookup.html?$args{lookup_params}type=host&q=$host">}
+        my $result = qq{[<a href="$web_path/RTIR/Tools/Lookup.html?$args{lookup_params}type=host&q=$escaped_host">}
             .loc('lookup "[_1]"', $host) .qq{</a>]};
         return $super . qq{ <span class="clickylink">$result</span>};
     },
@@ -26,29 +34,30 @@ my %actions;
         my %args = @_;
 
         my $host = $args{'all_matches'}[3];
-        my $super = $super{url_overwrite} ? $super{url_overwrite}->(%args) : $args{value};
+        my $escaped_host = $escaper->($host);
+        my $super = $super{url_overwrite} ? $super{url_overwrite}->(%args) : $escaper->($args{value});
 
-        my $result = qq{[<a href="$web_path/RTIR/Tools/Lookup.html?$args{lookup_params}type=host&q=$host">}
+        my $result = qq{[<a href="$web_path/RTIR/Tools/Lookup.html?$args{lookup_params}type=host&q=$escaped_host">}
             .loc('lookup "[_1]"', $host) .qq{</a>]};
         return $super . qq{ <span class="clickylink">$result</span>};
     },
     ip => sub {
         my %args = @_;
         $args{host} ||= $args{value};
-        my $result .= qq{[<a href="$web_path/RTIR/Tools/Lookup.html?$args{lookup_params}type=ip&q=$args{host}">}
+        my $escaped_host = $escaper->($args{host});
+        my $result .= qq{[<a href="$web_path/RTIR/Tools/Lookup.html?$args{lookup_params}type=ip&q=$escaped_host">}
                       .loc('lookup IP') .q{</a>]};
         if ( $args{incident} && !RT->Config->Get('RTIR_DisableBlocksQueue') ) {
-            $result .= qq{[<a href="$web_path/RTIR/Create.html?Incident=$args{incident}&Queue=Blocks&IP-Value=$args{host}">block</a>]};
+            $result .= qq{[<a href="$web_path/RTIR/Create.html?Incident=$args{incident}&Queue=Blocks&IP-Value=$escaped_host">block</a>]};
         }
         if ( $args{'ticket'} && $args{'ticket'}->id ) {
             my $cf = RT::IR::GetCustomField('_RTIR_IP');
             my $tid = $args{'ticket'}->id;
             $result .= qq{[<a href="$web_path/RTIR/Edit.html?id=$tid}
-                .qq{&Object-RT::Ticket-$tid-CustomField-}. $cf->id .qq{-AddValue=}
-                . $m->interp->apply_escapes($args{host}, 'u', 'h')
+                .qq{&Object-RT::Ticket-$tid-CustomField-}. $cf->id .qq{-AddValue=$escaped_host}
                 .q{&SaveChanges=1">}. loc('Add IP') .q{</a>]};
         }
-        return $args{value} . qq{ <span class="clickylink">$result</span>};
+        return $escaper->($args{value}) . qq{ <span class="clickylink">$result</span>};
     },
     ipdecimal => sub {
         my %args = @_;
@@ -68,31 +77,34 @@ my %actions;
     email => sub {
         my %args = @_;
         my $email = $args{'value'}; $email =~ s/^<|>$//g;
-        RT::Interface::Web::EscapeUTF8( \$args{'value'} ); 
-        my $domain = (split /@/, $email, 2)[1];
+        my $escaped_email = $escaper->($email);
 
-        my $result = qq{[<a href="$web_path/RTIR/Tools/Lookup.html?$args{'lookup_params'}type=email&q=$email">}
+        my $result = qq{[<a href="$web_path/RTIR/Tools/Lookup.html?$args{'lookup_params'}type=email&q=$escaped_email">}
                       .loc('lookup email') .q{</a>]};
         if ( $args{'incident'} ) {
             if ( $r->uri =~ /Lookup.html$/ ) {
-                $result .= qq{<input type="checkbox" name="Requestorbox-$email" unchecked />};
+                $result .= qq{<input type="checkbox" name="Requestorbox-$escaped_email" unchecked />};
             }
             $result .= qq{[<a href="$web_path/RTIR/Create.html}
-                . qq{?Incident=$args{'incident'}&Queue=Investigations&Requestors=$email">}
+                . qq{?Incident=$args{'incident'}&Queue=Investigations&Requestors=$escaped_email">}
                 . loc('Investigate to') .qq{</a>]};
         }
-        $result .= qq{ [<a href="$web_path/RTIR/Tools/Lookup.html?$args{'lookup_params'}type=host&q=$domain">}
+        my $domain = (split /@/, $email, 2)[1];
+        my $escaped_domain = $escaper->($domain);
+        $result .= qq{ [<a href="$web_path/RTIR/Tools/Lookup.html?$args{'lookup_params'}type=host&q=$escaped_domain">}
                .loc('lookup "[_1]"', $domain) .qq{</a>]};
-        return $args{'value'} . qq{ <span class="clickylink">$result</span>};
+        return $escaper->($args{'value'}) . qq{ <span class="clickylink">$result</span>};
     },
     noc => sub {
         my %args = @_;
+        $args{value} = $escaper->($args{value});
         my $result = qq{[<a href="$web_path/RTIR/Tools/Lookup.html?$args{lookup_params}type=handle&q=$args{value}">}
                .loc('lookup') .qq{</a>]};
         return $args{value} . qq{ <span class="clickylink">$result</span>};
     },
     host => sub {
         my %args = @_;
+        $args{value} = $escaper->($args{value});
         my $result = qq{[<a href="$web_path/RTIR/Tools/Lookup.html?$args{lookup_params}type=host&q=$args{value}">}
                .loc('lookup host') .qq{</a>]};
         return $args{value} . qq{ <span class="clickylink">$result</span>};
@@ -139,6 +151,8 @@ ${$ARGS{handle}} = sub {
 
     $args{lookup_params} .= "&"
       if $args{lookup_params} and $args{lookup_params} !~ /&$/;
+
+    $args{lookup_params} = $escaper->($args{lookup_params});
 
     return $handle->(%args);
 };
