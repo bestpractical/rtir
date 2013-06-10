@@ -1,0 +1,69 @@
+=head1 Upgrading to 2.6
+
+The following describes some of the key components of the upgrade
+to RTIR 2.6 from previous versions of RTIR, specifically
+from RTIR 2.4. The other UPGRADING documents contain details
+for previous versions.
+
+=head1 Upgrading from 2.4.x and Earlier
+
+=head2 _RTIR_ Prefix Removed
+
+_RTIR_ prefix has been deleted from all RTIR's custom fields. This
+means you have to update any custom code you have: templates,
+scrips and other customizations which may have name of a custom
+field hardcoded.
+
+Custom fields with multiple words in the name and no spaces have
+been renamed, now there is space. These custom fields are:
+
+    HowReported  => How Reported
+    ReporterType => Reporter Type
+    WhereBlocked => Where Blocked
+
+All these changes are implemented in F<etc/upgrade/2.5.1/content>
+
+=head3 Custom Field Updates in Saved Searches
+
+Saved searches are affected by the above change and you can convert
+them using a script provided.
+
+    perl -I /opt/rt4/local/lib -I/opt/rt4/lib etc/upgrade/2.5.1/update_saved_searches.pl
+
+=head3 Custom Field Updates in Templates
+
+Some standard RTIR templates contain code to insert values of
+CFs into emails. It is impossible to safely change these templates
+automatically, so you have to do it manually. To identify templates
+and/or confirm that all has been changed you can use the following
+SQL query:
+
+    SELECT id, Queue FROM Templates WHERE Content LIKE '%_RTIR_%';
+
+Usually this change is as simple as deleting the _RTIR_ prefix and
+adding a space to the three names mentioned above.
+
+Some of your code may still use the old names as well, so you'll
+need to update it. The following command might help you identify
+where it's used:
+
+    find dir/ | xargs grep '_RTIR_'
+
+=head3 Custom Fields Configuration
+
+The _RTIR_*_default options in the config have been merged together
+into the RTIR_CustomFieldDefaults hash. Change your site config
+accordingly.
+
+=head1 Upgrading from 2.4.4 and Earlier
+
+SubjectTag was ignored in RTIR templates, so users could be confused.
+Find all templates with the following text:
+
+    [{$rtname} #{$Ticket->id}]
+
+And replace it with:
+
+    [{$Ticket->QueueObj->SubjectTag || $rtname} #{$Ticket->id}]
+
+=cut

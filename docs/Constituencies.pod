@@ -25,7 +25,7 @@ in a single RTIR instance with shared workflows and global
 configuration that applies to all constituencies. This guide
 will help you configure RTIR to manage multiple constituencies.
 
-=head2 Definitions 
+=head2 Definitions
 
 A constituency is defined by:
 
@@ -253,7 +253,7 @@ unless it's also empty. The last fallback address is the C<$CorrespondAddress>
 in the RT's configuration file.
 
 It is important to note that these additional rights do not also
-add new mailing rules.  
+add new mailing rules.
 
 =head2 Presetting Constituency from Email
 
