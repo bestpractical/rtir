@@ -45,13 +45,17 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-%# XXX: this duplication of RT's /Ticket/Elements/ShowPeople
-%# the only difference is s/Reuestor/Correspondet/, keep in sync
+%# XXX: this is a duplication of RT's /Ticket/Elements/ShowPeople
+%# the only difference is s/Requestor/Correspondent/, keep in sync
 
 <table>
   <tr>
     <td class="label"><&|/l&>Owner</&>:</td>
-    <td class="value"><& /Elements/ShowUser, User => $Ticket->OwnerObj, Ticket => $Ticket &></td>
+% my $owner = $Ticket->OwnerObj;
+    <td class="value"><& /Elements/ShowUser, User => $owner, Ticket => $Ticket &>
+    <& /Elements/ShowUserEmailFrequency, User => $owner, Ticket => $Ticket &>
+% $m->callback( User => $owner, Ticket => $Ticket, %ARGS, CallbackName => 'AboutThisUser' );
+    </td>
   </tr>
   <tr>
     <td class="labeltop"><&|/l&>Correspondents</&>:</td>
