@@ -70,8 +70,14 @@ my $Type = RT::IR::TicketType( Queue => $Queue ) || '';
 $Format ||= RT->Config->Get('RTIRSearchResultFormats')->{ $Type . 'Default' };
 
 # Warn if old CFs are found
-RT::IR::Config::CheckObsoleteCFSyntax($Format);
-RT::IR::Config::CheckObsoleteCFSyntax($Query);
+my $location;
+if ($SavedSearchId) {
+    $location = $SavedSearchId eq 'new' ?
+            "an ad-hoc search" : "Saved Search $SavedSearchId";
+    $location .= " executed by ".$session{'CurrentUser'}->Name;
+}
+RT::IR::Config::CheckObsoleteCFSyntax($Format,$location);
+RT::IR::Config::CheckObsoleteCFSyntax($Query,$location);
 
 if ( $Type ) {
     $BaseQuery ||= RT::IR->Query( Queue => $Queue );
@@ -93,4 +99,6 @@ $Rows      => 50
 $Page      => 1
 $OrderBy   => 'id'
 $Order     => 'ASC'
+$SavedSearchId => undef
+$SavedChartSearchId => undef
 </%ARGS>
