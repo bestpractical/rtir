@@ -461,7 +461,7 @@ $m->callback(
 );
 
 unless ( $skip_create || $checks_failure ) {
-    $ARGS{'new-MemberOf'} = join ', ', @Incident;
+    $ARGS{'new-MemberOf'} = join ' ', @Incident;
     $m->callback(CallbackName => 'BeforeDisplay', Ticket => $SplitObj, ARGSRef => \%ARGS);
     push @{ $session{'Actions'}{''} ||= [] }, @results;
     return $m->comp( 'Display.html', %ARGS, SkipNotification => \@SkipNotification );
