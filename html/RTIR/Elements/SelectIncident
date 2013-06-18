@@ -102,9 +102,13 @@ my $query = RT::IR->Query(
 );
 my $format = RT->Config->Get('RTIRSearchResultFormats')->{'LinkIncident'};
 my ($dformat, $hide);
-if ( $config->{'Multiple'} ) {
+if ( $config->{'Multiple'} ||
+     ( @potential == 1 && !$config->{'Required'} ) ) {
     $dformat = "'__CheckBox.{$Name}__', $format";
 } elsif ( @potential > 1 || !$config->{'Required'} ) {
+# Do we actually use this case, except when you have multiple incidents but are configured for single?
+# You would need to have triggered one of the 2.[46] bugs allowing multiple Incident parents or changed your config.
+# Removing this would allow the removal of the uncheckable jQuery plugin.
     $dformat = "'__RadioButton.{$Name}__', $format";
 } else {
     ($dformat, $hide) = ($format, 1);
