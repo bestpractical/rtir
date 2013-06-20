@@ -350,7 +350,14 @@ sub set_scrip_condition {
 }
 
 sub delete_scrip {
-    my $obj = get_scrip( @_ ) or return;
+    my $obj = get_scrip( @_ );
+
+    unless ( $obj ){
+        $RT::Logger->debug("Scrip " . $_[0]->{Description}
+                           . " already deleted or renamed. Nothing to do.");
+        return;
+    }
+
     # Delete has no return value
     my ($status, $msg) = $obj->Delete;
     print "Deleted scrip #". $obj->id .": ". $obj->Description ."\n";
@@ -402,6 +409,7 @@ sub set_scrip_field {
         );
     }
 }, sub {
+    $RT::Logger->debug("Deleting old scrips");
     delete_scrip( $_ ) foreach @DeleteScrips;
 } );
 
