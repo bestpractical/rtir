@@ -395,7 +395,7 @@ sub IsLinkedToActiveIncidents {
     $tickets->FromSQL( $self->ActiveQuery(
         Queue     => 'Incidents',
         HasMember => $child,
-        Exclude   => $parent->id,
+        ($parent ? (Exclude   => $parent->id) : ()),
     ) );
     return $tickets->Count;
 }
