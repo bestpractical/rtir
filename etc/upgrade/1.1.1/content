@@ -361,6 +361,10 @@ sub set_scrip_field {
     my ($field, $value) = @_;
 
     my $cur = $scrip->$field();
+
+    # Can be undef if value is null in the DB
+    $cur = '' if not defined $cur;
+
     return if $value =~ /^\d+$/? $cur == $value: $cur eq $value;
 
     my $method = 'Set'. $field;
