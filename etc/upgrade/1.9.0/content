@@ -35,15 +35,8 @@ sub delete_scrip {
 }
 
 @Initial = ( sub {
-    eval { require RT::FM; };
-    if ($@) {
-        die "RTIR is built on top of RTFM; please install RTFM before continuing.\n";
-    }
-}, sub {
     delete_scrip( { Description => 'NotifyOnLaunch', Queue => 'Investigations' } );
     delete_scrip( { Description => 'NotifyOnCreate', Queue => 'Blocks' } );
-
-    
 } );
 
 @CustomFields = (
