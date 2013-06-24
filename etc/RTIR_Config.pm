@@ -661,7 +661,7 @@ Set($RunWhoisRequestByDefault, 0);
 
 =head1 Service Level Agreements (SLA)
 
-Read L<RT::IR::AdministrationTutorial>.
+Read F<docs/AdministrationTutorial>.
 
 =cut
 
