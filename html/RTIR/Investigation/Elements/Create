@@ -176,7 +176,7 @@ email addresses. These people <b>will</b> receive future updates.)</&></font></i
 <& /Elements/MessageBox,
     Name             => $NamePrefix .'Content',
     Default          => $content,
-    IncludeSignature => !$content,
+    IncludeSignature => exists $ARGS{'IncludeSignature'} ? $ARGS{'IncludeSignature'} : !$content,
     QuoteTransaction => $value_cb->('QuoteTransaction'),
 &></td></tr>
 % }

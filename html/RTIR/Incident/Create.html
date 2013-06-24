@@ -180,30 +180,9 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 
 <tr><td class="labeltop"><&|/l&>Message</&>:</td>
 <td>
-<%PERL>
-my $include_signature = 1;
-unless ( exists $ARGS{'Content'} ) {
-    my $Transactions;
-    if ( $SplitObj ) {
-        $Transactions = $SplitObj->Transactions;
-    } elsif ( $ChildObj ) {
-        $Transactions = $ChildObj->Transactions;
-    }
-    if ( $Transactions ) {
-        $ARGS{'Content'} = $m->scomp("/RTIR/Elements/TransactionData",
-            Transactions => $Transactions,
-            Type         => 'messages',
-            Include      => ['Create', 'Correspond'],
-        ) || '';
-        $ARGS{'Content'} =~ s/\&gt;/>/g;
-    }
-} else {
-    $include_signature = 0;
-}
-</%PERL>
 <& /Elements/MessageBox,
     Default => $ARGS{'Content'},
-    IncludeSignature => $include_signature,
+    IncludeSignature => 0,
 &>
 </td></tr>
 
@@ -287,6 +266,7 @@ unless ( exists $ARGS{'Content'} ) {
     NamePrefix => 'Investigation',
     Queue => 'Investigations',
     SkipField => { Owner => 1, Attachments => 1, DateFields => 1 },
+    IncludeSignature => (exists $ARGS{'InvestigationContent'} ? 0 : 1),
 &>
 <& /Elements/Submit,
     Name => 'CreateWithInvestigation',
@@ -468,6 +448,22 @@ PageMenu->child(
     . q[>] . loc('Launch Investigation') . q[</a>]
 );
 
+unless ( exists $ARGS{'Content'} ) {
+    my $Transactions;
+    if ( $SplitObj ) {
+        $Transactions = $SplitObj->Transactions;
+    } elsif ( $ChildObj ) {
+        $Transactions = $ChildObj->Transactions;
+    }
+    if ( $Transactions ) {
+        $ARGS{'Content'} = $m->scomp("/RTIR/Elements/TransactionData",
+            Transactions => $Transactions,
+            Type         => 'messages',
+            Include      => ['Create', 'Correspond'],
+        ) || '';
+        $ARGS{'Content'} =~ s/\&gt;/>/g;
+    }
+}
 </%INIT>
 
 <%ARGS>
