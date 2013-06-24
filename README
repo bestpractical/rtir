@@ -125,19 +125,19 @@ Documentation for RTIR
         Instructions for users upgrading from 1.0 or 2.0
 
    * perldoc docs/DocIndex.pod
-        ( also at http://www.bestpractical.com/docs/rtir/latest/DocIndex.pod )
+        ( also at http://bestpractical.com/docs/rtir/latest/DocIndex )
         Links to documentation specific to RTIR
 
    * perldoc docs/Tutorial.pod
-        ( also at http://www.bestpractical.com/docs/rtir/latest/Tutorial.pod )
+        ( also at http://bestpractical.com/docs/rtir/latest/Tutorial )
         Extended information about ticket merging
 
    * perldoc docs/Constituencies.pod
-        ( also at http://www.bestpractical.com/docs/rtir/latest/Constituencies.pod )
+        ( also at http://bestpractical.com/docs/rtir/latest/Constituencies )
         Information about setting up RTIR with multiple user constituencies
 
    * perldoc docs/AdministrationTutorial.pod
-        ( also at http://www.bestpractical.com/docs/rtir/latest/AdministrationTutorial.pod )
+        ( also at http://bestpractical.com/docs/rtir/latest/AdministrationTutorial )
         Information about setting up RTIR for Administrators
         
    * install extension RT-OnlineDocs to give SuperUsers access to the RT::IR and RT API
