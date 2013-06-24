@@ -12,3 +12,5 @@
 ^etc/add_constituency
 ^etc/upgrade/upgrade.pl
 ^lib/RT/IR/Test.pm
+^\.prove
+\.sw[op]$
