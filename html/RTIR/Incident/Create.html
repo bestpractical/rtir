@@ -243,7 +243,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
     NamePrefix => 'Investigation',
     Queue => 'Investigations',
     SkipField => { Owner => 1, Attachments => 1, DateFields => 1 },
-    IncludeSignature => $include_signature,
+    IncludeSignature => (exists $ARGS{'InvestigationContent'} ? 0 : 1),
 &>
 <& /Elements/Submit,
     Name => 'CreateWithInvestigation',
@@ -425,7 +425,6 @@ PageMenu->child(
     . q[>] . loc('Launch Investigation') . q[</a>]
 );
 
-my $include_signature = 1;
 unless ( exists $ARGS{'Content'} ) {
     my $Transactions;
     if ( $SplitObj ) {
@@ -441,8 +440,6 @@ unless ( exists $ARGS{'Content'} ) {
         ) || '';
         $ARGS{'Content'} =~ s/\&gt;/>/g;
     }
-} else {
-    $include_signature = 0;
 }
 </%INIT>
 
