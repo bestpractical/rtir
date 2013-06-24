@@ -39,6 +39,23 @@ our @Final = (
         }
     },
 
+    # fix our standard SelectSingle Custom Fields to use a more modern dropdown
+    sub {
+       for my $name ('Constituency', 'Resolution', 'Function', 'Classification', 'How Reported', 'Reporter Type', 'Customer') {
+            my $cf = RT::CustomField->new( RT->SystemUser );
+            # We have to be ugly here because Customers exists twice, once as a single value and once as a multiple
+            my ($ok, $msg) = $cf->LoadByCols(Name => $name, MaxValues => 1);
+            unless ($ok) {
+                RT->Logger->error("Unable to load a Single Value Select named $name: $msg - skipping update of Render Type");
+                next;
+            } 
+
+            ($ok,$msg) = $cf->SetRenderType('Dropdown');
+            unless ($ok) {
+                RT->Logger->error("Unable to set Render Type to Dropdown for $name: $msg");
+            }
+        }
+    },
 );
 
 1;

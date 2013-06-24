@@ -70,6 +70,14 @@
         <% $Multiple && 'multiple' %> >
 %       $m->out($out);
       </select>
+<%INIT>
+# Handle render types
+$RenderType ||= $CustomField->RenderType;
+if ( $RenderType eq 'Dropdown' ) {
+    # Turn it into a dropdown
+    $Rows = 0;
+}
+</%INIT>
 <%ARGS>
 $Object => undef
 $CustomField => undef
@@ -78,6 +86,7 @@ $Default => undef
 $Values => undef
 $Multiple => 0
 $Rows => undef
+$RenderType => undef
 </%ARGS>
 
 <%METHOD options>
