@@ -139,4 +139,22 @@ installed. You should then test with the new SLA configurations in
 a dev environment to verify that due dates are being properly set
 for all relevant actions (create, respond, resolve, etc.).
 
+=head2 Notifications
+
+New installs of RTIR notify Ccs when launching an Investigation.
+
+If you would like your updgraded RTIR to notify Ccs when launching
+Investigations, you can make a Global or Investigations-specific Scrip
+from Tools -> Configuration -> Global -> Scrips or
+Tools -> Configuration -> Queues -> Investigations -> Scrips with:
+
+    Description: On Create Notify Ccs
+    Condition:   On Create
+    Action:      Notify Ccs
+    Template:    Global Template: Correspondence
+
+
+
+
+
 =cut

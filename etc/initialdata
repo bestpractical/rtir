@@ -382,6 +382,12 @@
        ScripCondition    => 'RTIR Require Constituency Group Change',
        ScripAction       => 'RTIR Set Constituency Group',
        Template          => 'Blank' },
+
+    {  Description    => 'On Create Notify Ccs',
+       Queue          => 'Investigations',
+       ScripCondition => 'On Create',
+       ScripAction    => 'Notify Ccs',
+       Template       => 'Correspondence' },
 );
 
 # WARNING: If you change content of the templates, don't forget to
