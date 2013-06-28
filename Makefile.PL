@@ -48,6 +48,7 @@ substitute( {
     'etc/upgrade/upgrade.pl',
     'etc/add_constituency',
     'lib/RT/IR/Test.pm',
+    'etc/upgrade/2.5.1/update_saved_searches.pl',
 );
 
 tests("t/*.t t/*/*.t");

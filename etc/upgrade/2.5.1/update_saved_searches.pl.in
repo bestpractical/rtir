@@ -1,4 +1,5 @@
-#!/usr/bin/env perl 
+#!/usr/bin/env perl
+### before: #!@PERL@
 # BEGIN BPS TAGGED BLOCK {{{
 #
 # COPYRIGHT:
@@ -48,7 +49,10 @@
 # END BPS TAGGED BLOCK }}}
 use strict;
 use warnings;
-use lib '/opt/rt/local/lib', '/opt/rt/3.8/lib';
+
+### after: use lib qw(@RT_LIB_PATH@);
+use lib qw(/opt/rt4/local/lib /opt/rt4/lib);
+
 use RT;
 RT->LoadConfig;
 RT->Init;
