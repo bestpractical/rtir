@@ -80,17 +80,19 @@ while ( my $s = $saved_searches->Next ) {
 
     if ( $old_query ne $content->{Query} || $old_format ne $content->{Format} )
     {
+        my $description = $s->Description;
+        $description = 'Unnamed (id: ' . $s->Id . ')' unless $description;
+
         my ( $status, $msg ) = $s->SetContent($content);
         if ($status) {
-            print 'update content of saved search ' . $s->Description . ' with
-                success';
+            print 'Updated content of saved search ' . $description;
         }
         else {
-            print 'failed to update content of saved search '
-              . $s->Description
-              . ": $msg";
+            print 'Failed to update content of saved search: '
+              . $description . $msg;
         }
         print "\n";
     }
 }
 
+print "Done.\n";
