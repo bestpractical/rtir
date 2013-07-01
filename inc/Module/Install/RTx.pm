@@ -136,6 +136,7 @@ install ::
         $has_etc{acl}++;
     }
     if ( -e 'etc/initialdata' ) { $has_etc{initialdata}++; }
+    if ( -d 'etc/upgrade/' )    { $has_etc{upgrade}++; }
 
     $self->postamble("$postamble\n");
     unless ( $subdirs{'lib'} ) {
@@ -164,6 +165,12 @@ install ::
 .
         $self->postamble("initdb ::\n$initdb\n");
         $self->postamble("initialize-database ::\n$initdb\n");
+        if ($has_etc{upgrade}) {
+            print "To upgrade from a previous version of this extension, use 'make upgrade-database'\n";
+            my $upgradedb = qq|\t\$(NOECHO) \$(PERL) -Ilib -I"$local_lib_path" -I"$lib_path" -Minc::Module::Install -e"RTxInitDB(qw(upgrade \$(NAME) \$(VERSION)))"\n|;
+            $self->postamble("upgrade-database ::\n$upgradedb\n");
+            $self->postamble("upgradedb ::\n$upgradedb\n");
+        }
     }
 }
 
@@ -209,4 +216,4 @@ sub requires_rt {
 
 __END__
 
-#line 329
+#line 336
