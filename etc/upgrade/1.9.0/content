@@ -35,15 +35,8 @@ sub delete_scrip {
 }
 
 @Initial = ( sub {
-    eval { require RT::FM; };
-    if ($@) {
-        die "RTIR is built on top of RTFM; please install RTFM before continuing.\n";
-    }
-}, sub {
     delete_scrip( { Description => 'NotifyOnLaunch', Queue => 'Investigations' } );
     delete_scrip( { Description => 'NotifyOnCreate', Queue => 'Blocks' } );
-
-    
 } );
 
 @CustomFields = (
@@ -504,11 +497,10 @@ push @ACL, (
     my $CurrentUser = RT::CurrentUser->new();
     $CurrentUser->LoadByName('RT_System');
 
-    require RT::FM::Class;
-    my $class = RT::FM::Class->new($CurrentUser);
+    my $class = RT::Class->new($CurrentUser);
     $class->Load('Templates');
     unless ($class->Id) {
-        print "  Creating 'Templates' RTFM class..";
+        print "  Creating 'Templates' class for Articles...";
         my ($id, $msg) = $class->Create(
             Name => 'Templates',
             Description => 'Response templates',
@@ -520,13 +512,14 @@ push @ACL, (
 
     my $response = RT::CustomField->new($CurrentUser);
     $response->Load('Response');
-    unless ($response->Id and $response->LookupType eq RT::FM::Article->CustomFieldLookupType) {
-        print "  Creating 'Response' RTFM custom field..";
+    unless ($response->Id and $response->LookupType eq RT::Article->CustomFieldLookupType) {
+        print "  Creating 'Response' Article custom field..";
         my ($id, $msg) = $response->Create(
             Name => 'Response',
             Type => 'Text',
+            MaxValues => 1,
             Description => 'Response to be inserted into the ticket',
-            LookupType => RT::FM::Article->CustomFieldLookupType,
+            LookupType => RT::Article->CustomFieldLookupType,
         );
         die $msg unless $id;
         print "Done\n";
