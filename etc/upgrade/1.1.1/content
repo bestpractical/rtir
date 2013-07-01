@@ -259,9 +259,9 @@ sub get_queue {
     $meta = { Name => $meta } unless ref $meta;
     $obj->LoadByCols( %$meta );
     unless( $obj->id ) {
-        print STDERR "Couldn't load queue by columns: "
+        RT->Logger->error("Couldn't load queue by columns: "
             . join( ', ', map "$_ = '". $meta->{$_} ."'", sort keys %$meta )
-            . ". ";
+            . ". ");
         return;
     }
     return $obj;
@@ -285,9 +285,9 @@ sub get_scrip {
     my $obj = RT::Scrip->new( $RT::SystemUser );
     $obj->LoadByCols( %$meta );
     unless( $obj->id ) {
-        print STDERR "Couldn't load scrip by columns: "
+        RT->Logger->error("Couldn't load scrip by columns: "
             . join( ', ', map "$_ = '". $meta->{$_} ."'", sort keys %$meta )
-            . ". ";
+            . ". ");
         return;
     }
     return $obj;
@@ -305,7 +305,7 @@ sub set_scrip_action {
         $scrip_action->Load( $new_action );
     }
     unless ( $scrip_action->Id ) {
-        print STDERR "Couldn't load scrip action.";
+        RT->Logger->error("Couldn't load scrip action.");
         return;
     }
 
@@ -314,8 +314,8 @@ sub set_scrip_action {
 
     my ($status, $msg) = $scrip->SetScripAction( $scrip_action->Id );
     unless ( $status ) {
-        print STDERR "Couldn't set action to '". $scrip_action->Name ."'"
-            ." on scrip #". $scrip->id .": $msg.";
+        RT->Logger->error("Couldn't set action to '". $scrip_action->Name ."'"
+            ." on scrip #". $scrip->id .": $msg.");
         return;
     }
     print "Changed action of the scrip #". $scrip->id ." to '". $scrip_action->Description ."'\n";
@@ -333,7 +333,7 @@ sub set_scrip_condition {
         $scrip_condition->Load( $new_condition );
     }
     unless ( $scrip_condition->Id ) {
-        print STDERR "Couldn't load scrip condition.";
+        RT->Logger->error("Couldn't load scrip condition.");
         return;
     }
 
@@ -342,8 +342,8 @@ sub set_scrip_condition {
 
     my ($status, $msg) = $scrip->SetScripCondition( $scrip_condition->Id );
     unless ( $status ) {
-        print STDERR "Couldn't set condition to '". $scrip_condition->Name ."'"
-            ." on scrip #". $scrip->id .": $msg.";
+        RT->Logger->error("Couldn't set condition to '". $scrip_condition->Name ."'"
+            ." on scrip #". $scrip->id .": $msg.");
         return;
     }
     print "Changed condition of the scrip #". $scrip->id ." to '". $scrip_condition->Description ."'\n";
@@ -353,7 +353,7 @@ sub delete_scrip {
     my $obj = get_scrip( @_ );
 
     unless ( $obj ){
-        $RT::Logger->debug("Scrip " . $_[0]->{Description}
+        RT->Logger->warn("Scrip " . $_[0]->{Description}
                            . " already deleted or renamed. Nothing to do.");
         return;
     }
@@ -377,8 +377,8 @@ sub set_scrip_field {
     my $method = 'Set'. $field;
     my ($status, $msg) = $scrip->$method( $value );
     unless ( $status ) {
-        print STDERR "Couldn't set $field to '$value'"
-            ." on scrip #". $scrip->id .": $msg.";
+        RT->Logger->error("Couldn't set $field to '$value'"
+            ." on scrip #". $scrip->id .": $msg.");
         return;
     }
     print "Set $field to '$value' on scrip #". $scrip->id ."\n";
@@ -409,7 +409,7 @@ sub set_scrip_field {
         );
     }
 }, sub {
-    $RT::Logger->debug("Deleting old scrips");
+    RT->Logger->warning("Deleting old scrips");
     delete_scrip( $_ ) foreach @DeleteScrips;
 } );
 
