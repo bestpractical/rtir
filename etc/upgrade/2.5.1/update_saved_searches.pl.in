@@ -70,12 +70,16 @@ while ( my $s = $saved_searches->Next ) {
     my $old_query  = $content->{Query};
     my $old_format = $content->{Format};
     my $special = join '|', keys %special_rename;
+    my $cf_values = join '|', values %special_rename;
     foreach ( $content->{Query}, $content->{Format} ) {
         s/(?<=CF\.{)_RTIR_//ig;
         s/(?<=CustomField\.{)_RTIR_//ig;
         s/(?<=CF\.{)_RTIR_//ig;
         s/(?<=CustomField\.{)_RTIR_//ig;
         s/\b($special)\b/$special_rename{lc($1)}/ige;
+
+        # Add quotes to handle new CFs with spaces
+        s/\s((CF|CustomField)\.{($cf_values)})\s/ '$1' /g;
     }
 
     if ( $old_query ne $content->{Query} || $old_format ne $content->{Format} )
