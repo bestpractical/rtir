@@ -75,7 +75,7 @@ while ( my $s = $saved_searches->Next ) {
         s/(?<=CustomField\.{)_RTIR_//ig;
         s/(?<=CF\.{)_RTIR_//ig;
         s/(?<=CustomField\.{)_RTIR_//ig;
-        s/\b($special)\b/$special_rename{$1}/ige;
+        s/\b($special)\b/$special_rename{lc($1)}/ige;
     }
 
     if ( $old_query ne $content->{Query} || $old_format ne $content->{Format} )
