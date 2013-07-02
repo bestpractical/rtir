@@ -74,8 +74,6 @@ while ( my $s = $saved_searches->Next ) {
     foreach ( $content->{Query}, $content->{Format} ) {
         s/(?<=CF\.{)_RTIR_//ig;
         s/(?<=CustomField\.{)_RTIR_//ig;
-        s/(?<=CF\.{)_RTIR_//ig;
-        s/(?<=CustomField\.{)_RTIR_//ig;
         s/\b($special)\b/$special_rename{lc($1)}/ige;
 
         # Add quotes to handle new CFs with spaces
