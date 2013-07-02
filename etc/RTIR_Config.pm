@@ -536,7 +536,7 @@ Set constituency propagation algorithm. Valid values are 'no',
 
 Read more about constituencies in F<lib/RT/IR/Constituencies.pod>.
 Algorithms are described in
-L<Constituencies/"Constituency Propagation Options">.
+L<Constituencies/Constituency Propagation Options>.
 
 =cut
 

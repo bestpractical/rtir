@@ -22,7 +22,7 @@ See L<RT::Crypt::GnuPG> and L<AdministrationTutorial/GnuPG Encryption>
 
 =head3 Create new block via web-interface
 
-L<Tutorial/'Creating a Block'>
+L<Tutorial/Creating a Block>
 
 =head2 Managing Incident Responses
 
@@ -32,15 +32,15 @@ L<Tutorial/Merging Tickets>
 
 =head3 Split IR
 
-L<Tutorial/'Splitting tickets'>
+L<Tutorial/Splitting tickets>
 
 =head3 Reject IR
 
-L<Tutorial/'Rejecting an IR'>
+L<Tutorial/Rejecting an IR>
 
 =head3 Bulk Reject IR
 
-L<Tutorial/'Rejecting many IRs at once (bulk reject)'>
+L<Tutorial/Rejecting many IRs at once (bulk reject)>
 
 =head3 Linking IRs to Incidents
 
@@ -54,31 +54,31 @@ L<Tutorial/'Rejecting many IRs at once (bulk reject)'>
 
 =back
 
-L<Tutorial/'Linking IRs to Incidents'>
+L<Tutorial/Linking IRs to Incidents>
 
 =head2 Reply Reporters Incident
 
-L<Tutorial/'Reply to Reporters'>
+L<Tutorial/Reply to Reporters>
 
 =head2 Reply All Incident
 
-L<Tutorial/'Reply to All'>
+L<Tutorial/Reply to All>
 
 =head2 Link Incident with new IR
 
-L<Tutorial/'Linking Incidents to IRs, Investigations, etc.'>
+L<Tutorial/Linking Incidents to IRs, Investigations, etc.>
 
 =head2 Link Incident with existing IR
 
-L<Tutorial/'Linking Incidents to IRs, Investigations, etc.'>
+L<Tutorial/Linking Incidents to IRs, Investigations, etc.>
 
 =head2 Link Incident with new Block
 
-L<Tutorial/'Linking Incidents to IRs, Investigations, etc.'>
+L<Tutorial/Linking Incidents to IRs, Investigations, etc.>
 
 =head2 Link Incident with existing Block
 
-L<Tutorial/'Linking Incidents to IRs, Investigations, etc.'>
+L<Tutorial/Linking Incidents to IRs, Investigations, etc.>
 
 =head2 Resolve Incident
 
@@ -90,23 +90,23 @@ L<Tutorial/Resolving an Incident>
 
 =head2 Quick resolve Incident
 
-L<Tutorial/'Quick Resolve'>
+L<Tutorial/Quick Resolve>
 
 =head2 Abandon Incident
 
-L<Tutorial/'Abandoning Incidents'>
+L<Tutorial/Abandoning Incidents>
 
 =head3 Bulk Abandon Incidents
 
-L<Tutorial/'Abandoning Incidents', subsection 'Abandoning many Incidents at once (bulk abandon)'>
+L<Tutorial/Abandoning Many Incidents at Once (Bulk Abandon)>
 
 =head2 Launch Investigation
 
-L<Tutorial/'Linking Incidents to IRs, Investigations, etc.'>
+L<Tutorial/Linking Incidents to IRs, Investigations, etc.>
 
 =head2 Correspond with Correspondent
 
-L<Tutorial/'Correspond with Correspondent'>
+L<Tutorial/Correspond with Correspondent>
 
 =head2 Remove Blocks
 
@@ -118,11 +118,11 @@ L<Tutorial/Blocks>
 
 =head2 Split Blocks, Split Investigation, Split Incident
 
-L<Tutorial/'Merging Tickets'>
+L<Tutorial/Merging Tickets>
 
 =head2 Merge Blocks, Split Investigation, Split Incident
 
-L<Tutorial/'Merging Tickets'>
+L<Tutorial/Merging Tickets>
 
 =head2 These Actions are part of normal Ticket management in RT
 

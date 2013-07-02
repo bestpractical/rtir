@@ -107,7 +107,7 @@ In RTIR 3.0 we delete this basic implementation in favor of
 the extension. The SLA custom field stays as the extension uses it as
 well. However, the dependency on the extension is not mandatory and there
 is no default config for it. Read the tutorial for administrators for
-more info L<AdministrationTutorial/"Service Level Agreements (SLA)">.
+more info L<AdministrationTutorial/Service Level Agreements (SLA)>.
 
 The following scrip actions and scrips that use them are deleted:
 

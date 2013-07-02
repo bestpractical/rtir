@@ -89,7 +89,7 @@ IP addresses related to the incident, IR, investigation, or block.
 Don't rename this custom field or it will lose all associated features.
 It's possible to change this CF from multiple values to single value.
 
-See L<Tutorial/'IP'> for more information.
+See L<Tutorial/IP> for more information.
 
 See also L</SetIPFromContent> below.
 
@@ -275,10 +275,10 @@ It's OK to disable this scrip.
 
 Applies to the Incident Reports, Blocks, Incidents and Investigations queues.
 
-Uses the Constituency algorithms discussed in L<RT::IR::Constituencies> to
+Uses the Constituency algorithms discussed in F<docs/Constituencies.pod> to
 set and propagate changes to the Constituency custom field.  On ticket
 creation, Constituency is set based on the parent ticket, the
-X-RT-Mail-Extension header (see L<RT::IR::Constituencies>) or the default set
+X-RT-Mail-Extension header (see F<docs/Constituencies.pod>) or the default set
 in your F<RTIR_Config.pm>
 
 When linking tickets or changing the Constituency custom field, this
@@ -293,7 +293,7 @@ When tickets are created, or the Constituency custom field is updated,
 this scrip manages the assignment of DutyTeam groups as AdminCcs.
 It makes sure that for a Constituency EDUNET, a DutyTeam group
 named 'DutyTeam EDUNET' is assigned as AdminCc and removes other DutyTeam
-groups from the AdminCc.  L<RT::IR::Constituencies/ACLs> discusses
+groups from the AdminCc.  L<Constituencies/ACLs> discusses
 how to use these groups.
 
 =back
