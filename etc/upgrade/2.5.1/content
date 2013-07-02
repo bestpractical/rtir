@@ -1,7 +1,7 @@
 
 my %special_rename = (
     howreported => 'How Reported',
-    resportertype => 'Reporter Type',
+    reportertype => 'Reporter Type',
     whereblocked => 'Where Blocked',
 );
 @Initial = (
