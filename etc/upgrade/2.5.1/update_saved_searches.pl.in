@@ -63,7 +63,7 @@ my %special_rename = (
     whereblocked => 'Where Blocked',
 );
 
-my $saved_searches = RT::Attributes->new($RT::SystemUser);
+my $saved_searches = RT::Attributes->new(RT->SystemUser);
 $saved_searches->Limit( FIELD => 'Name', VALUE => 'SavedSearch' );
 while ( my $s = $saved_searches->Next ) {
     my $content    = $s->Content;
