@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 28;
+use RT::IR::Test tests => undef;
 use Test::Warn;
 
 RT::Test->started_ok;
@@ -58,3 +58,77 @@ $agent->display_ticket( $ir);
     is $inv->FirstCustomFieldValue('IP'), '172.16.0.1', 'IP is here';
 }
 
+diag('Tests the creation of investigation from an incident') if $ENV{TEST_VERBOSE};
+my $incident_foo = $agent->create_incident(
+    {
+        Subject => 'Incident foo for testing creation of a linked Investigation'
+    }
+);
+my $incident_bar = $agent->create_incident(
+    {
+        Subject => 'Incident bar for testing creation of a linked Investigation'
+    }
+);
+$agent->display_ticket($incident_foo);
+
+$agent->follow_link_ok({text => 'Launch', n => 2}, "Followed 'Launch' link");
+$agent->form_name('TicketCreate');
+is($agent->value('Incident'), $incident_foo, 'Incident foo is checked');
+$agent->field('Incident', $incident_bar);
+$agent->click('MoreIncident');
+$agent->form_name('TicketCreate');
+is($agent->value('Incident'), $incident_bar, 'Incident bar is checked');
+
+$agent->field('Subject', 'Investigation from Incident');
+$agent->field('Requestors', 'root@localhost');
+$agent->click('Create');
+ok(
+    $agent->find_link(
+        text => 'Incident bar for testing creation of a linked Investigation'
+    ),
+    'linked to incident bar'
+);
+
+diag('Tests the creation of investigation with multiple incidents') if $ENV{TEST_VERBOSE};
+
+RT::Test->stop_server;
+my %config = RT->Config->Get('RTIR_IncidentChildren');
+$config{Investigation}{Multiple} = 1;
+RT->Config->Set(RTIR_IncidentChildren => %config);
+RT::Test->started_ok;
+
+$agent = default_agent();
+$agent->goto_create_rtir_ticket('Investigations');
+$agent->form_name('TicketCreate');
+$agent->field('Incident', $incident_foo);
+$agent->click('MoreIncident');
+$agent->form_name('TicketCreate');
+$agent->field('Incident', $incident_bar, 2);
+$agent->field('Subject', 'Investigation with multiple Incidents');
+$agent->field('Requestors', 'root@localhost');
+$agent->click('Create');
+for my $incident( qw/foo bar/ ) {
+    ok(
+        $agent->find_link(
+            text => "Incident $incident for testing creation of a linked Investigation"
+        ),
+        "linked to incident $incident"
+    );
+}
+
+diag 'Test the creation of investigation without incidents' if $ENV{TEST_VERBOSE};
+
+RT::Test->stop_server;
+$config{Investigation}{Required} = 1;
+RT->Config->Set(RTIR_IncidentChildren => %config);
+RT::Test->started_ok;
+$agent->goto_create_rtir_ticket('Investigations');
+$agent->form_name('TicketCreate');
+$agent->field('Subject', 'Investigation without Incidents');
+$agent->field('Requestors', 'root@localhost');
+$agent->click('Create');
+like( $agent->uri, qr/RTIR\/Create.html/, 'still in the create page' );
+$agent->content_contains('Creation failed', 'failed to create');
+$agent->content_contains('You must enter an Incident ID');
+
+done_testing;

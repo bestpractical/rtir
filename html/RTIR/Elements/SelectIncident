@@ -102,11 +102,11 @@ my $query = RT::IR->Query(
 );
 my $format = RT->Config->Get('RTIRSearchResultFormats')->{'LinkIncident'};
 my ($dformat, $hide);
-if ( $config->{'Multiple'} ) {
-    $dformat = "'__CheckBox.{$Name}__', $format";
-} elsif ( @potential > 1 || !$config->{'Required'} ) {
+if ( !$config->{'Multiple'} && @potential > 1 ) {
     $dformat = "'__RadioButton.{$Name}__', $format";
-} else {
+} elsif ( !$config->{'Multiple'} && $config->{'Required'} && @potential == 1 ) {
     ($dformat, $hide) = ($format, 1);
+} else {
+    $dformat = "'__CheckBox.{$Name}__', $format";
 }
 </%INIT>

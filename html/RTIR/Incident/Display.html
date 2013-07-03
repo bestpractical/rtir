@@ -172,7 +172,7 @@ my $DoLinks = sub {
         my $incidents = RT::IR->Incidents( $child, Exclude => $parent );
         while ( my $incident = $incidents->Next ) {
             $deleted_links = 1;
-            $args{'DeleteLink-'. $child->id .'-MemberOf-'. $incident->id } = '';
+            $args{'DeleteLink--MemberOf-'. $incident->id } = '';
         }
     }
 
