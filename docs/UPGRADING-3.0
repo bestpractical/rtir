@@ -11,6 +11,25 @@ The update steps implemented in the database upgrade script make
 significant changes to the database and its data. It's highly
 recommended that you save a DB backup before applying this script.
 
+=head3 MySQL
+
+If you are using MySQL you may want to apply the following indexes to
+improve the performance of the upgrade.
+
+    CREATE INDEX UPGRADE_TRANSACTIONS_TYPE ON Transactions (Type, Field);
+    CREATE INDEX UPGRADE_TRANSACTIONS_NEW ON Transactions(Field,ObjectType, Type, NewReference);
+    CREATE INDEX UPGRADE_TRANSACTIONS_OLD on Transactions(Field,ObjectType, Type, OldReference);
+    CREATE INDEX UPGRADE_OCFV_STATUS ON ObjectCustomFieldValues(Content,Disabled,CustomField);
+
+These should be removed following a successful since they are unlikely
+to be useful in normal RTIR usage.
+
+    DROP INDEX UPGRADE_TRANSACTIONS_TYPE;
+    DROP INDEX UPGRADE_TRANSACTIONS_NEW;
+    DROP INDEX UPGRADE_TRANSACTIONS_OLD;
+    DROP INDEX UPGRADE_OCFV_STATUS;
+
+
 =head2 Lifecycles
 
 RT 4.0 introduces a new feature, lifecycles, which allowed
