@@ -363,8 +363,10 @@ if ( $Split ) {
     $SplitObj = LoadTicket( $Split );
     $ARGS{'Split'} = $Split = $SplitObj->id;
 
-    @Incident = map $_->id, @{ RT::IR->Incidents( $SplitObj )->ItemsArrayRef || [] }
-        unless @Incident;
+    unless (@Incident) {
+        @Incident = map $_->id, @{ RT::IR->Incidents( $SplitObj )->ItemsArrayRef || [] };
+        $DECODED_ARGS->{Incident} = \@Incident;
+    }
 }
 
 my @IncidentObj;
