@@ -170,6 +170,7 @@ our @Final = (
                 $values->Limit( FIELD => 'Disabled', VALUE => 0 );
                 $values->Limit( FIELD => 'Content', VALUE => $state );
                 $values->Columns('ObjectId');
+                $values->OrderBy();
 
                 my $res = $RT::Handle->SimpleUpdateFromSelect(
                     'Tickets', { Status => $state }, $values->BuildSelectQuery
