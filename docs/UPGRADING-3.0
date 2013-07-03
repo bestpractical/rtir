@@ -7,10 +7,9 @@ for previous versions.
 
 =head2 Database
 
-The update steps implemented in the upgrade script
-F<etc/upgrade/2.9.0/content> make significant changes to the
-database and its data. It's highly recommended that you save
-a DB backup before applying this script.
+The update steps implemented in the database upgrade script make
+significant changes to the database and its data. It's highly
+recommended that you save a DB backup before applying this script.
 
 =head2 Lifecycles
 
