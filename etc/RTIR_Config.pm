@@ -624,26 +624,40 @@ Set($TracerouteCommand, '/usr/sbin/traceroute');
 
 Whois servers for the research tool.
 
-Host is of the form "hostname:port"
+The outer hash key is the order the entry should appear in the WHOIS
+dropdown. Host is of the form "hostname:port" and FriendlyName is
+the dropdown label.
+
+Some of the resources provided here, like IANA, are thin WHOIS clients,
+so the query results can point you to other sources of WHOIS information.
+You can then add these additional servers to this configuration.
 
 =cut
 
 Set($whois, {
     1 => {
+        Host         => "whois.verisign-grs.com",
+        FriendlyName => "VERISIGN",
+    },
+    2 => {
+        Host         => "whois.pir.org",
+        FriendlyName => "PIR",
+    },
+    3 => {
         Host         => "whois.iana.org",
         FriendlyName => "IANA",
     },
-    5 => {
-        Host         => "whois.ripe.net",
-        FriendlyName => "RIPE",
-    },
-    2 => {
+    4 => {
         Host         => "whois.internic.net",
         FriendlyName => "INTERNIC",
     },
-    3 => {
+    5 => {
         Host         => "whois.arin.net",
         FriendlyName => "ARIN",
+    },
+    6 => {
+        Host         => "whois.ripe.net",
+        FriendlyName => "RIPE",
     },
 } );
 
