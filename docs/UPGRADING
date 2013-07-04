@@ -51,46 +51,23 @@ Install the new version of RTIR. B<DO NOT> run C<make initdb>.
 
 =item 6
 
+Review all of the upgrade notes in docs/UPGRADING-*. If you were
+coming from 2.4.1, you would read UPGRADING-2.4, UPGRADING-2.6 and
+UPGRADING-3.0.
+
+=item 7
+
 Update RTIR's database.
 
 Type:
 
-    ls etc/upgrade
+    make upgrade-database
 
-For each item in that directory whose name is greater than
-your previously installed RTIR version (a later version),
-you must run upgrade commands.
+Answer the prompt for which version of RTIR you are upgrading from. RT
+will then confirm the upgrades that it is going to apply and will run
+them in sequence.
 
-Each step is described below and may have additional instructions.
-Read them before running upgrade commands.
-
-For example, if you had RTIR 1.1.1 then you should read the
-instructions under L<UPGRADING-2.4/"Applying Changes from upgrade/1.1.3">,
-run the commands, then do the same with 1.9.0 directory
-and greater until you have run all of the commands.
-
-Note that even if there is no etc/upgrade/<some version>
-directory for a particular version, you must still read the
-instructions for all remaining versions greater than or
-equal to the version you're upgrading from. Some upgrades
-may require manual changes or describe important changes in
-RTIR you should be aware of. Missing a set of upgrade
-instructions can result in strange behavior that can be very hard
-to diagnose.
-
-If the upgrade directory has any C<schema> files, run:
-
-    /opt/rt4/sbin/rt-setup-database --dba <dba> \
-        --prompt-for-dba-password --action schema \
-        --datadir etc/upgrade/<version>
-
-If the upgrade directory has a file named C<content> then run:
-
-    /opt/rt4/sbin/rt-setup-database --dba <dba> \
-        --prompt-for-dba-password --action insert \
-        --datadir etc/upgrade/<version>
-
-=item 7
+=item 8
 
 Re-analyze and re-optimize your database tables.
 
