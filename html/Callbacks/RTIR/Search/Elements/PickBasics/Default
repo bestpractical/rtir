@@ -52,7 +52,7 @@ my $path = $m->request_comp->path;
 return unless $path =~ m{^/RTIR};
 return if $path =~ m{^/RTIR/Search/index.html};
 foreach( @$Conditions ) {
-    next unless ($_->{'Name'}||'') =~ /^(?:Queue|Status)$/;
+    next unless ($_->{'Name'}||'') eq 'Queue';
     $_ = undef;
 }
 </%INIT>
