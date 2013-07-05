@@ -389,6 +389,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
         All => $args->{'All'},
         Status => $args->{'Status'},
         Action => $args->{'Action'},
+        map { $_ => $DECODED_ARGS->{$_} } grep { /Selected\w+All/ } keys %$DECODED_ARGS,
     );
 
     PageMenu()->child(
