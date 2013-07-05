@@ -393,7 +393,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
 
     PageMenu()->child(
         link => title => loc('Reply'),
-        path => "/RTIR/Incident/Reply/?SelectedReportsAll=1&". $query_string->( %args ),
+        path => "/RTIR/Incident/Reply/?". $query_string->( %args ),
     );
     PageMenu()->child(
         edit_search => title => loc('Edit Search'),
