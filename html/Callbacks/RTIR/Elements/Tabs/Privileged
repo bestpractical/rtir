@@ -298,12 +298,6 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
         path => "/RTIR/Link/$direction/Refine.html?". $query_string->( %args ),
     );
     PageMenu()->child(
-        new_search => title => loc('New Search'),
-        path => "/RTIR/Link/$direction/Refine.html?". $query_string->(
-            NewQuery => 1, id => $id, Queue => $queue,
-        ),
-    );
-    PageMenu()->child(
         new => title => loc("New $type"),
         path => !$queue
             ? "/RTIR/Create.html?Child=$id&Queue=Incidents"
@@ -337,12 +331,6 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
         path => "/RTIR/Incident/Children/Refine.html?". $query_string->( %args ),
     );
     PageMenu()->child(
-        new_search => title => loc('New Search'),
-        path => "/RTIR/Incident/Children/Refine.html?". $query_string->(
-            NewQuery => 1, id => $id, Queue => $queue,
-        ),
-    );
-    PageMenu()->child(
         new => title => loc("New $type"),
         path => "/RTIR/Create.html?". $query_string->( Incident => $id, Queue => $queue ),
     );
@@ -369,12 +357,6 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
         path => "/RTIR/Merge/Refine.html?". $query_string->( %args ),
     );
     PageMenu()->child(
-        new_search => title => loc('New Search'),
-        path => "/RTIR/Merge/Refine.html?". $query_string->(
-            NewQuery => 1, id => $id,
-        ),
-    );
-    PageMenu()->child(
         back => title => loc('Back to ticket #[_1]', $id),
         path => "/RTIR/Display.html?id=$id",
     );
@@ -399,12 +381,6 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
     PageMenu()->child(
         edit_search => title => loc('Edit Search'),
         path => "/RTIR/Incident/Reply/Refine.html?". $query_string->( %args ),
-    );
-    PageMenu()->child(
-        new_search => title => loc('New Search'),
-        path => "/RTIR/Incident/Reply/Refine.html?". $query_string->(
-            NewQuery => 1, id => $id,
-        ),
     );
     PageMenu()->child(
         back => title => loc('Back to ticket #[_1]', $id),
