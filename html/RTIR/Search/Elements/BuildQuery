@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 
-<form method="post" action="<% RT->Config->Get('WebPath') %><% $m->request_comp->path %>" name="BuildQuery">
+<form method="post" action="<% RT->Config->Get('WebPath') %><% $m->request_comp->path %>" name="BuildQuery" id="BuildQuery">
 <input type="hidden" class="hidden" name="SavedSearchId" value="<% $saved_search{'Id'} %>" />
 <input type="hidden" class="hidden" name="ResultPage" value="<% $ResultPage %>" />
 <input type="hidden" class="hidden" name="BaseQuery" value="<% $BaseQuery %>" />
