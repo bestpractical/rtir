@@ -354,7 +354,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
     );
     PageMenu()->child(
         edit_search => title => loc('Edit Search'),
-        path => "/RTIR/Merge/Refine.html?". $query_string->( %args ),
+        path => "/RTIR/Merge/Refine.html?". $query_string->( %args, Queue => $ticket->Queue ),
     );
     PageMenu()->child(
         back => title => loc('Back to ticket #[_1]', $id),
