@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
-<& /Elements/Tabs &>
+<& /Elements/Tabs, RefineArgs => { %defaults, Query => $Query } &>
 
 % $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket);
 

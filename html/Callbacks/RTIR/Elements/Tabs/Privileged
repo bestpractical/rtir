@@ -113,9 +113,10 @@ my $re_rtir_types = '(?:'. join( '|', map "\Q$_\E", RT::IR->Types ) .')';
 
 my $search_arguments = sub {
     my %res = ();
+    my $caller_args = $m->caller_args(1);
     my @query_fields = qw(Query Format RowsPerPage Page OrderBy Order);
-    if ( my $refined = $m->notes('RefinedSearch') ) {
-        @res{ @query_fields } = @{ $refined->{'query'} }{ @query_fields };
+    if ( $caller_args->{'RefineArgs'} ) {
+        @res{ @query_fields } = @{ $caller_args->{'RefineArgs'} }{ @query_fields };
     } else {
         @res{ @query_fields } = @{ $args }{ @query_fields };
     }

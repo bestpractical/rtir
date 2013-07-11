@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /RTIR/Elements/Header, Title => $Title &>
-<& /Elements/Tabs &> 
+<& /Elements/Tabs, RefineArgs => $query_state{query}  &>
 <& BuildQuery,
     %query_state,
 
@@ -62,8 +62,6 @@ my %query_state = $m->comp('ProcessQuery',
     BaseQuery  => $BaseQuery,
     ResultPage => $ResultPage,
 );
-
-$m->notes( 'RefinedSearch' => \%query_state );
 
 my @results = @{ delete $query_state{'results'} };
 
