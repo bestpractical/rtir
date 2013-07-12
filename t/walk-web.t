@@ -5,7 +5,7 @@ use warnings;
 
 use HTML::TreeBuilder;
 
-use RT::IR::Test tests => 594;
+use RT::IR::Test tests => 486;
 
 RT::Test->started_ok;
 my $m = default_agent();

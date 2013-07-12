@@ -398,21 +398,25 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
 
     $args{'Queue'} = $queue if $queue;
 
-    PageMenu()->child(
-        link => title => loc('Show Results'),
-        path => "/RTIR/Search/Results.html?". $query_string->( %args ),
-    );
+    if ( $args{'Query'} ) {
+        PageMenu()->child(
+            link => title => loc('Show Results'),
+            path => "/RTIR/Search/Results.html?". $query_string->( %args ),
+        );
+    }
     PageMenu()->child(
         edit_search => title => loc('Edit Search'),
         path => "/RTIR/Search/Refine.html?". $query_string->( %args ),
     );
-    PageMenu()->child(
-        new_search => title => loc('New Search'),
-        path => "/RTIR/Search/Refine.html?". $query_string->(
-            NewQuery => 1,
-            Queue => $queue,
-        ),
-    );
+    if ( $args{'Query'} ) {
+        PageMenu()->child(
+            new_search => title => loc('New Search'),
+            path => "/RTIR/Search/Refine.html?". $query_string->(
+                NewQuery => 1,
+                Queue => $queue,
+            ),
+        );
+    }
 
     if ( $type eq 'Incident' ) {
         PageMenu()->child(
@@ -431,22 +435,23 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
             path => "/RTIR/Report/BulkReject.html?". $query_string->( %args ),
         );
     }
-    PageMenu()->child(
-        chart => title => loc('Chart'),
-        path => "/RTIR/Search/Reporting.html?". $query_string->( %args ),
-    );
-
-    my $more = PageMenu->child( more => title => loc('Feeds') );
-    $more->child(
-        spreadsheet => title => loc('Spreadsheet'),
-        path => "/Search/Results.tsv?". $query_string->( %args ),
-    );
-
-    # other paths need query defined
-    $args{'Query'} = RT::IR->Query( Queue => $args{'Queue'} )
-        if !$args{'Query'} && $args{'Queue'};
 
     if ( $args{'Query'} ) {
+        PageMenu()->child(
+            chart => title => loc('Chart'),
+            path => "/RTIR/Search/Reporting.html?". $query_string->( %args ),
+        );
+
+        my $more = PageMenu->child( more => title => loc('Feeds') );
+        $more->child(
+                spreadsheet => title => loc('Spreadsheet'),
+                path => "/Search/Results.tsv?". $query_string->( %args ),
+        );
+
+        # other paths need query defined
+        $args{'Query'} = RT::IR->Query( Queue => $args{'Queue'} )
+            if !$args{'Query'} && $args{'Queue'};
+
         my $RSSPath = join '/', map $m->interp->apply_escapes( $_, 'u' ),
             $session{'CurrentUser'}->UserObj->Name,
             $session{'CurrentUser'}->UserObj->GenerateAuthString(
@@ -466,21 +471,19 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
             $args{Query}
         ;
         $more->child( ical => title => loc('iCal') => path => '/NoAuth/iCal/'.$ical_path);
-    }
 
-    if ( $args{'Query'} && $session{'CurrentUser'}->HasRight(
-        Right => 'SuperUser', Object => RT->System
-    ) ) {
-        my $shred_args = $query_string->(
-            search          => 1,
-            plugin          => 'Tickets',
-            'Tickets:query' => $args{'Query'},
-            'Tickets:limit' => $args{'RowsPerPage'},
-        );
-        $more->child(
-            shredder => title => loc('Shredder'),
-            path => '/Admin/Tools/Shredder/?' . $shred_args
-        );
+        if ( $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => RT->System ) ) {
+            my $shred_args = $query_string->(
+                search          => 1,
+                plugin          => 'Tickets',
+                'Tickets:query' => $args{'Query'},
+                'Tickets:limit' => $args{'RowsPerPage'},
+            );
+            $more->child(
+                shredder => title => loc('Shredder'),
+                path => '/Admin/Tools/Shredder/?' . $shred_args
+            );
+        }
     }
 } elsif ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?Split\.html$} ) {
     my $id = $args->{'Split'};
