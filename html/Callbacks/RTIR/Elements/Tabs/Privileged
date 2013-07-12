@@ -318,19 +318,10 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
     my $id = $ticket->id;
 
     my %args = (
-        $search_arguments->(),
         id => $id,
         Queue => $queue,
     );
 
-    PageMenu()->child(
-        link => title => loc('Show Results'),
-        path => "/RTIR/Incident/Children/?". $query_string->( %args ),
-    );
-    PageMenu()->child(
-        edit_search => title => loc('Edit Search'),
-        path => "/RTIR/Incident/Children/Refine.html?". $query_string->( %args ),
-    );
     PageMenu()->child(
         new => title => loc("New $type"),
         path => "/RTIR/Create.html?". $query_string->( Incident => $id, Queue => $queue ),
