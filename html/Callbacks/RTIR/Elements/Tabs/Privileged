@@ -404,17 +404,21 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
             path => "/RTIR/Search/Results.html?". $query_string->( %args ),
         );
     }
+
+    # Refine.html doesn't let you change the Queue, so don't link there from the
+    # full RTIR Search UI, only from the Bulk screens.
+    my $bulk_path = 1 if $request_path =~ m{^/RTIR/(Incident/BulkAbandon\.html$|Report/BulkReject\.html$)};
+
     PageMenu()->child(
         edit_search => title => loc('Edit Search'),
-        path => "/RTIR/Search/Refine.html?". $query_string->( %args ),
+        path => "/RTIR/Search/" .
+                    ($bulk_path ? "Refine.html?" : "?") .
+                    $query_string->( %args ),
     );
-    if ( $args{'Query'} ) {
+    if ( $args{'Query'} && !$bulk_path ) {
         PageMenu()->child(
             new_search => title => loc('New Search'),
-            path => "/RTIR/Search/Refine.html?". $query_string->(
-                NewQuery => 1,
-                Queue => $queue,
-            ),
+            path => "/RTIR/Search/?NewQuery=1"
         );
     }
 
