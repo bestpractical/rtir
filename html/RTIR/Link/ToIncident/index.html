@@ -50,7 +50,13 @@
     Refresh => $session{'tickets_refresh_interval'},
 &>
 
-<& /Elements/Tabs &>
+<& /Elements/Tabs,
+    RefineArgs => { Query       => $Query,
+                    Format      => $Format,
+                    RowsPerPage => $Rows,
+                    Page        => $Page,
+                    Order       => $Order,
+                    OrderBy     => $OrderBy } &>
 
 % $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $Ticket);
 

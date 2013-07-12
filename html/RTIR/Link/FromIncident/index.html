@@ -46,7 +46,13 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /RTIR/Elements/Header, Title => $title &>
-<& /Elements/Tabs &>
+<& /Elements/Tabs,
+    RefineArgs => { Query       => $Query,
+                    Format      => $Format,
+                    RowsPerPage => $Rows,
+                    Page        => $Page,
+                    Order       => $Order,
+                    OrderBy     => $OrderBy } &>
 
 <form action="<% RT->Config->Get('WebPath') %>/RTIR/Incident/Display.html" method="post">
 <input type="hidden" name="id" value="<% $id %>" />
