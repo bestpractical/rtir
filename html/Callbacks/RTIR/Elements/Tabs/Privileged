@@ -115,8 +115,8 @@ my $search_arguments = sub {
     my %res = ();
     my $caller_args = $m->caller_args(1);
     my @query_fields = qw(Query Format RowsPerPage Page OrderBy Order);
-    if ( $caller_args->{'RefineArgs'} ) {
-        @res{ @query_fields } = @{ $caller_args->{'RefineArgs'} }{ @query_fields };
+    if ( $caller_args->{'SearchArgs'} ) {
+        @res{ @query_fields } = @{ $caller_args->{'SearchArgs'} }{ @query_fields };
     } else {
         @res{ @query_fields } = @{ $args }{ @query_fields };
     }

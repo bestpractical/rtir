@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /RTIR/Elements/Header, Title => $Title &>
-<& /Elements/Tabs, RefineArgs => $query_state{query}  &>
+<& /Elements/Tabs, SearchArgs => $query_state{query}  &>
 <& BuildQuery,
     %query_state,
 
