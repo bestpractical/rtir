@@ -46,7 +46,13 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /RTIR/Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'} &>
-<& /Elements/Tabs &>
+<& /Elements/Tabs,
+    RefineArgs => { Query       => $Query,
+                    Format      => $Format,
+                    RowsPerPage => $Rows,
+                    Page        => $Page,
+                    Order       => $Order,
+                    OrderBy     => $OrderBy } &>
 
 % $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $IncidentObj);
 <& /Elements/ListActions, actions => \@results &>

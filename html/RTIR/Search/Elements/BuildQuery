@@ -50,8 +50,15 @@
 <input type="hidden" class="hidden" name="SavedSearchId" value="<% $saved_search{'Id'} %>" />
 <input type="hidden" class="hidden" name="ResultPage" value="<% $ResultPage %>" />
 <input type="hidden" class="hidden" name="BaseQuery" value="<% $BaseQuery %>" />
+
 % if ( $DECODED_ARGS->{id} ) {
     <input type="hidden" class="hidden" name="id" value="<% $DECODED_ARGS->{id} %>" />
+% }
+
+% for my $input ( @ExtraQueryParams ) {
+%   if ( $DECODED_ARGS->{$input} ) {
+<input type="hidden" class="hidden" name="<% $input %>" value="<% $DECODED_ARGS->{$input} %>" />
+%   }
 % }
 
 <input type="hidden" class="hidden" name="Query" value="<% $query{'Query'} %>" />
@@ -98,4 +105,5 @@ $dirty => undef
 $AvailableColumns => undef
 $CurrentFormat => undef
 $ResultPage => undef
+@ExtraQueryParams => ()
 </%ARGS>

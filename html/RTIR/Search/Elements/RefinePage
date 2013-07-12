@@ -54,6 +54,8 @@
     ResultPage => $ResultPage,
 
     actions    => \@results, 
+
+    ExtraQueryParams => \@ExtraQueryParams,
 &>
 
 <%INIT>
@@ -71,4 +73,5 @@ my $QueryString = $m->comp( '/Elements/QueryString', %{ $query_state{'query'} } 
 $Title => loc("Refine Search")
 $ResultPage => 'RTIR/Search/Results.html',
 $BaseQuery => '',
+@ExtraQueryParams => ()
 </%ARGS>
