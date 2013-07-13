@@ -54,7 +54,7 @@ my $query_string = sub {
     return $u->query || '';
 };
 
-my $args = $m->request_args;
+my $args = $DECODED_ARGS;
 
 my $search_arguments = sub {
     my %res = ();
