@@ -5,7 +5,7 @@ use warnings;
 
 use HTML::TreeBuilder;
 
-use RT::IR::Test tests => 486;
+use RT::IR::Test tests => undef;
 
 RT::Test->started_ok;
 my $m = default_agent();
@@ -51,3 +51,5 @@ sub test_page {
     }
 }
 
+undef $m;
+done_testing;

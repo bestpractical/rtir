@@ -54,16 +54,36 @@ my $query_string = sub {
     return $u->query || '';
 };
 
+my $args = $m->request_args;
+
+my $search_arguments = sub {
+    my %res = ();
+    my $caller_args = $m->caller_args(1);
+    my @query_fields = qw(Query Format RowsPerPage Page OrderBy Order);
+    if ( $caller_args->{'SearchArgs'} ) {
+        @res{ @query_fields } = @{ $caller_args->{'SearchArgs'} }{ @query_fields };
+    } else {
+        @res{ @query_fields } = @{ $args }{ @query_fields };
+    }
+    delete $res{$_} foreach grep !defined $res{$_}, keys %res;
+    return %res;
+};
+
 my $root = Menu->child( rtir => title => loc('RTIR'), path => '/RTIR/' );
 
 my $search = $root->child( search => title => loc('Search'), path => '/RTIR/Search/' );
 $search->child( new => title => loc('New Query'), path => '/RTIR/Search/?NewQuery=1' );
-# XXX: query string
-$search->child( build => title => loc('Build Search'), path => '/RTIR/Search/' );
-if ( $session{'CurrentSearchHash'} ) {
-    $search->child( results => title => loc('Show Results'), path => '/RTIR/Search/Results.html' );
-} else {
 
+{
+my $current_search = $session{"CurrentSearchHash"} || {};
+my $has_query = 1 if ( $args->{'Query'} or $current_search->{'Query'} );
+
+if ( $has_query ) {
+    $search->child( build => title => loc('Build Search'), path => '/RTIR/Search/' );
+    $search->child( results => title => loc('Show Results'),
+                    path => '/RTIR/Search/Results.html?' .
+                    $query_string->( $args->{'Query'} ? $search_arguments->() : %$current_search ) );
+}
 }
 
 $root->child(
@@ -108,21 +128,7 @@ my $request_path = $HTML::Mason::Commands::r->path_info;
 $request_path =~ s!/{2,}!/!g;
 return unless $request_path =~ m{^/RTIR/};
 
-my $args = $m->request_args;
 my $re_rtir_types = '(?:'. join( '|', map "\Q$_\E", RT::IR->Types ) .')';
-
-my $search_arguments = sub {
-    my %res = ();
-    my $caller_args = $m->caller_args(1);
-    my @query_fields = qw(Query Format RowsPerPage Page OrderBy Order);
-    if ( $caller_args->{'SearchArgs'} ) {
-        @res{ @query_fields } = @{ $caller_args->{'SearchArgs'} }{ @query_fields };
-    } else {
-        @res{ @query_fields } = @{ $args }{ @query_fields };
-    }
-    delete $res{$_} foreach grep !defined $res{$_}, keys %res;
-    return %res;
-};
 
 if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|Advanced)\.html$} ) {
     my $id = $args->{'id'};
