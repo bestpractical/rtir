@@ -72,14 +72,14 @@ my $search_arguments = sub {
 my $root = Menu->child( rtir => title => loc('RTIR'), path => '/RTIR/' );
 
 my $search = $root->child( search => title => loc('Search'), path => '/RTIR/Search/' );
-$search->child( new => title => loc('New Query'), path => '/RTIR/Search/?NewQuery=1' );
+$search->child( new => title => loc('New Search'), path => '/RTIR/Search/?NewQuery=1' );
 
 {
 my $current_search = $session{"CurrentSearchHash"} || {};
 my $has_query = 1 if ( $args->{'Query'} or $current_search->{'Query'} );
 
 if ( $has_query ) {
-    $search->child( build => title => loc('Build Search'), path => '/RTIR/Search/' );
+    $search->child( build => title => loc('Edit Search'), path => '/RTIR/Search/' );
     $search->child( results => title => loc('Show Results'),
                     path => '/RTIR/Search/Results.html?' .
                     $query_string->( $args->{'Query'} ? $search_arguments->() : %$current_search ) );
