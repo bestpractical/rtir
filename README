@@ -15,9 +15,8 @@ REQUIRED PACKAGES:
 ------------------
 
 o   RT 4.0.14rc1 or later, configured, installed and tested.
-o   Net::Whois::RIPE 1.31 or OLDER, later versions broke
-    backwards compatibility
-
+o   Net::Whois::RIPE 1.31 is bundled with RTIR for compatibility with the
+    API RTIR uses and for a fix to run without warnings under perl 5.18.
 
 Upgrade instructions:
 -----------------------
