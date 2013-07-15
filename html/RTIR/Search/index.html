@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title &>
-<& /Elements/Tabs &>
+<& /Elements/Tabs, SearchArgs => $query_state{query} &>
 
 <& Elements/BuildQuery,
     %query_state,

@@ -54,16 +54,36 @@ my $query_string = sub {
     return $u->query || '';
 };
 
+my $args = $DECODED_ARGS;
+
+my $search_arguments = sub {
+    my %res = ();
+    my $caller_args = $m->caller_args(1);
+    my @query_fields = qw(Query Format RowsPerPage Page OrderBy Order);
+    if ( $caller_args->{'SearchArgs'} ) {
+        @res{ @query_fields } = @{ $caller_args->{'SearchArgs'} }{ @query_fields };
+    } else {
+        @res{ @query_fields } = @{ $args }{ @query_fields };
+    }
+    delete $res{$_} foreach grep !defined $res{$_}, keys %res;
+    return %res;
+};
+
 my $root = Menu->child( rtir => title => loc('RTIR'), path => '/RTIR/' );
 
 my $search = $root->child( search => title => loc('Search'), path => '/RTIR/Search/' );
-$search->child( new => title => loc('New Query'), path => '/RTIR/Search/?NewQuery=1' );
-# XXX: query string
-$search->child( build => title => loc('Build Search'), path => '/RTIR/Search/' );
-if ( $session{'CurrentSearchHash'} ) {
-    $search->child( results => title => loc('Show Results'), path => '/RTIR/Search/Results.html' );
-} else {
+$search->child( new => title => loc('New Search'), path => '/RTIR/Search/?NewQuery=1' );
 
+{
+my $current_search = $session{"CurrentSearchHash"} || {};
+my $has_query = 1 if ( $args->{'Query'} or $current_search->{'Query'} );
+
+if ( $has_query ) {
+    $search->child( build => title => loc('Edit Search'), path => '/RTIR/Search/' );
+    $search->child( results => title => loc('Show Results'),
+                    path => '/RTIR/Search/Results.html?' .
+                    $query_string->( $args->{'Query'} ? $search_arguments->() : %$current_search ) );
+}
 }
 
 $root->child(
@@ -108,21 +128,7 @@ my $request_path = $HTML::Mason::Commands::r->path_info;
 $request_path =~ s!/{2,}!/!g;
 return unless $request_path =~ m{^/RTIR/};
 
-my $args = $m->request_args;
 my $re_rtir_types = '(?:'. join( '|', map "\Q$_\E", RT::IR->Types ) .')';
-
-my $search_arguments = sub {
-    my %res = ();
-    my $caller_args = $m->caller_args(1);
-    my @query_fields = qw(Query Format RowsPerPage Page OrderBy Order);
-    if ( $caller_args->{'SearchArgs'} ) {
-        @res{ @query_fields } = @{ $caller_args->{'SearchArgs'} }{ @query_fields };
-    } else {
-        @res{ @query_fields } = @{ $args }{ @query_fields };
-    }
-    delete $res{$_} foreach grep !defined $res{$_}, keys %res;
-    return %res;
-};
 
 if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|Advanced)\.html$} ) {
     my $id = $args->{'id'};
@@ -398,21 +404,29 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
 
     $args{'Queue'} = $queue if $queue;
 
-    PageMenu()->child(
-        link => title => loc('Show Results'),
-        path => "/RTIR/Search/Results.html?". $query_string->( %args ),
-    );
+    if ( $args{'Query'} ) {
+        PageMenu()->child(
+            link => title => loc('Show Results'),
+            path => "/RTIR/Search/Results.html?". $query_string->( %args ),
+        );
+    }
+
+    # Refine.html doesn't let you change the Queue, so don't link there from the
+    # full RTIR Search UI, only from the Bulk screens.
+    my $bulk_path = 1 if $request_path =~ m{^/RTIR/(Incident/BulkAbandon\.html$|Report/BulkReject\.html$)};
+
     PageMenu()->child(
         edit_search => title => loc('Edit Search'),
-        path => "/RTIR/Search/Refine.html?". $query_string->( %args ),
+        path => "/RTIR/Search/" .
+                    ($bulk_path ? "Refine.html?" : "?") .
+                    $query_string->( %args ),
     );
-    PageMenu()->child(
-        new_search => title => loc('New Search'),
-        path => "/RTIR/Search/Refine.html?". $query_string->(
-            NewQuery => 1,
-            Queue => $queue,
-        ),
-    );
+    if ( $args{'Query'} && !$bulk_path ) {
+        PageMenu()->child(
+            new_search => title => loc('New Search'),
+            path => "/RTIR/Search/?NewQuery=1"
+        );
+    }
 
     if ( $type eq 'Incident' ) {
         PageMenu()->child(
@@ -431,22 +445,23 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
             path => "/RTIR/Report/BulkReject.html?". $query_string->( %args ),
         );
     }
-    PageMenu()->child(
-        chart => title => loc('Chart'),
-        path => "/RTIR/Search/Reporting.html?". $query_string->( %args ),
-    );
-
-    my $more = PageMenu->child( more => title => loc('Feeds') );
-    $more->child(
-        spreadsheet => title => loc('Spreadsheet'),
-        path => "/Search/Results.tsv?". $query_string->( %args ),
-    );
-
-    # other paths need query defined
-    $args{'Query'} = RT::IR->Query( Queue => $args{'Queue'} )
-        if !$args{'Query'} && $args{'Queue'};
 
     if ( $args{'Query'} ) {
+        PageMenu()->child(
+            chart => title => loc('Chart'),
+            path => "/RTIR/Search/Reporting.html?ShowChart=1&". $query_string->( %args ),
+        );
+
+        my $more = PageMenu->child( more => title => loc('Feeds') );
+        $more->child(
+                spreadsheet => title => loc('Spreadsheet'),
+                path => "/Search/Results.tsv?". $query_string->( %args ),
+        );
+
+        # other paths need query defined
+        $args{'Query'} = RT::IR->Query( Queue => $args{'Queue'} )
+            if !$args{'Query'} && $args{'Queue'};
+
         my $RSSPath = join '/', map $m->interp->apply_escapes( $_, 'u' ),
             $session{'CurrentUser'}->UserObj->Name,
             $session{'CurrentUser'}->UserObj->GenerateAuthString(
@@ -466,21 +481,19 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
             $args{Query}
         ;
         $more->child( ical => title => loc('iCal') => path => '/NoAuth/iCal/'.$ical_path);
-    }
 
-    if ( $args{'Query'} && $session{'CurrentUser'}->HasRight(
-        Right => 'SuperUser', Object => RT->System
-    ) ) {
-        my $shred_args = $query_string->(
-            search          => 1,
-            plugin          => 'Tickets',
-            'Tickets:query' => $args{'Query'},
-            'Tickets:limit' => $args{'RowsPerPage'},
-        );
-        $more->child(
-            shredder => title => loc('Shredder'),
-            path => '/Admin/Tools/Shredder/?' . $shred_args
-        );
+        if ( $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => RT->System ) ) {
+            my $shred_args = $query_string->(
+                Search          => 1,
+                Plugin          => 'Tickets',
+                'Tickets:query' => $args{'Query'},
+                'Tickets:limit' => $args{'RowsPerPage'},
+            );
+            $more->child(
+                shredder => title => loc('Shredder'),
+                path => '/Admin/Tools/Shredder/?' . $shred_args
+            );
+        }
     }
 } elsif ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?Split\.html$} ) {
     my $id = $args->{'Split'};
