@@ -51,4 +51,14 @@ substitute( {
 
 tests("t/*.t t/*/*.t");
 
+postamble('
+snapshot: dist sign-dist dist-shasums
+
+sign-dist:
+	gpg -a --detach-sign $(DISTVNAME).tar.gz
+
+dist-shasums:
+	sha1sum $(DISTVNAME).tar.gz*
+');
+
 WriteAll();
