@@ -116,6 +116,8 @@ unless ($WhoisServer) {
     $WhoisServer = RT::IR->FirstWhoisServer;
 }
 
+return unless $q;
+
 my ($WhoisIterator, $WhoisError) = RT::IR->WhoisLookup(
     Server => $WhoisServer,
     Query => $q,

@@ -24,8 +24,6 @@ if ($^O ne 'VMS') {
 # RTIR needs this version of SB because of cud-from-select
 requires('DBIx::SearchBuilder', 1.61);
 
-# whois tool
-requires('Net::Whois::RIPE');
 # IP searching
 requires('Hook::LexWrap');
 requires('Regexp::Common');
