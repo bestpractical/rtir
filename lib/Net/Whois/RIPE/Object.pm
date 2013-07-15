@@ -198,7 +198,7 @@ sub error {
 
 sub success {
     my $self = shift;
-    return defined @{ $self->{_error} } > 0 ? 0 : 1;
+    return @{ $self->{_error} } ? 0 : 1;
 }
 
 sub debug {
