@@ -179,10 +179,9 @@ $ RTHOME=/opt/my-rt perl Makefile.PL
 $ RT_DBA_USER=user RT_DBA_PASSWORD=password make test
 
 These are intended to be run before installing RTIR.
-RTFM, however, must already be installed( except RT version >= 4 ).
 
-Like RT, RTIR expects to be able to create a new database called rt3test
-on your system.
+Like RT, RTIR expects to be able to create a new database called rt4test
+on your system
 
 
 REPORTING BUGS
