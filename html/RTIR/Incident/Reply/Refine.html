@@ -56,10 +56,16 @@ return $m->comp(
     ResultPage => 'RTIR/Incident/Reply/?'. $m->comp('/Elements/QueryString',
         id => $ARGS{'id'}, All => $ARGS{'All'},
         Status => $ARGS{'Status'}, Action => $ARGS{'Action'},
+        SelectedReportsAll => $ARGS{'SelectedReportsAll'},
+        SelectedInvestigationsAll => $ARGS{'SelectedInvestigationsAll'},
+        SelectedBlocksAll => $ARGS{'SelectedBlocksAll'},
     ),
     BaseQuery => RT::IR->Query(
         Queue    => \@queues,
         MemberOf => $ARGS{'id'},
     ),
+    ExtraQueryParams => [qw(SelectedReportsAll SelectedInvestigationsAll
+                            All Status Action SelectedBlocksAll)],
+
 );
 </%INIT>
