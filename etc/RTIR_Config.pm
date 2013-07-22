@@ -312,9 +312,10 @@ Set($ReplyString , '');
 
 =item C<$RTIR_OldestRelatedTickets>
 
-Controls how far back, in days, RTIR should look for tickets which
-might contain a specific string, such as an IP address. Sixty
-days by default.
+Controls how far back, in days, RTIR should look for tickets which might
+contain a specific string. This is only used for Content searches,
+searches based on IP or other Custom Fields are not limited by age
+because the current implementation has poor performance.
 
 =cut
 
