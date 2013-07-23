@@ -61,6 +61,11 @@ unless ( exists $session{'my_rtir_portlets'} ) {
 my $portlets = $session{'my_rtir_portlets'};
 
 if ( defined $q && length $q ) {
+
+    if ($q =~ /^#?(\d+)$/) {
+        RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."RTIR/Display.html?id=".$1);
+    }
+
     my $query = RT::IR->ParseSimpleSearch(
         Query => $q,
         CurrentUser => $session{'CurrentUser'},
