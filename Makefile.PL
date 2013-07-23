@@ -6,7 +6,7 @@ author('Best Practical Solutions <sales@bestpractical.com>');
 version_from('lib/RT/IR.pm');
 
 # update README and docs/UPGRADING
-requires_rt('4.0.14rc1');
+requires_rt('4.0.14');
 
 # XXX: This should be reported by M::I::RTx
 my ($lib_path) = $INC{'RT.pm'} =~ /^(.*)[\\\/]/;
