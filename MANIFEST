@@ -8,6 +8,7 @@ docs/UPGRADING
 docs/UPGRADING-2.4
 docs/UPGRADING-2.6
 docs/UPGRADING-3.0
+etc/add_constituency.in
 etc/initialdata
 etc/logo/gif/rtir-logo-badge-3d.gif
 etc/logo/gif/rtir-logo-badge-shadow.gif
@@ -42,6 +43,7 @@ etc/upgrade/2.5.1/update_saved_searches.pl.in
 etc/upgrade/2.6.2/content
 etc/upgrade/2.9.0/content
 etc/upgrade/3.0.0rc2/content
+etc/upgrade/upgrade.pl.in
 html/Callbacks/RTIR/autohandler/Default
 html/Callbacks/RTIR/Elements/EditCustomField/EditComponentName
 html/Callbacks/RTIR/Elements/Header/Default
@@ -188,6 +190,7 @@ lib/RT/Condition/RTIR_RequireReportActivation.pm
 lib/RT/Condition/RTIR_StaffResponse.pm
 lib/RT/IR.pm
 lib/RT/IR/Config.pm
+lib/RT/IR/Test.pm.in
 lib/RT/IR/Test/Web.pm
 Makefile.PL
 MANIFEST			This list of files
@@ -251,6 +254,7 @@ t/report/status.t
 t/rtfm/basics.t
 t/rtfm/on-create.t
 t/rtfm/on-update.t
+t/searches/menu.t
 t/searches/simple.t
 t/upgrade/2.6.0-to-2.9.0.t
 t/walk-web.t
