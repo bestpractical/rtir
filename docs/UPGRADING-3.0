@@ -24,11 +24,10 @@ improve the performance of the upgrade.
 These should be removed following a successful since they are unlikely
 to be useful in normal RTIR usage.
 
-    DROP INDEX UPGRADE_TRANSACTIONS_TYPE;
-    DROP INDEX UPGRADE_TRANSACTIONS_NEW;
-    DROP INDEX UPGRADE_TRANSACTIONS_OLD;
-    DROP INDEX UPGRADE_OCFV_STATUS;
-
+    DROP INDEX UPGRADE_TRANSACTIONS_TYPE ON Transactions;
+    DROP INDEX UPGRADE_TRANSACTIONS_NEW ON Transactions;
+    DROP INDEX UPGRADE_TRANSACTIONS_OLD ON Transactions;
+    DROP INDEX UPGRADE_OCFV_STATUS ON Transactions;
 
 =head2 Lifecycles
 
