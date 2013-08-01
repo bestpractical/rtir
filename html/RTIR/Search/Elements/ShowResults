@@ -47,7 +47,12 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 
-$Query = join ' AND ', map "( $_ )", grep $_, $BaseQuery, $Query;
+if ( $BaseQuery && $Query ) {
+    $Query = join ' AND ', map "( $_ )", $BaseQuery, $Query;
+}
+else {
+    $Query ||= $BaseQuery;
+}
 
 $BaseURL = RT->Config->Get('WebPath')."/$BaseURL" unless $BaseURL =~ m{^/};
 $BaseURL .= ( $BaseURL =~ /\?/ )? '&': '?' unless $BaseURL =~ m{[&?]$};

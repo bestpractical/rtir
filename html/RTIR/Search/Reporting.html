@@ -71,7 +71,14 @@
 <%INIT>
 my $title = loc('Reporting');
 
-my $FullQuery = join ' AND ', map "( $_ )", grep $_, $BaseQuery, $Query;
+my $FullQuery;
+
+if ( $BaseQuery && $Query ) {
+    $FullQuery = join ' AND ', map "( $_ )", $BaseQuery, $Query;
+}
+else {
+    $FullQuery = $BaseQuery || $Query;
+}
 
 </%INIT>
 

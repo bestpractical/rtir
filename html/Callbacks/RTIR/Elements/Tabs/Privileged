@@ -56,10 +56,11 @@ my $query_string = sub {
 
 my $args = $DECODED_ARGS;
 
+my @query_fields = qw(Query Format RowsPerPage Page OrderBy Order);
+
 my $search_arguments = sub {
     my %res = ();
     my $caller_args = $m->caller_args(1);
-    my @query_fields = qw(Query Format RowsPerPage Page OrderBy Order);
     if ( $caller_args->{'SearchArgs'} ) {
         @res{ @query_fields } = @{ $caller_args->{'SearchArgs'} }{ @query_fields };
     } else {
@@ -75,7 +76,7 @@ my $search = $root->child( search => title => loc('Search'), path => '/RTIR/Sear
 $search->child( new => title => loc('New Search'), path => '/RTIR/Search/?NewQuery=1' );
 
 {
-my $current_search = $session{"CurrentSearchHash"} || {};
+my $current_search = $session{'CurrentSearchHash'} ? { map { $_ => $session{'CurrentSearchHash'}{$_} } @query_fields } : {};
 my $has_query = 1 if ( $args->{'Query'} or $current_search->{'Query'} );
 
 if ( $has_query ) {
