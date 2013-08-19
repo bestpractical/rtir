@@ -79,6 +79,16 @@ my $ticket_sql_parser = Parse::BooleanLogic->new;
 
 RT->AddJavaScript('jquery.uncheckable-radio-0.1.js');
 
+# Add the RTIR search result page to the whitelist to allow
+# bookmarks to work without CSRF warnings, similar to the RT
+# search result page. As noted in the similar RT configuration,
+# whitelisted search links can be used for denial-of-service against RT
+# (construct a very inefficient query and trick lots of users into
+# running them against RT). This is offset by the general usefulness of
+# bookmarking search links.
+
+$RT::Interface::Web::is_whitelisted_component{'/RTIR/Search/Results.html'} = 1;
+
 =head1 FUNCTIONS
 
 =head2 OurQueue
