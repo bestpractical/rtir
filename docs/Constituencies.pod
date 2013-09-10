@@ -93,10 +93,16 @@ rename values, and change the sort order.
 However, to get advanced control over constituencies you have to create additional
 objects in the system. The steps below describe how to do this manually. An
 F<add_constituency> script is also provided which helps add new constituency
-values, along with their associated groups and queues. You'll find this in the
-F<etc> directory in your RTIR distribution.
+values, along with their associated groups and queues. These queues are there only 
+for technical reasons and are only visible for administrators of RTIR.
+The script is located in the F<etc> directory in your RTIR distribution.
 
-=head2 Managing Constituency Values
+Then assign users to their corresponding F<DutyTeam> to give them control over 
+objects from their constituency. As the permissions are based on the 
+F<constituency> field of the ticket there is no need to move tickets 
+from one queue to the newly created constituency queue.
+
+=head2 Manually Managing Constituency Values
 
 In some simple configurations, administrators may use the web interface
 to add, delete, or rename values for the 'Constituency' field, however
