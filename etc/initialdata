@@ -420,7 +420,7 @@ Subject: { $Ticket->Subject }
 -------------------------------------------------------------------------
 Please include the string:
 
-         [{ $Ticket->QueueObj->SubjectTag || $rtname } #{ $Ticket->id }]
+         [{ $Ticket->SubjectTag } #{ $Ticket->id }]
 
 in the subject line of all future correspondence about this issue. To do so, 
 you may reply to this message.
@@ -452,7 +452,7 @@ Block #{$Ticket->id} was removed.
 -------------------------------------------------------------------------
 Please include the string:
 
-         [{ $Ticket->QueueObj->SubjectTag || $rtname } #{$Ticket->id}]
+         [{ $Ticket->SubjectTag } #{$Ticket->id}]
 
 in the subject line of all future correspondence about this issue. To do so, 
 you may reply to this message.
@@ -470,7 +470,7 @@ Subject: {$Ticket->Subject}
 -------------------------------------------------------------------------
 Please include the string:
 
-         [{ $Ticket->QueueObj->SubjectTag || $rtname } #{$Ticket->id}]
+         [{ $Ticket->SubjectTag } #{$Ticket->id}]
 
 in the subject line of all future correspondence about this issue. To do so, 
 you may reply to this message.

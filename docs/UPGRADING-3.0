@@ -171,7 +171,22 @@ Tools -> Configuration -> Queues -> Investigations -> Scrips with:
     Template:    Global Template: Correspondence
 
 
+=head1 UPGRADING FROM 3.0.0 AND EARLIER
 
+=head2 SubjectTag corrections
 
+During the upgrade from 2.4 to 2.6, instructions were provided to begin including
+Queue SubjectTags in outgoing mail.  New installs of 2.6.0 also used SubjectTags in
+templates.  However, they suggested an old-style
+
+    [{$Ticket->QueueObj->SubjectTag || $rtname} #{$Ticket->id}]
+
+Instead, you should use the more modern
+
+    [{$Ticket->SubjectTag} #{$Ticket->id}]
+
+Because correspondence templates are frequently modified, it is
+not practical to script updates and they will need to be done
+through the UI.
 
 =cut
