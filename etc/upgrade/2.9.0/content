@@ -169,6 +169,7 @@ our @Final = (
                 $values->Limit( FIELD => 'CustomField', VALUE => $cf->id );
                 $values->Limit( FIELD => 'Disabled', VALUE => 0 );
                 $values->Limit( FIELD => 'Content', VALUE => $state );
+                $values->Limit( FIELD => 'ObjectType', VALUE => 'RT::Ticket' );
                 $values->Columns('ObjectId');
                 $values->OrderBy();
 
