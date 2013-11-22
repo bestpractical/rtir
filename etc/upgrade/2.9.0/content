@@ -151,7 +151,7 @@ our @Final = (
         }
     },
 
-    # in RTIR queues for variouse reasons we kept Status and State in
+    # in RTIR queues for various reasons we kept Status and State in
     # sync with each other and were hiding these txns in the UI. Now
     # we delete old status changes
     # and convert State changes into Status changes
