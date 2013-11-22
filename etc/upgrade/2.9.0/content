@@ -204,6 +204,7 @@ our @Final = (
                 $txns->Limit( ALIAS => $ocfv_alias, FIELD => 'Content', VALUE => $state );
                 $txns->Limit( ALIAS => $ocfv_alias, FIELD => 'CustomField', VALUE => $cf->id );
                 $txns->Columns('id');
+                $txns->OrderBy;
 
                 my $res = $RT::Handle->SimpleUpdateFromSelect(
                     'Transactions', { $old_new .'Value' => $state }, $txns->BuildSelectQuery
@@ -231,6 +232,7 @@ our @Final = (
                     VALUE    => 'NULL'
                 );
                 $txns->Columns( $old_new .'Reference' );
+                $txns->OrderBy;
 
                 my $res = $RT::Handle->DeleteFromSelect(
                     'ObjectCustomFieldValues', $txns->BuildSelectQuery
@@ -269,6 +271,7 @@ our @Final = (
             $txns->Limit( FIELD => 'Type', VALUE => 'CustomField' );
             $txns->Limit( FIELD => 'Field', VALUE => $cf->id );
             $txns->Columns('id');
+            $txns->OrderBy();
 
             my $res = $RT::Handle->SimpleUpdateFromSelect(
                 'Transactions',
