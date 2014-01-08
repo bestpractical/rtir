@@ -3,7 +3,7 @@ use inc::Module::Install;
 RTx('RT-IR');
 license('GPL Version 2');
 author('Best Practical Solutions <sales@bestpractical.com>');
-version_from('lib/RT/IR.pm');
+all_from('lib/RT/IR.pm');
 
 # update README and docs/UPGRADING
 requires_rt('4.0.14');
