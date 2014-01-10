@@ -49,6 +49,7 @@
 <%INIT>
 my $Title = loc( "Most due incidents owned by [_1]", $Owner->Name );
 $Query ||= RT::IR->ActiveQuery( Queue => 'Incidents', And => 'Owner.id = '. $Owner->id );
+$m->callback( CallbackName => 'ModifyQuery', Query => \$Query );
 </%INIT>
 <%ARGS>
 $Owner => $session{'CurrentUser'}

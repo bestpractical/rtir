@@ -65,6 +65,7 @@
     Order        => $Order,
     AllowSorting => 0,
 &>
+% $m->callback( CallbackName => 'AfterResults' );
 </&>
 
 <%INIT>
