@@ -64,6 +64,6 @@ Find all templates with the following text:
 
 And replace it with:
 
-    [{$Ticket->QueueObj->SubjectTag || $rtname} #{$Ticket->id}]
+    [{$Ticket->SubjectTag} #{$Ticket->id}]
 
 =cut
