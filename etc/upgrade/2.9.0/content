@@ -151,7 +151,7 @@ our @Final = (
         }
     },
 
-    # in RTIR queues for variouse reasons we kept Status and State in
+    # in RTIR queues for various reasons we kept Status and State in
     # sync with each other and were hiding these txns in the UI. Now
     # we delete old status changes
     # and convert State changes into Status changes
@@ -169,6 +169,7 @@ our @Final = (
                 $values->Limit( FIELD => 'CustomField', VALUE => $cf->id );
                 $values->Limit( FIELD => 'Disabled', VALUE => 0 );
                 $values->Limit( FIELD => 'Content', VALUE => $state );
+                $values->Limit( FIELD => 'ObjectType', VALUE => 'RT::Ticket' );
                 $values->Columns('ObjectId');
                 $values->OrderBy();
 
@@ -203,6 +204,7 @@ our @Final = (
                 $txns->Limit( ALIAS => $ocfv_alias, FIELD => 'Content', VALUE => $state );
                 $txns->Limit( ALIAS => $ocfv_alias, FIELD => 'CustomField', VALUE => $cf->id );
                 $txns->Columns('id');
+                $txns->OrderBy;
 
                 my $res = $RT::Handle->SimpleUpdateFromSelect(
                     'Transactions', { $old_new .'Value' => $state }, $txns->BuildSelectQuery
@@ -230,6 +232,7 @@ our @Final = (
                     VALUE    => 'NULL'
                 );
                 $txns->Columns( $old_new .'Reference' );
+                $txns->OrderBy;
 
                 my $res = $RT::Handle->DeleteFromSelect(
                     'ObjectCustomFieldValues', $txns->BuildSelectQuery
@@ -268,6 +271,7 @@ our @Final = (
             $txns->Limit( FIELD => 'Type', VALUE => 'CustomField' );
             $txns->Limit( FIELD => 'Field', VALUE => $cf->id );
             $txns->Columns('id');
+            $txns->OrderBy();
 
             my $res = $RT::Handle->SimpleUpdateFromSelect(
                 'Transactions',
