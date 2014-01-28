@@ -52,7 +52,7 @@ substitute( {
 
 tests("t/*.t t/*/*.t");
 
-postamble('
+postamble(<<POSTAMBLE
 snapshot: dist sign-dist dist-shasums
 
 sign-dist:
@@ -60,6 +60,12 @@ sign-dist:
 
 dist-shasums:
 	sha1sum $(DISTVNAME).tar.gz*
-');
+
+parallel-test: test-parallel
+
+test-parallel:
+	RT_TEST_PARALLEL=1 \$(FULLPERLRUN) "-MApp::Prove" -e 'my \$\$p = App::Prove->new(); \$\$p->process_args("-wlrj5","--state=slow,save", "t"); exit( \$\$p->run() ? 0 : 1 )'
+POSTAMBLE
+);
 
 WriteAll();
