@@ -192,11 +192,15 @@ my $handle = ${$ARGS{handle}};
 ${$ARGS{handle}} = sub {
     my %args = @_;
 
-    $args{incident} = $args{ticket}->id
-      if $args{ticket} and $args{ticket}->QueueObj->Name eq 'Incidents';
+    if ( $args{ticket} ) {
+        $args{type} = RT::IR::TicketType( Queue => $args{ticket}->QueueObj->Name );
 
-    $args{lookup_params} = "ticket=".$args{ticket}->id
-        if $args{ticket} && !$args{lookup_params};
+        $args{incident} = $args{ticket}->id
+          if $args{type} && $args{type} eq 'Incident';
+
+        $args{lookup_params} = "ticket=".$args{ticket}->id
+            if !$args{lookup_params};
+    }
 
     $args{lookup_params} .= "&"
       if $args{lookup_params} and $args{lookup_params} !~ /&$/;
