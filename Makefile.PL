@@ -56,10 +56,10 @@ postamble(<<POSTAMBLE
 snapshot: dist sign-dist dist-shasums
 
 sign-dist:
-	gpg -a --detach-sign $(DISTVNAME).tar.gz
+	gpg -a --detach-sign \$(DISTVNAME).tar.gz
 
 dist-shasums:
-	sha1sum $(DISTVNAME).tar.gz*
+	sha1sum \$(DISTVNAME).tar.gz*
 
 parallel-test: test-parallel
 
