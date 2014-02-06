@@ -517,7 +517,8 @@ if ( $session{'CurrentUser'}->HasRight(Right => 'ModifySelf', Object => $RT::Sys
 
 PageWidgets()->child('simple_search')->raw_html( $m->scomp(
     '/Elements/SimpleSearch',
-    SendTo => '/RTIR/index.html'
+    SendTo => '/RTIR/index.html',
+    Placeholder => 'Search Incidents'
 ) );
 
 </%INIT>
