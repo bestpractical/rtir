@@ -74,6 +74,8 @@
 <&| /Widgets/TitleBox, contentbg => "#cccccc", title => loc("Identify Recipients") &>
 
 <table border="0" cellpadding="0" cellspacing="2">
+% my $height = RT->Config->Get('MessageBoxHeight', $session{'CurrentUser'} ) || 15;
+% my $wrap   = RT->Config->Get('MessageBoxWrap', $session{'CurrentUser'} ) || 'SOFT';
 % if ($loop eq 'IP') {
   <tr>
     <td class="label">WHOIS:</td>
@@ -90,22 +92,14 @@
       <&|/l&>IP Addresses</&>:<br /><small>arg: <i>_IP_</i></small>
     </td>
     <td class="value">
-% if (exists $ARGS{IPs}) {
-      <& /Elements/MessageBox, Name=>"IPs", Width => 30, Default=>$ARGS{IPs}, IncludeSignature => 0, %ARGS&>
-% } else {
-      <& /Elements/MessageBox, Name=> 'IPs', Width => 30, IncludeSignature => 0 &>
-% }
+        <textarea autocomplete="off" cols="30" rows="<% $height %>" wrap="<% $wrap %>" name="IPs" id="IPs"><% $ARGS{IPs} || '' %></textarea>
     </td>
   </tr>
 % } else {
   <tr>
     <td class="label"><&|/l&>Addresses</&>:<br /><small>arg: <i>_ADDR_</i></small></td>
     <td class="value">
-% if (exists $ARGS{Addresses}) {
-      <& /Elements/MessageBox, Name=>"Addresses", Width => 30, Default=>$ARGS{Addresses}, IncludeSignature => 0, %ARGS&>
-% } else {
-      <& /Elements/MessageBox, Name=> 'Addresses', Width => 30, IncludeSignature => 0 &>
-% }
+        <textarea autocomplete="off" cols="30" rows="<% $height %>" wrap="<% $wrap %>" name="Addresses" id="Addresses"><% $ARGS{Addresses} || '' %></textarea>
     </td>
   </tr>
 % }
