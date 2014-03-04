@@ -56,7 +56,7 @@
 % if ( $Delete && $children->Count ) {
 <i><% loc("Check box to unlink") %></i><br />
 % }
-<& /Elements/TicketList, 
+<& /Elements/CollectionList,
    Collection     => $children,
    DisplayFormat  => ($Delete? "__CheckBox__, $Format": $Format),
    Format         => $Format,
