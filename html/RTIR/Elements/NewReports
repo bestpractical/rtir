@@ -52,6 +52,7 @@
     titleright      => loc("Bulk Reject"),
     titleright_href => RT->Config->Get('WebPath') ."/RTIR/Report/BulkReject.html?$BulkQS",
     bodyclass       => '',
+    class           => 'ticket-info-generic',
 &>
 
 <& /RTIR/Search/Elements/ShowResults,
