@@ -58,7 +58,7 @@
 <input type="hidden" name="Action" value="<% $Action || '' %>" />
 <input type="hidden" name="TakeOrStealFirst" value="<% $ARGS{TakeOrStealFirst} || '' %>" />
 
-<& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
+<& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
 <div id="ticket-update-metadata">
 <&|/Widgets/TitleBox, title => loc('Ticket and Transaction') &>
@@ -186,13 +186,13 @@ $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 
 my (@results, $checks_failure);
 
-my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
-$m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
+my $gnupg_widget = $m->comp('/Elements/Crypt/SignEncryptWidget:new', Arguments => \%ARGS );
+$m->comp( '/Elements/Crypt/SignEncryptWidget:Process',
     self => $gnupg_widget,
     TicketObj => $Ticket,
 );
 if ( $SubmitTicket ) {
-    my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
+    my $status = $m->comp('/Elements/Crypt/SignEncryptWidget:Check',
         self      => $gnupg_widget,
         TicketObj => $Ticket,
     );

@@ -81,7 +81,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 % }
 <a name="top"></a>
 
-<& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
+<& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
 <div id="ticket-create-incident">
 <a name="incident"></a>
@@ -173,7 +173,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 
 % if ( $gnupg_widget ) {
 <tr><td>&nbsp;</td><td>
-<& /Elements/GnuPG/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &>
+<& /Elements/Crypt/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &>
 </td></tr>
 % }
 
@@ -313,16 +313,16 @@ $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 my $checks_failure = 0;
 
 my $gnupg_widget = $m->comp(
-    '/Elements/GnuPG/SignEncryptWidget:new',
+    '/Elements/Crypt/SignEncryptWidget:new',
     Arguments => \%ARGS
 );
-$m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
+$m->comp( '/Elements/Crypt/SignEncryptWidget:Process',
     self      => $gnupg_widget,
     QueueObj  => $QueueObj,
 );
 
 if ( $CreateIncident && $gnupg_widget ) {
-    my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
+    my $status = $m->comp('/Elements/Crypt/SignEncryptWidget:Check',
         self      => $gnupg_widget,
         Operation => 'Create',
         QueueObj  => $QueueObj,
