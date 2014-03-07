@@ -69,7 +69,7 @@ sub IsApplicable {
 
     my $txn = $self->TransactionObj;
 
-    my $cycle = $ticket->QueueObj->Lifecycle;
+    my $cycle = $ticket->QueueObj->LifecycleObj;
     if ( $cycle->IsInitial( $ticket->Status ) ) {
         # no change if the ticket in initial status and is not linked to parent
         return 0 unless RT::IR->Incidents( $ticket )->Count;

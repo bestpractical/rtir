@@ -103,7 +103,7 @@ sub Commit {
         }
     }
 
-    if ( !$new && $t->QueueObj->Lifecycle->IsInactive( $current ) ) {
+    if ( !$new && $t->QueueObj->LifecycleObj->IsInactive( $current ) ) {
         $new = $t->FirstActiveStatus;
     }
     return 1 unless $new;
