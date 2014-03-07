@@ -73,7 +73,7 @@
 <a name="top"></a>
 
 % if ( $gnupg_widget ) {
-<& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
+<& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 % }
 
 <div id="Ticket-Create-basics">
@@ -209,7 +209,7 @@
 
 % if ( $gnupg_widget ) {
   <tr><td>&nbsp;</td><td class="value">
-  <& /Elements/GnuPG/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &>
+  <& /Elements/Crypt/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &>
   </td></tr>
 % }
 
@@ -405,13 +405,13 @@ $Subject ||= $IncidentObj[0]->Subject if @IncidentObj;
 
 push @results, $m->comp( 'SELF:ProcessAttachments', %ARGS );
 
-my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
-$m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
+my $gnupg_widget = $m->comp('/Elements/Crypt/SignEncryptWidget:new', Arguments => \%ARGS );
+$m->comp( '/Elements/Crypt/SignEncryptWidget:Process',
     self      => $gnupg_widget,
     QueueObj  => $QueueObj,
 );
 if ( !$skip_create && $gnupg_widget ) {
-    my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
+    my $status = $m->comp('/Elements/Crypt/SignEncryptWidget:Check',
         self      => $gnupg_widget,
         Operation => 'Create',
         QueueObj  => $QueueObj,
