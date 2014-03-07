@@ -154,7 +154,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 
 <& /RTIR/Elements/EditCustomFields, 
     %ARGS,
-    TicketObj    => undef,
+    TicketObj    => $ticket,
     QueueObj     => $QueueObj,
     DefaultsFrom => $SplitObj || $ChildObj,
 &>
@@ -307,6 +307,8 @@ $m->callback(
 
 my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
 $QueueObj->Load( 'Incidents' ) || Abort( loc("Queue could not be loaded.") );
+
+my $ticket = RT::Ticket->new($session{'CurrentUser'}); # empty ticket object
 
 $m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
 

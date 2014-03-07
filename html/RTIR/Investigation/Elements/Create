@@ -96,7 +96,7 @@
 % if ( ($QueueObj || $TicketObj) && !$SkipField{'CustomFields'} ) {
 <& /RTIR/Elements/EditCustomFields,
     %ARGS,
-    TicketObj  => undef,
+    TicketObj  => $ticket,
     NamePrefix => $NamePrefix,
     QueueObj   => $QueueObj,
     DefaultsFrom => $TicketObj,
@@ -211,6 +211,8 @@ unless ( $QueueObj ) {
         $QueueObj->Load( $queue );
     }
 }
+
+my $ticket = RT::Ticket->new($session{'CurrentUser'}); # empty ticket object
 
 if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
     foreach ( qw(Sign Encrypt) ) {
