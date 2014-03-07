@@ -123,8 +123,8 @@
 
 </&></div>
 
-<& /Ticket/Elements/ShowHistory,
-    Ticket         => $Ticket,
+<& /Elements/ShowHistory,
+    Object         => $Ticket,
     Collapsed      => $ARGS{'Collapsed'}, 
     ShowHeaders    => $ARGS{'ShowHeaders'},
     DisplayPath    => RT->Config->Get('WebPath') ."/RTIR/Display.html?id=$id",
