@@ -64,6 +64,7 @@ foreach my $object (@$objects) {
         FIELD =>'Name',
         OPERATOR => 'STARTSWITH',
         VALUE  => $object->__Value('Name'),
+        CASESENSITIVE => 0,
     );
     while ( my $queue = $queues->Next ) {
         unshift @new_objects,$queue;
