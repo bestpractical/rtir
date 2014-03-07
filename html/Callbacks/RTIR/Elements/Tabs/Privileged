@@ -232,7 +232,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
 
     my $i = 0;
     my $status = $ticket->Status;
-    my $lifecycle = $queue->Lifecycle;
+    my $lifecycle = $queue->LifecycleObj;
     foreach my $info ( $lifecycle->Actions( $status ) ) {
         my $next = $info->{'to'};
         next unless $lifecycle->IsTransition( $status => $next );
