@@ -78,6 +78,7 @@ use Parse::BooleanLogic;
 my $ticket_sql_parser = Parse::BooleanLogic->new;
 
 RT->AddJavaScript('jquery.uncheckable-radio-0.1.js');
+RT->AddStyleSheets( 'rtir-styles.css' );
 
 # Add the RTIR search result page to the whitelist to allow
 # bookmarks to work without CSRF warnings, similar to the RT
