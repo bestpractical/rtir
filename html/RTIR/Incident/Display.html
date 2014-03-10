@@ -118,8 +118,8 @@
 
 </&></div>
 
-<& /Ticket/Elements/ShowHistory,
-    Ticket         => $TicketObj,
+<& /Elements/ShowHistory,
+    Object         => $TicketObj,
     Collapsed      => $ARGS{'Collapsed'},
     ShowHeaders    => $ARGS{'ShowHeaders'},
     DisplayPath    => RT->Config->Get('WebPath') ."/RTIR/Display.html?id=$id",
