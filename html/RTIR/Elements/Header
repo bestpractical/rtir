@@ -48,7 +48,7 @@
 <& /Elements/Header,
     URL  => RT->Config->Get('WebPath') ."/RTIR/index.html",
     Name => loc("RTIR for [_1]", RT->Config->Get('rtirname')),
-    LogoURL => RT->Config->Get('WebPath')."/NoAuth/images/RTIR/logo.png",
+    LogoURL => RT->Config->Get('WebPath')."/static/images/RTIR/logo.png",
     %ARGS
 
 &>
