@@ -3,10 +3,11 @@ use inc::Module::Install;
 RTx('RT-IR');
 license('GPL Version 2');
 author('Best Practical Solutions <sales@bestpractical.com>');
-version_from('lib/RT/IR.pm');
+all_from('lib/RT/IR.pm');
 
 # update README and docs/UPGRADING
-requires_rt('4.0.14rc1');
+requires_rt('4.0.14');
+rt_too_new('4.2.0',"\nRTIR 3.0.x is only compatible with RT 4.0.x and you are using RT %s\n");
 
 # XXX: This should be reported by M::I::RTx
 my ($lib_path) = $INC{'RT.pm'} =~ /^(.*)[\\\/]/;
@@ -50,5 +51,21 @@ substitute( {
 );
 
 tests("t/*.t t/*/*.t");
+
+postamble(<<POSTAMBLE
+snapshot: dist sign-dist dist-shasums
+
+sign-dist:
+	gpg -a --detach-sign \$(DISTVNAME).tar.gz
+
+dist-shasums:
+	sha1sum \$(DISTVNAME).tar.gz*
+
+parallel-test: test-parallel
+
+test-parallel:
+	RT_TEST_PARALLEL=1 \$(FULLPERLRUN) "-MApp::Prove" -e 'my \$\$p = App::Prove->new(); \$\$p->process_args("-wlrj5","--state=slow,save", "t"); exit( \$\$p->run() ? 0 : 1 )'
+POSTAMBLE
+);
 
 WriteAll();

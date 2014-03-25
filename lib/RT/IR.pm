@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -52,7 +52,7 @@ use warnings;
 
 package RT::IR;
 
-our $VERSION = '3.0.0rc1';
+our $VERSION = '3.0.1rc1';
 
 
 use Scalar::Util qw(blessed);
@@ -78,6 +78,16 @@ use Parse::BooleanLogic;
 my $ticket_sql_parser = Parse::BooleanLogic->new;
 
 RT->AddJavaScript('jquery.uncheckable-radio-0.1.js');
+
+# Add the RTIR search result page to the whitelist to allow
+# bookmarks to work without CSRF warnings, similar to the RT
+# search result page. As noted in the similar RT configuration,
+# whitelisted search links can be used for denial-of-service against RT
+# (construct a very inefficient query and trick lots of users into
+# running them against RT). This is offset by the general usefulness of
+# bookmarking search links.
+
+$RT::Interface::Web::is_whitelisted_component{'/RTIR/Search/Results.html'} = 1;
 
 =head1 FUNCTIONS
 
@@ -611,6 +621,7 @@ if ( RT::IR->HasConstituency ) {
     wrap 'RT::Interface::Web::Handler::CleanupRequest', pre => sub {
         %RT::IR::ConstituencyCache = ();
         %RT::IR::HasNoQueueCache = ();
+        RT::IR::_FlushQueueHasRightCache();
     };
 
     require RT::Record;
@@ -689,6 +700,7 @@ if ( RT::IR->HasConstituency ) {
         return;
     };
 
+    my $queue_cache = {};
     wrap 'RT::Queue::HasRight', pre => sub {
         return unless $_[0]->id;
         return if $_[0]->{'disable_constituency_right_check'};
@@ -700,16 +712,26 @@ if ( RT::IR->HasConstituency ) {
         my %args = (@_[1..(@_-2)]);
         $args{'Principal'} ||= $_[0]->CurrentUser;
 
-        my $queues = RT::Queues->new( RT->SystemUser );
-        $queues->Limit( FIELD => 'Name', OPERATOR => 'STARTSWITH', VALUE => "$name - " );
+        my $equiv_objects;
+        if ( $queue_cache->{$name} ) {
+            $equiv_objects = $queue_cache->{$name};
+        } else {
+            my $queues = RT::Queues->new( RT->SystemUser );
+            $queues->Limit( FIELD => 'Name', OPERATOR => 'STARTSWITH', VALUE => "$name - " );
+            $equiv_objects = $queues->ItemsArrayRef;
+            $queue_cache->{$name} = $equiv_objects;
+        }
+
+
         my $has_right = $args{'Principal'}->HasRight(
             %args,
             Object => $_[0],
-            EquivObjects => $queues->ItemsArrayRef,
+            EquivObjects => $equiv_objects,
         );
         $_[-1] = $has_right;
         return;
     };
+    sub _FlushQueueHasRightCache { undef $queue_cache  };
 
 
     require RT::Queue;

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -82,8 +82,12 @@ RT::IR::Config::CheckObsoleteCFSyntax($Format,$location);
 RT::IR::Config::CheckObsoleteCFSyntax($Query,$location);
 
 if ( $Type ) {
-    $BaseQuery ||= RT::IR->Query( Queue => $Queue );
-    $Query     ||= RT::IR->ActiveQuery( Queue => $Queue );
+    if ( $Query ) {
+        $BaseQuery ||= RT::IR->Query( Queue => $Queue );
+    }
+    else {
+        $Query = RT::IR->ActiveQuery( Queue => $Queue );
+    }
 }
 
 my $BaseURL = "RTIR/Search/Results.html";

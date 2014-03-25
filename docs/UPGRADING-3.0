@@ -19,16 +19,13 @@ improve the performance of the upgrade.
     CREATE INDEX UPGRADE_TRANSACTIONS_TYPE ON Transactions (Type, Field);
     CREATE INDEX UPGRADE_TRANSACTIONS_NEW ON Transactions(Field,ObjectType, Type, NewReference);
     CREATE INDEX UPGRADE_TRANSACTIONS_OLD on Transactions(Field,ObjectType, Type, OldReference);
-    CREATE INDEX UPGRADE_OCFV_STATUS ON ObjectCustomFieldValues(Content,Disabled,CustomField);
 
 These should be removed following a successful since they are unlikely
 to be useful in normal RTIR usage.
 
-    DROP INDEX UPGRADE_TRANSACTIONS_TYPE;
-    DROP INDEX UPGRADE_TRANSACTIONS_NEW;
-    DROP INDEX UPGRADE_TRANSACTIONS_OLD;
-    DROP INDEX UPGRADE_OCFV_STATUS;
-
+    DROP INDEX UPGRADE_TRANSACTIONS_TYPE ON Transactions;
+    DROP INDEX UPGRADE_TRANSACTIONS_NEW ON Transactions;
+    DROP INDEX UPGRADE_TRANSACTIONS_OLD ON Transactions;
 
 =head2 Lifecycles
 
@@ -172,7 +169,22 @@ Tools -> Configuration -> Queues -> Investigations -> Scrips with:
     Template:    Global Template: Correspondence
 
 
+=head1 UPGRADING FROM 3.0.0 AND EARLIER
 
+=head2 SubjectTag corrections
 
+During the upgrade from 2.4 to 2.6, instructions were provided to begin including
+Queue SubjectTags in outgoing mail.  New installs of 2.6.0 also used SubjectTags in
+templates.  However, they suggested an old-style
+
+    [{$Ticket->QueueObj->SubjectTag || $rtname} #{$Ticket->id}]
+
+Instead, you should use the more modern
+
+    [{$Ticket->SubjectTag} #{$Ticket->id}]
+
+Because correspondence templates are frequently modified, it is
+not practical to script updates and they will need to be done
+through the UI.
 
 =cut

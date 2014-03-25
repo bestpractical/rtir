@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -64,6 +64,8 @@ my %actions;
     default => sub {
         my %args = @_;
         $args{value} = $escaper->($args{value});
+        # don't execute on non-rtir tickets
+        return $args{value} unless defined $args{type};
         return qq{<a href="$web_path/RTIR/Tools/Lookup.html?$args{lookup_params}q=$args{value}">$args{value}</a>};
     },
     url => sub {
@@ -72,6 +74,9 @@ my %actions;
         my $host = $args{'all_matches'}[3];
         my $escaped_host = $escaper->($host);
         my $super = $super{url} ? $super{url}->(%args) : $escaper->($args{value});
+
+        # don't execute on non-rtir tickets
+        return $super unless defined $args{type};
 
         my $result = qq{[<a href="$web_path/RTIR/Tools/Lookup.html?$args{lookup_params}type=host&q=$escaped_host">}
             .loc('lookup "[_1]"', $host) .qq{</a>]};
@@ -84,12 +89,19 @@ my %actions;
         my $escaped_host = $escaper->($host);
         my $super = $super{url_overwrite} ? $super{url_overwrite}->(%args) : $escaper->($args{value});
 
+        # don't execute on non-rtir tickets
+        return $super unless defined $args{type};
+
         my $result = qq{[<a href="$web_path/RTIR/Tools/Lookup.html?$args{lookup_params}type=host&q=$escaped_host">}
             .loc('lookup "[_1]"', $host) .qq{</a>]};
         return $super . qq{ <span class="clickylink">$result</span>};
     },
     ip => sub {
         my %args = @_;
+
+        # don't execute on non-rtir tickets
+        return $escaper->($args{value}) unless defined $args{type};
+
         $args{host} ||= $args{value};
         my $escaped_host = $escaper->($args{host});
         my $result .= qq{[<a href="$web_path/RTIR/Tools/Lookup.html?$args{lookup_params}type=ip&q=$escaped_host">}
@@ -108,6 +120,10 @@ my %actions;
     },
     ipdecimal => sub {
         my %args = @_;
+
+        # don't execute on non-rtir tickets
+        return $escaper->($args{value}) unless defined $args{type};
+
         my $i = unpack "L",$args{value};
         return $args{value} unless $args{value} > 33554432;
 
@@ -123,6 +139,10 @@ my %actions;
     },
     email => sub {
         my %args = @_;
+
+        # don't execute on non-rtir tickets
+        return $escaper->($args{value}) unless defined $args{type};
+
         my $email = $args{'value'}; $email =~ s/^<|>$//g;
         my $escaped_email = $escaper->($email);
 
@@ -144,6 +164,10 @@ my %actions;
     },
     noc => sub {
         my %args = @_;
+
+        # don't execute on non-rtir tickets
+        return $escaper->($args{value}) unless defined $args{type};
+
         $args{value} = $escaper->($args{value});
         my $result = qq{[<a href="$web_path/RTIR/Tools/Lookup.html?$args{lookup_params}type=handle&q=$args{value}">}
                .loc('lookup') .qq{</a>]};
@@ -151,6 +175,10 @@ my %actions;
     },
     host => sub {
         my %args = @_;
+
+        # don't execute on non-rtir tickets
+        return $escaper->($args{value}) unless defined $args{type};
+
         $args{value} = $escaper->($args{value});
         my $result = qq{[<a href="$web_path/RTIR/Tools/Lookup.html?$args{lookup_params}type=host&q=$args{value}">}
                .loc('lookup host') .qq{</a>]};
@@ -192,11 +220,15 @@ my $handle = ${$ARGS{handle}};
 ${$ARGS{handle}} = sub {
     my %args = @_;
 
-    $args{incident} = $args{ticket}->id
-      if $args{ticket} and $args{ticket}->QueueObj->Name eq 'Incidents';
+    if ( $args{ticket} ) {
+        $args{type} = RT::IR::TicketType( Queue => $args{ticket}->QueueObj->Name );
 
-    $args{lookup_params} = "ticket=".$args{ticket}->id
-        if $args{ticket} && !$args{lookup_params};
+        $args{incident} = $args{ticket}->id
+          if $args{type} && $args{type} eq 'Incident';
+
+        $args{lookup_params} = "ticket=".$args{ticket}->id
+            if !$args{lookup_params};
+    }
 
     $args{lookup_params} .= "&"
       if $args{lookup_params} and $args{lookup_params} !~ /&$/;

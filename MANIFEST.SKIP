@@ -1,4 +1,5 @@
 .*\.tar\.gz$
+.*.asc$
 ^releng\.cnf$
 ^blib/
 ^pm_to_blib
@@ -9,9 +10,9 @@
 ^\.git
 ^t/tmp/
 ^MYMETA\.*
-^etc/add_constituency
-^etc/upgrade/upgrade.pl
-^etc/upgrade/2.5.1/update_saved_searches.pl
-^lib/RT/IR/Test.pm
+^etc/add_constituency$
+^etc/upgrade/upgrade.pl$
+^etc/upgrade/2.5.1/update_saved_searches.pl$
+^lib/RT/IR/Test.pm$
 ^\.prove
 \.sw[op]$
