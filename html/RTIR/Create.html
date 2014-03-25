@@ -242,7 +242,7 @@
 %   $include_signature = 0;
 % }
 % if ( RT->Config->Get('ArticleOnTicketCreate')) {
-<& /Articles/Elements/BeforeMessageBox, %ARGS &>
+<& /Articles/Elements/BeforeMessageBox, %ARGS, QueueObj => $QueueObj &>
 % }
 % $m->callback( %ARGS, CallbackPage => '/Ticket/Create.html', CallbackName => 'BeforeMessageBox' );
 % if ( $ARGS{Content} ) {
