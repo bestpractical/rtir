@@ -24,12 +24,12 @@ lose data.
 
 =item 2
 
-Upgrade your RT installation to RT 4.0.14 or newer following
+Upgrade your RT installation to RT 4.2.3 or newer following
 its upgrade instructions. Make sure you follow all of the
 steps and upgrade both the code and the database.
 
 As noted in the RT documentation, it is recommended that you
-use a fresh directory when upgrading to RT 4.0, like /opt/rt4,
+use a fresh directory when upgrading to RT 4, like /opt/rt4,
 rather than upgrading on top of your RT 3 installation.
 A lot of files have been deleted and moved around in RTIR 3.0,
 so don't copy old RTIR's files.

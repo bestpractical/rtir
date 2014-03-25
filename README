@@ -14,7 +14,7 @@ touch with us at <sales@bestpractical.com>.
 REQUIRED PACKAGES:
 ------------------
 
-o   RT 4.0.14 or later, configured, installed and tested.
+o   RT 4.2.3 or other releases of the 4.2 series.
 o   Net::Whois::RIPE 1.31 is bundled with RTIR for compatibility with the
     API RTIR uses and for a fix to run without warnings under perl 5.18.
 
@@ -29,7 +29,7 @@ information.
 Installation instructions:
 --------------------------
 
-1) Install RT 4.0.0 or newer following RT's regular installation instructions
+1) Install the current release of the RT 4.2 series following RT's regular installation instructions
 
 2) Run "perl Makefile.PL" to generate a makefile for RTIR.
 
