@@ -671,6 +671,8 @@ if ( RT::IR->HasConstituency ) {
 
         # For historical reasons, the System just returned a System Queue on this Ticket
         # rather than delve into the overridden QueueObj.  It's possible this is no longer needed.
+        # The biggest thing that $self->QueueObj would do is return a queue with _for_ticket set
+        # which causes a lot of code to skip Constituency checks, so we'd need to duplicate that.
         # We punt early on non-IR queues because otherwise we try to look for constituency Queues
         # and the negative cache (_none) is disabled, leading to perf problems.
         # It's also somewhat concerning that we return a SystemUser queue outside IR queues.
@@ -716,8 +718,6 @@ if ( RT::IR->HasConstituency ) {
     };
 }
 
-require RT::Ticket;
-
 # Skip the global AutoOpen scrip on Blocks and Incident Reports
 # This points to RTIR wanting to muck with the global scrips using the 4.2 scrips
 # organization, although it possibly messes with Admins expectations of 'contained Queues'
@@ -737,12 +737,21 @@ require RT::Action::AutoOpen;
 if ( RT::IR->HasConstituency ) {
     # Queue {Comment,Correspond}Address for multiple constituencies
 
-    wrap 'RT::Ticket::QueueObj', pre => sub {
-        my $queue = RT::Queue->new($_[0]->CurrentUser);
-        $queue->Load($_[0]->__Value('Queue'));
-        $queue->{'_for_ticket'} = $_[0]->id;
-        $_[-1] = $queue;
-        return;
+    no warnings 'redefine';
+
+    # returns an RT::Queue that has _for_ticket set to indicate
+    # that we're using this Queue to check something about a ticket
+    # that may have a Constituency.
+    require RT::Ticket;
+    my $orig_QueueObj = RT::Ticket->can('QueueObj');
+    *RT::Ticket::QueueObj = sub {
+        my $self = shift;
+        # RT::Ticket::QueueObj uses a cache
+        my $queue = $orig_QueueObj->($self,@_);
+        # used to know that this Queue was retrieved from a ticket
+        # so we can skip a bunch of constituency checks...
+        $queue->{'_for_ticket'} = $self->id;
+        return $queue;
     };
 
     my $queue_cache = {};
