@@ -801,9 +801,14 @@ if ( RT::IR->HasConstituency ) {
     }
 
 
+    # TODO SubjectTag and Encryption Keys need overriding also
     sub CorrespondAddress { GetQueueAttribute(shift, 'CorrespondAddress') }
     sub CommentAddress { GetQueueAttribute(shift, 'CommentAddress') }
 
+    # dive down to get Queue Attributes from Incidents - EDUNET rather than Incidents
+    # Populates ConstituencyCache and HasNoQueueCache, but has the same
+    # bug around always over-checking the Constituency CF if we've
+    # cached that a ticket has no Constituency.
     sub GetQueueAttribute {
         my $queue = shift;
         my $attr  = shift;
@@ -817,8 +822,7 @@ if ( RT::IR->HasConstituency ) {
             }
             if ($const ne '_none' && !$RT::IR::HasNoQueueCache{$const} ) {
                 my $new_queue = RT::Queue->new(RT->SystemUser);
-                $new_queue->LoadByCols(
-                    Name => $queue->Name . " - " . $const );
+                $new_queue->LoadByCols( Name => $queue->Name . " - " . $const );
                 if ( $new_queue->id ) {
                     my $val = $new_queue->_Value($attr) || $queue->_Value($attr);
                     RT->Logger->debug("Overriden $attr is $val for ticket #$id according to constituency $const");
