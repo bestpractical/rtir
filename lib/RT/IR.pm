@@ -641,7 +641,7 @@ if ( RT::IR->HasConstituency ) {
     *RT::Interface::Web::Handler::CleanupRequest = sub {
         %RT::IR::ConstituencyCache = ();
         %RT::IR::HasNoQueueCache = ();
-        RT::IR::_FlushQueueHasRightCache();
+        RT::Queue::_FlushQueueHasRightCache();
         $orig_CleanupRequest->();
     };
 
@@ -754,24 +754,29 @@ if ( RT::IR->HasConstituency ) {
         return $queue;
     };
 
-    my $queue_cache = {};
-    wrap 'RT::Queue::HasRight', pre => sub {
-        return unless $_[0]->id;
-        return if $_[0]->{'disable_constituency_right_check'};
-        return if $_[0]->{'_for_ticket'};
-        return unless $_[0]->__Value('Name') =~
+    require RT::Queue;
+    package RT::Queue;
+
+    { my $queue_cache = {};
+    # RT 4.2 removed RT::Queue's HasRight, meaning we can just stub one in
+    sub HasRight {
+        my $self = shift;
+        return $self->SUPER::HasRight(@_) unless $self->id;
+        return $self->SUPER::HasRight(@_) if $self->{'disable_constituency_right_check'};
+        return $self->SUPER::HasRight(@_) if $self->{'_for_ticket'};
+        return $self->SUPER::HasRight(@_) unless $self->__Value('Name') =~
             /^(Incidents|Incident Reports|Investigations|Blocks)$/i;
 
         my $name = $1;
-        my %args = (@_[1..(@_-2)]);
-        $args{'Principal'} ||= $_[0]->CurrentUser;
+        my %args = @_;
+        $args{'Principal'} ||= $self->CurrentUser;
 
         my $equiv_objects;
         if ( $queue_cache->{$name} ) {
             $equiv_objects = $queue_cache->{$name};
         } else {
             my $queues = RT::Queues->new( RT->SystemUser );
-            $queues->Limit( FIELD => 'Name', OPERATOR => 'STARTSWITH', VALUE => "$name - " );
+            $queues->Limit( FIELD => 'Name', OPERATOR => 'STARTSWITH', VALUE => "$name - ", CASESENSITIVE => 0 );
             $equiv_objects = $queues->ItemsArrayRef;
             $queue_cache->{$name} = $equiv_objects;
         }
@@ -779,17 +784,14 @@ if ( RT::IR->HasConstituency ) {
 
         my $has_right = $args{'Principal'}->HasRight(
             %args,
-            Object => $_[0],
+            Object => $self,
             EquivObjects => $equiv_objects,
         );
-        $_[-1] = $has_right;
-        return;
+        return $has_right;
     };
     sub _FlushQueueHasRightCache { undef $queue_cache  };
+    }
 
-
-    require RT::Queue;
-    package RT::Queue;
 
     sub CorrespondAddress { GetQueueAttribute(shift, 'CorrespondAddress') }
     sub CommentAddress { GetQueueAttribute(shift, 'CommentAddress') }
