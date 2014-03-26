@@ -764,7 +764,12 @@ if ( RT::IR->HasConstituency ) {
         my %args = @_;
 
         return $self->SUPER::HasRight(@_) unless $self->id;
+        # currently only obviously used so that one right can be checked
+        # on Incidents not Incidents - EDUNET during Constituency CF
+        # editing.
         return $self->SUPER::HasRight(@_) if $self->{'disable_constituency_right_check'};
+        # Not really convinced this is right, since it gets set on $ticket->QueueObj
+        # commit messages that add it are vague about why it was added.
         return $self->SUPER::HasRight(@_) if $self->{'_for_ticket'};
 
         my $name = $self->__Value('Name');
@@ -773,6 +778,8 @@ if ( RT::IR->HasConstituency ) {
 
         $args{'Principal'} ||= $self->CurrentUser->PrincipalObj;
 
+        # Avoid going to the database on every Queue->HasRight('ModifyCustomField') or any
+        # other Queue right, but in RTIR, CF rights checks at the Queue level are very heavy.
         my $equiv_objects;
         if ( $queue_cache->{$name} ) {
             $equiv_objects = $queue_cache->{$name};
@@ -782,7 +789,6 @@ if ( RT::IR->HasConstituency ) {
             $equiv_objects = $queues->ItemsArrayRef;
             $queue_cache->{$name} = $equiv_objects;
         }
-
 
         my $has_right = $args{'Principal'}->HasRight(
             %args,
