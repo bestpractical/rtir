@@ -26,7 +26,6 @@ if ($^O ne 'VMS') {
 requires('DBIx::SearchBuilder', 1.61);
 
 # IP searching
-requires('Hook::LexWrap');
 requires('Regexp::Common');
 # queries parsing
 requires('Parse::BooleanLogic');
