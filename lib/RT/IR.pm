@@ -656,46 +656,63 @@ if ( RT::IR->HasConstituency ) {
         return $self->RT::Record::_AddCustomFieldValue(@_);
     };
 
-    require RT::Ticket;
-    wrap 'RT::Ticket::ACLEquivalenceObjects', pre => sub {
+    # Tickets with Constituencies CF values that point to a Constituency
+    # Queue such as Incidents - EDUNET should return multiple Queues as
+    # EquivalenceObjects for checking rights. Constituency DutyTeams
+    # have their rights granted on the relevant Constituency Queues, so
+    # RT needs to know to check in both places for the combination of
+    # their rights.
+    my $orig_ACLEquivaluenceObjects = RT::Ticket->can('ACLEquivalenceObjects');
+    *RT::Ticket::ACLEquivalenceObjects = sub {
         my $self = shift;
 
         my $queue = RT::Queue->new(RT->SystemUser);
         $queue->Load($self->__Value('Queue'));
 
-        # We do this, rather than fall through to the orignal sub, as that
-        # interacts poorly with our overloaded QueueObj below
-        # Don't try and load Constituencies outside of RTIR.  It results
-        # in a lot of useless checks.
+        # For historical reasons, the System just returned a System Queue on this Ticket
+        # rather than delve into the overridden QueueObj.  It's possible this is no longer needed.
+        # We punt early on non-IR queues because otherwise we try to look for constituency Queues
+        # and the negative cache (_none) is disabled, leading to perf problems.
+        # It's also somewhat concerning that we return a SystemUser queue outside IR queues.
         if ( ( $self->CurrentUser->id == RT->SystemUser->id ) ||
              ( $queue->Name !~ /^(Incidents|Incident Reports|Investigations|Blocks)$/i ) ) {
-            $_[-1] =  [$queue];
+            return [$queue];
+        }
+
+        # Old old bulletproofing, can probably delete.
+        unless ( UNIVERSAL::isa( $self, 'RT::Ticket' ) ) {
+            RT->Logger->crit("$self is not a ticket object like I expected");
             return;
         }
-        if ( UNIVERSAL::isa( $self, 'RT::Ticket' ) ) {
-            my $const = $RT::IR::ConstituencyCache{ $self->id };
-            if (!$const || $const eq '_none' ) {
-                my $systicket = RT::Ticket->new(RT->SystemUser);
-                $systicket->Load( $self->id );
-                $const = $RT::IR::ConstituencyCache{ $self->id } =
-                    $systicket->FirstCustomFieldValue('Constituency')
-                    || '_none';
-            }
-            return if $const eq '_none';
-            return if $RT::IR::HasNoQueueCache{ $const };
 
-            my $new_queue = RT::Queue->new(RT->SystemUser);
-            $new_queue->LoadByCols(
-                Name => $queue->Name . " - " . $const
-            );
-            unless ( $new_queue->id ) {
-                $RT::IR::HasNoQueueCache{$const} = 1;
-                return;
-            }
-            $_[-1] =  [$queue, $new_queue];
-        } else {
-            RT->Logger->crit("$self is not a ticket object like I expected");
+        # We check both uncached constituencies and those explicitly negatively cached
+        # The commit that introduced this doesn't say what bug it was fixing, but it's definitely
+        # a perf hit.
+        my $const = $RT::IR::ConstituencyCache{ $self->id };
+        if (!$const || $const eq '_none' ) {
+            my $systicket = RT::Ticket->new(RT->SystemUser);
+            $systicket->Load( $self->id );
+            $const = $RT::IR::ConstituencyCache{ $self->id } =
+                $systicket->FirstCustomFieldValue('Constituency') || '_none';
         }
+
+        # If this ticket still has no constituency, or the constituency it is assigned
+        # doesn't have a corresponding Constituency queue, return the default Queue.
+        if ( $const eq '_none' || $RT::IR::HasNoQueueCache{ $const } ) {
+            return $orig_ACLEquivaluenceObjects->($self,@_);
+        }
+
+        # Track that there is no Constituency queue for the Constituency recorded in the CF on this ticket.
+        my $constituency_queue = RT::Queue->new(RT->SystemUser);
+        $constituency_queue->LoadByCols( Name => $queue->Name . " - " . $const );
+        unless ( $constituency_queue->id ) {
+            $RT::IR::HasNoQueueCache{$const} = 1;
+            return $orig_ACLEquivaluenceObjects->($self,@_);
+        }
+
+        # If a constituency queue such as 'Incidents - EDUNET' exists, we want to check
+        # ACLs on both of them.
+        return $queue, $constituency_queue;
     };
 }
 
