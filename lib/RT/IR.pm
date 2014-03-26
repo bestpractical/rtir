@@ -645,11 +645,15 @@ if ( RT::IR->HasConstituency ) {
         $orig_CleanupRequest->();
     };
 
-    require RT::Record;
-    # flush constituency cache on update of the custom field value for a ticket
-    wrap 'RT::Record::_AddCustomFieldValue', pre => sub {
-        return unless UNIVERSAL::isa($_[0] => 'RT::Ticket');
-        $RT::IR::ConstituencyCache{$_[0]->id}  = undef;
+    require RT::Ticket;
+    # flush constituency cache for a ticket when the Constituency CF is updated
+    # RT::Ticket currently uses RT::Record::_AddCustomFieldValue so we just insert not wrap
+    # I wonder what happens when you Delete an OCFV, since it doesn't hit this code path.
+    # This also clears the constituency cache when updating the IP Custom Field, intentional?
+    sub RT::Ticket::_AddCustomFieldValue {
+        my $self = shift;
+        $RT::IR::ConstituencyCache{$self->id}  = undef;
+        return $self->RT::Record::_AddCustomFieldValue(@_);
     };
 
     require RT::Ticket;
