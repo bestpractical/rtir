@@ -631,14 +631,18 @@ sub DefaultConstituency {
 use Hook::LexWrap;
 
 if ( RT::IR->HasConstituency ) {
-    # ACL checks for multiple constituencies
 
+    # lots of wrapping going on
+    no warnings 'redefine';
+
+    # flush constituency caches on each request
     require RT::Interface::Web::Handler;
-    # flush constituency cache on each request
-    wrap 'RT::Interface::Web::Handler::CleanupRequest', pre => sub {
+    my $orig_CleanupRequest = RT::Interface::Web::Handler->can('CleanupRequest');
+    *RT::Interface::Web::Handler::CleanupRequest = sub {
         %RT::IR::ConstituencyCache = ();
         %RT::IR::HasNoQueueCache = ();
         RT::IR::_FlushQueueHasRightCache();
+        $orig_CleanupRequest->();
     };
 
     require RT::Record;
