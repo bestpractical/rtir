@@ -718,6 +718,9 @@ if ( RT::IR->HasConstituency ) {
 
 require RT::Ticket;
 
+# Skip the global AutoOpen scrip on Blocks and Incident Reports
+# This points to RTIR wanting to muck with the global scrips using the 4.2 scrips
+# organization, although it possibly messes with Admins expectations of 'contained Queues'
 require RT::Action::AutoOpen;
 {
     no warnings 'redefine';
