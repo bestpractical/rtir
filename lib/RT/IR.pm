@@ -761,15 +761,17 @@ if ( RT::IR->HasConstituency ) {
     # RT 4.2 removed RT::Queue's HasRight, meaning we can just stub one in
     sub HasRight {
         my $self = shift;
+        my %args = @_;
+
         return $self->SUPER::HasRight(@_) unless $self->id;
         return $self->SUPER::HasRight(@_) if $self->{'disable_constituency_right_check'};
         return $self->SUPER::HasRight(@_) if $self->{'_for_ticket'};
-        return $self->SUPER::HasRight(@_) unless $self->__Value('Name') =~
+
+        my $name = $self->__Value('Name');
+        return $self->SUPER::HasRight(@_) unless $name =~
             /^(Incidents|Incident Reports|Investigations|Blocks)$/i;
 
-        my $name = $1;
-        my %args = @_;
-        $args{'Principal'} ||= $self->CurrentUser;
+        $args{'Principal'} ||= $self->CurrentUser->PrincipalObj;
 
         my $equiv_objects;
         if ( $queue_cache->{$name} ) {
