@@ -481,19 +481,16 @@ you may reply to this message.
 
 @Groups = (
     { Name        => 'DutyTeam',
-      Type        => 'Privileged',
       Domain      => 'UserDefined',
       Instance    => '',
       Description => 'Duty Team Members',    # loc
     },
     { Name        => 'DutyTeam EDUNET',
-      Type        => 'Privileged',
       Domain      => 'UserDefined',
       Instance    => '',
       Description => 'Duty Team responsible for EDUNET constituency',    # loc
     },
     { Name        => 'DutyTeam GOVNET',
-      Type        => 'Privileged',
       Domain      => 'UserDefined',
       Instance    => '',
       Description => 'Duty Team responsible for GOVNET constituency',    # loc
