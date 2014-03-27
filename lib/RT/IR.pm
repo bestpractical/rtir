@@ -271,12 +271,12 @@ sub ParseSimpleSearch {
     my $self = shift;
     my %args = @_;
 
-    local @RT::Search::Googleish::GUESS = (
-        @RT::Search::Googleish::GUESS,
+    local @RT::Search::Simple::GUESS = (
+        @RT::Search::Simple::GUESS,
         @SIMPLE_SEARCH_GUESS,
     );
 
-    my $search = RT::Search::Googleish->new(
+    my $search = RT::Search::Simple->new(
         Argument => $args{'Query'},
         TicketsObj => RT::Tickets->new( $args{'CurrentUser'} ),
     );
@@ -820,8 +820,8 @@ if ( RT::IR->HasConstituency ) {
     };
 }
 
-require RT::Search::Googleish;
-package RT::Search::Googleish;
+require RT::Search::Simple;
+package RT::Search::Simple;
 
 sub HandleRtirip {
     return 'RTIR IP' => RT::IR->Query(
