@@ -840,15 +840,22 @@ if ( RT::IR->HasConstituency ) {
 if ( RT::IR->HasConstituency ) {
     # Set Constituency on Create
 
+    no warnings 'redefine';
+
     require RT::Ticket;
-    wrap 'RT::Ticket::Create', pre => sub {
-        my $ticket = $_[0];
-        my %args = (@_[1..(@_-2)]);
+    my $orig_Create = RT::Ticket->can('Create');
+    *RT::Ticket::Create = sub {
+        my $self = shift;
+        my %args = @_;
 
         # get out if there is constituency value in arguments
         my $cf = GetCustomField( 'Constituency' );
-        return unless $cf && $cf->id;
-        return if $args{ 'CustomField-'. $cf->id };
+        unless ($cf && $cf->id) {
+            return $orig_Create->($self,%args);
+        }
+        if ($args{ 'CustomField-'. $cf->id }) {
+            return $orig_Create->($self,%args);
+        }
 
         # get out of here if it's not RTIR queue
         my $QueueObj = RT::Queue->new( RT->SystemUser );
@@ -859,11 +866,13 @@ if ( RT::IR->HasConstituency ) {
             $QueueObj->Load( $args{'Queue'} );
         }
         else {
-            return;
+            return $orig_Create->($self,%args);
         }
-        return unless $QueueObj->id;
-        return unless $QueueObj->Name =~
-            /^(Incidents|Incident Reports|Investigations|Blocks)$/i; 
+        unless ( $QueueObj->id &&
+                 $QueueObj->Name =~ /^(Incidents|Incident Reports|Investigations|Blocks)$/i ) {
+            return $orig_Create->($self,%args);
+        }
+
         
         # fetch value
         my $value;
@@ -878,13 +887,15 @@ if ( RT::IR->HasConstituency ) {
             RT->Logger->debug("Found Constituency '$tmp' in email") if $tmp;
         }
         $value ||= RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'};
-        return unless $value;
+        unless ($value) {
+            return $orig_Create->($self,%args);
+        }
 
-        my @res = $ticket->Create(
+        my @res = $self->Create(
             %args,
             'CustomField-'. $cf->id => $value,
         );
-        $_[-1] = \@res;
+        return @res;
     };
 }
 
