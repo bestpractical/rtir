@@ -80,6 +80,17 @@ sub Init {
             }
         };
 
+    my @homepage_components = @{RT->Config->Get('HomepageComponents')};
+
+    foreach my $component (RT->Config->Get('RTIR_HomepageComponents')){
+        # Add them if they aren't already there
+        # They may get added to the RT config manually
+        push @homepage_components, $component
+            unless grep /$component/, @homepage_components;
+    }
+
+    RT->Config->Set(HomepageComponents => \@homepage_components);
+
     return;
 }
 

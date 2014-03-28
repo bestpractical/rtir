@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => loc("Attach Reports") &>
-<& /Elements/TicketList,
+<& /Elements/CollectionList,
     Collection     => $siblings,
     DisplayFormat  => "__CheckBox.{$Name}__, $Format",
     Format         => $Format,

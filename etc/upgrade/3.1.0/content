@@ -1,0 +1,43 @@
+use strict;
+use warnings;
+
+our @Initial = (
+    sub {
+        my $users = RT::Users->new(RT->SystemUser);
+        my $attributes = $users->Join(
+            ALIAS1 => "main",
+            FIELD1 => "id",
+            TABLE2 => "Attributes",
+            FIELD2 => "ObjectId",
+        );
+        $users->Limit(
+            ALIAS => $attributes,
+            FIELD => "ObjectType",
+            VALUE => "RT::User",
+        );
+        $users->Limit(
+            ALIAS => $attributes,
+            FIELD => "Name",
+            VALUE => RT::User::_PrefName('RTIR_HomepageSettings'),
+        );
+
+        while (my $user = $users->Next) {
+            my $settings = $user->Preferences('RTIR_HomepageSettings')
+                or next;
+            next if exists $settings->{sidebar};
+
+            $settings->{sidebar} = delete $settings->{summary};
+            $user->SetPreferences('RTIR_HomepageSettings', $settings);
+        }
+    },
+    sub {
+        my ($default_portlets) = RT->System->Attributes->Named('RTIR_HomepageSettings');
+        my $settings = $default_portlets->Content;
+        return if exists $settings->{sidebar};
+
+        $settings->{sidebar} = delete $settings->{summary};
+        $default_portlets->SetContent($settings);
+    },
+);
+
+

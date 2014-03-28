@@ -60,7 +60,7 @@ $BaseURL .= ( $BaseURL =~ /\?/ )? '&': '?' unless $BaseURL =~ m{[&?]$};
 my $collection = RT::Tickets->new( $session{'CurrentUser'} );
 $collection->FromSQL( $Query );
 
-my $result = $m->scomp( '/Elements/TicketList',
+my $result = $m->scomp( '/Elements/CollectionList',
     %ARGS,
     Collection     => $collection,
     Query          => $Query,

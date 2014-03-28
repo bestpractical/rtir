@@ -49,13 +49,12 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<& /Widgets/SelectionBox:header, nojs => 1 &>
-% foreach my $box( @boxes ) {
+% foreach my $pane ( @panes ) {
 <&|/Widgets/TitleBox,
-    title => loc('RTIR at a glance') .': '. loc( $box->{Name} ),
+    title => loc('RTIR at a glance') .': '. loc( $pane->{Name} ),
     bodyclass => ""
 &>
-<& /Widgets/SelectionBox:show, self => $box, nojs => 1 &>
+<& /Widgets/SelectionBox:show, self => $pane &>
 </&>
 % }
 
@@ -108,31 +107,21 @@ for my $object (@objs) {
     }
 }
 
+my @panes = $m->comp(
+    '/Admin/Elements/ConfigureMyRT',
+    panes  => ['body', 'sidebar'],
+    Action => 'Home.html',
+    items => \@items,
+    current_portlets => $portlets,
+    OnSave => sub {
+        my ( $conf, $pane ) = @_;
+        my ($ok, $msg) = $user->SetPreferences( 'RTIR_HomepageSettings', $conf );
+        push @results, $ok ? loc('Preferences saved for [_1].', $pane) : $msg;
+        delete $session{'my_rtir_portlets'};
+    }
+);
 
-my @boxes;
-foreach my $pane ( sort keys %$portlets ) {
-    push @boxes,
-        $m->comp(
-            '/Widgets/SelectionBox:new',
-            Action    => 'Home.html',
-            Name      => $pane,
-            Available => \@items,
-            AutoSave  => 1,
-            OnSubmit  => sub {
-                my $self = shift;
-                $portlets->{ $pane } = [
-                    map { m/(\w+)-(.*)$}/; { type => $1, name => $2, }}
-                    @{$self->{Current}}
-                ];
-                $user->SetPreferences('RTIR_HomepageSettings', $portlets);
-                push @results, loc ('Preferences saved for [_1].', $pane);
-                delete $session{'my_rtir_portlets'};
-            },
-            Selected  => [ map { join '-', @{$_}{qw/type name/} } @{ $portlets->{$pane} } ]
-        );
-}
-
-$m->comp ('/Widgets/SelectionBox:process', %ARGS, self => $_, nojs => 1) for @boxes;
+$m->comp ('/Widgets/SelectionBox:process', %ARGS, self => $_ ) for @panes;
 
 MaybeRedirectForResults( Actions => \@results );
 </%INIT>

@@ -53,6 +53,7 @@ Description => loc('Due Incidents')
 	title_class => 'inverse',
     title => $Title,
     bodyclass=> '',
+    class => 'ticket-info-generic',
 &>
 
 <& /RTIR/Search/Elements/ShowResults,

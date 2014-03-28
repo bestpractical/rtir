@@ -50,7 +50,7 @@
 
 % if ( $TicketObj ) {
 <&| /Widgets/TitleBox, title => loc("Current [_1]: #[_2]", $TicketType, $ticket), class => 'ticket-info-basics' &>
-<& /Elements/TicketList, Query => "id = $ticket", Format => RT->Config->Get('RTIRSearchResultFormats')->{$TicketType . 'Default'}, ShowNavigation => 0 &>
+<& /Elements/CollectionList, Query => "id = $ticket", Format => RT->Config->Get('RTIRSearchResultFormats')->{$TicketType . 'Default'}, ShowNavigation => 0 &>
 </&>
 % }
 

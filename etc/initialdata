@@ -619,7 +619,7 @@ for my $cf (@CustomFields) {
             { type => 'component',  name => '/RTIR/Elements/NobodyDueIncidents' },
             { type => 'component',  name => '/RTIR/Elements/DueIncidents' },
         ],
-        summary => [
+        sidebar => [
             { type => 'component', name => 'RefreshHomepage' },
             { type => 'component', name => 'Quicksearch' },
         ]

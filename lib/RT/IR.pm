@@ -185,7 +185,7 @@ sub Statuses {
         }
         next unless $queue->id;
 
-        my $cycle = $queue->Lifecycle;
+        my $cycle = $queue->LifecycleObj;
         push @initial, $cycle->Initial if $arg{'Initial'};
         push @active, $cycle->Active if $arg{'Active'};
         push @inactive, $cycle->Inactive if $arg{'Inactive'};
