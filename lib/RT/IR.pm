@@ -628,8 +628,6 @@ sub DefaultConstituency {
 }
 
 
-use Hook::LexWrap;
-
 if ( RT::IR->HasConstituency ) {
 
     # lots of wrapping going on
