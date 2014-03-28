@@ -52,7 +52,6 @@ html/Callbacks/RTIR/Elements/QueueSummary/Filter
 html/Callbacks/RTIR/Elements/RT__Ticket/ColumnMap/Once
 html/Callbacks/RTIR/Elements/SelectOwner/UpdateObjectList
 html/Callbacks/RTIR/Elements/Tabs/Privileged
-html/Callbacks/RTIR/NoAuth/css/base/main.css/End
 html/Callbacks/RTIR/Search/Elements/PickBasics/Default
 html/Callbacks/RTIR/Search/Results.html/Initial
 html/Callbacks/RTIR/Ticket/Create.html/Default
