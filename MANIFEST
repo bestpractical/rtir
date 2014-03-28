@@ -59,10 +59,6 @@ html/Callbacks/RTIR/Ticket/Create.html/Default
 html/Callbacks/RTIR/Ticket/Display.html/Initial
 html/Callbacks/RTIR/Ticket/Elements/EditCustomFields/MassageCustomFields
 html/Callbacks/RTIR/Ticket/Elements/ShowHistory/SkipTransaction
-html/NoAuth/css/RTIR/base/main.css
-html/NoAuth/css/RTIR/base/misc.css
-html/NoAuth/images/RTIR/logo.png
-html/NoAuth/js/jquery.uncheckable-radio-0.1.js
 html/RTIR/Advanced.html
 html/RTIR/Create.html
 html/RTIR/Display.html
@@ -199,6 +195,9 @@ META.yml
 po/README
 po/rtir.pot
 README
+static/css/rtir-styles.css
+static/images/RTIR/logo.png
+static/js/jquery.uncheckable-radio-0.1.js
 t/000-mason-syntax.t
 t/001-basic-RTIR.t
 t/002-test-reject.t
