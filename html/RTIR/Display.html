@@ -123,8 +123,8 @@
 
 </&></div>
 
-<& /Ticket/Elements/ShowHistory,
-    Ticket         => $Ticket,
+<& /Elements/ShowHistory,
+    Object         => $Ticket,
     Collapsed      => $ARGS{'Collapsed'}, 
     ShowHeaders    => $ARGS{'ShowHeaders'},
     DisplayPath    => RT->Config->Get('WebPath') ."/RTIR/Display.html?id=$id",
@@ -241,7 +241,7 @@ if (defined $Ticket->TimeLeft && $Ticket->TimeLeft > 0 ) {
     $TimeWorked .= "/".$Ticket->TimeLeft;
 }
 
-my $attachments = $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket);
+my $attachments = $Ticket->Attachments;
 
 </%INIT>
 

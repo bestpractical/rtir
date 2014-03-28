@@ -45,8 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Ticket/Elements/EditCustomFields, 
-  TicketObj => $TicketObj, 
+<& /Elements/EditCustomFields,
+  Object => $TicketObj,
   QueueObj => $QueueObj,
   %ARGS,
   InTable => 1,
