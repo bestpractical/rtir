@@ -49,6 +49,7 @@
     title       => loc( $Queue ),
     title_href  => RT->Config->Get('WebPath') ."/RTIR/Incident/Children/?Queue=". $EscapedQueue ."&id=".$id,
     titleright_raw => $box_actions,
+    title_class    => 'inverse',
     class => 'tickets-list-'. lc(RT::IR::TicketType( Queue => $Queue )),
 &>
 
