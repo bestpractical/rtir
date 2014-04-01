@@ -46,11 +46,14 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-foreach my $q ( splice @$Queues ) {
-    next if $q->Name =~ /^(?:Incidents|Incident Reports|Investigations|Blocks)(?:\s*-\s*.*)?$/i;
-    push @$Queues, $q;
+for my $type ('Incidents', 'Incident Reports', 'Investigations', 'Blocks') {
+    $Queues->Limit( FIELD => 'Name',
+                    OPERATOR => 'NOT STARTSWITH',
+                    VALUE => "$type - ",
+                    SUBCLAUSE => 'Constituencies',
+            );
 }
 </%INIT>
 <%ARGS>
-$Queues => []
+$Queues
 </%ARGS>
