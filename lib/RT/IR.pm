@@ -113,6 +113,16 @@ sub Types {
     return values %TYPE;
 }
 
+=head2 Queues
+
+Returns a list of the core RTIR Queue names
+
+=cut
+
+sub Queues {
+    return @QUEUES;
+}
+
 =head2 TicketType
 
 Returns type of a ticket. Takes either Ticket or Queue argument.

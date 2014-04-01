@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-for my $type ('Incidents', 'Incident Reports', 'Investigations', 'Blocks') {
+for my $type (RT::IR->Queues) {
     $Queues->Limit( FIELD => 'Name',
                     OPERATOR => 'NOT STARTSWITH',
                     VALUE => "$type - ",
