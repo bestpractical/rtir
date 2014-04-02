@@ -45,12 +45,4 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%INIT>
-foreach my $q ( splice @$Queues ) {
-    next if $q->Name =~ /^(?:Incidents|Incident Reports|Investigations|Blocks)(?:\s*-\s*.*)?$/i;
-    push @$Queues, $q;
-}
-</%INIT>
-<%ARGS>
-$Queues => []
-</%ARGS>
+<& /Callbacks/RTIR/Elements/QueueSummaryByLifecycle/SQLFilter, %ARGS &>
