@@ -268,7 +268,10 @@ sub grant_group_cf_rights {
     my @rights = (@_);
 
     my $cfs = RT::CustomFields->new($RT::SystemUser);
-    $cfs->Limit( FIELD => 'Name', OPERATOR => 'STARTSWITH', VALUE => '_RTIR' );
+    for my $queue (@queue_prefixes) {
+        my $q = load_queue($queue);
+        $cfs->LimitToObjectId($q->Id);
+    }
     while ( my $cf = $cfs->Next ) {
         debug "Granting rights for custom field ". $cf->Name . " to group ". $group->Name;
 
