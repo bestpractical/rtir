@@ -20,8 +20,8 @@ improve the performance of the upgrade.
     CREATE INDEX UPGRADE_TRANSACTIONS_NEW ON Transactions(Field,ObjectType, Type, NewReference);
     CREATE INDEX UPGRADE_TRANSACTIONS_OLD on Transactions(Field,ObjectType, Type, OldReference);
 
-These should be removed following a successful since they are unlikely
-to be useful in normal RTIR usage.
+These should be removed following a successful upgrade since they are
+unlikely to be useful in normal RTIR usage.
 
     DROP INDEX UPGRADE_TRANSACTIONS_TYPE ON Transactions;
     DROP INDEX UPGRADE_TRANSACTIONS_NEW ON Transactions;
@@ -188,3 +188,23 @@ not practical to script updates and they will need to be done
 through the UI.
 
 =cut
+
+=head1 UPGRADING FROM 3.0.1 AND EARLIER
+
+=head2 add_constituency fixes
+
+If you previously used the C<etc/add_constituency> script to set up a
+Constituency, it did not set your Custom Field rights properly. The
+version included in 3.0.2 can safely be re-run as
+
+    etc/add_constituency --name Name
+
+It will apply the missing rights on custom fields.
+
+As part of this fix, there has been a behavior change.  Constituency Duty
+Teams are now given rights on all Custom Fields applied to RTIR queues
+(modify or read only depending on the type of duty team).
+Previously they were only granted rights on the default RTIR Custom Fields.
+
+Rights are managed at the Custom Field level by this script, so it's
+straightforward to remove rights after constituency creation.

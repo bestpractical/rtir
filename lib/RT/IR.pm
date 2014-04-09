@@ -109,9 +109,25 @@ sub OurQueue {
     return $TYPE{ lc $queue };
 }
 
+=head2 Types
+
+Returns a list of valid L<TicketType>s
+
+=cut
+
 sub Types {
     my $self = shift;
     return values %TYPE;
+}
+
+=head2 Queues
+
+Returns a list of the core RTIR Queue names
+
+=cut
+
+sub Queues {
+    return @QUEUES;
 }
 
 =head2 TicketType

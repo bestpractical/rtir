@@ -248,13 +248,14 @@ sub grant_group_queue_rights {
     foreach my $queue    (values %$queues) {
         debug "Granting rights for queue " .$queue->Name. " to group ". $group->Name;
         foreach my $right  (@rights) {
-            my ($val,$msg) =  $group->PrincipalObj->GrantRight(Right => $right, Object=>$queue);
             debug "\t$right\n";
+            if ( $group->PrincipalObj->HasRight( Right => $right, Object => $queue ) ) {
+                debug "\t...skipped, already granted";
+                next;
+            }
+            my ($val,$msg) =  $group->PrincipalObj->GrantRight(Right => $right, Object=>$queue);
             if ( $val ) {
                 debug "\t...done.";
-            }
-            elsif ( $msg =~ /That principal already has that right/i ) {
-                debug "\t...skipped, already granted.\n";
             } else {
                 die "Failed to grant $right to ". $group->Name ." for Queue ". $queue->Name;
             }
@@ -268,18 +269,22 @@ sub grant_group_cf_rights {
     my @rights = (@_);
 
     my $cfs = RT::CustomFields->new($RT::SystemUser);
-    $cfs->Limit( FIELD => 'Name', OPERATOR => 'STARTSWITH', VALUE => '_RTIR' );
+    for my $queue (@queue_prefixes) {
+        my $q = load_queue($queue);
+        $cfs->LimitToObjectId($q->Id);
+    }
     while ( my $cf = $cfs->Next ) {
         debug "Granting rights for custom field ". $cf->Name . " to group ". $group->Name;
 
         foreach my $right  (@rights) {
-            my ($val,$msg) =  $group->PrincipalObj->GrantRight(Right => $right, Object=>$cf);
             debug "\t$right";
+            if ( $group->PrincipalObj->HasRight( Right => $right, Object => $cf ) ) {
+                debug "\t...skipped, already granted";
+                next;
+            }
+            my ($val,$msg) =  $group->PrincipalObj->GrantRight(Right => $right, Object=>$cf);
             if ( $val ) {
                 debug "\t...done.";
-            }
-            elsif ( $msg =~ /That principal already has that right/i ) {
-                debug "\t...skipped, already granted.\n";
             } else {
                 die "Failed to grant $right to ".$group->Name. " for Custom Field ". $cf->Name
                     .".\nError: $msg";
