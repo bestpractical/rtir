@@ -56,6 +56,7 @@
 <input type="hidden" name="Action" value="Respond" />
 <input type="hidden" name="Owner" value="<%$session{'CurrentUser'}->Id%>" />
 <input type="hidden" name="id" value="new" />
+<input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
 <input type="hidden" name="Status" value="<% $ARGS{Status} || '' %>" />
 <a name="top"></a>
         
@@ -106,7 +107,7 @@
 <tr>
   <td class="label"><&|/l&>Template</&>:</td>
   <td class="value">
-    <& /Admin/Elements/SelectTemplate, Name => "Template", Default => $ARGS{'Template'} || 0, Queue => $investigationq->Id &>
+    <& /Admin/Scrips/Elements/SelectTemplate, Default => $ARGS{'Template'} || 0, Queue => $investigationq &>
   </td>
 </tr>
 <tr>
@@ -263,7 +264,7 @@ if ( $ARGS{'SubmitAction'} || $ARGS{'TestAddresses'} ) {
     }
 }
 
-push @finalresults, $m->comp('/RTIR/Create.html:ProcessAttachments', %ARGS);
+ProcessAttachments(ARGSRef => \%ARGS);
 
 if ( $ARGS{'SubmitAction'} ) {
 
@@ -288,7 +289,8 @@ if ( $ARGS{'SubmitAction'} ) {
             unless ( $reportq->CurrentUserHasRight('CreateTicket') ) {
                 Abort('You have no permission to create tickets in that queue.');
             }
-            my ($Ticket, @ChildActions) = CreateTicket( %ARGS, Queue => $reportq->Id );
+            my ($Ticket, @ChildActions) = CreateTicket( %ARGS,
+                    Queue => $reportq->Id, KeepAttachments => 1 );
             unless ( $Ticket ) {
                 Abort("Couldn't create an Incident Report");
             }
@@ -309,7 +311,6 @@ if ( $ARGS{'SubmitAction'} ) {
             ($Incident, @IncidentActions) = CreateTicket(
                 %ARGS,
                 Queue       => $incidentq->Id,
-                Attachments => $session{'Attachments'},
             );
             unless ( $Incident ) {
                 Abort("Couldn't create an Incident");
@@ -370,14 +371,13 @@ if ( $ARGS{'SubmitAction'} ) {
             }
 
             # add the template's MIMEObj to the Attachments list
-            $session{'Attachments'} = {
-                %{$session{'Attachments'} || {}},
+            $session{'Attachments'}{$ARGS{'Token'}} = {
+                %{$session{'Attachments'}{$ARGS{'Token'}} || {}},
                 _Body => $TemplateObj->MIMEObj,
             };
 
             # the content will be part of the template, if desired
             $ARGS{'UpdateContent'} = " ";
-            $ARGS{'UpdateAttachments'} = $session{'Attachments'};
             @updateresults = ProcessUpdateMessage(
                 TicketObj => $Ticket, ARGSRef => \%ARGS,
             );
@@ -386,8 +386,6 @@ if ( $ARGS{'SubmitAction'} ) {
         push @finalresults, map { loc("Ticket [_1]: [_2]", $Ticket->Id, $_) }
             @updateresults;
 
-        # delete attachments only after they've been sent to everyone
-        delete $session{'Attachments'};
     }
     # restore back arguments
     $ARGS{'Subject'} = $original_subject;
