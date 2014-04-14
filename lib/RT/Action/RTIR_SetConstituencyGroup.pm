@@ -68,7 +68,7 @@ sub Commit {
     }
     my $groups = $admincc_group->GroupMembersObj( Recursively => 0 );
     $groups->LimitToUserDefinedGroups;
-    $groups->Limit( FIELD => 'Name', OPERATOR => 'STARTSWITH', VALUE => 'DutyTeam ' );
+    $groups->Limit( FIELD => 'Name', OPERATOR => 'STARTSWITH', VALUE => 'DutyTeam ', CASESENSITIVE => 0 );
 
     my $constituency = $ticket->FirstCustomFieldValue('Constituency') || '';
     my $required_group_there = 0;

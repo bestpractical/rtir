@@ -51,6 +51,7 @@ for my $type (RT::IR->Queues) {
                     OPERATOR => 'NOT STARTSWITH',
                     VALUE => "$type - ",
                     SUBCLAUSE => 'Constituencies',
+                    CASESENSITIVE => 0,
             );
 }
 </%INIT>

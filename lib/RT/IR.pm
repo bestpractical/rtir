@@ -617,7 +617,7 @@ sub DefaultConstituency {
     my @values;
 
     my $queues = RT::Queues->new( RT->SystemUser );
-    $queues->Limit( FIELD => 'Name', OPERATOR => 'STARTSWITH', VALUE => "$name - " );
+    $queues->Limit( FIELD => 'Name', OPERATOR => 'STARTSWITH', VALUE => "$name - ", CASESENSITIVE => 0 );
     while ( my $pqueue = $queues->Next ) {
         next unless $pqueue->HasRight( Principal => $queue->CurrentUser, Right => "ShowTicket" );
         push @values, substr $pqueue->__Value('Name'), length("$name - ");
