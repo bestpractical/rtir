@@ -316,7 +316,7 @@ sub OurQuery {
             my $queue = RT::Queue->new( RT->SystemUser );
             $queue->Load( $_[0]->{'value'} );
             my $our = $self->OurQueue( $queue );
-            my ($negative) = RT::Tickets->ClassifySQLOperation( $_[0]->{'op'} );
+            my ($negative) = ( $_[0]->{'op'} eq '!=' || $_[0]->{'op'} =~ /\bNOT\b/i );
             if ( $our && !$negative ) {
                 $has_our = 1;
                 push @queues, $queue->Name;
