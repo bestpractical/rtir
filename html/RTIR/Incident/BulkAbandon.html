@@ -106,10 +106,9 @@ my $Status = 'abandoned';
 
 my ( @results );
 
-$m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
+ProcessAttachments( ARGSRef => \%ARGS );
 
 if ( $ARGS{'BulkAbandon'} ) {
-    $ARGS{'UpdateAttachments'} = delete $session{'Attachments'};
 
     my @tempresults;
     foreach my $id ( @SelectedTickets ) {
@@ -133,10 +132,12 @@ if ( $ARGS{'BulkAbandon'} ) {
             );
             while ( my $child = $children->Next ) {
                 push @tempresults, ProcessUpdateMessage(
-                    TicketObj => $child, ARGSRef => \%ARGS,
+                    TicketObj => $child, ARGSRef => \%ARGS, KeepAttachments => 1
                 );
             }
         }
+        # manually clear this out since we told ProcessUpdateMessage to KeepAttachments
+        delete $session{'Attachments'}{ $ARGS{'Token'} };
 
         # process status updates
         {

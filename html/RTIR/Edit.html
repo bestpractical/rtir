@@ -214,8 +214,6 @@ if ( $SaveChanges && !$checks_failure && !$OnlySearchForPeople ) {
 
     push @results, ProcessTicketDates(    TicketObj => $Ticket, ARGSRef => \%ARGS );
 
-    # XXX: edit page has no message box or attachments form
-    $ARGS{UpdateAttachments} = delete $session{'Attachments'};
     push @results, ProcessUpdateMessage(  TicketObj => $Ticket, ARGSRef=>\%ARGS );
     push @results, ProcessTicketBasics(   TicketObj => $Ticket, ARGSRef => \%ARGS );
 

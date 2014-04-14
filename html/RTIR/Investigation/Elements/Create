@@ -305,11 +305,9 @@ if ( ($DefaultsNamePrefix||'') ne $NamePrefix ) {
 }
 
 my ($Ticket, @results) = CreateTicket(
-    Attachments => $session{'Attachments'},
     %ARGS,
 );
 
-delete $session{'Attachments'} if $Ticket;
 return ($Ticket, @results);
 </%INIT>
 </%METHOD>

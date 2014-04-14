@@ -53,6 +53,7 @@
 
 <form action="Update.html" name="TicketUpdate" method="post" enctype="multipart/form-data">
 <input type="hidden" name="id" value="<% $id %>" />
+<input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
 <input type="hidden" name="QuoteTransaction" value="<% $ARGS{'QuoteTransaction'} || '' %>" />
 <input type="hidden" name="Status" value="<% $Status || '' %>" />
 <input type="hidden" name="Action" value="<% $Action || '' %>" />
@@ -181,8 +182,7 @@ $CanRespond = 1 if ( $Ticket->CurrentUserHasRight('ReplyToTicket') or
 $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
                      $Ticket->CurrentUserHasRight('ModifyTicket') ); 
 
-
-$m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
+ProcessAttachments(ARGSRef => \%ARGS);
 
 my (@results, $checks_failure);
 

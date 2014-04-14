@@ -203,7 +203,7 @@ if ( $id eq 'new' ) {
     unless( $QueueObj->Name eq 'Incidents' ) {
         return $m->comp('/RTIR/Display.html', %ARGS );
     }
-    ($TicketObj, @results) = CreateTicket( %ARGS, Attachments => delete $session{'Attachments'} );
+    ($TicketObj, @results) = CreateTicket( %ARGS );
     $new_ticket = 1;
 } else {
     $TicketObj = LoadTicket( $id );
@@ -264,8 +264,7 @@ if ( $ARGS{'BulkArticles'} && @SelectedTickets ) {
 }
 
 unless( $new_ticket ) {
-    $ARGS{UpdateAttachments} = delete $session{'Attachments'};
-    push @results, ProcessUpdateMessage( ARGSRef => \%ARGS, TicketObj => $TicketObj );
+    push @results, ProcessUpdateMessage( ARGSRef => \%ARGS, TicketObj => $TicketObj, Actions => \@results );
 }
 
 MaybeRedirectForResults(

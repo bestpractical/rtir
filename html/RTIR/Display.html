@@ -164,7 +164,7 @@ if ( $id eq 'new' ) {
     unless ($QueueObj->CurrentUserHasRight('CreateTicket')) {
         Abort('You have no permission to create tickets in that queue.');
     }
-    ($Ticket, @results) = CreateTicket( %ARGS, Attachments => delete $session{'Attachments'} );
+    ($Ticket, @results) = CreateTicket( %ARGS );
 } elsif( $id ) {
     
     $m->callback(
@@ -195,8 +195,7 @@ if ( $id eq 'new' ) {
         }
     }
 
-    $ARGS{UpdateAttachments} = delete $session{'Attachments'};
-    push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS );
+    push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS, Actions => \@results );
 
     push @results, ProcessTicketBasics(  TicketObj => $Ticket, ARGSRef => \%ARGS );
 

@@ -65,6 +65,7 @@
 <form action="<% RT->Config->Get('WebPath') %>/RTIR/Split.html" method="post" enctype="multipart/form-data" name="TicketCreate">
 % }
 <input type="hidden" name="id" value="new" />
+<input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
 <input type="hidden" name="Queue" value="<% $Queue %>" />
 % if ( $Split ) {
 <input type="hidden" name="Split" value="<% $SplitObj->id %>" />
@@ -404,7 +405,7 @@ if ( @Incident > 1 && !$children_config->{'Multiple'} ) {
 
 $Subject ||= $IncidentObj[0]->Subject if @IncidentObj;
 
-push @results, $m->comp( 'SELF:ProcessAttachments', %ARGS );
+ProcessAttachments(ARGSRef => \%ARGS);
 
 my $gnupg_widget = $m->comp('/Elements/Crypt/SignEncryptWidget:new', Arguments => \%ARGS );
 $m->comp( '/Elements/Crypt/SignEncryptWidget:Process',
@@ -503,44 +504,3 @@ $QuoteTransaction => undef
 
 $Split            => undef
 </%ARGS>
-
-<%METHOD ProcessAttachments>
-<%ARGS>
-@DeleteAttachments => ()
-$Attachment => '';
-</%ARGS>
-<%INIT>
-
-my @results;
-
-# deal with deleting uploaded attachments
-foreach (
-    grep $_ && exists $session{'Attachments'}{ $_ },
-    @DeleteAttachments,
-    map { /^DeleteAttach-(.*)$/; $1 } keys %ARGS,
-) {
-    delete $session{'Attachments'}{ $_ };
-    push @results, loc("Deleted attachment '[_1]'", $_ );
-    $session{'i'}++;
-}
-
-# store the uploaded attachment in session
-foreach my $field ( 'Attach', 'Attachment' ) {
-    next unless $ARGS{ $field };
-
-    my $filename = "$ARGS{ $field }";
-    $filename =~ s{^.*[\\/]}{};
-
-    my $entity = MakeMIMEEntity(
-        AttachmentFieldName => $field,
-    );
-    $session{'Attachments'}{ $filename } = $entity;
-    push @results, loc("Added attachment '[_1]'", $filename );
-    $session{'i'}++;
-}
-
-delete $session{'Attachments'} if $session{'Attachments'} && !%{ $session{'Attachments'} };
-
-return @results;
-</%INIT>
-</%METHOD>

@@ -59,6 +59,7 @@
 
 <form action="index.html" name="TicketUpdate" method="post" enctype="multipart/form-data">
 <input type="hidden" name="id" value="<% $id %>" />
+<input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
 <input type="hidden" name="Status" value="<% $Status %>" />
 <input type="hidden" name="All" value="<% $All %>" />
 <input type="hidden" name="Query" value="<% $Query %>" />
@@ -132,7 +133,7 @@ $m->callback( %ARGS, CallbackName => 'Initial', Ticket => $IncidentObj );
 
 $Status = '' if $Status && $Status eq $IncidentObj->Status;
 
-$m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
+ProcessAttachments( ARGSRef => \%ARGS );
 
 my $checks_failure = 0;
 
@@ -164,14 +165,13 @@ if ( $SubmitTicket && $gnupg_widget ) {
 }
 
 if ( $SubmitTicket && !$checks_failure ) {
-    $ARGS{'UpdateAttachments'} = delete $session{'Attachments'};
 
     my $incident_cycle = $IncidentObj->QueueObj->Lifecycle;
     foreach my $Ticket ( @selected_children ) {
         my $id = $Ticket->id;
 
         push @results, map { loc("Ticket [_1]: [_2]", $id, $_) }
-            ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS );
+            ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS, KeepAttachments => 1 );
 
         my %additional = (
             Status => RT::IR->MapStatus( $Status, $incident_cycle => $Ticket ),
@@ -184,6 +184,8 @@ if ( $SubmitTicket && !$checks_failure ) {
             );
         }
     }
+    # manually clear this out since we told ProcessUpdateMessage to KeepAttachments
+    delete $session{'Attachments'}{ $ARGS{'Token'} };
 
     my $update_incident_state = 1;
     if ( $Status && $incident_cycle->IsInactive( $Status ) ) {

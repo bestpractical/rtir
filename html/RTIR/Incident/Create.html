@@ -72,6 +72,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 % }
 
 <input type="hidden" name="id"           value="new" />
+<input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
 <input type="hidden" name="Queue"        value="<% $QueueObj->Name       || '' %>" />
 % if ( $ChildObj ) {
 <input type="hidden" name="Child"        value="<% $Child %>" />
@@ -308,7 +309,7 @@ $m->callback(
 my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
 $QueueObj->Load( 'Incidents' ) || Abort( loc("Queue could not be loaded.") );
 
-$m->comp( '/RTIR/Create.html:ProcessAttachments', %ARGS );
+ProcessAttachments(ARGSRef => \%ARGS);
 
 my $checks_failure = 0;
 
