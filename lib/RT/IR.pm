@@ -435,10 +435,10 @@ sub MapStatus {
     foreach my $e ($from, $to) {
         if ( blessed $e ) {
             if ( $e->isa('RT::Queue') ) {
-                $e = $e->Lifecycle;
+                $e = $e->LifecycleObj;
             }
             elsif ( $e->isa('RT::Ticket') ) {
-                $e = $e->QueueObj->Lifecycle;
+                $e = $e->QueueObj->LifecycleObj;
             }
             elsif ( !$e->isa('RT::Lifecycle') ) {
                 $e = undef;
@@ -447,7 +447,7 @@ sub MapStatus {
         else {
             my $queue = RT::Queue->new( RT->SystemUser );
             $queue->Load( $e );
-            $e = $queue->Lifecycle;
+            $e = $queue->LifecycleObj;
         }
         return unless $e;
     }
