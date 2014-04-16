@@ -628,71 +628,97 @@ sub DefaultConstituency {
 }
 
 
-use Hook::LexWrap;
-
 if ( RT::IR->HasConstituency ) {
-    # ACL checks for multiple constituencies
 
+    # lots of wrapping going on
+    no warnings 'redefine';
+
+    # flush constituency caches on each request
     require RT::Interface::Web::Handler;
-    # flush constituency cache on each request
-    wrap 'RT::Interface::Web::Handler::CleanupRequest', pre => sub {
+    my $orig_CleanupRequest = RT::Interface::Web::Handler->can('CleanupRequest');
+    *RT::Interface::Web::Handler::CleanupRequest = sub {
         %RT::IR::ConstituencyCache = ();
         %RT::IR::HasNoQueueCache = ();
-        RT::IR::_FlushQueueHasRightCache();
-    };
-
-    require RT::Record;
-    # flush constituency cache on update of the custom field value for a ticket
-    wrap 'RT::Record::_AddCustomFieldValue', pre => sub {
-        return unless UNIVERSAL::isa($_[0] => 'RT::Ticket');
-        $RT::IR::ConstituencyCache{$_[0]->id}  = undef;
+        RT::Queue::_FlushQueueHasRightCache();
+        $orig_CleanupRequest->();
     };
 
     require RT::Ticket;
-    wrap 'RT::Ticket::ACLEquivalenceObjects', pre => sub {
+    # flush constituency cache for a ticket when the Constituency CF is updated
+    # RT::Ticket currently uses RT::Record::_AddCustomFieldValue so we just insert not wrap
+    # I wonder what happens when you Delete an OCFV, since it doesn't hit this code path.
+    # This also clears the constituency cache when updating the IP Custom Field, intentional?
+    sub RT::Ticket::_AddCustomFieldValue {
+        my $self = shift;
+        $RT::IR::ConstituencyCache{$self->id}  = undef;
+        return $self->RT::Record::_AddCustomFieldValue(@_);
+    };
+
+    # Tickets with Constituencies CF values that point to a Constituency
+    # Queue such as Incidents - EDUNET should return multiple Queues as
+    # EquivalenceObjects for checking rights. Constituency DutyTeams
+    # have their rights granted on the relevant Constituency Queues, so
+    # RT needs to know to check in both places for the combination of
+    # their rights.
+    my $orig_ACLEquivaluenceObjects = RT::Ticket->can('ACLEquivalenceObjects');
+    *RT::Ticket::ACLEquivalenceObjects = sub {
         my $self = shift;
 
         my $queue = RT::Queue->new(RT->SystemUser);
         $queue->Load($self->__Value('Queue'));
 
-        # We do this, rather than fall through to the orignal sub, as that
-        # interacts poorly with our overloaded QueueObj below
-        # Don't try and load Constituencies outside of RTIR.  It results
-        # in a lot of useless checks.
+        # For historical reasons, the System just returned a System Queue on this Ticket
+        # rather than delve into the overridden QueueObj.  It's possible this is no longer needed.
+        # The biggest thing that $self->QueueObj would do is return a queue with _for_ticket set
+        # which causes a lot of code to skip Constituency checks, so we'd need to duplicate that.
+        # We punt early on non-IR queues because otherwise we try to look for constituency Queues
+        # and the negative cache (_none) is disabled, leading to perf problems.
+        # It's also somewhat concerning that we return a SystemUser queue outside IR queues.
         if ( ( $self->CurrentUser->id == RT->SystemUser->id ) ||
              ( $queue->Name !~ /^(Incidents|Incident Reports|Investigations|Blocks)$/i ) ) {
-            $_[-1] =  [$queue];
+            return [$queue];
+        }
+
+        # Old old bulletproofing, can probably delete.
+        unless ( UNIVERSAL::isa( $self, 'RT::Ticket' ) ) {
+            RT->Logger->crit("$self is not a ticket object like I expected");
             return;
         }
-        if ( UNIVERSAL::isa( $self, 'RT::Ticket' ) ) {
-            my $const = $RT::IR::ConstituencyCache{ $self->id };
-            if (!$const || $const eq '_none' ) {
-                my $systicket = RT::Ticket->new(RT->SystemUser);
-                $systicket->Load( $self->id );
-                $const = $RT::IR::ConstituencyCache{ $self->id } =
-                    $systicket->FirstCustomFieldValue('Constituency')
-                    || '_none';
-            }
-            return if $const eq '_none';
-            return if $RT::IR::HasNoQueueCache{ $const };
 
-            my $new_queue = RT::Queue->new(RT->SystemUser);
-            $new_queue->LoadByCols(
-                Name => $queue->Name . " - " . $const
-            );
-            unless ( $new_queue->id ) {
-                $RT::IR::HasNoQueueCache{$const} = 1;
-                return;
-            }
-            $_[-1] =  [$queue, $new_queue];
-        } else {
-            RT->Logger->crit("$self is not a ticket object like I expected");
+        # We check both uncached constituencies and those explicitly negatively cached
+        # The commit that introduced this doesn't say what bug it was fixing, but it's definitely
+        # a perf hit.
+        my $const = $RT::IR::ConstituencyCache{ $self->id };
+        if (!$const || $const eq '_none' ) {
+            my $systicket = RT::Ticket->new(RT->SystemUser);
+            $systicket->Load( $self->id );
+            $const = $RT::IR::ConstituencyCache{ $self->id } =
+                $systicket->FirstCustomFieldValue('Constituency') || '_none';
         }
+
+        # If this ticket still has no constituency, or the constituency it is assigned
+        # doesn't have a corresponding Constituency queue, return the default Queue.
+        if ( $const eq '_none' || $RT::IR::HasNoQueueCache{ $const } ) {
+            return $orig_ACLEquivaluenceObjects->($self,@_);
+        }
+
+        # Track that there is no Constituency queue for the Constituency recorded in the CF on this ticket.
+        my $constituency_queue = RT::Queue->new(RT->SystemUser);
+        $constituency_queue->LoadByCols( Name => $queue->Name . " - " . $const );
+        unless ( $constituency_queue->id ) {
+            $RT::IR::HasNoQueueCache{$const} = 1;
+            return $orig_ACLEquivaluenceObjects->($self,@_);
+        }
+
+        # If a constituency queue such as 'Incidents - EDUNET' exists, we want to check
+        # ACLs on both of them.
+        return $queue, $constituency_queue;
     };
 }
 
-require RT::Ticket;
-
+# Skip the global AutoOpen scrip on Blocks and Incident Reports
+# This points to RTIR wanting to muck with the global scrips using the 4.2 scrips
+# organization, although it possibly messes with Admins expectations of 'contained Queues'
 require RT::Action::AutoOpen;
 {
     no warnings 'redefine';
@@ -709,54 +735,78 @@ require RT::Action::AutoOpen;
 if ( RT::IR->HasConstituency ) {
     # Queue {Comment,Correspond}Address for multiple constituencies
 
-    wrap 'RT::Ticket::QueueObj', pre => sub {
-        my $queue = RT::Queue->new($_[0]->CurrentUser);
-        $queue->Load($_[0]->__Value('Queue'));
-        $queue->{'_for_ticket'} = $_[0]->id;
-        $_[-1] = $queue;
-        return;
+    no warnings 'redefine';
+
+    # returns an RT::Queue that has _for_ticket set to indicate
+    # that we're using this Queue to check something about a ticket
+    # that may have a Constituency.
+    require RT::Ticket;
+    my $orig_QueueObj = RT::Ticket->can('QueueObj');
+    *RT::Ticket::QueueObj = sub {
+        my $self = shift;
+        # RT::Ticket::QueueObj uses a cache
+        my $queue = $orig_QueueObj->($self,@_);
+        # used to know that this Queue was retrieved from a ticket
+        # so we can skip a bunch of constituency checks...
+        $queue->{'_for_ticket'} = $self->id;
+        return $queue;
     };
 
-    my $queue_cache = {};
-    wrap 'RT::Queue::HasRight', pre => sub {
-        return unless $_[0]->id;
-        return if $_[0]->{'disable_constituency_right_check'};
-        return if $_[0]->{'_for_ticket'};
-        return unless $_[0]->__Value('Name') =~
+    require RT::Queue;
+    package RT::Queue;
+
+    { my $queue_cache = {};
+    # RT 4.2 removed RT::Queue's HasRight, meaning we can just stub one in
+    sub HasRight {
+        my $self = shift;
+        my %args = @_;
+
+        return $self->SUPER::HasRight(@_) unless $self->id;
+        # currently only obviously used so that one right can be checked
+        # on Incidents not Incidents - EDUNET during Constituency CF
+        # editing.
+        return $self->SUPER::HasRight(@_) if $self->{'disable_constituency_right_check'};
+        # Not really convinced this is right, since it gets set on $ticket->QueueObj
+        # commit messages that add it are vague about why it was added.
+        return $self->SUPER::HasRight(@_) if $self->{'_for_ticket'};
+
+        my $name = $self->__Value('Name');
+        return $self->SUPER::HasRight(@_) unless $name =~
             /^(Incidents|Incident Reports|Investigations|Blocks)$/i;
 
-        my $name = $1;
-        my %args = (@_[1..(@_-2)]);
-        $args{'Principal'} ||= $_[0]->CurrentUser;
+        $args{'Principal'} ||= $self->CurrentUser->PrincipalObj;
 
+        # Avoid going to the database on every Queue->HasRight('ModifyCustomField') or any
+        # other Queue right, but in RTIR, CF rights checks at the Queue level are very heavy.
         my $equiv_objects;
         if ( $queue_cache->{$name} ) {
             $equiv_objects = $queue_cache->{$name};
         } else {
             my $queues = RT::Queues->new( RT->SystemUser );
-            $queues->Limit( FIELD => 'Name', OPERATOR => 'STARTSWITH', VALUE => "$name - " );
+            $queues->Limit( FIELD => 'Name', OPERATOR => 'STARTSWITH', VALUE => "$name - ", CASESENSITIVE => 0 );
             $equiv_objects = $queues->ItemsArrayRef;
             $queue_cache->{$name} = $equiv_objects;
         }
 
-
         my $has_right = $args{'Principal'}->HasRight(
             %args,
-            Object => $_[0],
+            Object => $self,
             EquivObjects => $equiv_objects,
         );
-        $_[-1] = $has_right;
-        return;
+        return $has_right;
     };
     sub _FlushQueueHasRightCache { undef $queue_cache  };
+    }
 
 
-    require RT::Queue;
-    package RT::Queue;
-
+    # TODO SubjectTag and Encryption Keys need overriding also
     sub CorrespondAddress { GetQueueAttribute(shift, 'CorrespondAddress') }
     sub CommentAddress { GetQueueAttribute(shift, 'CommentAddress') }
 
+    # dive down to get Queue Attributes from Incidents - EDUNET rather than Incidents
+    # Populates ConstituencyCache and HasNoQueueCache, but has the same
+    # bug around always over-checking the Constituency CF if we've
+    # cached that a ticket has no Constituency.
     sub GetQueueAttribute {
         my $queue = shift;
         my $attr  = shift;
@@ -770,8 +820,7 @@ if ( RT::IR->HasConstituency ) {
             }
             if ($const ne '_none' && !$RT::IR::HasNoQueueCache{$const} ) {
                 my $new_queue = RT::Queue->new(RT->SystemUser);
-                $new_queue->LoadByCols(
-                    Name => $queue->Name . " - " . $const );
+                $new_queue->LoadByCols( Name => $queue->Name . " - " . $const );
                 if ( $new_queue->id ) {
                     my $val = $new_queue->_Value($attr) || $queue->_Value($attr);
                     RT->Logger->debug("Overriden $attr is $val for ticket #$id according to constituency $const");
@@ -789,15 +838,22 @@ if ( RT::IR->HasConstituency ) {
 if ( RT::IR->HasConstituency ) {
     # Set Constituency on Create
 
+    no warnings 'redefine';
+
     require RT::Ticket;
-    wrap 'RT::Ticket::Create', pre => sub {
-        my $ticket = $_[0];
-        my %args = (@_[1..(@_-2)]);
+    my $orig_Create = RT::Ticket->can('Create');
+    *RT::Ticket::Create = sub {
+        my $self = shift;
+        my %args = @_;
 
         # get out if there is constituency value in arguments
         my $cf = GetCustomField( 'Constituency' );
-        return unless $cf && $cf->id;
-        return if $args{ 'CustomField-'. $cf->id };
+        unless ($cf && $cf->id) {
+            return $orig_Create->($self,%args);
+        }
+        if ($args{ 'CustomField-'. $cf->id }) {
+            return $orig_Create->($self,%args);
+        }
 
         # get out of here if it's not RTIR queue
         my $QueueObj = RT::Queue->new( RT->SystemUser );
@@ -808,11 +864,13 @@ if ( RT::IR->HasConstituency ) {
             $QueueObj->Load( $args{'Queue'} );
         }
         else {
-            return;
+            return $orig_Create->($self,%args);
         }
-        return unless $QueueObj->id;
-        return unless $QueueObj->Name =~
-            /^(Incidents|Incident Reports|Investigations|Blocks)$/i; 
+        unless ( $QueueObj->id &&
+                 $QueueObj->Name =~ /^(Incidents|Incident Reports|Investigations|Blocks)$/i ) {
+            return $orig_Create->($self,%args);
+        }
+
         
         # fetch value
         my $value;
@@ -827,13 +885,15 @@ if ( RT::IR->HasConstituency ) {
             RT->Logger->debug("Found Constituency '$tmp' in email") if $tmp;
         }
         $value ||= RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'};
-        return unless $value;
+        unless ($value) {
+            return $orig_Create->($self,%args);
+        }
 
-        my @res = $ticket->Create(
+        my @res = $self->Create(
             %args,
             'CustomField-'. $cf->id => $value,
         );
-        $_[-1] = \@res;
+        return @res;
     };
 }
 

@@ -26,7 +26,6 @@ no_index:
     - t
 requires:
   DBIx::SearchBuilder: 1.61
-  Hook::LexWrap: 0
   Parse::BooleanLogic: 0
   Regexp::Common: 0
   perl: 5.8.3
