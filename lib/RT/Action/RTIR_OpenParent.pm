@@ -66,7 +66,7 @@ sub Commit {
     # If the child becomes not-closed, make sure the Incident is re-opened
 
     my $ticket = $self->TicketObj;
-    return 1 if $ticket->QueueObj->Lifecycle->IsInactive( $txn->NewValue );
+    return 1 if $ticket->QueueObj->LifecycleObj->IsInactive( $txn->NewValue );
 
     my $parents = RT::Tickets->new( $txn->CurrentUser );
     $parents->FromSQL( RT::IR->Query(

@@ -72,7 +72,7 @@ sub IsApplicable {
     return 1 if $type eq 'DeleteLink' || $type eq "AddLink";
     return 1 if $type eq "Set" && $field eq "Due";
     if ( $type eq 'Status' || ($type eq 'Set' && $field eq 'Status') ) {
-        my $lifecycle = $self->TicketObj->QueueObj->Lifecycle;
+        my $lifecycle = $self->TicketObj->QueueObj->LifecycleObj;
         return 1 if !$lifecycle->IsInactive( $txn->OldValue )
             && $lifecycle->IsInactive( $txn->NewValue );
     }

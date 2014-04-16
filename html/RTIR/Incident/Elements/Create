@@ -71,13 +71,14 @@
 
 <& /RTIR/Elements/EditCustomFields,
     %ARGS,
-    TicketObj    => undef,
+    TicketObj    => $ticket,
     QueueObj     => $QueueObj,
     DefaultsFrom => $ChildObj,
 &>
 
 <%INIT>
 my $constituency_cf = RT::IR->CustomFields( 'Constituency', Queue => $QueueObj->Name );
+my $ticket = RT::Ticket->new($session{'CurrentUser'}); # empty object for EditCustomFields
 </%INIT>
 <%ARGS>
 $NamePrefix => ''

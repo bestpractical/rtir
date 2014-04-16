@@ -49,6 +49,7 @@
     title          => loc("Articles"),
     title_href     => RT->Config->Get('WebPath') ."/RTIR/Advanced.html?id=".$id, 
     titleright_raw => $box_actions,
+    title_class    => 'inverse',
     class          => 'ticket-info-articles',
 &>
 

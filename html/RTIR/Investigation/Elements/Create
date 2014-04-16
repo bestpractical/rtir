@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <input type="hidden" name="<% $NamePrefix %>Queue" value="<% $QueueObj->id %>" />
-<input type="hidden" name="<% $NamePrefix %>Status" value="<% $ARGS{ $NamePrefix .'Status' } || $QueueObj->Lifecycle->DefaultOnCreate %>" />
+<input type="hidden" name="<% $NamePrefix %>Status" value="<% $ARGS{ $NamePrefix .'Status' } || $QueueObj->LifecycleObj->DefaultOnCreate %>" />
 
 <div class="ticket-create-basics">
 <&| /Widgets/TitleBox, title => loc("Basics"), class => 'ticket-info-basics' &>
@@ -96,7 +96,7 @@
 % if ( ($QueueObj || $TicketObj) && !$SkipField{'CustomFields'} ) {
 <& /RTIR/Elements/EditCustomFields,
     %ARGS,
-    TicketObj  => undef,
+    TicketObj  => $ticket,
     NamePrefix => $NamePrefix,
     QueueObj   => $QueueObj,
     DefaultsFrom => $TicketObj,
@@ -211,6 +211,8 @@ unless ( $QueueObj ) {
         $QueueObj->Load( $queue );
     }
 }
+
+my $ticket = RT::Ticket->new($session{'CurrentUser'}); # empty ticket object
 
 if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
     foreach ( qw(Sign Encrypt) ) {

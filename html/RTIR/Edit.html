@@ -219,7 +219,7 @@ if ( $SaveChanges && !$checks_failure && !$OnlySearchForPeople ) {
     push @results, ProcessUpdateMessage(  TicketObj => $Ticket, ARGSRef=>\%ARGS );
     push @results, ProcessTicketBasics(   TicketObj => $Ticket, ARGSRef => \%ARGS );
 
-    push @results, ProcessTicketCustomFieldUpdates( ARGSRef => \%ARGS );
+    push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS );
 
     $m->callback(
         CallbackName => 'AfterProcessing',
