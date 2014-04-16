@@ -11,7 +11,7 @@ my $cf;
 diag "load and check basic properties of the CF" if $ENV{'TEST_VERBOSE'};
 {
     my $cfs = RT::CustomFields->new( $RT::SystemUser );
-    $cfs->Limit( FIELD => 'Name', VALUE => 'Constituency' );
+    $cfs->Limit( FIELD => 'Name', VALUE => 'Constituency', CASESENSITIVE => 0 );
     $cf = $cfs->First;
     ok $cf && $cf->id, 'loaded field';
     is $cf->Name, 'Constituency', 'good name';

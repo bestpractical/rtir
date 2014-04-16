@@ -12,7 +12,7 @@ my $cf;
 diag "load the field" if $ENV{'TEST_VERBOSE'};
 {
     my $cfs = RT::CustomFields->new( $RT::SystemUser );
-    $cfs->Limit( FIELD => 'Name', VALUE => 'Constituency' );
+    $cfs->Limit( FIELD => 'Name', VALUE => 'Constituency', CASESENSITIVE => 0 );
     $cf = $cfs->First;
     ok $cf, 'have a field';
     ok $cf->id, 'with some ID';
