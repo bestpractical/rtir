@@ -96,7 +96,7 @@ $agent->goto_create_rtir_ticket('Incident Reports');
     $agent->content_like( qr/\Q$filename/, "has file name on the page");
 
     $agent->form_number(3);
-    $agent->tick('DeleteAttach-'. $filename, 1);
+    $agent->tick('DeleteAttach', $filename);
     $agent->click('AddMoreAttach');
     is($agent->status, 200, "request successful");
 

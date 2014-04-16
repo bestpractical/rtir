@@ -68,11 +68,18 @@ sub IsApplicable {
 
     my $field = $self->TransactionObj->Field;
     if ( $type eq 'AddLink' && $field eq 'MemberOf' ) {
-        my ($status, $msg, $parent) = $self->TicketObj->__GetTicketFromURI(
-            URI => $self->TransactionObj->NewValue
-        );
-        unless ( $parent && $parent->id ) {
-            RT->Logger->error( "Couldn't load linked ticket #". $self->TransactionObj->NewValue );
+        my $uri = RT::URI->new($self->TicketObj->CurrentUser);
+        my ($status, $msg) = $uri->FromURI( $self->TransactionObj->NewValue );
+        unless ( $status ) {
+            RT->Logger->debug("Couldn't load link ". $self->transactionObj->NewValue . "$msg");
+        }
+
+        # don't bother running on something that can't be a ticket
+        return unless $uri->IsLocal;
+
+        my $parent = $uri->Object;
+        unless ( $parent && $parent->id && $parent->isa('RT::Ticket') ) {
+            RT->Logger->error( "Couldn't load linked ticket #". $self->TransactionObj->NewValue ." $msg");
             return 0;
         }
         return $parent->QueueObj->Name eq 'Incidents';
