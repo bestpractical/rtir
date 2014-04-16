@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if( $ShowStatusesSelector ) {
-%   foreach my $s ( $QueueObj->Lifecycle->Valid ) {
+%   foreach my $s ( $QueueObj->LifecycleObj->Valid ) {
 %       my $checked = (grep { $_ eq $s } @Statuses)? 'checked': '';
 <input type="checkbox" name="Statuses" value="<% $s %>" <% $checked %> />&nbsp;<% $s %>
 %   }
@@ -89,7 +89,7 @@ unless ( $QueueObj->id ) {
     return;
 }
 
-@Statuses = $QueueObj->Lifecycle->Valid('initial', 'active') unless @Statuses;
+@Statuses = $QueueObj->LifecycleObj->Valid('initial', 'active') unless @Statuses;
 
 my $Type = RT::IR::TicketType( Queue => $Queue );
 

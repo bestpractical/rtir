@@ -166,7 +166,7 @@ if ( $SubmitTicket && $gnupg_widget ) {
 if ( $SubmitTicket && !$checks_failure ) {
     $ARGS{'UpdateAttachments'} = delete $session{'Attachments'};
 
-    my $incident_cycle = $IncidentObj->QueueObj->Lifecycle;
+    my $incident_cycle = $IncidentObj->QueueObj->LifecycleObj;
     foreach my $Ticket ( @selected_children ) {
         my $id = $Ticket->id;
 

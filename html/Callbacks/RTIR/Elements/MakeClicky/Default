@@ -51,7 +51,7 @@ use URI::URL;
 
 my $escaper = sub {
     my $content = shift;
-    RT::Interface::Web::EscapeUTF8( \$content );
+    RT::Interface::Web::EscapeHTML( \$content );
     return $content;
 };
 
