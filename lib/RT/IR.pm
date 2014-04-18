@@ -729,7 +729,7 @@ require RT::Action::AutoOpen;
         my $self = shift;
         my $ticket = $self->TicketObj;
         my $type = RT::IR::TicketType( Ticket => $ticket );
-        return 1 if $type && ( $type eq 'Block' || $type eq 'Report' );
+        return 0 if $type && ( $type eq 'Block' || $type eq 'Report' );
         return $self->$prepare(@_);
     };
 }
@@ -741,7 +741,7 @@ require RT::Action::AutoOpenInactive;
         my $self = shift;
         my $ticket = $self->TicketObj;
         my $type = RT::IR::TicketType( Ticket => $ticket );
-        return 1 if $type && ( $type eq 'Block' || $type eq 'Report' );
+        return 0 if $type && ( $type eq 'Block' || $type eq 'Report' );
         return $self->$prepare(@_);
     };
 }
