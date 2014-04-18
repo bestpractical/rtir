@@ -51,7 +51,16 @@ $Object => undef
 </%args>
 <%init>
 return unless $Object->isa('RT::Ticket');
-my $queue = $Object->QueueObj;
+my $queue;
+if ($Object->Id) {
+    $queue = $Object->QueueObj;
+} else {
+    # during ticket creation, we get an id'less ticket
+    # but the CustomFields object was created from Queue->TicketCustomFields
+    # so we can find the relevant Queue from that
+    $queue = $CustomFields->ContextObject;
+    return unless ($queue && $queue->isa('RT::Queue'));
+}
 return unless RT::IR->OurQueue( $queue );
 
 # We never want to see the RTIR's custom field Constituency in the edity ui
