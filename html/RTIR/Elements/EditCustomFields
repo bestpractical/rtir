@@ -48,6 +48,7 @@
 <& /Elements/EditCustomFields,
   Object => $TicketObj,
   QueueObj => $QueueObj,
+  ($TicketObj->Id ? () : (CustomFields => $QueueObj->TicketCustomFields)), # on ticket creation, use Queue CFs
   %ARGS,
   InTable => 1,
 &>
