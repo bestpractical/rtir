@@ -675,8 +675,8 @@ if ( RT::IR->HasConstituency ) {
         # and the negative cache (_none) is disabled, leading to perf problems.
         # It's also somewhat concerning that we return a SystemUser queue outside IR queues.
         if ( ( $self->CurrentUser->id == RT->SystemUser->id ) ||
-             ( $queue->Name !~ /^(Incidents|Incident Reports|Investigations|Blocks)$/i ) ) {
-            return [$queue];
+             ( ! RT::IR->OurQueue( $queue ) ) ) {
+            return $queue;
         }
 
         # Old old bulletproofing, can probably delete.
