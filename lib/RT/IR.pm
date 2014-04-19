@@ -903,7 +903,8 @@ if ( RT::IR->HasConstituency ) {
             return $orig_Create->($self,%args);
         }
 
-        my @res = $self->Create(
+        my @res = $orig_Create->(
+            $self,
             %args,
             'CustomField-'. $cf->id => $value,
         );
