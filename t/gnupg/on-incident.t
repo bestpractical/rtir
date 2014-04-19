@@ -68,7 +68,7 @@ diag 'import rt-recipient@example.com key and sign it';
 {
     RT::Test->import_gnupg_key('rt-recipient@example.com');
     RT::Test->trust_gnupg_key('rt-recipient@example.com');
-    my %res = RT::Crypt::GnuPG::GetKeysInfo('rt-recipient@example.com');
+    my %res = RT::Crypt->GetKeysInfo('rt-recipient@example.com');
     is $res{'info'}[0]{'TrustTerse'}, 'ultimate', 'ultimately trusted key';
 }
 
