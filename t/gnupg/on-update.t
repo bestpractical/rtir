@@ -3,23 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 68;
-use File::Temp qw(tempdir);
-
-RT->Config->Set( 'GnuPG',
-                 Enable => 1,
-                 OutgoingMessagesFormat => 'RFC' );
-
-RT->Config->Set( GnuPGOptions =>
-    homedir => scalar tempdir( CLEANUP => 0 ),
-    passphrase => 'rt-test',
-    'no-permission-warning' => undef,
-);
-diag "GnuPG --homedir ". RT->Config->Get('GnuPGOptions')->{'homedir'};
-
-RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
-
-RT->Config->Set( Plugins => 'RT::FM', 'RT::IR' );
+use RT::IR::Test::GnuPG tests => 68, gnupg_options => { passphrase => 'rt-test' };
 
 my $queue = RT::Test->load_or_create_queue(
     Name              => 'Incident Reports',
@@ -32,12 +16,6 @@ my ($baseurl) = RT::Test->started_ok;
 my $agent = default_agent();
 rtir_user();
 $agent->login( rtir_test_user => 'rtir_test_pass' );
-
-
-RT::Test->set_rights(
-    Principal => 'Everyone',
-    Right => ['CreateTicket', 'ShowTicket', 'SeeQueue', 'ReplyToTicket', 'ModifyTicket'],
-);
 
 {
     RT::Test->import_gnupg_key('rt-recipient@example.com');

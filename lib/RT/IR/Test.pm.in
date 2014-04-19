@@ -54,18 +54,7 @@ use lib qw(/opt/rt4/local/lib /opt/rt4/lib);
 
 package RT::IR::Test;
 
-our @ISA;
-BEGIN {
-    local $@ = undef;
-    eval { require RT::Test; 1 } or do {
-        require Test::More;
-        Test::More::BAIL_OUT(
-            "requires 3.8 to run tests. Error:\n$@\n"
-            ."You may need to set PERL5LIB=/path/to/rt/lib"
-        );
-    };
-    push @ISA, 'RT::Test';
-}
+use base 'RT::Test';
 
 use RT::IR::Test::Web;
 
@@ -86,7 +75,13 @@ sub import {
     }
 
     $class->SUPER::import( %args );
-    $class->export_to_level(1);
+
+    my $level = 1;
+    while ( my ($package) = caller($level-1) ) {
+        last unless $package =~ /Test/;
+        $level++;
+    }
+    RT::IR::Test->export_to_level($level);
 
     RT->Config->Set( 'rtirname' => 'regression_tests' );
 }
