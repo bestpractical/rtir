@@ -109,9 +109,9 @@ my %actions;
         if ( $args{incident} && !RT->Config->Get('RTIR_DisableBlocksQueue') ) {
             $result .= qq{[<a href="$web_path/RTIR/Create.html?Incident=$args{incident}&Queue=Blocks&IP-Value=$escaped_host">block</a>]};
         }
-        if ( $args{'ticket'} && $args{'ticket'}->id ) {
+        if ( $args{'object'} && $args{'object'}->id ) {
             my $cf = RT::IR::GetCustomField('IP');
-            my $tid = $args{'ticket'}->id;
+            my $tid = $args{'object'}->id;
             $result .= qq{[<a href="$web_path/RTIR/Edit.html?id=$tid}
                 .qq{&Object-RT::Ticket-$tid-CustomField-}. $cf->id .qq{-AddValue=$escaped_host}
                 .q{&SaveChanges=1">}. loc('Add IP') .q{</a>]};
@@ -220,20 +220,22 @@ my $handle = ${$ARGS{handle}};
 ${$ARGS{handle}} = sub {
     my %args = @_;
 
-    if ( $args{ticket} ) {
-        $args{type} = RT::IR::TicketType( Queue => $args{ticket}->QueueObj->Name );
+    if ($args{object}->isa('RT::Ticket')) {
+        if ( $args{object} ) {
+            $args{type} = RT::IR::TicketType( Queue => $args{object}->QueueObj->Name );
 
-        $args{incident} = $args{ticket}->id
-          if $args{type} && $args{type} eq 'Incident';
+            $args{incident} = $args{ticket}->id
+              if $args{type} && $args{type} eq 'Incident';
 
-        $args{lookup_params} = "ticket=".$args{ticket}->id
-            if !$args{lookup_params};
+            $args{lookup_params} = "ticket=".$args{object}->id
+                if !$args{lookup_params};
+        }
+
+        $args{lookup_params} .= "&"
+          if $args{lookup_params} and $args{lookup_params} !~ /&$/;
+
+        $args{lookup_params} = $escaper->($args{lookup_params});
     }
-
-    $args{lookup_params} .= "&"
-      if $args{lookup_params} and $args{lookup_params} !~ /&$/;
-
-    $args{lookup_params} = $escaper->($args{lookup_params});
 
     return $handle->(%args);
 };
