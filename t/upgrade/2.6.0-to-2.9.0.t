@@ -18,7 +18,7 @@ use RT::IR::Test tests => 17;
 my @state_cf_ids;
 {
     my $cfs = RT::CustomFields->new( RT->SystemUser );
-    $cfs->Limit( FIELD => 'Name', VALUE => 'State' );
+    $cfs->Limit( FIELD => 'Name', VALUE => 'State', CASESENSITIVE => 0 );
     $cfs->Limit( FIELD => 'Disabled', VALUE => 1 );
     push @state_cf_ids, map $_->id, @{ $cfs->ItemsArrayRef };
     is( scalar @state_cf_ids, 4, 'four disabled state fields' );
@@ -30,7 +30,7 @@ my @state_cf_ids;
 
     my $queue = $ticket->QueueObj;
     is( $queue->Name, 'Incident Reports', 'an IR' );
-    is( $queue->Lifecycle->Name, 'incident_reports', 'incidents cycle' );
+    is( $queue->LifecycleObj->Name, 'incident_reports', 'incidents cycle' );
 
     is( $ticket->Subject, 'IR for reject' );
     is( $ticket->Status, 'rejected' );
@@ -45,7 +45,7 @@ my @state_cf_ids;
 
     my $queue = $ticket->QueueObj;
     is( $queue->Name, 'Incidents', 'an incident' );
-    is( $queue->Lifecycle->Name, 'incidents', 'incidents cycle' );
+    is( $queue->LifecycleObj->Name, 'incidents', 'incidents cycle' );
 
     is( $ticket->Subject, 'Inc for abandon' );
     is( $ticket->Status, 'abandoned' );

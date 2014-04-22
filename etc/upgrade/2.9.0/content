@@ -136,7 +136,7 @@ our @Final = (
             my $new_cycle = lc $name;
             $new_cycle =~ s/ /_/;
 
-            if ( $queue->Lifecycle->Name eq $new_cycle ) {
+            if ( $queue->LifecycleObj->Name eq $new_cycle ) {
                 $RT::Logger->debug("Queue $name already uses '$new_cycle' lifecycle");
                 next;
             }
