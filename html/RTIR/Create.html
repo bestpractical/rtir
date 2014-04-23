@@ -441,6 +441,7 @@ unless ( $skip_create ) {
         CustomFields => $QueueObj->TicketTransactionCustomFields,
         ARGSRef      => \%ARGS,
         NamePrefix   => "Object-RT::Transaction--CustomField-",
+        Object       => RT::Transaction->new( $session{CurrentUser} )
     );
     unless ( $ticket_status && $txn_status ) {
         push @results, loc( "Invalid value(s) of the custom fields" );
