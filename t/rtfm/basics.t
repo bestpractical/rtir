@@ -13,11 +13,11 @@ my $ir_id  = $agent->create_ir( {Subject => "looking for articles"});
 $agent->display_ticket( $ir_id);
 
 $agent->follow_link_ok({text => "Articles"}, "followed 'Articles' overview link");
-$agent->title_like(qr/^Articles$/);
+$agent->title_like(qr/^Search for articles$/);
 
 $agent->back();
 
-$agent->follow_link_ok({text => "Create", url_regex => qr/Articles/}, "followed new article link");
+$agent->follow_link_ok({text => "Create", url_regex => qr/Articles/, n => 2}, "followed new article link");
 
 $agent->follow_link_ok({text => "in class Templates"}, "chose a class");
 

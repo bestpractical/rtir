@@ -3,21 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 40;
-use File::Temp qw(tempdir);
-
-RT->Config->Set( 'GnuPG',
-                 Enable => 1,
-                 OutgoingMessagesFormat => 'RFC' );
-
-RT->Config->Set( GnuPGOptions =>
-    homedir => scalar tempdir( CLEANUP => 0 ),
-    passphrase => 'rt-test',
-    'no-permission-warning' => undef,
-);
-diag "GnuPG --homedir ". RT->Config->Get('GnuPGOptions')->{'homedir'};
-
-RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
+use RT::IR::Test::GnuPG tests => 40, gnupg_options => { passphrase => 'rt-test' };
 
 my $queue = RT::Test->load_or_create_queue(
     Name              => 'Incident Reports',
@@ -30,11 +16,6 @@ my ($baseurl) = RT::Test->started_ok;
 my $agent = default_agent();
 rtir_user();
 $agent->login( rtir_test_user => 'rtir_test_pass' );
-
-RT::Test->set_rights(
-    Principal => 'Everyone',
-    Right => ['CreateTicket', 'ShowTicket', 'SeeQueue', 'OwnTicket', 'ReplyToTicket', 'ModifyTicket'],
-);
 
 diag "check that things don't work if there is no key";
 {
@@ -68,7 +49,7 @@ diag 'import rt-recipient@example.com key and sign it';
 {
     RT::Test->import_gnupg_key('rt-recipient@example.com');
     RT::Test->trust_gnupg_key('rt-recipient@example.com');
-    my %res = RT::Crypt::GnuPG::GetKeysInfo('rt-recipient@example.com');
+    my %res = RT::Crypt->GetKeysInfo('rt-recipient@example.com');
     is $res{'info'}[0]{'TrustTerse'}, 'ultimate', 'ultimately trusted key';
 }
 

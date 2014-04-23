@@ -280,7 +280,7 @@ if ( ($DefaultsNamePrefix||'') ne $NamePrefix ) {
 
             my $dst_cf = do {
                 my $cfs = $queue->TicketCustomFields;
-                $cfs->Limit( FIELD => 'Name', VALUE => $src_cf->Name );
+                $cfs->Limit( FIELD => 'Name', VALUE => $src_cf->Name, CASESENSITIVE => 0 );
                 $cfs->RowsPerPage(1);
                 $cfs->First;
             };

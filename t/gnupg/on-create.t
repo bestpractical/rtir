@@ -3,22 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 61;
-
-use File::Temp qw(tempdir);
-
-RT->Config->Set( 'GnuPG',
-                 Enable => 1,
-                 OutgoingMessagesFormat => 'RFC' );
-
-RT->Config->Set( GnuPGOptions =>
-    homedir => scalar tempdir( CLEANUP => 0 ),
-    passphrase => 'rt-test',
-    'no-permission-warning' => undef,
-);
-diag "GnuPG --homedir ". RT->Config->Get('GnuPGOptions')->{'homedir'};
-
-RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
+use RT::IR::Test::GnuPG tests => 61, gnupg_options => { passphrase => 'rt-test' };
 
 my $queue = RT::Test->load_or_create_queue(
     Name              => 'Incident Reports',
@@ -29,19 +14,14 @@ ok $queue && $queue->id, 'loaded or created queue';
 
 my ($baseurl) = RT::Test->started_ok;
 my $agent = default_agent();
-rtir_user();
+RT::IR::Test::rtir_user();
 $agent->login( rtir_test_user => 'rtir_test_pass' );
 
-
-RT::Test->set_rights(
-    Principal => 'Everyone',
-    Right => ['CreateTicket', 'ShowTicket', 'SeeQueue', 'ReplyToTicket', 'ModifyTicket'],
-);
 
 {
     RT::Test->import_gnupg_key('rt-recipient@example.com');
     RT::Test->trust_gnupg_key('rt-recipient@example.com');
-    my %res = RT::Crypt::GnuPG::GetKeysInfo('rt-recipient@example.com');
+    my %res = RT::Crypt->GetKeysInfo( Key => 'rt-recipient@example.com' );
     is $res{'info'}[0]{'TrustTerse'}, 'ultimate', 'ultimately trusted key';
 }
 
@@ -75,7 +55,7 @@ diag "import first key of rt-test\@example.com";
 my $fpr1 = '';
 {
     RT::Test->import_gnupg_key('rt-test@example.com', 'public');
-    my %res = RT::Crypt::GnuPG::GetKeysInfo('rt-test@example.com');
+    my %res = RT::Crypt->GetKeysInfo('rt-test@example.com');
     is $res{'info'}[0]{'TrustLevel'}, 0, 'is not trusted key';
     $fpr1 = $res{'info'}[0]{'Fingerprint'};
 }
@@ -122,7 +102,7 @@ diag "import a second key of rt-test\@example.com";
 my $fpr2 = '';
 {
     RT::Test->import_gnupg_key('rt-test@example.com.2', 'public');
-    my %res = RT::Crypt::GnuPG::GetKeysInfo('rt-test@example.com');
+    my %res = RT::Crypt->GetKeysInfo('rt-test@example.com');
     is $res{'info'}[1]{'TrustLevel'}, 0, 'is not trusted key';
     $fpr2 = $res{'info'}[2]{'Fingerprint'};
 }
@@ -167,7 +147,7 @@ diag "check that things still doesn't work if two keys are not trusted";
 
 {
     RT::Test->lsign_gnupg_key( $fpr1 );
-    my %res = RT::Crypt::GnuPG::GetKeysInfo('rt-test@example.com');
+    my %res = RT::Crypt->GetKeysInfo('rt-test@example.com');
     ok $res{'info'}[0]{'TrustLevel'} > 0, 'trusted key';
     is $res{'info'}[1]{'TrustLevel'}, 0, 'is not trusted key';
 }
@@ -295,5 +275,4 @@ sub check_text_emails {
         }
     }
 }
-
 

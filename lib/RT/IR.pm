@@ -716,9 +716,11 @@ if ( RT::IR->HasConstituency ) {
     };
 }
 
-# Skip the global AutoOpen scrip on Blocks and Incident Reports
+# Skip the global AutoOpen and AutoOpenInactive scrip on Blocks and Incident Reports
 # This points to RTIR wanting to muck with the global scrips using the 4.2 scrips
 # organization, although it possibly messes with Admins expectations of 'contained Queues'
+# We have to hit both because the first is installed on upgraded RTs while the latter is
+# installed on fresh 4.2 installs and Admins are free to configure either.
 require RT::Action::AutoOpen;
 {
     no warnings 'redefine';
@@ -727,7 +729,19 @@ require RT::Action::AutoOpen;
         my $self = shift;
         my $ticket = $self->TicketObj;
         my $type = RT::IR::TicketType( Ticket => $ticket );
-        return 1 if $type && ( $type eq 'Block' || $type eq 'Report' );
+        return 0 if $type && ( $type eq 'Block' || $type eq 'Report' );
+        return $self->$prepare(@_);
+    };
+}
+require RT::Action::AutoOpenInactive;
+{
+    no warnings 'redefine';
+    my $prepare = RT::Action::AutoOpenInactive->can('Prepare');
+    *RT::Action::AutoOpenInactive::Prepare = sub {
+        my $self = shift;
+        my $ticket = $self->TicketObj;
+        my $type = RT::IR::TicketType( Ticket => $ticket );
+        return 0 if $type && ( $type eq 'Block' || $type eq 'Report' );
         return $self->$prepare(@_);
     };
 }
@@ -889,7 +903,8 @@ if ( RT::IR->HasConstituency ) {
             return $orig_Create->($self,%args);
         }
 
-        my @res = $self->Create(
+        my @res = $orig_Create->(
+            $self,
             %args,
             'CustomField-'. $cf->id => $value,
         );

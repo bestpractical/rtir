@@ -680,6 +680,7 @@ for my $cf (@CustomFields) {
       for qw/SeeCustomField ModifyCustomField/;
     $group->PrincipalObj->GrantRight( Right => $_, Object => $class )
       for qw/AdminClass AdminTopics CreateArticle ModifyArticle ModifyArticleTopics SeeClass ShowArticle ShowArticleHistory DeleteArticle/;
+    $group->PrincipalObj->GrantRight( Right => ShowArticlesMenu, Object => RT->System );
 
 } );
 
