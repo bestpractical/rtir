@@ -510,12 +510,7 @@ sub CustomFields {
         @_%2 ? (Field => @_) : @_
     );
 
-# TODO cache doesn't work with rt 3.9
-# t/customfields/defaults-on-linking.t will fail with cache on
-# maybe because it's called too early somewhere?
-# anyway, seems caching here is not a great idea
-# as it will obstruct cf updates later?
-#    unless ( keys %cache ) {
+    unless ( keys %cache ) {
         foreach my $qname ( @QUEUES ) {
             my $type = TicketType( Queue => $qname );
             $cache{$type} = [];
@@ -543,7 +538,7 @@ sub CustomFields {
         while ( my $cf = $cfs->Next ) {
             push @{ $cache{'Global'} }, $cf;
         }
-#    }
+    }
 
     my $type = TicketType( %arg );
 
@@ -566,7 +561,7 @@ sub CustomFields {
 }
 
 sub _FlushCustomFieldsCache {
-    %cache = ()
+    %cache = ();
 } }
 
 
@@ -640,6 +635,7 @@ if ( RT::IR->HasConstituency ) {
         %RT::IR::ConstituencyCache = ();
         %RT::IR::HasNoQueueCache = ();
         RT::Queue::_FlushQueueHasRightCache();
+        RT::IR::_FlushCustomFieldsCache();
         $orig_CleanupRequest->();
     };
 
