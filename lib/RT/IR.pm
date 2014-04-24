@@ -603,6 +603,9 @@ sub HasConstituency {
 
     my $self = shift;
     return $cache = $self->CustomFields('Constituency');
+}
+sub _FlushHasConstituencyCache {
+    undef $cache;
 } }
 
 sub DefaultConstituency {
@@ -636,6 +639,7 @@ if ( RT::IR->HasConstituency ) {
         %RT::IR::HasNoQueueCache = ();
         RT::Queue::_FlushQueueHasRightCache();
         RT::IR::_FlushCustomFieldsCache();
+        RT::IR::_FlushHasConstituencyCache();
         $orig_CleanupRequest->();
     };
 
