@@ -103,8 +103,8 @@ $Query           => ''
 $Format          => ''
 $Rows            => undef
 $Page            => 1
-$OrderBy         => 'id'
-$Order           => 'ASC'
+$OrderBy         => RT->Config->Get('DefaultSearchResultOrderBy')
+$Order           => RT->Config->Get('DefaultSearchResultOrder')
 
 $BaseURL         => "RTIR/Search/Results.html?"
 
