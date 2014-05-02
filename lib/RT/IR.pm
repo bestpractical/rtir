@@ -824,23 +824,25 @@ if ( RT::IR->HasConstituency ) {
     sub GetQueueAttribute {
         my $queue = shift;
         my $attr  = shift;
-        if ( ( my $id = $queue->{'_for_ticket'} ) ) {
-            my $const = $RT::IR::ConstituencyCache{$id};
-            if (!$const || $const eq '_none' ) {
-                my $ticket = RT::Ticket->new(RT->SystemUser);
-                $ticket->Load($id);
-                $const = $RT::IR::ConstituencyCache{$ticket->id}
-                    = $ticket->FirstCustomFieldValue('Constituency') || '_none';
-            }
-            if ($const ne '_none' && !$RT::IR::HasNoQueueCache{$const} ) {
-                my $new_queue = RT::Queue->new(RT->SystemUser);
-                $new_queue->LoadByCols( Name => $queue->Name . " - " . $const );
-                if ( $new_queue->id ) {
-                    my $val = $new_queue->_Value($attr) || $queue->_Value($attr);
-                    RT->Logger->debug("Overriden $attr is $val for ticket #$id according to constituency $const");
-                    return $val;
-                } else {
-                    $RT::IR::HasNoQueueCache{$const} = 1;
+        if ( RT::IR->OurQueue($queue) ) {
+            if ( ( my $id = $queue->{'_for_ticket'} ) ) {
+                my $const = $RT::IR::ConstituencyCache{$id};
+                if (!$const || $const eq '_none' ) {
+                    my $ticket = RT::Ticket->new(RT->SystemUser);
+                    $ticket->Load($id);
+                    $const = $RT::IR::ConstituencyCache{$ticket->id}
+                        = $ticket->FirstCustomFieldValue('Constituency') || '_none';
+                }
+                if ($const ne '_none' && !$RT::IR::HasNoQueueCache{$const} ) {
+                    my $new_queue = RT::Queue->new(RT->SystemUser);
+                    $new_queue->LoadByCols( Name => $queue->Name . " - " . $const );
+                    if ( $new_queue->id ) {
+                        my $val = $new_queue->_Value($attr) || $queue->_Value($attr);
+                        RT->Logger->debug("Overriden $attr is $val for ticket #$id according to constituency $const");
+                        return $val;
+                    } else {
+                        $RT::IR::HasNoQueueCache{$const} = 1;
+                    }
                 }
             }
         }
