@@ -1,0 +1,4 @@
+#!/usr/bin/env perl
+### before: #!@PERL@
+
+print "\nThe add_constituency script has moved from etc to the bin directory (bin/add_constituency).\n\n";
