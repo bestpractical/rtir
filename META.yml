@@ -32,4 +32,4 @@ requires:
   perl: 5.8.3
 resources:
   license: http://opensource.org/licenses/gpl-license.php
-version: 3.0.2rc1
+version: 3.0.2
