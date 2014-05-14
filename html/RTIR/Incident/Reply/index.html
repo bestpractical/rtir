@@ -137,6 +137,14 @@ ProcessAttachments( ARGSRef => \%ARGS );
 
 my $checks_failure = 0;
 
+$m->callback(
+    CallbackName   => 'BeforeReply',
+    ARGSRef        => \%ARGS,
+    checks_failure => \$checks_failure,
+    results        => \@results,
+    Ticket         => $IncidentObj
+);
+
 my $gnupg_widget = $m->comp('/Elements/Crypt/SignEncryptWidget:new', Arguments => \%ARGS );
 $m->comp( '/Elements/Crypt/SignEncryptWidget:Process',
     self => $gnupg_widget,
