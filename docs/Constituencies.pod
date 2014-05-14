@@ -91,8 +91,8 @@ At the bottom of the page in the Values section, you can add, delete, and
 rename values, and change the sort order.
 
 However, to get advanced control over constituencies you have to create additional
-objects in the system. The steps below describe how to do this manually. An
-F<add_constituency> script is also provided which helps add new constituency
+objects in the system. The steps below describe how to do this manually. A
+script (F<bin/add_constituency>) is also provided which helps add new constituency
 values, along with their associated groups and queues. These queues are there only 
 for technical reasons and are only visible for administrators of RTIR.
 The script is located in the F<etc> directory in your RTIR distribution.

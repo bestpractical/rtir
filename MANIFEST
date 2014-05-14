@@ -1,4 +1,6 @@
 .perlcriticrc
+bin/add_constituency
+bin/add_constituency.in
 CHANGES
 docs/AdministrationTutorial.pod
 docs/Constituencies.pod
@@ -8,6 +10,7 @@ docs/UPGRADING
 docs/UPGRADING-2.4
 docs/UPGRADING-2.6
 docs/UPGRADING-3.0
+docs/UPGRADING-3.2
 etc/add_constituency.in
 etc/initialdata
 etc/logo/gif/rtir-logo-badge-3d.gif
