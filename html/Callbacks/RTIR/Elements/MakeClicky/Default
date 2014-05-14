@@ -201,7 +201,7 @@ my @types = (
     },
     {
         name   => "email",
-        regex  => qr{(?:mailto:)?<?[\w\.\+-]+\@[\w\.-]+\.\w{2,3}>?},
+        regex  => qr{(?:mailto:)?<?[\w\.\+-]+\@[\w\.-]+\.\w{2,}>?},
         action => "email",
     },
     {
@@ -239,6 +239,29 @@ ${$ARGS{handle}} = sub {
 
     return $handle->(%args);
 };
+
+unless (ref $ARGS{cache} && defined ${$ARGS{cache}}) {
+    ${$ARGS{cache}} = sub {
+        my $type = shift;
+        my $content = shift;
+        if ($type eq 'fetch') {
+            my $parent_args = $m->caller_args(1);
+            return if $parent_args->{lookup_params};
+
+            require Digest::SHA;
+            return $m->cache->get(Digest::SHA::sha512_base64($$content));
+        } elsif ($type eq 'store') {
+            require Digest::SHA;
+            $m->cache->set(Digest::SHA::sha512_base64($$content),
+                           $$content,
+                           "6 hours");
+        } else {
+            RT->Logger->error("Invalid type $type passed to MakeClicky's cache");
+        }
+    }
+} else {
+    RT->Logger->info("Someone else defined a MakeClicky cache, skipping ours");
+}
 
 %{$ARGS{actions}} = ( %{$ARGS{actions}}, %actions );
 push @{$ARGS{types}}, @types;

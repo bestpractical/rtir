@@ -48,7 +48,8 @@ html/Callbacks/RTIR/autohandler/Default
 html/Callbacks/RTIR/Elements/EditCustomField/EditComponentName
 html/Callbacks/RTIR/Elements/Header/Default
 html/Callbacks/RTIR/Elements/MakeClicky/Default
-html/Callbacks/RTIR/Elements/QueueSummary/Filter
+html/Callbacks/RTIR/Elements/QueueSummaryByLifecycle/SQLFilter
+html/Callbacks/RTIR/Elements/QueueSummaryByStatus/SQLFilter
 html/Callbacks/RTIR/Elements/RT__Ticket/ColumnMap/Once
 html/Callbacks/RTIR/Elements/SelectOwner/UpdateObjectList
 html/Callbacks/RTIR/Elements/Tabs/Privileged

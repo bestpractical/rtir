@@ -34,6 +34,8 @@ rather than upgrading on top of your RT 3 installation.
 A lot of files have been deleted and moved around in RTIR 3.0,
 so don't copy old RTIR's files.
 
+RTIR 3.0 is not compatible with RT 4.2 releases.
+
 =item 3
 
 Test your upgraded RT. You should be able to start the server,

@@ -173,9 +173,10 @@ if ( $SubmitTicket && !$checks_failure ) {
         push @results, map { loc("Ticket [_1]: [_2]", $id, $_) }
             ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS, KeepAttachments => 1 );
 
-        my %additional = (
-            Status => RT::IR->MapStatus( $Status, $incident_cycle => $Ticket ),
-        );
+        my %additional;
+        if ( $Status ) {
+            $additional{Status} = RT::IR->MapStatus( $Status, $incident_cycle => $Ticket );
+        }
 
         unless ( RT::IR->IsLinkedToActiveIncidents( $Ticket, $IncidentObj ) ) {
             push @results, ProcessTicketBasics(
