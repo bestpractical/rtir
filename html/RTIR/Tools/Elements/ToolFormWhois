@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<form action="Lookup.html" method="get">
+<form name="ToolFormWhois" action="Lookup.html" method="get">
 % foreach my $arg ( grep exists $ARGS{$_}, @PassArguments ) {
   <input type="hidden" name="<% $arg %>" value="<% $ARGS{ $arg } %>" />
 % }

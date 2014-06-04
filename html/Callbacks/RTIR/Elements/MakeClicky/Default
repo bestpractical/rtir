@@ -220,11 +220,11 @@ my $handle = ${$ARGS{handle}};
 ${$ARGS{handle}} = sub {
     my %args = @_;
 
-    if ($args{object}->isa('RT::Ticket')) {
-        if ( $args{object} ) {
+    if ($args{object}) {
+        if ( $args{object}->isa('RT::Ticket') ) {
             $args{type} = RT::IR::TicketType( Queue => $args{object}->QueueObj->Name );
 
-            $args{incident} = $args{ticket}->id
+            $args{incident} = $args{object}->id
               if $args{type} && $args{type} eq 'Incident';
 
             $args{lookup_params} = "ticket=".$args{object}->id

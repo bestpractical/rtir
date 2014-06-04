@@ -64,7 +64,7 @@ if ( $WhoisIterator ) {
         if ( $handparse || $#lines_starting_with_space >= 4 ) { #we couldn't parse that. suck
             my $content = join "", $obj->content;
             $m->comp( '/Elements/MakeClicky',
-                ticket        => $TicketObj,
+                object        => $TicketObj,
                 lookup_params => "ticket=". ($TicketObj? $TicketObj->id : 0) ."&server=$WhoisServer",
                 content       => \$content,
             );
