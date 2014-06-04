@@ -47,12 +47,9 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, 
     title_href      => RT->Config->Get('WebPath') ."/RTIR/Search/Results.html?$QueryString",
-    title_class     => 'inverse',
     title           => $title,
     titleright      => loc("Bulk Reject"),
     titleright_href => RT->Config->Get('WebPath') ."/RTIR/Report/BulkReject.html?$BulkQS",
-    bodyclass       => '',
-    class           => 'ticket-info-generic',
 &>
 
 <& /RTIR/Search/Elements/ShowResults,
