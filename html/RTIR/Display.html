@@ -132,6 +132,7 @@
     ForwardPath    => RT->Config->Get('WebPath') ."/RTIR/Forward.html",
     EncryptionPath => RT->Config->Get('WebPath') ."/RTIR/GnuPG.html",
     WarnUnsigned   => 1,
+    PathPrefix     => RT->Config->Get('WebPath') ."/Ticket/",
 &>
 <%INIT>
 my ($name);
