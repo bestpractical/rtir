@@ -96,6 +96,7 @@
 <%INIT>
 my $QueueObj = RT::Queue->new($session{'CurrentUser'});
 $QueueObj->Load('Incidents');
+RT::Logger->error('Unable to load Incidents queue') unless $QueueObj->Id;
 
 my $ConstituencyDisabled = 0;
 my $constituency_cf = RT::CustomField->new($session{'CurrentUser'});
