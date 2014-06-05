@@ -53,6 +53,16 @@ for my $type (RT::IR->Queues) {
                     SUBCLAUSE => 'Constituencies',
                     CASESENSITIVE => 0,
             );
+
+    if ( $m->request_comp->path =~ m{^/RTIR/} ){
+        $Queues->Limit( FIELD => 'Name',
+                        OPERATOR => '=',
+                        VALUE => $type,
+                        SUBCLAUSE => 'RTIRQueues',
+                        ENTRYAGGREGATOR => 'OR',
+                        CASESENSITIVE => 0,
+                );
+    }
 }
 </%INIT>
 <%ARGS>
