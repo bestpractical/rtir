@@ -54,7 +54,7 @@ $m->comp("SELF:TwoColumnsTable$ReportAs",
     ]
 );
 $m->comp("SELF:TwoColumnsTable$ReportAs",
-    Title => loc('Incident Report Summary (including unlinked Incident Reports)'),
+    Title => loc('Incident Report Summary'),
     Body  => [
         [ loc('Outstanding reports at the beginning of this period'), scalar keys %$outstanding_pruned ],
         [ loc('Total new reports for this period'), scalar keys %$tix_created_pruned ],
