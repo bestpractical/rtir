@@ -51,6 +51,7 @@
 % $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket);
 
 <& /Elements/ListActions, actions => \@results &>
+<& /Ticket/Elements/ShowUpdateStatus, Ticket => $Ticket &>
 
 <div class="summary"><&| /Widgets/TitleBox, title => loc('Ticket metadata') &>
 
@@ -219,6 +220,14 @@ unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
     Abort("No permission to view ticket");
 }
 
+if ( $ARGS{'MarkAsSeen'} ) {
+    $Ticket->SetAttribute(
+        Name => 'User-'. $Ticket->CurrentUser->id .'-SeenUpTo',
+        Content => $Ticket->LastUpdated,
+    );
+    push @results, loc('Marked all messages as seen');
+}
+
 # update id argument in the case we took merged or created new
 $ARGS{'id'} = $id = $Ticket->Id;
 
@@ -226,6 +235,7 @@ MaybeRedirectForResults(
     Path      => '/RTIR/Display.html',
     Actions   => \@results,
     Arguments => { id => $id },
+    Anchor    => $ARGS{'Anchor'},
 );
 
 if ( $Type eq 'Report' ) {
