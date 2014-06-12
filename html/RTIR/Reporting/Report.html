@@ -46,7 +46,13 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%PERL>
-$m->comp("SELF:Heading$ReportAs", Text => loc('RTIR Periodic Report for [_1]', $Constituency) );
+if ( $Constituency ){
+    $m->comp("SELF:Heading$ReportAs", Text => loc('RTIR Periodic Report for [_1]', $Constituency) );
+}
+else{
+    $m->comp("SELF:Heading$ReportAs", Text => loc('RTIR Periodic Report') );
+}
+
 $m->comp("SELF:TwoColumnsTable$ReportAs",
     Body => [
         [ loc('Start date'), $rtstart->AsString ],
@@ -120,6 +126,9 @@ my $filter_by_incident_field = sub {
     else {
         %$res = %$tickets;
     }
+
+    # No filter on Constituency if that feature isn't being used
+    return $res if $field eq 'Constituency' and not $condition;
 
     while( my($id, $t) = each %$res ) {
         my $value = $get_incident_field->( $t, $field );
