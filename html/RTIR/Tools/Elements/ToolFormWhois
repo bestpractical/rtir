@@ -51,8 +51,7 @@
 % }
   <span class="label">WHOIS:</span>
   <span class="input">
-    <input type="text" size="30" name="q" value="<% $q %>" /> at 
-    <& SelectWhoisServer, Name => 'WhoisServer', Default => $WhoisServer &>
+    <input type="text" size="30" name="q" value="<% $q %>" />
   </span>
   <input type="submit" value="<%loc('Go')%>" />
 </form>
