@@ -50,10 +50,7 @@ Description => loc('Due Incidents')
 </%ATTR>
 <&| /Widgets/TitleBox,
 	title_href  => RT->Config->Get('WebPath') ."/RTIR/Search/Results.html?Queue=Incidents&$QueryString",
-	title_class => 'inverse',
     title => $Title,
-    bodyclass=> '',
-    class => 'ticket-info-generic',
 &>
 
 <& /RTIR/Search/Elements/ShowResults,

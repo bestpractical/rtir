@@ -49,6 +49,7 @@
     title => loc($Queue) .': '. $q,
     class => 'tickets-list-'. lc RT::IR::TicketType( Queue => $Queue ),
     titleright_raw => $box_actions,
+    title_class => 'inverse',
 &>
 % if ( $lookup_cf_not_applies ) {
 <i><% loc("Custom field '[_1]' doesn't applies to this queue", loc($LookupType) ) %></i>
