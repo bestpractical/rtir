@@ -50,7 +50,7 @@
     
 % $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Ticket => $TicketObj);
 <& /Elements/ListActions, actions => \@results &>
-<& /Ticket/Elements/ShowUpdateStatus, Ticket => $TicketObj &>
+<& /Ticket/Elements/ShowUpdateStatus, Ticket => $TicketObj, DisplayPath => 'RTIR'  &>
 
 <div class="summary"><&| /Widgets/TitleBox, title => loc('Ticket metadata') &>
 <table class="ticket-summary" width="100%"><tr><td class="boxcontainer" valign="top">
