@@ -1,5 +1,5 @@
 ---
-abstract: 'RT IR Extension'
+abstract: 'RT-IR Extension'
 author:
   - 'Best Practical Solutions <sales@bestpractical.com>'
 build_requires:
@@ -33,3 +33,6 @@ requires:
 resources:
   license: http://opensource.org/licenses/gpl-license.php
 version: 3.0.HEAD
+x_module_install_rtx_version: 0.34_05
+x_requires_rt: 4.0.14
+x_rt_too_new: 4.2.0
