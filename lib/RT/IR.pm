@@ -824,6 +824,7 @@ if ( RT::IR->HasConstituency ) {
     sub GetQueueAttribute {
         my $queue = shift;
         my $attr  = shift;
+
         if ( RT::IR->OurQueue($queue) ) {
             if ( ( my $id = $queue->{'_for_ticket'} ) ) {
                 my $const = $RT::IR::ConstituencyCache{$id};
@@ -836,7 +837,7 @@ if ( RT::IR->HasConstituency ) {
                 if ($const ne '_none' && !$RT::IR::HasNoQueueCache{$const} ) {
                     my $new_queue = RT::Queue->new(RT->SystemUser);
                     $new_queue->LoadByCols( Name => $queue->Name . " - " . $const );
-                    if ( $new_queue->id ) {
+                    if ( $new_queue->id && !$new_queue->Disabled ) {
                         my $val = $new_queue->_Value($attr) || $queue->_Value($attr);
                         RT->Logger->debug("Overriden $attr is $val for ticket #$id according to constituency $const");
                         return $val;
