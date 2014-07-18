@@ -771,7 +771,7 @@ if ( RT::IR->HasConstituency ) {
                 my $new_queue = RT::Queue->new(RT->SystemUser);
                 $new_queue->LoadByCols(
                     Name => $queue->Name . " - " . $const );
-                if ( $new_queue->id ) {
+                if ( $new_queue->id && !$new_queue->Disabled ) {
                     my $val = $new_queue->_Value($attr) || $queue->_Value($attr);
                     RT->Logger->debug("Overriden $attr is $val for ticket #$id according to constituency $const");
                     return $val;
