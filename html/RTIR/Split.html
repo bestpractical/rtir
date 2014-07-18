@@ -68,6 +68,11 @@
 my $TicketObj = LoadTicket( $Split );
 $ARGS{'Split'} = $Split = $TicketObj->id;
 
+$ARGS{'Due'} = $TicketObj->DueObj->ISO(Timezone => 'user')
+    if $TicketObj->DueObj->IsSet();
+$ARGS{'Starts'} = $TicketObj->StartsObj->ISO(Timezone => 'user')
+    if $TicketObj->StartsObj->IsSet();
+
 $m->callback(CallbackName => 'Initial', %ARGS, Ticket => $TicketObj);
 
 my $Type = RT::IR::TicketType( Ticket => $TicketObj );
