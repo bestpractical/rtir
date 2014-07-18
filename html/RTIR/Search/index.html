@@ -78,6 +78,6 @@ $Query      => ''
 $Format     => undef
 $Rows       => 50
 $Page       => 1
-$OrderBy    => 'id'
-$Order      => 'ASC'
+$OrderBy    => RT->Config->Get('DefaultSearchResultOrderBy')
+$Order      => RT->Config->Get('DefaultSearchResultOrder')
 </%ARGS>
