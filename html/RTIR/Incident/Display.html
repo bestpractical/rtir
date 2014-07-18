@@ -50,6 +50,7 @@
     
 % $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Ticket => $TicketObj);
 <& /Elements/ListActions, actions => \@results &>
+<& /Ticket/Elements/ShowUpdateStatus, Ticket => $TicketObj, DisplayPath => 'RTIR'  &>
 
 <div class="summary"><&| /Widgets/TitleBox, title => loc('Ticket metadata') &>
 <table class="ticket-summary" width="100%"><tr><td class="boxcontainer" valign="top">
@@ -268,10 +269,19 @@ unless( $new_ticket ) {
     push @results, ProcessUpdateMessage( ARGSRef => \%ARGS, TicketObj => $TicketObj, Actions => \@results );
 }
 
+if ( $ARGS{'MarkAsSeen'} ) {
+    $TicketObj->SetAttribute(
+        Name => 'User-'. $TicketObj->CurrentUser->id .'-SeenUpTo',
+        Content => $TicketObj->LastUpdated,
+    );
+    push @results, loc('Marked all messages as seen');
+}
+
 MaybeRedirectForResults(
     Actions   => \@results,
     Path      => "/RTIR/Display.html",
     Arguments => { id => $TicketObj->id },
+    Anchor    => $ARGS{'Anchor'},
 );
 
 # XXX: need the way to show @results when aborting

@@ -50,6 +50,7 @@
 
 <form action="index.html" method="post">
 <table>
+% unless ( $ConstituencyDisabled ){
   <tr>
     <td class="label"><&|/l&>Constituency</&>:</td>
     <td class="value">
@@ -61,6 +62,7 @@
       &>
     </td>
   </tr>
+% }
   <tr>
     <td class="label"><&|/l&>Start Date:</&></td>
     <td class="input">
@@ -92,9 +94,19 @@
 </form>
 
 <%INIT>
+my $QueueObj = RT::Queue->new($session{'CurrentUser'});
+$QueueObj->Load('Incidents');
+RT::Logger->error('Unable to load Incidents queue') unless $QueueObj->Id;
+
+my $ConstituencyDisabled = 0;
+my $constituency_cf = RT::CustomField->new($session{'CurrentUser'});
+my ($ok, $msg) = $constituency_cf->LoadByName(Queue => $QueueObj->Id, Name => 'Constituency');
+if ( not $ok or $constituency_cf->Disabled ){
+    $ConstituencyDisabled = 1;
+}
+
 if ( $ARGS{'HTMLReport'} || $ARGS{'TextReport'} || $ARGS{'SpreadsheetReport'} ) {
-    unless ( $ARGS{'Constituency'} ) {
-        my $constituency_cf = RT::IR::GetCustomField('Constituency');
+    unless ( $ARGS{'Constituency'} or $ConstituencyDisabled ) {
         $ARGS{'Constituency'} = delete $ARGS{ 'Object-RT::Ticket--CustomField-'. $constituency_cf->Id .'-Values' };
     }
     my $ext = 'html';
@@ -104,9 +116,6 @@ if ( $ARGS{'HTMLReport'} || $ARGS{'TextReport'} || $ARGS{'SpreadsheetReport'} ) 
     $url   .= "?". $m->comp( '/Elements/QueryString', %ARGS );
     $m->redirect($url);
 }
-
-my $QueueObj = RT::Queue->new($session{'CurrentUser'});
-$QueueObj->Load('Incidents');
 
 my $now = RT::Date->new(RT->SystemUser);
 $now->SetToNow();
