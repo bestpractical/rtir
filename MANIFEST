@@ -73,7 +73,6 @@ html/RTIR/Elements/AttachReports
 html/RTIR/Elements/DueIncidents
 html/RTIR/Elements/EditConstituency
 html/RTIR/Elements/EditCustomFields
-html/RTIR/Elements/EditDates
 html/RTIR/Elements/EditPeople
 html/RTIR/Elements/EditRTIRField
 html/RTIR/Elements/Header
