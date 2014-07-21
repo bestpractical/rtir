@@ -49,24 +49,74 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions &>
 
+% if ( $ShowChart ) {
+<& /Search/Elements/Chart, %ARGS &>
+% }
+
 <form method="get" action="<% RT->Config->Get('WebPath') %>/RTIR/Search/Reporting.html">
 % my %hiddens = (Queue => $Queue, Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order);
 % while ( my ($key, $val) = each %hiddens ) {
 % next unless defined $val;
 <input type="hidden" class="hidden" name="<% $key %>" value="<% $val %>" />
 % }
-<&|/l&>Show chart</&>
-<&|/l_unsafe, $m->scomp('/Search/Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $FullQuery) &>grouped by [_1]</&>
-<&|/l_unsafe, $m->scomp('/Search/Elements/SelectChartType', Name => 'ChartStyle') &>style: [_1]</&>
-<input type="submit" class="button" name="ShowChart" value="<% loc('Go')%>" />
+
+<&| /Widgets/TitleBox, title => loc('Group by'), class => "chart-group-by" &>
+<fieldset><legend><% loc('Group tickets by') %></legend>
+<& /Search/Elements/SelectGroupBy,
+    Name => 'GroupBy',
+    Query => $ARGS{Query},
+    Default => $GroupBy[0],
+    &>
+</fieldset>
+<fieldset><legend><% loc('and then') %></legend>
+<& /Search/Elements/SelectGroupBy,
+    Name => 'GroupBy',
+    Query => $ARGS{Query},
+    Default => $GroupBy[1],
+    ShowEmpty => 1,
+    &>
+</fieldset>
+<fieldset><legend><% loc('and then') %></legend>
+<& /Search/Elements/SelectGroupBy,
+    Name => 'GroupBy',
+    Query => $ARGS{Query},
+    Default => $GroupBy[2],
+    ShowEmpty => 1,
+    &>
+</fieldset>
+</&>
+
+<&| /Widgets/TitleBox, title => loc("Calculate"), class => "chart-calculate" &>
+
+<fieldset><legend><% loc('Calculate values of') %></legend>
+<& /Search/Elements/SelectChartFunction, Default => $ChartFunction[0] &>
+</fieldset>
+<fieldset><legend><% loc('and then') %></legend>
+<& /Search/Elements/SelectChartFunction, Default => $ChartFunction[1], ShowEmpty => 1 &>
+</fieldset>
+<fieldset><legend><% loc('and then') %></legend>
+<& /Search/Elements/SelectChartFunction, Default => $ChartFunction[2], ShowEmpty => 1 &>
+</fieldset>
+
+</&>
+
+<&| /Widgets/TitleBox, title => loc('Picture'), class => "chart-picture" &>
+<label><% loc('Style') %>: <& /Search/Elements/SelectChartType, Default => $ChartStyle, Name => 'ChartStyle' &></label>
+<label><% loc("Width") %>: <input type="text" name="Width" value="<% $Width || "" %>"> <% loc("px") %></label>
+<span class="height">
+  &#x00d7;
+  <label><% loc("Height") %>: <input type="text" name="Height" value="<% $Height || "" %>"> <% loc("px") %></label>
+</span>
+</&>
+<script type="text/javascript">
+jQuery(".chart-picture [name=ChartStyle]").change(function(){
+    var t = jQuery(this);
+    t.closest("form").find("[name=Height]").closest(".height").toggle( t.val() !== "pie" );
+}).change();
+</script>
+
+<& /Elements/Submit, Label => loc('Update Chart'), Name => 'Update' &>
 </form>
-
-<br />
-
-% if ( $ShowChart ) {
-<& /Search/Elements/Chart, Query => $FullQuery, PrimaryGroupBy => $PrimaryGroupBy, ChartStyle => $ChartStyle &>
-% }
-
 
 <%INIT>
 my $title = loc('Reporting');
@@ -83,9 +133,14 @@ else {
 </%INIT>
 
 <%ARGS>
-$PrimaryGroupBy => 'Status'
-$ChartStyle     => 'bar'
-$ShowChart      => 0
+$ShowChart      => 1
+
+@GroupBy => 'Status'
+$ChartStyle => 'bar'
+@ChartFunction => ('COUNT')
+$Description => undef
+$Width => undef
+$Height => undef
 
 $Queue     => ''
 
