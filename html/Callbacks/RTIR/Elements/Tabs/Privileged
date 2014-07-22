@@ -230,6 +230,10 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
         }
     }
 
+    if ( $can->('ForwardMessage') ) {
+        $actions_tab->child( forward => title => loc('Forward'), path => "/RTIR/Forward.html?id=" . $id );
+    }
+
     my $i = 0;
     my $status = $ticket->Status;
     my $lifecycle = $queue->LifecycleObj;
