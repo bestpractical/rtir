@@ -96,6 +96,9 @@
         UserOp => $UserOp, UserField => $UserField &> 
 </td>
 </tr>
+
+<& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'People', InTable => 1 &>
+
 </table>
 
 <%ARGS>
