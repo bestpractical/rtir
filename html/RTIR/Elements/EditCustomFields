@@ -51,6 +51,7 @@
   ($TicketObj->Id ? () : (CustomFields => $QueueObj->TicketCustomFields)), # on ticket creation, use Queue CFs
   %ARGS,
   %$CFDefaults,
+  ($AllGroupings ? () : (Grouping => 'Basics')), # Groupings comes in as an ARGS on Edit.html
   InTable => 1,
 &>
 
@@ -93,5 +94,6 @@ unless ( $TicketObj && $TicketObj->Id ) {
 $TicketObj => undef
 $QueueObj => undef
 $DefaultsFrom => undef
+$AllGroupings => 0
 $CFDefaults => {}
 </%ARGS>
