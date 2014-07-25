@@ -83,11 +83,16 @@
     <td class="value"><%loc('[_1] min', $TimeWorked)%></td>
   </tr>
 
-  <& /Elements/ShowCustomFields, Object => $Ticket, Table => 0 &>
+  <& /Elements/ShowCustomFields, Grouping => 'Basics', Object => $Ticket, Table => 0 &>
 
 </table>
 
 </&>
+
+<& /Elements/ShowCustomFieldCustomGroupings,
+    Object       => $Ticket,
+    title_href => RT->Config->Get('WebPath') ."/RTIR/Edit.html",
+&>
 
 <& /RTIR/Elements/ShowArticles, Ticket => $Ticket &>
 

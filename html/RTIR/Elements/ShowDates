@@ -78,6 +78,7 @@
     <td class="label"><&|/l&>Updated</&>:</td>
     <td class="value"><a href="#lasttrans"><% $Ticket->LastUpdated ? (loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)) : loc("Never") | h %></a></td>
   </tr>
+<& /Elements/ShowCustomFields, Grouping => 'Dates', Object => $Ticket, Table => 0 &>
 </table>
 <%ARGS>
 $Ticket => undef
