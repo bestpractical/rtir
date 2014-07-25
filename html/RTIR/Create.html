@@ -152,11 +152,22 @@
     TicketObj => $ticket,
     QueueObj => $QueueObj,
     DefaultsFrom => $SplitObj || $IncidentObj[0],
+    CFDefaults => \%CFDefaults,
   &>
   <& /Ticket/Elements/EditTransactionCustomFields,
     %ARGS, QueueObj => $QueueObj, InTable => 1,
   &>
-</table></&></div>
+</table></&>
+
+<& /Elements/EditCustomFieldCustomGroupings,
+    %ARGS,
+    %CFDefaults,
+    Object => $ticket,
+    CustomFieldGenerator => sub { $QueueObj->TicketCustomFields },
+    Groupings => [ RT::CustomField->CustomGroupings('RTIR::Ticket'), '' ],
+&>
+
+</div>
 
 <div id="ticket-create-message">
 <&| /Widgets/TitleBox, title => $Title, class => 'messagedetails' &>
@@ -326,6 +337,7 @@
 </form>
 
 <%INIT>
+my %CFDefaults;
 $m->callback(
     CallbackName => 'Init', CallbackPage => '/Ticket/Create.html',
     ARGSRef => \%ARGS,
