@@ -218,7 +218,7 @@ diag "check that key selector works and we can select trusted key";
 
     $agent->select( 'UseKey-rt-test@example.com' => $fpr1 );
     $agent->click('SubmitTicket');
-    $agent->content_like( qr/Message recorded/i, 'ticket updated' );
+    $agent->content_like( qr/Correspondence added/i, 'ticket updated' );
 
     my @mail = RT::Test->fetch_caught_mails;
     ok @mail, 'there are some emails';
@@ -252,7 +252,7 @@ diag "check encrypting of attachments";
 
     $agent->select( 'UseKey-rt-test@example.com' => $fpr1 );
     $agent->click('SubmitTicket');
-    $agent->content_like( qr/Message recorded/i, 'ticket updated' );
+    $agent->content_like( qr/Correspondence added/i, 'ticket updated' );
 
     my @mail = RT::Test->fetch_caught_mails;
     ok @mail, 'there are some emails';
