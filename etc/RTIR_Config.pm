@@ -322,13 +322,19 @@ Lookup.html to run a query.
 
 Set($RTIR_OldestRelatedTickets, 60);
 
-=item C<$RTIRSearchResultFormats>
+=item C<%RTIRSearchResultFormats>
 
 Default formats for RTIR search results
 
+If you only want to override one entry, you can copy only part of this,
+which will protect you during upgrades because other entries will be
+merged from this configuration.  To change just the Investigation list you would do:
+
+    Set(%RTIRSearchResultFormats, InvestigationDefault => 'modified configuration');
+
 =cut
 
-Set($RTIRSearchResultFormats, {
+Set(%RTIRSearchResultFormats,
     Default =>
         q{'<b><a HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
           '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
@@ -354,7 +360,6 @@ Set($RTIRSearchResultFormats, {
           __CreatedRelative__,
           __NEWLINE__,
           '', __Requestors__, __OwnerName__, __ToldRelative__, __DueRelative__, __TimeLeft__},
-
     BlockDefault =>
         q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
           '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
@@ -363,7 +368,6 @@ Set($RTIRSearchResultFormats, {
           __CreatedRelative__,
           __NEWLINE__,
           '', __Requestors__, __OwnerName__, __ToldRelative__, __DueRelative__, __TimeLeft__},
-
     IncidentDefault =>
         q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
           '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
@@ -443,7 +447,7 @@ Set($RTIRSearchResultFormats, {
           __Status__,
           __Priority__},
 
-} );
+);
 
 =item C<$DisplayAfterEdit>
 

@@ -73,9 +73,9 @@ sub Init {
     # should go here.
     $RT::Config::META{RTIRSearchResultFormats}{PostLoadCheck} =
         sub {
-            my ($self, $value) = @_;
-            foreach my $format ( keys %{$value} ){
-                CheckObsoleteCFSyntax($value->{$format},
+            my ($self, %value) = @_;
+            foreach my $format ( keys %value ){
+                CheckObsoleteCFSyntax($value{$format},
                     $RT::Config::META{RTIRSearchResultFormats}{Source}{File});
             }
         };
