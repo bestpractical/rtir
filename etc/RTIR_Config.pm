@@ -312,10 +312,11 @@ Set($ReplyString , '');
 
 =item C<$RTIR_OldestRelatedTickets>
 
-Controls how far back, in days, RTIR should look for tickets which might
-contain a specific string. This is only used for Content searches,
-searches based on IP or other Custom Fields are not limited by age
-because the current implementation has poor performance.
+Controls what tickets (LastUpdated > "RTIR_OldestRelatedTickets days ago")
+are returned for searches generated from the Lookup tools. This applies
+to searches for IP addresses and Hostnames linked from Ticket histories
+that are run against Lookup.html and any other custom code that links to
+Lookup.html to run a query.
 
 =cut
 
