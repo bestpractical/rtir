@@ -8,7 +8,7 @@ no warnings 'once';
 
 use Module::Install::Base;
 use base 'Module::Install::Base';
-our $VERSION = '0.34_05';
+our $VERSION = '0.35_01';
 
 use FindBin;
 use File::Glob     ();
@@ -18,7 +18,8 @@ my @DIRS = qw(etc lib html static bin sbin po var);
 my @INDEX_DIRS = qw(lib bin sbin);
 
 sub RTx {
-    my ( $self, $name ) = @_;
+    my ( $self, $name, $extra_args ) = @_;
+    $extra_args ||= {};
 
     # Set up names
     my $fname = $name;
@@ -30,8 +31,10 @@ sub RTx {
         unless $self->version;
     $self->abstract("$name Extension")
         unless $self->abstract;
-    $self->readme_from( "lib/$fname.pm",
-                        { options => [ quotes => "none" ] } );
+    unless ( $extra_args->{no_readme_generation} ) {
+        $self->readme_from( "lib/$fname.pm",
+                            { options => [ quotes => "none" ] } );
+    }
     $self->add_metadata("x_module_install_rtx_version", $VERSION );
 
     # Try to find RT.pm
@@ -62,7 +65,9 @@ sub RTx {
     unshift @INC, $lib_path;
 
     # Set a baseline minimum version
-    $self->requires_rt('4.0.0');
+    unless ( $extra_args->{deprecated_rt} ) {
+        $self->requires_rt('4.0.0');
+    }
 
     # Installation locations
     my %path;
@@ -253,4 +258,4 @@ sub _load_rt_handle {
 
 __END__
 
-#line 372
+#line 387
