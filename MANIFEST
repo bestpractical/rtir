@@ -51,7 +51,7 @@ etc/upgrade/upgrade.pl.in
 html/Callbacks/RTIR/autohandler/Default
 html/Callbacks/RTIR/Elements/EditCustomField/EditComponentName
 html/Callbacks/RTIR/Elements/EditCustomFields/MassageCustomFields
-html/Callbacks/RTIR/Elements/Header/Default
+html/Callbacks/RTIR/Elements/Header/Head
 html/Callbacks/RTIR/Elements/MakeClicky/Default
 html/Callbacks/RTIR/Elements/QueueSummaryByLifecycle/SQLFilter
 html/Callbacks/RTIR/Elements/QueueSummaryByStatus/SQLFilter
@@ -153,7 +153,6 @@ inc/Module/Install/Fetch.pm
 inc/Module/Install/Include.pm
 inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
-inc/Module/Install/ReadmeFromPod.pm
 inc/Module/Install/RTx.pm
 inc/Module/Install/RTx/Runtime.pm
 inc/Module/Install/Substitute.pm
