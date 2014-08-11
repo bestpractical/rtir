@@ -21,3 +21,11 @@ but the arguments passed have changed. If you have bookmarks pointing to
 It is now possible to edit the Due date of Incidents manually, however
 editing a child's Due Date will disable this (and Incident Due dates are
 not copied down to Children).
+
+=head2 C<$RTIRSearchResultFormats> now C<%RTIRSearchResultFormats>
+
+If you've copied $RTIRSearchResultFormats to your RTIR_SiteConfig.pm,
+you should switch to using %RTIRSearchResultFormats.  You no longer need
+to copy the entire configuration option just to change one or two of the
+formats (documented in RTIR_SiteConfig.pm) so you can merge your
+customizations together with our new entries and avoid copying defaults.

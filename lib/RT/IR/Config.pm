@@ -73,9 +73,12 @@ sub Init {
     # should go here.
     $RT::Config::META{RTIRSearchResultFormats}{PostLoadCheck} =
         sub {
-            my ($self, $value) = @_;
-            foreach my $format ( keys %{$value} ){
-                CheckObsoleteCFSyntax($value->{$format},
+            my ($self, %value) = @_;
+            foreach my $format ( keys %value ){
+                if ($format =~ /^HASH/ && !defined $value{$format}) {
+                        RT->Logger->warning('You appear to have $RTIRSearchResultFormats in your configuration, this has been renamed to %RTIRSearchResultFormats see docs/UPGRADING-3.2');
+                }
+                CheckObsoleteCFSyntax($value{$format},
                     $RT::Config::META{RTIRSearchResultFormats}{Source}{File});
             }
         };
