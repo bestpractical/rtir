@@ -1,6 +1,6 @@
 use inc::Module::Install;
 
-RTx('RT-IR');
+RTx('RT-IR', { no_readme_generation => 1 });
 license('GPL Version 2');
 author('Best Practical Solutions <sales@bestpractical.com>');
 all_from('lib/RT/IR.pm');
