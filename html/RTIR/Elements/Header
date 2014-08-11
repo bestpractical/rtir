@@ -45,10 +45,4 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header,
-    URL  => RT->Config->Get('WebPath') ."/RTIR/index.html",
-    Name => loc("RTIR for [_1]", RT->Config->Get('rtirname')),
-    LogoURL => RT->Config->Get('WebPath')."/static/images/RTIR/logo.png",
-    %ARGS
-
-&>
+<& /Elements/Header, %ARGS &>
