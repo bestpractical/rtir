@@ -212,6 +212,10 @@ See L</"Service Level Agreements (SLAs)"> below for details on automating
 Due dates, and L<RT::Action::RTIR_SetDueIncident> for details
 about action of the scrip.
 
+It is now possible to edit the Due date of Incidents manually, however
+editing a child's Due Date will disable this (and Incident Due dates are
+not copied down to Children).
+
 =item ResolveAllChildren
 
 Applies to the Incidents queue.
