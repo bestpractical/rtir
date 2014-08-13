@@ -94,6 +94,24 @@ my $BaseURL = "RTIR/Search/Results.html";
 $BaseURL .= '?'. $m->comp( '/Elements/QueryString', Queue => $Queue )
     if $Queue;
 
+# Read from user preferences
+my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
+
+$Format      ||= $prefs->{'Format'} || RT->Config->Get('DefaultSearchResultFormat');
+$Order       ||= $prefs->{'Order'} || RT->Config->Get('DefaultSearchResultOrder');
+$OrderBy     ||= $prefs->{'OrderBy'} || RT->Config->Get('DefaultSearchResultOrderBy');
+
+
+if ( !defined($Rows) ) {
+    if (defined $ARGS{'RowsPerPage'} ) {
+        $Rows = $ARGS{'RowsPerPage'};
+    } elsif ( defined $prefs->{'RowsPerPage'} ) {
+        $Rows = $prefs->{'RowsPerPage'};
+    } else {
+        $Rows = 50;
+    }
+}
+
 </%INIT>
 <%ARGS>
 $Queue     => ''
@@ -101,10 +119,10 @@ $Queue     => ''
 $BaseQuery => ''
 $Query     => undef
 $Format    => undef
-$Rows      => 50
+$Rows      => undef
 $Page      => 1
-$OrderBy   => RT->Config->Get('DefaultSearchResultOrderBy')
-$Order     => RT->Config->Get('DefaultSearchResultOrder')
+$OrderBy   => undef
+$Order     => undef
 $SavedSearchId => undef
 $SavedChartSearchId => undef
 </%ARGS>
