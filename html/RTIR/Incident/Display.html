@@ -133,7 +133,6 @@
 % } else {
     <& /Elements/ShowHistory,
         Object         => $TicketObj,
-        Collapsed      => $ARGS{'Collapsed'},
         ShowHeaders    => $ARGS{'ShowHeaders'},
         DisplayPath    => RT->Config->Get('WebPath') ."/RTIR/Display.html?id=$id",
         UpdatePath     => RT->Config->Get('WebPath') ."/RTIR/Update.html",
