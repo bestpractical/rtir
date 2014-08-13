@@ -50,6 +50,8 @@ if (defined $$RedirectTo &&
     $$RedirectTo ne '/') {
     return;
 }
+return unless RT->Config->Get('RTIR_RedirectOnLogin');
+
 if (RT::IR->IsStaff($session{'CurrentUser'}->Id)) {
 # no need for WebPath since Redirect() adds on the whole server URL
     $$RedirectTo = '/RTIR/';

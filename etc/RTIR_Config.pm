@@ -274,6 +274,19 @@ Set(%RTIR_IncidentChildren,
     },
 );
 
+=item C<$RTIR_RedirectOnLogin>
+
+If set to a true value, will redirect members of DutyTeam groups to
+/RTIR/ upon login so that they immediately see the RTIR Homepage (rather
+than their RT Homepage).  This does not change where Home in the menu
+links to, since you can get to the RTIR homepage from RTIR at the top
+level, and users may wish to have more custom searches stashed on their
+Home page.
+
+=cut
+
+Set($RTIR_RedirectOnLogin, 1);
+
 =back
 
 =head1 Web Interface Configuration
