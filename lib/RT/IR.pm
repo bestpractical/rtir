@@ -115,6 +115,7 @@ sub IsStaff {
         FIELD    => 'Name',
         OPERATOR => 'LIKE',
         VALUE    => 'DutyTeam',
+        CASESENSITIVE => 0,
     );
     $cgm->RowsPerPage(1);
     return $cgm->First? 1 : 0;
