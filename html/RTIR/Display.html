@@ -124,17 +124,31 @@
 
 </&></div>
 
-<& /Elements/ShowHistory,
-    Object         => $Ticket,
-    Collapsed      => $ARGS{'Collapsed'}, 
-    ShowHeaders    => $ARGS{'ShowHeaders'},
-    DisplayPath    => RT->Config->Get('WebPath') ."/RTIR/Display.html?id=$id",
-    UpdatePath     => RT->Config->Get('WebPath') ."/RTIR/Update.html",
-    ForwardPath    => RT->Config->Get('WebPath') ."/RTIR/Forward.html",
-    EncryptionPath => RT->Config->Get('WebPath') ."/RTIR/Crypt.html",
-    WarnUnsigned   => 1,
-    PathPrefix     => RT->Config->Get('WebPath') ."/Ticket/",
-&>
+% my $ShowHistory = RT->Config->Get("ShowHistory", $session{'CurrentUser'});
+% if ($ShowHistory eq "delay") {
+    <& /Ticket/Elements/DelayShowHistory,
+        Ticket => $Ticket,
+        ShowHeaders => $ARGS{'ShowHeaders'},
+    &>
+% } elsif (not $ForceShowHistory and $ShowHistory eq "click") {
+    <& /Ticket/Elements/ClickToShowHistory,
+        Ticket => $Ticket,
+        ShowHeaders => $ARGS{'ShowHeaders'},
+    &>
+% } else {
+    <& /Elements/ShowHistory,
+        Object         => $Ticket,
+        Collapsed      => $ARGS{'Collapsed'},
+        ShowHeaders    => $ARGS{'ShowHeaders'},
+        DisplayPath    => RT->Config->Get('WebPath') ."/RTIR/Display.html?id=$id",
+        UpdatePath     => RT->Config->Get('WebPath') ."/RTIR/Update.html",
+        ForwardPath    => RT->Config->Get('WebPath') ."/RTIR/Forward.html",
+        EncryptionPath => RT->Config->Get('WebPath') ."/RTIR/Crypt.html",
+        WarnUnsigned   => 1,
+        PathPrefix     => RT->Config->Get('WebPath') ."/Ticket/",
+    &>
+% }
+
 <%INIT>
 my ($name);
 my $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
@@ -259,4 +273,5 @@ my $attachments = $Ticket->Attachments;
 $id => 0
 $Queue => undef
 @SelectedTickets => ()
+$ForceShowHistory => 0
 </%ARGS>
