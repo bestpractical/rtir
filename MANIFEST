@@ -65,6 +65,7 @@ html/Callbacks/RTIR/Ticket/Create.html/Default
 html/Callbacks/RTIR/Ticket/Display.html/Initial
 html/RTIR/Advanced.html
 html/RTIR/Create.html
+html/RTIR/Crypt.html
 html/RTIR/Display.html
 html/RTIR/Edit.html
 html/RTIR/EditUsername
@@ -92,7 +93,6 @@ html/RTIR/Elements/TransactionData
 html/RTIR/Elements/UpdateData
 html/RTIR/Elements/UserDueIncidents
 html/RTIR/Forward.html
-html/RTIR/GnuPG.html
 html/RTIR/Incident/BulkAbandon.html
 html/RTIR/Incident/Children/index.html
 html/RTIR/Incident/Create.html
