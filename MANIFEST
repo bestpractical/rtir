@@ -48,7 +48,6 @@ etc/upgrade/2.9.0/content
 etc/upgrade/3.0.0rc2/content
 etc/upgrade/3.1.0/content
 etc/upgrade/upgrade.pl.in
-html/Callbacks/RTIR/autohandler/Default
 html/Callbacks/RTIR/Elements/EditCustomField/EditComponentName
 html/Callbacks/RTIR/Elements/EditCustomFields/MassageCustomFields
 html/Callbacks/RTIR/Elements/Header/Head
