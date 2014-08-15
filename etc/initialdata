@@ -313,6 +313,11 @@
        ScripCondition    => 'RTIR Require IRs Activation',
        ScripAction       => 'RTIR Activate Ticket',
        Template          => 'Blank' },
+    {  Description       => "On Linking To Incident Copy IPs",
+       Queue             => 'Incident Reports',
+       ScripCondition    => 'RTIR Linking To Incident',
+       ScripAction       => 'RTIR merge IPs',
+       Template          => 'Blank' },
 
     {  Description       => "Set Due Date On Incident",
        Queue             => ['Incident Reports', 'Investigations', 'Blocks' ],

@@ -40,4 +40,11 @@ our @Initial = (
     },
 );
 
+our @Scrips = (
+    {  Description       => "On Linking To Incident Copy IPs",
+       Queue             => 'Incident Reports',
+       ScripCondition    => 'RTIR Linking To Incident',
+       ScripAction       => 'RTIR merge IPs',
+       Template          => 'Blank' },
+);
 
