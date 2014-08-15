@@ -54,7 +54,7 @@ use base 'RT::Action::RTIR';
 
 =head2 Commit
 
-Change the ownership of children.
+Copy IPs from one ticket to another
 
 =cut
 
