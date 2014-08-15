@@ -282,6 +282,13 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
         );
     }
 
+    # TODO needs a "Can extract article into a class applied to this queue" check
+    $actions_tab->child( 'extract-article' =>
+            title => loc('Extract Article'),
+            path  => "/Articles/Article/ExtractIntoClass.html?Ticket=$id",
+    ) if $session{CurrentUser}->HasRight( Right => 'ShowArticlesMenu', Object => RT->System );
+
+
     PageMenu()->child(
         bookmark => raw_html => $m->scomp( '/Ticket/Elements/Bookmark', id => $id ),
         sort_order   => 99
