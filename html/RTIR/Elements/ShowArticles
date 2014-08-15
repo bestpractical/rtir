@@ -48,7 +48,6 @@
 <&| /Widgets/TitleBox,
     title          => loc("Articles"),
     title_href     => RT->Config->Get('WebPath') ."/RTIR/Advanced.html?id=".$id, 
-    titleright_raw => $box_actions,
     title_class    => 'inverse',
     class          => 'ticket-info-articles',
 &>
@@ -75,16 +74,4 @@ my $format = q{
     __Summary__,
 };
 
-my $box_actions = '';
-if ( $Ticket->CurrentUserHasRight('ModifyTicket') ) {
-    my $web_path = RT->Config->Get('WebPath');
-    my $qs = $m->comp("/Elements/QueryString",
-        "RefersTo-new" => "t:$id",
-        next => $web_path."/RTIR/Display.html?id=$id"
-    );
-    $box_actions = join '&nbsp;'x3,
-        qq{<a href="$web_path/Articles/Article/PreCreate.html?$qs">}. loc('Create') .q{</a>},
-        qq{<a href="$web_path/RTIR/Link/Articles.html?id=$id">}. loc('Link') .q{</a>},
-    ;
-}
 </%INIT>
