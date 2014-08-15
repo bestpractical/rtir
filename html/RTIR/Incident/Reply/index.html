@@ -203,6 +203,8 @@ if ( $SubmitTicket && !$checks_failure ) {
         $update_incident_state = 0 if RT::IR->IncidentHasActiveChildren( $IncidentObj );
     }
 
+    push @results, ProcessTicketLinks(   TicketObj => $IncidentObj, ARGSRef => \%ARGS );
+
     if ( $update_incident_state ) {
         push @results, ProcessObjectCustomFieldUpdates(
             Object => $IncidentObj, ARGSRef => \%ARGS
