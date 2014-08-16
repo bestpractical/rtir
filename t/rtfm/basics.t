@@ -31,7 +31,7 @@ $agent->submit();
 
 is($agent->status, 200, "attempt to create succeeded");
 
-like($agent->content, qr/Incident Report #\d+: looking for articles/, "back on IR page");
+$agent->content_like(qr/Incident Report #\d+: looking for articles/, "back on IR page");
 
 $agent->follow_link_ok({text => $article_name}, "back to article");
-like($agent->content, qr/this is a summary/, "found the summary of the article");
+$agent->content_like( qr/this is a summary/, "found the summary of the article");
