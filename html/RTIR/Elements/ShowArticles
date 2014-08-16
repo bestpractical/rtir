@@ -50,6 +50,7 @@
     title_href     => RT->Config->Get('WebPath') ."/RTIR/Advanced.html?id=".$id, 
     title_class    => 'inverse',
     class          => 'ticket-info-articles',
+    hide_empty     => 1,
 &>
 
 <& /Elements/CollectionList,
