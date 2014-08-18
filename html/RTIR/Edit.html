@@ -125,10 +125,17 @@
 % }
 
   <& /RTIR/Elements/EditCustomFields, %ARGS, TicketObj => $Ticket &>
-
 </table>
 
 </&>
+
+<& /Elements/EditCustomFieldCustomGroupings,
+    %ARGS,
+    Object => $Ticket,
+    CustomFieldGenerator => sub { $Ticket->QueueObj->TicketCustomFields },
+    Groupings => [ RT::CustomField->CustomGroupings('RTIR::Ticket'), '' ],
+&>
+
 
 </td>
 </tr>

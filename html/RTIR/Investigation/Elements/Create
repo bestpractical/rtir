@@ -101,10 +101,23 @@
     QueueObj   => $QueueObj,
     DefaultsFrom => $TicketObj,
     CFIDPrefix => $NamePrefix,
+    CFDefaults => \%CFDefaults,
 &>
 % }
 
-</table></&></div>
+</table></&>
+
+% if ( ($QueueObj || $TicketObj) && !$SkipField{'CustomFields'} ) {
+<& /Elements/EditCustomFieldCustomGroupings,
+    %ARGS,
+    %CFDefaults,
+    Object => $ticket,
+    CustomFieldGenerator => sub { $QueueObj->TicketCustomFields },
+    Groupings => [ RT::CustomField->CustomGroupings('RTIR::Ticket'), '' ],
+&>
+% }
+
+</div>
 
 <div class="ticket-create-details">
 <&| /Widgets/TitleBox,
@@ -195,6 +208,7 @@ $TicketObj => undef
 %SkipField => ()
 </%ARGS>
 <%INIT>
+my %CFDefaults;
 my $value_cb = sub {
     my $name = shift;
     my $full_name = $NamePrefix . $name;

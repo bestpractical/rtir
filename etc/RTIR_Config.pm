@@ -548,6 +548,36 @@ L<Constituencies/Constituency Propagation Options>.
 
 Set( $_RTIR_Constituency_Propagation,    'no' );
 
+=item C<%CustomFieldGroupings>
+
+All of the configuration rules for RT CustomFieldGroupings apply and you
+should review the documentation in F<etc/RT_Config.pm>
+
+RTIR provides a separate 'object' that groupings are applied to,
+RTIR::Ticket. Groupings for this object type will only be applied to
+Custom Fields on Tickets in RTIR Queues. This allows you to
+logically separate your Custom Field configuration between RTIR Queues
+and standalone Queues in your RT instance.
+
+We do not provide the Links core grouping because no RTIR tickets display
+the Links box.  Basics, People and Dates will work as they do in core, but
+keep in mind that Incidents do not display a People box, so CFs in the People
+group will not render on Incidents.  Additionally, People and Dates are not always
+available in all screens in RTIR so may not be the best place for Custom Fields.
+
+=cut
+
+Set(%CustomFieldGroupings,
+    'RTIR::Ticket' => [
+        'Basics'         => ['Constituency'],
+        'Networking'     => ['IP'],
+        'Details' => ['How Reported','Reporter Type','Customer',
+                      'Description', 'Resolution', 'Function', 'Classification',
+                      'Customer',
+                      'Netmask','Port','Where Blocked'],
+    ],
+);
+
 =back
 
 =head1 Blocks

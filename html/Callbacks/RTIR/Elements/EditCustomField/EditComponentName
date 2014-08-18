@@ -48,7 +48,7 @@
 <%init>
 return unless $CustomField->LookupType eq 'RT::Queue-RT::Ticket';
 
-my $type = RT::IR->OurQueue( $ARGS{'QueueObj'} || $Object->QueueObj );
+my $type = RT::IR->OurQueue( $ARGS{'QueueObj'} || $ARGS{'Queue'} || $Object->QueueObj );
 unless ( $type ) {
     RT->Logger->error("Couldn't figure out queue from arguments")
         unless defined $type;

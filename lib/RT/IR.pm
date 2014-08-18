@@ -746,6 +746,50 @@ require RT::Action::AutoOpenInactive;
     };
 }
 
+# Because you can't (easily/cleanly/prettily) merge two
+# RT::Ticket entries in %CustomFieldGroupings, add a new
+# RTIR::Ticket option.
+require RT::CustomField;
+{
+    RT::CustomField->RegisterBuiltInGroupings(
+            'RTIR::Ticket'    => [ qw(Basics Dates People) ],
+    );
+
+    no warnings 'redefine';
+    my $orig_GroupingClass = RT::CustomField->can('_GroupingClass');
+    *RT::CustomField::_GroupingClass = sub {
+        my $self        = shift;
+        my $record      = shift;
+
+        my $record_class = $orig_GroupingClass->($self,$record);
+
+        # we're only doing shenanigans on Tickets, which might be RTIR::Ticket
+        unless ($record_class eq 'RT::Ticket') {
+            return $record_class;
+        }
+
+        my $queue = undef;
+        # on Create we can get an empty RT::Ticket here
+        if ( ref $record && $record->Id ) {
+            $queue = $record->QueueObj->Name;
+        # if we have an empty ticket, but a real CustomField,
+        # we can pull the Queue out of the ACLEquivalenceObjects
+        } elsif ( ref $self ) {
+            for my $obj ($self->ACLEquivalenceObjects) {
+                next unless (ref $obj eq 'RT::Queue');
+                $queue = $obj->Name;
+                last;
+            }
+        }
+
+        if (RT::IR->OurQueue($queue)) {
+            return 'RTIR::Ticket';
+        } else {
+            return $record_class;
+        }
+    };
+}
+
 if ( RT::IR->HasConstituency ) {
     # Queue {Comment,Correspond}Address for multiple constituencies
 

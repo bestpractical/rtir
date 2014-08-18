@@ -50,6 +50,8 @@
   QueueObj => $QueueObj,
   ($TicketObj->Id ? () : (CustomFields => $QueueObj->TicketCustomFields)), # on ticket creation, use Queue CFs
   %ARGS,
+  %$CFDefaults,
+  ($AllGroupings ? () : (Grouping => 'Basics')), # Groupings comes in as an ARGS on Edit.html
   InTable => 1,
 &>
 
@@ -57,7 +59,7 @@
 unless ( $TicketObj && $TicketObj->Id ) {
     # no ticket, we need to find defaults of cfs
     my $CustomFields = $QueueObj->TicketCustomFields();
-    my %Defaults = RT->Config->Get('RTIR_CustomFieldsDefaults');
+    my %ConfigDefaults = RT->Config->Get('RTIR_CustomFieldsDefaults');
     while ( my $CustomField = $CustomFields->Next ) {
         my $name = $CustomField->Name;
 
@@ -65,32 +67,33 @@ unless ( $TicketObj && $TicketObj->Id ) {
             my ($link_cf) = RT::IR->CustomFields( Field => $name, Ticket => $DefaultsFrom );
             if ( $link_cf ) {
 # XXX: if CF can have only one value then we should use only first value
-                $ARGS{"CustomField-".$CustomField->Id} = join "\n",
+                $CFDefaults->{"CustomField-".$CustomField->Id} = join "\n",
                     grep defined && length, map $_->Content,
                     @{ $DefaultsFrom->CustomFieldValues( $link_cf->id )->ItemsArrayRef };
                 next;
             }
         }
-        
+
         if ( $ARGS{"$name-Value"} ) {
-            $ARGS{"CustomField-".$CustomField->Id} = $ARGS{"$name-Value"};
+            $CFDefaults->{"CustomField-".$CustomField->Id} = $ARGS{"$name-Value"};
         }
-        elsif ( defined $Defaults{ $name } ) {
-# if $Defaults{$name} is ref, it should be treated carefully
-            unless ( ref $Defaults{ $name } ) {
-                $ARGS{"CustomField-".$CustomField->Id} = $Defaults{ $name };
+        elsif ( defined $ConfigDefaults{ $name } ) {
+# if $ConfigDefaults{$name} is ref, it should be treated carefully
+            unless ( ref $ConfigDefaults{ $name } ) {
+                $CFDefaults->{"CustomField-".$CustomField->Id} = $ConfigDefaults{ $name };
             }
-            elsif ( ref $Defaults{ $name } eq 'ARRAY' ) {
-                $ARGS{"CustomField-".$CustomField->id} =
-                    join "\n", @{$Defaults{ $name }};
+            elsif ( ref $ConfigDefaults{ $name } eq 'ARRAY' ) {
+                $CFDefaults->{"CustomField-".$CustomField->id} =
+                    join "\n", @{$ConfigDefaults{ $name }};
             }
         }
     }
 }
-
 </%INIT>
 <%ARGS>
 $TicketObj => undef
 $QueueObj => undef
 $DefaultsFrom => undef
+$AllGroupings => 0
+$CFDefaults => {}
 </%ARGS>

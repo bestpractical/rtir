@@ -158,9 +158,20 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
     TicketObj    => $ticket,
     QueueObj     => $QueueObj,
     DefaultsFrom => $SplitObj || $ChildObj,
+    CFDefaults => \%CFDefaults,
 &>
 
-</table></&></div>
+</table></&>
+
+<& /Elements/EditCustomFieldCustomGroupings,
+    %ARGS,
+    %CFDefaults,
+    Object => $ticket,
+    CustomFieldGenerator => sub { $QueueObj->TicketCustomFields },
+    Groupings => [ RT::CustomField->CustomGroupings('RTIR::Ticket'), '' ],
+&>
+
+</div>
 
 <div class="ticket-create-details">
 
@@ -278,6 +289,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 
 
 <%INIT>
+my %CFDefaults;
 $m->callback(
     CallbackName => 'Init', CallbackPage => '/Ticket/Create.html',
     ARGSRef => \%ARGS,

@@ -74,6 +74,7 @@
     TicketObj    => $ticket,
     QueueObj     => $QueueObj,
     DefaultsFrom => $ChildObj,
+    AllGroupings => 1,
 &>
 
 <%INIT>

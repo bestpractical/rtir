@@ -184,7 +184,7 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
         $incident_id = $id if $queue eq 'Incidents';
         $agent->display_ticket( $id);
 
-        my $field_name = "Object-RT::Ticket-$id-CustomField-". $cf->id ."-Values";
+        my $field_name = "Object-RT::Ticket-$id-CustomField:Networking-". $cf->id ."-Values";
 
 diag "set IP" if $ENV{'TEST_VERBOSE'};
         my $val = 'abcd::192.168.1.1';

@@ -86,14 +86,19 @@
     <td class="value"><%loc('[_1] min', $TimeWorked)%></td>
   </tr>
 
-  <& /Elements/ShowCustomFields, Object => $TicketObj, Table => 0 &>
+  <& /Elements/ShowCustomFields, Grouping => 'Basics', Object => $TicketObj, Table => 0 &>
 
 </table>
 </&>
 
+<& /Elements/ShowCustomFieldCustomGroupings,
+    Object       => $TicketObj,
+    title_href => RT->Config->Get('WebPath') ."/RTIR/Edit.html",
+&>
+
 <&| /Widgets/TitleBox,
     title => loc("Dates"),
-    title_href => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=".$id, 
+    title_href => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=".$id,
     class => 'ticket-info-dates',
 &>
 <& /RTIR/Elements/ShowDates, Ticket => $TicketObj &>
