@@ -1,0 +1,19 @@
+<%INIT>
+my $type = RT::IR::TicketType( Ticket => $Ticket );
+return unless $type;
+
+my $id = $Ticket->Id;
+%$ExtraArgs = (
+        DisplayPath    => RT->Config->Get('WebPath') ."/RTIR/Display.html?id=$id",
+        UpdatePath     => RT->Config->Get('WebPath') ."/RTIR/Update.html",
+        ForwardPath    => RT->Config->Get('WebPath') ."/RTIR/Forward.html",
+        EncryptionPath => RT->Config->Get('WebPath') ."/RTIR/Crypt.html",
+        (($type eq "Incident") ? () : (WarnUnsigned   => 1)),
+        PathPrefix     => RT->Config->Get('WebPath') ."/Ticket/",
+);
+
+</%INIT>
+<%ARGS>
+$Ticket
+$ExtraArgs
+</%ARGS>
