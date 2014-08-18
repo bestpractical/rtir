@@ -67,6 +67,56 @@ sub CreatorCurrentUser {
     return $user;
 }
 
+sub CopyCustomFields {
+    my ($self, %args) = @_;
+
+    for my $ticket (qw/From To/) {
+        unless ( ref $args{$ticket} eq 'RT::Ticket' && $args{$ticket}->Id ) {
+            RT->Logger->error("Argument $ticket isn't a ticket");
+            return;
+        }
+    }
+
+    unless ( defined $args{CF} ) {
+        RT->Logger->error("Must pass a CF");
+        return;
+    }
+
+    my $target = $args{To};
+    my $source = $args{From};
+
+    my $cf_name = $args{CF};
+
+    my $target_cf = $target->LoadCustomFieldByIdentifier( $cf_name );
+    unless ( $target_cf->Id ) {
+        RT->Logger->error("Couldn't load CF $cf_name on ticket ".$target->Id);
+        return;
+    }
+    my $has_values = $target->CustomFieldValues( $target_cf );
+
+    my $source_cf = $source->LoadCustomFieldByIdentifier( $cf_name );
+    unless ( $source_cf->Id ) {
+        RT->Logger->error("Couldn't load CF $cf_name on ticket ".$source->Id);
+        return;
+    }
+    my $add_values = $source->CustomFieldValues( 'IP' );
+
+    while ( my $value = $add_values->Next ) {
+        my $content = $value->Content;
+        next if $has_values->HasEntry( $content );
+
+        my ($status, $msg) = $target->AddCustomFieldValue(
+            Value => $content,
+            Field => $target_cf,
+        );
+        RT->Logger->error("Couldn't add $cf_name: $msg")
+            unless $status;
+    }
+
+    return 1;
+
+}
+
 RT::Base->_ImportOverlays;
 
 1;

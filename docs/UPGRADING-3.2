@@ -29,3 +29,11 @@ you should switch to using %RTIRSearchResultFormats.  You no longer need
 to copy the entire configuration option just to change one or two of the
 formats (documented in RTIR_SiteConfig.pm) so you can merge your
 customizations together with our new entries and avoid copying defaults.
+
+=head2 Linking an IR to an Incident now copies IPs
+
+When creating an Incident from an Incident Report, RTIR would helpfully
+copy the IP for you, but didn't do so if you later added another IR to
+an existing Incident.  If you do no want this behavior, it is controlled
+by the "On Linking To Incident Copy IPs" scrip in the Incident Report
+Queue.
