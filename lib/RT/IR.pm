@@ -92,6 +92,35 @@ $RT::Interface::Web::is_whitelisted_component{'/RTIR/Search/Results.html'} = 1;
 
 =head1 FUNCTIONS
 
+=head2 IsStaff
+
+Is the user id passed in a member of one of the DutyTeam groups
+
+Useful for differentiating between actions by a user of the system vs
+actions by someone flagged to work on RTIR.
+
+=cut
+
+sub IsStaff {
+    my $self = shift;
+    my $actor_id = shift;
+
+    my $cgm = RT::CachedGroupMembers->new( RT->SystemUser );
+    $cgm->Limit(FIELD => 'MemberId', VALUE => $actor_id );
+    my $group_alias = $cgm->Join(
+        FIELD1 => 'GroupId', TABLE2 => 'Groups', FIELD2 => 'id'
+    );
+    $cgm->Limit(
+        ALIAS    => $group_alias,
+        FIELD    => 'Name',
+        OPERATOR => 'LIKE',
+        VALUE    => 'DutyTeam',
+        CASESENSITIVE => 0,
+    );
+    $cgm->RowsPerPage(1);
+    return $cgm->First? 1 : 0;
+}
+
 =head2 OurQueue
 
 Takes queue name or L<RT::Queue> object and returns its type
