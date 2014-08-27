@@ -48,6 +48,7 @@ etc/upgrade/2.9.0/content
 etc/upgrade/3.0.0rc2/content
 etc/upgrade/3.1.0/content
 etc/upgrade/upgrade.pl.in
+html/Callbacks/RTIR/autohandler/SuccessfulLogin
 html/Callbacks/RTIR/Elements/EditCustomField/EditComponentName
 html/Callbacks/RTIR/Elements/EditCustomFields/MassageCustomFields
 html/Callbacks/RTIR/Elements/Header/Head
@@ -58,6 +59,7 @@ html/Callbacks/RTIR/Elements/RT__Ticket/ColumnMap/Once
 html/Callbacks/RTIR/Elements/SelectOwner/UpdateObjectList
 html/Callbacks/RTIR/Elements/ShowHistory/SkipTransaction
 html/Callbacks/RTIR/Elements/Tabs/Privileged
+html/Callbacks/RTIR/Helpers/TicketHistory/ExtraShowHistoryArguments
 html/Callbacks/RTIR/Search/Elements/PickBasics/Default
 html/Callbacks/RTIR/Search/Results.html/Initial
 html/Callbacks/RTIR/Ticket/Create.html/Default
@@ -214,6 +216,9 @@ t/011-merge.t
 t/015-make-clicky.t
 t/019-watchers-on-create.t
 t/020-incident-and-investigation.t
+t/articles/basics.t
+t/articles/on-create.t
+t/articles/on-update.t
 t/block/pending-no-regexp.t
 t/block/pending-regexp.t
 t/block/status-basics.t
@@ -254,9 +259,6 @@ t/incident/split.t
 t/mail/skip_notification.t
 t/report/split.t
 t/report/status.t
-t/rtfm/basics.t
-t/rtfm/on-create.t
-t/rtfm/on-update.t
 t/searches/menu.t
 t/searches/simple.t
 t/tools/lookup.t
