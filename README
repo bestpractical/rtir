@@ -93,8 +93,8 @@ Configuring RTIR
 4) Add staff members who handle incidents to the DutyTeam group.
    RT -> Configuration -> Groups -> DutyTeam -> Members.
 
-5) You can override values in the RTIR_Config.pm in your
-   RT_SiteConfig.pm file. Just add your customizations.
+5) You can override values defined in RTIR_Config.pm by creating
+   RTIR_SiteConfig.pm in /opt/rt4/etc/ and adding your customizations.
 
 
 SETTING UP THE MAIL GATEWAY 

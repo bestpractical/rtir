@@ -8,16 +8,19 @@ F<RT_Config.pm> and F<RTIR_Config.pm> provide documentation on all available
 configuration options and also set system defaults. You can view these
 files to see what configuration options are available, but don't edit
 these files to change configuration values. The F<RT_SiteConfig.pm> file
-is specifically provided to store your site-specific configurations.
+is specifically provided to store your core site-specific configurations
+and you may create F<RTIR_SiteConfig.pm> for customizations to configuration
+declared in F<RTIR_Config.pm>.  F<RTIR_SiteConfig.pm> is normally
+created in /opt/rt4/etc/.
 
 To change a configuration value, copy the Set code from F<RT_Config.pm>
-or F<RTIR_Config.pm> and add it to your F<RT_SiteConfig.pm>. Then set
+or F<RTIR_Config.pm> and add it to the relevant Site Config. Then set
 your custom configuration values there.
 
 =head2 Blocks Queue
 
 You may disable the Blocks queue by putting the following into your
-RT_SiteConfig.pm config:
+F<RTIR_SiteConfig.pm> config:
 
     Set($RTIR_DisableBlocksQueue, 1);
 
@@ -376,7 +379,7 @@ it will detect this and avoid sending any email. The user will be asked to
 notify a system administrator.
 
 A missing passphrase occurs when GPG Agent is unresponsive or the passphrase
-is wrong in F<RTIR_SiteConfig.pm>. Note that you can use either GPG Agent or
+is wrong in F<RT_SiteConfig.pm>. Note that you can use either GPG Agent or
 set the passphrase in the site config, you need not do both.
 
 =head2 Service Level Agreements (SLAs)
