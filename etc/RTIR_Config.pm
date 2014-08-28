@@ -287,6 +287,23 @@ Home page.
 
 Set($RTIR_RedirectOnLogin, 1);
 
+=item DefaultQueue
+
+By default, RT does not specify a Default Queue.
+If you set one in your RT_SiteConfig.pm, RTIR will honor that setting.
+Otherwise, RTIR will set Incident Reports to be the default Queue
+for the New Ticket In dropdown.
+
+If you prefer another Queue, you should specify it in RT_SiteConfig.pm
+
+=cut
+
+my $default_queue = RT->Config->Get('DefaultQueue');
+unless (defined $default_queue) {
+    RT->Config->Set('DefaultQueue','Incident Reports');
+}
+
+
 =back
 
 =head1 Web Interface Configuration
