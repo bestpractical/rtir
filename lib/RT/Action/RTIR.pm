@@ -99,7 +99,7 @@ sub CopyCustomFields {
         RT->Logger->error("Couldn't load CF $cf_name on ticket ".$source->Id);
         return;
     }
-    my $add_values = $source->CustomFieldValues( 'IP' );
+    my $add_values = $source->CustomFieldValues( $cf_name );
 
     while ( my $value = $add_values->Next ) {
         my $content = $value->Content;
