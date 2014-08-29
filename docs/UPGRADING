@@ -38,26 +38,20 @@ RTIR 3.0 is not compatible with RT 4.2 releases.
 
 =item 3
 
-Test your upgraded RT. You should be able to start the server,
-log in, use the RT web interface, create tickets, send email to
-RT, receive mail from RT, etc.
-
-=item 4
-
 Make another backup of the DB, so you can return to this step
 if something goes wrong.
 
-=item 5
+=item 4
 
 Install the new version of RTIR. B<DO NOT> run C<make initdb>.
 
-=item 6
+=item 5
 
 Review all of the upgrade notes in docs/UPGRADING-*. If you were
 coming from 2.4.1, you would read UPGRADING-2.4, UPGRADING-2.6 and
-UPGRADING-3.0.
+UPGRADING-3.0 and UPGRADING-3.2.
 
-=item 7
+=item 6
 
 Update RTIR's database.
 
@@ -69,13 +63,20 @@ Answer the prompt for which version of RTIR you are upgrading from. RT
 will then confirm the upgrades that it is going to apply and will run
 them in sequence.
 
-=item 8
+=item 7
 
 Re-analyze and re-optimize your database tables.
 
 When you have completed all of the upgrade steps, you will
 likely need to update any optimizations you have done since the
 underlying tables have probably changed.
+
+=item 8
+
+Test your upgraded RT. You should be able to start the server,
+log in, use the RT web interface, create tickets, send email to
+RT, receive mail from RT, etc.
+
 
 =back
 
