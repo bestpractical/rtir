@@ -235,7 +235,7 @@ Constituency value is always preferred.
 
 The Advanced tab allows you to do things that generic RTIR
 interfaces don't, so you can merge arbitrary tickets, move tickets between
-queues and, most important for constitiencies, it
+queues and, most important for constituencies, it
 allows you to link tickets with different constituencies even if
 the propagation algorithm is set to 'reject'.
 
