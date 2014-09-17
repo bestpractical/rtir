@@ -198,7 +198,7 @@ sub requires_rt_plugin {
     my ( $plugin ) = @_;
 
     if ($self->is_admin) {
-        my $plugins = $self->{values}{"x_requires_rt_plugins"} || [];
+        my $plugins = $self->Meta->{values}{"x_requires_rt_plugins"} || [];
         push @{$plugins}, $plugin;
         $self->add_metadata("x_requires_rt_plugins", $plugins);
     }
@@ -258,4 +258,4 @@ sub _load_rt_handle {
 
 __END__
 
-#line 387
+#line 390
