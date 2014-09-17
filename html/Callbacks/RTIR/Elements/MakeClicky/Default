@@ -266,6 +266,4 @@ unless (ref $ARGS{cache} && defined ${$ARGS{cache}}) {
 %{$ARGS{actions}} = ( %{$ARGS{actions}}, %actions );
 push @{$ARGS{types}}, @types;
 
-RT->Logger->info("Finished adding callbacks");
-
 </%init>
