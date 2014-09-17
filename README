@@ -14,7 +14,7 @@ touch with us at <sales@bestpractical.com>.
 REQUIRED PACKAGES:
 ------------------
 
-o   RT 4.2.3 or other releases of the 4.2 series.
+o   RT 4.2.7 or other releases of the 4.2 series.
 o   Net::Whois::RIPE 1.31 is bundled with RTIR for compatibility with the
     API RTIR uses and for a fix to run without warnings under perl 5.18.
 
@@ -52,7 +52,7 @@ Installation instructions:
 
 6) Activate the RTIR extension in the RT_SiteConfig.pm file:
 
-    Set(@Plugins, 'RT::IR');
+    Plugins('RT::IR');
 
 7) Stop and start your web server.
 
@@ -93,8 +93,8 @@ Configuring RTIR
 4) Add staff members who handle incidents to the DutyTeam group.
    RT -> Configuration -> Groups -> DutyTeam -> Members.
 
-5) You can override values in the RTIR_Config.pm in your
-   RT_SiteConfig.pm file. Just add your customizations.
+5) You can override values defined in RTIR_Config.pm by creating
+   RTIR_SiteConfig.pm in /opt/rt4/etc/ and adding your customizations.
 
 
 SETTING UP THE MAIL GATEWAY 
@@ -118,24 +118,30 @@ o  If you're configuring RTIR with support for multiple constituencies, please
 Documentation for RTIR
 ----------------------
 
+   * Documents included with RTIR are also available for browsing at
+        http://www.bestpractical.com/docs/rtir/3.2/
+
    * This README file
 
-   * UPGRADING 
-        Instructions for users upgrading from 1.0 or 2.0
+   * docs/UPGRADING
 
-   * perldoc docs/DocIndex.pod
+   * docs/UPGRADING-* 
+        Version specific upgrading files. If upgrading from 2.6, you
+        would read the UPGRADING-2.6, UPGRADING-3.0 and UPGRADING-3.2 files.
+
+   * docs/DocIndex.pod
         ( also at http://bestpractical.com/docs/rtir/latest/DocIndex )
         Links to documentation specific to RTIR
 
-   * perldoc docs/Tutorial.pod
+   * docs/Tutorial.pod
         ( also at http://bestpractical.com/docs/rtir/latest/Tutorial )
         Extended information about ticket merging
 
-   * perldoc docs/Constituencies.pod
+   * docs/Constituencies.pod
         ( also at http://bestpractical.com/docs/rtir/latest/Constituencies )
         Information about setting up RTIR with multiple user constituencies
 
-   * perldoc docs/AdministrationTutorial.pod
+   * docs/AdministrationTutorial.pod
         ( also at http://bestpractical.com/docs/rtir/latest/AdministrationTutorial )
         Information about setting up RTIR for Administrators
         
@@ -143,11 +149,11 @@ Documentation for RTIR
      documentation via the Web UI.  This includes the Tutorial.pod and other .pod files
      mentioned above.
 
-   * perldoc RT::Extension::TicketAging
+   * RT::Extension::TicketAging
         (also at https://metacpan.org/module/RT::Extension::TicketAging )
         Information about configuring and using RT and RTIR Ticket Aging.
 
-   * perldoc RT::Extension::TicketLocking
+   * RT::Extension::TicketLocking
         (also at https://metacpan.org/module/RT::Extension::TicketLocking )
         Information about configuring and using RT and RTIR Ticket Locking.
 
@@ -156,9 +162,6 @@ Documentation for RTIR
 
    * RTIR mailing list 
         Subscribe by sending mail to rtir-request@lists.bestpractical.com
-
-   * http://wiki.bestpractical.com/view/RTIR
-        The RTIR section of the community-developed RT wiki is still in its infancy.  
 
 
 DEVELOPMENT
