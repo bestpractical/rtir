@@ -51,7 +51,7 @@
 %       my $selected = 0;
 %       my @category;
 %       my $id = $NamePrefix . $CustomField->Id;
-%       my $out = $m->scomp('SELF:options', %ARGS, SelectedRef => \$selected, CategoryRef => \@category, Object => $Object);
+%       my $out = $m->scomp('SELF:options', %ARGS, SelectedRef => \$selected, CategoryRef => \@category, Object => $Object, Default => $Default);
 %       if (@category) {
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/cascaded.js"></script>
 %#      XXX - Hide this select from w3m?
@@ -77,6 +77,12 @@ if ( $RenderType eq 'Dropdown' ) {
     # Turn it into a dropdown
     $Rows = 0;
 }
+
+unless ($Default) {
+    $Default = $PropagationObject->FirstCustomFieldValue('Constituency') if $PropagationObject;
+    $Default ||= RT::IR::DefaultConstituency( $QueueObj );
+    $Default ||= scalar RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'};
+}
 </%INIT>
 <%ARGS>
 $Object => undef
@@ -87,6 +93,8 @@ $Values => undef
 $Multiple => 0
 $Rows => undef
 $RenderType => undef
+$PropagationObject => undef
+$QueueObj => undef
 </%ARGS>
 
 <%METHOD options>

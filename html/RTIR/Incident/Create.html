@@ -133,14 +133,11 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 <tr><td class="label"><&|/l&>Constituency</&>:</td>
 <td class="value">
 % if ( !$ChildObj || RT->Config->Get('_RTIR_Constituency_Propagation') eq 'no' ) {
-% my $default;
-% $default = $ChildObj->FirstCustomFieldValue('Constituency') if $ChildObj;
-% $default ||= RT::IR::DefaultConstituency( $QueueObj );
-% $default ||= scalar RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'};
 <& /RTIR/Elements/EditRTIRField,
+    %ARGS,
     QueueObj => $QueueObj,
     Name     => 'Constituency',
-    Default  => $default,
+    PropagationObject => $ChildObj,
 &>
 % } else {
 % #TODO: hacks, we need way to define CF value on Create, but don't allow user to change it
