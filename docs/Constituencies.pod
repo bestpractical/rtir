@@ -40,7 +40,8 @@ Its name.
 Its correspondence email address.
 
 =item *
-  Associated ACLs (rights and permissions for queues, tickets, etc.)
+
+Associated ACLs (rights and permissions for queues, tickets, etc.)
 
 =back
 
@@ -124,6 +125,8 @@ the constituency 'EDUNET':
 =item * Queue 'Blocks - EDUNET'
 
 =item * Group 'DutyTeam EDUNET'
+
+=item * Group 'ReadOnly EDUNET'
 
 =back
 
@@ -235,7 +238,7 @@ Constituency value is always preferred.
 
 The Advanced tab allows you to do things that generic RTIR
 interfaces don't, so you can merge arbitrary tickets, move tickets between
-queues and, most important for constitiencies, it
+queues and, most important for constituencies, it
 allows you to link tickets with different constituencies even if
 the propagation algorithm is set to 'reject'.
 
@@ -258,8 +261,10 @@ is empty, the correspond address of the 'Incident Reports' queue is used
 unless it's also empty. The last fallback address is the C<$CorrespondAddress>
 in the RT's configuration file.
 
-It is important to note that these additional rights do not also
-add new mailing rules.
+It is important to note that these additional configuration do not also
+add new mail routing rules.  It is your responsibility to configure
+rt-mailgate to handle mail coming to the constituency correspond
+addresses.
 
 =head2 Presetting Constituency from Email
 
