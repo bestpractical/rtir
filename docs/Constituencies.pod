@@ -258,8 +258,10 @@ is empty, the correspond address of the 'Incident Reports' queue is used
 unless it's also empty. The last fallback address is the C<$CorrespondAddress>
 in the RT's configuration file.
 
-It is important to note that these additional rights do not also
-add new mailing rules.
+It is important to note that these additional configuration do not also
+add new mail routing rules.  It is your responsibility to configure
+rt-mailgate to handle mail coming to the constituency correspond
+addresses.
 
 =head2 Presetting Constituency from Email
 
