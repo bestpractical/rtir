@@ -126,6 +126,8 @@ the constituency 'EDUNET':
 
 =item * Group 'DutyTeam EDUNET'
 
+=item * Group 'ReadOnly EDUNET'
+
 =back
 
 These queues are used to store limited per-constituency information for
