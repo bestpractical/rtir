@@ -40,7 +40,8 @@ Its name.
 Its correspondence email address.
 
 =item *
-  Associated ACLs (rights and permissions for queues, tickets, etc.)
+
+Associated ACLs (rights and permissions for queues, tickets, etc.)
 
 =back
 
