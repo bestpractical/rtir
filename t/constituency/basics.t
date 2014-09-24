@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-
 use strict;
 use warnings;
 
@@ -9,8 +7,6 @@ use_ok('RT::IR');
 
 my ($baseurl) = RT::Test->started_ok;
 my $agent = default_agent();
-rtir_user();
-$agent->login( rtir_test_user => 'rtir_test_pass' );
 
 my $cf;
 diag "load and check basic properties of the CF" if $ENV{'TEST_VERBOSE'};
