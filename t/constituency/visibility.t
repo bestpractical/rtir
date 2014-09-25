@@ -23,7 +23,7 @@ my $rogovhandler = RT::Test->load_or_create_user( Name => 'rogovhandler', Passwo
 ok $rogovhandler->id, "Created rogovhandler";
 
 {
-    my $path = RT::Plugin->new( name => 'RT::IR' )->Path( 'etc' ) . "/add_constituency";
+    my $path = RT::Plugin->new( name => 'RT::IR' )->Path( 'bin' ) . "/add_constituency";
     diag("running $path to set up EDUNET and GOVNET constituencies");
 
     for my $constituency (@constituencies) {
