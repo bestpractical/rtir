@@ -368,3 +368,20 @@ Considering the above suggestion, a good way to manage users is to place
 each user in a constituency specific groups based on their access needs.
 Place users into DutyTeam only if they should work with all constituencies.
 
+=head2 Constituency issues
+
+Constituencies are very heavyweight, they add extra code to many
+permission checks in the system and also greatly complicate the number
+of groups and group members in the system.  If you are not going to use
+this functionality, you would be well served to disable the Constituency
+Custom Field, which will cause RTIR to remove a number of added
+complexities.
+
+Additionaly, while RT 4.2 has shipped with the config option
+C<$UseSQLForACLChecks> defaulted on, it is not compatible with Constituencies.
+If RTIR detects that it is being started with Constituencies enabled it
+will disabled C<$UseSQLForACLChecks>.  Overriding this means that any
+part of the UI trying to show a list of tickets (such as the RTIR
+homepage or any search results) will be empty for users in restricted
+Constituency DutyTeams.
+
