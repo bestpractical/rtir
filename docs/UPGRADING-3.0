@@ -154,6 +154,12 @@ installed. You should then test with the new SLA configurations in
 a dev environment to verify that due dates are being properly set
 for all relevant actions (create, respond, resolve, etc.).
 
+Starting in 3.0.3, RTIR also disables and unapplies the SLA Custom Field since it can
+conflict with the field provided by L<RT::Extension::SLA> and cause SLAs
+not to apply properly. This change is only automated for users coming to
+3.0 or later for the first time. If you previously upgraded to 3.0.x and
+then to 3.0.3, your SLA field will not be changed.
+
 =head2 Notifications
 
 New installs of RTIR notify Ccs when launching an Investigation.
