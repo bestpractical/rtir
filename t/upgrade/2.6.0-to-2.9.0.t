@@ -8,7 +8,7 @@ BEGIN { unless ( $ENV{RTIR_TEST_UPGRADE} ) {
     Test::More->import( skip_all => "Skipping upgrade tests, it's only for developers" );
 } }
 
-use RT::IR::Test tests => 17;
+use RT::IR::Test tests => 18;
 {
     RT::IR::Test->import_snapshot( 'rtir-2.6.after-rt-upgrade.sql' );
     my ($status, $msg) = RT::IR::Test->apply_upgrade( 'etc/upgrade/', '2.9.0' );
@@ -23,6 +23,16 @@ my @state_cf_ids;
     push @state_cf_ids, map $_->id, @{ $cfs->ItemsArrayRef };
     is( scalar @state_cf_ids, 4, 'four disabled state fields' );
 }
+
+{
+    my @sla_cf_ids;
+    my $cfs = RT::CustomFields->new( RT->SystemUser );
+    $cfs->Limit( FIELD => 'Name', VALUE => 'SLA' );
+    $cfs->Limit( FIELD => 'Disabled', VALUE => 1 );
+    push @sla_cf_ids, map $_->id, @{ $cfs->ItemsArrayRef };
+    is( scalar @sla_cf_ids, 1, 'one disabled SLA field' );
+}
+
 
 {
     my $ticket = RT::Ticket->new( RT->SystemUser );

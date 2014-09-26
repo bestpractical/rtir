@@ -342,6 +342,30 @@ our @Final = (
         remove_scrip_condition('RTIR_BlockActivation');
     },
 
+    sub {
+            my $queue = get_queue( 'Incident Reports' );
+
+            my $cf = RT::CustomField->new( $RT::SystemUser );
+            $cf->LoadByName( Name => 'SLA', Queue => $queue->id );
+            unless ( $cf->id ) {
+                $RT::Logger->error("Couldn't load SLA CF applied to queue '". $queue->Name ."'");
+                return;
+            }
+            next unless $queue && $cf;
+
+            {
+                my ($status, $msg) = $cf->RemoveFromObject( $queue );
+                $RT::Logger->error("Couldn't unapply custom field #". $cf->id .": $msg")
+                    unless $status;
+            }
+
+            unless ( $cf->Disabled ) {
+                my ($status, $msg) = $cf->SetDisabled(1);
+                $RT::Logger->error("Couldn't disable custom field #". $cf->id .": $msg")
+                    unless $status;
+            }
+    },
+
     # replace conditions with RT's StatusChange
     sub {
         my %map = (
