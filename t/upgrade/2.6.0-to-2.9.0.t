@@ -27,7 +27,7 @@ my @state_cf_ids;
 {
     my @sla_cf_ids;
     my $cfs = RT::CustomFields->new( RT->SystemUser );
-    $cfs->Limit( FIELD => 'Name', VALUE => 'SLA' );
+    $cfs->Limit( FIELD => 'Name', VALUE => 'SLA', CASESENSITIVE => 0  );
     $cfs->Limit( FIELD => 'Disabled', VALUE => 1 );
     push @sla_cf_ids, map $_->id, @{ $cfs->ItemsArrayRef };
     is( scalar @sla_cf_ids, 1, 'one disabled SLA field' );
