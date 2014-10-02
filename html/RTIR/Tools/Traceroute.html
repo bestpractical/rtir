@@ -57,7 +57,7 @@
 <pre>
 <%PERL>
 while (my $content = <$tr>) {
-    $m->comp('/Elements/MakeClicky', content => \$content, ($TicketObj? (ticket => $TicketObj):()) );
+    $m->comp('/Elements/MakeClicky', content => \$content, ($TicketObj? (object => $TicketObj):()) );
     $m->out( $content );
     $m->out('<br />');
     $m->flush_buffer;
