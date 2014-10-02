@@ -46,10 +46,14 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <form action="Traceroute.html" method="get" target="_blank">
+% foreach my $arg ( grep exists $ARGS{$_}, @PassArguments ) {
+  <input type="hidden" name="<% $arg %>" value="<% $ARGS{ $arg } %>" />
+% }
     <span class="label">Traceroute to:</span>
     <span class="input"><input type="text" size="30" name="q" value="<% $q %>" /></span>
     <input type="submit" value="<%loc('Go')%>" />
 </form>
 <%args>
 $q => ''
+@PassArguments => ()
 </%args>
