@@ -57,7 +57,7 @@
 <pre>
 <%PERL>
 while (my $content = <$tr>) {
-    $m->comp('/Elements/MakeClicky', content => \$content);
+    $m->comp('/Elements/MakeClicky', content => \$content, ($TicketObj? (ticket => $TicketObj):()) );
     $m->out( $content );
     $m->out('<br />');
     $m->flush_buffer;
@@ -82,9 +82,15 @@ unless ( -f $cmd && -x _ ) {
     Abort(loc("Traceroute is not configured properly. Contact system administrator."));
 }
 
+my $TicketObj;
+if ($ticket) {
+    $TicketObj = LoadTicket($ticket);
+}
+
 tied(%session)->release_all_locks;
 open(my $tr, "-|", $cmd, $q) or Abort("Couldn't run '$cmd': $!");
 </%INIT>
 <%ARGS>
+$ticket => undef
 $q => ''
 </%ARGS>
