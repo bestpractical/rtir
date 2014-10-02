@@ -67,7 +67,7 @@ while (my $content = <$tr>) {
 
 </div>
 <%INIT>
-unless ( $q =~ /^[A-Z0-9.]+$/i ) {
+unless ( $q =~ /^[A-Z0-9.:]+$/i ) {
     Abort(loc("Invalid search query"));
 }
 my $title = loc("Traceroute to '[_1]'", $q);
