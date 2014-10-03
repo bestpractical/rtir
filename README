@@ -64,13 +64,6 @@ o  To maintain Due date for Reports, Investigations and Blocks, install
    RT::Extension::SLA following the installation instructions in that
    extension's README file.
 
-o  If you want to enable ticket/incident aging, install RT::Extension::TicketAging
-   following the instructions in that extension's INSTALL and README files.
-
-o  If you want to enable ticket locking, install RT::Extension::TicketLocking
-   following the installation instructions in that extension's README file.
-
-
 Configuring RTIR
 ----------------
 
@@ -148,14 +141,6 @@ Documentation for RTIR
    * install extension RT-OnlineDocs to give SuperUsers access to the RT::IR and RT API
      documentation via the Web UI.  This includes the Tutorial.pod and other .pod files
      mentioned above.
-
-   * RT::Extension::TicketAging
-        (also at https://metacpan.org/module/RT::Extension::TicketAging )
-        Information about configuring and using RT and RTIR Ticket Aging.
-
-   * RT::Extension::TicketLocking
-        (also at https://metacpan.org/module/RT::Extension::TicketLocking )
-        Information about configuring and using RT and RTIR Ticket Locking.
 
    * etc/RTIR_Config.pm  
         (Contains a number of RTIR-specific configuration options and instructions for their use)
