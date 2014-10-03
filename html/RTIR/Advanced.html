@@ -98,7 +98,11 @@
 </&>
 
 <&| /Widgets/TitleBox, title => loc('Edit Links') &>
-<& /Elements/EditLinks, Object => $Ticket, Merge => 1 &>
+<& /Elements/EditLinks, Object => $Ticket &>
+</&>
+
+<&| /Widgets/TitleBox, title => loc('Merge'), class=>'ticket-info-merge' &>
+<& /Ticket/Elements/EditMerge, Ticket => $Ticket, %ARGS &>
 </&>
 
 <& /Elements/Submit,
