@@ -154,7 +154,6 @@ inc/Module/Install/Fetch.pm
 inc/Module/Install/Include.pm
 inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
-inc/Module/Install/ReadmeFromPod.pm
 inc/Module/Install/RTx.pm
 inc/Module/Install/RTx/Runtime.pm
 inc/Module/Install/Substitute.pm
@@ -226,6 +225,7 @@ t/constituency/email_outgoing.t
 t/constituency/propagation-inherit.t
 t/constituency/propagation-no.t
 t/constituency/propagation-reject.t
+t/constituency/visibility.t
 t/custom-fields/defaults-config.t
 t/custom-fields/defaults-on-linking.t
 t/custom-fields/ip.t
