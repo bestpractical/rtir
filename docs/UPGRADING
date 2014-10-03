@@ -79,7 +79,6 @@ Test your upgraded RT. You should be able to start the server,
 log in, use the RT web interface, create tickets, send email to
 RT, receive mail from RT, etc.
 
-
 =back
 
 =cut
