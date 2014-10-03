@@ -122,10 +122,6 @@ Documentation for RTIR
         Version specific upgrading files. If upgrading from 2.6, you
         would read the UPGRADING-2.6, UPGRADING-3.0 and UPGRADING-3.2 files.
 
-   * docs/DocIndex.pod
-        ( also at http://bestpractical.com/docs/rtir/latest/DocIndex )
-        Links to documentation specific to RTIR
-
    * docs/Tutorial.pod
         ( also at http://bestpractical.com/docs/rtir/latest/Tutorial )
         Extended information about ticket merging
