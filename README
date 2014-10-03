@@ -106,7 +106,8 @@ o  If your webserver uses SSL, rt-mailgate will require several new
 o  See "perldoc /opt/rt4/bin/rt-mailgate" for more info about the rt-mailgate script.
 
 o  If you're configuring RTIR with support for multiple constituencies, please
-   refer to the instructions in the file lib/RT/IR/Constituencies.pod
+   refer to the instructions in the file docs/Constituencies.pod which is also
+   viewable here http://www.bestpractical.com/docs/rtir/3.2/Constituencies.html
 
 Documentation for RTIR
 ----------------------
@@ -123,19 +124,20 @@ Documentation for RTIR
         would read the UPGRADING-2.6, UPGRADING-3.0 and UPGRADING-3.2 files.
 
    * docs/Tutorial.pod
-        ( also at http://bestpractical.com/docs/rtir/latest/Tutorial )
+        ( also at http://bestpractical.com/docs/rtir/3.2/Tutorial )
         Extended information about ticket merging
 
    * docs/Constituencies.pod
-        ( also at http://bestpractical.com/docs/rtir/latest/Constituencies )
+        ( also at http://bestpractical.com/docs/rtir/3.2/Constituencies )
         Information about setting up RTIR with multiple user constituencies
 
    * docs/AdministrationTutorial.pod
-        ( also at http://bestpractical.com/docs/rtir/latest/AdministrationTutorial )
+        ( also at http://bestpractical.com/docs/rtir/3.2/AdministrationTutorial )
         Information about setting up RTIR for Administrators
         
    * etc/RTIR_Config.pm  
         (Contains a number of RTIR-specific configuration options and instructions for their use)
+        http://www.bestpractical.com/docs/rtir/3.2/RTIR_Config.html
 
    * RTIR mailing list 
         Subscribe by sending mail to rtir-request@lists.bestpractical.com
