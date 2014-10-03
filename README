@@ -134,10 +134,6 @@ Documentation for RTIR
         ( also at http://bestpractical.com/docs/rtir/latest/AdministrationTutorial )
         Information about setting up RTIR for Administrators
         
-   * install extension RT-OnlineDocs to give SuperUsers access to the RT::IR and RT API
-     documentation via the Web UI.  This includes the Tutorial.pod and other .pod files
-     mentioned above.
-
    * etc/RTIR_Config.pm  
         (Contains a number of RTIR-specific configuration options and instructions for their use)
 
