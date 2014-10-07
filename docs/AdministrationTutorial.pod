@@ -344,11 +344,11 @@ RT::Shredder's documentation includes information on restoring deleted data
 from backups. RT::Shredder provides SQL commands to reverse any delete
 operations, so any data that it deletes may be restored.
 
-=head2 GnuPG support
+=head2 GnuPG and S/MIME support
 
-GnuPG integration is now a feature of RT.  Configuration
+GnuPG and S/MIME integration is a core feature of RT.  Configuration
 can be done in your F<RT_SiteConfig.pm>.
-See also the documentation in L<RT::Crypt::GnuPG>.
+See also the documentation in L<RT::Crypt>.
 
 =head3 Reverification
 

@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-
 use strict;
 use warnings;
 
@@ -9,8 +7,6 @@ use_ok('RT::IR');
 
 my ($baseurl) = RT::Test->started_ok;
 my $agent = default_agent();
-rtir_user();
-$agent->login( rtir_test_user => 'rtir_test_pass' );
 
 my $cf;
 diag "load and check basic properties of the CF" if $ENV{'TEST_VERBOSE'};
@@ -61,7 +57,7 @@ diag "check that there is no option to set 'no value' on create" if $ENV{'TEST_V
         my $value = $agent->form_number(3)->value("Object-RT::Ticket--CustomField-". $cf->id ."-Values");
         is lc $value, lc $default, 'correct value is selected';
 
-        my @values = $agent->form_number(3)->param("Object-RT::Ticket--CustomField-". $cf->id ."-Values");
+        my @values = $agent->current_form->find_input("Object-RT::Ticket--CustomField-". $cf->id ."-Values")->possible_values;
         ok !grep( $_ eq '', @values ), 'have no empty value for selection';
     }
 }

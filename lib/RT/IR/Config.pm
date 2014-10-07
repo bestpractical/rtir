@@ -94,6 +94,16 @@ sub Init {
 
     RT->Config->Set(HomepageComponents => \@homepage_components);
 
+    $RT::Config::META{UseSQLForACLChecks}{PostLoadCheck} = sub {
+        my ($self,$value) = @_;
+        if ( RT::IR->HasConstituency ) {
+            if ( $value ) {
+                $self->Set('UseSQLForACLChecks',0);
+                RT->Logger->info('Disabling UseSQLForACLChecks because Constituencies are in use.  If you are not using Constituencies, you can disable that Custom Field.');
+            }
+        }
+    };
+
     return;
 }
 

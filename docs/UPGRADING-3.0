@@ -154,6 +154,19 @@ installed. You should then test with the new SLA configurations in
 a dev environment to verify that due dates are being properly set
 for all relevant actions (create, respond, resolve, etc.).
 
+Starting in 3.0.3, RTIR also disables and unapplies the SLA Custom Field
+since it can conflict with the field provided by L<RT::Extension::SLA>
+and cause SLAs not to apply properly. This change is only automated for
+users coming to 3.0 or later for the first time. If you previously
+upgraded to 3.0.x and then to 3.0.3, your SLA field will not be changed.
+If you installed RTIR from the 3.0 series first, you do not have an
+extraneous SLA Custom Field.
+
+If you have two SLA Custom Fields (one from an old 2.6 RTIR install and
+one from RT::Extension::SLA) you can manually disable the incorrect SLA
+custom field and clicking on the Applies To menu in that Custom Field
+and ensuring that it is not applied to any queues, or globally.
+
 =head2 Notifications
 
 New installs of RTIR notify Ccs when launching an Investigation.
@@ -208,3 +221,10 @@ Previously they were only granted rights on the default RTIR Custom Fields.
 
 Rights are managed at the Custom Field level by this script, so it's
 straightforward to remove rights after constituency creation.
+
+=head1 UPGRADING FROM 3.0.2 AND EARLIER
+
+=head2 SLA Custom Field
+
+See new additional notes in the L<SLA Support> section if you are upgrading
+within the 3.0 series.
