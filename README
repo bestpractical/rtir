@@ -96,9 +96,9 @@ SETTING UP THE MAIL GATEWAY
 An alias for the Incident Reports queue will need to be configured.
 Add the following lines to /etc/aliases (or your local equivalent):
 
-rtir:         "|/opt/rt4/bin/rt-mailgate --queue 'Incident Reports' --action correspond --url http://localhost/"
+rtir:         "|/opt/rt4/bin/rt-mailgate --queue 'Incident Reports' --action correspond --url http://rt.example.com/"
 
-You should substitute the URL for RT's web interface for "http://localhost/".
+You should substitute the URL for RT's web interface for http://rt.example.com/.
 
 o  If your webserver uses SSL, rt-mailgate will require several new
    Perl libraries. See the RT README for more details on this option.
