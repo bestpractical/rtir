@@ -52,7 +52,7 @@ Installation instructions:
 
 6) Activate the RTIR extension in the RT_SiteConfig.pm file:
 
-    Plugins('RT::IR');
+    Plugin('RT::IR');
 
 7) Stop and start your web server.
 
