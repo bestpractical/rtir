@@ -247,10 +247,10 @@ unless (ref $ARGS{cache} && defined ${$ARGS{cache}}) {
             return if $parent_args->{lookup_params};
 
             require Digest::SHA;
-            return $m->cache->get(Digest::SHA::sha512_base64($$content));
+            return $m->cache->get(Digest::SHA::sha512_base64(Encode::encode( "UTF-8", $$content)));
         } elsif ($type eq 'store') {
             require Digest::SHA;
-            $m->cache->set(Digest::SHA::sha512_base64($$content),
+            $m->cache->set(Digest::SHA::sha512_base64(Encode::encode( "UTF-8", $$content)),
                            $$content,
                            "6 hours");
         } else {
