@@ -90,5 +90,14 @@ diag "clicky email" if $ENV{'TEST_VERBOSE'};
     }
 }
 
+diag "utf8 caching " if $ENV{'TEST_VERBOSE'};
+{
+    my $content = "snowman \N{U+2603}";
+    my $id = $agent->create_ir( { Subject => 'utf-8 snowman caching', Content => $content } );
+    $agent->display_ticket( $id);
+    $agent->content_contains($content,"Found snowman");
+
+}
+
 done_testing;
 
