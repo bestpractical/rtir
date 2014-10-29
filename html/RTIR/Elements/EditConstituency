@@ -51,7 +51,7 @@
 %       my $selected = 0;
 %       my @category;
 %       my $id = $NamePrefix . $CustomField->Id;
-%       my $out = $m->scomp('SELF:options', %ARGS, SelectedRef => \$selected, CategoryRef => \@category, Object => $Object, Default => $Default);
+%       my $out = $m->scomp('SELF:options', %ARGS, SelectedRef => \$selected, CategoryRef => \@category, Object => $Object, Default => \@Default);
 %       if (@category) {
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/cascaded.js"></script>
 %#      XXX - Hide this select from w3m?
@@ -78,17 +78,19 @@ if ( $RenderType eq 'Dropdown' ) {
     $Rows = 0;
 }
 
-unless ($Default) {
-    $Default = $PropagationObject->FirstCustomFieldValue('Constituency') if $PropagationObject;
-    $Default ||= RT::IR::DefaultConstituency( $QueueObj );
-    $Default ||= scalar RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'};
+@Default = grep defined && length, @Default;
+unless (@Default) {
+    my $default = $PropagationObject->FirstCustomFieldValue('Constituency') if $PropagationObject;
+    $default ||= RT::IR::DefaultConstituency( $QueueObj ) if $QueueObj;
+    $default ||= scalar RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'};
+    push @Default, $default;
 }
 </%INIT>
 <%ARGS>
 $Object => undef
 $CustomField => undef
 $NamePrefix => undef
-$Default => undef
+@Default => ()
 $Values => undef
 $Multiple => 0
 $Rows => undef
