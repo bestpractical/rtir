@@ -216,6 +216,7 @@ t/011-merge.t
 t/015-make-clicky.t
 t/019-watchers-on-create.t
 t/020-incident-and-investigation.t
+t/030-redirect-on-login.t
 t/articles/basics.t
 t/articles/on-create.t
 t/articles/on-update.t

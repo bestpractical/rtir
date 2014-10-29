@@ -46,15 +46,26 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
+
+# when logging in 'normally' to an RT with a WebPath,
+# RedirectTo gets set to the WebPath
+my $webpath = RT->Config->Get('WebPath');
 if (defined $$RedirectTo &&
-    $$RedirectTo ne '/') {
+    $$RedirectTo ne '/' &&
+    $$RedirectTo !~ m{^$webpath\/?$} ) {
     return;
 }
+
+my $path = $r->path_info;
+# Mason ignores WebPath so it's always /NoAuth/Login.html, not /rt/NoAuth/Login.html
+if ($path && $path ne '/NoAuth/Login.html' ) {
+    return;
+}
+
 return unless RT->Config->Get('RTIR_RedirectOnLogin');
 
 if (RT::IR->IsStaff($session{'CurrentUser'}->Id)) {
-# no need for WebPath since Redirect() adds on the whole server URL
-    $$RedirectTo = '/RTIR/';
+    $$RedirectTo = "$webpath/RTIR/";
 }
 </%INIT>
 <%ARGS>
