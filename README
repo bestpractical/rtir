@@ -14,7 +14,7 @@ touch with us at <sales@bestpractical.com>.
 REQUIRED PACKAGES:
 ------------------
 
-o   RT 4.2.7 or newer releases of the 4.2 series.
+o   RT 4.2.9 or newer releases of the 4.2 series.
 o   Net::Whois::RIPE 1.31 is bundled with RTIR for compatibility with the
     API RTIR uses and for a fix to run without warnings under perl 5.18.
 
