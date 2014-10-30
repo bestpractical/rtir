@@ -73,6 +73,11 @@ my $title = loc("New unlinked Incident Reports...");
 
 $Query ||= RT::IR->Query( Queue => $Queue, Initial => 1 );
 
+$Rows = $session{'CurrentUser'}->UserObj->Preferences(
+    'SummaryRows',
+    ( RT->Config->Get('DefaultSummaryRows') || 10 ),
+) unless defined $Rows;
+
 my $QueryString = $m->comp('/Elements/QueryString',
     Queue   => $Queue,
     Query   => $Query,
@@ -97,7 +102,7 @@ $Queue     => 'Incident Reports'
 $BaseQuery => RT::IR->Query( Queue => $Queue )
 $Query     => undef
 $Format    => RT->Config->Get('RTIRSearchResultFormats')->{'NewReports'}
-$Rows      => RT->Config->Get('DefaultSummaryRows', $session{'CurrentUser'})
+$Rows      => undef
 $Page      => 1
 $OrderBy   => 'Due'
 $Order     => 'ASC'
