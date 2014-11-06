@@ -154,6 +154,26 @@ installed. You should then test with the new SLA configurations in
 a dev environment to verify that due dates are being properly set
 for all relevant actions (create, respond, resolve, etc.).
 
+If you wish to convert to the L<RT::Extension::SLA> module, you will
+need to take care with the SLA Custom Fields.  RT::Extension::SLA will
+install a new Global Custom Field named SLA.  This is in addition to the
+SLA field that RTIR previously provided on the Incident Reports Queues.
+You should navigate to Tools -> Configuration -> Custom Fields and select the
+SLA Custom Field which is marked as being "Global" in the "Applied" column.
+Uncheck the "Enabled" box to disable the global SLA field.
+
+If you plan to enforce SLAs on your Investigations or Blocks Queues, you
+should select the SLA Custom Field marked as "Incident Reports" in the
+Applied" column, click on the "Applies To" link in the upper right menu
+and apply it to the other Queues where you wish to enforce an SLA.  Do
+not enable SLA on Incidents without disabling the RTIR scrips that
+manage the Due date on the Incidents Queues.
+
+You will need to review L<RT::Extension::SLA> documentation and construct
+a configuration that matches up with how you need to set up SLAs.  You
+can find more about RTIR's Due date management and SLAs in
+L<docs/AdministrationTutorial>.
+
 =head2 Notifications
 
 New installs of RTIR notify Ccs when launching an Investigation.
