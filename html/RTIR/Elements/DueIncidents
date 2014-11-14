@@ -69,6 +69,11 @@ Description => loc('Due Incidents')
 </&>
 
 <%INIT>
+$Rows = $session{'CurrentUser'}->UserObj->Preferences(
+    'SummaryRows',
+    ( RT->Config->Get('DefaultSummaryRows') || 10 ),
+) unless defined $Rows;
+
 my $QueryString = $m->comp('/Elements/QueryString',
     Query   => $Query,
     Format  => $Format,
@@ -84,7 +89,7 @@ $Title           => loc("Most due incidents")
 $BaseQuery       => RT::IR->Query( Queue => 'Incidents' )
 $Query           => RT::IR->ActiveQuery( Queue => 'Incidents' )
 $Format          => RT->Config->Get('RTIRSearchResultFormats')->{'DueIncidents'}
-$Rows            => RT->Config->Get('DefaultSummaryRows', $session{'CurrentUser'})
+$Rows            => undef
 $Page            => 1
 $OrderBy         => 'Due'
 $Order           => 'ASC'
