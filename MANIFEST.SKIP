@@ -10,6 +10,7 @@
 ^\.git
 ^t/tmp/
 ^MYMETA\.*
+^bin/add_constituency$
 ^etc/add_constituency$
 ^etc/upgrade/upgrade.pl$
 ^etc/upgrade/2.5.1/update_saved_searches.pl$

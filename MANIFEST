@@ -1,5 +1,4 @@
 .perlcriticrc
-bin/add_constituency
 bin/add_constituency.in
 CHANGES
 docs/AdministrationTutorial.pod
