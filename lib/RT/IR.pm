@@ -52,7 +52,7 @@ use warnings;
 
 package RT::IR;
 
-our $VERSION = '3.0.4rc1';
+our $VERSION = '3.0.4';
 
 
 use Scalar::Util qw(blessed);
