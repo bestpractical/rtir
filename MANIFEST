@@ -260,6 +260,7 @@ t/incident/split.t
 t/mail/skip_notification.t
 t/report/split.t
 t/report/status.t
+t/searches/cf.t
 t/searches/menu.t
 t/searches/simple.t
 t/tools/lookup.t
