@@ -65,14 +65,13 @@ use Scalar::Util qw(blessed);
 use RT::IR::Config;
 RT::IR::Config::Init();
 
-my @QUEUES = ('Incidents', 'Incident Reports', 'Investigations', 'On-Site Supports', 'Blocks'); #DEBUG
+my @QUEUES = ('Incidents', 'Incident Reports', 'Investigations', 'Blocks');
 my %QUEUES = map { lc($_) => $_ } @QUEUES;
 my %TYPE = (
     'incidents'        => 'Incident',
     'incident reports' => 'Report',
     'investigations'   => 'Investigation',
     'blocks'           => 'Block',
-    'on-site supports' => 'Investigation', #DEBUG
 );
 
 @RT::IR::QUEUES = @QUEUES;
