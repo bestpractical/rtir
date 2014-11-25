@@ -65,14 +65,19 @@ use Scalar::Util qw(blessed);
 use RT::IR::Config;
 RT::IR::Config::Init();
 
-my @QUEUES = ('Incidents', 'Incident Reports', 'Investigations', 'Blocks');
+my @QUEUES = ('Incidents', 'Incident Reports', 'Investigations', 'On-Site Supports', 'Blocks'); #DEBUG
 my %QUEUES = map { lc($_) => $_ } @QUEUES;
 my %TYPE = (
     'incidents'        => 'Incident',
     'incident reports' => 'Report',
     'investigations'   => 'Investigation',
     'blocks'           => 'Block',
+    'on-site supports' => 'Investigation', #DEBUG
 );
+
+@RT::IR::QUEUES = @QUEUES;
+@RT::IR::CHILDREN_QUEUES = grep { !($_ eq 'Incidents') } @RT::IR::QUEUES;
+$RT::IR::QUEUES_REGEX = '^(' . join('|', @RT::IR::QUEUES) . ')$';
 
 use Parse::BooleanLogic;
 my $ticket_sql_parser = Parse::BooleanLogic->new;
@@ -859,7 +864,7 @@ if ( RT::IR->HasConstituency ) {
 
         my $name = $self->__Value('Name');
         return $self->SUPER::HasRight(@_) unless $name =~
-            /^(Incidents|Incident Reports|Investigations|Blocks)$/i;
+            /$RT::IR::QUEUES_REGEX/i;
 
         $args{'Principal'} ||= $self->CurrentUser->PrincipalObj;
 
@@ -957,7 +962,7 @@ if ( RT::IR->HasConstituency ) {
             return $orig_Create->($self,%args);
         }
         unless ( $QueueObj->id &&
-                 $QueueObj->Name =~ /^(Incidents|Incident Reports|Investigations|Blocks)$/i ) {
+                 $QueueObj->Name =~ /$RT::IR::QUEUES_REGEX/i ) {
             return $orig_Create->($self,%args);
         }
 
@@ -993,7 +998,7 @@ package RT::Search::Simple;
 
 sub HandleRtirip {
     return 'RTIR IP' => RT::IR->Query(
-        Queue => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
+        Queue => @RT::IR::QUEUES,
         And => "'CustomField.{IP}' = '$_[1]'",
     );
 }
@@ -1001,12 +1006,16 @@ sub HandleRtirip {
 sub HandleRtirrequestor {
     my $self = shift;
     my $value = shift;
+    
+    my $subquery = '';
+    foreach my $queue (@RT::IR::CHILDREN_QUEUES) {
+        $subquery .= ' OR ' if $subquery;
+        $subquery .= "Queue = '$queue'";
+    }
 
     my $children = RT::Tickets->new( $self->TicketsObj->CurrentUser );
     $children->FromSQL(
-        "( Queue = 'Incident Reports' OR
-           Queue = 'Investigations' OR
-           Queue = 'Blocks'
+        "( $subquery
          ) AND Requestor LIKE '$value'"
     );
     my $query = '';

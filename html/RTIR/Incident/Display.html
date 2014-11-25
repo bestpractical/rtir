@@ -111,7 +111,7 @@
 </td><td class="boxcontainer" valign="top">
 % $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'RightColumnStart' );
 
-% foreach my $queue ( 'Incident Reports', 'Investigations', 'Blocks' ) {
+% foreach my $queue (@RT::IR::CHILDREN_QUEUES) {
 <& /RTIR/Incident/Elements/ShowChildren,
     IncidentObj => $TicketObj,
     Queue       => $queue,

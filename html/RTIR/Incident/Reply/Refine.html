@@ -46,9 +46,20 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-my @queues = ('Incident Reports');
-push @queues, 'Investigations' if $ARGS{'All'};
-push @queues, 'Blocks' if $ARGS{'All'} && !RT->Config->Get('RTIR_DisableBlocksQueue');
+
+my @queues = ();
+
+foreach my $queue (@RT::IR::CHILDREN_QUEUES) {
+    my $queue_without_spaces = $queue;
+    $queue_without_spaces =~ s/\s*//;
+    if ($queue eq 'Incident Reports') {
+        push @queues, $queue;
+    } elsif ( $All ) {
+        unless( RT->Config->Get('RTIR_Disable' . $queue_without_spaces . 'Queue') ) {
+            push @queues, $queue;
+        }
+    }
+}
 
 return $m->comp(
     '/RTIR/Search/Elements/RefinePage',

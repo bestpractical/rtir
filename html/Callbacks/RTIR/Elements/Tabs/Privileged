@@ -87,35 +87,23 @@ if ( $has_query ) {
 }
 }
 
-$root->child(
-    incidents => title => loc('Incidents'),
-    path => '/RTIR/Search/Results.html?Queue=Incidents'
-)->child(
-    create => title => loc('Create'),
-    path => '/RTIR/Create.html?Queue=Incidents',
-);
-$root->child(
-    reports => title => loc('Incident Reports'),
-    path => '/RTIR/Search/Results.html?Queue=Incident%20Reports'
-)->child(
-    create => title => loc('Create'),
-    path => '/RTIR/Create.html?Queue=Incident%20Reports',
-);
-$root->child(
-    investigations => title => loc('Investigations'),
-    path => '/RTIR/Search/Results.html?Queue=Investigations'
-)->child(
-    launch => title => loc('Launch'),
-    path => '/RTIR/Create.html?Queue=Investigations',
-);
-unless ( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
-    $root->child(
-        blocks => title => loc('Blocks'),
-        path => '/RTIR/Search/Results.html?Queue=Blocks'
-    )->child(
-        create => title => loc('Create'),
-        path => '/RTIR/Create.html?Queue=Blocks',
-    );
+foreach my $queue (@RT::IR::QUEUES) {
+    my $escaped_queue = $m->interp->apply_escapes( $queue, 'u' );
+    my $queue_without_spaces = $queue;
+    $queue_without_spaces =~ s/\s*//;
+    
+    unless (RT->Config->Get('RTIR_Disable' . $queue_without_spaces . 'Queue')) {
+        my $new_ticket_text = 'Create';
+        $new_ticket_text = 'Launch' if $queue eq 'Investigations';
+        
+        $root->child(
+            $queue_without_spaces => title => loc($queue),
+            path => '/RTIR/Search/Results.html?Queue=' . $escaped_queue
+        )->child(
+            create => title => loc($new_ticket_text),
+            path => '/RTIR/Create.html?Queue=' . $escaped_queue,
+        );
+    }
 }
 
 my $tools = $root->child( tools => title => loc('Tools'), path => '/RTIR/Tools/' );

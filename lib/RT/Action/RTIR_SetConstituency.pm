@@ -82,12 +82,14 @@ sub Commit {
 sub InheritConstituency {
     my $self = shift;
     my $ticket = $self->TicketObj;
+    
+    my $query = '';
+    foreach my $queue (@RT::IR::QUEUES) {
+        $query .= ' OR ' if $query;
+        $query .= "Queue = '$queue'";
+    }
 
-    my $query =  "( Queue = 'Incidents'"
-        ." OR Queue = 'Incident Reports'"
-        ." OR Queue = 'Investigations'"
-        ." OR Queue = 'Blocks'"
-        .")";
+    $query =  "( " . $query . " )";
 
     my $constituency = $ticket->FirstCustomFieldValue('Constituency');
     if ( $constituency ) {

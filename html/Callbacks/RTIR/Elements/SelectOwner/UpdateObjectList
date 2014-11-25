@@ -57,7 +57,7 @@ foreach my $object (@$objects) {
 }
 my @new_objects;
 foreach my $object (@$objects) {
-    next unless ($object->__Value('Name')||'') =~ /^(?:Incidents|Investigations|Incident Reports|Blocks)$/;
+    next unless ($object->__Value('Name')||'') =~ /$RT::IR::QUEUES_REGEX/;
 
     my $queues = RT::Queues->new( RT->SystemUser );
     $queues->Limit(

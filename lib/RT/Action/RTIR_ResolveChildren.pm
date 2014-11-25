@@ -78,8 +78,10 @@ sub Commit {
     my $incident = $self->TicketObj;
     my $id = $incident->Id;
 
-    foreach my $qname ( 'Incident Reports', 'Investigations', 'Blocks' ) {
-        next if $qname eq 'Blocks' && RT->Config->Get('RTIR_DisableBlocksQueue');
+    foreach my $qname (@RT::IR::CHILDREN_QUEUES) {
+        my $qname_without_spaces = $qname;
+        $qname_without_spaces =~ s/\s*//;
+        next if && RT->Config->Get('RTIR_Disable' . $qname_without_spaces . 'Queue');
 
         my $members = RT::IR->IncidentChildren(
             $incident, Queue => $qname,

@@ -75,10 +75,14 @@ sub Commit {
     }
 
     # change owner of child Incident Reports, Investigations, Blocks
-    my $query =  "(Queue = 'Incident Reports'"
-                ." OR Queue = 'Investigations'"
-                ." OR Queue = 'Blocks'"
-                .") AND MemberOf = ". $self->TicketObj->Id
+    my $subquery = '';
+    foreach my $queue (@RT::IR::CHILDREN_QUEUES) {
+        $subquery .= ' OR ' if $subquery;
+        $subquery .= "Queue = '$queue'";
+    }
+    
+    my $query =  "(" . $subquery . ")".
+                ." AND MemberOf = ". $self->TicketObj->Id
                 ." AND Owner != ". $transaction->NewValue;
     my $members = RT::Tickets->new( $actor );
     $members->FromSQL( $query );
