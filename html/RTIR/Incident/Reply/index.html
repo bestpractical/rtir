@@ -95,7 +95,7 @@
 % unless( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
 <h2><&|/l&>Blocks Correspondents</&></h2>
 <& /RTIR/Search/Elements/ShowResults,
-    Queue         => 'Investigations',
+    Queue         => 'Blocks',
     BaseURL       => $BaseURL,
     BaseQuery     => RT::IR->Query(Queue => 'Blocks', MemberOf => $id),
     Query         => $Query,
