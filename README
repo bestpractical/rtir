@@ -14,7 +14,7 @@ touch with us at <sales@bestpractical.com>.
 REQUIRED PACKAGES:
 ------------------
 
-o   RT 4.2.7 or newer releases of the 4.2 series.
+o   RT 4.2.9 or newer releases of the 4.2 series.
 o   Net::Whois::RIPE 1.31 is bundled with RTIR for compatibility with the
     API RTIR uses and for a fix to run without warnings under perl 5.18.
 
@@ -52,7 +52,7 @@ Installation instructions:
 
 6) Activate the RTIR extension in the RT_SiteConfig.pm file:
 
-    Plugins('RT::IR');
+    Plugin('RT::IR');
 
 7) Stop and start your web server.
 
@@ -96,9 +96,9 @@ SETTING UP THE MAIL GATEWAY
 An alias for the Incident Reports queue will need to be configured.
 Add the following lines to /etc/aliases (or your local equivalent):
 
-rtir:         "|/opt/rt4/bin/rt-mailgate --queue 'Incident Reports' --action correspond --url http://localhost/"
+rtir:         "|/opt/rt4/bin/rt-mailgate --queue 'Incident Reports' --action correspond --url http://rt.example.com/"
 
-You should substitute the URL for RT's web interface for "http://localhost/".
+You should substitute the URL for RT's web interface for http://rt.example.com/.
 
 o  If your webserver uses SSL, rt-mailgate will require several new
    Perl libraries. See the RT README for more details on this option.

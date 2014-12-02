@@ -1,5 +1,4 @@
 .perlcriticrc
-bin/add_constituency
 bin/add_constituency.in
 CHANGES
 docs/AdministrationTutorial.pod
@@ -216,6 +215,7 @@ t/011-merge.t
 t/015-make-clicky.t
 t/019-watchers-on-create.t
 t/020-incident-and-investigation.t
+t/030-redirect-on-login.t
 t/articles/basics.t
 t/articles/on-create.t
 t/articles/on-update.t
@@ -260,6 +260,7 @@ t/incident/split.t
 t/mail/skip_notification.t
 t/report/split.t
 t/report/status.t
+t/searches/cf.t
 t/searches/menu.t
 t/searches/simple.t
 t/tools/lookup.t
