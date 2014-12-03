@@ -2,13 +2,26 @@
 
 @Initial = (
     sub {
-        # put fake lifecycles for initiialization to succed
+
+        # make initdb will generally not have Plugin('RT::IR') set
+        # so we need to ensure that some dummy lifecycles and our CFV source
+        # are imported and configured.
+        #
+        # similarly, RT::Test runs InsertData without having actually loaded Plugins
+        #
+        # Some of this could be fixed with "require RT::IR" but there is so much
+        # caching that breaks with that happening before queues/CFs are loaded.
         my $lc = RT->Config->Get('Lifecycles') || {};
         foreach my $name (qw(incidents incident_reports investigations blocks)) {
             $lc->{ $name } ||= $lc->{'default'} || {};
         }
         RT->Config->Set(Lifecycles => %$lc);
         RT::Lifecycle->FillCache;
+
+        RT->Config->Set('CustomFieldValuesSources', ( RT->Config->Get('CustomFieldValuesSources'),
+                'RT::CustomFieldValues::Constituency') );
+        require RT::CustomFieldValues::Constituency;
+
         return 1;
     },
 );
@@ -44,8 +57,9 @@
 @CustomFields = (
     {
         Name        => 'Constituency',
-        Type        => 'SelectSingle',
+        Type        => 'ConstituencySingle',
         RenderType  => 'Dropdown',
+        ValuesClass => 'RT::CustomFieldValues::Constituency',
         Queue       => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
         Disabled    => 0,
         Description => 'Constituency for RTIR queues',

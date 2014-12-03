@@ -45,30 +45,6 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%init>
-return unless $CustomField->LookupType eq 'RT::Queue-RT::Ticket';
-
-my $type = RT::IR->OurQueue( $ARGS{'QueueObj'} || $ARGS{'Queue'} || $Object->QueueObj );
-unless ( $type ) {
-    RT->Logger->error("Couldn't figure out queue from arguments")
-        unless defined $type;
-    return;
-}
-
-my $cf_name = $CustomField->Name;
-my @paths = (
-    "/RTIR/$type/Elements/Edit$cf_name",
-    "/RTIR/Elements/Edit$cf_name",
-);
-foreach my $path ( @paths ) {
-    next unless $m->comp_exists($path);
-
-    $$Name = $path;
-    return;
-}
-</%init>
-<%args>
-$Name
-$CustomField
-$Object
-</%args>
+<%INIT>
+return $m->comp( 'EditCustomFieldSelect', %ARGS );
+</%INIT>

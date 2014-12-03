@@ -16,7 +16,7 @@ diag "load and check basic properties of the CF" if $ENV{'TEST_VERBOSE'};
     is( $cfs->Count, 1, "found one CF with name 'Constituency'" );
 
     $cf = $cfs->First;
-    is( $cf->Type, 'Select', 'type check' );
+    is( $cf->Type, 'Constituency', 'type check' );
     is( $cf->LookupType, 'RT::Queue-RT::Ticket', 'lookup type check' );
     is( $cf->MaxValues, 1, "single value" );
     ok( !$cf->Disabled, "not disabled" );

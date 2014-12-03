@@ -87,6 +87,10 @@ RT->AddStyleSheets( 'rtir-styles.css' );
 
 $RT::Interface::Web::is_whitelisted_component{'/RTIR/Search/Results.html'} = 1;
 
+RT->Config->Set('CustomFieldValuesSources',
+                ( RT->Config->Get('CustomFieldValuesSources'),
+                  'RT::CustomFieldValues::Constituency') );
+
 =head1 FUNCTIONS
 
 =head2 IsStaff

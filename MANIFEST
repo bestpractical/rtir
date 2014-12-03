@@ -48,7 +48,6 @@ etc/upgrade/3.0.0rc2/content
 etc/upgrade/3.1.0/content
 etc/upgrade/upgrade.pl.in
 html/Callbacks/RTIR/autohandler/SuccessfulLogin
-html/Callbacks/RTIR/Elements/EditCustomField/EditComponentName
 html/Callbacks/RTIR/Elements/EditCustomFields/MassageCustomFields
 html/Callbacks/RTIR/Elements/Header/Head
 html/Callbacks/RTIR/Elements/MakeClicky/Default
@@ -63,6 +62,7 @@ html/Callbacks/RTIR/Search/Elements/PickBasics/Default
 html/Callbacks/RTIR/Search/Results.html/Initial
 html/Callbacks/RTIR/Ticket/Create.html/Default
 html/Callbacks/RTIR/Ticket/Display.html/Initial
+html/Elements/EditCustomFieldConstituency
 html/RTIR/Advanced.html
 html/RTIR/Create.html
 html/RTIR/Crypt.html
@@ -72,7 +72,6 @@ html/RTIR/EditUsername
 html/RTIR/Elements/AddWatchers
 html/RTIR/Elements/AttachReports
 html/RTIR/Elements/DueIncidents
-html/RTIR/Elements/EditConstituency
 html/RTIR/Elements/EditCustomFields
 html/RTIR/Elements/EditPeople
 html/RTIR/Elements/EditRTIRField
@@ -188,6 +187,7 @@ lib/RT/Condition/RTIR_RequireConstituencyGroupChange.pm
 lib/RT/Condition/RTIR_RequireDueChange.pm
 lib/RT/Condition/RTIR_RequireReportActivation.pm
 lib/RT/Condition/RTIR_StaffResponse.pm
+lib/RT/CustomFieldValues/Constituency.pm
 lib/RT/IR.pm
 lib/RT/IR/Config.pm
 lib/RT/IR/Test.pm.in
