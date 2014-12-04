@@ -109,7 +109,28 @@ sub ExternalValues {
     }
     $cfvs->Limit( FIELD => 'CustomField', VALUE => $cf->Id );
 
+    my $main_queue = RT::Queue->new($self->CurrentUser);
+    for my $obj ($cf->ACLEquivalenceObjects) {
+        next unless (ref $obj eq 'RT::Queue');
+        $main_queue->Load( $obj->Id );
+        last;
+    }
+    unless ($main_queue->Id) {
+        RT->Logger->debug("Unable to find Queue from Custom Field, loading Incidents");
+
+        $main_queue->Load( 'Incidents' );
+    }
+
+    # Only needed until we don't override RT::Queue->HasRight in RT::IR as much
+    $main_queue->{'disable_constituency_right_check'} = 1;
+    my $show_all = $main_queue->CurrentUserHasRight('OwnTicket') ? 1 : 0;
+
     while( my $cfv = $cfvs->Next ) {
+        unless ($show_all) {
+            my $name = $cfv->Name;
+            my $subqueue = RT::Queue->new($self->CurrentUser);
+            next unless ($subqueue->LoadByCols(Name => $main_queue->Name . " - ".$name) && $subqueue->id && $subqueue->CurrentUserHasRight('OwnTicket'))
+        }
         push @res, {
             name        => $cfv->Name,
             sortorder   => $i++,
