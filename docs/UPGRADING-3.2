@@ -37,3 +37,12 @@ copy the IP for you, but didn't do so if you later added another IR to
 an existing Incident.  If you do no want this behavior, it is controlled
 by the "On Linking To Incident Copy IPs" scrip in the Incident Report
 Queue.
+
+
+=head1 UPGRADING FROM 3.2.0 AND EARLIER
+
+RTIR 3.2.0 and earlier set an unlimited value for the core setting
+C<MaxInlineBody>, overriding the default of 12k.  This could cause
+performance problems on large emails with large numbers of IP addresses,
+URLs, or other MakeClicky targets.  RTIR now sets a C<MaxInlineBody> of
+25k.
