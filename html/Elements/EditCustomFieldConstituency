@@ -45,6 +45,43 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%INIT>
-return $m->comp( 'EditCustomFieldSelect', %ARGS );
-</%INIT>
+<select name="<%$name%>" id="<%$name%>" class="CF-<%$CustomField->id%>-Edit">
+% my $CFVs = $CustomField->Values;
+% while ( my $value = $CFVs->Next ) { my $cfv_name = $value->Name;
+    <option value="<% $cfv_name %>" <% $default{ lc $cfv_name } ? 'selected="selected"' : '' %>>
+        <% $cfv_name %>
+    </option>
+% }
+</select>
+<%init>
+@Default = grep defined && length, @Default;
+
+unless (@Default) {
+    my $default = $PropagationObject->FirstCustomFieldValue('Constituency') if $PropagationObject;
+    $default ||= RT::IR::DefaultConstituency( $QueueObj ) if $QueueObj;
+    $default ||= scalar RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'};
+    push @Default, $default;
+}
+
+if ( !@Default && $Values ) {
+    @Default = map $_->Content, @{ $Values->ItemsArrayRef };
+}
+my %default = map {lc $_ => 1} @Default;
+my $name =  $Name || $NamePrefix . $CustomField->Id . '-Values';
+</%init>
+<%ARGS>
+$Object => undef
+$CustomField => undef
+$NamePrefix => undef
+$Name => undef
+$BasedOnName => undef
+@Default => ()
+$Values => undef
+$Multiple => 0
+$Rows => undef
+$HideCategory => 0
+$RenderType => undef
+$MaxValues => 1
+$PropagationObject => undef
+$QueueObj => undef
+</%ARGS>
