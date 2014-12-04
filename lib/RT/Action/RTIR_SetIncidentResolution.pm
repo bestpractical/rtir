@@ -45,11 +45,9 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
+package RT::Action::RTIR_SetIncidentResolution;
 use strict;
 use warnings;
-
-package RT::Action::RTIR_SetIncidentResolution;
 use base 'RT::Action::RTIR';
 
 =head2 Commit
@@ -89,6 +87,6 @@ sub Commit {
     return 1;
 }
 
-RT::Base->_ImportOverlays;
+RT::IR->ImportOverlays;
 
 1;

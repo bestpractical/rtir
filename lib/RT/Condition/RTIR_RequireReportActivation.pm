@@ -45,11 +45,9 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
+package RT::Condition::RTIR_RequireReportActivation;
 use strict;
 use warnings;
-
-package RT::Condition::RTIR_RequireReportActivation;
 use base 'RT::Condition::RTIR';
 
 =head2 IsApplicable
@@ -85,6 +83,6 @@ sub IsApplicable {
     return 1;
 }
 
-RT::Base->_ImportOverlays;
+RT::IR->ImportOverlays;
 
 1;

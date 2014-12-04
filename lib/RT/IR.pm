@@ -45,12 +45,10 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
+package RT::IR;
 use 5.008003;
 use strict;
 use warnings;
-
-package RT::IR;
 
 our $VERSION = '3.3.HEAD';
 
@@ -574,22 +572,23 @@ sub CustomFields {
     if ( $type ) {
         @list = (@{ $cache{'Global'} }, @{ $cache{$type} });
     } else {
-        @list = (@{ $cache{'Global'} }, map @$_, @cache{values %TYPE});
+        @list = (@{ $cache{'Global'} }, map { @$_ } @cache{values %TYPE});
     }
 
     if ( my $field = $arg{'Field'} ) {
         if ( $field =~ /\D/ ) {
-            @list = grep lc $_->Name eq lc $field, @list;
+            @list = grep { lc $_->Name eq lc $field } @list;
         } else {
-            @list = grep $_->id == $field, @list;
+            @list = grep { $_->id == $field } @list;
         }
     }
 
     return wantarray? @list : $list[0];
 }
 
-sub _FlushCustomFieldsCache {
+sub FlushCustomFieldsCache {
     %cache = ();
+    return 1;
 } }
 
 
@@ -649,7 +648,7 @@ sub DefaultConstituency {
         push @values, substr $pqueue->__Value('Name'), length("$name - ");
     }
     my $default = RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'} || '';
-    return $default if grep lc $_ eq lc $default, @values;
+    return $default if grep { lc $_ eq lc $default } @values;
     return shift @values;
 }
 
@@ -666,7 +665,7 @@ if ( RT::IR->HasConstituency ) {
         %RT::IR::ConstituencyCache = ();
         %RT::IR::HasNoQueueCache = ();
         RT::Queue::_FlushQueueHasRightCache();
-        RT::IR::_FlushCustomFieldsCache();
+        RT::IR::FlushCustomFieldsCache();
         RT::IR::_FlushHasConstituencyCache();
         $orig_CleanupRequest->();
     };
@@ -885,9 +884,10 @@ if ( RT::IR->HasConstituency ) {
     }
 
 
+
     # TODO SubjectTag and Encryption Keys need overriding also
-    sub CorrespondAddress { GetQueueAttribute(shift, 'CorrespondAddress') }
-    sub CommentAddress { GetQueueAttribute(shift, 'CommentAddress') }
+    sub CorrespondAddress { return GetQueueAttribute(shift, 'CorrespondAddress') }
+    sub CommentAddress { return GetQueueAttribute(shift, 'CommentAddress') }
 
     # dive down to get Queue Attributes from Incidents - EDUNET rather than Incidents
     # Populates ConstituencyCache and HasNoQueueCache, but has the same
@@ -968,7 +968,7 @@ if ( RT::IR->HasConstituency ) {
             if ( $tmp ) {
                 chomp $tmp;
                 $tmp = undef unless
-                    grep lc $_->Name eq lc $tmp, @{ $cf->Values->ItemsArrayRef };
+                    grep { lc $_->Name eq lc $tmp } @{ $cf->Values->ItemsArrayRef };
             }
             $value = $tmp;
             RT->Logger->debug("Found Constituency '$tmp' in email") if $tmp;
@@ -1019,6 +1019,18 @@ sub HandleRtirrequestor {
 
 package RT::IR;
 
-RT::Base->_ImportOverlays;
+sub ImportOverlays {
+    my $class = shift;
+    my ($package,undef,undef) = caller();
+    $package =~ s|::|/|g;
+    for my $type (qw(Overlay Vendor Local)) {
+        my $filename = $package."_".$type.".pm";
+        eval { require $filename };
+        die $@ if ($@ && $@ !~ qr{^Can't locate $filename});
+    }
+    return;
+}
+
+__PACKAGE__->ImportOverlays();
 
 1;

@@ -45,11 +45,9 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
+package RT::Condition::RTIR_CustomerResponse;
 use strict;
 use warnings;
-
-package RT::Condition::RTIR_CustomerResponse;
 use base 'RT::Condition::RTIR';
 
 =head1 NAME
@@ -76,6 +74,6 @@ sub IsApplicable {
     return !$self->IsStaff;
 }
 
-RT::Base->_ImportOverlays;
+RT::IR->ImportOverlays;
 
 1;

@@ -45,11 +45,9 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
+package RT::Condition::RTIR_RequireConstituencyGroupChange;
 use strict;
 use warnings;
-
-package RT::Condition::RTIR_RequireConstituencyGroupChange;
 use base 'RT::Condition::RTIR';
 
 =head2 IsApplicable
@@ -73,6 +71,6 @@ sub IsApplicable {
     return 0;
 }
 
-RT::Base->_ImportOverlays;
+RT::IR->ImportOverlays;
 
 1;

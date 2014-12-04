@@ -46,10 +46,9 @@
 #
 # END BPS TAGGED BLOCK }}}
 
+package RT::Action::RTIR_FindIP;
 use strict;
 use warnings;
-
-package RT::Action::RTIR_FindIP;
 use base qw(RT::Action::RTIR);
 
 use Regexp::Common qw(net);
@@ -135,7 +134,7 @@ sub Commit {
             );
         }
         elsif ( $4 && defined $5 ) { # IPv4/mask
-            my $cidr = join( '.', map $_||0, (split /\./, $4)[0..3] ) ."/$5";
+            my $cidr = join( '.', map { $_||0 } (split /\./, $4)[0..3] ) ."/$5";
             my $range = (Net::CIDR::cidr2range( $cidr ))[0] or next;
             $spots_left -= $self->AddIP(
                 IP => $range, CustomField => $cf, Skip => \%existing
@@ -162,6 +161,6 @@ sub AddIP {
     return 1;
 }
 
-RT::Base->_ImportOverlays;
+RT::IR->ImportOverlays;
 
 1;

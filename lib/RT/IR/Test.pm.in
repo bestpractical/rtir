@@ -45,14 +45,12 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
+package RT::IR::Test;
 use strict;
 use warnings;
 
 ### after: use lib qw(@RT_LIB_PATH@);
 use lib qw(/opt/rt4/local/lib /opt/rt4/lib);
-
-package RT::IR::Test;
 
 use base 'RT::Test';
 
@@ -84,13 +82,14 @@ sub import {
     RT::IR::Test->export_to_level($level);
 
     RT->Config->Set( 'rtirname' => 'regression_tests' );
+    return;
 }
 
 our $RTIR_TEST_USER = "rtir_test_user";
 our $RTIR_TEST_PASS = "rtir_test_pass";
 
 sub default_agent {
-    my $agent = new RT::IR::Test::Web;
+    my $agent = RT::IR::Test::Web->new;
     require HTTP::Cookies;
     $agent->cookie_jar( HTTP::Cookies->new );
     rtir_user();

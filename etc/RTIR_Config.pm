@@ -1,3 +1,4 @@
+use warnings;
 =head1 NAME
 
 RT::IR::Config - RTIR specific options and defaults for RT

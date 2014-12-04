@@ -114,10 +114,11 @@ RT::Init;
 
 my %opt;
 
-sub debug(@) {
+sub debug {
     return if $opt{'quiet'};
     print @_;
     print "\n" if $_[-1] && $_[-1] !~ /\n$/s;
+    return 1;
 };
 
 use Getopt::Long;
@@ -293,6 +294,7 @@ sub add_cf_value {
         die $msg unless $val;
         debug "Added '$value' to the constituency field";
     }
+    return 1;
 }
 
 sub grant_group_queue_rights {
@@ -315,7 +317,8 @@ sub grant_group_queue_rights {
                 die "Failed to grant $right to ". $group->Name ." for Queue ". $queue->Name;
             }
         }
-    } 
+    }
+    return 1;
 }
 
 
@@ -345,7 +348,8 @@ sub grant_group_cf_rights {
                     .".\nError: $msg";
             }
         }
-    } 
+    }
+    return 1;
 }
 
 sub group_exists {

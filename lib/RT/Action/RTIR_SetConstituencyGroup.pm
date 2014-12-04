@@ -45,11 +45,9 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
+package RT::Action::RTIR_SetConstituencyGroup;
 use strict;
 use warnings;
-
-package RT::Action::RTIR_SetConstituencyGroup;
 use base 'RT::Action::RTIR';
 
 =head2 Commit
@@ -113,13 +111,13 @@ sub ConstituencyValues {
             RT->Logger->crit("Couldn't load constituency field");
             return 0;
         }
-        @constituencies = map $_->Name, @{ $cf->Values->ItemsArrayRef };
+        @constituencies = map { $_->Name } @{ $cf->Values->ItemsArrayRef };
     }
     return @constituencies;
 }
 
 }
 
-RT::Base->_ImportOverlays;
+RT::IR->ImportOverlays;
 
 1;

@@ -45,11 +45,9 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
+package RT::Action::RTIR_SetDueIncident;
 use strict;
 use warnings;
-
-package RT::Action::RTIR_SetDueIncident;
 use base 'RT::Action::RTIR';
 
 =head1 NAME
@@ -119,6 +117,6 @@ sub UpdateDue {
     return 1;
 }
 
-RT::Base->_ImportOverlays;
+RT::IR->ImportOverlays;
 
 1;

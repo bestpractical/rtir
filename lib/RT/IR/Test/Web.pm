@@ -45,11 +45,9 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
+package RT::IR::Test::Web;
 use strict;
 use warnings;
-
-package RT::IR::Test::Web;
 use base qw(RT::Test::Web);
 
 require RT::IR::Test;
@@ -89,7 +87,7 @@ sub goto_create_rtir_ticket {
     );
 
     # set the form
-    $self->form_number(3);
+    return $self->form_number(3);
 }
 
 sub create_rtir_ticket_ok {
@@ -170,8 +168,8 @@ sub create_incident_for_ir {
     
     Test::More::is ($self->status, 200, "Attempting to create new incident linked to child $ir_id");
 
-    Test::More::ok ($self->content =~ /.*Ticket (\d+) created in queue.*/g, "Incident created from child $ir_id.");
-    my $incident_id = $1;
+    my ($incident_id) = $self->content =~ /.*Ticket (\d+) created in queue.*/;
+    Test::More::ok ($incident_id, "Incident created from child $ir_id.");
 
 #    diag("incident ID is $incident_id");
     return $incident_id;
@@ -181,7 +179,7 @@ sub display_ticket {
     my $self = shift;
     my $id = shift;
 
-    $self->get_ok("/RTIR/Display.html?id=$id", "Loaded Display page for Ticket #$id");
+    return $self->get_ok("/RTIR/Display.html?id=$id", "Loaded Display page for Ticket #$id");
 }
 
 sub ticket_is_linked_to_inc {
@@ -222,7 +220,7 @@ sub ok_and_content_like {
     local $Test::Builder::Level = $Test::Builder::Level + 1;
     Test::More::is($self->status, 200, "request successful");
     #like($self->content, $re, $desc);
-    $self->content_like($re, $desc);
+    return $self->content_like($re, $desc);
 }
 
 
@@ -257,51 +255,6 @@ sub LinkChildToIncident {
 
     return;
 }
-
-
-sub merge_ticket {
-    my $self = shift;
-    my $id = shift;
-    my $id_to_merge_to = shift;
-    
-    $self->display_ticket( $id);
-    
-    $self->timeout(600);
-    
-    $self->follow_link_ok({text => 'Merge', n => '1'}, "Followed 'Merge' link");
-    
-    $self->content() =~ /Merge ([\w ]+) #$id:/i;
-    my $type = $1 || 'Ticket';
-    
-
-    # Check that the desired incident occurs in the list of available incidents; if not, keep
-    # going to the next page until you find it (or get to the last page and don't find it,
-    # whichever comes first)
-    while($self->content() !~ m|<a href="/Ticket/Display.html\?id=$id_to_merge_to">$id_to_merge_to</a>|) {
-        my @ids = sort map s|<b>\s*<a href="/Ticket/Display.html?id=(\d+)">\1</a>\s*</b>|$1|, split /<td/, $self->content();
-        my $max = pop @ids;
-        my $url = "Merge.html?id=$id&Order=ASC&Query=( 'Status' = 'new' OR 'Status' = 'open' AND 'id' > $max)";
-        my $weburl = RT->Config->Get('WebURL');
-        Test::More::diag("IDs found: " . join ', ', @ids);
-        Test::More::diag("Max ID: " . $max);
-        Test::More::diag ("URL: " . $url);
-        $self->get("$weburl/RTIR/$url");
-        last unless $self->content() =~ qr|<b>\s*<a href="/Ticket/Display.html?id=(\d+)">\1</a>\s*</b>|sm;
-    }
-    
-    
-    $self->form_number(3);
-    
-    
-    $self->field("SelectedTicket", $id_to_merge_to);
-    $self->click_button(value => 'Merge');
-    
-    Test::More::is ($self->status, 200, "Attempting to merge $type #$id to ticket #$id_to_merge_to");
-    
-    $self->content_like(qr{.*<ul class="action-results">\s*<li>Merge Successful</li>.*}i, 
-        "Successfully merged $type #$id to ticket #$id_to_merge_to");
-}
-
 
 sub create_incident_and_investigation {
     my $self = shift;
@@ -357,7 +310,7 @@ sub has_watchers {
 
     $self->display_ticket($id);
 
-    $self->content_like(
+    return $self->content_like(
 qr{<td class="labeltop">Correspondents:</td>\s*<td class="value">\s*<span class="user" data-user-id="\d+">\s*<a href="/User/Summary\.html\?id=\d+">\s*([@\w\.&;]+)\s*</a></span>}ms,
         "Found $type",
     );
@@ -369,7 +322,7 @@ sub goto_edit_block {
 
     $self->display_ticket($id);
 
-    $self->follow_link_ok( { text => 'Edit', n => '1' },
+    return $self->follow_link_ok( { text => 'Edit', n => '1' },
         "Followed 'Edit' (block) link" );
 }
 
@@ -386,7 +339,7 @@ sub resolve_rtir_ticket {
 
     Test::More::is( $self->status, 200, "Attempting to resolve $type #$id" );
 
-    $self->content_like(
+    return $self->content_like(
         qr/.*Status changed from \S*\w+\S* to \S*resolved.*/,
         "Successfully resolved $type #$id"
     );
@@ -396,7 +349,7 @@ sub bulk_abandon {
     my $self       = shift;
     my @to_abandon = @_;
 
-    Test::More::diag "going to bulk abandon incidents " . join ',', map "#$_",
+    Test::More::diag "going to bulk abandon incidents " . join ',', map { "#$_" }
       @to_abandon
       if $ENV{'TEST_VERBOSE'};
 
@@ -440,6 +393,7 @@ sub bulk_abandon {
         $self->form_number(3);
         Test::More::ok( $self->value('BulkAbandon'), "Still on Bulk Abandon page" );
     }
+    return;
 }
 
 1;
