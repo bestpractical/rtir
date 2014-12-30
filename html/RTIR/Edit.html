@@ -79,7 +79,7 @@
 % } else {
       <& /Elements/SelectStatus,
           Name => 'Status',
-          QueueObj => $Ticket->QueueObj,
+          Object => $Ticket->QueueObj,
           DefaultValue => 0,
           Default => $ARGS{'Status'} || $Ticket->Status,
       &>
