@@ -108,7 +108,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
   <td colspan="2">
     <& /Elements/SelectStatus,
         Name => 'Status',
-        QueueObj => $QueueObj,
+        Object => $QueueObj,
         DefaultValue => 0,
         Default => $ARGS{Status} || $QueueObj->LifecycleObj->DefaultOnCreate,
     &>
