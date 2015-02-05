@@ -315,12 +315,11 @@ unless (defined $default_queue) {
 =item C<$MaxInlineBody>
 
 By default, RT only displays text attachments inline up to
-the first 16k. RTIR will display them no matter how long
-they are.
+the first 12k; RTIR increases this to 25k.
 
 =cut
 
-Set($MaxInlineBody, 0);
+Set($MaxInlineBody, 25 * 1024);
 
 =item C<$OverdueAfter>
 
