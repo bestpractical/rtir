@@ -62,6 +62,7 @@ use Scalar::Util qw(blessed);
 use RT::IR::Config;
 RT::IR::Config::Init();
 
+my @LIFECYCLES = ('incidents', 'incident_reports', 'investigations','blocks');
 my @QUEUES = ('Incidents', 'Incident Reports', 'Investigations', 'Blocks');
 my %QUEUES = map { lc($_) => $_ } @QUEUES;
 my %TYPE = (
@@ -244,7 +245,8 @@ sub ActiveQuery {
 sub Query {
     my $self = shift;
     my %args = (
-        Queue        => undef,
+        Lifecycle    => undef,
+        Queue        => undef, # TODO 3.4: remove this in favor of lifecycle
         Status       => undef,
         Active       => undef,
         Inactive     => undef,
@@ -258,7 +260,11 @@ sub Query {
     );
 
     my @res;
-    if ( $args{'Queue'} ) {
+    if ( $args{'Lifecycle'} ) {
+        push @res, map "($_)", join ' OR ', map "Lifecycle = '$_'",
+            $flat->( $args{'Lifecycle'}, 'Name' );
+    }
+    elsif ( $args{'Queue'} ) {
         push @res, map "($_)", join ' OR ', map "Queue = '$_'",
             $flat->( $args{'Queue'}, 'Name' );
     }
@@ -312,8 +318,8 @@ sub ParseSimpleSearch {
         TicketsObj => RT::Tickets->new( $args{'CurrentUser'} ),
     );
     my $res = $search->QueryToSQL;
-    if ( $res && $res !~ /\bQueue\b/ ) {
-        $res = "Queue = 'Incidents' AND ($res)";
+    if ( $res && $res !~ /\bQueue\b/ && $res !~ /\bLifecycle\b/ ) {
+        $res = "Lifecycle = 'incidents' AND ($res)";
     }
     return $res;
 }
@@ -360,7 +366,7 @@ sub Incidents {
     my $ticket = shift;
 
     my $res = RT::Tickets->new( $ticket->CurrentUser );
-    $res->FromSQL( $self->Query( Queue => 'Incidents', HasMember => $ticket ) );
+    $res->FromSQL( $self->Query( Lifecycle => 'incidents', HasMember => $ticket ) );
     return $res;
 }
 
@@ -375,7 +381,7 @@ sub RelevantIncidentsQuery {
     my $self = shift;
     my $ticket = shift;
 
-    return "Queue = 'Incidents' AND HasMember = ". $ticket->id
+    return "Lifecycle = 'incidents' AND HasMember = ". $ticket->id
         ." AND Status != 'abandoned'"
     ;
 }
@@ -392,7 +398,7 @@ sub RelevantIncidents {
 sub IncidentChildren {
     my $self = shift;
     my $ticket = shift;
-    my %args = (Queue => \@QUEUES, @_);
+    my %args = (Lifecycle => \@LIFECYCLES, @_);
 
     my $res = RT::Tickets->new( $ticket->CurrentUser );
     $res->FromSQL( $self->Query( %args, MemberOf => $ticket->id ) );
@@ -408,7 +414,7 @@ sub IncidentHasActiveChildren {
     my $incident = shift;
 
     my $children = RT::Tickets->new( $incident->CurrentUser );
-    $children->FromSQL( $self->ActiveQuery( Queue => \@QUEUES, MemberOf => $incident->id ) );
+    $children->FromSQL( $self->ActiveQuery( Lifecycle => \@LIFECYCLES, MemberOf => $incident->id ) );
     while ( my $child = $children->Next ) {
         next if $self->IsLinkedToActiveIncidents( $child, $incident );
         return 1;
@@ -434,7 +440,7 @@ sub IsLinkedToActiveIncidents {
 
     my $tickets = RT::Tickets->new( $child->CurrentUser );
     $tickets->FromSQL( $self->ActiveQuery(
-        Queue     => 'Incidents',
+        Lifecycle     => 'incidents',
         HasMember => $child,
         ($parent ? (Exclude   => $parent->id) : ()),
     ) );
@@ -691,7 +697,7 @@ package RT::Search::Simple;
 
 sub HandleRtirip {
     return 'RTIR IP' => RT::IR->Query(
-        Queue => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
+        Lifecycle => ['incidents', 'incident_reports', 'investigations', 'blocks'],
         And => "'CustomField.{IP}' = '$_[1]'",
     );
 }
@@ -702,9 +708,9 @@ sub HandleRtirrequestor {
 
     my $children = RT::Tickets->new( $self->TicketsObj->CurrentUser );
     $children->FromSQL(
-        "( Queue = 'Incident Reports' OR
-           Queue = 'Investigations' OR
-           Queue = 'Blocks'
+        "( Lifecycle = 'incident_reports' OR
+           Lifecycle = 'investigations' OR
+           Lifecycle = 'blocks'
          ) AND Requestor LIKE '$value'"
     );
     my $query = '';
@@ -713,7 +719,7 @@ sub HandleRtirrequestor {
         $query .= "HasMember = " . $child->Id;
     }
     $query ||= 'id = 0';
-    return 'RTIR Requestor' => "Queue = 'Incidents' AND ($query)";
+    return 'RTIR Requestor' => "Lifecycle = 'incidents' AND ($query)";
 }
 
 package RT::IR;

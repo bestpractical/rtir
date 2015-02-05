@@ -56,7 +56,7 @@
 % } else {
 <& /RTIR/Search/Elements/ShowResults,
     Queue         => $Queue,
-    BaseQuery     => RT::IR->Query( Queue => $Queue ),
+    BaseQuery     => RT::IR->Query( Lifecycle => $Queue->Lifecycle ),
     Query         => $Query,
     Format        => $Format,
     AllowSorting  => 0,

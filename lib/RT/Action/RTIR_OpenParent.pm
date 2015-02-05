@@ -68,7 +68,7 @@ sub Commit {
 
     my $parents = RT::Tickets->new( $txn->CurrentUser );
     $parents->FromSQL( RT::IR->Query(
-        Queue     => 'Incidents',
+        Lifecycle     => 'incidents',
         HasMember => $ticket,
         Inactive  => 1,
     ) );
