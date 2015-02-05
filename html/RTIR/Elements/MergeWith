@@ -64,7 +64,7 @@ my $Type = RT::IR::TicketType( Queue => $Queue );
 $Title ||= $Type .'s';
 
 $Query ||= RT::IR->ActiveQuery( Queue => $Queue );
-$BaseQuery ||= RT::IR->Query( Queue => $Queue, Exclude => $id, Constituency => $Ticket );
+$BaseQuery ||= RT::IR->Query( Queue => $Queue, Exclude => $id );
 
 </%INIT>
       

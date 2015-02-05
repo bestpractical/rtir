@@ -57,15 +57,6 @@ for my $type (RT::IR->Queues) {
                         ENTRYAGGREGATOR => 'OR',
                         CASESENSITIVE => 0,
                 );
-    } else {
-# anywhere else, skip constituency Queues.  In the if() clause
-# we're hardcoding 4 Queues, so we don't also need to skip the constituency queues.
-        $Queues->Limit( FIELD => 'Name',
-                        OPERATOR => 'NOT STARTSWITH',
-                        VALUE => "$type - ",
-                        SUBCLAUSE => 'Constituencies',
-                        CASESENSITIVE => 0,
-                );
     }
 
 }

@@ -97,7 +97,6 @@ my $title = loc("Link selected [_1] to Incident #[_2]", $Type, $id);
 my $BaseQuery = RT::IR->Query(
     Queue => $Queue,
     NotMemberOf => $id,
-    Constituency => $IncidentObj,
 );
 
 my $base_url = 'RTIR/Link/FromIncident/?'

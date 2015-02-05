@@ -563,21 +563,7 @@ Set(
         resolved => "successfully resolved",
         rejected => "no resolution reached",
     },
-    Constituency => 'EDUNET',
 );
-
-=item C<$_RTIR_Constituency_Propagation>
-
-Set constituency propagation algorithm. Valid values are 'no',
-'inherit' and 'reject', by default 'no' propagation happens.
-
-Read more about constituencies in F<lib/RT/IR/Constituencies.pod>.
-Algorithms are described in
-L<Constituencies/Constituency Propagation Options>.
-
-=cut
-
-Set( $_RTIR_Constituency_Propagation,    'no' );
 
 =item C<%CustomFieldGroupings>
 
@@ -600,7 +586,6 @@ available in all screens in RTIR so may not be the best place for Custom Fields.
 
 Set(%CustomFieldGroupings,
     'RTIR::Ticket' => [
-        'Basics'         => ['Constituency'],
         'Networking'     => ['IP'],
         'Details' => ['How Reported','Reporter Type','Customer',
                       'Description', 'Resolution', 'Function', 'Classification',

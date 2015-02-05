@@ -124,26 +124,6 @@
     ],
   &>
 
-% if ( $constituency_cf ) {
-  <tr>
-    <td class="label"><&|/l&>Constituency</&>:</td>
-    <td class="value">
-% if ( !$Incident[0] || RT->Config->Get('_RTIR_Constituency_Propagation') eq 'no' ) {
-      <& /RTIR/Elements/EditRTIRField, 
-         QueueObj => $QueueObj, 
-         Name     => 'Constituency',
-         ($Incident[0] ? (PropagationObject => $IncidentObj[0]) : ()),
-       &>
-% } else {
-% #TODO: hacks, we need way to define CF value on Create, but don't allow user to change it
-      <input type="hidden" class="hidden" name="<% $constituency_field %>-Magic" value="1" />
-      <input type="hidden" class="hidden" name="<% $constituency_field %>" value="<% $IncidentObj[0]->FirstCustomFieldValue('Constituency') %>" />
-      <& /RTIR/Elements/ShowRTIRField, Ticket => $IncidentObj[0], Name => 'Constituency' &>
-% }
-    </td>
-  </tr>
-% }
-
   <& /RTIR/Elements/EditCustomFields, 
     %ARGS,
     TicketObj => $ticket,
@@ -362,12 +342,6 @@ $name ||= $Type;
 my (@results, $checks_failure, $skip_create);
 $skip_create = !$ARGS{'Create'};
 
-my $constituency_cf = RT::IR->CustomFields( 'Constituency', Queue => $Queue );
-my $constituency_field;
-$constituency_field =
-    'Object-RT::Ticket--CustomField-' . $constituency_cf->id .'-Values'
-        if $constituency_cf;
-
 my $SplitObj;
 if ( $Split ) {
     $SplitObj = LoadTicket( $Split );
@@ -390,12 +364,6 @@ foreach my $id ( grep $_, @Incident ) {
     }
     elsif ( $inc->QueueObj->Name ne 'Incidents' ) {
         push @results, loc('Ticket #[_1] is not an Incident', $id );
-    }
-    elsif ( !$skip_create && $constituency_field 
-        && RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject'
-        && lc $ARGS{$constituency_field} ne lc $inc->FirstCustomFieldValue('Constituency') )
-    {
-        push @results, loc('Incident #[_1] has constituency [_2], choose the same value for a new ticket or use another Incident', $id, $inc->FirstCustomFieldValue('Constituency') );
     }
     else {
         push @IncidentObj, $inc;

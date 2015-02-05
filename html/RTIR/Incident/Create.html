@@ -130,26 +130,6 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 % }
 </tr>
 
-% if ( my $constituency_cf = RT::IR->CustomFields( 'Constituency', Queue => $QueueObj->Name ) ) {
-<tr><td class="label"><&|/l&>Constituency</&>:</td>
-<td class="value">
-% if ( !$ChildObj || RT->Config->Get('_RTIR_Constituency_Propagation') eq 'no' ) {
-<& /RTIR/Elements/EditRTIRField,
-    %ARGS,
-    QueueObj => $QueueObj,
-    Name     => 'Constituency',
-    PropagationObject => $ChildObj,
-&>
-% } else {
-% #TODO: hacks, we need way to define CF value on Create, but don't allow user to change it
-<input type="hidden" class="hidden" name="Constituency" value="Object-RT::Ticket--CustomField-<% $constituency_cf->id %>-Values" />
-<input type="hidden" class="hidden" name="Object-RT::Ticket--CustomField-<% $constituency_cf->id %>-Values-Magic" value="1" />
-<input type="hidden" class="hidden" name="Object-RT::Ticket--CustomField-<% $constituency_cf->id %>-Values" value="<% $ChildObj->FirstCustomFieldValue('Constituency') %>" />
-<& /RTIR/Elements/ShowRTIRField, Ticket => $ChildObj, Name => 'Constituency' &>
-% }
-</td></tr>
-% }
-
 <& /RTIR/Elements/EditCustomFields, 
     %ARGS,
     TicketObj    => $ticket,
@@ -380,21 +360,6 @@ if ( $CreateIncident ) {
         $checks_failure = 1;
     }
 
-    if ( $ChildObj
-        and RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject'
-        and my $constituency_cf = RT::IR->CustomFields(
-            'Constituency', Queue => 'Incidents'
-        )
-    ) {
-        my $constituency_field =
-            'Object-RT::Ticket--CustomField-' . $constituency_cf->id .'-Values';
-        unless ( lc $ARGS{ $constituency_field }
-            eq lc $ChildObj->FirstCustomFieldValue('Constituency') )
-        {
-            push @results, loc( "New incident and its child #[_1] must have the same constituency", $ChildObj->id );
-            $checks_failure = 1;
-        }
-    }
 }
 
 if ( !$checks_failure && $CreateIncident ) {

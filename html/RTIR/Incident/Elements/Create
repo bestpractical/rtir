@@ -45,30 +45,6 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% if ( my $constituency_cf = RT::IR->CustomFields( 'Constituency', Queue => $QueueObj->Name ) ) {
-<tr><td class="label"><&|/l&>Constituency</&>:</td>
-<td class="value">
-% if ( !$ChildObj || RT->Config->Get('_RTIR_Constituency_Propagation') eq 'no' ) {
-% my $default;
-% $default = $ChildObj->FirstCustomFieldValue('Constituency') if $ChildObj;
-% $default ||= RT::IR::DefaultConstituency( $QueueObj );
-% $default ||= scalar RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'};
-<& /RTIR/Elements/EditRTIRField,
-    QueueObj => $QueueObj,
-    Name     => 'Constituency',
-    Default  => $default,
-    Rows     => 1,
-&>
-% } else {
-% #TODO: hacks, we need way to define CF value on Create, but don't allow user to change it
-<input type="hidden" class="hidden" name="Constituency" value="Object-RT::Ticket--CustomField-<% $constituency_cf->id %>-Values" />
-<input type="hidden" class="hidden" name="Object-RT::Ticket--CustomField-<% $constituency_cf->id %>-Values-Magic" value="1" />
-<input type="hidden" class="hidden" name="Object-RT::Ticket--CustomField-<% $constituency_cf->id %>-Values" value="<% $ChildObj->FirstCustomFieldValue('Constituency') %>" />
-<& /RTIR/Elements/ShowRTIRField, Ticket => $ChildObj, Name => 'Constituency' &>
-% }
-</td></tr>
-% }
-
 <& /RTIR/Elements/EditCustomFields,
     %ARGS,
     TicketObj    => $ticket,
@@ -78,7 +54,6 @@
 &>
 
 <%INIT>
-my $constituency_cf = RT::IR->CustomFields( 'Constituency', Queue => $QueueObj->Name );
 my $ticket = RT::Ticket->new($session{'CurrentUser'}); # empty object for EditCustomFields
 </%INIT>
 <%ARGS>

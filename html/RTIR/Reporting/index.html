@@ -50,19 +50,6 @@
 
 <form action="index.html" method="post">
 <table>
-% unless ( $ConstituencyDisabled ){
-  <tr>
-    <td class="label"><&|/l&>Constituency</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/EditRTIRField, 
-         QueueObj => $QueueObj, 
-	     Name     => 'Constituency',
-	     Default  => RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'},
-	     Rows     => 1
-      &>
-    </td>
-  </tr>
-% }
   <tr>
     <td class="label"><&|/l&>Start Date:</&></td>
     <td class="input">
@@ -98,17 +85,8 @@ my $QueueObj = RT::Queue->new($session{'CurrentUser'});
 $QueueObj->Load('Incidents');
 RT::Logger->error('Unable to load Incidents queue') unless $QueueObj->Id;
 
-my $ConstituencyDisabled = 0;
-my $constituency_cf = RT::CustomField->new($session{'CurrentUser'});
-my ($ok, $msg) = $constituency_cf->LoadByName(Queue => $QueueObj->Id, Name => 'Constituency');
-if ( not $ok or $constituency_cf->Disabled ){
-    $ConstituencyDisabled = 1;
-}
 
 if ( $ARGS{'HTMLReport'} || $ARGS{'TextReport'} || $ARGS{'SpreadsheetReport'} ) {
-    unless ( $ARGS{'Constituency'} or $ConstituencyDisabled ) {
-        $ARGS{'Constituency'} = delete $ARGS{ 'Object-RT::Ticket--CustomField-'. $constituency_cf->Id .'-Values' };
-    }
     my $ext = 'html';
     $ext = 'txt' if $ARGS{'TextReport'};
     $ext = 'tsv' if $ARGS{'SpreadsheetReport'};

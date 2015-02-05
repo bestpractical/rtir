@@ -72,7 +72,6 @@ html/RTIR/EditUsername
 html/RTIR/Elements/AddWatchers
 html/RTIR/Elements/AttachReports
 html/RTIR/Elements/DueIncidents
-html/RTIR/Elements/EditConstituency
 html/RTIR/Elements/EditCustomFields
 html/RTIR/Elements/EditPeople
 html/RTIR/Elements/EditRTIRField
@@ -174,8 +173,6 @@ lib/RT/Action/RTIR_MergeIPs.pm
 lib/RT/Action/RTIR_OpenParent.pm
 lib/RT/Action/RTIR_ResolveChildren.pm
 lib/RT/Action/RTIR_SetBlockStatus.pm
-lib/RT/Action/RTIR_SetConstituency.pm
-lib/RT/Action/RTIR_SetConstituencyGroup.pm
 lib/RT/Action/RTIR_SetDueIncident.pm
 lib/RT/Action/RTIR_SetHowReported.pm
 lib/RT/Action/RTIR_SetIncidentResolution.pm
@@ -183,8 +180,6 @@ lib/RT/Condition/RTIR.pm
 lib/RT/Condition/RTIR_CustomerResponse.pm
 lib/RT/Condition/RTIR_LinkingToIncident.pm
 lib/RT/Condition/RTIR_Merge.pm
-lib/RT/Condition/RTIR_RequireConstituencyChange.pm
-lib/RT/Condition/RTIR_RequireConstituencyGroupChange.pm
 lib/RT/Condition/RTIR_RequireDueChange.pm
 lib/RT/Condition/RTIR_RequireReportActivation.pm
 lib/RT/Condition/RTIR_StaffResponse.pm

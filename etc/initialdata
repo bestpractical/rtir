@@ -43,18 +43,6 @@
 
 @CustomFields = (
     {
-        Name        => 'Constituency',
-        Type        => 'SelectSingle',
-        RenderType  => 'Dropdown',
-        Queue       => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
-        Disabled    => 0,
-        Description => 'Constituency for RTIR queues',
-        Values      => [
-            { Name      => "EDUNET", SortOrder => 1 },
-            { Name      => "GOVNET", SortOrder => 2 },
-        ],
-    },
-    {
         Name        => 'Description',
         Type        => 'FreeformSingle',
         Queue       => 'Incidents',
@@ -221,14 +209,6 @@
        Description => 'Merge multiple IPs on ticket merge' ,                                            # loc
        ExecModule  => 'RTIR_MergeIPs',
     },
-    {  Name        => 'RTIR Set Constituency',    # loc
-       Description => 'Set and cascade Constituency custom field' ,                                            # loc
-       ExecModule  => 'RTIR_SetConstituency',
-    },
-    {  Name        => 'RTIR Set Constituency Group',    # loc
-       Description => 'Set group responsible for constituency' ,                                            # loc
-       ExecModule  => 'RTIR_SetConstituencyGroup',
-    },
     {  Name        => 'RTIR Activate Ticket',    # loc
        Description => 'Set status to first active possible',            # loc
        ExecModule  => 'RTIR_Activate',
@@ -263,16 +243,6 @@
        Description => 'The due date of the parent incident must be changed',                                            # loc
        ApplicableTransTypes => 'Any',
        ExecModule => 'RTIR_RequireDueChange',
-    },
-    {  Name        => 'RTIR Require Constituency Change',    # loc
-       Description => 'The constituency must be changed',                                            # loc
-       ApplicableTransTypes => 'Any',
-       ExecModule => 'RTIR_RequireConstituencyChange',
-    },
-    {  Name        => 'RTIR Require Constituency Group Change',    # loc
-       Description => 'A group responsible for constituency must be changed',                                            # loc
-       ApplicableTransTypes => 'Any',
-       ExecModule => 'RTIR_RequireConstituencyGroupChange',
     },
     {  Name        => 'RTIR Linking To Incident',    # loc
        Description => 'Whenever ticket is linked to incident or created with link',                                 # loc
@@ -375,17 +345,6 @@
        Queue             => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
        ScripCondition    => 'RTIR Merge',
        ScripAction       => 'RTIR merge IPs',
-       Template          => 'Blank' },
-
-    {  Description       => "SetConstituency",
-       Queue             => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
-       ScripCondition    => 'RTIR Require Constituency Change',
-       ScripAction       => 'RTIR Set Constituency',
-       Template          => 'Blank' },
-    {  Description       => "SetConstituencyGroup",
-       Queue             => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
-       ScripCondition    => 'RTIR Require Constituency Group Change',
-       ScripAction       => 'RTIR Set Constituency Group',
        Template          => 'Blank' },
 
 );

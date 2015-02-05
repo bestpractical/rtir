@@ -99,15 +99,6 @@ if ( $MergeTicket ) {
     }
 }
 
-if ( $MergeTicket && RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject' ) {
-    if ( lc $MergeTicket->FirstCustomFieldValue('Constituency')
-        ne lc $Ticket->FirstCustomFieldValue('Constituency')
-    ) {
-        push @results, loc("Merge failed: Tickets have different constituencies" );
-        $checks_failure = 1;
-    }
-}
-
 if ( $MergeTicket && !$checks_failure ) {
 
     my @queues = sort map $_->Name, $Ticket->QueueObj, $MergeTicket->QueueObj;
@@ -143,7 +134,7 @@ my $Queue = $Ticket->QueueObj->Name;
 my $title = loc("Merge [_1] #[_2]: [_3]", $Type, $id, $Ticket->Subject);
 
 $Query      ||= RT::IR->ActiveQuery( Queue => $Queue );
-my $BaseQuery = RT::IR->Query( Queue => $Queue, Exclude => $id, Constituency => $Ticket );
+my $BaseQuery = RT::IR->Query( Queue => $Queue, Exclude => $id);
 
 my %defaults = (
     Format  => $Format,

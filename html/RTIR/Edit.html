@@ -112,18 +112,6 @@
     <td class="value"><&/Elements/SelectPriority, Name => 'Priority', Default => $ARGS{'Priority'} || $Ticket->Priority &></td>
   </tr>
 % }
-% if ( $constituency_cf && ( $constituency_propagation ne 'reject' || !$is_linked ) ) {
-  <tr>
-    <td class="label"><&|/l&>Constituency</&>:</td>
-    <td class="value">
-      <& /RTIR/Elements/EditRTIRField, 
-         TicketObj => $Ticket,
-         Name => 'Constituency',
-      &>
-    </td>
-  </tr>
-% }
-
   <& /RTIR/Elements/EditCustomFields, %ARGS, TicketObj => $Ticket &>
 </table>
 
@@ -246,17 +234,6 @@ if ($Type eq 'Report') {
     $name = "Incident Report";
 } else {
     $name = $Type;
-}
-
-my $constituency_cf = RT::IR->CustomFields( Constituency => Ticket => $Ticket );
-my $constituency_propagation = RT->Config->Get('_RTIR_Constituency_Propagation');
-
-my $is_linked = 0;
-if ( $constituency_cf && $constituency_propagation eq 'reject' ) {
-    $is_linked = $Type eq 'Incident'
-        ? RT::IR->IncidentChildren( $Ticket )->Count
-        : RT::IR->Incidents( $Ticket )->Count
-    ;
 }
 
 # If they've gone and moved the ticket to somewhere they can't see, etc...

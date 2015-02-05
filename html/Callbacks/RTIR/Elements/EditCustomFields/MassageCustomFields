@@ -63,8 +63,4 @@ if ($Object->Id) {
 }
 return unless RT::IR->OurQueue( $queue );
 
-# We never want to see the RTIR's custom field Constituency in the edity ui
-$CustomFields->_OpenParen('RTIR');
-$CustomFields->Limit( SUBCLAUSE => 'RTIR', ENTRYAGGREGATOR => 'AND', FIELD => 'Name', OPERATOR => '!=', VALUE => 'Constituency', CASESENSITIVE => 0);
-$CustomFields->_CloseParen('RTIR');
 </%init>

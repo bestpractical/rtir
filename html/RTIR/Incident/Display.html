@@ -175,13 +175,6 @@ my $deleted_links = 0;
 my $DoLinks = sub {
     my ($child, $parent) = @_;
 
-    if ( RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject' ) {
-        return loc("Couldn't link tickets with different constituencies")
-            if lc $child->FirstCustomFieldValue('Constituency') 
-                ne lc $parent->FirstCustomFieldValue('Constituency')
-                && RT::IR->CustomFields('Constituency');
-    }
-
     my %args = ();
 
     # Blocks or Incedent Reports can have multiple incidents
