@@ -96,8 +96,6 @@ else {
 return $found;
 </%INIT>
 <%ARGS>
-$Queue           => ''
-
 $BaseQuery       => ''
 $Query           => ''
 $Format          => ''
