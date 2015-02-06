@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <h3><% $Title %></h3>
 <& /RTIR/Search/Elements/ShowResults,
-    Queue         => $Queue,
+    Lifecycle     => $Lifecycle,
     BaseQuery     => $BaseQuery,
     Query         => $Query,
     DisplayFormat => "__RadioButton__, $Format",
@@ -60,18 +60,18 @@
 &>
 
 <%INIT>
-my $Type = RT::IR::TicketType( Queue => $Queue );
+my $Type = RT::IR::TicketType( Lifecycle => $Lifecycle );
 $Title ||= $Type .'s';
 
-$Query ||= RT::IR->ActiveQuery( Queue => $Queue );
-$BaseQuery ||= RT::IR->Query( Queue => $Queue, Exclude => $id );
+$Query ||= RT::IR->ActiveQuery( Lifecycle => $Lifecycle );
+$BaseQuery ||= RT::IR->Query( Lifecycle => $Lifecycle, Exclude => $id );
 
 </%INIT>
       
 <%ARGS>
 $id             => undef
 $Ticket         => undef
-$Queue          => undef
+$Lifecycle      => undef
 $Title          => ''
 
 $Format         => undef

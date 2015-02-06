@@ -67,12 +67,12 @@
 &>
 % }
 
-<& /RTIR/Elements/MergeWith, %defaults, %ARGS, Queue => $Ticket->QueueObj->Name, Ticket => $Ticket &>
+<& /RTIR/Elements/MergeWith, %defaults, %ARGS, Lifecycle => $Ticket->QueueObj->Lifecycle, Ticket => $Ticket &>
 
 % if ( $Type eq 'Report' ) {
-<& /RTIR/Elements/MergeWith, %defaults, %ARGS, Queue => "Investigations", Ticket => $Ticket &>
+<& /RTIR/Elements/MergeWith, %defaults, %ARGS, Lifecycle => "investigations", Ticket => $Ticket &>
 % } elsif ( $Type eq 'Investigation' ) {
-<& /RTIR/Elements/MergeWith, %defaults, %ARGS, Queue => "Incident Reports", Ticket => $Ticket &>
+<& /RTIR/Elements/MergeWith, %defaults, %ARGS, Lifecycle => "incident_reports", Ticket => $Ticket &>
 % }
 <& /Elements/Submit, Caption=> loc('Merge into selected Ticket'), Label => loc("Merge") &>
 </form>
@@ -89,10 +89,10 @@ $MergeTicket = LoadTicket( $SelectedTicket ) if $SelectedTicket;
 my (@results);
 my $checks_failure = 0;
 if ( $MergeTicket ) {
-    my @queues = sort map $_->Name, $Ticket->QueueObj, $MergeTicket->QueueObj;
+    my @lifecycles = sort map $_->Lifecycle, $Ticket->QueueObj, $MergeTicket->QueueObj;
     unless (
-        $queues[0] eq $queues[1]
-        or ($queues[0] eq "Incident Reports" and $queues[1] eq "Investigations")
+        $lifecycles[0] eq $lifecycles[1]
+        or ($lifecycles[0] eq "incident_reports" and $lifecycles[1] eq "investigations")
     ) {
         push @results, loc("Merge failed: Ticket #[_1] is not the right type", $MergeTicket->Id );
         $checks_failure = 1;
@@ -101,8 +101,8 @@ if ( $MergeTicket ) {
 
 if ( $MergeTicket && !$checks_failure ) {
 
-    my @queues = sort map $_->Name, $Ticket->QueueObj, $MergeTicket->QueueObj;
-    if ( $queues[0] ne $queues[1] && $queues[1] eq "Incident Reports" ) {
+    my @lifecycles = sort map $_->Lifecycle, $Ticket->QueueObj, $MergeTicket->QueueObj;
+    if ( $lifecycles[0] ne $lifecycles[1] && $lifecycles[1] eq "incident_reports" ) {
         # We always want to merge into the Investigation
         ($Ticket, $MergeTicket) = ($MergeTicket, $Ticket);
     }
@@ -129,12 +129,12 @@ if ( $MergeTicket && !$checks_failure ) {
 }
 
 my $Type = RT::IR::TicketType( Ticket => $Ticket );
-my $Queue = $Ticket->QueueObj->Name;
+my $Lifecycle = $Ticket->QueueObj->Lifecycle;
 
 my $title = loc("Merge [_1] #[_2]: [_3]", $Type, $id, $Ticket->Subject);
 
-$Query      ||= RT::IR->ActiveQuery( Queue => $Queue );
-my $BaseQuery = RT::IR->Query( Queue => $Queue, Exclude => $id);
+$Query      ||= RT::IR->ActiveQuery( Lifecycle => $Lifecycle );
+my $BaseQuery = RT::IR->Query( Lifecycle => $Lifecycle, Exclude => $id);
 
 my %defaults = (
     Format  => $Format,
@@ -148,11 +148,11 @@ my $siblings_query = '';
 if ( $Type ne 'Incident' ) {
     my @parents = @{ RT::IR->Incidents( $Ticket )->ItemsArrayRef || [] };
     if ( @parents ) {
-        my @queues = ($Queue);
-        push @queues, 'Investigations' if $Type eq 'Report';
-        push @queues, 'Incident Reports' if $Type eq 'Investigation';
+        my @lifecycles = ($Lifecycle);
+        push @lifecycles, 'investigations' if $Type eq 'Report';
+        push @lifecycles, 'incident_reports' if $Type eq 'Investigation';
         $siblings_query = RT::IR->Query(
-            Queue    => \@queues,
+            Lifecycle    => \@lifecycles,
             MemberOf => \@parents,
             Exclude  => $id
         );

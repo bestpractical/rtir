@@ -68,6 +68,7 @@ my %QUEUES = map { lc($_) => $_ } @QUEUES;
 my %TYPE = (
     'incidents'        => 'Incident',
     'incident reports' => 'Report',
+    'incident_reports' => 'Report',
     'investigations'   => 'Investigation',
     'blocks'           => 'Block',
 );
@@ -130,10 +131,20 @@ Returns empty string if queue is not one of RTIR's.
 sub OurQueue {
     my $self = shift;
     my $queue = shift;
-    $queue = $queue->Name if ref $queue;
-    return undef unless $queue;
-    return '' unless $QUEUES{ lc $queue };
-    return $TYPE{ lc $queue };
+
+    my $lifecycle;
+
+    if (ref $queue) {
+        $lifecycle = $queue->Lifecycle;
+    } else {
+        my $temp_queue = RT::Queue->new(RT->SystemUser);
+        $temp_queue->Load($queue);
+        $lifecycle = $temp_queue->Lifecycle
+    }
+
+    return undef unless $lifecycle;
+    return '' unless defined $TYPE{ $lifecycle };
+    return $TYPE{ $lifecycle };
 }
 
 =head2 Types
@@ -159,7 +170,7 @@ sub Queues {
 
 =head2 TicketType
 
-Returns type of a ticket. Takes either Ticket or Queue argument.
+Returns type of a ticket. Takes Ticket, Lifecycle or Queue as an argument.
 Both arguments could be objects or IDs, however, name of a queue
 works too for Queue argument. If the queue argument is defined then
 the ticket is ignored even if it's defined too.
@@ -167,22 +178,31 @@ the ticket is ignored even if it's defined too.
 =cut
 
 sub TicketType {
-    my %arg = ( Queue => undef, Ticket => undef, @_);
+    my %arg = ( Lifecycle => undef, Queue => undef, Ticket => undef, @_);
+    if ( defined $arg{'Lifecycle'}) {
+        return $TYPE{$arg{'Lifecycle'}};
+    }
 
     if ( defined $arg{'Ticket'} && !defined $arg{'Queue'} ) {
         my $obj = RT::Ticket->new( RT->SystemUser );
         $obj->Load( ref $arg{'Ticket'} ? $arg{'Ticket'}->id : $arg{'Ticket'} );
-        $arg{'Queue'} = $obj->QueueObj->Name if $obj->id;
+        return $TYPE{ $obj->QueueObj->Lifecycle } if $obj->id;
     }
     return undef unless defined $arg{'Queue'};
 
-    return $TYPE{ lc $arg{'Queue'} } if !ref $arg{'Queue'} && $arg{'Queue'} !~ /^\d+$/;
-
     my $obj = RT::Queue->new( RT->SystemUser );
-    $obj->Load( ref $arg{'Queue'}? $arg{'Queue'}->id : $arg{'Queue'} );
-    return $TYPE{ lc $obj->Name } if $obj->id;
+    if (ref $arg{'Queue'}) {
+        $obj->Load($arg{'Queue'}->id);
+    }
+    elsif ($arg{'Queue'} =~/^\d+$/) {
+        $obj->Load($arg{'Queue'});
+    } else {
+        $obj->LoadByCols(Name => $arg{'Queue'});
+    }
 
-    return;
+    return undef unless ($obj->id);
+
+    return $TYPE{ $obj->Lifecycle };
 }
 
 =head2 Statuses
