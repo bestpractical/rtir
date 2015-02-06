@@ -73,9 +73,9 @@ sub Commit {
     }
 
     # change owner of child Incident Reports, Investigations, Blocks
-    my $query =  "(Queue = 'Incident Reports'"
-                ." OR Queue = 'Investigations'"
-                ." OR Queue = 'Blocks'"
+    my $query =  "(Lifecycle = 'incident_reports'"
+                ." OR Lifecycle = 'investigations'"
+                ." OR Lifecycle = 'blocks'"
                 .") AND MemberOf = ". $self->TicketObj->Id
                 ." AND Owner != ". $transaction->NewValue;
     my $members = RT::Tickets->new( $actor );

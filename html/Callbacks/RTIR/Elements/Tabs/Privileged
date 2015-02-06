@@ -89,21 +89,21 @@ if ( $has_query ) {
 
 $root->child(
     incidents => title => loc('Incidents'),
-    path => '/RTIR/Search/Results.html?Queue=Incidents'
+    path => '/RTIR/Search/Results.html?Lifecycle=incidents'
 )->child(
     create => title => loc('Create'),
     path => '/RTIR/Create.html?Queue=Incidents',
 );
 $root->child(
     reports => title => loc('Incident Reports'),
-    path => '/RTIR/Search/Results.html?Queue=Incident%20Reports'
+    path => '/RTIR/Search/Results.html?Lifecycle=incident_reports'
 )->child(
     create => title => loc('Create'),
     path => '/RTIR/Create.html?Queue=Incident%20Reports',
 );
 $root->child(
     investigations => title => loc('Investigations'),
-    path => '/RTIR/Search/Results.html?Queue=Investigations'
+    path => '/RTIR/Search/Results.html?Lifecycle=investigations'
 )->child(
     launch => title => loc('Launch'),
     path => '/RTIR/Create.html?Queue=Investigations',
@@ -111,7 +111,7 @@ $root->child(
 unless ( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
     $root->child(
         blocks => title => loc('Blocks'),
-        path => '/RTIR/Search/Results.html?Queue=Blocks'
+        path => '/RTIR/Search/Results.html?Lifecycle=blocks'
     )->child(
         create => title => loc('Create'),
         path => '/RTIR/Create.html?Queue=Blocks',
@@ -364,7 +364,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
     );
     PageMenu()->child(
         edit_search => title => loc('Edit Search'),
-        path => "/RTIR/Merge/Refine.html?". $query_string->( %args, Queue => $ticket->Queue ),
+        path => "/RTIR/Merge/Refine.html?". $query_string->( %args, Lifecycle => $ticket->QueueObj->Lifecycle ),
     );
     PageMenu()->child(
         back => title => loc('Back to ticket #[_1]', $id),
