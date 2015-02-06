@@ -65,7 +65,7 @@ diag "clicky email" if $ENV{'TEST_VERBOSE'};
         $agent->save_content('/tmp/x.html');
         if ( $clicky{'email'} ) {
             ok( $email_link,                                   "found link" );
-            ok( $email_link->url =~ /(?<!\w)\Q$email\E(?!\w)/, 'url has an email' );
+            ok( $email_link->url =~ /(?<!\w)\Q$email\E(?!\w)/, 'url '.$email_link->url.' has an email - '.$email );
 
             ok( $domain_link,                                    "found link" );
             ok( $domain_link->url =~ /(?<!\w)\Q$domain\E(?!\w)/, 'url has a domain' );
