@@ -72,7 +72,7 @@
     Page          => $Page,
     OrderBy       => $OrderBy,
     Order         => $Order,
-    BaseURL       => "RTIR/Link/ToIncident/?id=$id&Queue=Incidents",
+    BaseURL       => "RTIR/Link/ToIncident/?id=$id&Lifecycle=incidents",
     ShowNavigation  => 1,
 &>
 
@@ -93,11 +93,11 @@ my $Type = RT::IR::TicketType( Ticket => $Ticket );
 my $title = loc( "Link [_1] #[_2] to selected Incident", $Type, $id );
 
 my $BaseQuery = RT::IR->Query(
-    Queue => 'Incidents',
+    Lifecycle => 'incidents',
     HasNoMember => $id,
     Costituency => $Ticket,
 );
-$Query ||= RT::IR->ActiveQuery( Queue => 'Incidents' );
+$Query ||= RT::IR->ActiveQuery( Lifecyce => 'incidents' );
 
 </%INIT>
 <%ARGS>
