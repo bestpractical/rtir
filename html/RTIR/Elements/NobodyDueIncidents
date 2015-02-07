@@ -48,7 +48,7 @@
 <& /RTIR/Elements/DueIncidents, %ARGS, Title => $Title, Query => $Query &>
 <%INIT>
 my $Title = loc( "Most due unowned incidents" );
-$Query ||= RT::IR->ActiveQuery( Queue => 'Incidents', And => 'Owner.id = '. $RT::Nobody->id );
+$Query ||= RT::IR->ActiveQuery( Lifecycle => 'incidents', And => 'Owner.id = '. $RT::Nobody->id );
 $m->callback( CallbackName => 'ModifyQuery', Query => \$Query );
 </%INIT>
 <%ARGS>

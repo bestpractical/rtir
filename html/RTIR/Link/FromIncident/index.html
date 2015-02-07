@@ -59,7 +59,7 @@
 <input type="hidden" name="BulkLink" value="1" />
 
 <& /RTIR/Search/Elements/ShowResults, 
-    Queue         => $Queue,
+    Lifecycle     => $Lifecycle,
     BaseQuery     => $BaseQuery,
     Query         => $Query,
     DisplayFormat => "__CheckBox__, $Format",
@@ -77,9 +77,9 @@
 
 <%ARGS>
 $id          => undef
-$Queue       => undef
+$Lifecycle       => undef
 
-$Query       => RT::IR->ActiveQuery( Queue => $Queue )
+$Query       => RT::IR->ActiveQuery( Lifecycle => $Lifecycle )
 $Format      => RT->Config->Get('RTIRSearchResultFormats')->{'LinkChildren'}
 $Rows        => 50
 $Page        => 1
@@ -91,15 +91,15 @@ $Order       => RT->Config->Get('DefaultSearchResultOrder')
 my $IncidentObj = LoadTicket($id);
 $ARGS{'id'} = $id = $IncidentObj->id;
 
-my $Type = RT::IR::TicketType( Queue => $Queue );
+my $Type = RT::IR::TicketType( Lifecycle => $Lifecycle );
 my $title = loc("Link selected [_1] to Incident #[_2]", $Type, $id);
 
 my $BaseQuery = RT::IR->Query(
-    Queue => $Queue,
+    Lifecycle => $Lifecycle,
     NotMemberOf => $id,
 );
 
 my $base_url = 'RTIR/Link/FromIncident/?'
-    . $m->comp( '/Elements/QueryString', id => $id, Queue => $Queue );
+    . $m->comp( '/Elements/QueryString', id => $id, Lifecycle => $Lifecycle );
 
 </%INIT>

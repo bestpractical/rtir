@@ -54,7 +54,7 @@
 % }
 
 <form method="get" action="<% RT->Config->Get('WebPath') %>/RTIR/Search/Reporting.html">
-% my %hiddens = (Queue => $Queue, Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order);
+% my %hiddens = (Lifecycle => $Lifecycle, Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order);
 % while ( my ($key, $val) = each %hiddens ) {
 % next unless defined $val;
 <input type="hidden" class="hidden" name="<% $key %>" value="<% $val %>" />
@@ -142,10 +142,10 @@ $Description => undef
 $Width => undef
 $Height => undef
 
-$Queue     => ''
+$Lifecycle     => ''
 
-$BaseQuery => RT::IR->Query( Queue => $Queue )
-$Query     => RT::IR->ActiveQuery( Queue => $Queue )
+$BaseQuery => RT::IR->Query( Lifecycle => $Lifecycle )
+$Query     => RT::IR->ActiveQuery( Lifecycle => $Lifecycle )
 $Format    => undef
 $Rows      => 50
 $Page      => 1

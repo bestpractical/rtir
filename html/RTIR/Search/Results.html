@@ -51,7 +51,7 @@
 
 <& Elements/ShowResults,
     %ARGS,
-    Queue          => $Queue,
+    Lifecycle      => $Lifecycle,
     BaseURL        => $BaseURL,
     BaseQuery      => $BaseQuery,
     Query          => $Query,
@@ -68,7 +68,7 @@
 <%INIT>
 my $title = loc("Results");
 
-my $Type = RT::IR::TicketType( Queue => $Queue ) || '';
+my $Type = RT::IR::TicketType( Lifecycle => $Lifecycle ) || '';
 $Format ||= RT->Config->Get('RTIRSearchResultFormats')->{ $Type . 'Default' };
 
 # Warn if old CFs are found
@@ -83,16 +83,16 @@ RT::IR::Config::CheckObsoleteCFSyntax($Query,$location);
 
 if ( $Type ) {
     if ( $Query ) {
-        $BaseQuery ||= RT::IR->Query( Queue => $Queue );
+        $BaseQuery ||= RT::IR->Query( Lifecycle => $Lifecycle );
     }
     else {
-        $Query = RT::IR->ActiveQuery( Queue => $Queue );
+        $Query = RT::IR->ActiveQuery( Lifecycle => $Lifecycle );
     }
 }
 
 my $BaseURL = "RTIR/Search/Results.html";
-$BaseURL .= '?'. $m->comp( '/Elements/QueryString', Queue => $Queue )
-    if $Queue;
+$BaseURL .= '?'. $m->comp( '/Elements/QueryString', Lifecycle => $Lifecycle )
+    if $Lifecycle;
 
 # Read from user preferences
 my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
@@ -114,8 +114,7 @@ if ( !defined($Rows) ) {
 
 </%INIT>
 <%ARGS>
-$Queue     => ''
-
+$Lifecycle     => ''
 $BaseQuery => ''
 $Query     => undef
 $Format    => undef
