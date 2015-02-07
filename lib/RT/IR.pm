@@ -472,6 +472,7 @@ sub MapStatus {
     my ($status, $from, $to) = @_;
     return unless $status;
 
+    # Validate that the from and to are legitimate
     foreach my $e ($from, $to) {
         if ( blessed $e ) {
             if ( $e->isa('RT::Queue') ) {
@@ -485,9 +486,8 @@ sub MapStatus {
             }
         }
         else {
-            my $queue = RT::Queue->new( RT->SystemUser );
-            $queue->Load( $e );
-            $e = $queue->LifecycleObj;
+            my $lifecycle = RT::Lifecycle->Load( Name => $e );
+            $e = $lifecycle;
         }
         return unless $e;
     }
