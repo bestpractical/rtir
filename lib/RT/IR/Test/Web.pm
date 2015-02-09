@@ -72,17 +72,17 @@ sub create_block {
 
 sub goto_create_rtir_ticket {
     my $self = shift;
-    my $queue = shift;
+    my $queue = shift; # we play a dumb game to change queues to lifecycles
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
-    my $equeue = $queue;
-    $equeue =~ s/ /%20/;
+    my $lifecycle = lc( $queue);
+    $lifecycle =~ s/ /_/;
     my $link_text = "Create";
-    $link_text = "Launch" if $queue eq 'Investigations';
+    $link_text = "Launch" if $lifecycle eq 'investigations';
 
     $self->get_ok("/RTIR/index.html", "Loaded home page");
     $self->follow_link_ok(
-        {text => $link_text, url_regex => qr{RTIR/Create\.html.*(?i:$equeue)} },
+        {text => $link_text, url_regex => qr{RTIR/Create\.html.*(?i:$lifecycle)} },
         "Followed create in '$queue' link"
     );
 
@@ -94,7 +94,7 @@ sub create_rtir_ticket_ok {
     my $self = shift;
     my $queue = shift;
 
-    local $Test::Builder::Level = $Test::Builder::Level + 1;
+    local $Test::Builder::Level = $Test::Builder::Level + 2;
 
     my $id = $self->create_rtir_ticket( $queue, @_ );
     Test::More::ok( $id, "Created ticket #$id in queue '$queue' successfully." );
