@@ -314,6 +314,13 @@
 </form>
 
 <%INIT>
+# XXX TODO remove this code that maps lifecycles to queues
+if ($Lifecycle && ! $Queue) {
+    $Queue=ucfirst($Lifecycle);
+    $Queue=~ s/_r/ R/;
+    $ARGS{'Queue'} = $Queue;
+}
+
 my %CFDefaults;
 $m->callback(
     CallbackName => 'Init', CallbackPage => '/Ticket/Create.html',
@@ -472,6 +479,7 @@ PageMenu->child( details => raw_html =>  q[<a href="#details" onclick="return sw
 
 <%ARGS>
 $Queue            => undef
+$Lifecycle        => undef
 @SkipNotification => ()
 
 $Subject          => undef
