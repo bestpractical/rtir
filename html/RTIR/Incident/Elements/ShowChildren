@@ -111,8 +111,8 @@ my @box_actions;
 if ( $IncidentObj->CurrentUserHasRight('ModifyTicket') ) {
     if ( $QueueObj->Id and $QueueObj->CurrentUserHasRight('CreateTicket') ) {
         push @box_actions, {
-            title => $QueueObj->Name ne 'Investigations'? loc('Create') : loc('Launch'),
-            path => "/RTIR/Create.html?Incident=$id&Queue=$EscapedQueue",
+            title => $Lifecycle ne 'investigations'? loc('Create') : loc('Launch'),
+            path => "/RTIR/Create.html?Incident=$id&Lifecycle=".$Lifecycle,
         };
     }
     push @box_actions, {
