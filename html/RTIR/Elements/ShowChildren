@@ -82,22 +82,17 @@
 
 <%INIT>
 
-my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
-$QueueObj->Load( $Queue );
-unless ( $QueueObj->id ) {
-    RT->Logger->error("Couldn't load queue '$Queue'");
-    return;
-}
+my $LifecycleObj = RT::Lifecycle->Load(Name => $Lifecycle);
 
-@Statuses = $QueueObj->LifecycleObj->Valid('initial', 'active') unless @Statuses;
+@Statuses = $LifecycleObj->Valid('initial', 'active') unless @Statuses;
 
-my $Type = RT::IR::TicketType( Queue => $Queue );
+my $Type = RT::IR::TicketType( Lifecycle => $Lifecycle );
 
 $Format ||= RT->Config->Get('RTIRSearchResultFormats')->{'Child' . $Type};
 
 my $children = RT::Tickets->new( $session{'CurrentUser'} );
 $children->FromSQL( RT::IR->Query(
-    Queue    => $Queue,
+    Lifecycle=> $Lifecycle,
     MemberOf => $Ticket,
     Status   => [@Statuses],
 ));

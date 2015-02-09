@@ -222,7 +222,7 @@ ${$ARGS{handle}} = sub {
 
     if ($args{object}) {
         if ( $args{object}->isa('RT::Ticket') ) {
-            $args{type} = RT::IR::TicketType( Queue => $args{object}->QueueObj->Name );
+            $args{type} = RT::IR::TicketType( Lifecycle => $args{object}->QueueObj->Lifecycle );
 
             $args{incident} = $args{object}->id
               if $args{type} && $args{type} eq 'Incident';

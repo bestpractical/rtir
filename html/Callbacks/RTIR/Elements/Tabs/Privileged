@@ -139,8 +139,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
     $ticket->Load($id);
     $id = $ticket->id;
 
-    my $queue = $ticket->QueueObj;
-    my $type = RT::IR::TicketType( Queue => $queue );
+    my $type = RT::IR::TicketType( Lifecycle => $ticket->QueueObj->Lifecycle );
 
     my %can;
     my $can = sub {
@@ -236,7 +235,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
 
     my $i = 0;
     my $status = $ticket->Status;
-    my $lifecycle = $queue->LifecycleObj;
+    my $lifecycle = $ticket->QueueObj->LifecycleObj;
     foreach my $info ( $lifecycle->Actions( $status ) ) {
         my $next = $info->{'to'};
         next unless $lifecycle->IsTransition( $status => $next );
@@ -295,8 +294,9 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
     );
 } elsif ( $request_path =~ m{^/RTIR/Link/(ToIncident|FromIncident)/} ) {
     my $direction = $1;
-    my $queue = $args->{'Queue'};
-    my $type = RT::IR::TicketType( Queue => $queue || 'Incidents' );
+
+    my $lifecycle = $args->{'Lifecycle'};
+    my $type = RT::IR::TicketType( Lifecycle => $lifecycle || 'incidents' );
 
     my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
     $ticket->Load( $args->{'id'} );
@@ -305,7 +305,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
     my %args = (
         $search_arguments->(),
         id => $id,
-        Queue => $queue,
+        Lifecycle => $lifecycle,
     );
 
     PageMenu()->child(
@@ -328,8 +328,8 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
         path => "/RTIR/Display.html?id=$id",
     );
 } elsif ( $request_path =~ m{^/RTIR/Incident/Children/} ) {
-    my $queue = $args->{'Queue'} || 'Incident Reports';
-    my $type = RT::IR::TicketType( Queue => $queue );
+    my $lifecycle = $args->{'Lifecycle'} || 'incident_reports';
+    my $type = RT::IR::TicketType( Lifecycle => $lifecycle );
 
     my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
     $ticket->Load( $args->{'id'} );
@@ -337,12 +337,12 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
 
     my %args = (
         id => $id,
-        Queue => $queue,
+        Lifecycle => $lifecycle,
     );
 
     PageMenu()->child(
         new => title => loc("New $type"),
-        path => "/RTIR/Create.html?". $query_string->( Incident => $id, Queue => $queue ),
+        path => "/RTIR/Create.html?". $query_string->( Incident => $id, Lifecycle => $lifecycle ),
     );
     PageMenu()->child(
         back => title => loc('Back to ticket #[_1]', $id),
@@ -412,7 +412,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
         my (undef, @queues) = RT::IR->OurQuery( $args{'Query'} );
         $queue = $queues[0] if @queues == 1;
     }
-    my $type = RT::IR::TicketType( Queue => $queue ) || '';
+    my $type = RT::IR::TicketType( Lifecycle => $lifecycle ) || '';
 
     $args{'Queue'} = $queue if $queue;
 
