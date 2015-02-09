@@ -52,10 +52,10 @@ return $m->comp(
     ResultPage => 'RTIR/Link/FromIncident/?'. $m->comp(
         '/Elements/QueryString',
         id    => $ARGS{'id'},
-        Queue => $ARGS{'Queue'},
+        Lifecycle => $ARGS{'Lifecycle'},
     ),
     BaseQuery => RT::IR->Query(
-        Queue       => $ARGS{'Queue'},
+        Lifecycle       => $ARGS{'Lifecycle'},
         NotMemberOf => $ARGS{'id'},
         Costituency => $ARGS{'id'},
     ),

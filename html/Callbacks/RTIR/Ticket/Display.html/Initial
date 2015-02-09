@@ -48,21 +48,20 @@
 <%INIT>
 return if $ARGSRef->{'NoRedirect'};
 
-my $Queue;
+my $QueueObj;
 if ( $TicketObj ) {
     my $tmp = RT::Ticket->new( RT->SystemUser );
     $tmp->Load( $TicketObj->id );
-    $Queue = $tmp->QueueObj->Name;
+    $QueueObj = $tmp->QueueObj;
 } elsif ( $ARGSRef->{'id'} && $ARGSRef->{'id'} ne 'new' ) {
     my $tmp = RT::Ticket->new( RT->SystemUser );
     $tmp->Load( $ARGSRef->{'id'} );
-    $Queue = $tmp->QueueObj->Name;
+    $QueueObj = $tmp->QueueObj;
 } elsif ( $ARGSRef->{'Queue'} ) {
-    my $QueueObj = RT::Queue->new( RT->SystemUser );
+    $QueueObj = RT::Queue->new( RT->SystemUser );
     $QueueObj->Load( $ARGSRef->{'Queue'} );
-    $Queue = $QueueObj->Name;
 }
-return unless $Queue && RT::IR->OurQueue( $Queue );
+return unless $QueueObj && RT::IR->OurQueue( $QueueObj );
 
 # for something more complex use subexec
 if ( grep !/^(id|results)$/, keys %$ARGSRef ) {

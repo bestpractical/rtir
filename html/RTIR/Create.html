@@ -369,7 +369,7 @@ foreach my $id ( grep $_, @Incident ) {
     unless ( $inc->id ) {
         push @results, loc("Couldn't load incident #[_1]", $id );
     }
-    elsif ( $inc->QueueObj->Name ne 'Incidents' ) {
+    elsif ( $inc->QueueObj->Lifecycle ne 'incidents' ) {
         push @results, loc('Ticket #[_1] is not an Incident', $id );
     }
     else {
