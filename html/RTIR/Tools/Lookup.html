@@ -76,7 +76,7 @@ if ( $ARGS{'InvestigateTo'} ) {
     return RT::Interface::Web::Redirect(
         RT->Config->Get('WebURL')."RTIR/Create.html?"
         . $m->comp('/Elements/QueryString',
-            Queue => 'Investigations',
+            Lifecycle => 'investigations',
             Requestors => $requestors,
             Incident => $ARGS{'incidentid'},
         )
