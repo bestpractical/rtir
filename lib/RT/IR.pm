@@ -73,6 +73,14 @@ my %TYPE = (
     'blocks'           => 'Block',
 );
 
+my %FRIENDLY_LIFECYCLE = (
+    'incidents'        => 'Incidents',
+    'incident_reports' => 'Incident Reports',
+    'investigations'   => 'Investigations',
+    'blocks'           => 'Blocks',
+
+);
+
 use Parse::BooleanLogic;
 my $ticket_sql_parser = Parse::BooleanLogic->new;
 
@@ -168,6 +176,28 @@ sub Queues {
     return @QUEUES;
 }
 
+=head2 Lifecycles
+
+Return a list of the core RTIR lifecycle names
+
+=cut
+
+sub Lifecycles {
+    return @LIFECYCLES;
+}
+
+=head2 FriendlyLifecycle
+
+XXX TODO 
+
+=cut
+
+sub FriendlyLifecycle {
+    my $lifecycle = shift;
+    return $FRIENDLY_LIFECYCLE{$lifecycle};
+
+}
+
 =head2 TicketType
 
 Returns type of a ticket. Takes Ticket, Lifecycle or Queue as an argument.
@@ -209,15 +239,15 @@ sub TicketType {
 
 Return sorted list of unique statuses for one, many or all RTIR queues.
 
-Takes arguments 'Queue', 'Active' and 'Inactive'. By default returns
-initial and active statuses. Queue can be an array reference to list several
-queues.
+Takes arguments 'Lifecycle', 'Active' and 'Inactive'. By default returns
+initial and active statuses. Lifecycle can be an array reference to list several
+lifecycles.
 
 Examples:
 
     RT::IR->Statuses()
-    RT::IR->Statuses( Queue => 'Blocks' );
-    RT::IR->Statuses( Queue => [ 'Blocks', 'Incident Reports' ] );
+    RT::IR->Statuses( Lifecycle => 'blocks' );
+    RT::IR->Statuses( Lifecycle => [ 'blocks', 'incident_reports' ] );
     RT::IR->Statuses( Active => 0, Inactive => 1 );
 
 =cut
@@ -233,27 +263,25 @@ my $flat = sub {
 
 sub Statuses {
     my $self = shift;
-    my %arg = ( Queue => undef, Initial => 1, Active => 1, Inactive => 0, @_ );
-
-    my @queues = $flat->( $arg{'Queue'} || \@QUEUES );
+    my %arg = ( Lifecycle => undef, Initial => 1, Active => 1, Inactive => 0, @_ );
 
     my (@initial, @active, @inactive);
-    foreach my $queue (@queues) {
-        unless ( blessed $queue ) {
-            my $tmp = RT::Queue->new(RT->SystemUser);
-            $tmp->Load( $queue );
-            RT->Logger->error( "failed to load queue $queue" )
-                unless $tmp->id;
-            $queue = $tmp;
+
+        my @lifecycles = $flat->( $arg{'Lifecycle'} || \@LIFECYCLES );
+    
+        foreach my $cycle (@lifecycles) {
+            unless ( blessed $cycle ) {
+                my $tmp = RT::Lifecycle->Load( Name => $cycle);
+                RT->Logger->error( "failed to load lifecycle $cycle" )
+                    unless $tmp->Name;
+                $cycle = $tmp;
+            }
+            next unless $cycle->Name;
+    
+            push @initial, $cycle->Initial if $arg{'Initial'};
+            push @active, $cycle->Active if $arg{'Active'};
+            push @inactive, $cycle->Inactive if $arg{'Inactive'};
         }
-        next unless $queue->id;
-
-        my $cycle = $queue->LifecycleObj;
-        push @initial, $cycle->Initial if $arg{'Initial'};
-        push @active, $cycle->Active if $arg{'Active'};
-        push @inactive, $cycle->Inactive if $arg{'Inactive'};
-    }
-
     my %seen = ();
     return grep !$seen{$_}++, @initial, @active, @inactive;
 }
@@ -266,7 +294,6 @@ sub Query {
     my $self = shift;
     my %args = (
         Lifecycle    => undef,
-        Queue        => undef, # TODO 3.4: remove this in favor of lifecycle
         Status       => undef,
         Active       => undef,
         Inactive     => undef,
@@ -282,14 +309,10 @@ sub Query {
     my @res;
     if ( $args{'Lifecycle'} ) {
         push @res, map "($_)", join ' OR ', map "Lifecycle = '$_'",
-            $flat->( $args{'Lifecycle'}, 'Name' );
-    }
-    elsif ( $args{'Queue'} ) {
-        push @res, map "($_)", join ' OR ', map "Queue = '$_'",
-            $flat->( $args{'Queue'}, 'Name' );
+            $flat->( $args{'Lifecycle'});
     }
     if ( !$args{'Status'} && ( $args{'Initial'} || $args{'Active'} || $args{'Inactive'} ) ) {
-        $args{'Status'} = [ $self->Statuses( %args ) ];
+        $args{'Status'} = [ $self->Statuses( Lifecycle => $args{'Lifecycle'}, Active => $args{'Active'}, Inactive => $args{'Inactive'}, Initial => $args{'Initial'})];
     }
     if ( my $s = $args{'Status'} ) {
         push @res, join ' OR ', map "Status = '$_'", $flat->( $s );
