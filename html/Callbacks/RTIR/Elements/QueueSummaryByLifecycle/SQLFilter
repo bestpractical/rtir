@@ -46,11 +46,11 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-for my $type (RT::IR->Queues) {
+for my $type (RT::IR->Lifecycles) {
 # displaying on the RTIR homepage
 # we don't have a good solution for showing this on an RTIR dashboard
     if ( $m->request_comp->path =~ m{^/RTIR/} ){
-        $Queues->Limit( FIELD => 'Name',
+        $Queues->Limit( FIELD => 'Lifecycle',
                         OPERATOR => '=',
                         VALUE => $type,
                         SUBCLAUSE => 'RTIRQueues',

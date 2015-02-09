@@ -399,22 +399,22 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
 } elsif ( $request_path =~ m{^/RTIR/(Search/|Incident/BulkAbandon\.html$|Report/BulkReject\.html$)} ) {
     my %args = $search_arguments->();
 
-    my $queue = $args->{'Queue'} || '';
-    unless ( $queue ) {
+    my $lifecycle = $args->{'Lifecycle'} || '';
+    unless ( $lifecycle ) {
         if ( $request_path =~ /Incident/ ) {
-            $queue = 'Incidents';
+            $lifecycle = 'incidents';
         }
         elsif ( $request_path =~ /Report/ ) {
-            $queue = 'Incident Reports';
+            $lifecycle = 'incident_reports';
         }
     }
-    unless ( $queue ) {
-        my (undef, @queues) = RT::IR->OurQuery( $args{'Query'} );
-        $queue = $queues[0] if @queues == 1;
+    unless ( $lifecycle ) {
+        my (undef, @lifecycles) = RT::IR->OurQuery( $args{'Query'} );
+        $lifecycle = $lifecycles[0] if @lifecycles == 1;
     }
     my $type = RT::IR::TicketType( Lifecycle => $lifecycle ) || '';
 
-    $args{'Queue'} = $queue if $queue;
+    $args{'Lifecycle'} = $lifecycle if $lifecycle;
 
     if ( $args{'Query'} ) {
         PageMenu()->child(
@@ -471,8 +471,8 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
         );
 
         # other paths need query defined
-        $args{'Query'} = RT::IR->Query( Queue => $args{'Queue'} )
-            if !$args{'Query'} && $args{'Queue'};
+        $args{'Query'} = RT::IR->Query( Lifecycle => $args{'Lifecycle'} )
+            if !$args{'Query'} && $args{'Lifecycle'};
 
         my $RSSPath = join '/', map $m->interp->apply_escapes( $_, 'u' ),
             $session{'CurrentUser'}->UserObj->Name,
