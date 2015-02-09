@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if( $ShowStatusesSelector ) {
-%   foreach my $s ( $QueueObj->LifecycleObj->Valid ) {
+%   foreach my $s ( $LifecycleObj->Valid ) {
 %       my $checked = (grep { $_ eq $s } @Statuses)? 'checked': '';
 <input type="checkbox" name="Statuses" value="<% $s %>" <% $checked %> />&nbsp;<% $s %>
 %   }
@@ -68,8 +68,8 @@
 % unless( $children->Count ) {
 %   if ( $NoTicketsCaption ) {
         <i>(<% $NoTicketsCaption %>)</i>
-%   } elsif ( $Queue ) {
-        <i>(<% loc("no [_1]", $Queue) %>)</i>
+%   } elsif ( $Lifecycle ) {
+        <i>(<% loc("no [_1]", RT::IR::FriendlyLifecycle($Lifecycle)) %>)</i>
 %   } else {
         <i>(<% loc("no children") %>)</i>
 %   }
@@ -101,7 +101,7 @@ $children->FromSQL( RT::IR->Query(
 
 <%ARGS>
 $Format => undef
-$Queue => undef
+$Lifecycle => undef
 $Ticket => undef
 $OrderBy => 'Due'
 $Rows => 0

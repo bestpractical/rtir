@@ -58,13 +58,13 @@
 
 <form action="index.html" method="post">
 <input type="hidden" name="id" value="<% $id %>" />
-<input type="hidden" name="Queue" value="<% $Queue %>" />
+<input type="hidden" name="Lifecycle" value="<% $Lifecycle %>" />
 
 <& /RTIR/Elements/ShowChildren,
     Ticket               => $Incident,
-    Queue                => $Queue,
+    Lifecycle            => $Lifecycle,
     Statuses             => [@Statuses],
-    FullList             => RT->Config->Get('WebPath')."/RTIR/Incident/Children/?Queue=$Queue&id=$id",
+    FullList             => RT->Config->Get('WebPath')."/RTIR/Incident/Children/?Lifecycle=$Lifecycle&id=$id",
     Delete               => $delete,
     ShowHeader           => 1,
     ShowStatusesSelector => 1,
@@ -89,36 +89,36 @@ if( $ARGS{'Unlink'} ) {
 
 MaybeRedirectForResults(
     Actions   => \@results,
-    Arguments => { id => $id, Queue => $Queue },
+    Arguments => { id => $id, Lifecycle => $Lifecycle },
 );
 
 unless ( $Incident->CurrentUserHasRight('ShowTicket') ) {
     Abort("No permission to view ticket");
 }
 
-my $Title = loc("$Queue for Incident #[_1]: [_2]", $id, $Incident->Subject);
+my $Title = loc("[_1] for Incident #[_2]: [_3]", RT::IR->TicketType(Lifecycle => $Lifecycle),$id, $Incident->Subject);
 
 my $delete = $Incident->CurrentUserHasRight('ModifyTicket') ? 1: 0;
 
-@Statuses = RT::IR->Statuses( Queue => $Queue )
+@Statuses = RT::IR->Statuses( Lifecycle => $Lifecycle ) 
     unless @Statuses;
 
 my $children = RT::Tickets->new( $session{'CurrentUser'} );
 $children->FromSQL( RT::IR->Query(
-    Queue    => $Queue,
+    Lifecycle =>  $Lifecycle,
     MemberOf => $Incident,
     Status   => [@Statuses],
 ) );
 
 my $all_children = RT::Tickets->new( $session{'CurrentUser'} );
 $all_children->FromSQL( RT::IR->Query(
-    Queue    => $Queue,
+    Lifecycle => $Lifecycle,
     MemberOf => $Incident,
 ) );
 </%INIT>
 <%ARGS>
 $id              => undef
-$Queue           => 'Incident Reports'
+$Lifecycle       => 'incident_reports'
 
 @SelectedTickets => ()
 @Statuses        => ()
