@@ -63,7 +63,7 @@ for my $type ( 'incident', 'ir', 'investigation', 'block' ) {
     $m->follow_link_ok( { text => "Edit Search", n => 2 } );
     $m->form_name('BuildQuery');
     my ($input_query) = $m->find_all_inputs( name => 'Query' );
-    is( $input_query->value, q{( Queue = 'Incidents' ) AND Status = 'open'}, 'Query input is correct' );
+    is( $input_query->value, q{( Lifecycle = 'incidents' ) AND Status = 'open'}, 'Query input is correct' );
 
     $m->submit_form_ok(
         {
@@ -100,7 +100,7 @@ for my $type ( 'incident', 'ir', 'investigation', 'block' ) {
     my ($input_query) = $m->find_all_inputs( name => 'Query' );
     is(
         $input_query->value,
-        q{( Queue = 'Incident Reports' ) AND (  Status = 'new' OR Status = 'open' )},
+        q{( Lifecycle = 'incident_reports' ) AND (  Status = 'new' OR Status = 'open' )},
         'Query input is correct'
     );
 
