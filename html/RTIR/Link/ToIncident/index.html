@@ -97,7 +97,7 @@ my $BaseQuery = RT::IR->Query(
     HasNoMember => $id,
     Costituency => $Ticket,
 );
-$Query ||= RT::IR->ActiveQuery( Lifecyce => 'incidents' );
+$Query ||= RT::IR->ActiveQuery( Lifecycle => 'incidents' );
 
 </%INIT>
 <%ARGS>
