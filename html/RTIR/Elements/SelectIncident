@@ -97,7 +97,7 @@ if ( $SplitObj ) {
 my $config = RT->Config->Get('RTIR_IncidentChildren')->{ $Type };
 
 my $query = RT::IR->Query(
-    Queue => 'Incidents',
+    Lifecycle => 'incidents',
     And => join ' OR ', map "id = $_", @potential
 );
 my $format = RT->Config->Get('RTIRSearchResultFormats')->{'LinkIncident'};

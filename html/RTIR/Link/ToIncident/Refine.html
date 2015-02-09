@@ -51,7 +51,7 @@ return $m->comp(
     %ARGS,
     ResultPage => 'RTIR/Link/ToIncident/?id='. $ARGS{'id'},
     BaseQuery => RT::IR->Query(
-        Queue => 'Incidents',
+        Lifecycle => 'incidents',
         HasNoMember => $ARGS{'id'},
         Costituency => $ARGS{'id'},
     ),
