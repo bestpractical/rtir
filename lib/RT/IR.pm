@@ -81,6 +81,12 @@ my %FRIENDLY_LIFECYCLE = (
 
 );
 
+sub lifecycle_report {'incident_report'}
+sub lifecycle_incident {'incident'}
+sub lifecycle_investigation {'investigation'}
+sub lifecycle_countermeasure {'blocks'}
+
+
 use Parse::BooleanLogic;
 my $ticket_sql_parser = Parse::BooleanLogic->new;
 
