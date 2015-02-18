@@ -1,0 +1,20 @@
+# TODO: rename me to add_constituency and make my arg parsing match the old tool
+#
+# If there is no global queue custom field called RTIR_Constituency, create one
+# add the constituency name to as a value for that field
+#
+# Create four queues
+#   $CONSTITUENCY Investigations
+#   $CONSTITUENCY Reports
+#   $CONSTITUENCY Incidents
+#   $CONSTITUENCY Countermeasures 
+#   
+#       For each of those queues
+#           set its RTIR constituency to $CONSTITUENCY
+#           apply the RTIR scrips for its kind of queue to it
+#           Create a dutyteam group for it $CONSTITUENCY Duty Team
+#           Create a readonly group for it $CONSTITUENCY Read Only
+#           Give the duty team the correct rights
+#           Give the read only group the correct rights
+#
+#
