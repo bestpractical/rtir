@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 
+use Test::More skip_all => 'constituencies being rebuilt';
 use RT::IR::Test tests => undef;
 
 my @constituencies = qw(EDUNET GOVNET third);
