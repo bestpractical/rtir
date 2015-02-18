@@ -55,7 +55,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 % if ( $Split && !$SplitObj->CurrentUserHasRight('ModifyTicket') ) {
-<% loc("You are not allowed to split this [_1].", $name) %>
+<% loc("You are not allowed to split this [_1].", RT::IR::TicketType(Lifecycle => $QueueObj->Lifecycle)) %>
 %    $m->abort();
 % }
 
@@ -205,31 +205,35 @@
   <tr>
     <td class="label"><&|/l&>Message</&>:</td>
     <td class="value">
-% my $include_signature = 1;
-% unless (exists $ARGS{Content}) {
-%   my $Transactions;
-%   if ($SplitObj) {
-%     $Transactions = $SplitObj->Transactions;
-%   } elsif (@IncidentObj) {
-%     $Transactions = $IncidentObj[0]->Transactions;
-%   }
-%
-%   if ($Transactions) {
-%   # Investigations should quote their included text
-%   my $quote = 0;
-%   if ($Type eq 'Investigation') {
-%       $quote = 1;
-%   }
-%   $ARGS{Content} = $m->scomp("/RTIR/Elements/TransactionData", 
-%      Transactions => $Transactions,
-%      Type => 'messages',
-%      Include => {'Create', 'Correspond'},
-%      QuoteText => $quote);
-%      $ARGS{Content} =~ s/\&gt;/>/g if $ARGS{Content};
-%   }
-% } else {
-%   $include_signature = 0;
-% }
+<%perl>
+ my $include_signature = 1;
+ unless (exists $ARGS{Content}) {
+   my $Transactions;
+   if ($SplitObj) {
+     $Transactions = $SplitObj->Transactions;
+   } elsif (@IncidentObj) {
+     $Transactions = $IncidentObj[0]->Transactions;
+   }
+
+   if ($Transactions) {
+   # Investigations should quote their included text
+   my $quote = 0;
+   if ($QueueObj->Lifecycle eq RT::IR->lifecycle_investigation){  
+       $quote = 1;
+   }
+   $ARGS{Content} = $m->scomp("/RTIR/Elements/TransactionData", 
+      Transactions => $Transactions,
+      Type => 'messages',
+      Include => {'Create', 'Correspond'},
+      QuoteText => $quote);
+      $ARGS{Content} =~ s/\&gt;/>/g if $ARGS{Content};
+   }
+ } else {
+   $include_signature = 0;
+ }
+
+</%perl>
+
 % if ( RT->Config->Get('ArticleOnTicketCreate')) {
 <& /Articles/Elements/BeforeMessageBox, %ARGS, QueueObj => $QueueObj &>
 % }
@@ -305,7 +309,7 @@
 &>
 </table></&>
 
-% if ( $Type eq "Investigation" && @IncidentObj ) {
+% if ( $QueueObj->Lifecycle eq RT::IR->lifecycle_investigation && @IncidentObj ) {
   <& /RTIR/Elements/AttachReports, Ticket => \@IncidentObj &>
 % }
 
@@ -332,19 +336,13 @@ $QueueObj->Load( $Queue ) || Abort( loc("Queue could not be loaded.") );
 
 my $ticket = RT::Ticket->new($session{'CurrentUser'}); # empty ticket object
 
-my $Type = RT::IR::TicketType( Queue => $Queue );
-if ($Type eq 'Block' && RT->Config->Get('RTIR_DisableBlocksQueue') ) {
+my $Type = RT::IR::TicketType( Lifecycle => $QueueObj->Lifecycle);
+if ($QueueObj->Lifecycle eq RT::IR->lifecycle_countermeasure && RT->Config->Get('RTIR_DisableBlocksQueue') ) {
     Abort(loc("Blocks queue is disabled via config file"));
 }
 if ( $m->comp_exists("/RTIR/$Type/Create.html") ) {
     return $m->comp( "/RTIR/$Type/Create.html", %ARGS );
 }
-
-my ($name);
-if ( $Type eq 'Report' ) {
-    $name = 'Incident Report';
-}
-$name ||= $Type;
 
 my (@results, $checks_failure, $skip_create);
 $skip_create = !$ARGS{'Create'};
@@ -406,7 +404,7 @@ if ( !$skip_create && $gnupg_widget ) {
 }
 
 unless ( $skip_create ) {
-    if ( $Type eq 'Investigation' && !$ARGS{'Requestors'} ) {
+if ( $QueueObj->Lifecycle eq RT::IR->lifecycle_investigation && !$ARGS{'Requestors'} ) {
         push @results, loc( "You must enter a correspondent" );
         $checks_failure = 1;
     }
@@ -460,14 +458,14 @@ unshift @results, loc("Creation failed:")
 
 my ($Title, $SubmitCaption);
 if ( $Split ) {
-    $Title = loc("Split [_1] #[_2]: [_3]", $name, $SplitObj->id, $SplitObj->Subject);
+$Title = loc("Split [_1] #[_2]: [_3]", RT::IR::TicketType(Lifecycle => $QueueObj->Lifecycle), $SplitObj->id, $SplitObj->Subject);
     $SubmitCaption = loc("Split");
 } else {
-    if ( $Type eq 'Investigation' ) {
-        $Title = loc("Launch a new [_1]", $name);
+if ( $QueueObj->Lifecycle eq RT::IR->lifecycle_investigation ) {
+    $Title = loc("Launch a new investigation");
         $SubmitCaption = loc("Launch");
     } else {
-        $Title = loc("Create a new [_1]", $name);
+    $Title = loc("Create a new [_1]", RT::IR::TicketType(Lifecycle => $QueueObj->Lifecycle));
         $SubmitCaption = loc("Create");
     }
 }
