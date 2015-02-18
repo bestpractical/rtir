@@ -81,9 +81,9 @@ my %FRIENDLY_LIFECYCLE = (
 
 );
 
-sub lifecycle_report {'incident_report'}
-sub lifecycle_incident {'incident'}
-sub lifecycle_investigation {'investigation'}
+sub lifecycle_report {'incident_reports'}
+sub lifecycle_incident {'incidents'}
+sub lifecycle_investigation {'investigations'}
 sub lifecycle_countermeasure {'blocks'}
 
 
