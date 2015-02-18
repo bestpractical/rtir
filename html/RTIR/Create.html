@@ -339,7 +339,11 @@ my $ticket = RT::Ticket->new($session{'CurrentUser'}); # empty ticket object
 my $Type = RT::IR::TicketType( Lifecycle => $QueueObj->Lifecycle);
 if ($QueueObj->Lifecycle eq RT::IR->lifecycle_countermeasure && RT->Config->Get('RTIR_DisableBlocksQueue') ) {
     Abort(loc("Blocks queue is disabled via config file"));
-}
+    }
+
+# If we have a custom create page for this kind of item, serve
+# that instead.
+# As of RTIR 3.8, that's only true for Incidents
 if ( $m->comp_exists("/RTIR/$Type/Create.html") ) {
     return $m->comp( "/RTIR/$Type/Create.html", %ARGS );
 }
