@@ -92,7 +92,7 @@ if ( $ARGS{'HTMLReport'} || $ARGS{'TextReport'} || $ARGS{'SpreadsheetReport'} ) 
     $ext = 'tsv' if $ARGS{'SpreadsheetReport'};
     my $url = RT->Config->Get('WebURL') .'RTIR/Reporting/Report.'. $ext;
     $url   .= "?". $m->comp( '/Elements/QueryString', %ARGS );
-    $m->redirect($url);
+    return RT::Interface::Web::Redirect($url);
 }
 
 my $now = RT::Date->new(RT->SystemUser);
