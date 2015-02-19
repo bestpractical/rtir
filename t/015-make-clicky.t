@@ -60,13 +60,12 @@ diag "clicky email" if $ENV{'TEST_VERBOSE'};
         my $id =
           $agent->create_ir( { Subject => 'clicky email', Content => $email } );
         $agent->display_ticket($id);
-        my $email_link = $agent->find_link( text_regex => qr/\Qlookup email\E$/ );
+        my $email_link = $agent->find_link( url_regex => qr/\Qq=$email\E/, text_regex => qr/\Qlookup email\E$/ );
         my $domain_link = $agent->find_link( text_regex => qr/^\Qlookup "$domain"\E$/i );
         $agent->save_content('/tmp/x.html');
         if ( $clicky{'email'} ) {
-            ok( $email_link,                                   "found link" );
-            ok( $email_link->url =~ /(?<!\w)\Q$email\E(?!\w)/, 'url has an email' );
-
+            ok( $email_link,                                   "found link $email_link" );
+            ok( $email_link->url =~ /(?<!\w)\Qq=$email\E(?!\w)/, 'url '.$email_link->url.' has an email - '.$email );
             ok( $domain_link,                                    "found link" );
             ok( $domain_link->url =~ /(?<!\w)\Q$domain\E(?!\w)/, 'url has a domain' );
         }
@@ -77,17 +76,39 @@ diag "clicky email" if $ENV{'TEST_VERBOSE'};
 
     }
 
-    for my $email ( 'foo@example', '@example.com', ) {
-        diag "test invalid email $email" if $ENV{TEST_VERBOSE};
+    for my $email ( 'foo@example') {
+        diag "test invalid email (invalid domain) $email" if $ENV{TEST_VERBOSE};
 
-        my ( $name, $domain ) = split /@/, $email, 2;
+        my ( $name, $domain );
+        if ($email =~ /^(.*)@(.*)$/) {
+            ($name,$domain) = ($1,$2);
+        }
         my $id = $agent->create_ir( { Subject => 'clicky email', Content => $email } );
         $agent->display_ticket($id);
-        my $email_link = $agent->find_link( text_regex => qr/\Qlookup email\E$/ );
-        ok( !$email_link, "not found email link" );
+        my $email_link = $agent->find_link( url_regex => qr/\Qq=$email\E/, text_regex => qr/\Qlookup email\E$/ );
+        ok( !$email_link, "not found email link for $email" );
         my $domain_link = $agent->find_link( text_regex => qr/^\Qlookup "$domain"\E$/i );
-        ok( !$domain_link, "not found domain link" );
+        ok( !$domain_link, "not found domain link for $domain" );
+
     }
+
+
+    for my $email ( '@example.com' ) {
+        diag "test invalid email (no local part) $email" if $ENV{TEST_VERBOSE};
+
+        my ( $name, $domain );
+        if ($email =~ /^(.*)@(.*)$/) {
+            ($name,$domain) = ($1,$2);
+        }
+        my $id = $agent->create_ir( { Subject => 'clicky email', Content => $email } );
+        $agent->display_ticket($id);
+        my $email_link = $agent->find_link( url_regex => qr/\Qq=$email\E/, text_regex => qr/\Qlookup email\E$/ );
+        ok( !$email_link, "not found email link for $email" );
+        my $domain_link = $agent->find_link( text_regex => qr/^\Qlookup "$domain"\E$/i );
+        ok( $domain_link, "still found the bare domain for $domain" );
+    }
+
+
 }
 
 diag "utf8 caching " if $ENV{'TEST_VERBOSE'};
