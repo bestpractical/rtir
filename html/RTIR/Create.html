@@ -66,7 +66,6 @@
 % }
 <input type="hidden" name="id" value="new" />
 <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
-<input type="hidden" name="Queue" value="<% $Queue %>" />
 % if ( $Split ) {
 <input type="hidden" name="Split" value="<% $SplitObj->id %>" />
 % }
@@ -100,6 +99,14 @@
   <& /Ticket/Elements/EditBasics,
     InTable => 1,
     fields  => [
+        {   name => 'Queue',
+            comp => '/RTIR/Elements/SelectRTIRQueue',
+            args => {
+                Name => 'Queue',
+                Default => $ARGS{'Queue'} || $QueueObj->Id,
+                ShowNullOption => 0,
+            }
+        },
         {
             name => 'Status',
             comp => '/Elements/SelectStatus',
