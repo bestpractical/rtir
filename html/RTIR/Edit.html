@@ -74,7 +74,7 @@
   <tr>
     <td class="label"><&|/l&>Status</&>:</td>
     <td class="value" colspan="2">
-% unless ( $Type eq 'Block' ) {
+% unless ( $Ticket->QueueObj->Lifecycle eq RT::IR->lifecycle_countermeasure ) {
       <% loc($Ticket->Status) %>
 % } else {
       <& /Elements/SelectStatus,
@@ -93,7 +93,7 @@
         TicketObj => $Ticket, QueueObj => $Ticket->QueueObj,
     &></td>
   </tr>
-% if ( $Type ne 'Incident' ) {
+% if ($Ticket->QueueObj->Lifecycle ne RT::IR->lifecycle_incident ) {
   <tr>
     <td class="label"><%loc("Incident")%>:</td>
     <td class="value"><& /RTIR/Elements/ShowIncidents, Ticket => $Ticket &></td>
@@ -106,7 +106,7 @@
         Default => $ARGS{'TimeWorked'} || $Ticket->TimeWorked || '',
     &></td>
   </tr>
-% if ( $Type eq 'Incident' ) {
+% if ( $Ticket->QueueObj->Lifecycle eq RT::IR->lifecycle_incident) {
   <tr>
     <td class="label"><&|/l&>Priority</&>:</td>
     <td class="value"><&/Elements/SelectPriority, Name => 'Priority', Default => $ARGS{'Priority'} || $Ticket->Priority &></td>
@@ -139,7 +139,7 @@
 </table>
 <br />
 
-% if ( $Type ne 'Incident' ) {
+% if ( $Ticket->QueueObj->Lifecycle ne RT::IR->lifecycle_incident) {
 <&| /Widgets/TitleBox, title => loc('People'), class => 'ticket-info-people' &>
 <& /RTIR/Elements/EditPeople, %ARGS, Ticket => $Ticket &>
 </&>
@@ -156,12 +156,16 @@ $id = $ARGS{'id'} = $Ticket->Id;
 
 $m->callback(CallbackName => 'Initial', %ARGS, Ticket => $Ticket);
 
-my $Type = RT::IR::TicketType( Ticket => $Ticket );
 
-return $m->comp( '/Ticket/Display.html', %ARGS ) unless $Type;
-if( $Type eq 'Block' && RT->Config->Get('RTIR_DisableBlocksQueue') ) {
+return $m->comp( '/Ticket/Display.html', %ARGS ) unless RT::IR->OurQueue($Ticket->QueueObj);
+
+if( $Ticket->QueueObj->Lifecycle eq RT::IR->lifecycle_countermeasure 
+    && RT->Config->Get('RTIR_DisableBlocksQueue') ) {
     Abort(loc("Blocks queue is disabled via config file"));
 }
+
+my $Type = RT::IR::TicketType( Ticket => $Ticket );
+
 if ( $m->comp_exists("/RTIR/$Type/Edit.html") ) {
     return $m->comp("/RTIR/$Type/Edit.html", %ARGS);
 }
@@ -229,11 +233,11 @@ if ( $SaveChanges && !$checks_failure && !$OnlySearchForPeople ) {
     );
 }
 
-my $name;
-if ($Type eq 'Report') {
+my $name = RT::IR::TicketType( Ticket => $Ticket );
+# We still call incident reports "incident reports in some places
+# XXX TODO just create a ShortTicketType method
+if ($Ticket->QueueObj->Lifecycle eq RT::IR->lifecycle_report) {
     $name = "Incident Report";
-} else {
-    $name = $Type;
 }
 
 # If they've gone and moved the ticket to somewhere they can't see, etc...
