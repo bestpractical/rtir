@@ -330,8 +330,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
         path => "/RTIR/Display.html?id=$id",
     );
 } elsif ( $request_path =~ m{^/RTIR/Incident/Children/} ) {
-    my $lifecycle = $args->{'Lifecycle'} || 'incident_reports';
-    my $type = RT::IR::TicketType( Lifecycle => $lifecycle );
+    my $lifecycle = $args->{'Lifecycle'} ||  RT::IR->lifecycle_report;
 
     my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
     $ticket->Load( $args->{'id'} );
@@ -404,17 +403,16 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
     my $lifecycle = $args->{'Lifecycle'} || '';
     unless ( $lifecycle ) {
         if ( $request_path =~ /Incident/ ) {
-            $lifecycle = 'incidents';
+            $lifecycle =  RT::IR->lifecycle_incident;
         }
         elsif ( $request_path =~ /Report/ ) {
-            $lifecycle = 'incident_reports';
+            $lifecycle =  RT::IR->lifecycle_report;
         }
     }
     unless ( $lifecycle ) {
         my (undef, @lifecycles) = RT::IR->OurQuery( $args{'Query'} );
         $lifecycle = $lifecycles[0] if @lifecycles == 1;
     }
-    my $type = RT::IR::TicketType( Lifecycle => $lifecycle ) || '';
 
     $args{'Lifecycle'} = $lifecycle if $lifecycle;
 
@@ -442,7 +440,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
         );
     }
 
-    if ( $type eq 'Incident' ) {
+    if ( $lifecycle eq RT::IR->lifecycle_incident ) {
         PageMenu()->child(
             report => title => loc('Report'),
             path => "/RTIR/Reporting/",
@@ -453,7 +451,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
             path => "/RTIR/Incident/BulkAbandon.html?". $query_string->( %args ),
         );
     }
-    elsif ( $type eq 'Report' ) {
+    elsif ( $lifecycle eq RT::IR->lifecycle_report) {
         PageMenu()->child(
             reject => title => loc('Bulk Reject'),
             path => "/RTIR/Report/BulkReject.html?". $query_string->( %args ),
