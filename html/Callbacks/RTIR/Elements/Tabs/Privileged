@@ -317,9 +317,9 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
         path => "/RTIR/Link/$direction/Refine.html?". $query_string->( %args ),
     );
     PageMenu()->child(
-        new => title => loc("New $type"),
+        new => title => loc("New [_1]", RT::IR::TicketType( Lifecycle => $lifecycle || RT::IR->lifecycle_incident ) ),
         path => !$lifecycle
-            ? "/RTIR/Create.html?Child=$id&Lifecycle=incidents"
+            ? "/RTIR/Create.html?Child=$id&Lifecycle=".RT::IR->lifecycle_incident
             : "/RTIR/Create.html?". $query_string->( Incident => $id, Lifecycle => $lifecycle )
         ,
     );
@@ -341,7 +341,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
     );
 
     PageMenu()->child(
-        new => title => loc("New $type"),
+        new => title => loc("New [_1]",RT::IR::TicketType( Lifecycle => $lifecycle ) ),
         path => "/RTIR/Create.html?". $query_string->( Incident => $id, Lifecycle => $lifecycle ),
     );
     PageMenu()->child(
