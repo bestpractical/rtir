@@ -139,8 +139,6 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
     $ticket->Load($id);
     $id = $ticket->id;
 
-    my $type = RT::IR::TicketType( Lifecycle => $ticket->QueueObj->Lifecycle );
-
     my %can;
     my $can = sub {
         return $can{$_[0]} if exists $can{$_[0]};
@@ -211,7 +209,8 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
         }
     }
 
-    my $lifecycle = $ticket->QueueObj->LifecycleObj;
+    my $LifecycleObj = $ticket->QueueObj->LifecycleObj;
+    my $lifecycle = $ticket->QueueObj->Lifecycle;
 
 
     if ( $can->('ModifyTicket') || $can->('ReplyToTicket') ) {
@@ -238,9 +237,9 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
 
     my $i = 0;
     my $status = $ticket->Status;
-    foreach my $info ( $lifecycle->Actions( $status ) ) {
+    foreach my $info ( $LifecycleObj->Actions( $status ) ) {
         my $next = $info->{'to'};
-        next unless $lifecycle->IsTransition( $status => $next );
+        next unless $LifecycleObj->IsTransition( $status => $next );
 
         my %args = (%$info, id => $id);
         delete @args{qw(to from label update)};
@@ -248,14 +247,14 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
         # if user will be owner then he will get more rights
         # TODO: check actually if he will get required rights
         if ( !$args{'TakeOrStealFirst'} || $session{'CurrentUser'}->id == $ticket->Owner ) {
-            my $check = $lifecycle->CheckRight( $status => $next );
+            my $check = $LifecycleObj->CheckRight( $status => $next );
             next unless $can->( $check );
         }
 
         my $path = '/RTIR/';
-        $path .= 'Incident/' if $type eq 'Incident';
+        $path .= 'Incident/' if $lifecycle eq RT::IR->lifecycle_incident;
         if ( my $update = $info->{'update'} ) {
-            $path .= $type eq 'Incident'? 'Reply/' : 'Update.html';
+            $path .= $lifecycle eq RT::IR->lifecycle_incident? 'Reply/' : 'Update.html';
             $path .= "?". $m->comp(
                 '/Elements/QueryString',
                 %args,
@@ -298,7 +297,6 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
     my $direction = $1;
 
     my $lifecycle = $args->{'Lifecycle'};
-    my $type = RT::IR::TicketType( Lifecycle => $lifecycle || 'incidents' );
 
     my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
     $ticket->Load( $args->{'id'} );
