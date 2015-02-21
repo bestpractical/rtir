@@ -82,7 +82,7 @@ $Rows  => 8
 <%INIT>
 
 
-return if $Lifecycle eq 'blocks' && RT->Config->Get('RTIR_DisableBlocksQueue');
+return if $Lifecycle eq RT::IR->lifecycle_countermeasure && RT->Config->Get('RTIR_DisableBlocksQueue');
 
 
 my $FriendlyLifecycle = RT::IR::FriendlyLifecycle($Lifecycle);
@@ -114,7 +114,7 @@ if ( $IncidentObj->CurrentUserHasRight('ModifyTicket') ) {
     if (1) { # XXX TODO RESTORE THIS ACL CHECK
     # $QueueObj->Id and $QueueObj->CurrentUserHasRight('CreateTicket') ) {
         push @box_actions, {
-            title => $Lifecycle ne 'investigations'? loc('Create') : loc('Launch'),
+            title => $Lifecycle ne RT::IR->lifecycle_investigation? loc('Create') : loc('Launch'),
             path => "/RTIR/Create.html?Incident=$id&Lifecycle=".$Lifecycle,
         };
     }

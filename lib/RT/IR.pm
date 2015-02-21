@@ -62,7 +62,16 @@ use Scalar::Util qw(blessed);
 use RT::IR::Config;
 RT::IR::Config::Init();
 
-my @LIFECYCLES = ('incidents', 'incident_reports', 'investigations','blocks');
+
+
+sub lifecycle_report {'incident_reports'}
+sub lifecycle_incident {'incidents'}
+sub lifecycle_investigation {'investigations'}
+sub lifecycle_countermeasure {'blocks'}
+
+
+my @LIFECYCLES = (RT::IR->lifecycle_incident, RT::IR->lifecycle_report, RT::IR->lifecycle_investigation, RT::IR->lifecycle_countermeasure);
+
 my @QUEUES = ('Incidents', 'Incident Reports', 'Investigations', 'Blocks');
 my %QUEUES = map { lc($_) => $_ } @QUEUES;
 my %TYPE = (
@@ -74,17 +83,12 @@ my %TYPE = (
 );
 
 my %FRIENDLY_LIFECYCLE = (
-    'incidents'        => 'Incidents',
-    'incident_reports' => 'Incident Reports',
-    'investigations'   => 'Investigations',
-    'blocks'           => 'Blocks',
+    RT::IR->lifecycle_incident        => 'Incidents',
+    RT::IR->lifecycle_report => 'Incident Reports',
+    RT::IR->lifecycle_investigation   => 'Investigations',
+    RT::IR->lifecycle_countermeasure           => 'Blocks',
 
 );
-
-sub lifecycle_report {'incident_reports'}
-sub lifecycle_incident {'incidents'}
-sub lifecycle_investigation {'investigations'}
-sub lifecycle_countermeasure {'blocks'}
 
 
 use Parse::BooleanLogic;
@@ -678,9 +682,8 @@ require RT::Action::AutoOpen;
     my $prepare = RT::Action::AutoOpen->can('Prepare');
     *RT::Action::AutoOpen::Prepare = sub {
         my $self = shift;
-        my $ticket = $self->TicketObj;
-        my $type = RT::IR::TicketType( Ticket => $ticket );
-        return 0 if $type && ( $type eq 'Block' || $type eq 'Report' );
+        my $type = $self->TicketObj->QueueObj->Lifecycle;
+        return 0 if $type && ( $type eq RT::IR->lifecycle_countermeasure || $type eq RT::IR->lifecycle_report);
         return $self->$prepare(@_);
     };
 }
@@ -690,9 +693,8 @@ require RT::Action::AutoOpenInactive;
     my $prepare = RT::Action::AutoOpenInactive->can('Prepare');
     *RT::Action::AutoOpenInactive::Prepare = sub {
         my $self = shift;
-        my $ticket = $self->TicketObj;
-        my $type = RT::IR::TicketType( Ticket => $ticket );
-        return 0 if $type && ( $type eq 'Block' || $type eq 'Report' );
+        my $type = $self->TicketObj->QueueObj->Lifecycle;
+        return 0 if $type && ( $type eq RT::IR->lifecycle_countermeasure || $type eq RT::IR->lifecycle_report);
         return $self->$prepare(@_);
     };
 }
@@ -746,7 +748,7 @@ package RT::Search::Simple;
 
 sub HandleRtirip {
     return 'RTIR IP' => RT::IR->Query(
-        Lifecycle => ['incidents', 'incident_reports', 'investigations', 'blocks'],
+        Lifecycle => \@LIFECYCLES,
         And => "'CustomField.{IP}' = '$_[1]'",
     );
 }
@@ -757,9 +759,9 @@ sub HandleRtirrequestor {
 
     my $children = RT::Tickets->new( $self->TicketsObj->CurrentUser );
     $children->FromSQL(
-        "( Lifecycle = 'incident_reports' OR
-           Lifecycle = 'investigations' OR
-           Lifecycle = 'blocks'
+        "( Lifecycle = '".RT::IR->lifecycle_report."' OR
+           Lifecycle = '".RT::IR->lifecycle_investigation."' OR
+           Lifecycle = '".RT::IR->lifecycle_countermeasure."'
          ) AND Requestor LIKE '$value'"
     );
     my $query = '';
@@ -768,7 +770,7 @@ sub HandleRtirrequestor {
         $query .= "HasMember = " . $child->Id;
     }
     $query ||= 'id = 0';
-    return 'RTIR Requestor' => "Lifecycle = 'incidents' AND ($query)";
+    return 'RTIR Requestor' => "Lifecycle = '".RT::IR->lifecycle_incident."' AND ($query)";
 }
 
 package RT::IR;

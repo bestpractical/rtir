@@ -111,7 +111,7 @@
 </td><td class="boxcontainer" valign="top">
 % $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'RightColumnStart' );
 
-% foreach my $lifecycle ( 'incident_reports', 'investigations', 'blocks' ) {
+% foreach my $lifecycle ( RT::IR->lifecycle_report, RT::IR->lifecycle_investigation, RT::IR->lifecycle_countermeasure ) {
 <& /RTIR/Incident/Elements/ShowChildren,
     IncidentObj => $TicketObj,
     Lifecycle   => $lifecycle
@@ -213,7 +213,7 @@ my $new_ticket = 0;
 if ( $id eq 'new' ) {
     my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
     $QueueObj->Load( $Queue ) || Abort(loc("Couldn't load queue."));
-    unless( $QueueObj->Lifecycle eq 'incidents' ) {
+    unless( $QueueObj->Lifecycle eq RT::IR->lifecycle_incident ) {
         return $m->comp('/RTIR/Display.html', %ARGS );
     }
     ($TicketObj, @results) = CreateTicket( %ARGS );
@@ -227,7 +227,7 @@ $m->callback(CallbackName => 'ProcessArguments',
             ARGSRef => \%ARGS,  
             Actions => \@results);
 
-unless( $TicketObj->QueueObj->Lifecycle eq 'incidents' ) {
+unless( $TicketObj->QueueObj->Lifecycle eq RT::IR->lifecycle_incident ) {
     return $m->comp('/RTIR/Display.html', %ARGS );
 }
 $ARGS{'id'} = $id = $TicketObj->Id;
@@ -311,7 +311,7 @@ my $attachments = $TicketObj->Attachments;
 
 <%ARGS>
 $id => undef
-$Queue => 'Incidents'
+$Queue => RT::IR->lifecycle_incident
 $Child => undef
 $SelectedTicket => undef
 @SelectedTickets => ()

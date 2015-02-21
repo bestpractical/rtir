@@ -46,9 +46,9 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-my @lifecycles = ('incident_reports');
-push @lifecycles, 'investigations' if $ARGS{'All'};
-push @lifecycles, 'blocks' if $ARGS{'All'} && !RT->Config->Get('RTIR_DisableBlocksQueue');
+my @lifecycles = (RT::IR->lifecycle_report);
+push @lifecycles, RT::IR->lifecycle_investigation if $ARGS{'All'};
+push @lifecycles, RT::IR->lifecycle_countermeasure if $ARGS{'All'} && !RT->Config->Get('RTIR_DisableBlocksQueue');
 
 return $m->comp(
     '/RTIR/Search/Elements/RefinePage',

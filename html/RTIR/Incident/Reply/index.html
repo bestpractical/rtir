@@ -69,7 +69,7 @@
 <h2><&|/l&>Reporters</&></h2>
 <& /RTIR/Search/Elements/ShowResults,
     BaseURL       => $BaseURL,
-    BaseQuery     => RT::IR->Query(Lifecycle => 'incident_reports', MemberOf => $id),
+    BaseQuery     => RT::IR->Query(Lifecycle => RT::IR->lifecycle_report, MemberOf => $id),
     Query         => $Query,
     DisplayFormat => "__CheckBox.{SelectedReports}__, $Format",
     Format        => $Format,
@@ -82,7 +82,7 @@
 <h2><&|/l&>Investigation Correspondents</&></h2>
 <& /RTIR/Search/Elements/ShowResults,
     BaseURL       => $BaseURL,
-    BaseQuery     => RT::IR->Query(Lifecycle => 'investigations', MemberOf => $id),
+    BaseQuery     => RT::IR->Query(Lifecycle => RT::IR->lifecycle_investigation, MemberOf => $id),
     Query         => $Query,
     DisplayFormat => "__CheckBox.{SelectedInvestigations}__, $Format",
     Format        => $Format,
@@ -95,7 +95,7 @@
 <h2><&|/l&>Blocks Correspondents</&></h2>
 <& /RTIR/Search/Elements/ShowResults,
     BaseURL       => $BaseURL,
-    BaseQuery     => RT::IR->Query(Lifecycle => 'blocks', MemberOf => $id),
+    BaseQuery     => RT::IR->Query(Lifecycle => RT::IR->lifecycle_countermeasure, MemberOf => $id),
     Query         => $Query,
     DisplayFormat => "__CheckBox.{SelectedBlocks}__, $Format",
     Format        => $Format,
@@ -240,9 +240,9 @@ if ($Status eq 'resolved') {
     }
 }
 
-my @lifecycles = ('incident_reports');
-push @lifecycles, 'investigations' if $All;
-push @lifecycles, 'blocks' unless RT->Config->Get('RTIR_DisableBlocksQueue');
+my @lifecycles = (RT::IR->lifecycle_report);
+push @lifecycles, RT::IR->lifecycle_investigation if $All;
+push @lifecycles, RT::IR->lifecycle_countermeasure unless RT->Config->Get('RTIR_DisableBlocksQueue');
 
 $Query ||= RT::IR->ActiveQuery( Lifecycle => \@lifecycles );
 

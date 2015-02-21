@@ -76,8 +76,8 @@ sub Commit {
     my $incident = $self->TicketObj;
     my $id = $incident->Id;
 
-    foreach my $lifecycle ( 'incident_reports', 'investigations', 'blocks' ) {
-        next if $lifecycle eq 'blocks' && RT->Config->Get('RTIR_DisableBlocksQueue');
+    foreach my $lifecycle ( RT::IR->lifecycle_report, RT::IR->lifecycle_investigation, RT::IR->lifecycle_countermeasure ) {
+        next if $lifecycle eq RT::IR->lifecycle_countermeasure && RT->Config->Get('RTIR_DisableBlocksQueue');
 
         my $members = RT::IR->IncidentChildren(
             $incident, Lifecycle => $lifecycle,
