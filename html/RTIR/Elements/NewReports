@@ -96,7 +96,7 @@ my $BulkQS = $m->comp('/Elements/QueryString',
 </%INIT>
 
 <%ARGS>
-$Lifecycle     => 'incident_reports'
+$Lifecycle     =>  RT::IR->lifecycle_report
 $BaseQuery => RT::IR->Query( Lifecycle => $Lifecycle )
 $Query     => undef
 $Format    => RT->Config->Get('RTIRSearchResultFormats')->{'NewReports'}

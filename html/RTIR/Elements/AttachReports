@@ -74,7 +74,7 @@ return unless @parents;
 
 my $siblings = RT::Tickets->new( $Ticket[0]->CurrentUser );
 $siblings->FromSQL( RT::IR->Query(
-    Lifecycle    => 'incident_reports',
+    Lifecycle    => RT::IR->lifecycle_report,
     MemberOf => \@parents,
     Exclude  => \@Ticket,
 ) );
