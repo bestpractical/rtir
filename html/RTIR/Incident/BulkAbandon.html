@@ -84,7 +84,7 @@ Lifecycle     => RT::IR->lifecycle_incident,
 </&>
 <br />
 
-<& Elements/ReplyForm &>
+<& Elements/ReplyForm, QueueObj => $queue &>
 
 <& /Elements/Submit,
     Name => "BulkAbandon",
@@ -179,6 +179,11 @@ if ( $ARGS{'BulkAbandon'} ) {
         },
     );
 }
+
+# XXX TODO Don't make this assumption 
+my $queue = RT::Queue->new( $session{'CurrentUser'} );
+$queue->Load('Incidents');
+
 
 </%INIT>
 <%ARGS>
