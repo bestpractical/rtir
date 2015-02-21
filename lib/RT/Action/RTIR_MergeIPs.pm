@@ -60,7 +60,7 @@ sub Commit {
     my $self = shift;
 
     my $txn = $self->TransactionObj;
-    my $uri = $txn->NewValue;
+    my $uri = $txn->NewValue ||'';
 
     my $uri_obj = RT::URI->new( $self->CurrentUser );
     my ($status) = $uri_obj->FromURI( $uri );
