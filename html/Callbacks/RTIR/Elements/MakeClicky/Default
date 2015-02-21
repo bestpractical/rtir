@@ -107,7 +107,7 @@ my %actions;
         my $result .= qq{[<a href="$web_path/RTIR/Tools/Lookup.html?$args{lookup_params}type=ip&q=$escaped_host">}
                       .loc('lookup IP') .q{</a>]};
         if ( $args{incident} && !RT->Config->Get('RTIR_DisableBlocksQueue') ) {
-            $result .= qq{[<a href="$web_path/RTIR/Create.html?Incident=$args{incident}&Lifecycle=blocks&IP-Value=$escaped_host">block</a>]};
+            $result .= qq{[<a href="$web_path/RTIR/Create.html?Incident=$args{incident}&Lifecycle=}.RT::IR->lifecycle_countermeasure.qq{&IP-Value=$escaped_host">block</a>]};
         }
         if ( $args{'object'} && $args{'object'}->id ) {
             my $cf = RT::IR::GetCustomField('IP');
@@ -153,7 +153,8 @@ my %actions;
                 $result .= qq{<input type="checkbox" name="Requestorbox-$escaped_email" unchecked />};
             }
             $result .= qq{[<a href="$web_path/RTIR/Create.html}
-                . qq{?Incident=$args{'incident'}&Lifecycle=investigations&Requestors=$escaped_email">}
+                . qq{?Incident=$args{'incident'}&Lifecycle=}.RT::IR->lifecycle_investigation
+                . qq{&Requestors=$escaped_email">}
                 . loc('Investigate to') .qq{</a>]};
         }
         my $domain = (split /@/, $email, 2)[1];

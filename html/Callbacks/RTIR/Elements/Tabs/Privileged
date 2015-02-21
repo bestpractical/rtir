@@ -103,18 +103,18 @@ $root->child(
 );
 $root->child(
     investigations => title => loc('Investigations'),
-    path => '/RTIR/Search/Results.html?Lifecycle=investigations'
+    path => '/RTIR/Search/Results.html?Lifecycle='.RT::IR->lifecycle_investigation
 )->child(
     launch => title => loc('Launch'),
-    path => '/RTIR/Create.html?Lifecycle=investigations',
+    path => '/RTIR/Create.html?Lifecycle='.RT::IR->lifecycle_investigation,
 );
 unless ( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
     $root->child(
         blocks => title => loc('Blocks'),
-        path => '/RTIR/Search/Results.html?Lifecycle=blocks'
+        path => '/RTIR/Search/Results.html?Lifecycle='.RT::IR->lifecycle_countermeasure
     )->child(
         create => title => loc('Create'),
-        path => '/RTIR/Create.html?Lifecycle=blocks',
+        path => '/RTIR/Create.html?Lifecycle='.RT::IR->lifecycle_countermeasure,
     );
 }
 

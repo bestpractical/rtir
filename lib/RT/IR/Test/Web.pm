@@ -78,7 +78,7 @@ sub goto_create_rtir_ticket {
     my $lifecycle = lc( $queue);
     $lifecycle =~ s/ /_/;
     my $link_text = "Create";
-    $link_text = "Launch" if $lifecycle eq 'investigations';
+    $link_text = "Launch" if $lifecycle eq RT::IR->lifecycle_investigation;
 
     $self->get_ok("/RTIR/index.html", "Loaded home page");
     $self->follow_link_ok(

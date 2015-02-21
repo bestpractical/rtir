@@ -138,7 +138,8 @@ $COLUMN_MAP->{'LookupToolIncidentActions'} = {
             ;
         }
         push @res, \'<a href="',
-            RT->Config->Get('WebPath') .'/RTIR/Create.html?Lifecycle=investigations&Incident='. $t->id,
+            RT->Config->Get('WebPath') .'/RTIR/Create.html?Lifecycle='.RT::IR->lifecycle_investigation
+            .'&Incident='. $t->id,
             \'">',
             '[' . $t->loc("Investigate") .']',
             \'</a>'

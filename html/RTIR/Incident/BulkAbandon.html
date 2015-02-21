@@ -58,9 +58,9 @@
 
 <%PERL>
 my $found = $m->comp('/RTIR/Search/Elements/ShowResults',
-    Lifecycle     => 'incidents',
+Lifecycle     => RT::IR->lifecycle_incident,
     BaseURL       => 'RTIR/Incident/BulkAbandon.html',
-    BaseQuery     => RT::IR->ActiveQuery( Lifecycle => 'incidents' ),
+    BaseQuery     => RT::IR->ActiveQuery( Lifecycle => RT::IR->lifecycle_incident ),
     Query         => $Query,
     DisplayFormat => "__CheckBox__, $Format",
     Format        => $Format,
@@ -120,7 +120,7 @@ if ( $ARGS{'BulkAbandon'} ) {
         }
         $id = $t->id;
 
-        unless( $t->QueueObj->Lifecycle eq 'incidents' ) {
+        unless( $t->QueueObj->Lifecycle eq RT::IR->lifecycle_incident ) {
             push @tempresults, [ $id, loc("Is not incident.") ];
             next;
         }

@@ -54,7 +54,7 @@
     <td class="label"><&|/l&>Starts</&>:</td>
     <td class="value"><% $Ticket->StartsObj->AsString %></td>
   </tr>
-% if ( $Type =~ /^(Report|Investigation|Block)$/i ) {
+% if ( $lifecycle eq RT::IR->lifecycle_report || $lifecycle eq RT::IR->lifecycle_investigation || $lifecycle eq RT::IR->lifecycle_countermeasure) {
   <tr>
     <td class="label"><&|/l&>Started</&>:</td>
     <td class="value"><% $Ticket->StartedObj->AsString %></td>
@@ -69,7 +69,7 @@
 % } else {
         <% $due->AsString %>
 % }
-% if ( $Type ne 'Incident' && $Due ) {
+% if ( $lifecycle ne RT::IR->lifecycle_incident && $Due ) {
         [<a href="Display.html?Due_Date=now%20%2B%20<% $Due |u %>%20days&id=<% $Ticket->Id %>"><% loc("Set to [_1] days from now", $Due ) %></a>]
 % }
     </td>
@@ -84,6 +84,6 @@
 $Ticket => undef
 </%ARGS>
 <%INIT>
-my $Type = RT::IR::TicketType( Ticket => $Ticket );
+my $lifecycle = $Ticket->QueueObj->Lifecycle;
 my $Due = ( $Ticket->QueueObj->DefaultDueIn || (RT->Config->Get('OverdueAfter')) || 7 ) ;
 </%INIT>
