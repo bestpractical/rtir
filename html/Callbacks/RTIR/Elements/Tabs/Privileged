@@ -211,8 +211,11 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
         }
     }
 
+    my $lifecycle = $ticket->QueueObj->LifecycleObj;
+
+
     if ( $can->('ModifyTicket') || $can->('ReplyToTicket') ) {
-        if ( $type eq 'Incident' ) {
+        if ( $lifecycle eq RT::IR->lifecycle_incident) {
             $actions_tab->child(
                 reply_reporters => title => loc('Reply to Reporters'),
                 path  => "/RTIR/Incident/Reply/?id=$id&SelectedReportsAll=1",
@@ -235,7 +238,6 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
 
     my $i = 0;
     my $status = $ticket->Status;
-    my $lifecycle = $ticket->QueueObj->LifecycleObj;
     foreach my $info ( $lifecycle->Actions( $status ) ) {
         my $next = $info->{'to'};
         next unless $lifecycle->IsTransition( $status => $next );
