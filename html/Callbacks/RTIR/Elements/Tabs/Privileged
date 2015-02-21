@@ -89,17 +89,17 @@ if ( $has_query ) {
 
 $root->child(
     incidents => title => loc('Incidents'),
-    path => '/RTIR/Search/Results.html?Lifecycle=incidents'
+    path => '/RTIR/Search/Results.html?Lifecycle='.RT::IR->lifecycle_incident
 )->child(
     create => title => loc('Create'),
-    path => '/RTIR/Create.html?Lifecycle=incidents',
+    path => '/RTIR/Create.html?Lifecycle='.RT::IR->lifecycle_incident,
 );
 $root->child(
     reports => title => loc('Incident Reports'),
-    path => '/RTIR/Search/Results.html?Lifecycle=incident_reports'
+    path => '/RTIR/Search/Results.html?Lifecycle='. RT::IR->lifecycle_report
 )->child(
     create => title => loc('Create'),
-    path => '/RTIR/Create.html?Lifecycle=incident_reports',
+    path => '/RTIR/Create.html?Lifecycle='. RT::IR->lifecycle_report,
 );
 $root->child(
     investigations => title => loc('Investigations'),
