@@ -73,7 +73,6 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 
 <input type="hidden" name="id"           value="new" />
 <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
-<input type="hidden" name="Queue"        value="<% $QueueObj->Name       || '' %>" />
 % if ( $ChildObj ) {
 <input type="hidden" name="Child"        value="<% $Child %>" />
 % }
@@ -100,6 +99,20 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 <tr><td class="label"><% loc('Link with') %>:</td>
     <td class="value"><% loc("[_1] #[_2]: [_3]",  RT::IR::TicketType(Lifecycle => $ChildObj->QueueObj->Lifecycle), $ChildObj->Id, $ChildObj->Subject) %></td></tr>
 % }
+
+  
+<tr>
+  <td class="label"><&|/l&>Queue</&>:</td>
+  <td colspan="2">
+      <& /RTIR/Elements/SelectRTIRQueue,
+                Name => 'Queue',
+                Default => $ARGS{'Queue'} || $QueueObj->Id,
+                Lifecycle => RT::IR->lifecycle_incident,
+    &>
+  </td>
+</tr>
+ 
+
 
 <tr>
   <td class="label"><&|/l&>Status</&>:</td>

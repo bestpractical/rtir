@@ -47,14 +47,80 @@
 %# END BPS TAGGED BLOCK }}}
 %# XXX TODO replace with something that limits by constituency and
 %# XXX TODO Lifecycle
-<& /Elements/SelectObject,
-    %ARGS,
-    ObjectType  => "Queue",
-    CheckRight  => $CheckQueueRight,
-    ShowAll     => $ShowAllQueues,
-    CacheNeedsUpdate => RT->System->QueueCacheNeedsUpdate,
-    &>
+<select name="<%$Name%>" <% ($OnChange) ? 'onchange="'.$OnChange.'"' : '' |n %> class="<%$Class%>">
+%     if ($ShowNullOption) {
+  <option value=""><% $DefaultLabel %></option>
+%     }
+%     for my $object (@{$session{$cache_key}{objects}}) {
+  <option value="<%  $object->{Id} %>"\
+% if ($object->{Id} eq ($Default||'') || $object->{Name} eq ($Default||'')) {
+ selected="selected"\
+% }
+><%$object->{Name}%>\
+</option>
+%     }
+</select>
 <%args>
-$CheckQueueRight => 'CreateTicket'
-$ShowAllQueues => 1
+$CheckRight => 'CreateTicket'
+$ShowNullOption => 0
+$ShowAll => 1
+$Name => undef
+$DefaultLabel => "-"
+$Default => 0
+$OnChange => undef
+$CacheNeedsUpdate => RT->System->QueueCacheNeedsUpdate
+$Lifecycle => undef
 </%args>
+<%init>
+my $Class    = "select-rtir-queue-".$Lifecycle;
+
+# XXX TODO This cache will need to take constituency into account
+my $cache_key = join "---", "SelectObject", 'rtir-queue-'.$Lifecycle,
+    $session{'CurrentUser'}->Id, $CheckRight || "", $ShowAll;
+
+if ( defined $session{$cache_key} && ref $session{$cache_key} eq 'ARRAY') {
+    delete $session{$cache_key};
+}
+if ( defined $session{$cache_key} && defined $CacheNeedsUpdate &&
+     $session{$cache_key}{lastupdated} <= $CacheNeedsUpdate ) {
+    delete $session{$cache_key};
+}
+
+if ( not defined $session{$cache_key} ) {
+    my $collection = RT::Queues->new($session{'CurrentUser'});
+    $collection->Limit(FIELD => 'Lifecycle', VALUE => $Lifecycle);
+    $m->callback( CallbackName => 'ModifyCollection', ARGSRef => \%ARGS,
+                  Collection => $collection );
+
+    if ( $Default ) {
+        my $object = RT::Queue->new($session{'CurrentUser'});
+        $object->Load( $Default );
+        unless ( $ShowAll
+                 or not $CheckRight
+                 or $session{CurrentUser}->HasRight( Object => $object, Right => $CheckRight ) )
+        {
+            if ( $object->id ) {
+                push @{$session{$cache_key}{objects}}, {
+                    Id          => $object->id,
+                    Name        => '#' . $object->id,
+                    Description => '#' . $object->id,
+                };
+            }
+        }
+    }
+
+    while (my $object = $collection->Next) {
+        if ($ShowAll
+            or not $CheckRight
+            or $session{CurrentUser}->HasRight( Object => $object, Right => $CheckRight ))
+        {
+            push @{$session{$cache_key}{objects}}, {
+                Id          => $object->Id,
+                Name        => $object->Name,
+                Description => $object->_Accessible("Description" => "read") ? $object->Description : undef,
+            };
+        }
+    }
+    $session{$cache_key}{lastupdated} = time();
+}
+</%init>

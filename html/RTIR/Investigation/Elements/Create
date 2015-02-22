@@ -45,16 +45,26 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<input type="hidden" name="<% $NamePrefix %>Queue" value="<% $QueueObj->id %>" />
 <input type="hidden" name="<% $NamePrefix %>Status" value="<% $ARGS{ $NamePrefix .'Status' } || $QueueObj->LifecycleObj->DefaultOnCreate %>" />
 
 <div class="ticket-create-basics">
 <&| /Widgets/TitleBox, title => loc("Basics"), class => 'ticket-info-basics' &>
 <table width="100%" border="0">
 
+<tr>
+  <td class="label"><&|/l&>Queue</&>:</td>
+  <td colspan="2">
+      <& /RTIR/Elements/SelectRTIRQueue,
+                Name => $NamePrefix.'Queue',
+                Default => $ARGS{'Queue'} || $QueueObj->Id,
+                Lifecycle => RT::IR->lifecycle_investigation,
+    &>
+  </td>
+</tr>
 % unless ( $SkipField{'Owner'} || $HideField{'Owner'} ) {
-<tr><td class="label"><&|/l&>Owner</&>:</td>
-<td class="value"><& /Elements/SelectOwner,
+<tr>
+    <td class="label"><&|/l&>Owner</&>:</td>
+    <td class="value"><& /Elements/SelectOwner,
     Name     => $NamePrefix ."Owner",
     QueueObj => $QueueObj,
     Default  => $value_cb->('Owner') || $session{'CurrentUser'}->Id,

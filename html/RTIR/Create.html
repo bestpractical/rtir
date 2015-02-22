@@ -105,6 +105,7 @@
                 Name => 'Queue',
                 Default => $ARGS{'Queue'} || $QueueObj->Id,
                 ShowNullOption => 0,
+                Lifecycle => $QueueObj->Lifecycle
             }
         },
         {
@@ -378,7 +379,7 @@ foreach my $id ( grep $_, @Incident ) {
     unless ( $inc->id ) {
         push @results, loc("Couldn't load incident #[_1]", $id );
     }
-    elsif ( $inc->QueueObj->Lifecycle ne 'incidents' ) {
+    elsif ( $inc->QueueObj->Lifecycle ne RT::IR->lifecycle_incident ) {
         push @results, loc('Ticket #[_1] is not an Incident', $id );
     }
     else {
