@@ -149,9 +149,7 @@ $id = $ARGS{'id'} = $Ticket->Id;
 
 $m->callback(CallbackName => 'Initial', %ARGS, Ticket => $Ticket);
 
-my $Type = RT::IR::TicketType( Ticket => $Ticket );
-
-my $title = loc("Update [_1] #[_2] ([_3])", $Type, $id, $Ticket->Subject);
+my $title = loc("Update [_1] #[_2] ([_3])",  RT::IR::TicketType( Ticket => $Ticket ), $id, $Ticket->Subject);
 
 my $CanRespond = 0;
 my $CanComment = 0;
