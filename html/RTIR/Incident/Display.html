@@ -63,6 +63,16 @@
 &>
 
 <table>
+  
+% if (my $constituency = $TicketObj->QueueObj->FirstCustomFieldValue('RTIR Constituency') ) {
+  <tr>
+    <td class="label"><% loc("Constituency") %>:</td>
+    <td class="value">
+      <% $constituency %>
+    </td>
+  </tr>
+  <tr>
+% }    
   <tr>
     <td class="label"><% loc("Status") %>:</td>
     <td class="value" colspan="2">
