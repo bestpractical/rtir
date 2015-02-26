@@ -144,7 +144,10 @@ unless ( defined $constituency && length $constituency ) {
     );
 }
 
-my @queue_prefixes = ('Incidents', 'Incident Reports', 'Investigations', 'Blocks');
+my @lifecycles = RT::IR->Lifecycles;
+
+
+my @queue_prefixes = map { RT::IR::FriendlyLifecycle($_) } @lifecycles;
 
 if ( exists $opt{'rename'} ) {
     exit rename_value(
@@ -163,8 +166,10 @@ if ( $exist ) {
 } else {
     print "* add new constituency value: '$constituency'.\n";
 }
-foreach (@queue_prefixes) {
-    print "* create queue '$_ - $constituency' if it doesn't exist\n";
+
+foreach my $lifecycle (@lifecycles) {
+    my $prefix = RT::IR::FriendlyLifecycle($lifecycle);
+    print "* create queue '$prefix - $constituency' if it doesn't exist\n";
 }
 print <<END;
 * create group 'DutyTeam $constituency' if it don't exist
@@ -182,21 +187,19 @@ unless ( $opt{'force'} ) {
 }
 
 debug "Adding constituency $constituency";
-add_cf_value( $constituency );
+my $constituency_cf = add_cf_value( $constituency );
 
-my %metaqueues;
-my %mainqueues;
+my %queues;
 # Create our four new queues
-foreach my $prefix (@queue_prefixes) {
-    $mainqueues{$prefix} = load_queue($prefix); # will always load
-    $metaqueues{$prefix} = create_or_load_queue($prefix . " - " .$constituency);
+foreach my $lifecycle (@lifecycles){
+    $queues{$lifecycle} = create_or_load_queue(RT::IR::FriendlyLifecycle($lifecycle) . " - " .$constituency, $lifecycle, $constituency_cf);
 }
 
 # Create a DutyTeam $constituency
 my $dutyteam = create_or_load_group('DutyTeam '.$constituency);
 my $ro = create_or_load_group('ReadOnly '.$constituency);
 
-my @DUTYTEAM_METAQUEUE_RIGHTS = (
+my @DUTYTEAM_QUEUE_RIGHTS = (
 
        'OwnTicket', 
        'CommentOnTicket', 
@@ -205,23 +208,16 @@ my @DUTYTEAM_METAQUEUE_RIGHTS = (
        'StealTicket', 
        'TakeTicket', 
        'Watch', 
-); 
-
-my @DUTYTEAM_PRIMARY_QUEUE_RIGHTS = (
        'CreateTicket', 
        'SeeQueue', 
        'ShowTemplate', 
 );
 
 
-my @RO_METAQUEUE_RIGHTS = (
+my @RO_QUEUE_RIGHTS = (
        'ShowTicket', 
        'ShowTicketComments', 
        'Watch', 
-);
- 
-
-my @RO_PRIMARY_QUEUE_RIGHTS = (
        'SeeQueue', 
        'ShowTemplate', 
 
@@ -233,20 +229,16 @@ my @RO_CF_RIGHTS = ( 'SeeCustomField');
 
 # Grant that new dutyteam rights to see and update the CFs
     grant_group_cf_rights($dutyteam, @DUTYTEAM_CF_RIGHTS);
-# Grant that new dutyteam rights to do queue-level things on the "main" RTIR queues
-    grant_group_queue_rights($dutyteam, \%mainqueues, @DUTYTEAM_PRIMARY_QUEUE_RIGHTS);
 # Grant that new dutyteam all the regular dutyteam rights for the new constituency queues
-    grant_group_queue_rights($dutyteam, \%metaqueues, @DUTYTEAM_METAQUEUE_RIGHTS);
+    grant_group_queue_rights($dutyteam, \%queues, @DUTYTEAM_QUEUE_RIGHTS);
 
 
 
 
 # Create or load the group "ReadOnly $constituency"
     grant_group_cf_rights($ro, @RO_CF_RIGHTS);
-# Grant the new readonly group the rights to see the RTIR CFs
-    grant_group_queue_rights($ro, \%mainqueues, @RO_PRIMARY_QUEUE_RIGHTS);
-# Grant the new readonly group the rights to see the "main" RTIR queues
-    grant_group_queue_rights($ro, \%metaqueues, @RO_METAQUEUE_RIGHTS);
+# Grant the new readonly group the rights to see the RTIR queues
+    grant_group_queue_rights($ro, \%queues, @RO_QUEUE_RIGHTS);
 
 
 $RT::Handle->Commit;
@@ -262,7 +254,7 @@ sub prompt_yN {
 
 sub get_cf {
     my $cf = RT::CustomField->new( $RT::SystemUser );
-    $cf->Load( "Constituency" );
+    $cf->Load("RTIR Constituency", LookupType => 'RT::Queue');
     unless ( $cf->id ) {
         die "Couldn't load the constituency custom field";
     }
@@ -294,7 +286,7 @@ sub add_cf_value {
         die $msg unless $val;
         debug "Added '$value' to the constituency field";
     }
-    return 1;
+    return $cf;
 }
 
 sub grant_group_queue_rights {
@@ -321,7 +313,7 @@ sub grant_group_queue_rights {
     return 1;
 }
 
-
+# XXX TODO this should be looking at cfs on the new queues
 sub grant_group_cf_rights {
     my $group = shift;
     my @rights = (@_);
@@ -391,6 +383,9 @@ sub load_queue {
 
 sub create_or_load_queue {
     my $name = shift;
+    my $lifecycle = shift;
+    my $constituency_cf = shift;
+    
     my $queue = RT::Queue->new( $RT::SystemUser );
     $queue->LoadByCols( Name => $name );
     unless ( $queue->id ) {
@@ -398,6 +393,7 @@ sub create_or_load_queue {
             Name => $name,
             CommentAddress => $opt{'comment'},
             CorrespondAddress => $opt{'correspond'},
+            Lifecycle => $lifecycle
         );
         debug "Creating new queue '$name': $msg";
         debug "\tcomment address:\t$opt{'comment'}" if $opt{'comment'};
@@ -420,6 +416,7 @@ sub create_or_load_queue {
         }
     }
 
+    $queue->AddCustomFieldValue(Field => $constituency_cf->id, Value => $constituency);
     die "Failed to create queue $name." unless $queue->id;
 
     return $queue;

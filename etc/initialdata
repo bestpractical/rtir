@@ -4,6 +4,7 @@
     sub {
         # put fake lifecycles for initiialization to succed
         my $lc = RT->Config->Get('Lifecycles') || {};
+        # XXX TODO can we pull the lifecycles from lib/RT/IR.pm?
         foreach my $name (qw(incidents incident_reports investigations blocks)) {
             $lc->{ $name } ||= $lc->{'default'} || {};
         }
@@ -42,6 +43,16 @@
 );
 
 @CustomFields = (
+    {
+        Name        => 'RTIR Constituency',
+        Type        => 'SelectSingle',
+        Disabled    => 0,
+        RenderType  => 'Dropdown',
+        LookupType  => 'RT::Queue',
+        Description => 'Associates RTIR queues with constituencies',
+        Values      => [
+        ]
+    },
     {
         Name        => 'Description',
         Type        => 'FreeformSingle',
