@@ -58,7 +58,7 @@
 % my $wp = RT->Config->Get('WebPath');
 % unless ( $action ) {
 <b><a href="<% $wp %>/RTIR/Link/ToIncident/?id=<% $id %>">[Link]</a></b>
-<b><a href="<% $wp %>/RTIR/Create.html?Child=<% $id %>&Lifecycle=incidents">[New]</a></b>
+<b><a href="<% $wp %>/RTIR/Incident/Create.html?Child=<% $id %>">[New]</a></b>
 % } elsif ( $action ne 'No' ) {
 <a href="<% $wp %>/RTIR/Display.html?Action=<% $action %>&id=<% $id %>">[<% loc( $action ) %>]</a>
 % }

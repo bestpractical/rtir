@@ -181,7 +181,7 @@ unless ( $id eq 'new' ) {
 
 my $Type = RT::IR::TicketType( Lifecycle => $QueueObj->Lifecycle );
 # If it's not an RTIR ticket type, just show the regular RT ticket display page
-return $m->comp( '/Ticket/Display.html', %ARGS ) unless $Type;
+RT::Interface::Web::Redirect(RT->Config->Get('WebURL').'Ticket/Display.html?'. $m->comp('/Elements/QueryString', %ARGS )) unless $Type;
 
 if ($QueueObj->Lifecycle eq RT::IR->lifecycle_countermeasure && RT->Config->Get('RTIR_DisableBlocksQueue') ) {
     Abort(loc("Blocks queue is disabled via config file"));
@@ -189,7 +189,7 @@ if ($QueueObj->Lifecycle eq RT::IR->lifecycle_countermeasure && RT->Config->Get(
 
 # If there's an RTIR specific display page for this kind of ticket, show that
 if ( $m->comp_exists("/RTIR/$Type/Display.html") ) {
-    return $m->comp("/RTIR/$Type/Display.html", %ARGS);
+RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."RTIR/$Type/Display.html?".$m->comp('/Elements/QueryString', %ARGS ));
 }
 
 my @results;
