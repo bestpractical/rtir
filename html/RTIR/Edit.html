@@ -156,18 +156,21 @@ $id = $ARGS{'id'} = $Ticket->Id;
 
 $m->callback(CallbackName => 'Initial', %ARGS, Ticket => $Ticket);
 
+my $Type = RT::IR::TicketType( Lifecycle => $Ticket->QueueObj->Lifecycle );
+# If it's not an RTIR ticket type, just show the regular RT ticket display page
+RT::Interface::Web::Redirect(RT->Config->Get('WebURL').'Ticket/Display.html?'.
+    $m->comp('/Elements/QueryString', %ARGS )) unless $Type;
 
-return $m->comp( '/Ticket/Display.html', %ARGS ) unless RT::IR->OurQueue($Ticket->QueueObj);
-
-if( $Ticket->QueueObj->Lifecycle eq RT::IR->lifecycle_countermeasure 
+if ($Ticket->QueueObj->Lifecycle eq RT::IR->lifecycle_countermeasure
     && RT->Config->Get('RTIR_DisableBlocksQueue') ) {
     Abort(loc("Blocks queue is disabled via config file"));
 }
 
-my $Type = RT::IR::TicketType( Ticket => $Ticket );
-
+# If there's an RTIR specific display page for this kind of ticket, show that
 if ( $m->comp_exists("/RTIR/$Type/Edit.html") ) {
-    return $m->comp("/RTIR/$Type/Edit.html", %ARGS);
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')
+    . "RTIR/$Type/Edit.html?"
+    . $m->comp('/Elements/QueryString', %ARGS ));
 }
 
 my @results;
