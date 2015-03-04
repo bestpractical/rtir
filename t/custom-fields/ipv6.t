@@ -73,7 +73,6 @@ while ( my ($short, $full) = each %valid ) {
         );
         $incident_id = $id if $queue eq 'Incidents';
 
-        $agent->display_ticket( $id);
         $agent->content_like( qr/\Q$full/, "IP on the page" );
 
         my $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -99,7 +98,6 @@ while ( my ($short, $full) = each %test_set ) {
         );
         $incident_id = $id if $queue eq 'Incidents';
 
-        $agent->display_ticket( $id );
         $agent->content_like( qr/\Q$full/, "IP on the page" );
 
         my $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -125,7 +123,6 @@ while ( my ($short, $full) = each %test_cidr ) {
         );
         $incident_id = $id if $queue eq 'Incidents';
 
-        $agent->display_ticket( $id);
         $agent->content_like( qr/\Q$full/, "IP range on the page" );
 
         my $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -154,7 +151,6 @@ while ( my ($short, $full) = each %test_cidr ) {
         );
         $incident_id = $id if $queue eq 'Incidents';
 
-        $agent->display_ticket( $id);
         $agent->content_like( qr/\Q$full/, "IP range on the page" );
 
         my $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -182,7 +178,6 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
             },
         );
         $incident_id = $id if $queue eq 'Incidents';
-        $agent->display_ticket( $id);
 
         my $field_name = "Object-RT::Ticket-$id-CustomField:Networking-". $cf->id ."-Values";
 
