@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 18;
+use RT::IR::Test tests => undef;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -15,3 +15,4 @@ $agent->goto_edit_block( $block);
 
 $agent->content_unlike(qr{<option (?:value=.*)?>Use system default\(\)</option>}, "The option 'Use system default()' does not exist.");
 
+done_testing();

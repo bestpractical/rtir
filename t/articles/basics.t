@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 20;
+use RT::IR::Test tests => undef;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -36,3 +36,5 @@ $agent->display_ticket( $ir_id);
 
 $agent->follow_link_ok({text => $article_name}, "back to article");
 $agent->content_like( qr/this is a summary/, "found the summary of the article");
+
+done_testing();

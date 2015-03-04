@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Test::More skip_all => 'constituencies being rebuilt';
-use RT::IR::Test tests => 39;
+use RT::IR::Test tests => undef;
 
 RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'} = 'EDUNET';
 
@@ -158,3 +158,5 @@ diag "GOV user creates an IR under EDUNET, check addresses";
     ok $from_ok, 'all From addresses are correct';
 }
 
+
+done_testing;

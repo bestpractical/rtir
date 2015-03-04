@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Test::More skip_all => 'constituencies being rebuilt';
 
-use RT::IR::Test tests => 186;
+use RT::IR::Test tests => undef;
 
 use_ok('RT::IR');
 RT->Config->Set('_RTIR_Constituency_Propagation' => 'inherit');
@@ -274,3 +274,5 @@ diag "check that constituency propagates from a child to a parent after 'Edit', 
     }
 }
 
+
+done_testing;

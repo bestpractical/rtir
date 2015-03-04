@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 80;
+use RT::IR::Test tests => undef;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -233,3 +233,5 @@ $agent->goto_create_rtir_ticket('Blocks');
 
     unlink $filename or die "couldn't delete file '$filename': $!";
 }
+
+done_testing;

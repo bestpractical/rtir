@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 22;
+use RT::IR::Test tests => undef;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -38,3 +38,4 @@ my $rtir_user = rtir_user();
     $agent->ticket_is_not_linked_to_inc( $inv_id, [$id]);
 }
 
+done_testing;

@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Test::More skip_all => 'constituencies being rebuilt';
-use RT::IR::Test tests => 187;
+use RT::IR::Test tests => undef;
 
 use_ok('RT::IR');
 RT->Config->Set('_RTIR_Constituency_Propagation' => 'reject');
@@ -303,3 +303,5 @@ diag "check that we can change constituency of an unlinked ticket using 'Edit' p
         'no constituency select box';
 }
 
+
+done_testing;

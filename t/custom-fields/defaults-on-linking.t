@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 32;
+use RT::IR::Test tests => undef;
 
 my $cf_name = 'test';
 {
@@ -74,3 +74,5 @@ my $agent = default_agent();
 }
 
 
+
+done_testing;

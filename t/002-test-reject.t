@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 107;
+use RT::IR::Test tests => undef;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -169,3 +169,4 @@ diag "test that after bulk reject links to incidents are still there" if $ENV{'T
     $agent->has_tag('a', "$id", 'we have link to ticket');
 }
 
+done_testing;

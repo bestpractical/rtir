@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 48;
+use RT::IR::Test tests => undef;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -56,5 +56,6 @@ diag "abandon incident with resolved IR" if $ENV{'TEST_VERBOSE'};
     is $agent->ticket_status( $ir_id), 'resolved', 'resolved ir';
 }
 
+done_testing;
 
 

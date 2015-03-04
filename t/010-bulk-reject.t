@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 45;
+use RT::IR::Test tests => undef;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -62,3 +62,5 @@ $agent->get_ok('/RTIR/index.html', 'open rtir at glance');
 foreach( @irs ) {
     $agent->ticket_status_is( $_, 'rejected', "Ticket #$_ is rejected" );
 }
+
+done_testing;

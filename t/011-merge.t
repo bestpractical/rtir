@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 108;
+use RT::IR::Test tests => undef;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -105,3 +105,5 @@ diag "merge two IRs that are linked to different Incidents" if $ENV{'TEST_VERBOS
 
     $agent->ticket_is_linked_to_inc( $ir1_id, [$inc1_id, $inc2_id] );
 }
+
+done_testing;

@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 698;
+use RT::IR::Test tests => undef;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -555,3 +555,4 @@ diag "merge ticket with the same IP";
     is( $has[0], '0000:'x6 .'ac10:0001', "has value" );
 }
 
+done_testing();

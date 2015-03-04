@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 53;
+use RT::IR::Test tests => undef;
 
 RT->Config->Set( ArticleOnTicketCreate => 1 );
 
@@ -68,3 +68,5 @@ foreach ( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
     like( $agent->field( $content_name ), qr/this is a content/ );
 }
 
+
+done_testing;

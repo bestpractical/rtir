@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Test::More skip_all => 'constituencies being rebuilt';
-use RT::IR::Test tests => 166;
+use RT::IR::Test tests => undef;
 
 use_ok('RT::IR');
 
@@ -303,3 +303,4 @@ diag "check defaults when creating inc with inv";
     }
 }
 
+done_testing;

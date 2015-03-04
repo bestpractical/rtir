@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 20;
+use RT::IR::Test tests => undef;
 
 RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'} = 'EDUNET';
 
@@ -61,3 +61,4 @@ diag "create an IR and check that 'SkipNotification' feature works";
     ok $recipient_ok, 'no emails to requestor';
 }
 
+done_testing;

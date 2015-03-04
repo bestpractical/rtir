@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 69;
+use RT::IR::Test tests => undef;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -73,3 +73,5 @@ foreach my $queue ( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' 
     $agent->form_name('TicketUpdate');
     like( $agent->field('UpdateContent'), qr/this is a content/ );
 }
+
+done_testing;

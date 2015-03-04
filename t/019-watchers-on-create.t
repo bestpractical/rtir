@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 53;
+use RT::IR::Test tests => undef;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -86,3 +86,4 @@ SKIP: {
 	$agent->has_watchers( $solo_inv, 'AdminCc');
 }
 
+done_testing;

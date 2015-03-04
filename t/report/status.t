@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 30;
+use RT::IR::Test tests => undef;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -33,3 +33,4 @@ diag "link IR to Inc after create" if $ENV{'TEST_VERBOSE'};
     is $agent->ticket_status($ir_id), 'open', 'auto open kicked in';
 }
 
+done_testing;
