@@ -60,6 +60,7 @@
 $q => ''
 $WhoisServer => undef
 $server => undef
+$TicketObj => undef
 @PassArguments => ()
 </%args>
 <%INIT>
