@@ -16,7 +16,9 @@ diag "create an article" if $ENV{'TEST_VERBOSE'};
     $agent->get_ok('/', "followed 'Articles' overview link");
     $agent->follow_link_ok({text => "Articles"}, "followed 'Articles' overview link");
     $agent->follow_link_ok({text => "New Article" }, "followed new article link");
-    $agent->follow_link_ok({text => "in class Templates"}, "chose a class");
+    if ($agent->content =~ /in class Templates/) { 
+        $agent->follow_link_ok({text => "in class Templates"}, "chose a class");
+    }
 
     my $cf = RT::CustomField->new( RT->SystemUser );
     $cf->Load('Response');

@@ -19,7 +19,10 @@ $agent->back();
 
 $agent->follow_link_ok({text => "Create", url_regex => qr/Articles/, n => 1}, "followed new article link");
 
-$agent->follow_link_ok({text => "in class Templates"}, "chose a class");
+# RT 4.2.11 forward skip 'pick a class' if there's only one
+if ($agent->content =~ /in class Templates/) {
+    $agent->follow_link_ok({text => "in class Templates"}, "chose a class");
+}
 
 $agent->form_name("EditArticle");
 
