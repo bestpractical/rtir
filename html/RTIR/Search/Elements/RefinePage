@@ -71,7 +71,7 @@ my $QueryString = $m->comp( '/Elements/QueryString', %{ $query_state{'query'} } 
 </%INIT>
 <%ARGS>
 $Title => loc("Refine Search")
-$ResultPage => 'RTIR/Search/Results.html',
+$ResultPage => RT::IR->HREFTo('Search/Results.html'),
 $BaseQuery => '',
 @ExtraQueryParams => ()
 </%ARGS>

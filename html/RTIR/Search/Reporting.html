@@ -53,7 +53,7 @@
 <& /Search/Elements/Chart, %ARGS &>
 % }
 
-<form method="get" action="<% RT->Config->Get('WebPath') %>/RTIR/Search/Reporting.html">
+<form method="get" action="<% RT::IR->HREFTo("Search/Reporting.html")%>">
 % my %hiddens = (Lifecycle => $Lifecycle, Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order);
 % while ( my ($key, $val) = each %hiddens ) {
 % next unless defined $val;

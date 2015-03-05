@@ -259,5 +259,5 @@ $NewQuery  => 0
 @clauses   => ()
 
 $BaseQuery => ''
-$ResultPage => "RTIR/Search/Results.html"
+$ResultPage => RT::IR->HREFTo("Search/Results.html")
 </%ARGS>

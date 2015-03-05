@@ -50,7 +50,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%RT->Config->Get('WebPath')%>/RTIR/Incident/BulkAbandon.html" method="post">
+<form action="<%RT::IR->HREFTo("Incident/BulkAbandon.html") %>" method="post">
 % foreach my $arg (qw(Query Format Rows Page OrderBy Order) ) {
 % next unless defined $ARGS{ $arg } && length $ARGS{ $arg };
 <input type="hidden" name="<% $arg %>" value="<% $ARGS{ $arg } %>" />
@@ -59,7 +59,7 @@
 <%PERL>
 my $found = $m->comp('/RTIR/Search/Elements/ShowResults',
 Lifecycle     => RT::IR->lifecycle_incident,
-    BaseURL       => 'RTIR/Incident/BulkAbandon.html',
+BaseURL       => RT::IR->HREFTo('Incident/BulkAbandon.html'),
     BaseQuery     => RT::IR->ActiveQuery( Lifecycle => RT::IR->lifecycle_incident ),
     Query         => $Query,
     DisplayFormat => "__CheckBox__, $Format",

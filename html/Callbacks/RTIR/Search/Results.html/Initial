@@ -52,9 +52,7 @@ $ARGSRef => {}
 my ($our, @queues) = RT::IR->OurQuery( $ARGSRef->{'Query'} );
 return unless $our;
 
-RT::Interface::Web::Redirect(
-    RT->Config->Get('WebURL')
-    .'RTIR/Search/Results.html?'
+RT::Interface::Web::Redirect( RT->Config->Get('WebURL') .'RTIR/Search/Results.html?'
     . $m->comp(
         '/Elements/QueryString',
         %$ARGSRef,

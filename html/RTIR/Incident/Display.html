@@ -58,7 +58,7 @@
 
 <&| /Widgets/TitleBox,
     title => loc('Incident #[_1]', $id), 
-    title_href => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=".$id, 
+    title_href => RT::IR->HREFTo("Edit.html?id=".$id), 
     class=> 'ticket-info-basics',
 &>
 
@@ -111,12 +111,12 @@
 
 <& /Elements/ShowCustomFieldCustomGroupings,
     Object       => $TicketObj,
-    title_href => RT->Config->Get('WebPath') ."/RTIR/Edit.html",
+    title_href => RT::IR->HREFTo("Edit.html"),
 &>
 
 <&| /Widgets/TitleBox,
     title => loc("Dates"),
-    title_href => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=".$id,
+    title_href =>RT::IR->HREFTo("Edit.html?id=".$id),
     class => 'ticket-info-dates',
 &>
 <& /RTIR/Elements/ShowDates, Ticket => $TicketObj &>
@@ -124,7 +124,7 @@
 
 
 <& /Ticket/Elements/ShowAttachments, Ticket => $TicketObj, Attachments => $attachments &>
-<& /Ticket/Elements/ShowRequestor, Ticket => $TicketObj, DisplayPath => "/RTIR/Display.html" &>
+<& /Ticket/Elements/ShowRequestor, Ticket => $TicketObj, DisplayPath => RT::IR->HREFTo("Display.html") &>
 
 </td><td class="boxcontainer" valign="top">
 % $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'RightColumnStart' );
@@ -157,10 +157,10 @@
     <& /Elements/ShowHistory,
         Object         => $TicketObj,
         ShowHeaders    => $ARGS{'ShowHeaders'},
-        DisplayPath    => RT->Config->Get('WebPath') ."/RTIR/Display.html?id=$id",
-        UpdatePath     => RT->Config->Get('WebPath') ."/RTIR/Update.html",
-        ForwardPath    => RT->Config->Get('WebPath') ."/RTIR/Forward.html",
-        EncryptionPath => RT->Config->Get('WebPath') ."/RTIR/Crypt.html",
+        DisplayPath    => RT::IR->HREFTo("Display.html?id=$id"),
+        UpdatePath     => RT::IR->HREFTo("Update.html"),
+        ForwardPath    => RT::IR->HREFTo("Forward.html"),
+        EncryptionPath => RT::IR->HREFTo("Crypt.html"),
         PathPrefix     => RT->Config->Get('WebPath') ."/Ticket/",
     &>
 % }
@@ -308,7 +308,7 @@ if ( $ARGS{'MarkAsSeen'} ) {
 
 MaybeRedirectForResults(
     Actions   => \@results,
-    Path      => "/RTIR/Display.html",
+    Path      => RT::IR->HREFTo("Display.html"),
     Arguments => { id => $TicketObj->id },
     Anchor    => $ARGS{'Anchor'},
 );

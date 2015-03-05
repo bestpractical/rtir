@@ -90,7 +90,7 @@ if ( $Type ) {
     }
 }
 
-my $BaseURL = "RTIR/Search/Results.html";
+my $BaseURL = RT::IR->HREFTo("Search/Results.html");
 $BaseURL .= '?'. $m->comp( '/Elements/QueryString', Lifecycle => $Lifecycle )
     if $Lifecycle;
 

@@ -222,7 +222,7 @@ if ( $SubmitTicket && !$checks_failure ) {
     );
     MaybeRedirectForResults(
         Actions   => \@results,
-        Path      => "/RTIR/Incident/Display.html",
+        Path      => RT::IR->HREFTo("Incident/Display.html"),
         Arguments => { %$pass, id => $id },
     );
 }
@@ -246,13 +246,13 @@ push @lifecycles, RT::IR->lifecycle_countermeasure unless RT->Config->Get('RTIR_
 
 $Query ||= RT::IR->ActiveQuery( Lifecycle => \@lifecycles );
 
-my $BaseURL = "RTIR/Incident/Reply/?".
+my $BaseURL = RT::IR->HREFTo("Incident/Reply/?".
     $m->comp('/Elements/QueryString',
         id     => $id,
         All    => $All,
         Status => $Status,
         Action => $Action,
-    );
+    ));
 
 my $candidates = RT::IR->IncidentChildren( $IncidentObj, Lifecycle => \@lifecycles )->Count;
 

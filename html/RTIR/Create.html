@@ -60,9 +60,9 @@
 % }
 
 % unless ( $Split ) {
-<form action="<% RT->Config->Get('WebPath') %>/RTIR/Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
+<form action="<% RT::IR->HREFTo("Create.html") %>" method="post" enctype="multipart/form-data" name="TicketCreate">
 % } else {
-<form action="<% RT->Config->Get('WebPath') %>/RTIR/Split.html" method="post" enctype="multipart/form-data" name="TicketCreate">
+<form action="<%RT::IR->HREFTo("Split.html") %>" method="post" enctype="multipart/form-data" name="TicketCreate">
 % }
 <input type="hidden" name="id" value="new" />
 <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />

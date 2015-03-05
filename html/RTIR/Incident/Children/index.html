@@ -64,7 +64,7 @@
     Ticket               => $Incident,
     Lifecycle            => $Lifecycle,
     Statuses             => [@Statuses],
-    FullList             => RT->Config->Get('WebPath')."/RTIR/Incident/Children/?Lifecycle=$Lifecycle&id=$id",
+    FullList             => RT::IR->HREFTo("Incident/Children/?Lifecycle=$Lifecycle&id=$id"),
     Delete               => $delete,
     ShowHeader           => 1,
     ShowStatusesSelector => 1,

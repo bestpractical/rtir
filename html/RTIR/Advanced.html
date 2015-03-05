@@ -129,8 +129,8 @@ if ( $ARGS{'SaveChanges'} ) {
     MaybeRedirectForResults(
         Actions   => \@results,
         Path      => RT->Config->Get('DisplayAfterEdit', $session{'CurrentUser'})
-            ? "/RTIR/Display.html"
-            : "/RTIR/Advanced.html"
+        ? RT::IR->HREFTo("Display.html")
+        : RT::IR->HREFTo("Advanced.html")
         ,
         Arguments => { id => $Ticket->id },
     );

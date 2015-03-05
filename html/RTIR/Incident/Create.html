@@ -408,7 +408,7 @@ if ( !$checks_failure && $CreateIncident ) {
 
         MaybeRedirectForResults(
             Actions   => \@results,
-            Path      => "/RTIR/Incident/Display.html",
+            Path      => RT::IR->HREFTo("Incident/Display.html"),
             Arguments => { id => $inc_obj->id },
         );
     }

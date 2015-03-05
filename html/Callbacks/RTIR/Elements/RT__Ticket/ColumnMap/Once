@@ -96,7 +96,7 @@ $COLUMN_MAP->{'LookupToolChildrenActions'} = {
         my @res;
         if ( $show{'link'} ) {
             push @res, \'<a href="',
-                RT->Config->Get('WebPath') .'/RTIR/Display.html?Child='. $t->id .'&id='. $lid,
+                RT::IR->HREFTo('Display.html?Child='. $t->id .'&id='. $lid),
                 \'">',
                 '[' . $t->loc("Link") .']',
                 \'</a>'
@@ -104,7 +104,7 @@ $COLUMN_MAP->{'LookupToolChildrenActions'} = {
         }
         if ( $lid != $t->id && $show{'merge'} ) {
             push @res, \'<a href="',
-                RT->Config->Get('WebPath') .'/RTIR/Merge/?SelectedTicket='. $t->id .'&id='. $lid,
+                RT::IR->HREFTo('Merge/?SelectedTicket='. $t->id .'&id='. $lid),
                 \'">',
                 '[' . $t->loc("Merge") .']',
                 \'</a>'
@@ -123,7 +123,7 @@ $COLUMN_MAP->{'LookupToolIncidentActions'} = {
         my @res;
         if ( $show{'link'} ) {
             push @res, \'<a href="',
-                RT->Config->Get('WebPath') .'/RTIR/Display.html?Child='. $lid .'&id='. $t->id,
+                RT::IR->HREFTo('Display.html?Child='. $lid .'&id='. $t->id),
                 \'">',
                 '[' . $t->loc("Link") .']',
                 \'</a>'
@@ -131,15 +131,15 @@ $COLUMN_MAP->{'LookupToolIncidentActions'} = {
         }
         if ( $lid != $t->id && $show{'merge'} ) {
             push @res, \'<a href="',
-                RT->Config->Get('WebPath') .'/RTIR/Merge/?SelectedTicket='. $lid .'&id='. $t->id,
+                RT::IR->HREFTo('Merge/?SelectedTicket='. $lid .'&id='. $t->id),
                 \'">',
                 '[' . $t->loc("Merge") .']',
                 \'</a>'
             ;
         }
         push @res, \'<a href="',
-            RT->Config->Get('WebPath') .'/RTIR/Create.html?Lifecycle='.RT::IR->lifecycle_investigation
-            .'&Incident='. $t->id,
+            RT::IR->HREFTo('Create.html?Lifecycle='.RT::IR->lifecycle_investigation
+            .'&Incident='. $t->id),
             \'">',
             '[' . $t->loc("Investigate") .']',
             \'</a>'

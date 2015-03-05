@@ -743,6 +743,32 @@ require RT::CustomField;
     };
 }
 
+
+=head2 HREFTo
+
+XXX TODO this wants a better name.
+
+
+=cut
+
+sub HREFTo {
+    my $self = shift;
+    my $page = shift;
+
+    return RT->Config->Get('WebPath') .'/RTIR/'.$page;
+}
+
+
+
+=head2 URL
+
+XXX TODO
+
+=cut
+
+
+
+
 require RT::Search::Simple;
 package RT::Search::Simple;
 

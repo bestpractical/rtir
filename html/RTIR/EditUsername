@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <span id="showuser-<%$User->id%>">
-% my $url = $RT::WebPath."/RTIR/ShowUser?page=1&id=".$User->id;
+% my $url = RT::IR->HREFTo("ShowUser?page=1&id=".$User->id);
 <form method="get">
 <&|/l, $User->EmailAddress &>[_1]'s name</&>: 
 <input type="text" id="edit-<%$User->id%>" value="<%$User->RealName%>"&>

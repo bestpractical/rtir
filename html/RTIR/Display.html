@@ -62,7 +62,7 @@
 
 <&| /Widgets/TitleBox,
     title => loc("The Basics"),
-    title_href  => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=".$Ticket->Id,
+    title_href  => RT::IR->HREFTo("Edit.html?id=".$Ticket->Id),
     class => 'ticket-info-basics',
 &>
 <table>
@@ -101,7 +101,7 @@
 
 <& /Elements/ShowCustomFieldCustomGroupings,
     Object       => $Ticket,
-    title_href => RT->Config->Get('WebPath') ."/RTIR/Edit.html",
+    title_href => RT::IR->HREFTo("Edit.html"),
 &>
 
 <& /RTIR/Elements/ShowArticles, Ticket => $Ticket &>
@@ -111,13 +111,13 @@
 
     <&| /Widgets/TitleBox,
         title => loc('People'), 
-        title_href  => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=". $Ticket->Id,
+        title_href  => RT::IR->HREFTo("Edit.html?id=". $Ticket->Id),
         class => 'ticket-info-people',
     &>
     <& /RTIR/Elements/ShowPeople, Ticket => $Ticket &>
     </&>
     <&| /Widgets/TitleBox, title => loc("Dates"),
-        title_href  => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=". $Ticket->Id,
+    title_href  => RT::IR->HREFTo("Edit.html?id=". $Ticket->Id),
         class => 'ticket-info-dates',
     &>
     <& /RTIR/Elements/ShowDates, Ticket => $Ticket &>
@@ -132,7 +132,7 @@
        Attachments => $attachments &>
   </td>
   <td class="boxcontainer" valign="top">
-    <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket, DisplayPath => '/RTIR/Display.html' &>
+      <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket, DisplayPath => RT::IR->HREFTo("Display.html") &>
   </td>
 </tr>
 </table>
@@ -154,10 +154,10 @@
     <& /Elements/ShowHistory,
         Object         => $Ticket,
         ShowHeaders    => $ARGS{'ShowHeaders'},
-        DisplayPath    => RT->Config->Get('WebPath') ."/RTIR/Display.html?id=$id",
-        UpdatePath     => RT->Config->Get('WebPath') ."/RTIR/Update.html",
-        ForwardPath    => RT->Config->Get('WebPath') ."/RTIR/Forward.html",
-        EncryptionPath => RT->Config->Get('WebPath') ."/RTIR/Crypt.html",
+        DisplayPath    => RT::IR->HREFTo("Display.html?id=$id"),
+        UpdatePath     => RT::IR->HREFTo("Update.html"),
+        ForwardPath    => RT::IR->HREFTo("Forward.html"),
+        EncryptionPath => RT::IR->HREFTo("Crypt.html"),
         WarnUnsigned   => 1,
         PathPrefix     => RT->Config->Get('WebPath') ."/Ticket/",
     &>
@@ -263,7 +263,7 @@ if ( $ARGS{'MarkAsSeen'} ) {
 $ARGS{'id'} = $id = $Ticket->Id;
 
 MaybeRedirectForResults(
-    Path      => '/RTIR/Display.html',
+    Path      => RT::IR->HREFTo("Display.html"),
     Actions   => \@results,
     Arguments => { id => $id },
     Anchor    => $ARGS{'Anchor'},

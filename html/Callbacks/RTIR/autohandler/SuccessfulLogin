@@ -65,7 +65,7 @@ if ($path && $path ne '/NoAuth/Login.html' ) {
 return unless RT->Config->Get('RTIR_RedirectOnLogin');
 
 if (RT::IR->IsStaff($session{'CurrentUser'}->Id)) {
-    $$RedirectTo = "$webpath/RTIR/";
+    $$RedirectTo = RT::IR->HREFTo('');
 }
 </%INIT>
 <%ARGS>

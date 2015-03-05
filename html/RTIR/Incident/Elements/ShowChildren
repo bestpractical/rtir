@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, 
     title       => loc( $FriendlyLifecycle ), 
-    title_href  => RT->Config->Get('WebPath') ."/RTIR/Incident/Children/?Lifecycle=". $Lifecycle ."&id=".$id,
+    title_href  => RT::IR->HREFTo("Incident/Children/?Lifecycle=". $Lifecycle ."&id=".$id),
     titleright_raw => $box_actions,
     title_class    => 'inverse',
     class => 'tickets-list-'. lc(RT::IR::TicketType( Lifecycle => $Lifecycle )),
@@ -115,19 +115,19 @@ if ( $IncidentObj->CurrentUserHasRight('ModifyTicket') ) {
     # $QueueObj->Id and $QueueObj->CurrentUserHasRight('CreateTicket') ) {
         push @box_actions, {
             title => $Lifecycle ne RT::IR->lifecycle_investigation? loc('Create') : loc('Launch'),
-            path => "/RTIR/Create.html?Incident=$id&Lifecycle=".$Lifecycle,
+            path => RT::IR->HREFTo("Create.html?Incident=$id&Lifecycle=".$Lifecycle),
         };
     }
     push @box_actions, {
         title => loc('Link'),
-        path  => "/RTIR/Link/FromIncident/?id=$id&Lifecycle=".$Lifecycle,
+        path  => RT::IR->HREFTo("Link/FromIncident/?id=$id&Lifecycle=".$Lifecycle),
     };
 }
 
 if ( $total_count > $Rows ) {
     push @box_actions, {
         title => loc("More... ([_1] total)", $total_count),
-        path => '/RTIR/Incident/Children/?Lifecycle='. $Lifecycle .'&id='. $id
+        path => RT::IR->HREFTo('Incident/Children/?Lifecycle='. $Lifecycle .'&id='. $id)
     };
 }
 my $box_actions = join '&nbsp;'x3,

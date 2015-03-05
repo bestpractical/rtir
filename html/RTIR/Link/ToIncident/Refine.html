@@ -49,7 +49,7 @@
 return $m->comp(
     '/RTIR/Search/Elements/RefinePage',
     %ARGS,
-    ResultPage => 'RTIR/Link/ToIncident/?id='. $ARGS{'id'},
+    ResultPage => RT::IR->HREFTo('Link/ToIncident/?id='. $ARGS{'id'}),
     BaseQuery => RT::IR->Query(
         Lifecycle => 'incidents',
         HasNoMember => $ARGS{'id'},

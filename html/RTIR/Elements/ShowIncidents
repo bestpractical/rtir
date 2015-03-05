@@ -55,12 +55,11 @@
     EmptyLabel    => loc('(no Incidents)'),
 &>
 
-% my $wp = RT->Config->Get('WebPath');
 % unless ( $action ) {
-<b><a href="<% $wp %>/RTIR/Link/ToIncident/?id=<% $id %>">[Link]</a></b>
-<b><a href="<% $wp %>/RTIR/Incident/Create.html?Child=<% $id %>">[New]</a></b>
+<b><a href="<% RT::IR->HREFTo('Link/ToIncident/?id='. $id ) %>">[Link]</a></b>
+<b><a href="<% RT::IR->HREFTo('Incident/Create.html?Child='. $id ) %>">[New]</a></b>
 % } elsif ( $action ne 'No' ) {
-<a href="<% $wp %>/RTIR/Display.html?Action=<% $action %>&id=<% $id %>">[<% loc( $action ) %>]</a>
+<a href="<% RT::IR->HREFTo('Display.html?Action='. $action.'&id='. $id) %>">[<% loc( $action ) %>]</a>
 % }
 
 <%INIT>
@@ -97,7 +96,7 @@ my $query = RT::IR->RelevantIncidentsQuery( $Ticket );
 my $format = RT->Config->Get('RTIRSearchResultFormats')->{'ListIncidents'};
 my $dformat = $format;
 if ( $show_unlink ) {
-    $dformat .= ", '<a href=\"__WebPath__/RTIR/Display.html?id=$id&DeleteLink--MemberOf-__id__=1\">". loc('Unlink') ."</a>/TITLE:'";
+    $dformat .= ", '<a href=\"". RT::IR->HREFTo("Display.html?id=$id&DeleteLink--MemberOf-__id__=1").\">". loc('Unlink') ."</a>/TITLE:'";
 }
 </%INIT>
 

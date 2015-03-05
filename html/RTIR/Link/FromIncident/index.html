@@ -54,7 +54,7 @@
                     Order       => $Order,
                     OrderBy     => $OrderBy } &>
 
-<form action="<% RT->Config->Get('WebPath') %>/RTIR/Incident/Display.html" method="post">
+<form action="<% RT::IR->HREFTo("Incident/Display.html")%>" method="post">
 <input type="hidden" name="id" value="<% $id %>" />
 <input type="hidden" name="BulkLink" value="1" />
 
@@ -99,7 +99,7 @@ my $BaseQuery = RT::IR->Query(
     NotMemberOf => $id,
 );
 
-my $base_url = 'RTIR/Link/FromIncident/?'
-    . $m->comp( '/Elements/QueryString', id => $id, Lifecycle => $Lifecycle );
+my $base_url = RT::IR->HREFTo('Link/FromIncident/?'
+    . $m->comp( '/Elements/QueryString', id => $id, Lifecycle => $Lifecycle ));
 
 </%INIT>

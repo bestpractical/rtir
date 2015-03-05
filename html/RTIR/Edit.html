@@ -168,8 +168,7 @@ if ($Ticket->QueueObj->Lifecycle eq RT::IR->lifecycle_countermeasure
 
 # If there's an RTIR specific display page for this kind of ticket, show that
 if ( $m->comp_exists("/RTIR/$Type/Edit.html") ) {
-    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')
-    . "RTIR/$Type/Edit.html?"
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL') . "RTIR/$Type/Edit.html?"
     . $m->comp('/Elements/QueryString', %ARGS ));
 }
 
@@ -229,8 +228,8 @@ if ( $SaveChanges && !$checks_failure && !$OnlySearchForPeople ) {
     MaybeRedirectForResults(
         Actions   => \@results,
         Path      => RT->Config->Get('DisplayAfterEdit', $session{'CurrentUser'})
-            ? "/RTIR/Display.html"
-            : "/RTIR/Edit.html"
+        ? RT::IR->HREFTo("Display.html")
+        : RT::IR->HREFTo("Edit.html")
         ,
         Arguments => { id => $id },
     );

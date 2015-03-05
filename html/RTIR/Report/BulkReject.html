@@ -50,7 +50,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%RT->Config->Get('WebPath')%>/RTIR/Report/BulkReject.html" method="post">
+<form action="<%RT::IR->HREFTo("Report/BulkReject.html")|n%>" method="post">
 <input type="hidden" name="Status"  value="<% $Status %>" />
 
 <input type="hidden" name="Query"   value="<% $Query %>" />
@@ -147,7 +147,7 @@ if ( $BulkReject ) {
     if ( $BulkRejectAndReturn ) {
         MaybeRedirectForResults(
             Actions => \@results,
-            Path    => '/RTIR/',
+            Path    => RT::IR->HREFTo(''),
             Force   => 1,
         );
     }
@@ -162,8 +162,8 @@ if ( $BulkReject ) {
     );
 }
 
-my $BaseURL = "RTIR/Report/BulkReject.html?"
-    . $m->comp('/Elements/QueryString', Lifecycle => $Lifecycle);
+my $BaseURL = RT::IR->HREFTo("Report/BulkReject.html?"
+    . $m->comp('/Elements/QueryString', Lifecycle => $Lifecycle));
 
 </%INIT>
 <%ARGS>

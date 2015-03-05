@@ -52,7 +52,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<% RT->Config->Get('WebPath') %>/RTIR/Merge/" method="post">
+<form action="<% RT::IR->HREFTo("Merge/") %>" method="post">
 <input type="hidden" name="id" value="<% $id %>" />
 
 % if ( $siblings_query ) {
@@ -123,7 +123,7 @@ if ( $MergeTicket && !$checks_failure ) {
 
     MaybeRedirectForResults(
         Actions   => \@results,
-        Path      => "/RTIR/Display.html",
+        Path      => RT::IR->HREFTo("Display.html"),
         Arguments => { id => $Ticket->id },
     );
 }

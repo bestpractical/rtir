@@ -56,7 +56,7 @@
     Page          => $Page,
     OrderBy       => $OrderBy,
     Order         => $Order,
-    BaseURL       => "RTIR/Merge/?id=$id",
+    BaseURL       => RT::IR->HREFTo("Merge/?id=$id"),
 &>
 
 <%INIT>

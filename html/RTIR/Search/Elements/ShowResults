@@ -104,7 +104,7 @@ $Page            => 1
 $OrderBy         => RT->Config->Get('DefaultSearchResultOrderBy')
 $Order           => RT->Config->Get('DefaultSearchResultOrder')
 
-$BaseURL         => "RTIR/Search/Results.html?"
+$BaseURL         => RT::IR->HREFTo("Search/Results.html?")
 
 $ShowEmpty       => 0
 $EmptyLabel      => ''
