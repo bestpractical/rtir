@@ -1,0 +1,15 @@
+<%init>
+my @uri = split("/",$m->dhandler_arg);
+my $constituency= shift @uri;
+$m->{'RTIR_ConstituencyFilter'} = $constituency;
+my $path = join("/",'','RTIR',@uri);
+    $path =~ s!/$!!;
+    if (   !$m->interp->comp_exists( $path )
+         && $m->interp->comp_exists( $path . "/index.html" ) )
+    {
+        $path= $path . "/index.html";
+    }
+
+
+return $m->comp($path, %ARGS);
+</%init>
