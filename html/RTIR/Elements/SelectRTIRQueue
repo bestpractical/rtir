@@ -45,8 +45,6 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-%# XXX TODO replace with something that limits by constituency and
-%# XXX TODO Lifecycle
 <select name="<%$Name%>" <% ($OnChange) ? 'onchange="'.$OnChange.'"' : '' |n %> class="<%$Class%>">
 %     if ($ShowNullOption) {
   <option value=""><% $DefaultLabel %></option>
@@ -70,12 +68,14 @@ $Default => 0
 $OnChange => undef
 $CacheNeedsUpdate => RT->System->QueueCacheNeedsUpdate
 $Lifecycle => undef
+$LimitToConstituency => 0
+$Constituency => undef
 </%args>
 <%init>
 my $Class    = "select-rtir-queue-".$Lifecycle;
 
 # XXX TODO This cache will need to take constituency into account
-my $cache_key = join "---", "SelectObject", 'rtir-queue-'.$Lifecycle,
+my $cache_key = join "---", "SelectObject", 'rtir-queue-'.$Lifecycle,$LimitToConstituency, ($Constituency ||""),
     $session{'CurrentUser'}->Id, $CheckRight || "", $ShowAll;
 
 if ( defined $session{$cache_key} && ref $session{$cache_key} eq 'ARRAY') {
@@ -110,6 +110,8 @@ if ( not defined $session{$cache_key} ) {
     }
 
     while (my $object = $collection->Next) {
+
+        next if ($LimitToConstituency && $object->FirstCustomFieldValue('RTIR Constituency') ne $Constituency);
         if ($ShowAll
             or not $CheckRight
             or $session{CurrentUser}->HasRight( Object => $object, Right => $CheckRight ))

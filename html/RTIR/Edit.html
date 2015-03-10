@@ -93,6 +93,19 @@
         TicketObj => $Ticket, QueueObj => $Ticket->QueueObj,
     &></td>
   </tr>
+  <tr>
+    <td class="label"><&|/l&>Queue</&>:</td>
+    <td class="value"><& /RTIR/Elements/SelectRTIRQueue,
+        Name => 'Queue', Default => $ARGS{'Queue'} || $Ticket->Queue,
+        TicketObj => $Ticket, Lifecycle => $Ticket->QueueObj->Lifecycle,
+        LimitToConstituency => 1,
+        Constituency => $Ticket->QueueObj->FirstCustomFieldValue('RTIR Constituency')
+    &></td>
+  </tr>
+
+
+
+
 % if ($Ticket->QueueObj->Lifecycle ne RT::IR->lifecycle_incident ) {
   <tr>
     <td class="label"><%loc("Incident")%>:</td>
