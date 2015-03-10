@@ -105,7 +105,9 @@
                 Name => 'Queue',
                 Default => $ARGS{'Queue'} || $QueueObj->Id,
                 ShowNullOption => 0,
-                Lifecycle => $QueueObj->Lifecycle
+                Lifecycle => $QueueObj->Lifecycle,
+                # XXX TODO narrow to the current constituency if the
+                # user wants us to, maybe?
             }
         },
         {
