@@ -47,7 +47,6 @@
 %# END BPS TAGGED BLOCK }}}
 <& /RTIR/Elements/Header,
     Title => $Title,
-    onload => "function () { hide('Ticket-Create-details') }",
 &>
 <& /Elements/Tabs &>
 
@@ -153,6 +152,62 @@
     CustomFieldGenerator => sub { $QueueObj->TicketCustomFields },
     Groupings => [ RT::CustomField->CustomGroupings('RTIR::Ticket'), '' ],
 &>
+<&| /Widgets/TitleBox, title => loc("Dates"), class=>'ticket-info-dates' &>
+<table width="100%" border="0">
+<& /Ticket/Elements/EditBasics,
+    InTable => 1,
+    fields  => [
+        {
+            name => 'Starts',
+            comp => '/Elements/SelectDate',
+            args => { Name => 'Starts', Default => $ARGS{'Starts'} || '' },
+        },
+        {
+            name => 'Due',
+            comp => '/Elements/SelectDate',
+            args => { Name => 'Due', Default => $ARGS{'Due'} || '' },
+        },
+    ],
+&>
+</table></&>
+
+<&| /Widgets/TitleBox, title => loc("Time"), class=>'ticket-info-time' &>
+<table width="100%" border="0">
+<& /Ticket/Elements/EditBasics,
+    InTable => 1,
+    fields  => [
+        {
+            name => 'Time Estimated',
+            comp => '/Elements/EditTimeValue',
+            args => {
+                Name    => "TimeEstimated",
+                Default => $ARGS{'TimeEstimated'} || '',
+            },
+        },
+        {
+            name => 'Time Worked',
+            comp => '/Elements/EditTimeValue',
+            args => {
+                Name    => "TimeWorked",
+                Default => $ARGS{'TimeWorked'} || '',
+            },
+        },
+        {
+            name => 'Time Left',
+            comp => '/Elements/EditTimeValue',
+            args => {
+                Name    => "TimeLeft",
+                Default => $ARGS{'TimeLeft'} || '',
+            },
+        },
+    ],
+&>
+</table></&>
+
+% if ( $QueueObj->Lifecycle eq RT::IR->lifecycle_investigation && @IncidentObj ) {
+  <& /RTIR/Elements/AttachReports, Ticket => \@IncidentObj &>
+% }
+
 
 </div>
 
@@ -263,67 +318,8 @@
 <& /Elements/Submit, Name => "Create", Label => $SubmitCaption &>
 </div></div>
 
-<div id="Ticket-Create-details">
-<a name="details"></a>
 
 
-<&| /Widgets/TitleBox, title => loc("Dates"), class=>'ticket-info-dates' &>
-<table width="100%" border="0">
-<& /Ticket/Elements/EditBasics,
-    InTable => 1,
-    fields  => [
-        {
-            name => 'Starts',
-            comp => '/Elements/SelectDate',
-            args => { Name => 'Starts', Default => $ARGS{'Starts'} || '' },
-        },
-        {
-            name => 'Due',
-            comp => '/Elements/SelectDate',
-            args => { Name => 'Due', Default => $ARGS{'Due'} || '' },
-        },
-    ],
-&>
-</table></&>
-
-<&| /Widgets/TitleBox, title => loc("Time"), class=>'ticket-info-time' &>
-<table width="100%" border="0">
-<& /Ticket/Elements/EditBasics,
-    InTable => 1,
-    fields  => [
-        {
-            name => 'Time Estimated',
-            comp => '/Elements/EditTimeValue',
-            args => {
-                Name    => "TimeEstimated",
-                Default => $ARGS{'TimeEstimated'} || '',
-            },
-        },
-        {
-            name => 'Time Worked',
-            comp => '/Elements/EditTimeValue',
-            args => {
-                Name    => "TimeWorked",
-                Default => $ARGS{'TimeWorked'} || '',
-            },
-        },
-        {
-            name => 'Time Left',
-            comp => '/Elements/EditTimeValue',
-            args => {
-                Name    => "TimeLeft",
-                Default => $ARGS{'TimeLeft'} || '',
-            },
-        },
-    ],
-&>
-</table></&>
-
-% if ( $QueueObj->Lifecycle eq RT::IR->lifecycle_investigation && @IncidentObj ) {
-  <& /RTIR/Elements/AttachReports, Ticket => \@IncidentObj &>
-% }
-
-</div>
 
 </form>
 
@@ -487,8 +483,6 @@ if ( $QueueObj->Lifecycle eq RT::IR->lifecycle_investigation ) {
     }
 }
 
-PageMenu->child( basics => raw_html =>  q[<a href="#basics" onclick="return switchVisibility('Ticket-Create-basics','Ticket-Create-details');">] . loc('Basics') . q[</a>]);
-PageMenu->child( details => raw_html =>  q[<a href="#details" onclick="return switchVisibility('Ticket-Create-details','Ticket-Create-basics');">] . loc('Details') . q[</a>]);
 
 </%INIT>
 
