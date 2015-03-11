@@ -106,9 +106,9 @@ my $build_search_link = sub {
     my ($queue_name, $extra_query) = @_;
     $queue_name =~ s/(['\\])/\\$1/g; #'
 
-    return RT->Config->Get('WebPath')
-         . "/Search/Results.html?Query="
-         . $m->interp->apply_escapes("Queue = '$queue_name' AND $extra_query", 'u');
+    RT::IR->HREFTo(
+          "Search/Results.html?Query="
+         . $m->interp->apply_escapes("Queue = '$queue_name' AND $extra_query", 'u'));
 };
 
 my $link_all = sub {
