@@ -182,7 +182,7 @@ unless ( $opt{'force'} ) {
     if ( $exist ) {
         exit 0 unless prompt_yN( "Do you want to proceed with update?" );
     } else {
-        exit 0 unless prompt_yN( "Do you want to proceed creating new incident?" );
+        exit 0 unless prompt_yN( "Do you want to proceed creating the new constituency?" );
     }
 }
 
