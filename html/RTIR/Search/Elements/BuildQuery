@@ -45,7 +45,11 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<form method="post" action="<% RT->Config->Get('WebPath') %><% $m->request_comp->path %>" name="BuildQuery" id="BuildQuery">
+%#
+%# 
+%# XXX TODO - this really ought to use HREFTo, but to do that
+%# we'd need to strip off the RTIR UIR prefix
+<form method="post" action="<% $r->path_info %>" name="BuildQuery" id="BuildQuery">
 <input type="hidden" class="hidden" name="SavedSearchId" value="<% $saved_search{'Id'} %>" />
 <input type="hidden" class="hidden" name="ResultPage" value="<% $ResultPage %>" />
 <input type="hidden" class="hidden" name="BaseQuery" value="<% $BaseQuery %>" />
