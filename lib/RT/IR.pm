@@ -401,10 +401,11 @@ sub OurQuery {
     my $self = shift;
     my $query = shift;
 
-    my ($has_our, $has_other, @queues) = (0, 0);
+    my ($has_our, $has_other, @lifecycles) = (0, 0);
     $ticket_sql_parser->walk(
         RT::SQL::ParseToArray( $query ),
         { operand => sub {
+            # XXX TODO  also pull out lifecycle keys
             return undef unless $_[0]->{'key'} =~ /^Queue(?:\z|\.)/;
             my $queue = RT::Queue->new( RT->SystemUser );
             $queue->Load( $_[0]->{'value'} );
@@ -412,7 +413,7 @@ sub OurQuery {
             my ($negative) = ( $_[0]->{'op'} eq '!=' || $_[0]->{'op'} =~ /\bNOT\b/i );
             if ( $our && !$negative ) {
                 $has_our = 1;
-                push @queues, $queue->Name;
+                push @lifecycles, $queue->Lifecycle;
             } else {
                 $has_other = 1;
             }
@@ -422,9 +423,9 @@ sub OurQuery {
     return 1 unless wantarray;
 
     my %seen;
-    @queues = grep !$seen{ lc $_ }++, @queues;
+    @lifecycles = grep !$seen{ lc $_ }++, @lifecycles;
 
-    return (1, @queues);
+    return (1, @lifecycles);
 }
 
 =head2 Incidents
