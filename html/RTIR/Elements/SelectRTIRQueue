@@ -50,7 +50,7 @@
   <option value=""><% $DefaultLabel %></option>
 %     }
 %     for my $object (@{$session{$cache_key}{objects}}) {
-  <option value="<%  $object->{Id} %>"\
+  <option value="<%   ($NamedValues ? $object->{Name} : $object->{Id}) %>"\
 % if ($object->{Id} eq ($Default||'') || $object->{Name} eq ($Default||'')) {
  selected="selected"\
 % }
@@ -59,6 +59,7 @@
 %     }
 </select>
 <%args>
+$NamedValues => 0
 $CheckRight => 'CreateTicket'
 $ShowNullOption => 0
 $ShowAll => 1
@@ -67,13 +68,12 @@ $DefaultLabel => "-"
 $Default => 0
 $OnChange => undef
 $CacheNeedsUpdate => RT->System->QueueCacheNeedsUpdate
-$Lifecycle => undef
+$Lifecycle => ''
 $LimitToConstituency => 0
 $Constituency => undef
 </%args>
 <%init>
 my $Class    = "select-rtir-queue-".$Lifecycle;
-
 # XXX TODO This cache will need to take constituency into account
 my $cache_key = join "---", "SelectObject", 'rtir-queue-'.$Lifecycle,$LimitToConstituency, ($Constituency ||""),
     $session{'CurrentUser'}->Id, $CheckRight || "", $ShowAll;
@@ -88,7 +88,11 @@ if ( defined $session{$cache_key} && defined $CacheNeedsUpdate &&
 
 if ( not defined $session{$cache_key} ) {
     my $collection = RT::Queues->new($session{'CurrentUser'});
-    $collection->Limit(FIELD => 'Lifecycle', VALUE => $Lifecycle);
+    if ($Lifecycle) {
+        $collection->Limit(FIELD => 'Lifecycle', VALUE => $Lifecycle);
+    } else {
+        $collection->UnLimit();
+    }
     $m->callback( CallbackName => 'ModifyCollection', ARGSRef => \%ARGS,
                   Collection => $collection );
 
@@ -110,8 +114,8 @@ if ( not defined $session{$cache_key} ) {
     }
 
     while (my $object = $collection->Next) {
-
-        next if ($LimitToConstituency && ($object->FirstCustomFieldValue('RTIR Constituency') ||'') 
+        next if ($LimitToConstituency && 
+            ($object->FirstCustomFieldValue('RTIR Constituency') ||'') 
             ne ($Constituency||''));
         if ($ShowAll
             or not $CheckRight
