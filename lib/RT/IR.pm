@@ -165,6 +165,26 @@ sub OurQueue {
     return $TYPE{ $lifecycle };
 }
 
+
+=head2 OurLifecycle LIFECYCLE
+
+Takes a scalar lifecycle name or a lifecycle object.
+Returns true if this lifecycle is an RTIR lifecycle. Returns undef otherwise
+
+=cut
+
+sub OurLifecycle {
+    my $self = shift;
+    my $lifecycle = shift;
+    
+    if (ref $lifecycle) {
+        $lifecycle = $lifecycle->Name;
+    }
+    return defined  $FRIENDLY_LIFECYCLE{$lifecycle};
+
+}
+
+
 =head2 Types
 
 Returns a list of valid L<TicketType>s
