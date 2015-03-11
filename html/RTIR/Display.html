@@ -144,7 +144,7 @@
     <& /Elements/ShowHistory,
         Object         => $Ticket,
         ShowHeaders    => $ARGS{'ShowHeaders'},
-        DisplayPath    => RT->Config->Get('WebPath') ."/RTIR/Display.html?id=$id",
+        DisplayPath    => RT->Config->Get('WebPath') ."/RTIR/Display.html",
         UpdatePath     => RT->Config->Get('WebPath') ."/RTIR/Update.html",
         ForwardPath    => RT->Config->Get('WebPath') ."/RTIR/Forward.html",
         EncryptionPath => RT->Config->Get('WebPath') ."/RTIR/Crypt.html",
