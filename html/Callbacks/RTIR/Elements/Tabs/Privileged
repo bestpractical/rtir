@@ -130,7 +130,7 @@ $request_path =~ s!/{2,}!/!g;
 return unless $request_path =~ m{^/RTIR/};
 
 
-my $re_rtir_path = qr'^/RTIR/(?:c/.*?/?)?';
+my $re_rtir_path = qr'^/RTIR/(?:c/[^/]*/?)?';
 
 my $re_rtir_types = '(?:'. join( '|', map "\Q$_\E", RT::IR->Types ) .')';
 
@@ -399,7 +399,7 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
         back => title => loc('Back to ticket #[_1]', $id),
         path => RT::IR->HREFTo("Display.html?id=$id"),
     );
-} elsif ( $request_path =~ m{(?:$re_rtir_path)(Search/|Incident/BulkAbandon\.html$|Report/BulkReject\.html$)} ) {
+} elsif ( $request_path =~ m{(?:$re_rtir_path)(Search/?|Incident/BulkAbandon\.html$|Report/BulkReject\.html$)} ) {
     my %args = $search_arguments->();
 
     my $lifecycle = $args->{'Lifecycle'} || '';
