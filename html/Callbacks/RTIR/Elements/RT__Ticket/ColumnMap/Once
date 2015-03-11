@@ -48,6 +48,19 @@
 <%INIT>
 use RT::Crypt::GnuPG;
 
+$COLUMN_MAP->{'RTIRTicketURI'} = {
+    value  =>sub {
+        my $t = shift;
+        my $link;
+        if ($t->QueueObj->Lifecycle eq RT::IR->lifecycle_incident) { 
+            $link =  RT::IR->HREFTo('Incident/Display.html?id='.$t->id);
+        } else {
+            $link = RT::IR->HREFTo('Display.html?id='.$t->id);
+        }
+        return \$link;
+    }
+};
+
 $COLUMN_MAP->{'Take'} = {
     title => 'Take',
     value => sub {
