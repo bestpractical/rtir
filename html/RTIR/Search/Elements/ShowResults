@@ -54,7 +54,7 @@ else {
     $Query ||= $BaseQuery;
 }
 
-$BaseURL = RT->Config->Get('WebPath')."/$BaseURL" unless $BaseURL =~ m{^/};
+$BaseURL = RT::IR->HREFTo("$BaseURL") unless $BaseURL =~ m{^/};
 $BaseURL .= ( $BaseURL =~ /\?/ )? '&': '?' unless $BaseURL =~ m{[&?]$};
 
 my $collection = RT::Tickets->new( $session{'CurrentUser'} );
