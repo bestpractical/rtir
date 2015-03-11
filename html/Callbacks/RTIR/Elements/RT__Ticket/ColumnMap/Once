@@ -76,11 +76,13 @@ $COLUMN_MAP->{'HasIncident'} = {
     value => sub {
         my $t = shift;
         my $yesno;
-        if ( RT::IR->RelevantIncidents( $t )->Count ) {
-            $yesno = '<span class="yes">'. $t->loc('yes') .'</span>';
+        if (my $count = RT::IR->RelevantIncidents( $t )->Count ) {
+            $yesno = '<span class="yes">'. '<a href="'.RT::IR->HREFTo('/Search/Results.html?'.$m->comp('/Elements/QueryString', Query => RT::IR->RelevantIncidentsQuery($t))).'">'
+            .  $count
+            .'</a></span>';
         }
         else {
-            $yesno = '<span class="no">'. $t->loc('no') .'</span>';
+            $yesno = '<span class="no">-</span>';
         }
 
         return \$yesno;
