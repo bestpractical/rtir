@@ -86,7 +86,16 @@ for my $queue (@queues) {
 <%INIT>
 
 my $unwanted = $session{'CurrentUser'}->UserObj->Preferences('QuickSearch', {});
-my $queue_filter =sub { $_->CurrentUserHasRight('ShowTicket') && !exists $unwanted->{$_->Name}};
+
+my $queue_filter =sub { 
+    my $q = $_;
+    return undef if !$q->CurrentUserHasRight('ShowTicket');
+    return undef if exists $unwanted->{$q->Name};
+    return undef if ($m->{'RTIR_ConstituencyFilter'} 
+        && $q->FirstCustomFieldValue('RTIR Constituency') 
+            ne $m->{'RTIR_ConstituencyFilter'});
+    return 1;
+};
 
 
 
