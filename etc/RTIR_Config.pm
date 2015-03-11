@@ -505,7 +505,6 @@ Components that available to add on the first page of the RTIR.
 
 Set(@RTIR_HomepageComponents, qw(
     QuickCreate
-    Quicksearch
     MyAdminQueues
     MySupportQueues
     MyReminders
@@ -516,6 +515,7 @@ Set(@RTIR_HomepageComponents, qw(
     /RTIR/Elements/UserDueIncidents
     /RTIR/Elements/NobodyDueIncidents
     /RTIR/Elements/DueIncidents
+    /RTIR/Elements/QueueSummary
 ));
 
 =item C<@Active_MakeClicky>

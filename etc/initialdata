@@ -591,7 +591,7 @@ for my $cf (@CustomFields) {
         ],
         sidebar => [
             { type => 'component', name => 'RefreshHomepage' },
-            { type => 'component', name => 'Quicksearch' },
+            { type => 'component', name => '/RTIR/Elements/QueueSummary' },
         ]
     },
 } );
