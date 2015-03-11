@@ -49,12 +49,11 @@
 return $m->comp(
     '/RTIR/Search/Elements/RefinePage',
     %ARGS,
-    ResultPage => 'RTIR/Merge/?'. $m->comp('/Elements/QueryString',
-        id => $ARGS{'id'},
+    ResultPage => RT::IR->HREFTo('Merge/?'. $m->comp('/Elements/QueryString', id => $ARGS{'id'},
     ),
     BaseQuery => RT::IR->Query(
         Lifecycle        => $ARGS{'Lifecycle'},
         Exclude      => $ARGS{'id'},
-    ),
+    )),
 );
 </%INIT>
