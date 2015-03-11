@@ -60,6 +60,7 @@ use Scalar::Util qw(blessed);
 # extensions in RT core
 
 use RT::IR::Config;
+use RT::IR::Web;
 RT::IR::Config::Init();
 
 
