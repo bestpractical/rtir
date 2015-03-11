@@ -129,10 +129,12 @@ my $request_path = $HTML::Mason::Commands::r->path_info;
 $request_path =~ s!/{2,}!/!g;
 return unless $request_path =~ m{^/RTIR/};
 
+
+my $re_rtir_path = qr'^/RTIR/(?:c/.*?/?)?';
+
 my $re_rtir_types = '(?:'. join( '|', map "\Q$_\E", RT::IR->Types ) .')';
 
-# XXX TODO make this handle the new constituency paths
-if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|Advanced)\.html$} ) {
+if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Update|Forward|Advanced)\.html$} ) {
     my $id = $args->{'id'};
 
     # we'll never get here unless ticket is there and it's rtir's type
@@ -295,8 +297,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
         bookmark => raw_html => $m->scomp( '/Ticket/Elements/Bookmark', id => $id ),
         sort_order   => 99
     );
-    # XXX TODO RTIR consittuency path
-} elsif ( $request_path =~ m{^/RTIR/Link/(ToIncident|FromIncident)/} ) {
+} elsif ( $request_path =~ m{(?:$re_rtir_path)Link/(ToIncident|FromIncident)/} ) {
     my $direction = $1;
 
     my $lifecycle = $args->{'Lifecycle'};
@@ -330,8 +331,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
         back => title => loc('Back to ticket #[_1]', $id),
         path => RT::IR->HREFTo("Display.html?id=$id"),
     );
-    ### XXX RTIR Constituency regex
-} elsif ( $request_path =~ m{^/RTIR/Incident/Children/} ) {
+} elsif ( $request_path =~ m{(?:$re_rtir_path)Incident/Children/} ) {
     my $lifecycle = $args->{'Lifecycle'} ||  RT::IR->lifecycle_report;
 
     my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
@@ -351,8 +351,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
         back => title => loc('Back to ticket #[_1]', $id),
         path => RT::IR->HREFTo( "Display.html?id=$id"),
     );
-    # XXX RTIR CONSTITUENCY URL
-} elsif ( $request_path =~ m{^/RTIR/Merge/} ) {
+} elsif ( $request_path =~ m{^(?:$re_rtir_path)Merge/} ) {
     my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
     $ticket->Load( $args->{'id'} );
     my $id = $ticket->id;
@@ -374,8 +373,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
         back => title => loc('Back to ticket #[_1]', $id),
         path => RT::IR->HREFTo("Display.html?id=$id"),
     );
-    # XXX RTIR URL
-} elsif ( $request_path =~ m{^/RTIR/Incident/Reply/} ) {
+} elsif ( $request_path =~ m{(?:$re_rtir_path)Incident/Reply/} ) {
     my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
     $ticket->Load( $args->{'id'} );
     my $id = $ticket->id;
@@ -401,8 +399,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
         back => title => loc('Back to ticket #[_1]', $id),
         path => RT::IR->HREFTo("Display.html?id=$id"),
     );
-    # XXX TODO RTIR CONSTITUENCY URIL
-} elsif ( $request_path =~ m{^/RTIR/(Search/|Incident/BulkAbandon\.html$|Report/BulkReject\.html$)} ) {
+} elsif ( $request_path =~ m{(?:$re_rtir_path)(Search/|Incident/BulkAbandon\.html$|Report/BulkReject\.html$)} ) {
     my %args = $search_arguments->();
 
     my $lifecycle = $args->{'Lifecycle'} || '';
@@ -430,8 +427,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
 
     # Refine.html doesn't let you change the Queue, so don't link there from the
     # full RTIR Search UI, only from the Bulk screens.
-    # #XXX TODO CONSTITUENCY
-    my $bulk_path = 1 if $request_path =~ m{^/RTIR/(Incident/BulkAbandon\.html$|Report/BulkReject\.html$)};
+    my $bulk_path = 1 if $request_path =~ m{(?:$re_rtir_path)(Incident/BulkAbandon\.html$|Report/BulkReject\.html$)};
 
     PageMenu()->child(
         edit_search => title => loc('Edit Search'),
@@ -513,8 +509,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
             );
         }
     }
-    #XXX TODO RTIR CONSTITUENCY
-} elsif ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?Split\.html$} ) {
+} elsif ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?Split\.html$} ) {
     my $id = $args->{'Split'};
 
     PageMenu()->child(
@@ -524,8 +519,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
 }
 
 if ( $session{'CurrentUser'}->HasRight(Right => 'ModifySelf', Object => $RT::System) ) {
-# XXX TODO RTIR CONSTITUENCY
-    if ( $request_path =~ m{^/RTIR/(?:index\.html|)$} ) {
+    if ( $request_path =~ m{(?:$re_rtir_path)(?:index\.html|)$} ) {
         PageMenu()->child( edit => title => loc('Edit'), path => RT::IR->HREFTo('Prefs/Home.html' ))
     }
     Menu->child('preferences')->child('settings')->child(
