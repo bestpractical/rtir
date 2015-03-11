@@ -138,7 +138,7 @@ elsif ( $TicketObj && $TicketObj->QueueObj->Lifecycle ne RT::IR->lifecycle_incid
     };
 }
 my $box_actions = join '&nbsp;'x3,
-    map qq{<a href="}. RT->Config->Get('WebPath') . $_->{'path'} .q{">}
+    map qq{<a href="}.  $_->{'path'} .q{">}
         . $m->interp->apply_escapes( $_->{title}, 'h' ) . q{</a>},
     @box_actions;
 
