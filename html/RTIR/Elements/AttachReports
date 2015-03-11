@@ -64,7 +64,7 @@ return unless @Ticket;
 
 my @parents;
 foreach my $e ( @Ticket ) {
-    if ( RT::IR::TicketType( Ticket => $e ) eq 'Incident' ) {
+    if ( $e->QueueObj->Lifecycle eq RT::IR->lifecycle_incident) {
         push @parents, $e->id;
     } else {
         push @parents, map $_->id, @{ RT::IR->Incidents( $e )->ItemsArrayRef || [] };
