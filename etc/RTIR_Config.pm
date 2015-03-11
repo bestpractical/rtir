@@ -367,8 +367,8 @@ merged from this configuration.  To change just the Investigation list you would
 
 Set(%RTIRSearchResultFormats,
     Default =>
-        q{'<b><a HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
-          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+        q{'<b><a HREF="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
+          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
           __QueueName__,
           __Status__,
           __LastUpdatedRelative__,
@@ -376,32 +376,32 @@ Set(%RTIRSearchResultFormats,
           __NEWLINE__,
           '',__Requestors__,__OwnerName__,__ToldRelative__,__DueRelative__,__TimeLeft__},
     ReportDefault =>
-        q{'<b><a HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
-          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+        q{'<b><a HREF="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
+          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
           __Status__,
           __LastUpdatedRelative__,
           __CreatedRelative__,
           __NEWLINE__,
           '',__Requestors__,__OwnerName__,__ToldRelative__,__DueRelative__,__TimeLeft__},
     InvestigationDefault =>
-        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
-          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
+          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
           __Status__,
           __LastUpdatedRelative__,
           __CreatedRelative__,
           __NEWLINE__,
           '', __Requestors__, __OwnerName__, __ToldRelative__, __DueRelative__, __TimeLeft__},
     BlockDefault =>
-        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
-          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
+          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
           __Status__,
           __LastUpdatedRelative__,
           __CreatedRelative__,
           __NEWLINE__,
           '', __Requestors__, __OwnerName__, __ToldRelative__, __DueRelative__, __TimeLeft__},
     IncidentDefault =>
-        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
-          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
+          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
           __Status__,
           __LastUpdatedRelative__,
           __CreatedRelative__,
@@ -410,71 +410,71 @@ Set(%RTIRSearchResultFormats,
           '', '', __OwnerName__, __ToldRelative__, __DueRelative__, __TimeLeft__},
 
     Merge =>
-        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
-          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
+          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
           __Requestors__, __OwnerName__, __CreatedRelative__, __DueRelative__},
 
     LinkChildren =>
-        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
-          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
+          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
           __Requestors__, __OwnerName__, __CreatedRelative__, __DueRelative__},
 
     LinkIncident =>
-        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
-          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
+          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
           __OwnerName__, __CreatedRelative__},
 
     ListIncidents =>
-        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
-          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
+          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
           __Status__},
 
     RejectReports =>
-        q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',
-          '<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>/TITLE:Subject',
+        q{'<a href="__RTIRTicketURI__">__id__</a>/TITLE:#',
+          '<a href="__RTIRTicketURI__">__Subject__</a>/TITLE:Subject',
           __HasIncident__, __Requestors__, __OwnerName__, __CreatedRelative__, __DueRelative__},
 
     BulkReply =>
-        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
-          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
+          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
           __KeyRequestors__, __KeyOwnerName__, __CreatedRelative__, __DueRelative__},
 
     DueIncidents =>
-        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
-          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
+          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
           __OwnerName__, __Priority__, __DueRelative__, __UpdateStatus__},
 
     AbandonIncidents =>
-        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
-          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
+          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
           __OwnerName__, __Priority__, __DueRelative__},
 
     NewReports =>
-        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
-          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
+          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
           __Requestors__, __OwnerName__, __DueRelative__, __Take__},
 
     ChildReport =>
-        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
-          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
+          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
           __Status__,
           __DueRelative__},
 
     ChildInvestigation =>
-        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
-          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
+          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
           __Status__,
           __DueRelative__},
 
     ChildBlock =>
-        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
-          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
+          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
           __Status__,
            __DueRelative__},
 
     LookupTool =>
-        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',
-          '<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
+          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
           __Status__,
           __Priority__},
 

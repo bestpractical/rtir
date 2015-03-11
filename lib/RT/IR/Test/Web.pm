@@ -183,7 +183,7 @@ sub ticket_is_linked_to_inc {
     foreach my $inc( ref $incs? @$incs : ($incs) ) {
         my $desc = shift || "Ticket #$id is linked to the Incident #$inc";
         $self->content_like(
-            qr{Incident:\s*</td>\s*<td[^>]*?>.*?<td[^>]*?><b><a\s+href="/(?:RTIR|Ticket)/Display.html\?id=\Q$inc\E">\Q$inc\E</a></b></td>}ism,
+            qr{Incident:\s*</td>\s*<td[^>]*?>.*?<td[^>]*?><b><a\s+href="/RTIR/Incident/Display.html\?id=\Q$inc\E">\Q$inc\E</a></b></td>}ism,
             $desc
         ) or return 0;
     }
@@ -232,7 +232,7 @@ sub LinkChildToIncident {
     # Check that the desired incident occurs in the list of available incidents; if not, keep
     # going to the next page until you find it (or get to the last page and don't find it,
     # whichever comes first)
-    while($self->content() !~ m|<a href="/Ticket/Display.html\?id=$incident">$incident</a>|) {
+    while($self->content() !~ m|<a href="/RTIR/Display.html\?id=$incident">$incident</a>|) {
         last unless $self->follow_link(text => 'Next');
     }
     
@@ -360,7 +360,7 @@ sub bulk_abandon {
 # going to the next page until you find it (or get to the last page and don't find it,
 # whichever comes first)
     while ( $self->content() !~
-        qr{<a href="/Ticket/Display.html\?id=$to_abandon[0]">$to_abandon[0]</a>}
+        qr{<a href="/RTIR/Display.html\?id=$to_abandon[0]">$to_abandon[0]</a>}
       )
     {
         last unless $self->follow_link( text => 'Next' );

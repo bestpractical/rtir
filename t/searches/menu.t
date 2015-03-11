@@ -27,8 +27,15 @@ for my $type ( 'incident', 'ir', 'investigation', 'block' ) {
     $m->follow_link_ok( { text => 'Merge' } );
     $m->title_like(qr/Merge .+ #$ticket{$type}[0]:/);
 
-    for my $id ( @{ $ticket{$type} }[ 1 .. 2 ] ) {
-        ok( $m->find_link( url_regex => qr{/Ticket/Display.html\?id=$id$} ), "found link to $type $id" );
+    if ($type eq 'incident') { 
+        for my $id ( @{ $ticket{$type} }[ 1 .. 2 ] ) {
+         ok( $m->find_link( url_regex => qr{/RTIR/Incident/Display.html\?id=$id$} ), "found link to $type $id" );
+        } 
+    } else {
+        for my $id ( @{ $ticket{$type} }[ 1 .. 2 ] ) {
+         ok( $m->find_link( url_regex => qr{/RTIR/Display.html\?id=$id$} ), "found link to $type $id" );
+        } 
+
     }
 
     $m->follow_link_ok( { text => "Edit Search", $type eq 'incident' ? () : ( n => 2 ) } );
@@ -40,10 +47,20 @@ for my $type ( 'incident', 'ir', 'investigation', 'block' ) {
         },
         "add new term 'id != $ticket{$type}[1]'"
     );
-    ok( !$m->find_link( url_regex => qr{/Ticket/Display.html\?id=$ticket{$type}[1]$} ),
+
+    if ($type eq 'incident') {
+    ok( !$m->find_link( url_regex => qr{/RTIR/Incident/Display.html\?id=$ticket{$type}[1]$} ),
         "didn't find link to $type $ticket{$type}[1]" );
-    ok( $m->find_link( url_regex => qr{/Ticket/Display.html\?id=$ticket{$type}[2]$} ),
+    ok( $m->find_link( url_regex => qr{/RTIR/Incident/Display.html\?id=$ticket{$type}[2]$} ),
         "found link to $type $ticket{$type}[2]" );
+    } else {
+
+    ok( !$m->find_link( url_regex => qr{/RTIR/Display.html\?id=$ticket{$type}[1]$} ),
+        "didn't find link to $type $ticket{$type}[1]" );
+    ok( $m->find_link( url_regex => qr{/RTIR/Display.html\?id=$ticket{$type}[2]$} ),
+        "found link to $type $ticket{$type}[2]" );
+    }
+
 }
 
 # Link ToIncident
@@ -53,10 +70,10 @@ for my $type ( 'incident', 'ir', 'investigation', 'block' ) {
     $m->follow_link_ok( { text => '[Link]' } );
     $m->title_is("Link Report #$ticket{ir}[0] to selected Incident");
 
-    ok( !$m->find_link( url_regex => qr{/Ticket/Display.html\?id=$ticket{incident}[0]$} ),
+    ok( !$m->find_link( url_regex => qr{/RTIR/Incident/Display.html\?id=$ticket{incident}[0]$} ),
         "didn't find link to incident $ticket{incident}[0]" );
     for my $incident_id ( @{ $ticket{incident} }[ 1 .. 2 ] ) {
-        ok( $m->find_link( url_regex => qr{/Ticket/Display.html\?id=$incident_id$} ),
+        ok( $m->find_link( url_regex => qr{/RTIR/Incident/Display.html\?id=$incident_id$} ),
             "found link to incident $incident_id" );
     }
 
@@ -72,9 +89,9 @@ for my $type ( 'incident', 'ir', 'investigation', 'block' ) {
         },
         "add new term 'id != $ticket{incident}[1]'"
     );
-    ok( !$m->find_link( url_regex => qr{/Ticket/Display.html\?id=$ticket{incident}[1]$} ),
+    ok( !$m->find_link( url_regex => qr{/RTIR/Incident/Display.html\?id=$ticket{incident}[1]$} ),
         "didn't find link to incident $ticket{incident}[1]" );
-    ok( $m->find_link( url_regex => qr{/Ticket/Display.html\?id=$ticket{incident}[2]$} ),
+    ok( $m->find_link( url_regex => qr{/RTIR/Incident/Display.html\?id=$ticket{incident}[2]$} ),
         "found link to incident $ticket{incident}[2]" );
 }
 
@@ -86,13 +103,13 @@ for my $type ( 'incident', 'ir', 'investigation', 'block' ) {
 
     ok(
         !$m->find_link(
-            url_regex => qr{/Ticket/Display.html\?id=$ticket{ir}[0]$}
+            url_regex => qr{/RTIR/Display.html\?id=$ticket{ir}[0]$}
         ),
         "didn't find link to incident report $ticket{ir}[0]"
     );
 
     for my $ir ( @{ $ticket{ir} }[ 1 .. 2 ] ) {
-        ok( $m->find_link( url_regex => qr{/Ticket/Display.html\?id=$ir$} ), "found link to incident report $ir" );
+        ok( $m->find_link( url_regex => qr{/RTIR/Display.html\?id=$ir$} ), "found link to incident report $ir" );
     }
 
     $m->follow_link_ok( { text => "Edit Search", n => 2 } );
@@ -114,12 +131,12 @@ for my $type ( 'incident', 'ir', 'investigation', 'block' ) {
 
     ok(
         !$m->find_link(
-            url_regex => qr{/Ticket/Display.html\?id=$ticket{ir}[1]$}
+            url_regex => qr{/RTIR/Display.html\?id=$ticket{ir}[1]$}
         ),
         "didn't find link to incident report $ticket{ir}[1]"
     );
 
-    ok( $m->find_link( url_regex => qr{/Ticket/Display.html\?id=$ticket{ir}[2]$} ),
+    ok( $m->find_link( url_regex => qr{/RTIR/Display.html\?id=$ticket{ir}[2]$} ),
         "found link to incident report $ticket{ir}[2]" );
 }
 
@@ -129,11 +146,11 @@ for my $type ( 'incident', 'ir', 'investigation', 'block' ) {
     $m->follow_link_ok( { text => 'Reply to Reporters' } );
     $m->title_like(qr/#$ticket{incident}[0]: Reply to Reporters/);
 
-    ok( $m->find_link( url_regex => qr{/Ticket/Display.html\?id=$ticket{ir}[0]$} ),
+    ok( $m->find_link( url_regex => qr{/RTIR/Display.html\?id=$ticket{ir}[0]$} ),
         "found link to incident report $ticket{ir}[0]" );
 
     for my $type (qw/investigation block/) {
-        ok( !$m->find_link( url_regex => qr{/Ticket/Display.html\?id=$ticket{$type}[0]$} ),
+        ok( !$m->find_link( url_regex => qr{/RTIR/Display.html\?id=$ticket{$type}[0]$} ),
             "didn't find link to $type $ticket{$type}[0]" );
     }
 
@@ -153,7 +170,7 @@ for my $type ( 'incident', 'ir', 'investigation', 'block' ) {
 
     ok(
         !$m->find_link(
-            url_regex => qr{/Ticket/Display.html\?id=$ticket{ir}[0]$},
+            url_regex => qr{/RTIR/Display.html\?id=$ticket{ir}[0]$},
             text      => $ticket{ir}[0],
             n         => 2,                     # there is one in "Attach Reports" widget
         ),
@@ -161,7 +178,7 @@ for my $type ( 'incident', 'ir', 'investigation', 'block' ) {
     );
 
     for my $type (qw/investigation block/) {
-        ok( !$m->find_link( url_regex => qr{/Ticket/Display.html\?id=$ticket{$type}[0]$} ),
+        ok( !$m->find_link( url_regex => qr{/RTIR/Display.html\?id=$ticket{$type}[0]$} ),
             "didn't find link to $type $ticket{$type}[0]" );
     }
 }
@@ -173,7 +190,7 @@ for my $type ( 'incident', 'ir', 'investigation', 'block' ) {
     $m->title_like(qr/#$ticket{incident}[0]: Reply to All/);
 
     for my $type (qw/ir investigation block/) {
-        ok( $m->find_link( url_regex => qr{/Ticket/Display.html\?id=$ticket{$type}[0]$} ),
+        ok( $m->find_link( url_regex => qr{/RTIR/Display.html\?id=$ticket{$type}[0]$} ),
             "found link to $type $ticket{$type}[0]" );
     }
     $m->form_name('TicketUpdate');
@@ -198,7 +215,7 @@ for my $type ( 'incident', 'ir', 'investigation', 'block' ) {
 
     ok(
         !$m->find_link(
-            url_regex => qr{/Ticket/Display.html\?id=$ticket{ir}[0]$},
+            url_regex => qr{/RTIR/Display.html\?id=$ticket{ir}[0]$},
             text      => $ticket{ir}[0],
             n         => 2,                     # there is one in "Attach Reports" widget
         ),
@@ -206,7 +223,7 @@ for my $type ( 'incident', 'ir', 'investigation', 'block' ) {
     );
 
     for my $type (qw/investigation block/) {
-        ok( $m->find_link( url_regex => qr{/Ticket/Display.html\?id=$ticket{$type}[0]$} ),
+        ok( $m->find_link( url_regex => qr{/RTIR/Display.html\?id=$ticket{$type}[0]$} ),
             "found link to $type $ticket{$type}[0]" );
     }
 }
