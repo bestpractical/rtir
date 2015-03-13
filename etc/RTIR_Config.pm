@@ -369,114 +369,114 @@ Set(%RTIRSearchResultFormats,
     Default =>
         q{'<b><a HREF="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
           '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          __QueueName__,
-          __Status__,
-          __LastUpdatedRelative__,
-          __CreatedRelative__,
+          QueueName,
+          Status,
+          LastUpdatedRelative,
+          CreatedRelative,
           __NEWLINE__,
-          '',__Requestors__,__OwnerName__,__ToldRelative__,__DueRelative__,__TimeLeft__},
+          '',Requestors,OwnerName,ToldRelative,DueRelative,TimeLeft},
     ReportDefault =>
         q{'<b><a HREF="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
           '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          __Status__,
-          __LastUpdatedRelative__,
-          __CreatedRelative__,
+          Status,
+          LastUpdatedRelative,
+          CreatedRelative,
           __NEWLINE__,
-          '',__Requestors__,__OwnerName__,__ToldRelative__,__DueRelative__,__TimeLeft__},
+          '',Requestors,OwnerName,ToldRelative,DueRelative,TimeLeft},
     InvestigationDefault =>
         q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
           '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          __Status__,
-          __LastUpdatedRelative__,
-          __CreatedRelative__,
+          Status,
+          LastUpdatedRelative,
+          CreatedRelative,
           __NEWLINE__,
-          '', __Requestors__, __OwnerName__, __ToldRelative__, __DueRelative__, __TimeLeft__},
+          '', Requestors, OwnerName, ToldRelative, DueRelative, TimeLeft},
     BlockDefault =>
         q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
           '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          __Status__,
-          __LastUpdatedRelative__,
-          __CreatedRelative__,
+          Status,
+          LastUpdatedRelative,
+          CreatedRelative,
           __NEWLINE__,
-          '', __Requestors__, __OwnerName__, __ToldRelative__, __DueRelative__, __TimeLeft__},
+          '', Requestors, OwnerName, ToldRelative, DueRelative, TimeLeft},
     IncidentDefault =>
         q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
           '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          __Status__,
-          __LastUpdatedRelative__,
-          __CreatedRelative__,
-          __Priority__,
+          Status,
+          LastUpdatedRelative,
+          CreatedRelative,
+          Priority,
           __NEWLINE__,
-          '', '', __OwnerName__, __ToldRelative__, __DueRelative__, __TimeLeft__},
+          '', '', OwnerName, ToldRelative, DueRelative, TimeLeft},
 
     Merge =>
         q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
           '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          __Requestors__, __OwnerName__, __CreatedRelative__, __DueRelative__},
+          Requestors, OwnerName, CreatedRelative, DueRelative},
 
     LinkChildren =>
         q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
           '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          __Requestors__, __OwnerName__, __CreatedRelative__, __DueRelative__},
+          Requestors, OwnerName, CreatedRelative, DueRelative},
 
     LinkIncident =>
         q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
           '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          __OwnerName__, __CreatedRelative__},
+          OwnerName, CreatedRelative},
 
     ListIncidents =>
         q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
           '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          __Status__},
+          Status},
 
     RejectReports =>
         q{'<a href="__RTIRTicketURI__">__id__</a>/TITLE:#',
           '<a href="__RTIRTicketURI__">__Subject__</a>/TITLE:Subject',
-          __HasIncident__, __Requestors__, __OwnerName__, __CreatedRelative__, __DueRelative__},
+          HasIncident, Requestors, OwnerName, CreatedRelative, DueRelative},
 
     BulkReply =>
         q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
           '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          __KeyRequestors__, __KeyOwnerName__, __CreatedRelative__, __DueRelative__},
+          KeyRequestors, KeyOwnerName, CreatedRelative, DueRelative},
 
     DueIncidents =>
         q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
           '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          __OwnerName__, __Priority__, __DueRelative__, __UpdateStatus__},
+          OwnerName, Priority, DueRelative, UpdateStatus},
 
     AbandonIncidents =>
         q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
           '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          __OwnerName__, __Priority__, __DueRelative__},
+          OwnerName, Priority, DueRelative},
 
     NewReports =>
         q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
           '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          __Requestors__, __OwnerName__, __DueRelative__, __Take__},
+          Requestors, OwnerName, DueRelative, Take},
 
     ChildReport =>
         q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
           '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          __Status__,
-          __DueRelative__},
+          Status,
+          DueRelative},
 
     ChildInvestigation =>
         q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
           '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          __Status__,
-          __DueRelative__},
+          Status,
+          DueRelative},
 
     ChildBlock =>
         q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
           '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          __Status__,
-           __DueRelative__},
+          Status,
+           DueRelative},
 
     LookupTool =>
         q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
           '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          __Status__,
-          __Priority__},
+          Status,
+          Priority},
 
 );
 
