@@ -108,6 +108,8 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
                 Name => 'Queue',
                 Default => $ARGS{'Queue'} || $QueueObj->Id,
                 Lifecycle => RT::IR->lifecycle_incident,
+                LimitToConstituency => $m->{'RTIR_ConstituencyFilter'} ? 1:0,
+                Constituency => $m->{'RTIR_ConstituencyFilter'}
     &>
   </td>
 </tr>

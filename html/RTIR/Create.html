@@ -105,8 +105,8 @@
                 Default => $ARGS{'Queue'} || $QueueObj->Id,
                 ShowNullOption => 0,
                 Lifecycle => $QueueObj->Lifecycle,
-                # XXX TODO narrow to the current constituency if the
-                # user wants us to, maybe?
+                LimitToConstituency => $m->{'RTIR_ConstituencyFilter'} ? 1:0,
+                Constituency => $m->{'RTIR_ConstituencyFilter'}
             }
         },
         {
