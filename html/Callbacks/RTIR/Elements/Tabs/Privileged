@@ -533,5 +533,5 @@ PageWidgets()->child('simple_search')->raw_html( $m->scomp(
     SendTo => RT::IR->HREFTo('index.html'),
     Placeholder => 'Search Incidents'
 ) );
-
+PageWidgets()->child( create_ticket => raw_html => $m->scomp('/RTIR/Elements/CreateTicketInQueue') );
 </%INIT>

@@ -1,0 +1,22 @@
+<label accesskey="9">
+  <& /RTIR/Elements/SelectRTIRQueue, 
+        Name => 'Queue', 
+        Default => $queue, 
+        %ARGS, 
+        ShowNullOption => 0,                 
+        LimitToConstituency => $m->{'RTIR_ConstituencyFilter'} ? 1:0,
+        Constituency => $m->{'RTIR_ConstituencyFilter'}
+
+ &>
+</label>
+<%INIT>
+my $queue = RT->Config->Get("DefaultQueue", $session{'CurrentUser'});
+
+if (RT->Config->Get("RememberDefaultQueue", $session{'CurrentUser'})) {
+    if (my $session_default = $session{'DefaultQueue'}) {
+        $queue = $session_default;
+    }
+}
+
+$m->callback(Queue => \$queue, CallbackName => 'DefaultQueue');
+</%INIT>
