@@ -90,9 +90,9 @@ if ( $ARGS{'HTMLReport'} || $ARGS{'TextReport'} || $ARGS{'SpreadsheetReport'} ) 
     my $ext = 'html';
     $ext = 'txt' if $ARGS{'TextReport'};
     $ext = 'tsv' if $ARGS{'SpreadsheetReport'};
-    my $url = RT->Config->Get('WebURL') .'RTIR/Reporting/Report.'. $ext;
-    $url   .= "?". $m->comp( '/Elements/QueryString', %ARGS );
-    return RT::Interface::Web::Redirect($url);
+    
+    return RT::Interface::Web::Redirect(RT::IR->HREFTo('RTIR/Reporting/Report.'. $ext
+       . "?". $m->comp( '/Elements/QueryString', %ARGS )));
 }
 
 my $now = RT::Date->new(RT->SystemUser);

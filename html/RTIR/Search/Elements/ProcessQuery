@@ -238,7 +238,7 @@ $session{'CurrentSearchHash'} = {
 if ( $ARGS{"DoSearch"} ) {
     $ResultPage .= $ResultPage =~ /\?/? '&': '?';
     $ResultPage .= $m->comp('/Elements/QueryString', %query );
-    return RT::Interface::Web::Redirect( RT->Config->Get('WebURL') . $ResultPage );
+    return RT::Interface::Web::Redirect( $ResultPage );
 }
 # }}}
 

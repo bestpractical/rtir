@@ -77,8 +77,7 @@ $m->callback(CallbackName => 'Initial', %ARGS, Ticket => $TicketObj);
 
 my $Type = RT::IR::TicketType( Ticket => $TicketObj );
 if ( $m->comp_exists("/RTIR/$Type/Split.html") ) {
-    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')
-    . RT::IR->HREFTo("$Type/Split.html?"
+    RT::Interface::Web::Redirect(RT::IR->HREFTo("$Type/Split.html?"
     . $m->comp('/Elements/QueryString', %ARGS )));
 }
 

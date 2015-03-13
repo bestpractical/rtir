@@ -54,10 +54,10 @@ if ( grep !/^(id|results|Queue)$/, keys %$ARGSRef ) {
     $m->abort;
 }
 
-my $url = RT->Config->Get('WebURL') .'RTIR/Create.html?'
-    . $m->comp('/Elements/QueryString', %$ARGSRef, Queue => $QueueObj->Name )
-;
-RT::Interface::Web::Redirect( $url );
+RT::Interface::Web::Redirect( RT::IR->HREFTo('Create.html?' 
+    . $m->comp('/Elements/QueryString', 
+            %$ARGSRef, 
+            Queue => $QueueObj->Name )) );
 </%INIT>
 <%ARGS>
 $QueueObj => undef
