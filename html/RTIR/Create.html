@@ -352,9 +352,9 @@ if ($QueueObj->Lifecycle eq RT::IR->lifecycle_countermeasure
 # As of RTIR 3.8, that's only true for Incidents
 # If there's an RTIR specific create page for this kind of ticket, show that
 if ( $m->comp_exists("/RTIR/$Type/Create.html") ) {
-    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')
-    . "RTIR/$Type/Create.html?"
-    . $m->comp('/Elements/QueryString', %ARGS ));
+RT::Interface::Web::Redirect(RT::IR->HREFTo(
+     "$Type/Create.html?"
+    . $m->comp('/Elements/QueryString', %ARGS )));
 }
 
 my (@results, $checks_failure, $skip_create);
