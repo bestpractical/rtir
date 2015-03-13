@@ -82,6 +82,7 @@
 
 <%INIT>
 my $QueueObj = RT::Queue->new($session{'CurrentUser'});
+# XXX TODO port to new non-queue-name implementation
 $QueueObj->Load('Incidents');
 RT::Logger->error('Unable to load Incidents queue') unless $QueueObj->Id;
 
