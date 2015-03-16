@@ -328,7 +328,7 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
         ,
     );
     PageMenu()->child(
-        back => title => loc('Back to ticket #[_1]', $id),
+        back => title => loc('Back to [_1] #[_2]',lc RT::IR::TicketType(Lifecycle => $ticket->QueueObj->Lifecycle), $id),
         path => RT::IR->HREFTo("Display.html?id=$id"),
     );
 } elsif ( $request_path =~ m{(?:$re_rtir_path)Incident/Children/} ) {
@@ -348,7 +348,7 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
         path => RT::IR->HREFTo("Create.html?". $query_string->( Incident => $id, Lifecycle => $lifecycle )),
     );
     PageMenu()->child(
-        back => title => loc('Back to ticket #[_1]', $id),
+        back => title => loc('Back to [_1] #[_2]', lc RT::IR::TicketType( Lifecycle => $ticket->QueueObj->Lifecycle), $id),
         path => RT::IR->HREFTo( "Display.html?id=$id"),
     );
 } elsif ( $request_path =~ m{^(?:$re_rtir_path)Merge/} ) {
@@ -370,7 +370,7 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
         path => RT::IR->HREFTo("Merge/Refine.html?". $query_string->( %args, Lifecycle => $ticket->QueueObj->Lifecycle )),
     );
     PageMenu()->child(
-        back => title => loc('Back to ticket #[_1]', $id),
+        back => title => loc('Back to [_1] #[_2]', lc RT::IR::TicketType( Lifecycle => $ticket->QueueObj->Lifecycle), $id),
         path => RT::IR->HREFTo("Display.html?id=$id"),
     );
 } elsif ( $request_path =~ m{(?:$re_rtir_path)Incident/Reply/} ) {
@@ -396,7 +396,7 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
         path => RT::IR->HREFTo("Incident/Reply/Refine.html?". $query_string->( %args )),
     );
     PageMenu()->child(
-        back => title => loc('Back to ticket #[_1]', $id),
+        back => title => loc('Back to [_1] #[_2]', lc RT::IR::TicketType(Lifecycle => $ticket->QueueObj->Lifecycle), $id),
         path => RT::IR->HREFTo("Display.html?id=$id"),
     );
 } elsif ( $request_path =~ m{(?:$re_rtir_path)(Search/?|Incident/BulkAbandon\.html$|Report/BulkReject\.html$)} ) {
@@ -512,8 +512,10 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
 } elsif ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?Split\.html$} ) {
     my $id = $args->{'Split'};
 
+    my $ticket = RT::Ticket->new($session{'CurrentUser'});
+    $ticket->Load($id);
     PageMenu()->child(
-        back => title => loc('Back to ticket #[_1]', $id),
+        back => title => loc('Back to  [_1] #[_2]',lc RT::IR::TicketType(Lifecycle => $ticket->QueueObj->Lifecycle), $id),
         path => RT::IR->HREFTo("Display.html?id=$id"),
     );
 }
