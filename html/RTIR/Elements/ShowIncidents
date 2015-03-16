@@ -53,7 +53,7 @@
     DisplayFormat => $dformat,
     AllowSorting  => 0,
     ShowHeader    => 0,
-    EmptyLabel    => loc('(no Incidents)'),
+    EmptyLabel    => loc('(none)'),
 &>
 <div class="actions">
 % unless ( $action ) {
