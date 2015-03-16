@@ -1,32 +1,37 @@
-.overdue {
+body.rtir .overdue {
     color: red;
 }
 
-.collection-as-table > .yes {
+body.rtir .collection-as-table > .yes {
     background: yellow;
 }
 
-ul.userlist {
+body.rtir .ticket-info-basics .incidents .collection-as-table {
+    margin-top: 0;
+}
+
+
+body.rtir ul.userlist {
     margin:0;
     padding: 0;
     border: 0;
 
 }
-ul.userlist li {
+body.rtir ul.userlist li {
     display: inline;
 }
 
-ul.userlist li::after{
+body.rtir ul.userlist li::after{
   content:", ";
  white-space:pre;
  }
 
-ul.userlist li:last-child::after{
+body.rtir ul.userlist li:last-child::after{
   content:"";
  }
 
 
-.no-recipients {
+body.rtir .no-recipients {
     background: #ffcccc; 
     width: 80%;
     align: center;
@@ -35,59 +40,100 @@ ul.userlist li:last-child::after{
     margin: 1em;
 }
 
-#topactions #simple-search input.button {
+body.rtir #topactions #simple-search input.button {
 }
 
-#topactions { min-width: 44em; white-space: no-wrap; }
+body.rtir #topactions { min-width: 44em; white-space: no-wrap; }
 
 #comp-RTIR .myrt>table>tr>td:first-child {
     width: 80%;
 }
 
-.titlebox.ticket-info-articles       .titlebox-title .left { background-color: #316531; color: #fff; }
-.titlebox.tickets-list-report        .titlebox-title .left { background-color: #316531; color: #fff; }
-.titlebox.tickets-list-incident      .titlebox-title .left { background-color: #316531; color: #fff; }
-.titlebox.tickets-list-investigation .titlebox-title .left { background-color: #316531; color: #fff; }
-.titlebox.tickets-list-block         .titlebox-title .left { background-color: #316531; color: #fff; }
+body.rtir .titlebox.ticket-info-articles       .titlebox-title .left { background-color: #316531; color: #fff; }
+body.rtir .titlebox.tickets-list-report        .titlebox-title .left { background-color: #316531; color: #fff; }
+body.rtir .titlebox.tickets-list-incident      .titlebox-title .left { background-color: #316531; color: #fff; }
+body.rtir .titlebox.tickets-list-investigation .titlebox-title .left { background-color: #316531; color: #fff; }
+body.rtir .titlebox.tickets-list-block         .titlebox-title .left { background-color: #316531; color: #fff; }
 
 
-#comp-RTIR-Search #body {
+body.rtir #comp-RTIR-Search #body {
     position: relative;
 }
-#comp-RTIR-Search .submit {
+body.rtir #comp-RTIR-Search .submit {
     width: 58%;
 }
 
-#ticket-create-incident input[type=text],
-#ticket-create-investigation input[type=text]
+body.rtir #ticket-create-incident input[type=text],
+body.rtir #ticket-create-investigation input[type=text]
 {
     width: 90%;
 }
 
-#ticket-create-incident .ticket-create-basics,
-#ticket-create-investigation .ticket-create-basics
+body.rtir #ticket-create-incident .ticket-create-basics,
+body.rtir #ticket-create-investigation .ticket-create-basics
 {
     float: right;
     width: 40%;
     clear: right;
 }
 
-#ticket-create-incident .ticket-create-details,
-#ticket-create-investigation .ticket-create-details
+body.rtir #ticket-create-incident .ticket-create-details,
+body.rtir #ticket-create-investigation .ticket-create-details
 {
     float: left;
     width: 58%;
     clear: left;
 }
-
 @media (max-width: 950px) {
-    #ticket-create-incident .ticket-create-basics,
-    #ticket-create-investigation .ticket-create-basics,
-    #ticket-create-incident .ticket-create-details,
-    #ticket-create-investigation .ticket-create-details
+    body.rtir #ticket-create-incident .ticket-create-basics,
+    body.rtir #ticket-create-investigation .ticket-create-basics,
+    body.rtir #ticket-create-incident .ticket-create-details,
+    body.rtir #ticket-create-investigation .ticket-create-details
     {
         float: none;
         width: auto;
         clear: both;
     }
 }
+
+body.rtir .titlebox-content>table {
+    width: 100%;
+}
+
+body.rtir table.edit-custom-fields {
+}
+
+body.rtir table.edit-custom-fields .entry {
+}
+
+body.rtir td.label, 
+body.rtir td.cflabel {
+    vertical-align:top;
+
+}
+
+
+body.rtir .entry textarea {
+    display:inline-block;
+   width: 100%;
+}
+
+body.rtir  .titlebox-content>table td.label,
+body.rtir  .titlebox-content>table td.cflabel {
+    width: 10em;
+}
+body.rtir  table.edit-custom-fields td.cflabel * {
+    width: 100%;
+    display:inline-block;
+    text-align:right;
+}
+body.rtir .cftype-Select td.cflabel .type {
+    display: none;
+}
+
+
+
+body.rtir .incidents .actions {
+    text-align: right;
+}
+
