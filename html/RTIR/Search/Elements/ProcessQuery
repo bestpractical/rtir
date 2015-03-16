@@ -47,11 +47,10 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 # XXX: This is almost complete copy&paste of the /Search/Build.html INIT section
-
+# XXX: Last synchronized on 2015-03-15
 
 use RT::Interface::Web::QueryBuilder;
 use RT::Interface::Web::QueryBuilder::Tree;
-use RT::SQL;
 
 my @actions;
 
@@ -64,8 +63,16 @@ my %saved_search;
 push @actions, $m->comp( '/Search/Elements/EditSearches:Init', %ARGS, Query => \%query, SavedSearch => \%saved_search );
 
 if ( $NewQuery ) {
-    %query = (); %saved_search = ( Id => 'new' );
+
+    # Wipe all data-carrying variables clear if we want a new
+    # search, or we're deleting an old one..
+    %query = ();
+    %saved_search = ( Id => 'new' );
+
+    # ..then wipe the session out..
     delete $session{'CurrentSearchHash'};
+
+    # ..and the search results.
     $session{'tickets'}->CleanSlate if defined $session{'tickets'};
 }
 
@@ -96,33 +103,38 @@ if ( $NewQuery ) {
     }
 }
 
-# {{{ Parse the query
 my $ParseQuery = sub {
-    my $string = shift;
+    my ($string, $results) = @_;
 
-    use RT::Interface::Web::QueryBuilder::Tree;
     my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
-    my @errors = $tree->ParseSQL( Query => $string, CurrentUser => $session{'CurrentUser'} );
+    @$results = $tree->ParseSQL( Query => $string, CurrentUser => $session{'CurrentUser'} );
 
-    return ($tree, @errors);
+    return $tree;
 };
 
-my ($tree, @parsing_errors) = $ParseQuery->( $query{'Query'} );
+my @parse_results;
+my $tree = $ParseQuery->( $query{'Query'}, \@parse_results );
 
 # if parsing went poorly, send them to the edit page to fix it
-if ( @parsing_errors ) {
+if ( @parse_results ) {
     # XXX: we have no Advanced Query Builder in RTIR, so just push errors into results
     # return $m->comp( "Edit.html", Query => $query{'Query'}, actions => \@actions );
-    push @actions, @parsing_errors;
+    push @actions, @parse_results;
 }
 
 my @options = $tree->GetDisplayedNodes;
 my @current_values = grep defined, @options[@clauses];
 my @new_values = ();
 
-# {{{ Try to find if we're adding a clause
+my $cf_field_names =
+    join "|",
+     map quotemeta,
+    grep { $RT::Tickets::FIELD_METADATA{$_}->[0] eq 'CUSTOMFIELD' }
+    sort keys %RT::Tickets::FIELD_METADATA;
+
+# Try to find if we're adding a clause
 foreach my $arg ( keys %ARGS ) {
-    next unless $arg =~ m/^ValueOf(\w+|CF.{.*?})$/
+    next unless $arg =~ m/^ValueOf(\w+|($cf_field_names).\{.*?\})$/
                 && ( ref $ARGS{$arg} eq "ARRAY"
                      ? grep $_ ne '', @{ $ARGS{$arg} }
                      : $ARGS{$arg} ne '' );
@@ -146,7 +158,7 @@ foreach my $arg ( keys %ARGS ) {
         @ops    = ( $ARGS{ $field . 'Op' } );
         @values = ( $ARGS{ 'ValueOf' . $field } );
     }
-    RT->Logger->error("Bad Parameters passed into Query Builder")
+    $RT::Logger->error("Bad Parameters passed into Query Builder")
         unless @ops == @values;
 
     for ( my $i = 0; $i < @ops; $i++ ) {
@@ -154,20 +166,21 @@ foreach my $arg ( keys %ARGS ) {
         next if !defined $value || $value eq '';
         my $rawvalue = $value;
 
-        if ( $value eq 'NULL' && $op =~ /=/ ) {
+        if ( $value =~ /^NULL$/i && $op =~ /=/ ) {
             if ( $op eq '=' ) {
                 $op = "IS";
             }
             elsif ( $op eq '!=' ) {
                 $op = "IS NOT";
             }
-
-            # This isn't "right", but...
-            # It has to be this way until #5182 is fixed
-            $value = "'NULL'";
         }
-        else {
+        elsif ($value =~ /\D/) {
+            $value =~ s/(['\\])/\\$1/g;
             $value = "'$value'";
+        }
+
+        if ($keyword =~ s/(['\\])/\\$1/g or $keyword =~ /[^{}\w\.]/) {
+            $keyword = "'$keyword'";
         }
 
         my $clause = {
@@ -181,7 +194,6 @@ foreach my $arg ( keys %ARGS ) {
     }
 }
 
-# }}}
 
 push @actions, $m->comp('/Search/Elements/EditQuery:Process',
     %ARGS,
@@ -190,7 +202,7 @@ push @actions, $m->comp('/Search/Elements/EditQuery:Process',
     New => \@new_values,
 );
 
-# {{{ Rebuild $Query based on the additions / movements
+# Rebuild $Query based on the additions / movements
 
 my $optionlist_arrayref;
 ($query{'Query'}, $optionlist_arrayref) = $tree->GetQueryAndOptionList(\@current_values);
@@ -199,7 +211,6 @@ my $optionlist = join "\n", map { qq(<option value="$_->{INDEX}" $_->{SELECTED}>
                                   . ("&nbsp;" x (5 * $_->{DEPTH}))
                                   . $m->interp->apply_escapes($_->{TEXT}, 'h') . qq(</option>) } @$optionlist_arrayref;
 
-# }}}
 
 my $queues = $tree->GetReferencedQueues;
 
@@ -218,7 +229,6 @@ my ( $AvailableColumns, $CurrentFormat );
     Format => $query{'Format'},
 );
 
-# }}}
 
 # if we're asked to save the current search, save it
 push @actions, $m->comp( '/Search/Elements/EditSearches:Save', %ARGS, Query => \%query, SavedSearch => \%saved_search );
@@ -232,7 +242,6 @@ $session{'CurrentSearchHash'} = {
     Description => $saved_search{'Description'},
 };
 
-# }}}
 
 # {{{ Show the results, if we were asked.
 if ( $ARGS{"DoSearch"} ) {
