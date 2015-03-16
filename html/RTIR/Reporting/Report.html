@@ -162,20 +162,20 @@ my @classifications;
 
 # of new reports outstanding at start of the period
 my $outstanding = RT::Tickets->new( $session{'CurrentUser'} );
-$outstanding->FromSQL("Lifecycle = '".RT::IR->lifecycle_reports."' AND Created < '$start' AND (Resolved = '1970-01-01 00:00:01' OR Resolved > '$start')");
+$outstanding->FromSQL("Lifecycle = '".RT::IR->lifecycle_report."' AND Created < '$start' AND (Resolved = '1970-01-01 00:00:01' OR Resolved > '$start')");
 my $outstanding_pruned = $outstanding;
 
 # of new reports created during the period
 my $tix_created = RT::Tickets->new( $session{'CurrentUser'} );
-$tix_created->FromSQL("Lifecycle = '".RT::IR->lifecycle_reports."' AND Created > '$start' AND Created < '$end'");
-my $tix_created_pruned = $tix_created_pruned;
+$tix_created->FromSQL("Lifecycle = '".RT::IR->lifecycle_report."' AND Created > '$start' AND Created < '$end'");
+my $tix_created_pruned = $tix_created;
 
 # of new reports resolved/closed/deleted during the period
 # this means "number of reports created during the period that were 
 # also closed during the period(or before which is insane but possible)"
 
 my $tix_resolved = RT::Tickets->new( $session{'CurrentUser'} );
-$tix_resolved->FromSQL("Lifecycle = '".RT::IR->lifecycle_reports. "' AND Created > '$start' AND Created < '$end' AND (Resolved > '1970-01-01 00:00:01' AND Resolved < '$end')");
+$tix_resolved->FromSQL("Lifecycle = '".RT::IR->lifecycle_report. "' AND Created > '$start' AND Created < '$end' AND (Resolved > '1970-01-01 00:00:01' AND Resolved < '$end')");
 my $tix_resolved_pruned = $tix_resolved;
 
 # of new reports oustanding at end of the period
@@ -183,7 +183,7 @@ my $tix_resolved_pruned = $tix_resolved;
 # closed during the period"
 
 my $tix_unresolved = RT::Tickets->new( $session{'CurrentUser'} );
-$tix_unresolved->FromSQL("Lifecycle = '".RT::IR->lifecycle_reports."' AND Created > '$start' AND Created < '$end' AND ( Resolved = '1970-01-01 00:00:01' OR Resolved > '$end' )");
+$tix_unresolved->FromSQL("Lifecycle = '".RT::IR->lifecycle_report."' AND Created > '$start' AND Created < '$end' AND ( Resolved = '1970-01-01 00:00:01' OR Resolved > '$end' )");
 my $tix_unresolved_pruned = $tix_unresolved;
 
 if ( $TextReport ) {

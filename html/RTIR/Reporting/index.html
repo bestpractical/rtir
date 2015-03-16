@@ -92,7 +92,7 @@ if ( $ARGS{'HTMLReport'} || $ARGS{'TextReport'} || $ARGS{'SpreadsheetReport'} ) 
     $ext = 'txt' if $ARGS{'TextReport'};
     $ext = 'tsv' if $ARGS{'SpreadsheetReport'};
     
-    return RT::Interface::Web::Redirect(RT::IR->HREFTo('RTIR/Reporting/Report.'. $ext
+    return RT::Interface::Web::Redirect(RT::IR->HREFTo('Reporting/Report.'. $ext
        . "?". $m->comp( '/Elements/QueryString', %ARGS )));
 }
 
