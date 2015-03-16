@@ -53,7 +53,7 @@
 
 <tr>
   <td class="label"><&|/l&>Queue</&>:</td>
-  <td colspan="2">
+  <td>
       <& /RTIR/Elements/SelectRTIRQueue,
                 Name => $NamePrefix.'Queue',
                 Default => $ARGS{'Queue'} || $QueueObj->Id,
@@ -72,19 +72,19 @@
 % }
 
 % unless ( $SkipField{'TimeFields'} ) {
-<tr>
+<tr class="time-worked">
     <td class="label"><&|/l&>Time Worked</&>:</td>
-    <td><table><tr>
     <td class="value"><& /Elements/EditTimeValue,
         Name => $NamePrefix .'TimeWorked',
         Default => $value_cb->('TimeWorked') || '',
     &></td>
+    </tr>
+<tr class="time-left">
     <td class="label"><&|/l&>Time Left</&>:</td>
     <td class="value"><& /Elements/EditTimeValue,
         Name => $NamePrefix .'TimeLeft',
         Default => $value_cb->('TimeLeft') || '',
     &></td>
-    </tr></table></td>
 </tr>
 % }
 

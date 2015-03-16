@@ -101,7 +101,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 % }
 
   
-<tr>
+<tr class="queue">
   <td class="label"><&|/l&>Queue</&>:</td>
   <td colspan="2">
       <& /RTIR/Elements/SelectRTIRQueue,
@@ -116,7 +116,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
  
 
 
-<tr>
+<tr class="status">
   <td class="label"><&|/l&>Status</&>:</td>
   <td colspan="2">
     <& /Elements/SelectStatus,
@@ -127,7 +127,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
     &>
   </td>
 </tr>
-<tr>
+<tr class="owner">
     <td class="label"><&|/l&>Owner</&>:</td>
 % if ( $ChildObj ) {
     <td class="value">
@@ -168,7 +168,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 <&| /Widgets/TitleBox, title => $Title, class => 'ticket-info-message' &>
 <table width="100%" border="0">
 
-  <tr>
+  <tr class="subject">
     <td class="label"><&|/l&>Subject</&>:</td>
     <td class="value"><input type="text" name="Subject" maxsize="200" value="<% $ARGS{'Subject'} || '' %>" /></td>
   </tr>
@@ -179,7 +179,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 </td></tr>
 % }
 
-<tr><td class="labeltop"><&|/l&>Message</&>:</td>
+<tr class="message"><td class="labeltop"><&|/l&>Message</&>:</td>
 <td>
 <& /Elements/MessageBox,
     Default => $ARGS{'Content'},
