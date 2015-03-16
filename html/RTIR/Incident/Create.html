@@ -91,13 +91,13 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 <table width="100%" border="0">
 
 % if ( $Split ) {
-<tr><td class="label"><% loc('Split from') %>:</td>
-    <td class="value"><% loc("[_1] #[_2]: [_3]", RT::IR::TicketType(Lifecycle => $SplitObj->QueueObj->Lifecycle), $SplitObj->Id, $SplitObj->Subject) %></td></tr>
+<tr class="split-from"><td class="label"><% loc('Split from') %>:</td>
+    <td class="value"><a href="<%RT::IR->HREFTo('Incident/Display.html?id='.$SplitObj->id)%>"><% loc("[_1] #[_2]: [_3]", RT::IR::TicketType(Lifecycle => $SplitObj->QueueObj->Lifecycle), $SplitObj->Id, $SplitObj->Subject) %></a></td></tr>
 % }
 
 % if ( $ChildObj ) {
-<tr><td class="label"><% loc('Link with') %>:</td>
-    <td class="value"><% loc("[_1] #[_2]: [_3]",  RT::IR::TicketType(Lifecycle => $ChildObj->QueueObj->Lifecycle), $ChildObj->Id, $ChildObj->Subject) %></td></tr>
+<tr class="link-with"><td class="label"><% loc('Link with') %>:</td>
+    <td class="value"><a href="<%RT::IR->HREFTo('Display.html?id='.$ChildObj->id)%>"><% loc("[_1] #[_2]: [_3]",  RT::IR::TicketType(Lifecycle => $ChildObj->QueueObj->Lifecycle), $ChildObj->Id, $ChildObj->Subject) %></a></td></tr>
 % }
 
   
