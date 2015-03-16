@@ -137,3 +137,6 @@ body.rtir .incidents .actions {
     text-align: right;
 }
 
+body.rtir #editquery, body.rtir #editsearches {
+    margin-top:8.1em;
+}
