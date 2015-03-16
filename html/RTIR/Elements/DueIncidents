@@ -86,8 +86,8 @@ my $QueryString = $m->comp('/Elements/QueryString',
 </%INIT>
 <%ARGS>
 $Title           => loc("Most due incidents")
-$BaseQuery       => RT::IR->Query( Lifecycle => 'incidents' )
-$Query           => RT::IR->ActiveQuery( Lifecycle => 'incidents' )
+$BaseQuery       => RT::IR->Query( Lifecycle => 'incidents', ($m->{'RTIR_ConstituencyFilter'} ? (Constituency => $m->{'RTIR_ConstituencyFilter'}) : () ))
+$Query           => RT::IR->ActiveQuery( Lifecycle => 'incidents',  ($m->{'RTIR_ConstituencyFilter'} ? (Constituency => $m->{'RTIR_ConstituencyFilter'}) : ()  ))
 $Format          => RT->Config->Get('RTIRSearchResultFormats')->{'DueIncidents'}
 $Rows            => undef
 $Page            => 1

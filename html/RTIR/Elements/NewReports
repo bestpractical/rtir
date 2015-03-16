@@ -69,8 +69,6 @@
 <%INIT>
 my $title = loc("New unlinked Incident Reports...");
 
-$Query ||= RT::IR->Query( Lifecycle => $Lifecycle, Initial => 1 );
-
 $Rows = $session{'CurrentUser'}->UserObj->Preferences(
     'SummaryRows',
     ( RT->Config->Get('DefaultSummaryRows') || 10 ),
@@ -97,8 +95,8 @@ my $BulkQS = $m->comp('/Elements/QueryString',
 
 <%ARGS>
 $Lifecycle     =>  RT::IR->lifecycle_report
-$BaseQuery => RT::IR->Query( Lifecycle => $Lifecycle )
-$Query     => undef
+$BaseQuery => RT::IR->Query( Lifecycle => $Lifecycle, ($m->{'RTIR_ConstituencyFilter'} ? (Constituency => $m->{'RTIR_ConstituencyFilter'}) : () ) )
+$Query     => RT::IR->Query( Lifecycle => $Lifecycle, ($m->{'RTIR_ConstituencyFilter'} ? (Constituency => $m->{'RTIR_ConstituencyFilter'}) : () ), Initial => 1 )
 $Format    => RT->Config->Get('RTIRSearchResultFormats')->{'NewReports'}
 $Rows      => undef
 $Page      => 1

@@ -334,6 +334,7 @@ sub Query {
         MemberOf     => undef,
         NotMemberOf  => undef,
         And          => undef,
+        Constituency => undef,
         @_
     );
 
@@ -362,6 +363,9 @@ sub Query {
     }
     if ( my $t = $args{'NotMemberOf'} ) {
         push @res, join ' AND ', map "MemberOf != $_", map int $_, $flat->( $t, 'id' );
+    }
+    if ( my $t = $args{'Constituency'} ) {
+        push @res, "'QueueCF.{RTIR Constituency}' = '$t'";
     }
     if ( my $c = $args{'And'} ) {
         push @res, ref $c? @$c : ($c);
