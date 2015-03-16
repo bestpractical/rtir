@@ -796,8 +796,22 @@ XXX TODO
 
 =cut
 
+=head2 ConstituencyFor $Ticket
+
+Returns the textual constituency name for any RTIR ticket.
+Returns undef for non-RTIR tickets.
+
+Dies if handed something that's not a ticket
+
+=cut
 
 
+sub ConstituencyFor {
+    my $self = shift;
+    my $ticket = shift;
+    die "$ticket is not a ticket object" unless ref($ticket) && $ticket->isa('RT::Ticket');
+    return $ticket->QueueObj->FirstCustomFieldValue('RTIR Constituency');
+}
 
 require RT::Search::Simple;
 package RT::Search::Simple;
