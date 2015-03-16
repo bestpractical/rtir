@@ -140,3 +140,8 @@ body.rtir .incidents .actions {
 body.rtir #editquery, body.rtir #editsearches {
     margin-top:8.1em;
 }
+
+
+body.rtir .sf-menu a.sf-with-ul {
+    padding-right:2em;
+}
