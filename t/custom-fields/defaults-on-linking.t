@@ -53,7 +53,7 @@ my $agent = default_agent();
 
     {
         $agent->display_ticket( $ir_id );
-        $agent->follow_link_ok({text => "[New]"}, "Followed 'New (Incident)' link")
+        $agent->follow_link_ok({text => "New"}, "Followed 'New (Incident)' link")
             or diag $agent->content;
         $agent->form_number(3);
 

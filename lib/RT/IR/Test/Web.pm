@@ -144,8 +144,8 @@ sub create_incident_for_ir {
     $self->display_ticket( $ir_id );
 
     # Select the "New" link from the Display page
-    $self->follow_link_ok({text => "[New]"}, "Followed 'New (Incident)' link")
-        or diag $self->content;
+    $self->follow_link_ok({text => "New"}, "Followed 'New (Incident)' link")
+        or Test::More::diag $self->content;
 
     $self->form_number(3);
 
@@ -226,7 +226,7 @@ sub LinkChildToIncident {
     $self->display_ticket( $id);
 
     # Select the "Link" link from the Display page
-    $self->follow_link_ok({text => "[Link]", n => "1"}, "Followed 'Link(to Incident)' link");
+    $self->follow_link_ok({text => "Link", n => "1"}, "Followed 'Link(to Incident)' link");
 
     
     # Check that the desired incident occurs in the list of available incidents; if not, keep
@@ -260,7 +260,7 @@ sub create_incident_and_investigation {
     if($ir_id) {
         $self->display_ticket( $ir_id );
         # Select the "New" link from the Display page
-        $self->follow_link_ok({text => "[New]"}, "Followed 'New (Incident)' link");
+        $self->follow_link_ok({text => "New"}, "Followed 'New (Incident)' link");
     }
     else 
     {

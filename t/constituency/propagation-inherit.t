@@ -61,7 +61,7 @@ diag "create an IR and check that we couldn't change constituency"
     is $ticket->FirstCustomFieldValue('Constituency'), 'GOVNET', 'correct value';
 
     # click [new] near 'incident', set another constituency and create
-    $agent->follow_link_ok({text => '[New]'}, "go to 'New Incident' page");
+    $agent->follow_link_ok({text => 'New'}, "go to 'New Incident' page");
     $agent->form_number(3);
     my $form = $agent->form_number(3);
     ok $form->find_input( $form->value('Constituency'), 'hidden'), 'constituency field is hidden';

@@ -67,7 +67,7 @@ for my $type ( 'incident', 'ir', 'investigation', 'block' ) {
 {
 
     $m->display_ticket( $ticket{ir}[0] );
-    $m->follow_link_ok( { text => '[Link]' } );
+    $m->follow_link_ok( { text => 'Link' } );
     $m->title_is("Link Report #$ticket{ir}[0] to selected Incident");
 
     ok( !$m->find_link( url_regex => qr{/RTIR/Incident/Display.html\?id=$ticket{incident}[0]$} ),
