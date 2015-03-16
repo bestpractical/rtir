@@ -51,9 +51,9 @@
 <& /Elements/ListActions, actions => \@results &>
 
 % if( $children->CountAll == $all_children->CountAll ) {
-<h2><% loc('Total [_1]: [_2]', RT::IR->TicketType(Lifecycle => $Lifecycle), $children->CountAll) %></h2>
+<h2><% loc('Total [_1]: [_2]', RT::IR::TicketType(Lifecycle => $Lifecycle), $children->CountAll) %></h2>
 % } else {
-<h2><% loc('Total [_1]: [_2]([_3])', RT::IR->TicketType(Lifecycle => $Lifecycle), $children->CountAll, $all_children->CountAll) %></h2>
+<h2><% loc('Total [_1]: [_2]([_3])', RT::IR::TicketType(Lifecycle => $Lifecycle), $children->CountAll, $all_children->CountAll) %></h2>
 % }
 
 <form action="index.html" method="post">
@@ -96,7 +96,7 @@ unless ( $Incident->CurrentUserHasRight('ShowTicket') ) {
     Abort("No permission to view ticket");
 }
 
-my $Title = loc("[_1] for Incident #[_2]: [_3]", RT::IR->TicketType(Lifecycle => $Lifecycle),$id, $Incident->Subject);
+my $Title = loc("[_1] for Incident #[_2]: [_3]", RT::IR::TicketType(Lifecycle => $Lifecycle),$id, $Incident->Subject);
 
 my $delete = $Incident->CurrentUserHasRight('ModifyTicket') ? 1: 0;
 
