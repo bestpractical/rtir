@@ -1,5 +1,5 @@
 <%init>
-#return unless $m->request_comp->path =~ m{^/RTIR/};
+return unless $m->request_comp->path =~ m{^/RTIR/};
 if (my $c = $m->{'RTIR_ConstituencyFilter'}) {
     $Search->{Query} .= " AND 'QueueCF.{RTIR Constituency}' = '$c'" unless ( $Search->{Query} =~ /QueueCF.\{RTIR Constituency\}/);
     $OriginalSearch->{Query} .=  " AND 'QueueCF.{RTIR Constituency}' = '$c'" unless ( $OriginalSearch->{Query} =~ /QueueCF.\{RTIR Constituency\}/);
