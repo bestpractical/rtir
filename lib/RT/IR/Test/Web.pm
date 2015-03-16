@@ -90,7 +90,7 @@ sub create_rtir_ticket_ok {
     local $Test::Builder::Level = $Test::Builder::Level + 2;
 
     my $id = $self->create_rtir_ticket( $queue, @_ );
-    Test::More::ok( $id, "Created ticket #$id in queue '$queue' successfully." );
+    Test::More::ok( $id, "Created ticket $id in queue '$queue' successfully." );
     return $id;
 }
 
@@ -172,7 +172,7 @@ sub display_ticket {
     my $self = shift;
     my $id = shift;
 
-    return $self->get_ok("/RTIR/Display.html?id=$id", "Loaded Display page for Ticket #$id");
+    return $self->get_ok("/RTIR/Display.html?id=$id", "Loaded Display page for Ticket $id");
 }
 
 sub ticket_is_linked_to_inc {
@@ -181,7 +181,7 @@ sub ticket_is_linked_to_inc {
     my $incs = shift;
     $self->display_ticket( $id );
     foreach my $inc( ref $incs? @$incs : ($incs) ) {
-        my $desc = shift || "Ticket #$id is linked to the Incident #$inc";
+        my $desc = shift || "Ticket $id is linked to the Incident #$inc";
         $self->content_like(
             qr{Incident:\s*</td>\s*<td[^>]*?>.*?<td[^>]*?><b><a\s+href="/RTIR/Incident/Display.html\?id=\Q$inc\E">\Q$inc\E</a></b></td>}ism,
             $desc
@@ -196,7 +196,7 @@ sub ticket_is_not_linked_to_inc {
     my $incs = shift;
     $self->display_ticket( $id );
     foreach my $inc( @$incs ) {
-        my $desc = shift || "Ticket #$id is not linked to the Incident #$inc";
+        my $desc = shift || "Ticket $id is not linked to the Incident #$inc";
         $self->content_unlike(
             qr{Incident:\s*</td>\s*<td[^>]*?>.*?<a\s+href="/RTIR/Display.html\?id=\Q$inc\E">\Q$inc\E:\s+}ism,
             $desc
