@@ -50,14 +50,22 @@
 <div class="ticket-create-basics">
 <&| /Widgets/TitleBox, title => loc("Basics"), class => 'ticket-info-basics' &>
 <table width="100%" border="0">
-
-<tr>
+% if($Constituency) {
+%
+<tr class="constituency">
+  <td class="label"><%loc('Constituency') %>:</td>
+  <td><% $Constituency %></td>
+</tr>
+% }
+<tr class="queue">
   <td class="label"><&|/l&>Queue</&>:</td>
   <td>
       <& /RTIR/Elements/SelectRTIRQueue,
                 Name => $NamePrefix.'Queue',
                 Default => $ARGS{'Queue'} || $QueueObj->Id,
                 Lifecycle => RT::IR->lifecycle_investigation,
+                LimitToConstituency => $Constituency ? 1 : 0,
+                Constituency => $Constituency
     &>
   </td>
 </tr>
@@ -216,6 +224,7 @@ $QueueObj => undef
 $TicketObj => undef
 %HideField => ()
 %SkipField => ()
+$Constituency => undef
 </%ARGS>
 <%INIT>
 my %CFDefaults;
@@ -233,8 +242,16 @@ unless ( $QueueObj ) {
     if ( my $queue = $value_cb->('Queue') ) {
         $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
         $QueueObj->Load( $queue );
+    } else {
+        $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
+        # XXX TODO DO NOT HARDCODE THIS. THIS IS WRONG
+        $QueueObj->Load('Investigations'.($Constituency? ' - '.$Constituency : ''));
+
     }
 }
+
+
+
 
 my $ticket = RT::Ticket->new($session{'CurrentUser'}); # empty ticket object
 

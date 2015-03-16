@@ -87,9 +87,13 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 <a name="incident"></a>
 
 <div class="ticket-create-basics">
-<&| /Widgets/TitleBox, title => $Title, class => 'ticket-info-basics' &>
+<&| /Widgets/TitleBox, title => 'Basics', class => 'ticket-info-basics' &>
 <table width="100%" border="0">
+% if ($constituency) {
+<tr class="constituency"><td class="label"><% loc('Constituency') %>:</td>
+    <td class="value"><% $constituency %></td></tr>
 
+% }
 % if ( $Split ) {
 <tr class="split-from"><td class="label"><% loc('Split from') %>:</td>
     <td class="value"><a href="<%RT::IR->HREFTo('Incident/Display.html?id='.$SplitObj->id)%>"><% loc("[_1] #[_2]: [_3]", RT::IR::TicketType(Lifecycle => $SplitObj->QueueObj->Lifecycle), $SplitObj->Id, $SplitObj->Subject) %></a></td></tr>
@@ -108,8 +112,8 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
                 Name => 'Queue',
                 Default => $ARGS{'Queue'} || $QueueObj->Id,
                 Lifecycle => RT::IR->lifecycle_incident,
-                LimitToConstituency => $m->{'RTIR_ConstituencyFilter'} ? 1:0,
-                Constituency => $m->{'RTIR_ConstituencyFilter'}
+                LimitToConstituency => $constituency ? 1:0,
+                Constituency => $constituency
     &>
   </td>
 </tr>
@@ -265,7 +269,8 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 <& /RTIR/Investigation/Elements/Create,
     %ARGS,
     NamePrefix => 'Investigation',
-    Queue => 'Investigations',
+    Lifecycle => RT::IR->lifecycle_investigation,
+    Constituency => $constituency,
     SkipField => { Owner => 1, Attachments => 1, DateFields => 1 },
     IncludeSignature => (exists $ARGS{'InvestigationContent'} ? 0 : 1),
 &>
@@ -307,6 +312,32 @@ $m->callback(
     Ticket => $SplitObj,
     Child => $ChildObj
 );
+
+
+
+my $constituency = $m->{'RTIR_ConstituencyFilter'};
+
+
+if($ChildObj) {
+    my $child_constituency = RT::IR->ConstituencyFor($ChildObj);
+    if ($constituency && $constituency ne $child_constituency) {
+        push @results, loc("[_1] constituency '[_2]' does not match current constituency '[_3]'", RT::IR::TicketType(Ticket=>$ChildObj), $child_constituency, $constituency);
+    } elsif(!$constituency) {
+        $constituency = $child_constituency;
+    }
+}
+
+
+if ($SplitObj) {
+    my $split_constituency = RT::IR->ConstituencyFor($SplitObj);
+    if ($constituency && $constituency ne $split_constituency) {
+        push @results, loc("[_1] constituency '[_2]' does not match current constituency '[_3]'", RT::IR::TicketType(Ticket=>$SplitObj), $split_constituency, $constituency);
+    } elsif(!$constituency) {
+        $constituency = $split_constituency;
+    }
+}
+
+
 
 my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
 $QueueObj->Load( 'Incidents' ) || Abort( loc("Queue could not be loaded.") );

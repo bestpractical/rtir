@@ -105,8 +105,8 @@
                 Default => $ARGS{'Queue'} || $QueueObj->Id,
                 ShowNullOption => 0,
                 Lifecycle => $QueueObj->Lifecycle,
-                LimitToConstituency => $m->{'RTIR_ConstituencyFilter'} ? 1:0,
-                Constituency => $m->{'RTIR_ConstituencyFilter'}
+                LimitToConstituency => 1,
+                Constituency => $constituency
             }
         },
         {
@@ -331,6 +331,9 @@ if ($Lifecycle && ! $Queue) {
     $ARGS{'Queue'} = $Queue;
 }
 
+my $constituency = $m->{'RTIR_ConstituencyFilter'};
+
+
 my %CFDefaults;
 $m->callback(
     CallbackName => 'Init', CallbackPage => '/Ticket/Create.html',
@@ -346,7 +349,7 @@ my $Type = RT::IR::TicketType( Lifecycle => $QueueObj->Lifecycle);
 if ($QueueObj->Lifecycle eq RT::IR->lifecycle_countermeasure 
     && RT->Config->Get('RTIR_DisableBlocksQueue') ) {
     Abort(loc("Blocks queue is disabled via config file"));
-    }
+}
 
 
 # As of RTIR 3.8, that's only true for Incidents
@@ -384,6 +387,13 @@ foreach my $id ( grep $_, @Incident ) {
         push @results, loc('Ticket #[_1] is not an Incident', $id );
     }
     else {
+        my $incident_constituency = RT::IR->ConstituencyFor($inc);
+        if ($constituency && $incident_constituency ne $constituency) {
+            push @results, loc("Incident constituency '[_1]' does not match current constituency '[_2]'", $incident_constituency, $constituency); 
+        }
+        if(!$constituency) {
+            $constituency = RT::IR->ConstituencyFor($inc);
+        }
         push @IncidentObj, $inc;
         $error = 0;
     }
