@@ -817,6 +817,30 @@ sub ConstituencyFor {
     return $ticket->QueueObj->FirstCustomFieldValue('RTIR Constituency');
 }
 
+sub IsReportQueue {
+    my $self  = shift;
+    my $queue = shift;
+    return $queue->Lifecycle eq $self->lifecycle_report;
+}
+
+sub IsIncidentQueue {
+    my $self  = shift;
+    my $queue = shift;
+    return $queue->Lifecycle eq $self->lifecycle_incident;
+}
+
+sub IsInvestigationQueue {
+    my $self  = shift;
+    my $queue = shift;
+    return $queue->Lifecycle eq $self->lifecycle_investigation;
+}
+
+sub IsCountermeasureQueue {
+    my $self  = shift;
+    my $queue = shift;
+    return $queue->Lifecycle eq $self->lifecycle_countermeasure;
+}
+
 require RT::Search::Simple;
 package RT::Search::Simple;
 

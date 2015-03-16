@@ -79,8 +79,8 @@ my $Format = RT->Config->Get('RTIRSearchResultFormats')->{'LookupTool'};
 if ( $TicketObj ) {
 
     my @show;
-    push @show, 'link' if ($Lifecycle eq RT::IR->lifecycle_incident && $TicketObj->QueueObj->Lifecycle ne RT::IR->lifecycle_incident)
-        || ($Lifecycle ne RT::IR->lifecycle_incident && $TicketObj->QueueObj->Lifecycle eq RT::IR->lifecycle_incident);
+    push @show, 'link' if ($Lifecycle eq RT::IR->lifecycle_incident && !RT::IR->IsIncidentQueue($TicketObj->QueueObj))
+        || ($Lifecycle ne RT::IR->lifecycle_incident && RT::IR->IsIncidentQueue($TicketObj->QueueObj));
     push @show, 'merge' if $Lifecycle eq $TicketObj->QueueObj->Lifecycle;
 
     my $column = $Lifecycle eq RT::IR->lifecycle_incident ? 'Incident' : 'Children';
@@ -95,7 +95,7 @@ push @box_actions, {
         Query => $Query,
     )),
 };
-if ( $TicketObj && $TicketObj->QueueObj->Lifecycle eq RT::IR->lifecycle_incident 
+if ( $TicketObj && RT::IR->IsIncidentQueue($TicketObj->QueueObj) 
     && $Lifecycle ne RT::IR->lifecycle_incident
 ) {
     push @box_actions, {
@@ -126,7 +126,7 @@ if ( $TicketObj && $TicketObj->QueueObj->Lifecycle eq RT::IR->lifecycle_incident
         };
     }
 }
-elsif ( $TicketObj && $TicketObj->QueueObj->Lifecycle ne RT::IR->lifecycle_incident 
+elsif ( $TicketObj && !RT::IR->IsIncidentQueue($TicketObj->QueueObj) 
     && $Lifecycle eq RT::IR->lifecycle_incident
 ) {
     push @box_actions, {

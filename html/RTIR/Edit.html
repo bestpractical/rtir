@@ -74,7 +74,7 @@
   <tr class="status">
     <td class="label"><&|/l&>Status</&>:</td>
     <td class="value" colspan="2">
-% unless ( $Ticket->QueueObj->Lifecycle eq RT::IR->lifecycle_countermeasure ) {
+% unless ( RT::IR->IsCountermeasureQueue($Ticket->QueueObj) ) {
       <% loc($Ticket->Status) %>
 % } else {
       <& /Elements/SelectStatus,
@@ -106,7 +106,7 @@
 
 
 
-% if ($Ticket->QueueObj->Lifecycle ne RT::IR->lifecycle_incident ) {
+% if (!RT::IR->IsIncidentQueue($Ticket->QueueObj) ) {
   <tr class="incidents">
     <td class="label"><%loc("Incident")%>:</td>
     <td class="value"><& /RTIR/Elements/ShowIncidents, Ticket => $Ticket &></td>
@@ -119,7 +119,7 @@
         Default => $ARGS{'TimeWorked'} || $Ticket->TimeWorked || '',
     &></td>
   </tr>
-% if ( $Ticket->QueueObj->Lifecycle eq RT::IR->lifecycle_incident) {
+% if ( RT::IR->IsIncidentQueue($Ticket->QueueObj)) {
   <tr class="priority">
     <td class="label"><&|/l&>Priority</&>:</td>
     <td class="value"><&/Elements/SelectPriority, Name => 'Priority', Default => $ARGS{'Priority'} || $Ticket->Priority &></td>
@@ -150,7 +150,7 @@
 </table>
 <br />
 
-% if ( $Ticket->QueueObj->Lifecycle ne RT::IR->lifecycle_incident) {
+% if ( !RT::IR->IsIncidentQueue($Ticket->QueueObj)) {
 <&| /Widgets/TitleBox, title => loc('People'), class => 'ticket-info-people' &>
 <& /RTIR/Elements/EditPeople, %ARGS, Ticket => $Ticket &>
 </&>
@@ -173,7 +173,7 @@ my $Type = RT::IR::TicketType( Lifecycle => $Ticket->QueueObj->Lifecycle );
 RT::Interface::Web::Redirect(RT->Config->Get('WebURL').'Ticket/Display.html?'.
     $m->comp('/Elements/QueryString', %ARGS )) unless $Type;
 
-if ($Ticket->QueueObj->Lifecycle eq RT::IR->lifecycle_countermeasure
+if (RT::IR->IsCountermeasureQueue($Ticket->QueueObj)
     && RT->Config->Get('RTIR_DisableBlocksQueue') ) {
     Abort(loc("Blocks queue is disabled via config file"));
 }
@@ -250,7 +250,7 @@ if ( $SaveChanges && !$checks_failure && !$OnlySearchForPeople ) {
 my $name = RT::IR::TicketType( Ticket => $Ticket );
 # We still call incident reports "incident reports in some places
 # XXX TODO just create a ShortTicketType method
-if ($Ticket->QueueObj->Lifecycle eq RT::IR->lifecycle_report) {
+if (RT::IR->IsReportQueue($Ticket->QueueObj)) {
     $name = "Incident Report";
 }
 

@@ -69,9 +69,9 @@
 
 <& /RTIR/Elements/MergeWith, %defaults, %ARGS, Lifecycle => $Ticket->QueueObj->Lifecycle, Ticket => $Ticket &>
 
-% if ( $Lifecycle eq RT::IR->lifecycle_report) {
+% if ( RT::IR->IsReportQueue($Ticket->QueueObj)) {
 <& /RTIR/Elements/MergeWith, %defaults, %ARGS, Lifecycle => RT::IR->lifecycle_investigation, Ticket => $Ticket &>
-% } elsif ( $Lifecycle eq RT::IR->lifecycle_investigation) {
+% } elsif ( RT::IR->IsInvestigationQueue($Ticket->QueueObj)) {
 <& /RTIR/Elements/MergeWith, %defaults, %ARGS, Lifecycle => RT::IR->lifecycle_report, Ticket => $Ticket &>
 % }
 <& /Elements/Submit, Caption=> loc('Merge into selected Ticket'), Label => loc("Merge") &>
@@ -144,7 +144,7 @@ my %defaults = (
 );
 
 my $siblings_query = '';
-if ( $Lifecycle ne RT::IR->lifecycle_incident) {
+if ( !RT::IR->IsIncidentQueue($Ticket->QueueObj)) {
     my @parents = @{ RT::IR->Incidents( $Ticket )->ItemsArrayRef || [] };
     if ( @parents ) {
         my @lifecycles = ($Lifecycle);
