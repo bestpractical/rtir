@@ -48,7 +48,7 @@
 <%init>
 return unless $m->request_comp->path =~ m{^/RTIR/};
 $ARGSRef->{URL} //= RT::IR->HREFTo("index.html");
-$ARGSRef->{Name} //= loc("RTIR for [_1]", RT->Config->Get('rtirname'));
+$ARGSRef->{Name} //=  RT->Config->Get('rtirname');
 $ARGSRef->{LogoURL} //= RT->Config->Get('WebPath')."/static/images/RTIR/logo.png";
 push @{$ARGSRef->{BodyClass}},  'rtir';
 </%init>
