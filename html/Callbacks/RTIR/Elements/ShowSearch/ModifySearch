@@ -1,0 +1,16 @@
+<%init>
+#return unless $m->request_comp->path =~ m{^/RTIR/};
+if (my $c = $m->{'RTIR_ConstituencyFilter'}) {
+    $Search->{Query} .= " AND 'QueueCF.{RTIR Constituency}' = '$c'" unless ( $Search->{Query} =~ /QueueCF.\{RTIR Constituency\}/);
+    $OriginalSearch->{Query} .=  " AND 'QueueCF.{RTIR Constituency}' = '$c'" unless ( $OriginalSearch->{Query} =~ /QueueCF.\{RTIR Constituency\}/);
+}
+# If we're inside RTIR, try to make all the ticket search links point to RTIR
+# A better implementation would check that the ticket is an RTIR ticket, but that
+# would be very, very, computationally intensive
+$OriginalSearch->{Format} =~ s/__WebPath__\/Ticket\/Display.html\?id=__id__/__RTIRTicketURI__/gsm;
+$Search->{Format} =~ s/__WebPath__\/Ticket\/Display.html\?id=__id__/__RTIRTicketURI__/gsm;
+</%init>
+<%args>
+$OriginalSearch => undef
+$Search => undef
+</%args>
