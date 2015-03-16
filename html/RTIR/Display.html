@@ -65,7 +65,7 @@
     title_href  => RT::IR->HREFTo("Edit.html?id=".$Ticket->Id),
     class => 'ticket-info-basics',
 &>
-<table>
+<table class="basics">
 % if (my $constituency = $Ticket->QueueObj->FirstCustomFieldValue('RTIR Constituency') ) {
   <tr>
     <td class="label"><% loc("Constituency") %>:</td>

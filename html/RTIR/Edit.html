@@ -67,11 +67,11 @@
 <&| /Widgets/TitleBox, title => loc("The Basics"), class => 'ticket-info-basics' &>
 
 <table>
-  <tr>
+  <tr class="subject">
     <td class="label"><&|/l&>Subject</&>:</td>
     <td class="value"><input type="text" name="Subject" value="<% $ARGS{'Subject'} || $Ticket->Subject %>" size="50" /></td>
   </tr>
-  <tr>
+  <tr class="status">
     <td class="label"><&|/l&>Status</&>:</td>
     <td class="value" colspan="2">
 % unless ( $Ticket->QueueObj->Lifecycle eq RT::IR->lifecycle_countermeasure ) {
@@ -86,14 +86,14 @@
 % }
     </td>
   </tr>
-  <tr>
+  <tr class="owner">
     <td class="label"><&|/l&>Owner</&>:</td>
     <td class="value"><& /Elements/SelectOwner,
         Name => 'Owner', Default => $ARGS{'Owner'} || $Ticket->Owner,
         TicketObj => $Ticket, QueueObj => $Ticket->QueueObj,
     &></td>
   </tr>
-  <tr>
+  <tr class="queue">
     <td class="label"><&|/l&>Queue</&>:</td>
     <td class="value"><& /RTIR/Elements/SelectRTIRQueue,
         Name => 'Queue', Default => $ARGS{'Queue'} || $Ticket->Queue,
@@ -107,12 +107,12 @@
 
 
 % if ($Ticket->QueueObj->Lifecycle ne RT::IR->lifecycle_incident ) {
-  <tr>
+  <tr class="incidents">
     <td class="label"><%loc("Incident")%>:</td>
     <td class="value"><& /RTIR/Elements/ShowIncidents, Ticket => $Ticket &></td>
   </tr>
 % }
-  <tr>
+  <tr class="time-worked">
     <td class="label"><&|/l&>Time Worked</&>:</td>
     <td class="value"><& /Elements/EditTimeValue,
         Name => 'TimeWorked',
@@ -120,7 +120,7 @@
     &></td>
   </tr>
 % if ( $Ticket->QueueObj->Lifecycle eq RT::IR->lifecycle_incident) {
-  <tr>
+  <tr class="priority">
     <td class="label"><&|/l&>Priority</&>:</td>
     <td class="value"><&/Elements/SelectPriority, Name => 'Priority', Default => $ARGS{'Priority'} || $Ticket->Priority &></td>
   </tr>

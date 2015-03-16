@@ -45,6 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<span class="incidents">
 <& /RTIR/Search/Elements/ShowResults,
     Query         => $query,
     Rows          => 0,
@@ -54,14 +55,15 @@
     ShowHeader    => 0,
     EmptyLabel    => loc('(no Incidents)'),
 &>
-
+<div class="actions">
 % unless ( $action ) {
 <b><a href="<% RT::IR->HREFTo('Link/ToIncident/?id='. $id ) %>">[Link]</a></b>
 <b><a href="<% RT::IR->HREFTo('Incident/Create.html?Child='. $id ) %>">[New]</a></b>
 % } elsif ( $action ne 'No' ) {
 <a href="<% RT::IR->HREFTo('Display.html?Action='. $action.'&id='. $id) %>">[<% loc( $action ) %>]</a>
 % }
-
+</div>
+</span>
 <%INIT>
 my $id = $Ticket->id;
 
