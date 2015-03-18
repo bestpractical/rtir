@@ -235,7 +235,7 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
 
 
     if ( $can->('ModifyTicket') || $can->('ReplyToTicket') ) {
-        if ( $lifecycle eq RT::IR->lifecycle_incident) {
+        if ( RT::IR->IsIncidentQueue($ticket->QueueObj)) {
             $actions_tab->child(
                 reply_reporters => title => loc('Reply to Reporters'),
                 path  => RT::IR->HREFTo("Incident/Reply/?id=$id&SelectedReportsAll=1"),
@@ -273,9 +273,9 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
         }
 
         my $path = '';
-        $path .= 'Incident/' if $lifecycle eq RT::IR->lifecycle_incident;
+        $path .= 'Incident/' if RT::IR->IsIncidentQueue($ticket->QueueObj);
         if ( my $update = $info->{'update'} ) {
-            $path .= $lifecycle eq RT::IR->lifecycle_incident? 'Reply/' : 'Update.html';
+            $path .= RT::IR->IsIncidentQueue($ticket->QueueObj) ? 'Reply/' : 'Update.html';
             $path .= "?". $m->comp(
                 '/Elements/QueryString',
                 %args,

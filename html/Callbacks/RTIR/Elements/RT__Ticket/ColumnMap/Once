@@ -52,7 +52,7 @@ $COLUMN_MAP->{'RTIRTicketURI'} = {
     value  =>sub {
         my $t = shift;
         my $link;
-        if ($t->QueueObj->Lifecycle eq RT::IR->lifecycle_incident) { 
+        if (RT::IR->IsIncidentQueue($t->QueueObj)) {
             $link =  RT::IR->HREFTo('Incident/Display.html?id='.$t->id);
         } else {
             $link = RT::IR->HREFTo('Display.html?id='.$t->id);

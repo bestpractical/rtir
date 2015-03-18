@@ -231,7 +231,7 @@ my $new_ticket = 0;
 if ( $id eq 'new' ) {
     my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
     $QueueObj->Load( $Queue ) || Abort(loc("Couldn't load queue."));
-    unless( $QueueObj->Lifecycle eq RT::IR->lifecycle_incident ) {
+    unless( RT::IR->IsIncidentQueue($QueueObj) ) {
         return $m->comp('/RTIR/Display.html', %ARGS );
     }
     ($TicketObj, @results) = CreateTicket( %ARGS );
@@ -245,7 +245,7 @@ $m->callback(CallbackName => 'ProcessArguments',
             ARGSRef => \%ARGS,  
             Actions => \@results);
 
-unless( $TicketObj->QueueObj->Lifecycle eq RT::IR->lifecycle_incident ) {
+unless( RT::IR->IsIncidentQueue($TicketObj->QueueObj) ) {
     return $m->comp('/RTIR/Display.html', %ARGS );
 }
 $ARGS{'id'} = $id = $TicketObj->Id;

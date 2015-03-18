@@ -204,7 +204,7 @@
 &>
 </table></&>
 
-% if ( $QueueObj->Lifecycle eq RT::IR->lifecycle_investigation && @IncidentObj ) {
+% if ( RT::IR->IsInvestigationQueue($QueueObj) && @IncidentObj ) {
   <& /RTIR/Elements/AttachReports, Ticket => \@IncidentObj &>
 % }
 
@@ -283,7 +283,7 @@
    if ($Transactions) {
    # Investigations should quote their included text
    my $quote = 0;
-   if ($QueueObj->Lifecycle eq RT::IR->lifecycle_investigation){  
+   if (RT::IR->IsInvestigationQueue($QueueObj)){  
        $quote = 1;
    }
    $ARGS{Content} = $m->scomp("/RTIR/Elements/TransactionData", 
@@ -346,7 +346,7 @@ $QueueObj->Load( $Queue ) || Abort( loc("Queue could not be loaded.") );
 my $ticket = RT::Ticket->new($session{'CurrentUser'}); # empty ticket object
 
 my $Type = RT::IR::TicketType( Lifecycle => $QueueObj->Lifecycle);
-if ($QueueObj->Lifecycle eq RT::IR->lifecycle_countermeasure 
+if (RT::IR->IsCountermeasureQueue($QueueObj) 
     && RT->Config->Get('RTIR_DisableBlocksQueue') ) {
     Abort(loc("Blocks queue is disabled via config file"));
 }
@@ -383,7 +383,7 @@ foreach my $id ( grep $_, @Incident ) {
     unless ( $inc->id ) {
         push @results, loc("Couldn't load incident #[_1]", $id );
     }
-    elsif ( $inc->QueueObj->Lifecycle ne RT::IR->lifecycle_incident ) {
+    elsif ( !RT::IR->IsIncidentQueue($inc->QueueObj) ) {
         push @results, loc('Ticket #[_1] is not an Incident', $id );
     }
     else {
@@ -427,7 +427,7 @@ if ( !$skip_create && $gnupg_widget ) {
 }
 
 unless ( $skip_create ) {
-if ( $QueueObj->Lifecycle eq RT::IR->lifecycle_investigation && !$ARGS{'Requestors'} ) {
+if ( RT::IR->IsInvestigationQueue($QueueObj) && !$ARGS{'Requestors'} ) {
         push @results, loc( "You must enter a correspondent" );
         $checks_failure = 1;
     }
@@ -484,7 +484,7 @@ if ( $Split ) {
 $Title = loc("Split [_1] #[_2]: [_3]", RT::IR::TicketType(Lifecycle => $QueueObj->Lifecycle), $SplitObj->id, $SplitObj->Subject);
     $SubmitCaption = loc("Split");
 } else {
-if ( $QueueObj->Lifecycle eq RT::IR->lifecycle_investigation ) {
+if ( RT::IR->IsInvestigationQueue($QueueObj) ) {
     $Title = loc("Launch a new investigation");
         $SubmitCaption = loc("Launch");
     } else {

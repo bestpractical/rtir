@@ -80,7 +80,7 @@ sub IsApplicable {
             RT->Logger->error( "Couldn't load linked ticket #". $self->TransactionObj->NewValue ." $msg");
             return 0;
         }
-        return $parent->QueueObj->Lifecycle eq 'incidents';
+        return RT::IR->IsIncidentQueue($parent->QueueObj);
     }
     elsif ( $type eq 'AddLink' && $field eq 'MergedInto' ) {
         return RT::IR->Incidents( $self->TicketObj )->Count;

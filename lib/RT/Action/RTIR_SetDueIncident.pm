@@ -74,7 +74,7 @@ Performs update.
 sub Commit {
     my $self = shift;
 
-    if ( $self->TicketObj->QueueObj->Lifecycle eq 'incidents' ) {
+    if ( RT::IR->IsIncidentQueue($self->TicketObj->QueueObj) ) {
         return $self->UpdateDue( $self->TicketObj );
     }
 
@@ -97,7 +97,7 @@ sub UpdateDue {
     my $self = shift;
     my $incident = shift;
     return 1 unless $incident;
-    return 1 unless $incident->QueueObj->Lifecycle eq 'incidents';
+    return 1 unless RT::IR->IsIncidentQueue($incident->QueueObj);
 
     my $children = RT::IR->IncidentChildren(
         $incident, Initial => 1, Active => 1,
