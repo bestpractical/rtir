@@ -45,9 +45,11 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<h2><&|/l&><%$research_tools->{$ResearchTool}->{FriendlyName}%></&></h2>
-<iframe src="<%$url%>" name="rtir_research_<%$m->notes('rtir_research_iframe_id')%>" style="width: 100%; height: 70%;">
-</iframe>
+<h2><%loc($research_tools->{$ResearchTool}->{FriendlyName})%></h2>
+<iframe 
+    src="<%$url%>" 
+    name="rtir_research_<%$m->notes('rtir_research_iframe_id')%>" 
+    style="width: 100%; height: 70%;"></iframe>
 <%args>
 $q =>  undef
 $TicketType => undef
