@@ -47,15 +47,15 @@
 %# END BPS TAGGED BLOCK }}}
 <%perl>
 my $tools = RT->Config->Get('RTIRResearchTools') || ();
- for my $tool (@$tools) {
-if ($m->comp_exists('ToolForm'.$tool)) {
-    $m->comp('ToolForm'.$tool, %ARGS);
-}
+for my $tool (@$tools) {
+    if ($m->comp_exists('ToolForm' . $tool)) {
+        $m->comp('ToolForm' . $tool, %ARGS);
+    }
 }
 for my $tool (@$tools) {
-if ($m->comp_exists('ToolResults'.$tool)) {
-    $m->comp('ToolResults'.$tool, %ARGS);
-}
+    if ($m->comp_exists('ToolResults' . $tool)) {
+        $m->comp('ToolResults' . $tool, %ARGS);
+    }
 }
 
 </%perl>
