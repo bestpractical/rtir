@@ -158,6 +158,15 @@ if ( exists $opt{'rename'} ) {
 
 $RT::Handle->BeginTransaction;
 
+my $whois_cf = RT::CustomField->new( RT->SystemUser );
+$whois_cf->LoadByName(
+    Name       => 'RTIR default WHOIS server',
+    LookupType => 'RT::Queue'
+);
+die "Couldn't find 'RTIR default WHOIS server' custom field"
+    unless ( $whois_cf->id );
+
+
 my $exist = cf_value_exists( $constituency );
 
 print "\nIf you continue then we'll...\n";
@@ -417,6 +426,8 @@ sub create_or_load_queue {
     }
 
     $queue->AddCustomFieldValue(Field => $constituency_cf->id, Value => $constituency);
+    $constituency_cf->AddToObject($queue);
+    $whois_cf->AddToObject($queue);
     die "Failed to create queue $name." unless $queue->id;
 
     return $queue;

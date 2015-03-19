@@ -54,6 +54,14 @@
         ]
     },
     {
+        Name        => 'RTIR default WHOIS server',
+        Type        => 'FreeformSingle',
+        Disabled    => 0,
+        LookupType  => 'RT::Queue',
+        Description => 'If set, defines the default WHOIS server for an RTIR Queue',
+        ApplyTo     => [map {$_->{Name}} @Queues]
+    },
+    {
         Name        => 'Description',
         Type        => 'FreeformSingle',
         Queue       => 'Incidents',

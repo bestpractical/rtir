@@ -64,6 +64,15 @@ $TicketObj => undef
 @PassArguments => ()
 </%args>
 <%INIT>
+my $queue_whois;
+if ($TicketObj) {
+    if ($queue_whois = $TicketObj->QueueObj->FirstCustomFieldValue('RTIR default WHOIS server')) {
+        $server = $queue_whois;
+    }
+}
+
+
 $WhoisServer = $server unless defined $WhoisServer;
 $WhoisServer ||= '';
+
 </%INIT>
