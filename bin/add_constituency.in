@@ -273,13 +273,14 @@ sub get_constituency_cf {
 sub cf_value_exists {
     my $value = shift;
 
-    debug "Check that the constituency exists";
+    debug "Check that constituency '$value' exists";
 
     my $cf = get_constituency_cf();
     my $values = $cf->Values;
     $values->Limit( FIELD => 'Name', VALUE => $value );
     my $value_obj = $values->First;
-    return $value_obj && $value_obj->id? $value_obj : undef;
+    if( $value_obj && $value_obj->id) {return  $value_obj }
+    else { return undef;}
 }
 
 sub add_cf_value {
@@ -452,8 +453,8 @@ sub create_or_load_queue {
     }
 
 
-    $queue->AddCustomFieldValue(Field => $constituency_cf->id, Value => $constituency);
     $constituency_cf->AddToObject($queue);
+    $queue->AddCustomFieldValue(Field => $constituency_cf->id, Value => $constituency);
     $whois_cf->AddToObject($queue);
     die "Failed to create queue $name." unless $queue->id;
 
@@ -465,6 +466,10 @@ sub rename_value {
     my $new = shift;
 
     my $value_obj;
+
+
+    my $constituency_cf = get_constituency_cf();
+
     unless ( $value_obj = cf_value_exists( $old ) ) {
         die "Couldn't rename. Constituency '$old' doesn't exist.";
     }
@@ -476,8 +481,19 @@ sub rename_value {
 
     print "\nIf you continue then we'll...\n";
     print "* rename constituency value '$old' into '$new'.\n";
-    foreach (@queue_prefixes) {
-        print "* rename queue '$_ - $old' if it exists into '$_ - $new'.\n";
+    my $queues = RT::Queues->new(RT->SystemUser);
+    $queues->UnLimit;
+    while (my $queue = $queues->Next) {
+        next unless (($queue->FirstCustomFieldValue('RTIR Constituency')||'') eq $old);
+        my $oldname = $queue->Name;
+        my $newname = $oldname;
+        $newname =~ s/$old/$new/;
+
+        print "* rename queue '$oldname' to '$newname'.\n";
+    }
+
+    
+    foreach my $basename (@queue_prefixes) {
     }
     print <<END;
 * rename group 'DutyTeam $old' if it exists into 'DutyTeam $new'
@@ -492,36 +508,34 @@ END
         debug "Renamed constituency value '$old' -> '$new'.";
     }
 
-    foreach (@queue_prefixes) {
-        my $queue = queue_exists( "$_ - $old" );
-        unless ( $queue ) {
-            debug "Queue '$_ - $old' doesn't exist. Skiping...";
-            next;
-        }
-        if ( queue_exists( "$_ - $new" ) ) {
-            die "Couldn't rename queue, target '$_ - $new' already exist.";
-        }
-
-        my ($status, $msg) = $queue->SetName( "$_ - $new" );
+    $queues = RT::Queues->new(RT->SystemUser);
+    $queues->UnLimit;
+    while (my $queue = $queues->Next) {
+        next unless (($queue->FirstCustomFieldValue('RTIR Constituency')||'') eq $old);
+        my $oldname = $queue->Name;
+        my $newname = $oldname;
+        $newname =~ s/$old/$new/;
+        $queue->AddCustomFieldValue(Field => $constituency_cf->id, Value => $new);
+        my ($status, $msg) = $queue->SetName( $newname);
         die $msg unless $status;
 
-        debug "Renamed queue '$_ - $old' -> '$_ - $new'";
+        debug "Renamed queue '$oldname' -> '$newname'";
     }
 
-    foreach (qw(DutyTeam Readonly)) {
-        my $group = group_exists( "$_ $old" );
+    foreach my $basename (qw(DutyTeam Readonly)) {
+        my $group = group_exists( "$basename $old" );
         unless ( $group ) {
-            debug "Group '$_ $old' doesn't exist. Skiping...";
+            debug "Group '$basename $old' doesn't exist. Skiping...";
             next;
         }
-        if ( group_exists( "$_ $new" ) ) {
-            die "Couldn't rename group, target '$_ $new' already exist.";
+        if ( group_exists( "$basename $new" ) ) {
+            die "Couldn't rename group, target '$basename $new' already exist.";
         }
 
-        my ($status, $msg) = $group->SetName( "$_ $new" );
+        my ($status, $msg) = $group->SetName( "$basename $new" );
         die $msg unless $status;
 
-        debug "Renamed group '$_ $old' -> '$_ $new'";
+        debug "Renamed group '$basename $old' -> '$basename $new'";
     }
 
     $RT::Handle->Commit;
