@@ -367,7 +367,7 @@ merged from this configuration.  To change just the Investigation list you would
 
 Set(%RTIRSearchResultFormats,
     Default =>
-        q{'<b><a HREF="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
           '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
           QueueName,
           Status,
@@ -376,7 +376,7 @@ Set(%RTIRSearchResultFormats,
           __NEWLINE__,
           '',Requestors,OwnerName,ToldRelative,DueRelative,TimeLeft},
     ReportDefault =>
-        q{'<b><a HREF="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
           '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
           Status,
           LastUpdatedRelative,
