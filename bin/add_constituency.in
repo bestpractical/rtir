@@ -394,7 +394,12 @@ sub create_or_load_queue {
     my $name = shift;
     my $lifecycle = shift;
     my $constituency_cf = shift;
-    
+   
+
+    my $basequeue = RT::Queue->new(RT->SystemUser);
+
+    $basequeue->LoadByCols(Name => RT::IR::FriendlyLifecycle($lifecycle));
+
     my $queue = RT::Queue->new( $RT::SystemUser );
     $queue->LoadByCols( Name => $name );
     unless ( $queue->id ) {
@@ -424,6 +429,28 @@ sub create_or_load_queue {
             }
         }
     }
+
+    my $basecfs = RT::CustomFields->new( RT->SystemUser);
+    $basecfs->SetContextObject( $basequeue );
+    $basecfs->LimitToObjectId( $basequeue->id );
+    $basecfs->LimitToLookupType( 'RT::Queue-RT::Ticket' );
+
+
+    while (my $basecf = $basecfs->Next) {
+        debug "Adding Ticket CustomField ".$basecf->Name." to queue ".$queue->Name;
+        $basecf->AddToObject($queue); 
+    }
+
+    my $base_txncfs = RT::CustomFields->new( RT->SystemUser);
+    $base_txncfs->SetContextObject( $basequeue );
+    $base_txncfs->LimitToObjectId( $basequeue->id );
+    $base_txncfs->LimitToLookupType( 'RT::Queue-RT::Ticket-RT::Transaction');
+
+    while (my $base_txncf = $base_txncfs->Next) {
+        debug "Adding Ticket Transaction CustomField ".$base_txncf->Name." to queue ".$queue->Name;
+        $base_txncf->AddToObject($queue); 
+    }
+
 
     $queue->AddCustomFieldValue(Field => $constituency_cf->id, Value => $constituency);
     $constituency_cf->AddToObject($queue);
