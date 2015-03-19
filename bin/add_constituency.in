@@ -261,7 +261,7 @@ sub prompt_yN {
     return 1;
 }
 
-sub get_cf {
+sub get_constituency_cf {
     my $cf = RT::CustomField->new( $RT::SystemUser );
     $cf->Load("RTIR Constituency", LookupType => 'RT::Queue');
     unless ( $cf->id ) {
@@ -275,7 +275,7 @@ sub cf_value_exists {
 
     debug "Check that the constituency exists";
 
-    my $cf = get_cf();
+    my $cf = get_constituency_cf();
     my $values = $cf->Values;
     $values->Limit( FIELD => 'Name', VALUE => $value );
     my $value_obj = $values->First;
@@ -287,7 +287,7 @@ sub add_cf_value {
 
     debug "Adding the value to the constituency CF";
 
-    my $cf = get_cf();
+    my $cf = get_constituency_cf();
     if ( cf_value_exists( $value ) ) {
         debug "Value '$value' already exists";
     } else {
