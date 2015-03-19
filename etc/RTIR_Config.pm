@@ -367,116 +367,96 @@ merged from this configuration.  To change just the Investigation list you would
 
 Set(%RTIRSearchResultFormats,
     Default =>
-        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
-          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          QueueName,
-          Status,
-          LastUpdatedRelative,
-          CreatedRelative,
-          __NEWLINE__,
-          '',Requestors,OwnerName,ToldRelative,DueRelative,TimeLeft},
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
+        q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
+        q{QueueName,Status,LastUpdatedRelative,CreatedRelative,__NEWLINE__,}.
+        q{'',Requestors,OwnerName,ToldRelative,DueRelative,TimeLeft},
     ReportDefault =>
-        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
-          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          Status,
-          LastUpdatedRelative,
-          CreatedRelative,
-          __NEWLINE__,
-          '',Requestors,OwnerName,ToldRelative,DueRelative,TimeLeft},
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
+        q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
+        q{Status,TimeLeft,DueRelative,CreatedRelative,__NEWLINE__,}.
+        q{'',Requestors,QueueName,OwnerName,ToldRelative,LastUpdatedRelative},
+
     InvestigationDefault =>
-        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
-          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          Status,
-          LastUpdatedRelative,
-          CreatedRelative,
-          __NEWLINE__,
-          '', Requestors, OwnerName, ToldRelative, DueRelative, TimeLeft},
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
+        q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
+        q{Status,TimeLeft,DueRelative,CreatedRelative,__NEWLINE__,}.
+        q{'',Requestors,QueueName,OwnerName,ToldRelative,LastUpdatedRelative },
+
     BlockDefault =>
-        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
-          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          Status,
-          LastUpdatedRelative,
-          CreatedRelative,
-          __NEWLINE__,
-          '', Requestors, OwnerName, ToldRelative, DueRelative, TimeLeft},
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
+        q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
+        q{Status,TimeLeft,DueRelative,CreatedRelative,__NEWLINE__,}.
+        q{'',Requestors,QueueName,OwnerName,ToldRelative,LastUpdateRelative},
     IncidentDefault =>
-        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
-          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          Status,
-          LastUpdatedRelative,
-          CreatedRelative,
-          Priority,
-          __NEWLINE__,
-          '', '', OwnerName, ToldRelative, DueRelative, TimeLeft},
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
+        q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
+        q{Status,TimeLeft,DueRelative,CreatedRelative,__NEWLINE__,}.
+        q{'',OwnerName,QueueName,Priority,ToldRelative,LastUpdatedRelative },
 
     Merge =>
-        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
-          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          Requestors, OwnerName, CreatedRelative, DueRelative},
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
+        q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
+        q{Requestors,OwnerName,CreatedRelative,DueRelative,QueueName},
 
     LinkChildren =>
-        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
-          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          Requestors, OwnerName, CreatedRelative, DueRelative},
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
+        q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
+        q{Requestors,OwnerName,CreatedRelative,DueRelative},
 
     LinkIncident =>
-        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
-          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          OwnerName, CreatedRelative},
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
+        q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
+        q{OwnerName,CreatedRelative},
 
     ListIncidents =>
-        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
-          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          Status},
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
+        q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
+        q{Status},
 
     RejectReports =>
-        q{'<a href="__RTIRTicketURI__">__id__</a>/TITLE:#',
-          '<a href="__RTIRTicketURI__">__Subject__</a>/TITLE:Subject',
-          HasIncident, Requestors, OwnerName, CreatedRelative, DueRelative},
+        q{'<a href="__RTIRTicketURI__">__id__</a>/TITLE:#',}.
+        q{'<a href="__RTIRTicketURI__">__Subject__</a>/TITLE:Subject',}.
+        q{HasIncident,Requestors,OwnerName,CreatedRelative,DueRelative},
 
     BulkReply =>
         q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
           '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          KeyRequestors, KeyOwnerName, CreatedRelative, DueRelative},
+          KeyRequestors,KeyOwnerName,CreatedRelative,DueRelative,QueueName},
 
     DueIncidents =>
-        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
-          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          OwnerName, Priority, DueRelative, UpdateStatus},
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
+        q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',DueRelative,OwnerName,'UpdateStatus/TITLE:Updates'},
 
     AbandonIncidents =>
-        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
-          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          OwnerName, Priority, DueRelative},
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
+        q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
+        q{OwnerName,Priority,DueRelative},
 
     NewReports =>
-        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
-          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          Requestors, OwnerName, DueRelative, Take},
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
+        q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
+        q{Requestors,OwnerName,DueRelative,QueueName,Take},
 
     ChildReport =>
-        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
-          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          Status,
-          DueRelative},
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
+        q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
+        q{Status,DueRelative},
 
     ChildInvestigation =>
-        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
-          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          Status,
-          DueRelative},
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
+        q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
+        q{Status,DueRelative},
 
     ChildBlock =>
-        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
-          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          Status,
-           DueRelative},
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
+        q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
+        q{Status,DueRelative},
 
     LookupTool =>
-        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',
-          '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
-          Status,
-          Priority},
+        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
+        q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
+        q{Status,Priority,QueueName},
 
 );
 
