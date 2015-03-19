@@ -496,6 +496,7 @@ Set(@RTIR_HomepageComponents, qw(
     /RTIR/Elements/NobodyDueIncidents
     /RTIR/Elements/DueIncidents
     /RTIR/Elements/QueueSummary
+    /RTIR/Elements/WorkWithConstituency
 ));
 
 =item C<@Active_MakeClicky>

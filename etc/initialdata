@@ -598,8 +598,9 @@ for my $cf (@CustomFields) {
             { type => 'component',  name => '/RTIR/Elements/DueIncidents' },
         ],
         sidebar => [
-            { type => 'component', name => 'RefreshHomepage' },
+            { type => 'component', name => '/RTIR/Elements/WorkWithConstituency' },
             { type => 'component', name => '/RTIR/Elements/QueueSummary' },
+            { type => 'component', name => 'RefreshHomepage' },
         ]
     },
 } );

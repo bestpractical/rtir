@@ -1,5 +1,6 @@
 <&| /Widgets/TitleBox, title => 'Work with constituency' &>
 <ul>
+<li><a href="<% RT::IR->HREFTo('',Constituency => '')%>">All constituencies</a></li>
 % for my $constituency (keys %known_constituencies) {
 <li><a href="<% RT::IR->HREFTo('', Constituency => $constituency)%>"><%$constituency%></a></li>
 % }
