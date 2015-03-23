@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 698;
+use RT::IR::Test tests => undef;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -24,6 +24,8 @@ my %test_set = (
     'abcd:' x 7 . 'abcd' => 'abcd:' x 7 . 'abcd',
     'abcd::034'          => 'abcd:' . '0000:' x 6 . '0034',
     '::192.168.1.1'      => '0000:' x 6 . 'c0a8:0101',
+    'IPv6:abcd::034'     => 'abcd:' . '0000:' x 6 . '0034',
+    'qabcd::034'         => '0000:' x 7 . '0034',
 );
 my %test_cidr = (
     'abcd:' x 7 . 'abcd/32' => 'abcd:abcd'. ':0000' x 6 .'-'. 'abcd:abcd'. ':ffff' x 6,
@@ -555,3 +557,5 @@ diag "merge ticket with the same IP";
     is( $has[0], '0000:'x6 .'ac10:0001', "has value" );
 }
 
+undef $agent;
+done_testing;
