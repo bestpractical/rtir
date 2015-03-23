@@ -59,28 +59,28 @@ use Net::CIDR ();
 
 my $IPv4_mask_re = qr{3[0-2]|[1-2]?[0-9]};
 my $IPv4_prefix_check_re = qr{(?:^|\b)(?<![0-9.])};
-my $IPv4_sufix_check_re = qr{(?!\.?[0-9])};
+my $IPv4_suffix_check_re = qr{(?!\.?[0-9])};
 my $IPv4_CIDR_re = qr{
     $IPv4_prefix_check_re
     $RE{net}{CIDR}{IPv4}{-keep}
-    $IPv4_sufix_check_re
+    $IPv4_suffix_check_re
 }x;
 my $IPv4_re = qr[
     $IPv4_prefix_check_re
     (?!0\.0\.0\.0)
     ($RE{net}{IPv4})
     (?!/$IPv4_mask_re)
-    $IPv4_sufix_check_re
+    $IPv4_suffix_check_re
 ]x;
 
 my $IPv6_mask_re = qr{12[0-8]|1[01][0-9]|[1-9]?[0-9]};
 my $IPv6_prefix_check_re = qr{(?:^|\b)(?<![0-9.])};
-my $IPv6_sufix_check_re = qr{(?!(?:\:{0,2}|\.)[0-9a-fA-F])};
+my $IPv6_suffix_check_re = qr{(?!(?:\:{0,2}|\.)[0-9a-fA-F])};
 my $IPv6_re = qr[
     $IPv6_prefix_check_re
     ($Regexp::IPv6::IPv6_re)
     (?:/($IPv6_mask_re))?
-    $IPv6_sufix_check_re
+    $IPv6_suffix_check_re
 ]x;
 
 my $IP_re = qr{$IPv6_re|$IPv4_re|$IPv4_CIDR_re};
