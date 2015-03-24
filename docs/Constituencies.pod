@@ -266,32 +266,6 @@ add new mail routing rules.  It is your responsibility to configure
 rt-mailgate to handle mail coming to the constituency correspond
 addresses.
 
-=head2 Presetting Constituency from Email
-
-Many mail transfer agents (MTAs) allow you to specify a flag on any incoming
-email message by appending "+flag" after an email address. This option
-is supported by postfix, sendmail, qmail, exim and others, though the "+" delimiter
-has different defaults on some systems and can be customized by a site's systems
-administrator.
-
-RTIR's multiple constituency support uses this extension mechanism to allow
-a single queue to receive mail for multiple constituencies. If you have two
-constituencies, EDUNET and GOVNET, you might set up RTIR's "incident report"
-address as follows in /etc/aliases:
-
-    edu: abuse+edunet
-    gov: abuse+govnet
-    abuse: "|/path/to/rt-mailgate ...mailgate options..."
-
-The rt-mailgate script expects the MTA to set the EXTENSION environment variable
-with a value of "flag." The script adds this value to the incoming message in
-the 'X-RT-Mail-Extension' header field. If an incoming mail has
-'X-RT-Mail-Extension: <valid constituency value>' header field then a new
-ticket is created with Constituency set accordingly.
-
-The Constituency field is mandatory so if the mail gate is not configured
-then the default value from the config is used.
-
 =head2 Access Control (ACLs)
 
 RTIR allows you to grant additional rights to tickets based on their
@@ -312,10 +286,6 @@ that you I<not> grant the user or group "queue-wide" rights such as
 "See Queue" or "Create Ticket" in the pseudo-queue as the system
 will apply those rights to the pseudo-queue "Incident Reports -
 EUDNET" and I<not> to the "Incident Reports" queue.
-
-Note that templates, custom fields and scrips can still be applied to
-pseudo queues, but in the current implementation these objects have
-no effect on the RTIR behavior. This may be changed in the future.
 
 =head3 Constituency Specific Groups
 
@@ -376,12 +346,3 @@ of groups and group members in the system.  If you are not going to use
 this functionality, you would be well served to disable the Constituency
 Custom Field, which will cause RTIR to remove a number of added
 complexities.
-
-Additionaly, while RT 4.2 has shipped with the config option
-C<$UseSQLForACLChecks> defaulted on, it is not compatible with Constituencies.
-If RTIR detects that it is being started with Constituencies enabled it
-will disabled C<$UseSQLForACLChecks>.  Overriding this means that any
-part of the UI trying to show a list of tickets (such as the RTIR
-homepage or any search results) will be empty for users in restricted
-Constituency DutyTeams.
-
