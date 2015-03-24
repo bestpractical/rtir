@@ -315,7 +315,7 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
         bookmark => raw_html => $m->scomp( '/Ticket/Elements/Bookmark', id => $id ),
         sort_order   => 99
     );
-} elsif ( $request_path =~ m{(?:$re_rtir_path)Link/(ToIncident|FromIncident)/} ) {
+} elsif ( $request_path =~ m{(?:$re_rtir_path)Link/(ToIncident|FromIncident)} ) {
     my $direction = $1;
 
     my $lifecycle = $args->{'Lifecycle'};
@@ -349,7 +349,7 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
         back => title => loc('Back to [_1] #[_2]',lc RT::IR::TicketType(Lifecycle => $ticket->QueueObj->Lifecycle), $id),
         path => RT::IR->HREFTo("Display.html?id=$id"),
     );
-} elsif ( $request_path =~ m{(?:$re_rtir_path)Incident/Children/} ) {
+} elsif ( $request_path =~ m{(?:$re_rtir_path)Incident/Children} ) {
     my $lifecycle = $args->{'Lifecycle'} ||  RT::IR->lifecycle_report;
 
     my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
@@ -369,7 +369,7 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
         back => title => loc('Back to [_1] #[_2]', lc RT::IR::TicketType( Lifecycle => $ticket->QueueObj->Lifecycle), $id),
         path => RT::IR->HREFTo( "Display.html?id=$id"),
     );
-} elsif ( $request_path =~ m{^(?:$re_rtir_path)Merge/} ) {
+} elsif ( $request_path =~ m{^(?:$re_rtir_path)Merge} ) {
     my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
     $ticket->Load( $args->{'id'} );
     my $id = $ticket->id;
@@ -391,7 +391,7 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
         back => title => loc('Back to [_1] #[_2]', lc RT::IR::TicketType( Lifecycle => $ticket->QueueObj->Lifecycle), $id),
         path => RT::IR->HREFTo("Display.html?id=$id"),
     );
-} elsif ( $request_path =~ m{(?:$re_rtir_path)Incident/Reply/} ) {
+} elsif ( $request_path =~ m{(?:$re_rtir_path)Incident/Reply} ) {
     my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
     $ticket->Load( $args->{'id'} );
     my $id = $ticket->id;
