@@ -485,9 +485,6 @@ Components that available to add on the first page of the RTIR.
 
 Set(@RTIR_HomepageComponents, qw(
     QuickCreate
-    MyAdminQueues
-    MySupportQueues
-    MyReminders
     RefreshHomepage
     Dashboards
     SavedSearches
