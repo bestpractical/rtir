@@ -139,10 +139,13 @@ special queues and groups.
 
 =head2 Constituency Propagation
 
-The C<$_RTIR_Constituency_Propagation> config option determines
-how constituency values are inherited between linked tickets.
-There are three option: 'no', 'inherit' and 'reject'.
-These algorithms are defined in L</Constituency Propagation Options>.
+Starting in RTIR 3.4, the C<$RTIR_StrictConstituencyLinking> option replaces the old C<$_RTIR_Constituency_Propagation> configuration option.
+
+C<$RTIR_StrictConstituencyLinking> is a simple boolean which implements the most common behaviors of C<$_RTIR_Constituency_Propagation>.
+
+If C<$RTIR_StrictConstituencyLinking> is set to 1, any attempt to link RTIR tickets across constituencies will result in an error. 
+
+If C<$RTIR_StrictConstituencyLinking> is set to 0, RTIR will allow users to link tickets across multiple constituencies.
 
 =head3 Introduction
 
@@ -153,13 +156,13 @@ the primary ways of setting and changing the Constituency field.
 
 =item Creating a new ticket without links
 
-This is the simplest case. A user creates a new ticket and there is no reference
-to an existing ticket. For example, the user creates
-an IR using the web UI by clicking RTIR -> Incident Reports -> Create,
-fills in values, and leaves the Incident input blank. In this case
-Constituency will be set to the default, set in C<%RTIR_CustomFieldsDefaults>
-in the RTIR configuration, or to the value the user
-selects.
+This is the simplest case. A user creates a new ticket and there
+is no reference to an existing ticket. For example, the user creates
+an IR using the web UI by clicking RTIR -> Incident Reports ->
+Create, fills in values, and leaves the Incident input blank. In
+this case, the user will be able to create the ticket in any 
+Incident Report queue for which they have the 'SeeQueue' and 
+'CreateTicket' permissions.
 
 =item Creating a new ticket with a link
 
@@ -167,11 +170,13 @@ RTIR allows users to create new tickets and link them with another
 as a single step. For example a user can create a new IR from an Incident
 or launch an Investigation from it. When a ticket is created based on an
 existing ticket, we can use the core information from the existing ticket,
-including the constituency value. In this case, the configuration option
-defines whether the user is allowed to manually change the constituency
-value.
+including the constituency value. 
 
-=item Creating a new ticket with Incident Id
+If C<RTIR_StrictConstituencyLinking> is set to 1, the list of available
+queues for the new ticket will be limited to the Constituency of the source
+ticket.
+
+=item Creating a new ticket with Incident id
 
 This case is similar to the first case, but the user provides
 an Incident Id in the Incident field. Since the new ticket references
@@ -180,59 +185,14 @@ noted in the second case.
 
 =item Updating an existing ticket
 
-Users can edit an existing ticket and change the Constituency value,
-and this can affect linked tickets as well. This case in
-particular is controlled by the propagation option you set.
+Users can edit an existing ticket and change its constituency
+by moving it to a new queue on the 'Advanced' tab.
+
+If RTIR_StrictConstituencyLinking is set to 1, and the ticket's new
+queue is in a different constituency, all linked
+tickets will be moved to the new queue's constituency.
 
 =back
-
-=head3 Constituency Propagation Options
-
-The three propagation algorithms are available:
-
-=head3 no
-
-This is the default algorithm. Any combinations are allowed. Users can link
-tickets with different constituencies. Changing the value on a ticket doesn't
-affect linked tickets. However, reasonable defaults are still used. For example
-when a user creates a new ticket from another one we select constituency of the
-existing ticket by default instead of using the default value from the config.
-
-=head3 reject
-
-This algorithm doesn't allow a user to link tickets with different Constituency
-values.
-
-Users cannot change the Constituency value when creating a new ticket from
-another one.
-
-When linking tickets together, the list of possible constituencies is restricted by
-the constituency of the former ticket, so the user may not choose targets with different
-constituencies.
-
-The Constituency value on an existing ticket can be changed only if
-the ticket is not linked to any other tickets.
-
-=head3 inherit
-
-This algorithm is something in between no and reject. Operations are not
-rejected; instead we prefer the value of a new incident when a user links tickets
-together.
-
-If the user uses New or Launch links on the main view of an incident,
-investigation, incident report or block to create a new linked ticket then
-the creation page contains a predefined value for Constituency and can't be
-changed at this point.
-
-The Constituency value can be changed on existing tickets, even if
-the ticket has other tickets linked to it. In this case, RTIR
-updates all related tickets during the update, so all continue to have
-the same value.
-
-Note that while linking tickets together, the list of possible candidates
-is not restricted by the constituency of the initial ticket, so a user may
-choose targets with different constituencies. In the latter case the incident's
-Constituency value is always preferred.
 
 =head3 Advanced Linking
 

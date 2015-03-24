@@ -308,6 +308,27 @@ unless (defined $default_queue) {
 
 =back
 
+
+=head1 Constituency Configuration
+
+=over 4
+
+=item C<$RTIR_StrictConstituencyLinking>
+
+
+Set constituency enforcement algorithm.
+
+Read more about constituencies in F<lib/RT/IR/Constituencies.pod>.
+Algorithms are described in
+L<Constituencies/Constituency Propagation>.
+
+=cut
+
+Set( $RTIR_StrictConstituencyLinking,  1  );
+
+
+=back
+
 =head1 Web Interface Configuration
 
 =over 4
