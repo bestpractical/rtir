@@ -317,6 +317,13 @@ sub Statuses {
     return grep !$seen{$_}++, @initial, @active, @inactive;
 }
 
+=head2 ActiveQuery ARGS
+
+ActiveQuery is a wrapper around Query which automatically limits
+results to tickets in active or initial states.
+
+=cut
+
 sub ActiveQuery {
     return (shift)->Query( Initial => 1, Active => 1, @_ );
 }
