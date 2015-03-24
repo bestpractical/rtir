@@ -848,6 +848,13 @@ sub IsCountermeasureQueue {
     return $queue->Lifecycle eq $self->lifecycle_countermeasure;
 }
 
+
+sub StrictConstituencyLinking {
+    my $self = shift;
+    return RT->Config->Get('RTIR_StrictConstituencyLinking');
+}
+
+
 require RT::Search::Simple;
 package RT::Search::Simple;
 
