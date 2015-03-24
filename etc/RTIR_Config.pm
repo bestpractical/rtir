@@ -423,12 +423,12 @@ Set(%RTIRSearchResultFormats,
     LinkChildren =>
         q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
         q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
-        q{Requestors,OwnerName,CreatedRelative,DueRelative},
+        q{Requestors,OwnerName,QueueName,CreatedRelative,DueRelative},
 
     LinkIncident =>
         q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
         q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
-        q{OwnerName,CreatedRelative},
+        q{OwnerName,QueueName,CreatedRelative},
 
     ListIncidents =>
         q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
