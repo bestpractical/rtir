@@ -79,7 +79,7 @@
 $id          => undef
 $Lifecycle       => undef
 
-$Query       => RT::IR->ActiveQuery( Lifecycle => $Lifecycle )
+$Query       => RT::IR->ActiveQuery( Lifecycle => $Lifecycle, Constituency =>  $m->{'RTIR_ConstituencyFilter'} )
 $Format      => RT->Config->Get('RTIRSearchResultFormats')->{'LinkChildren'}
 $Rows        => 50
 $Page        => 1
