@@ -223,7 +223,7 @@ my $DoLinks = sub {
         push @results, $take_or_steal->( $parent );
     }
 
-    # turn off strict check localy
+    # turn off strict check locally
     my $strict_acl = RT->Config->Set( StrictLinkACL => 0 );
     $args{ $child->Id .'-MemberOf' } = $parent->Id;
     push @results, ProcessTicketLinks( TicketObj => $child, ARGSRef => \%args );
