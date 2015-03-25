@@ -76,11 +76,10 @@ for my $type ( 'incident', 'ir', 'investigation', 'block' ) {
         ok( $m->find_link( url_regex => qr{/RTIR/Incident/Display.html\?id=$incident_id$} ),
             "found link to incident $incident_id" );
     }
-
     $m->follow_link_ok( { text => "Edit Search", n => 2 } );
     $m->form_name('BuildQuery');
     my ($input_query) = $m->find_all_inputs( name => 'Query' );
-    is( $input_query->value, q{( Lifecycle = 'incidents' ) AND Status = 'open'}, 'Query input is correct' );
+    is( $input_query->value, q{( Lifecycle = 'incidents' ) AND Status = 'open' AND HasMember != 2}, 'Query input is correct' );
 
     $m->submit_form_ok(
         {
@@ -117,7 +116,7 @@ for my $type ( 'incident', 'ir', 'investigation', 'block' ) {
     my ($input_query) = $m->find_all_inputs( name => 'Query' );
     is(
         $input_query->value,
-        q{( Lifecycle = 'incident_reports' ) AND (  Status = 'new' OR Status = 'open' )},
+        q{( Lifecycle = 'incident_reports' ) AND (  Status = 'new' OR Status = 'open' ) AND MemberOf != 1},
         'Query input is correct'
     );
 
