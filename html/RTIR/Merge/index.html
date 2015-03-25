@@ -96,7 +96,21 @@ if ( $MergeTicket ) {
     ) {
         push @results, loc("Merge failed: Ticket #[_1] is not the right type", $MergeTicket->Id );
         $checks_failure = 1;
-    }
+        }
+
+        if (RT::IR->StrictConstituencyLinking) {
+        if (RT::IR->ConstituencyFor($Ticket) 
+            != RT::IR->ConstituencyFor($MergeTicket)) {
+            push @results, 
+            loc("Merge failed: Ticket #[_1] is associated with a different constituency", 
+                $MergeTicket->Id );
+	            $checks_failure = 1;
+	        }
+
+        }
+
+
+
 }
 
 if ( $MergeTicket && !$checks_failure ) {
