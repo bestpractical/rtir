@@ -314,7 +314,7 @@ $m->callback(
 );
 
 
-my $constituency = $m->{'RTIR_ConstituencyFilter'};
+my $constituency = $m->{'RTIR_ConstituencyFilter'} || '';
 
 
 for my $related_ticket ($ChildObj, $SplitObj) {
@@ -337,8 +337,7 @@ my $QueueObj;
 my $collection = RT::Queues->new($session{'CurrentUser'});
 $collection->Limit(FIELD => 'Lifecycle', VALUE => RT::IR->lifecycle_incident);
 while (my $queue = $collection->Next) {
-     if (($queue->FirstCustomFieldValue('RTIR Constituency') ||'') 
-     eq $constituency) {
+    if ((RT::IR->ConstituencyFor($queue)||'') eq ($constituency||'')) {
         $QueueObj = $queue;
         last;
     }
