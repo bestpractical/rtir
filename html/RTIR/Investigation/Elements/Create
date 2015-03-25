@@ -64,7 +64,7 @@
                 Name => $NamePrefix.'Queue',
                 Default => $ARGS{'Queue'} || $QueueObj->Id,
                 Lifecycle => RT::IR->lifecycle_investigation,
-                LimitToConstituency => $Constituency ? 1 : 0,
+                LimitToConstituency => ($m->{'RTIR_ConstituencyFilter'} || RT::IR->StrictConstituencyLinking ) ? 1:0,
                 Constituency => $Constituency
     &>
   </td>

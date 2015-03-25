@@ -98,7 +98,7 @@
     <td class="value"><& /RTIR/Elements/SelectRTIRQueue,
         Name => 'Queue', Default => $ARGS{'Queue'} || $Ticket->Queue,
         TicketObj => $Ticket, Lifecycle => $Ticket->QueueObj->Lifecycle,
-        LimitToConstituency => 1,
+        LimitToConstituency => ($m->{'RTIR_ConstituencyFilter'} || RT::IR->StrictConstituencyLinking) ? 1 : 0,
         Constituency => $Ticket->QueueObj->FirstCustomFieldValue('RTIR Constituency')
     &></td>
   </tr>

@@ -105,7 +105,7 @@
                 Default => $ARGS{'Queue'} || $QueueObj->Id,
                 ShowNullOption => 0,
                 Lifecycle => $QueueObj->Lifecycle,
-                LimitToConstituency => 1,
+                LimitToConstituency => (RT::IR->StrictConstituencyLinking ? 1:0),
                 Constituency => $constituency
             }
         },
