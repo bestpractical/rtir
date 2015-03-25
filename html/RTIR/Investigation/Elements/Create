@@ -227,6 +227,9 @@ $TicketObj => undef
 $Constituency => undef
 </%ARGS>
 <%INIT>
+# this component is only ever called from Incident/Create.html
+
+
 my %CFDefaults;
 my $value_cb = sub {
     my $name = shift;
@@ -347,9 +350,7 @@ if ( ($DefaultsNamePrefix||'') ne $NamePrefix ) {
     }
 }
 
-my ($Ticket, @results) = CreateTicket(
-    %ARGS,
-);
+my ($Ticket, @results) = CreateTicket( %ARGS);
 
 return ($Ticket, @results);
 </%INIT>
