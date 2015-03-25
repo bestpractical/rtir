@@ -330,8 +330,25 @@ for my $related_ticket ($ChildObj, $SplitObj) {
 }
 
 
-my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
-$QueueObj->Load( 'Incidents' ) || Abort( loc("Queue could not be loaded.") );
+my $QueueObj;
+
+# XXX TODO refactor this into library code
+# that 'finds the first plausible queue with the right constituency
+my $collection = RT::Queues->new($session{'CurrentUser'});
+$collection->Limit(FIELD => 'Lifecycle', VALUE => RT::IR->lifecycle_incident);
+while (my $queue = $collection->Next) {
+     if (($queue->FirstCustomFieldValue('RTIR Constituency') ||'') 
+     eq $constituency) {
+        $QueueObj = $queue;
+        last;
+    }
+}
+
+if (!$QueueObj) {
+    $QueueObj->Load( 'Incidents' ) 
+        || Abort( loc("Queue could not be loaded.") );
+}
+
 
 my $ticket = RT::Ticket->new($session{'CurrentUser'}); # empty ticket object
 
