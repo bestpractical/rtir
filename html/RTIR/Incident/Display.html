@@ -195,6 +195,14 @@ my $DoLinks = sub {
 
     my %args = ();
 
+    if (RT::IR->StrictConstituencyLinking) {
+        if (RT::IR->ConstituencyFor($child) 
+            != RT::IR->ConstituencyFor($parent)) {
+            return loc("Link failed: Ticket #[_1] is associated with a different constituency", 
+            $child->id );
+        }
+    }
+
     # Blocks or Incedent Reports can have multiple incidents
     my $Type = RT::IR::TicketType( Ticket => $child );
     my $config = RT->Config->Get('RTIR_IncidentChildren')->{$Type};
