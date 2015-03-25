@@ -64,7 +64,6 @@
 <input type="hidden" name="Child" value="<% $id %>" />
 
 <& /RTIR/Search/Elements/ShowResults, 
-    BaseQuery     => $BaseQuery,
     Query         => $Query,
     DisplayFormat => "__RadioButton__, $Format",
     Format        => $Format,
@@ -92,11 +91,8 @@ $m->callback(CallbackName => 'Initial', %ARGS, Ticket => $Ticket);
 my $Type = RT::IR::TicketType( Ticket => $Ticket );
 my $title = loc( "Link [_1] #[_2] to selected Incident", $Type, $id );
 
-# BaseQuery is "things that the user can't delete
-my $BaseQuery = RT::IR->Query( HasNoMember => $id, Lifecycle => 'incidents');
-
 # $Query is 'defaults'
-$Query ||= RT::IR->ActiveQuery( Constituency =>  $m->{'RTIR_ConstituencyFilter'});
+$Query ||= RT::IR->ActiveQuery( Constituency =>  $m->{'RTIR_ConstituencyFilter'}, HasNoMember => $id, Lifecycle => 'incidents');
 
 </%INIT>
 <%ARGS>

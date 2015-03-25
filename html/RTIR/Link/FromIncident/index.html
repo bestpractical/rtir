@@ -60,7 +60,6 @@
 
 <& /RTIR/Search/Elements/ShowResults, 
     Lifecycle     => $Lifecycle,
-    BaseQuery     => $BaseQuery,
     Query         => $Query,
     DisplayFormat => "__CheckBox__, $Format",
     Format        => $Format,
@@ -78,8 +77,7 @@
 <%ARGS>
 $id          => undef
 $Lifecycle       => undef
-
-$Query       => RT::IR->ActiveQuery( Lifecycle => $Lifecycle, Constituency =>  $m->{'RTIR_ConstituencyFilter'} )
+$Query       => RT::IR->ActiveQuery( Lifecycle => $Lifecycle, Constituency =>  $m->{'RTIR_ConstituencyFilter'}, Lifecycle => $Lifecycle, NotMemberOf => $id )
 $Format      => RT->Config->Get('RTIRSearchResultFormats')->{'LinkChildren'}
 $Rows        => 50
 $Page        => 1
@@ -93,11 +91,6 @@ $ARGS{'id'} = $id = $IncidentObj->id;
 
 my $Type = RT::IR::TicketType( Lifecycle => $Lifecycle );
 my $title = loc("Link selected [_1] to Incident #[_2]", $Type, $id);
-
-my $BaseQuery = RT::IR->Query(
-    Lifecycle => $Lifecycle,
-    NotMemberOf => $id,
-);
 
 my $base_url = RT::IR->HREFTo('Link/FromIncident/?'
     . $m->comp( '/Elements/QueryString', id => $id, Lifecycle => $Lifecycle ));
