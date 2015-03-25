@@ -64,7 +64,7 @@
 
 <table>
   
-% if (my $constituency = $TicketObj->QueueObj->FirstCustomFieldValue('RTIR Constituency') ) {
+% if (my $constituency = RT::IR->ConstituencyFor($TicketObj)) {
   <tr>
     <td class="label"><% loc("Constituency") %>:</td>
     <td class="value">

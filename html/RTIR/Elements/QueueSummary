@@ -92,7 +92,7 @@ my $queue_filter =sub {
     return undef if !$q->CurrentUserHasRight('ShowTicket');
     return undef if exists $unwanted->{$q->Name};
     return undef if (defined $m->{'RTIR_ConstituencyFilter'}
-        && ($q->FirstCustomFieldValue('RTIR Constituency')  || '')
+        && (RT::IR->ConstituencyFor($q) || '')
             ne ($m->{'RTIR_ConstituencyFilter'}||''));
     return 1;
 };

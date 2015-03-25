@@ -15,7 +15,7 @@ for my $lifecycle (RT::IR->Lifecycles) {
 
 # This list is already filtered by queues the user can see
 for my $queue (@{$queues->ItemsArrayRef}) {
-    my $c = $queue->FirstCustomFieldValue('RTIR Constituency');
+    my $c = RT::IR->ConstituencyFor($queue);
     next unless $c;
    $known_constituencies{$c }++;  
 }
