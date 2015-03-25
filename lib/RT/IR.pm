@@ -807,21 +807,25 @@ XXX TODO
 
 =cut
 
-=head2 ConstituencyFor $Ticket
+=head2 ConstituencyFor $Ticket|$Queue
 
-Returns the textual constituency name for any RTIR ticket.
-Returns undef for non-RTIR tickets.
+Returns the textual constituency name for any RTIR ticket or queue
+Returns undef for non-RTIR tickets and queues.
 
-Dies if handed something that's not a ticket
+Dies if handed something that's not a ticket or queue
 
 =cut
 
 
 sub ConstituencyFor {
     my $self = shift;
-    my $ticket = shift;
-    die "$ticket is not a ticket object" unless ref($ticket) && $ticket->isa('RT::Ticket');
-    return $ticket->QueueObj->FirstCustomFieldValue('RTIR Constituency');
+    my $object = shift;
+    if ($object->isa('RT::Queue')) {
+        return $object->FirstCustomFieldValue('RTIR Constituency');
+    }
+
+    die "$object is not a ticket object" unless ref($object) && $object->isa('RT::Ticket');
+    return $object->QueueObj->FirstCustomFieldValue('RTIR Constituency');
 }
 
 sub IsReportQueue {
