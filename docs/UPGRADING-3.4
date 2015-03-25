@@ -1,48 +1,16 @@
-=head1 Upgrading to 3.2
+=head1 Upgrading to 3.4
 
 The following describes some of the key components of the upgrade
-to RTIR 3.2 from previous versions of RTIR, specifically
-from RTIR 3.0. The other UPGRADING documents contain details
-for previous versions.
+to RTIR 3.4 from RTIR 3.2.  The other UPGRADING documents contain
+details for previous versions.
 
-=head2 F<add_constituency> Moved
+=head2 Constituency support
 
-The F<add_constituency> script has been moved from F<etc> to the standard
-F<bin> directory.
+=head3 Setting constituency based on email headers
 
-=head2 Chart URLs changed
-
-RT 4.2 added improved charting (multiple group bys, calculations, etc),
-but the arguments passed have changed. If you have bookmarks pointing to
-/RTIR/Search/Reporting.html they likely will not work on RTIR 3.2.
-
-=head2 Incident Due Dates
-
-It is now possible to edit the Due date of Incidents manually, however
-editing a child's Due Date will overwrite this (and Incident Due dates are
-not copied down to Children).
-
-=head2 C<$RTIRSearchResultFormats> now C<%RTIRSearchResultFormats>
-
-If you've copied $RTIRSearchResultFormats to your RTIR_SiteConfig.pm,
-you should switch to using %RTIRSearchResultFormats.  You no longer need
-to copy the entire configuration option just to change one or two of the
-formats (documented in RTIR_SiteConfig.pm) so you can merge your
-customizations together with our new entries and avoid copying defaults.
-
-=head2 Linking an IR to an Incident now copies IPs
-
-When creating an Incident from an Incident Report, RTIR would helpfully
-copy the IP for you, but didn't do so if you later added another IR to
-an existing Incident.  If you do no want this behavior, it is controlled
-by the "On Linking To Incident Copy IPs" scrip in the Incident Report
-Queue.
+RTIR 3.2 allowed sites to set ticket constituencies based on
+the C<X-RT-Mail-Extension> message header. As RTIR now supports
+the features of 'regular' RT queues for constituencies, using
+message headers to set RTIR constituencies is no longer available.
 
 
-=head1 UPGRADING FROM 3.2.0 AND EARLIER
-
-RTIR 3.2.0 and earlier set an unlimited value for the core setting
-C<MaxInlineBody>, overriding the default of 12k.  This could cause
-performance problems on large emails with large numbers of IP addresses,
-URLs, or other MakeClicky targets.  RTIR now sets a C<MaxInlineBody> of
-25k.
