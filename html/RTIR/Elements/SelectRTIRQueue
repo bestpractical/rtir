@@ -114,9 +114,9 @@ if ( not defined $session{$cache_key} ) {
     }
 
     while (my $object = $collection->Next) {
+        my $object_constituency =$object->FirstCustomFieldValue('RTIR Constituency') ||'';
         next if ($LimitToConstituency && 
-            ($object->FirstCustomFieldValue('RTIR Constituency') ||'') 
-            ne ($Constituency||''));
+            ($object_constituency ne ($Constituency||'')));
         if ($ShowAll
             or not $CheckRight
             or $session{CurrentUser}->HasRight( Object => $object, Right => $CheckRight ))
