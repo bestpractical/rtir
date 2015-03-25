@@ -232,6 +232,11 @@
        Description => 'Set status to first active possible',            # loc
        ExecModule  => 'RTIR_Activate',
     },
+    {
+       Name        => 'RTIR Change Child Constituencies',
+       Description => 'Move all tickets related to an incident to a new constituency',
+       ExecModule  => 'RTIR_ChangeChildConstituencies'
+    }
 );
 
 @ScripConditions = (
@@ -318,6 +323,12 @@
        Queue             => 'Incidents',
        ScripCondition    => 'On Status Change',
        ScripAction       => 'RTIR Resolve Children',
+       Template          => 'Blank', },
+
+    {  Description       => "Propagate Constituency Changes",
+       Queue             => 'Incidents',
+       ScripCondition    => 'On Queue Change',
+       ScripAction       => 'RTIR Change Child Constituencies',
        Template          => 'Blank', },
 
     {  Description       => "FixOwnership",
