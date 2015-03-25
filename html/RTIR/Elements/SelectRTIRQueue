@@ -125,8 +125,15 @@ if ( not defined $session{$cache_key} ) {
                 Id          => $object->Id,
                 Name        => $object->Name,
                 Description => $object->_Accessible("Description" => "read") ? $object->Description : undef,
+                Constituency => $object_constituency
             };
         }
+    }
+    if ($Constituency) {
+       @{$session{$cache_key}{objects}} = sort { 
+        ($b->{'Constituency'} eq $Constituency)
+            cmp ( $a->{'Constituency'} eq $Constituency) } 
+                            @{$session{$cache_key}{objects}};
     }
     $session{$cache_key}{lastupdated} = time();
 }
