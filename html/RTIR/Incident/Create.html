@@ -314,29 +314,20 @@ $m->callback(
 );
 
 
-
 my $constituency = $m->{'RTIR_ConstituencyFilter'};
 
 
-if($ChildObj) {
-    my $child_constituency = RT::IR->ConstituencyFor($ChildObj);
-    if ($constituency && $constituency ne $child_constituency) {
-        push @results, loc("[_1] constituency '[_2]' does not match current constituency '[_3]'", RT::IR::TicketType(Ticket=>$ChildObj), $child_constituency, $constituency);
+for my $related_ticket ($ChildObj, $SplitObj) {
+    next if !$related_ticket;
+
+    my $related_constituency = RT::IR->ConstituencyFor($related_ticket);
+    if ($constituency && $constituency ne $related_constituency) {
+        push @results, loc("[_1] constituency '[_2]' does not match current constituency '[_3]'", RT::IR::TicketType(Ticket=>$related_ticket), $related_constituency, $constituency);
     } elsif(!$constituency) {
-        $constituency = $child_constituency;
-    }
+        $constituency = $related_constituency;
+        }
+        last;
 }
-
-
-if ($SplitObj) {
-    my $split_constituency = RT::IR->ConstituencyFor($SplitObj);
-    if ($constituency && $constituency ne $split_constituency) {
-        push @results, loc("[_1] constituency '[_2]' does not match current constituency '[_3]'", RT::IR::TicketType(Ticket=>$SplitObj), $split_constituency, $constituency);
-    } elsif(!$constituency) {
-        $constituency = $split_constituency;
-    }
-}
-
 
 
 my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
