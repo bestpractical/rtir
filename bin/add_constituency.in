@@ -456,6 +456,25 @@ sub create_or_load_queue {
     $constituency_cf->AddToObject($queue);
     $queue->AddCustomFieldValue(Field => $constituency_cf->id, Value => $constituency);
     $whois_cf->AddToObject($queue);
+
+    my $templates = RT::Templates->new(RT->SystemUser);
+    $templates->LimitToQueue($basequeue->id);
+    while ( my $template = $templates->Next ) {
+        my $new_template = RT::Template->new( RT->SystemUser );
+        $new_template->Create(
+            Queue => $queue->id,
+            map { $_ => $template->$_ } qw/Name Description Type Content /,
+        );
+    }
+
+    my $scrips = RT::Scrips->new(RT->SystemUser);
+    $scrips->LimitToQueue($basequeue->id);
+    while ( my $scrip = $scrips->Next ) {
+        unless ( $scrip->IsAdded( $queue->id ) ) {
+            $scrip->AddToObject($queue->id);
+        }
+    }
+
     die "Failed to create queue $name." unless $queue->id;
 
     return $queue;
