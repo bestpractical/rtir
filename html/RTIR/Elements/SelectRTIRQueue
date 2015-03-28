@@ -75,7 +75,7 @@ $Constituency => undef
 <%init>
 my $Class    = "select-rtir-queue-".$Lifecycle;
 # XXX TODO This cache will need to take constituency into account
-my $cache_key = join "---", "SelectObject", 'rtir-queue-'.$Lifecycle,$LimitToConstituency, ($Constituency ||""),
+my $cache_key = join "---", "SelectObject", 'rtir-queue-'.$Lifecycle,$LimitToConstituency, ($Constituency ||""),$Default,
     $session{'CurrentUser'}->Id, $CheckRight || "", $ShowAll;
 
 if ( defined $session{$cache_key} && ref $session{$cache_key} eq 'ARRAY') {
@@ -87,6 +87,13 @@ if ( defined $session{$cache_key} && defined $CacheNeedsUpdate &&
 }
 
 if ( not defined $session{$cache_key} ) {
+
+    if ($Default && $LimitToConstituency && !$Constituency) {
+        my $default_queue= RT::Queue->new($session{'CurrentUser'});
+        $default_queue->Load($Default);
+        $Constituency = RT::IR->ConstituencyFor($default_queue);
+    }
+
     my $collection = RT::Queues->new($session{'CurrentUser'});
     if ($Lifecycle) {
         $collection->Limit(FIELD => 'Lifecycle', VALUE => $Lifecycle);
