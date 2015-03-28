@@ -260,7 +260,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 </&>
 </div>
 
-<& /Elements/Submit, Name => 'CreateIncident', Label => $SubmitLabel &>
+<& /Elements/Submit, Name => 'CreateIncident', Label => $SubmitLabel, SubmitId => 'create-ticket' &>
 
 </div>
 
@@ -277,6 +277,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 <& /Elements/Submit,
     Name => 'CreateWithInvestigation',
     Label => loc("Create Incident and run Investigation"),
+    SubmitId => 'create-ticket-with-investigation'
 &>
 </div>
 
