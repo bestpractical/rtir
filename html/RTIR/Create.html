@@ -360,7 +360,7 @@ if (RT::IR->IsCountermeasureQueue($QueueObj)
 }
 
 
-# As of RTIR 3.8, that's only true for Incidents
+# As of RTIR 3.4, that's only true for Incidents
 # If there's an RTIR specific create page for this kind of ticket, show that
 if ( $m->comp_exists("/RTIR/$Type/Create.html") ) {
 RT::Interface::Web::Redirect(RT::IR->HREFTo(
