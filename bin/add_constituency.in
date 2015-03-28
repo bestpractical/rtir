@@ -169,18 +169,18 @@ die "Couldn't find 'RTIR default WHOIS server' custom field"
 
 my $exist = cf_value_exists( $constituency );
 
-print "\nIf you continue then we'll...\n";
+debug "\nIf you continue then we'll...\n";
 if ( $exist ) {
-    print "* WARNING: skip adding constituency value, already exists.\n";
+    debug "* WARNING: skip adding constituency value, already exists.\n";
 } else {
-    print "* add new constituency value: '$constituency'.\n";
+    debug "* add new constituency value: '$constituency'.\n";
 }
 
 foreach my $lifecycle (@lifecycles) {
     my $prefix = RT::IR::FriendlyLifecycle($lifecycle);
-    print "* create queue '$prefix - $constituency' if it doesn't exist\n";
+    debug "* create queue '$prefix - $constituency' if it doesn't exist\n";
 }
-print <<END;
+debug <<END;
 * create group 'DutyTeam $constituency' if it don't exist
 * create group 'ReadOnly $constituency' if it don't exist
 * grant basic set of rights to the groups on the queues
@@ -498,8 +498,8 @@ sub rename_value {
 
     $RT::Handle->BeginTransaction;
 
-    print "\nIf you continue then we'll...\n";
-    print "* rename constituency value '$old' into '$new'.\n";
+    debug "\nIf you continue then we'll...\n";
+    debug "* rename constituency value '$old' into '$new'.\n";
     my $queues = RT::Queues->new(RT->SystemUser);
     $queues->UnLimit;
     while (my $queue = $queues->Next) {
@@ -508,13 +508,13 @@ sub rename_value {
         my $newname = $oldname;
         $newname =~ s/$old/$new/;
 
-        print "* rename queue '$oldname' to '$newname'.\n";
+        debug "* rename queue '$oldname' to '$newname'.\n";
     }
 
     
     foreach my $basename (@queue_prefixes) {
     }
-    print <<END;
+    debug <<END;
 * rename group 'DutyTeam $old' if it exists into 'DutyTeam $new'
 * rename group 'ReadOnly $old' if it exists into 'ReadOnly $new'
 
