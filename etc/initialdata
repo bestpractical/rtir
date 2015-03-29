@@ -2,45 +2,24 @@
 
 @Initial = (
     sub {
-        # put fake lifecycles for initiialization to succed
-        my $lc = RT->Config->Get('Lifecycles') || {};
-        # XXX TODO can we pull the lifecycles from lib/RT/IR.pm?
-        foreach my $name (qw(incidents incident_reports investigations blocks)) {
-            $lc->{ $name } ||= $lc->{'default'} || {};
-        }
-        RT->Config->Set(Lifecycles => %$lc);
+        use RT::IR;
         RT::Lifecycle->FillCache;
         return 1;
     },
 );
 
-@Queues = (
-    {
-        Name              => 'Incidents',
-        Lifecycle         => 'incidents',
+@Queues = map {
+    {   Name              => RT::IR::FriendlyLifecycle($_),
+        Lifecycle         => $_,
         CorrespondAddress => "",
         CommentAddress    => "",
-        InitialPriority   => 50,
-    },
-    {
-        Name              => 'Incident Reports',
-        Lifecycle         => 'incident_reports',
-        CorrespondAddress => "",
-        CommentAddress    => "",
-    },
-    {
-        Name              => 'Investigations',
-        Lifecycle         => 'investigations',
-        CorrespondAddress => "",
-        CommentAddress    => "",
-    },
-    {
-        Name              => 'Blocks',
-        Lifecycle         => 'blocks',
-        CorrespondAddress => "",
-        CommentAddress    => "",
-    },
-);
+        InitialPriority   => (
+            $_ eq 'incidents'
+            ? 50
+            : undef
+        )
+    }
+} RT::IR->Lifecycles;
 
 @CustomFields = (
     {
@@ -487,78 +466,65 @@ you may reply to this message.
 );
 
 @ACL = ();
-for my $queue (map {$_->{Name}} @Queues) {
-    push @ACL, (
-    { GroupDomain => 'RT::Queue-Role',
-      GroupType => 'Owner',
-      Queue => $queue,
-      Right  => 'ModifyTicket', },
-    { GroupId => 'DutyTeam',      # - principalId
-      GroupDomain => 'UserDefined',
-      Queue => $queue,
-      Right  => 'ShowTemplate', },
-    { GroupId => 'DutyTeam',      # - principalId
-      GroupDomain => 'UserDefined',
-      Queue => $queue,
-      Right  => 'CreateTicket', },
-    { GroupId => 'DutyTeam',      # - principalId
-      GroupDomain => 'UserDefined',
-      Queue => $queue,
-      Right  => 'OwnTicket', },
-    { GroupId => 'DutyTeam',      # - principalId
-      GroupDomain => 'UserDefined',
-      Queue => $queue,
-      Right  => 'CommentOnTicket', },
-    { GroupId => 'DutyTeam',      # - principalId
-      GroupDomain => 'UserDefined',
-      Queue => $queue,
-      Right  => 'SeeQueue', },
-    { GroupId => 'DutyTeam',      # - principalId
-      GroupDomain => 'UserDefined',
-      Queue => $queue,
-      Right  => 'ShowTicket', },
-    { GroupId => 'DutyTeam',      # - principalId
-      GroupDomain => 'UserDefined',
-      Queue => $queue,
-      Right  => 'ShowTicketComments', },
-    { GroupId => 'DutyTeam',      # - principalId
-      GroupDomain => 'UserDefined',
-      Queue => $queue,
-      Right  => 'StealTicket', },
-    { GroupId => 'DutyTeam',      # - principalId
-      GroupDomain => 'UserDefined',
-      Queue => $queue,
-      Right  => 'TakeTicket', },
-    { GroupId => 'DutyTeam',      # - principalId
-      GroupDomain => 'UserDefined',
-      Queue => $queue,
-      Right  => 'Watch', },
-    { GroupId => 'DutyTeam',      # - principalId
-      GroupDomain => 'UserDefined',
-      Queue => $queue,
-      Right  => 'ShowOutgoingEmail', },
-);}
+for my $queue ( map { $_->{Name} } @Queues ) {
+    foreach my $right ( RT::IR->OwnerAllQueueRights ) {
+        push @ACL,
+            (
+            {   GroupDomain => 'RT::Queue-Role',
+                GroupType   => 'Owner',
+                Queue       => $queue,
+                Right       => $right
+            },
+            );
+    }
+}
 
-push @ACL, (
-    { GroupType => 'Everyone', 
-      GroupDomain => 'SystemInternal',
-      Queue => 'Incident Reports',
-      Right  => 'CreateTicket', },
-    { GroupType => 'Everyone', 
-      GroupDomain => 'SystemInternal',
-      Queue => 'Incident Reports',
-      Right  => 'ReplyToTicket', },
+for my $queue ( map { $_->{Name} } @Queues ) {
+    foreach my $right ( RT::IR->DutyTeamAllQueueRights ) {
+        push @ACL, {
+            GroupId     => 'DutyTeam',      # - principalId
+            GroupDomain => 'UserDefined',
+            Queue       => $queue,
+            Right       => $right
+            },
 
-    { GroupType => 'Everyone', 
-      GroupDomain => 'SystemInternal',
-      Queue => 'Investigations',
-      Right  => 'ReplyToTicket', },
+    }
+}
 
-    { GroupType => 'Everyone', 
-      GroupDomain => 'SystemInternal',
-      Queue => 'Blocks',
-      Right  => 'ReplyToTicket', },
-);
+push @ACL, map {
+    {   Queue       => 'Investigations',
+        GroupType   => 'Everyone',
+        GroupDomain => 'SystemInternal',
+
+        Right => $_
+    }
+} RT::IR->EveryoneInvestigationRights();
+
+push @ACL, map {
+    {   Queue       => 'Incidents',
+        GroupType   => 'Everyone',
+        GroupDomain => 'SystemInternal',
+
+        Right => $_
+    }
+} RT::IR->EveryoneIncidentRights();
+
+push @ACL, map {
+
+    {   GroupType   => 'Everyone',
+        GroupDomain => 'SystemInternal',
+        Queue       => 'Incident Reports',
+        Right       => $_
+    }
+} RT::IR->EveryoneIncidentReportRights();
+
+push @ACL, map {
+    {   GroupType   => 'Everyone',
+        GroupDomain => 'SystemInternal',
+        Queue       => 'Blocks',
+        Right       => $_
+    }
+} RT::IR->EveryoneBlockRights();
 
 push @ACL, (
     { GroupId => 'DutyTeam',      # - principalId

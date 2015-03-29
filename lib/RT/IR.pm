@@ -91,6 +91,42 @@ my %FRIENDLY_LIFECYCLE = (
 
 );
 
+sub DutyTeamAllQueueRights {
+    return (
+        qw( CreateTicket
+            ShowTemplate
+            OwnTicket
+            CommentOnTicket
+            SeeQueue
+            ShowTicket
+            ShowTicketComments
+            StealTicket
+            TakeTicket
+            Watch
+            ShowOutgoingEmail
+            ));
+
+}
+
+sub OwnerAllQueueRights {
+    return (qw(ModifyTicket));
+}
+
+sub EveryoneIncidentReportRights {
+    return (qw(CreateTicket ReplyToTicket));
+}
+
+sub EveryoneIncidentRights {
+    return ();
+}
+
+sub EveryoneBlockRights {
+    return (qw(ReplyToTicket));
+}
+
+sub EveryoneInvestigationRights {
+    return (qw(ReplyToTicket));
+}
 
 use Parse::BooleanLogic;
 my $ticket_sql_parser = Parse::BooleanLogic->new;
