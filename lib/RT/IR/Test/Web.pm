@@ -120,13 +120,6 @@ sub create_rtir_ticket
     while (my ($f, $v) = each %$cfs) {
         $self->set_custom_field($queue, $f, $v);
     }
-
-    my %create = (
-        'Incident Reports' => 'Create',
-        'Investigations'   => 'Create',
-        'Blocks'           => 'Create',
-        'Incidents'        => 'CreateIncident'
-    );
     # Create it!
     my @submits = $self->find_all_inputs(id => 'create-ticket');
     $self->click_button(input=>$submits[0]); 
