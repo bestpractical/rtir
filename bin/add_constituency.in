@@ -117,7 +117,6 @@ my %opt;
 sub debug {
     return if $opt{'quiet'};
     print @_;
-    print "\n" if $_[-1] && $_[-1] !~ /\n$/s;
     return 1;
 };
 
@@ -195,7 +194,7 @@ unless ( $opt{'force'} ) {
     }
 }
 
-debug "Adding constituency $constituency";
+debug "Adding constituency $constituency\n";
 my $constituency_cf = add_cf_value( $constituency );
 
 my %queues;
@@ -249,6 +248,11 @@ my @RO_CF_RIGHTS = ( 'SeeCustomField');
 # Grant the new readonly group the rights to see the RTIR queues
     grant_group_queue_rights($ro, \%queues, @RO_QUEUE_RIGHTS);
 
+grant_role_queue_rights(\%queues);
+
+
+
+
 
 $RT::Handle->Commit;
 
@@ -273,7 +277,7 @@ sub get_constituency_cf {
 sub cf_value_exists {
     my $value = shift;
 
-    debug "Check that constituency '$value' exists";
+    debug "Check that constituency '$value' exists\n";
 
     my $cf = get_constituency_cf();
     my $values = $cf->Values;
@@ -286,15 +290,15 @@ sub cf_value_exists {
 sub add_cf_value {
     my $value = shift;
 
-    debug "Adding the value to the constituency CF";
+    debug "Adding the value to the constituency CF\n";
 
     my $cf = get_constituency_cf();
     if ( cf_value_exists( $value ) ) {
-        debug "Value '$value' already exists";
+        debug "Value '$value' already exists\n";
     } else {
         my ($val,$msg) = $cf->AddValue( Name => $value );
         die $msg unless $val;
-        debug "Added '$value' to the constituency field";
+        debug "Added '$value' to the constituency field\n";
     }
     return $cf;
 }
@@ -305,16 +309,16 @@ sub grant_group_queue_rights {
     my @rights = (@_);
     
     foreach my $queue    (values %$queues) {
-        debug "Granting rights for queue " .$queue->Name. " to group ". $group->Name;
+        debug "Granting rights for queue " .$queue->Name. " to group ". $group->Name."\n";
         foreach my $right  (@rights) {
-            debug "\t$right\n";
+            debug "\t$right";
             if ( $group->PrincipalObj->HasRight( Right => $right, Object => $queue ) ) {
-                debug "\t...skipped, already granted";
+                debug "\t...skipped, already granted\n";
                 next;
             }
             my ($val,$msg) =  $group->PrincipalObj->GrantRight(Right => $right, Object=>$queue);
             if ( $val ) {
-                debug "\t...done.";
+                debug "\t...done.\n";
             } else {
                 die "Failed to grant $right to ". $group->Name ." for Queue ". $queue->Name;
             }
@@ -334,17 +338,17 @@ sub grant_group_cf_rights {
         $cfs->LimitToObjectId($q->Id);
     }
     while ( my $cf = $cfs->Next ) {
-        debug "Granting rights for custom field ". $cf->Name . " to group ". $group->Name;
+        debug "Granting rights for custom field ". $cf->Name . " to group ". $group->Name."\n";
 
         foreach my $right  (@rights) {
             debug "\t$right";
             if ( $group->PrincipalObj->HasRight( Right => $right, Object => $cf ) ) {
-                debug "\t...skipped, already granted";
+                debug "\t...skipped, already granted\n";
                 next;
             }
             my ($val,$msg) =  $group->PrincipalObj->GrantRight(Right => $right, Object=>$cf);
             if ( $val ) {
-                debug "\t...done.";
+                debug "\t...done.\n";
             } else {
                 die "Failed to grant $right to ".$group->Name. " for Custom Field ". $cf->Name
                     .".\nError: $msg";
@@ -367,9 +371,9 @@ sub create_or_load_group {
     $group->LoadUserDefinedGroup($name);
     unless ( $group->id ) {
         my ($val,$msg) = $group->CreateUserDefinedGroup( Name => $name);
-        debug "Creating new group $name: $msg";
+        debug "Creating new group $name: $msg\n";
     } else {
-        debug "Group '$name' already exists";
+        debug "Group '$name' already exists\n";
     }
 
     die "Failed to create group $name." unless $group->id;
@@ -410,11 +414,11 @@ sub create_or_load_queue {
             CorrespondAddress => $opt{'correspond'},
             Lifecycle => $lifecycle
         );
-        debug "Creating new queue '$name': $msg";
+        debug "Creating new queue '$name': $msg\n";
         debug "\tcomment address:\t$opt{'comment'}" if $opt{'comment'};
         debug "\tcorrespond address:\t$opt{'correspond'}" if $opt{'correspond'};
     } else {
-        debug "Queue '$name' already exists";
+        debug "Queue '$name' already exists\n";
         foreach my $type ( qw(Comment Correspond) ) {
             next unless $opt{ lc $type };
             my $method = $type .'Address';
@@ -438,7 +442,7 @@ sub create_or_load_queue {
 
 
     while (my $basecf = $basecfs->Next) {
-        debug "Adding Ticket CustomField ".$basecf->Name." to queue ".$queue->Name;
+        debug "Adding Ticket CustomField ".$basecf->Name." to queue ".$queue->Name."\n";
         $basecf->AddToObject($queue); 
     }
 
@@ -448,7 +452,7 @@ sub create_or_load_queue {
     $base_txncfs->LimitToLookupType( 'RT::Queue-RT::Ticket-RT::Transaction');
 
     while (my $base_txncf = $base_txncfs->Next) {
-        debug "Adding Ticket Transaction CustomField ".$base_txncf->Name." to queue ".$queue->Name;
+        debug "Adding Ticket Transaction CustomField ".$base_txncf->Name." to queue ".$queue->Name."\n";
         $base_txncf->AddToObject($queue); 
     }
 
@@ -524,7 +528,7 @@ END
     {
         my ($status, $msg) = $value_obj->SetName( $new );
         die $msg unless $status;
-        debug "Renamed constituency value '$old' -> '$new'.";
+        debug "Renamed constituency value '$old' -> '$new'.\n";
     }
 
     $queues = RT::Queues->new(RT->SystemUser);
@@ -538,23 +542,23 @@ END
         my ($status, $msg) = $queue->SetName( $newname);
         die $msg unless $status;
 
-        debug "Renamed queue '$oldname' -> '$newname'";
+        debug "Renamed queue '$oldname' -> '$newname'\n";
     }
 
     foreach my $basename (qw(DutyTeam Readonly)) {
         my $group = group_exists( "$basename $old" );
         unless ( $group ) {
-            debug "Group '$basename $old' doesn't exist. Skiping...";
+            debug "Group '$basename $old' doesn't exist. Skipping...\n";
             next;
         }
         if ( group_exists( "$basename $new" ) ) {
-            die "Couldn't rename group, target '$basename $new' already exist.";
+            die "Couldn't rename group, target '$basename $new' already exists.";
         }
 
         my ($status, $msg) = $group->SetName( "$basename $new" );
         die $msg unless $status;
 
-        debug "Renamed group '$basename $old' -> '$basename $new'";
+        debug "Renamed group '$basename $old' -> '$basename $new'\n";
     }
 
     $RT::Handle->Commit;
