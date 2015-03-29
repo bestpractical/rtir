@@ -68,13 +68,15 @@ sub Prepare {
 
     return 0 unless (RT::IR->ConstituencyFor($q2) ne RT::IR->ConstituencyFor($q1));
 
+    $self->{'old_constituency'} = RT::IR->ConstituencyFor($q1);
     $self->{'new_constituency'} = RT::IR->ConstituencyFor($q2);
     return 1;
 }
 
 =head2 Commit
 
-Change the constituency of children.
+Change the constituency of children, but only if they were started
+off in the same constituency as the incident
 
 =cut
 
@@ -91,6 +93,7 @@ sub Commit {
     while ( my $ticket = $kids->Next) {
         my $kid_constituency = RT::IR->ConstituencyFor($ticket);
         next if ($kid_constituency eq $new_constituency);
+        next if ($kid_constituency ne $old_constituency);
         # if the constituency of the other ticket isn't the same as the new 
         # constituency
         my $kid_queue = $ticket->QueueObj->Name;
