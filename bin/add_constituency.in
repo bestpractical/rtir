@@ -285,6 +285,67 @@ sub add_cf_value {
     return $cf;
 }
 
+sub grant_role_queue_rights {
+    my $queues = shift;
+    my $everyone = RT::Group->new( RT->SystemUser );
+    $everyone->LoadSystemInternalGroup('Everyone');
+    foreach my $queue ( values %$queues ) {
+        debug "Granting role rights to Everyone for queue " . $queue->Name . "\n";
+        my @rights;
+
+        if ( $queue->Lifecycle eq 'incident_reports' ) {
+            @rights = RT::IR->EveryoneIncidentReportRights();
+        } elsif ( $queue->Lifecycle eq 'incidents' ) {
+            @rights = RT::IR->EveryoneIncidentRights();
+
+        }
+        if ( $queue->Lifecycle eq 'investigations' ) {
+            @rights = RT::IR->EveryoneInvestigationRights();
+
+        } elsif ( $queue->Lifecycle eq 'countermeaures' ) {
+            @rights = RT::IR->EveryoneBlockRights();
+        }
+        # grant 'everyone' rights
+        for my $right (@rights) {
+            debug "\t$right...";
+            
+            if ( $everyone->PrincipalObj->HasRight(
+                Object => $queue,
+                Right  => $right)) {
+            debug "skipping, already granted\n";
+            } else { 
+            my ( $val, $msg ) = $everyone->PrincipalObj->GrantRight(
+                Object => $queue,
+                Right  => $right
+            );
+            if ( !$val ) { die $msg }
+            debug  "done\n";
+        }
+        }
+
+        # grant 'owner' rights
+        debug "\tGranting role rights to Owners on " . $queue->Name . "\n";
+        for my $right ( RT::IR->OwnerAllQueueRights ) {
+            debug "\t$right...";
+            my $owner = $queue->RoleGroup('Owner');
+            if( $owner->PrincipalObj->HasRight(
+                Object => $queue,
+                Right  => $right
+            )) {
+            debug "skipping, already granted\n";
+            } else { 
+            my ( $val, $msg ) = $owner->PrincipalObj->GrantRight(
+                Object => $queue,
+                Right  => $right
+            );
+
+            if ( !$val ) { die $msg }
+            debug  "done\n";
+        }
+        }
+    }
+}
+
 sub grant_group_queue_rights {
     my $group  = shift;
     my $queues = shift;
