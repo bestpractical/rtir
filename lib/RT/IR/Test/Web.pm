@@ -128,8 +128,8 @@ sub create_rtir_ticket
         'Incidents'        => 'CreateIncident'
     );
     # Create it!
-    $self->click( $create{ $queue } );
-    
+    my @submits = $self->find_all_inputs(id => 'create-ticket');
+    $self->click_button(input=>$submits[0]); 
     Test::More::is ($self->status, 200, "Attempted to create the ticket");
 
     return $self->get_ticket_id;
@@ -144,7 +144,7 @@ sub create_incident_for_ir {
     $self->display_ticket( $ir_id );
 
     # Select the "New" link from the Display page
-    $self->follow_link_ok({text => "New"}, "Followed 'New (Incident)' link")
+    $self->follow_link_ok({id => 'create-incident'}, "Followed 'New (Incident)' link")
         or Test::More::diag $self->content;
 
     $self->form_number(3);
@@ -157,7 +157,9 @@ sub create_incident_for_ir {
         $self->set_custom_field( 'Incidents', $f, $v);
     }
 
-    $self->click("CreateIncident");
+    #warn $self->content;
+    my @submits = $self->find_all_inputs(id => 'create-ticket');
+    $self->click_button(input=>$submits[0]); 
     
     Test::More::is ($self->status, 200, "Attempting to create new incident linked to child $ir_id");
 
