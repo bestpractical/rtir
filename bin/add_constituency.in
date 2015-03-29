@@ -118,16 +118,17 @@ sub debug {
     return if $opt{'quiet'};
     print @_;
     return 1;
-};
+}
 
 use Getopt::Long;
-GetOptions( \%opt, "name=s", "rename=s", "correspond=s", "comment=s", "help", "quiet", "force" );
+GetOptions( \%opt, "name=s", "rename=s", "correspond=s", "comment=s", "help",
+    "quiet", "force" );
 
 if ( $opt{'help'} ) {
     require Pod::Usage;
     import Pod::Usage;
     pod2usage(
-        -msg => "RTIR Constituencies management tool\n",
+        -msg     => "RTIR Constituencies management tool\n",
         -verbose => 2,
         -exitval => 0,
     );
@@ -138,22 +139,18 @@ unless ( defined $constituency && length $constituency ) {
     require Pod::Usage;
     import Pod::Usage;
     pod2usage(
-        -msg => "Name of constituency is a mandatory argument\n",
+        -msg     => "Name of constituency is a mandatory argument\n",
         -exitval => 1,
     );
 }
 
 my @lifecycles = RT::IR->Lifecycles;
 
-
 my @queue_prefixes = map { RT::IR::FriendlyLifecycle($_) } @lifecycles;
 
 if ( exists $opt{'rename'} ) {
-    exit rename_value(
-        $constituency => sanitize_value( $opt{'rename'} )
-    );
+    exit rename_value( $constituency => sanitize_value( $opt{'rename'} ) );
 }
-
 
 $RT::Handle->BeginTransaction;
 
@@ -165,11 +162,10 @@ $whois_cf->LoadByName(
 die "Couldn't find 'RTIR default WHOIS server' custom field"
     unless ( $whois_cf->id );
 
-
-my $exist = cf_value_exists( $constituency );
+my $exist = cf_value_exists($constituency);
 
 debug "\nIf you continue then we'll...\n";
-if ( $exist ) {
+if ($exist) {
     debug "* WARNING: skip adding constituency value, already exists.\n";
 } else {
     debug "* add new constituency value: '$constituency'.\n";
@@ -187,62 +183,62 @@ debug <<END;
 END
 
 unless ( $opt{'force'} ) {
-    if ( $exist ) {
-        exit 0 unless prompt_yN( "Do you want to proceed with update?" );
+    if ($exist) {
+        exit 0 unless prompt_yN("Do you want to proceed with update?");
     } else {
-        exit 0 unless prompt_yN( "Do you want to proceed creating the new constituency?" );
+        exit 0
+            unless prompt_yN(
+            "Do you want to proceed creating the new constituency?");
     }
 }
 
 debug "Adding constituency $constituency\n";
-my $constituency_cf = add_cf_value( $constituency );
+my $constituency_cf = add_cf_value($constituency);
 
 my %queues;
+
 # Create our four new queues
-foreach my $lifecycle (@lifecycles){
-    $queues{$lifecycle} = create_or_load_queue(RT::IR::FriendlyLifecycle($lifecycle) . " - " .$constituency, $lifecycle, $constituency_cf);
+foreach my $lifecycle (@lifecycles) {
+    $queues{$lifecycle}
+        = create_or_load_queue(
+        RT::IR::FriendlyLifecycle($lifecycle) . " - " . $constituency,
+        $lifecycle, $constituency_cf );
 }
 
 # Create a DutyTeam $constituency
-my $dutyteam = create_or_load_group('DutyTeam '.$constituency);
-my $ro = create_or_load_group('ReadOnly '.$constituency);
-
+my $dutyteam = create_or_load_group( 'DutyTeam ' . $constituency );
+my $ro       = create_or_load_group( 'ReadOnly ' . $constituency );
 
 my @RO_QUEUE_RIGHTS = (
-       'ShowTicket', 
-       'ShowTicketComments', 
-       'Watch', 
-       'SeeQueue', 
-       'ShowTemplate', 
+    'ShowTicket',
+    'ShowTicketComments',
+    'Watch',
+    'SeeQueue',
+    'ShowTemplate',
 
 );
-   
-    
-my @DUTYTEAM_CF_RIGHTS = ( 'SeeCustomField', 'ModifyCustomField');
-my @RO_CF_RIGHTS = ( 'SeeCustomField');
+
+my @DUTYTEAM_CF_RIGHTS = ( 'SeeCustomField', 'ModifyCustomField' );
+my @RO_CF_RIGHTS = ('SeeCustomField');
 
 # Grant that new dutyteam rights to see and update the CFs
-    grant_group_cf_rights($dutyteam, @DUTYTEAM_CF_RIGHTS);
+grant_group_cf_rights( $dutyteam, @DUTYTEAM_CF_RIGHTS );
+
 # Grant that new dutyteam all the regular dutyteam rights for the new constituency queues
-    grant_group_queue_rights($dutyteam, \%queues, RT::IR->DutyTeamAllQueueRights);
-
-
-
+grant_group_queue_rights( $dutyteam, \%queues,
+    RT::IR->DutyTeamAllQueueRights );
 
 # Create or load the group "ReadOnly $constituency"
-    grant_group_cf_rights($ro, @RO_CF_RIGHTS);
+grant_group_cf_rights( $ro, @RO_CF_RIGHTS );
+
 # Grant the new readonly group the rights to see the RTIR queues
-    grant_group_queue_rights($ro, \%queues, @RO_QUEUE_RIGHTS);
+grant_group_queue_rights( $ro, \%queues, @RO_QUEUE_RIGHTS );
 
-grant_role_queue_rights(\%queues);
-
-
-
-
+grant_role_queue_rights( \%queues );
 
 $RT::Handle->Commit;
 
-debug "Done. Enjoy your new constituency.\n"; 
+debug "Done. Enjoy your new constituency.\n";
 
 sub prompt_yN {
     my $text = shift;
@@ -252,8 +248,8 @@ sub prompt_yN {
 }
 
 sub get_constituency_cf {
-    my $cf = RT::CustomField->new( $RT::SystemUser );
-    $cf->Load("RTIR Constituency", LookupType => 'RT::Queue');
+    my $cf = RT::CustomField->new($RT::SystemUser);
+    $cf->Load( "RTIR Constituency", LookupType => 'RT::Queue' );
     unless ( $cf->id ) {
         die "Couldn't load the constituency custom field";
     }
@@ -265,12 +261,12 @@ sub cf_value_exists {
 
     debug "Check that constituency '$value' exists\n";
 
-    my $cf = get_constituency_cf();
+    my $cf     = get_constituency_cf();
     my $values = $cf->Values;
     $values->Limit( FIELD => 'Name', VALUE => $value );
     my $value_obj = $values->First;
-    if( $value_obj && $value_obj->id) {return  $value_obj }
-    else { return undef;}
+    if   ( $value_obj && $value_obj->id ) { return $value_obj }
+    else                                  { return undef; }
 }
 
 sub add_cf_value {
@@ -279,10 +275,10 @@ sub add_cf_value {
     debug "Adding the value to the constituency CF\n";
 
     my $cf = get_constituency_cf();
-    if ( cf_value_exists( $value ) ) {
+    if ( cf_value_exists($value) ) {
         debug "Value '$value' already exists\n";
     } else {
-        my ($val,$msg) = $cf->AddValue( Name => $value );
+        my ( $val, $msg ) = $cf->AddValue( Name => $value );
         die $msg unless $val;
         debug "Added '$value' to the constituency field\n";
     }
@@ -290,23 +286,37 @@ sub add_cf_value {
 }
 
 sub grant_group_queue_rights {
-    my $group = shift;
+    my $group  = shift;
     my $queues = shift;
     my @rights = (@_);
-    
-    foreach my $queue    (values %$queues) {
-        debug "Granting rights for queue " .$queue->Name. " to group ". $group->Name."\n";
-        foreach my $right  (@rights) {
+
+    foreach my $queue ( values %$queues ) {
+        debug "Granting rights for queue "
+            . $queue->Name
+            . " to group "
+            . $group->Name . "\n";
+        foreach my $right (@rights) {
             debug "\t$right";
-            if ( $group->PrincipalObj->HasRight( Right => $right, Object => $queue ) ) {
+            if ($group->PrincipalObj->HasRight(
+                    Right  => $right,
+                    Object => $queue
+                )
+               )
+            {
                 debug "\t...skipped, already granted\n";
                 next;
             }
-            my ($val,$msg) =  $group->PrincipalObj->GrantRight(Right => $right, Object=>$queue);
-            if ( $val ) {
+            my ( $val, $msg ) = $group->PrincipalObj->GrantRight(
+                Right  => $right,
+                Object => $queue
+            );
+            if ($val) {
                 debug "\t...done.\n";
             } else {
-                die "Failed to grant $right to ". $group->Name ." for Queue ". $queue->Name;
+                die "Failed to grant $right to "
+                    . $group->Name
+                    . " for Queue "
+                    . $queue->Name;
             }
         }
     }
@@ -315,29 +325,43 @@ sub grant_group_queue_rights {
 
 # XXX TODO this should be looking at cfs on the new queues
 sub grant_group_cf_rights {
-    my $group = shift;
+    my $group  = shift;
     my @rights = (@_);
 
     my $cfs = RT::CustomFields->new($RT::SystemUser);
     for my $queue (@queue_prefixes) {
         my $q = load_queue($queue);
-        $cfs->LimitToObjectId($q->Id);
+        $cfs->LimitToObjectId( $q->Id );
     }
     while ( my $cf = $cfs->Next ) {
-        debug "Granting rights for custom field ". $cf->Name . " to group ". $group->Name."\n";
+        debug "Granting rights for custom field "
+            . $cf->Name
+            . " to group "
+            . $group->Name . "\n";
 
-        foreach my $right  (@rights) {
+        foreach my $right (@rights) {
             debug "\t$right";
-            if ( $group->PrincipalObj->HasRight( Right => $right, Object => $cf ) ) {
+            if ($group->PrincipalObj->HasRight(
+                    Right  => $right,
+                    Object => $cf
+                )
+               )
+            {
                 debug "\t...skipped, already granted\n";
                 next;
             }
-            my ($val,$msg) =  $group->PrincipalObj->GrantRight(Right => $right, Object=>$cf);
-            if ( $val ) {
+            my ( $val, $msg ) = $group->PrincipalObj->GrantRight(
+                Right  => $right,
+                Object => $cf
+            );
+            if ($val) {
                 debug "\t...done.\n";
             } else {
-                die "Failed to grant $right to ".$group->Name. " for Custom Field ". $cf->Name
-                    .".\nError: $msg";
+                die "Failed to grant $right to "
+                    . $group->Name
+                    . " for Custom Field "
+                    . $cf->Name
+                    . ".\nError: $msg";
             }
         }
     }
@@ -345,18 +369,18 @@ sub grant_group_cf_rights {
 }
 
 sub group_exists {
-    my $name = shift;
-    my $group = RT::Group->new( $RT::SystemUser );
+    my $name  = shift;
+    my $group = RT::Group->new($RT::SystemUser);
     $group->LoadByCols( Name => $name );
     return $group && $group->id ? $group : undef;
 }
 
 sub create_or_load_group {
-    my $name = shift;
+    my $name  = shift;
     my $group = RT::Group->new($RT::SystemUser);
     $group->LoadUserDefinedGroup($name);
     unless ( $group->id ) {
-        my ($val,$msg) = $group->CreateUserDefinedGroup( Name => $name);
+        my ( $val, $msg ) = $group->CreateUserDefinedGroup( Name => $name );
         debug "Creating new group $name: $msg\n";
     } else {
         debug "Group '$name' already exists\n";
@@ -368,87 +392,94 @@ sub create_or_load_group {
 }
 
 sub queue_exists {
-    my $name = shift;
-    my $queue = RT::Queue->new( $RT::SystemUser );
+    my $name  = shift;
+    my $queue = RT::Queue->new($RT::SystemUser);
     $queue->LoadByCols( Name => $name );
     return $queue && $queue->id ? $queue : undef;
 }
 
 sub load_queue {
-    my $name = shift;
-    my $queue = queue_exists( $name );
+    my $name  = shift;
+    my $queue = queue_exists($name);
     die "Couldn't load queue '$name'" unless $queue;
     return $queue;
 }
 
 sub create_or_load_queue {
-    my $name = shift;
-    my $lifecycle = shift;
+    my $name            = shift;
+    my $lifecycle       = shift;
     my $constituency_cf = shift;
-   
 
-    my $basequeue = RT::Queue->new(RT->SystemUser);
+    my $basequeue = RT::Queue->new( RT->SystemUser );
 
-    $basequeue->LoadByCols(Name => RT::IR::FriendlyLifecycle($lifecycle));
+    $basequeue->LoadByCols( Name => RT::IR::FriendlyLifecycle($lifecycle) );
 
-    my $queue = RT::Queue->new( $RT::SystemUser );
+    my $queue = RT::Queue->new($RT::SystemUser);
     $queue->LoadByCols( Name => $name );
     unless ( $queue->id ) {
-        my ($val, $msg) = $queue->Create(
-            Name => $name,
-            CommentAddress => $opt{'comment'},
+        my ( $val, $msg ) = $queue->Create(
+            Name              => $name,
+            CommentAddress    => $opt{'comment'},
             CorrespondAddress => $opt{'correspond'},
-            Lifecycle => $lifecycle
+            Lifecycle         => $lifecycle
         );
         debug "Creating new queue '$name': $msg\n";
         debug "\tcomment address:\t$opt{'comment'}" if $opt{'comment'};
-        debug "\tcorrespond address:\t$opt{'correspond'}" if $opt{'correspond'};
+        debug "\tcorrespond address:\t$opt{'correspond'}"
+            if $opt{'correspond'};
     } else {
         debug "Queue '$name' already exists\n";
-        foreach my $type ( qw(Comment Correspond) ) {
+        foreach my $type (qw(Comment Correspond)) {
             next unless $opt{ lc $type };
-            my $method = $type .'Address';
+            my $method  = $type . 'Address';
             my $current = $queue->$method();
             next if $current eq $opt{ lc $type };
 
-            $method = 'Set'. $method;
-            my ($status, $msg) = $queue->$method( $opt{ lc $type } );
-            unless ( $status ) {
+            $method = 'Set' . $method;
+            my ( $status, $msg ) = $queue->$method( $opt{ lc $type } );
+            unless ($status) {
                 print STDERR "Couldn't set $type address of '$name' queue\n";
             } else {
-                debug "\tnew $type address: ". $opt{ lc $type };
+                debug "\tnew $type address: " . $opt{ lc $type };
             }
         }
     }
 
-    my $basecfs = RT::CustomFields->new( RT->SystemUser);
-    $basecfs->SetContextObject( $basequeue );
+    my $basecfs = RT::CustomFields->new( RT->SystemUser );
+    $basecfs->SetContextObject($basequeue);
     $basecfs->LimitToObjectId( $basequeue->id );
-    $basecfs->LimitToLookupType( 'RT::Queue-RT::Ticket' );
+    $basecfs->LimitToLookupType('RT::Queue-RT::Ticket');
 
-
-    while (my $basecf = $basecfs->Next) {
-        debug "Adding Ticket CustomField ".$basecf->Name." to queue ".$queue->Name."\n";
-        $basecf->AddToObject($queue); 
+    while ( my $basecf = $basecfs->Next ) {
+        debug "Adding Ticket CustomField "
+            . $basecf->Name
+            . " to queue "
+            . $queue->Name . "\n";
+        $basecf->AddToObject($queue);
     }
 
-    my $base_txncfs = RT::CustomFields->new( RT->SystemUser);
-    $base_txncfs->SetContextObject( $basequeue );
+    my $base_txncfs = RT::CustomFields->new( RT->SystemUser );
+    $base_txncfs->SetContextObject($basequeue);
     $base_txncfs->LimitToObjectId( $basequeue->id );
-    $base_txncfs->LimitToLookupType( 'RT::Queue-RT::Ticket-RT::Transaction');
+    $base_txncfs->LimitToLookupType('RT::Queue-RT::Ticket-RT::Transaction');
 
-    while (my $base_txncf = $base_txncfs->Next) {
-        debug "Adding Ticket Transaction CustomField ".$base_txncf->Name." to queue ".$queue->Name."\n";
-        $base_txncf->AddToObject($queue); 
+    while ( my $base_txncf = $base_txncfs->Next ) {
+        debug "Adding Ticket Transaction CustomField "
+            . $base_txncf->Name
+            . " to queue "
+            . $queue->Name . "\n";
+        $base_txncf->AddToObject($queue);
     }
-
 
     $constituency_cf->AddToObject($queue);
-    $queue->AddCustomFieldValue(Field => $constituency_cf->id, Value => $constituency);
+    $queue->AddCustomFieldValue(
+        Field => $constituency_cf->id,
+        Value => $constituency
+    );
     $whois_cf->AddToObject($queue);
 
-    my $templates = RT::Templates->new(RT->SystemUser);
-    $templates->LimitToQueue($basequeue->id);
+    my $templates = RT::Templates->new( RT->SystemUser );
+    $templates->LimitToQueue( $basequeue->id );
     while ( my $template = $templates->Next ) {
         my $new_template = RT::Template->new( RT->SystemUser );
         $new_template->Create(
@@ -457,11 +488,11 @@ sub create_or_load_queue {
         );
     }
 
-    my $scrips = RT::Scrips->new(RT->SystemUser);
-    $scrips->LimitToQueue($basequeue->id);
+    my $scrips = RT::Scrips->new( RT->SystemUser );
+    $scrips->LimitToQueue( $basequeue->id );
     while ( my $scrip = $scrips->Next ) {
         unless ( $scrip->IsAdded( $queue->id ) ) {
-            $scrip->AddToObject($queue->id);
+            $scrip->AddToObject( $queue->id );
         }
     }
 
@@ -476,13 +507,12 @@ sub rename_value {
 
     my $value_obj;
 
-
     my $constituency_cf = get_constituency_cf();
 
-    unless ( $value_obj = cf_value_exists( $old ) ) {
+    unless ( $value_obj = cf_value_exists($old) ) {
         die "Couldn't rename. Constituency '$old' doesn't exist.";
     }
-    if ( cf_value_exists( $new ) ) {
+    if ( cf_value_exists($new) ) {
         die "Couldn't rename. Constituency '$new' already exists.";
     }
 
@@ -490,10 +520,13 @@ sub rename_value {
 
     debug "\nIf you continue then we'll...\n";
     debug "* rename constituency value '$old' into '$new'.\n";
-    my $queues = RT::Queues->new(RT->SystemUser);
+    my $queues = RT::Queues->new( RT->SystemUser );
     $queues->UnLimit;
-    while (my $queue = $queues->Next) {
-        next unless (($queue->FirstCustomFieldValue('RTIR Constituency')||'') eq $old);
+    while ( my $queue = $queues->Next ) {
+        next
+            unless (
+            ( $queue->FirstCustomFieldValue('RTIR Constituency') || '' ) eq
+            $old );
         my $oldname = $queue->Name;
         my $newname = $oldname;
         $newname =~ s/$old/$new/;
@@ -501,7 +534,6 @@ sub rename_value {
         debug "* rename queue '$oldname' to '$newname'.\n";
     }
 
-    
     foreach my $basename (@queue_prefixes) {
     }
     debug <<END;
@@ -509,39 +541,46 @@ sub rename_value {
 * rename group 'ReadOnly $old' if it exists into 'ReadOnly $new'
 
 END
-    return 0 unless prompt_yN( "Do you want to proceed?" );
+    return 0 unless prompt_yN("Do you want to proceed?");
 
     {
-        my ($status, $msg) = $value_obj->SetName( $new );
+        my ( $status, $msg ) = $value_obj->SetName($new);
         die $msg unless $status;
         debug "Renamed constituency value '$old' -> '$new'.\n";
     }
 
-    $queues = RT::Queues->new(RT->SystemUser);
+    $queues = RT::Queues->new( RT->SystemUser );
     $queues->UnLimit;
-    while (my $queue = $queues->Next) {
-        next unless (($queue->FirstCustomFieldValue('RTIR Constituency')||'') eq $old);
+    while ( my $queue = $queues->Next ) {
+        next
+            unless (
+            ( $queue->FirstCustomFieldValue('RTIR Constituency') || '' ) eq
+            $old );
         my $oldname = $queue->Name;
         my $newname = $oldname;
         $newname =~ s/$old/$new/;
-        $queue->AddCustomFieldValue(Field => $constituency_cf->id, Value => $new);
-        my ($status, $msg) = $queue->SetName( $newname);
+        $queue->AddCustomFieldValue(
+            Field => $constituency_cf->id,
+            Value => $new
+        );
+        my ( $status, $msg ) = $queue->SetName($newname);
         die $msg unless $status;
 
         debug "Renamed queue '$oldname' -> '$newname'\n";
     }
 
     foreach my $basename (qw(DutyTeam Readonly)) {
-        my $group = group_exists( "$basename $old" );
-        unless ( $group ) {
+        my $group = group_exists("$basename $old");
+        unless ($group) {
             debug "Group '$basename $old' doesn't exist. Skipping...\n";
             next;
         }
-        if ( group_exists( "$basename $new" ) ) {
-            die "Couldn't rename group, target '$basename $new' already exists.";
+        if ( group_exists("$basename $new") ) {
+            die
+                "Couldn't rename group, target '$basename $new' already exists.";
         }
 
-        my ($status, $msg) = $group->SetName( "$basename $new" );
+        my ( $status, $msg ) = $group->SetName("$basename $new");
         die $msg unless $status;
 
         debug "Renamed group '$basename $old' -> '$basename $new'\n";
@@ -554,6 +593,7 @@ END
 
 sub sanitize_value {
     my $value = shift;
+
     # cleanup value
     $value = '' unless defined $value;
     $value =~ s/^\s+//;
