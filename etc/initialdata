@@ -22,33 +22,29 @@
 } RT::IR->Lifecycles;
 
 @CustomFields = (
-    {
-        Name        => 'RTIR Constituency',
+    {   Name        => 'RTIR Constituency',
         Type        => 'SelectSingle',
         Disabled    => 0,
         RenderType  => 'Dropdown',
         LookupType  => 'RT::Queue',
         Description => 'Associates RTIR queues with constituencies',
-        Values      => [
-        ]
+        Values      => []
     },
-    {
-        Name        => 'RTIR default WHOIS server',
-        Type        => 'FreeformSingle',
-        Disabled    => 0,
-        LookupType  => 'RT::Queue',
-        Description => 'If set, defines the default WHOIS server for an RTIR Queue',
-        ApplyTo     => [map {$_->{Name}} @Queues]
+    {   Name       => 'RTIR default WHOIS server',
+        Type       => 'FreeformSingle',
+        Disabled   => 0,
+        LookupType => 'RT::Queue',
+        Description =>
+            'If set, defines the default WHOIS server for an RTIR Queue',
+        ApplyTo => [ map { $_->{Name} } @Queues ]
     },
-    {
-        Name        => 'Description',
+    {   Name        => 'Description',
         Type        => 'FreeformSingle',
         Queue       => 'Incidents',
         Disabled    => 0,
         Description => 'Description for Incidents RTIR queue',
     },
-    {
-        Name        => 'Resolution',
+    {   Name        => 'Resolution',
         Type        => 'SelectSingle',
         RenderType  => 'Dropdown',
         Queue       => 'Incidents',
@@ -61,49 +57,46 @@
             { Name => 'no response from other ISP', SortOrder => 4 },
         ],
     },
-    {
-        Name        => 'Function',
+    {   Name        => 'Function',
         Type        => 'SelectSingle',
         RenderType  => 'Dropdown',
         Queue       => 'Incidents',
         Disabled    => 0,
         Description => 'Function for Incidents RTIR queue',
         Values      => [
-            { Name      => "AbuseDesk",     SortOrder => 1 },
-            { Name      => "IncidentCoord", SortOrder => 2 },
+            { Name => "AbuseDesk",     SortOrder => 1 },
+            { Name => "IncidentCoord", SortOrder => 2 },
         ],
     },
-    {
-        Name        => 'Classification',
+    {   Name        => 'Classification',
         Type        => 'SelectSingle',
         RenderType  => 'Dropdown',
         Queue       => 'Incidents',
         Disabled    => 0,
         Description => 'Classification for Incidents RTIR queue',
         Values      => [
-            { Name      => "Spam",              SortOrder => 1 },
-            { Name      => "System Compromise", SortOrder => 2 },
-            { Name      => "Query",             SortOrder => 3 },
-            { Name      => "Scan",              SortOrder => 4 },
-            { Name      => "Denial of Service", SortOrder => 5 },
-            { Name      => "Piracy",            SortOrder => 6 },
+            { Name => "Spam",              SortOrder => 1 },
+            { Name => "System Compromise", SortOrder => 2 },
+            { Name => "Query",             SortOrder => 3 },
+            { Name => "Scan",              SortOrder => 4 },
+            { Name => "Denial of Service", SortOrder => 5 },
+            { Name => "Piracy",            SortOrder => 6 },
         ],
     },
-    {
-        Name        => 'How Reported',
-        Type        => 'SelectSingle',
-        RenderType  => 'Dropdown',
-        Queue       => 'Incident Reports',
-        Disabled    => 0,
-        Description => 'How the incident was reported for Incident Reports RTIR queue',
+    {   Name       => 'How Reported',
+        Type       => 'SelectSingle',
+        RenderType => 'Dropdown',
+        Queue      => 'Incident Reports',
+        Disabled   => 0,
+        Description =>
+            'How the incident was reported for Incident Reports RTIR queue',
         Values => [
-            { Name      => "Email",      SortOrder => 1 },
-            { Name      => "Telephone", SortOrder => 2 },
-            { Name      => "Other",     SortOrder => 3 },
+            { Name => "Email",     SortOrder => 1 },
+            { Name => "Telephone", SortOrder => 2 },
+            { Name => "Other",     SortOrder => 3 },
         ]
     },
-    {
-        Name        => 'Reporter Type',
+    {   Name        => 'Reporter Type',
         Type        => 'SelectSingle',
         RenderType  => 'Dropdown',
         Queue       => 'Incident Reports',
@@ -118,243 +111,261 @@
             { Name => "other",               SortOrder => 6 },
         ]
     },
-    {
-        Name        => 'IP',
-        Type        => 'IPAddressRangeMultiple',
-        Queue       => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
+    {   Name => 'IP',
+        Type => 'IPAddressRangeMultiple',
+        Queue =>
+            [ 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ],
         Disabled    => 0,
         Description => 'IP address for RTIR queues',
-        LinkValueTo => '__WebPath__/RTIR/Tools/Lookup.html?type=ip&q=__CustomField__&ticket=__id__'
+        LinkValueTo =>
+            '__WebPath__/RTIR/Tools/Lookup.html?type=ip&q=__CustomField__&ticket=__id__'
     },
-    {
-        Name        => 'Netmask',
+    {   Name        => 'Netmask',
         Type        => 'FreeformSingle',
         Queue       => 'Blocks',
         Disabled    => 0,
         Description => 'Network mask for Blocks RTIR queue',
     },
-    {
-        Name        => 'Port',
+    {   Name        => 'Port',
         Type        => 'FreeformSingle',
         Queue       => 'Blocks',
         Disabled    => 0,
         Description => 'Port for Blocks RTIR queue',
     },
-    {
-        Name        => 'Where Blocked',
+    {   Name        => 'Where Blocked',
         Type        => 'FreeformSingle',
         Queue       => 'Blocks',
         Disabled    => 0,
         Description => 'Where the block is placed for Blocks RTIR queue',
     },
-    {
-        Name        => 'Customer',
+    {   Name        => 'Customer',
         Type        => 'SelectMultiple',
         Queue       => 'Incident Reports',
         Disabled    => 0,
-        Values      => [ ],
+        Values      => [],
         Description => 'Customer for Incident Reports RTIR queue',
     },
-    {
-        Name        => 'Customer',
+    {   Name        => 'Customer',
         Type        => 'SelectSingle',
         RenderType  => 'Dropdown',
         Queue       => 'Investigations',
         Disabled    => 0,
-        Values      => [ ],
+        Values      => [],
         Description => 'Customer for Investigations RTIR queue',
     },
 );
 
 @ScripActions = (
-    {  Name        => 'RTIR Set Incident Due',    # loc
-       Description => 'Set the due date of parent Incident' ,                                            # loc
-       ExecModule => 'RTIR_SetDueIncident',
+    {   Name        => 'RTIR Set Incident Due',                  # loc
+        Description => 'Set the due date of parent Incident',    # loc
+        ExecModule  => 'RTIR_SetDueIncident',
     },
-    {  Name        => 'RTIR Set How Reported',    # loc
-       Description => 'Set how the Incident Report was reported' ,                                            # loc
-       ExecModule => 'RTIR_SetHowReported',
+    {   Name        => 'RTIR Set How Reported',                       # loc
+        Description => 'Set how the Incident Report was reported',    # loc
+        ExecModule  => 'RTIR_SetHowReported',
     },
-    {  Name        => 'RTIR Resolve Children',    # loc
-       Description => "Resolve an Incident's children",                                            # loc
-       ExecModule => 'RTIR_ResolveChildren',
+    {   Name        => 'RTIR Resolve Children',                       # loc
+        Description => "Resolve an Incident's children",              # loc
+        ExecModule  => 'RTIR_ResolveChildren',
     },
-    {  Name        => 'RTIR Change Child Ownership',    # loc
-       Description => "Change the ownership of Incident's children",                                            # loc
-       ExecModule => 'RTIR_ChangeChildOwnership',
+    {   Name        => 'RTIR Change Child Ownership',                    # loc
+        Description => "Change the ownership of Incident's children",    # loc
+        ExecModule  => 'RTIR_ChangeChildOwnership',
     },
-    {  Name        => 'RTIR Change Parent Ownership',    # loc
-       Description => 'Change the ownership of the parent Incident' ,                                            # loc
-       ExecModule => 'RTIR_ChangeParentOwnership',
+    {   Name        => 'RTIR Change Parent Ownership',                   # loc
+        Description => 'Change the ownership of the parent Incident',    # loc
+        ExecModule  => 'RTIR_ChangeParentOwnership',
     },
-    {  Name        => 'RTIR Open Parent',    # loc
-       Description => 'Open the parent Incident when a child reopens' ,                                            # loc
-       ExecModule => 'RTIR_OpenParent',
+    {   Name        => 'RTIR Open Parent',                               # loc
+        Description => 'Open the parent Incident when a child reopens',  # loc
+        ExecModule  => 'RTIR_OpenParent',
     },
-    {  Name        => 'RTIR Set Block Status',    # loc
-       Description => 'Set the status of a Block' ,                                            # loc
-       ExecModule => 'RTIR_SetBlockStatus',
+    {   Name        => 'RTIR Set Block Status',                          # loc
+        Description => 'Set the status of a Block',                      # loc
+        ExecModule  => 'RTIR_SetBlockStatus',
     },
-    {  Name        => 'RTIR Set Incident Resolution',    # loc
-       Description => 'Set the default resolution of an Incident' ,                                            # loc
-       ExecModule => 'RTIR_SetIncidentResolution',
+    {   Name        => 'RTIR Set Incident Resolution',                   # loc
+        Description => 'Set the default resolution of an Incident',      # loc
+        ExecModule  => 'RTIR_SetIncidentResolution',
     },
-    {  Name        => 'RTIR parse message for IPs',    # loc
-       Description => 'Set IP custom field from message content' ,                                            # loc
-       ExecModule  => 'RTIR_FindIP',
+    {   Name        => 'RTIR parse message for IPs',                     # loc
+        Description => 'Set IP custom field from message content',       # loc
+        ExecModule  => 'RTIR_FindIP',
     },
-    {  Name        => 'RTIR merge IPs',    # loc
-       Description => 'Merge multiple IPs on ticket merge' ,                                            # loc
-       ExecModule  => 'RTIR_MergeIPs',
+    {   Name        => 'RTIR merge IPs',                                 # loc
+        Description => 'Merge multiple IPs on ticket merge',             # loc
+        ExecModule  => 'RTIR_MergeIPs',
     },
-    {  Name        => 'RTIR Activate Ticket',    # loc
-       Description => 'Set status to first active possible',            # loc
-       ExecModule  => 'RTIR_Activate',
+    {   Name        => 'RTIR Activate Ticket',                           # loc
+        Description => 'Set status to first active possible',            # loc
+        ExecModule  => 'RTIR_Activate',
     },
-    {
-       Name        => 'RTIR Change Child Constituencies',
-       Description => 'Move all tickets related to an incident to a new constituency',
-       ExecModule  => 'RTIR_ChangeChildConstituencies'
+    {   Name => 'RTIR Change Child Constituencies',
+        Description =>
+            'Move all tickets related to an incident to a new constituency',
+        ExecModule => 'RTIR_ChangeChildConstituencies'
     }
 );
 
 @ScripConditions = (
 
-    {  Name        => 'RTIR Customer Response',    # loc
-       Description => 'Detect an external response' ,                                            # loc
-       ApplicableTransTypes => 'Correspond',
-       ExecModule => 'RTIR_CustomerResponse',
+    {   Name                 => 'RTIR Customer Response',                # loc
+        Description          => 'Detect an external response',           # loc
+        ApplicableTransTypes => 'Correspond',
+        ExecModule           => 'RTIR_CustomerResponse',
     },
-    {  Name        => 'RTIR Staff Response',    # loc
-       Description => 'Detect an internal response' ,                                            # loc
-       ApplicableTransTypes => 'Correspond',
-       ExecModule => 'RTIR_StaffResponse',
+    {   Name                 => 'RTIR Staff Response',                   # loc
+        Description          => 'Detect an internal response',           # loc
+        ApplicableTransTypes => 'Correspond',
+        ExecModule           => 'RTIR_StaffResponse',
     },
-    {  Name        => 'RTIR Close Ticket',    # loc
-       Description => 'A ticket is rejected or resolved' ,                                            # loc
-       ApplicableTransTypes => 'Any',
-       ExecModule  => 'StatusChange',
-       Argument    => 'old: initial, active; new: inactve',
+    {   Name                 => 'RTIR Close Ticket',                     # loc
+        Description          => 'A ticket is rejected or resolved',      # loc
+        ApplicableTransTypes => 'Any',
+        ExecModule           => 'StatusChange',
+        Argument             => 'old: initial, active; new: inactve',
     },
-    {  Name        => 'RTIR Reopen Ticket',    # loc
-       Description => 'A closed ticket is reopened' ,                                            # loc
-       ApplicableTransTypes => 'Any',
-       ExecModule  => 'StatusChange',
-       Argument    => 'old: inactive; new: initial, active',
+    {   Name                 => 'RTIR Reopen Ticket',                    # loc
+        Description          => 'A closed ticket is reopened',           # loc
+        ApplicableTransTypes => 'Any',
+        ExecModule           => 'StatusChange',
+        Argument             => 'old: inactive; new: initial, active',
     },
-    {  Name        => 'RTIR Require Due Change',    # loc
-       Description => 'The due date of the parent incident must be changed',                                            # loc
-       ApplicableTransTypes => 'Any',
-       ExecModule => 'RTIR_RequireDueChange',
+    {   Name => 'RTIR Require Due Change',                               # loc
+        Description =>
+            'The due date of the parent incident must be changed',       # loc
+        ApplicableTransTypes => 'Any',
+        ExecModule           => 'RTIR_RequireDueChange',
     },
-    {  Name        => 'RTIR Linking To Incident',    # loc
-       Description => 'Whenever ticket is linked to incident or created with link',                                 # loc
-       ApplicableTransTypes => 'Create,AddLink',
-       ExecModule => 'RTIR_LinkingToIncident',
+    {   Name => 'RTIR Linking To Incident',                              # loc
+        Description =>
+            'Whenever ticket is linked to incident or created with link'
+        ,                                                                # loc
+        ApplicableTransTypes => 'Create,AddLink',
+        ExecModule           => 'RTIR_LinkingToIncident',
     },
-    {  Name        => 'RTIR Merge',    # loc
-       Description => 'Whenever ticket is merged into another one',                                 # loc
-       ApplicableTransTypes => 'AddLink',
-       ExecModule => 'RTIR_Merge',
+    {   Name        => 'RTIR Merge',                                     # loc
+        Description => 'Whenever ticket is merged into another one',     # loc
+        ApplicableTransTypes => 'AddLink',
+        ExecModule           => 'RTIR_Merge',
     },
-    {  Name                 => 'RTIR Require IRs Activation',               # loc
-       Description          => "Whenever it's time to activate report",                                        # loc
-       ApplicableTransTypes => 'Correspond',
-       ExecModule           => 'RTIR_RequireReportActivation',
+    {   Name                 => 'RTIR Require IRs Activation',           # loc
+        Description          => "Whenever it's time to activate report", # loc
+        ApplicableTransTypes => 'Correspond',
+        ExecModule           => 'RTIR_RequireReportActivation',
     },
 );
 
 @Scrips = (
-    {  Description       => "SetHowReported",
-       Queue             => 'Incident Reports',
-       ScripCondition    => 'On Create',
-       ScripAction       => 'RTIR Set How Reported',
-       Template          => 'Blank' },
+    {   Description    => "SetHowReported",
+        Queue          => 'Incident Reports',
+        ScripCondition => 'On Create',
+        ScripAction    => 'RTIR Set How Reported',
+        Template       => 'Blank'
+    },
 
-    {  Description       => "On Correspond Change Status of the Block",
-       Queue             => 'Blocks',
-       ScripCondition    => 'On Correspond',
-       ScripAction       => 'RTIR Set Block Status',
-       Template          => 'Blank', },
-    {  Description       => "On Linking To Incident Activate Report",
-       Queue             => 'Incident Reports',
-       ScripCondition    => 'RTIR Linking To Incident',
-       ScripAction       => 'RTIR Activate Ticket',
-       Template          => 'Blank' },
-    {  Description       => "On Correspond (not every) Activate Report",
-       Queue             => 'Incident Reports',
-       ScripCondition    => 'RTIR Require IRs Activation',
-       ScripAction       => 'RTIR Activate Ticket',
-       Template          => 'Blank' },
-    {  Description       => "On Linking To Incident Copy IPs",
-       Queue             => 'Incident Reports',
-       ScripCondition    => 'RTIR Linking To Incident',
-       ScripAction       => 'RTIR merge IPs',
-       Template          => 'Blank' },
+    {   Description    => "On Correspond Change Status of the Block",
+        Queue          => 'Blocks',
+        ScripCondition => 'On Correspond',
+        ScripAction    => 'RTIR Set Block Status',
+        Template       => 'Blank',
+    },
+    {   Description    => "On Linking To Incident Activate Report",
+        Queue          => 'Incident Reports',
+        ScripCondition => 'RTIR Linking To Incident',
+        ScripAction    => 'RTIR Activate Ticket',
+        Template       => 'Blank'
+    },
+    {   Description    => "On Correspond (not every) Activate Report",
+        Queue          => 'Incident Reports',
+        ScripCondition => 'RTIR Require IRs Activation',
+        ScripAction    => 'RTIR Activate Ticket',
+        Template       => 'Blank'
+    },
+    {   Description    => "On Linking To Incident Copy IPs",
+        Queue          => 'Incident Reports',
+        ScripCondition => 'RTIR Linking To Incident',
+        ScripAction    => 'RTIR merge IPs',
+        Template       => 'Blank'
+    },
 
-    {  Description       => "Set Due Date On Incident",
-       Queue             => ['Incident Reports', 'Investigations', 'Blocks' ],
-       ScripCondition    => 'RTIR Require Due Change',
-       ScripAction       => 'RTIR Set Incident Due',
-       Template          => 'Blank', },
+    {   Description    => "Set Due Date On Incident",
+        Queue          => [ 'Incident Reports', 'Investigations', 'Blocks' ],
+        ScripCondition => 'RTIR Require Due Change',
+        ScripAction    => 'RTIR Set Incident Due',
+        Template       => 'Blank',
+    },
 
-    {  Description       => "ResolveAllChildren",
-       Queue             => 'Incidents',
-       ScripCondition    => 'On Status Change',
-       ScripAction       => 'RTIR Resolve Children',
-       Template          => 'Blank', },
+    {   Description    => "ResolveAllChildren",
+        Queue          => 'Incidents',
+        ScripCondition => 'On Status Change',
+        ScripAction    => 'RTIR Resolve Children',
+        Template       => 'Blank',
+    },
 
-    {  Description       => "Propagate Constituency Changes",
-       Queue             => 'Incidents',
-       ScripCondition    => 'On Queue Change',
-       ScripAction       => 'RTIR Change Child Constituencies',
-       Template          => 'Blank', },
+    {   Description    => "Propagate Constituency Changes",
+        Queue          => 'Incidents',
+        ScripCondition => 'On Queue Change',
+        ScripAction    => 'RTIR Change Child Constituencies',
+        Template       => 'Blank',
+    },
 
-    {  Description       => "FixOwnership",
-       Queue             => 'Incidents',
-       ScripCondition    => 'On Owner Change',
-       ScripAction       => 'RTIR Change Child Ownership',
-       Template          => 'Blank', },
-    {  Description       => "FixOwnership",
-       Queue             => [ 'Incident Reports', 'Investigations', 'Blocks' ],
-       ScripCondition    => 'On Owner Change',
-       ScripAction       => 'RTIR Change Parent Ownership',
-       Template          => 'Blank', },
+    {   Description    => "FixOwnership",
+        Queue          => 'Incidents',
+        ScripCondition => 'On Owner Change',
+        ScripAction    => 'RTIR Change Child Ownership',
+        Template       => 'Blank',
+    },
+    {   Description    => "FixOwnership",
+        Queue          => [ 'Incident Reports', 'Investigations', 'Blocks' ],
+        ScripCondition => 'On Owner Change',
+        ScripAction    => 'RTIR Change Parent Ownership',
+        Template       => 'Blank',
+    },
 
-    {  Description       => "ReopenIncident",
-       Queue             => [ 'Incident Reports', 'Investigations', 'Blocks' ],
-       ScripCondition    => 'On Status Change',
-       ScripAction       => 'RTIR Open Parent',
-       Template          => 'Blank', },
+    {   Description    => "ReopenIncident",
+        Queue          => [ 'Incident Reports', 'Investigations', 'Blocks' ],
+        ScripCondition => 'On Status Change',
+        ScripAction    => 'RTIR Open Parent',
+        Template       => 'Blank',
+    },
 
-    {  Description       => "SetDefaultIncidentResolution",
-       Queue             => 'Incidents',
-       ScripCondition    => 'On Status Change',
-       ScripAction       => 'RTIR Set Incident Resolution',
-       Template          => 'Blank', },
+    {   Description    => "SetDefaultIncidentResolution",
+        Queue          => 'Incidents',
+        ScripCondition => 'On Status Change',
+        ScripAction    => 'RTIR Set Incident Resolution',
+        Template       => 'Blank',
+    },
 
-    {  Description       => "NotifyOnClose",
-       Queue             => 'Blocks',
-       ScripCondition    => 'RTIR Close Ticket',
-       ScripAction       => 'Notify Requestors',
-       Template          => 'BlockRemoved' },
+    {   Description    => "NotifyOnClose",
+        Queue          => 'Blocks',
+        ScripCondition => 'RTIR Close Ticket',
+        ScripAction    => 'Notify Requestors',
+        Template       => 'BlockRemoved'
+    },
 
-    {  Description       => "SetIPFromContent",
-       Queue             => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
-       ScripCondition    => 'On Correspond',
-       ScripAction       => 'RTIR parse message for IPs',
-       Template          => 'Blank' },
-    {  Description       => "SetIPFromContent",
-       Queue             => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
-       ScripCondition    => 'On Create',
-       ScripAction       => 'RTIR parse message for IPs',
-       Template          => 'Blank' },
+    {   Description => "SetIPFromContent",
+        Queue =>
+            [ 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ],
+        ScripCondition => 'On Correspond',
+        ScripAction    => 'RTIR parse message for IPs',
+        Template       => 'Blank'
+    },
+    {   Description => "SetIPFromContent",
+        Queue =>
+            [ 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ],
+        ScripCondition => 'On Create',
+        ScripAction    => 'RTIR parse message for IPs',
+        Template       => 'Blank'
+    },
 
-    {  Description       => "MergeIPs",
-       Queue             => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
-       ScripCondition    => 'RTIR Merge',
-       ScripAction       => 'RTIR merge IPs',
-       Template          => 'Blank' },
+    {   Description => "MergeIPs",
+        Queue =>
+            [ 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ],
+        ScripCondition => 'RTIR Merge',
+        ScripAction    => 'RTIR merge IPs',
+        Template       => 'Blank'
+    },
 
 );
 
@@ -362,10 +373,10 @@
 # mention it in the UPGRADING file
 
 @Templates = (
-    { Queue       => 'Blocks',
-      Name        => 'Autoreply',
-      Description => 'Sent when a block is created',
-      Content     => 'RT-Attach-Message: yes
+    {   Queue       => 'Blocks',
+        Name        => 'Autoreply',
+        Description => 'Sent when a block is created',
+        Content     => 'RT-Attach-Message: yes
 Subject: { $Ticket->Subject }
 
 { $Transaction->Content }
@@ -394,11 +405,12 @@ in the subject line of all future correspondence about this issue. To do so,
 you may reply to this message.
 
                         Thank you,
-                        { $Ticket->QueueObj->CorrespondAddress }', },
-    { Queue       => 'Blocks',
-      Name        => 'BlockRemoved',
-      Description => 'Sent when a block is removed',
-      Content     => 'Subject: {$Ticket->Subject}
+                        { $Ticket->QueueObj->CorrespondAddress }',
+    },
+    {   Queue       => 'Blocks',
+        Name        => 'BlockRemoved',
+        Description => 'Sent when a block is removed',
+        Content     => 'Subject: {$Ticket->Subject}
 
 Block #{$Ticket->id} was removed.
 
@@ -426,11 +438,12 @@ in the subject line of all future correspondence about this issue. To do so,
 you may reply to this message.
 
                         Thank you,
-                        {$Ticket->QueueObj->CorrespondAddress()}', },
-    { Queue       => 'Investigations',
-      Name        => 'Autoreply',
-      Description => 'Sent when an investigation is launched',
-      Content     => 'RT-Attach-Message: yes
+                        {$Ticket->QueueObj->CorrespondAddress()}',
+    },
+    {   Queue       => 'Investigations',
+        Name        => 'Autoreply',
+        Description => 'Sent when an investigation is launched',
+        Content     => 'RT-Attach-Message: yes
 Subject: {$Ticket->Subject}
 
 {$Transaction->Content()}
@@ -444,24 +457,15 @@ in the subject line of all future correspondence about this issue. To do so,
 you may reply to this message.
 
                         Thank you,
-                        {$Ticket->QueueObj->CorrespondAddress()}', },
+                        {$Ticket->QueueObj->CorrespondAddress()}',
+    },
 );
 
 @Groups = (
-    { Name        => 'DutyTeam',
-      Domain      => 'UserDefined',
-      Instance    => '',
-      Description => 'Duty Team Members',    # loc
-    },
-    { Name        => 'DutyTeam EDUNET',
-      Domain      => 'UserDefined',
-      Instance    => '',
-      Description => 'Duty Team responsible for EDUNET constituency',    # loc
-    },
-    { Name        => 'DutyTeam GOVNET',
-      Domain      => 'UserDefined',
-      Instance    => '',
-      Description => 'Duty Team responsible for GOVNET constituency',    # loc
+    {   Name        => 'DutyTeam',
+        Domain      => 'UserDefined',
+        Instance    => '',
+        Description => 'Duty Team Members',    # loc
     },
 );
 
@@ -527,116 +531,143 @@ push @ACL, map {
 } RT::IR->EveryoneBlockRights();
 
 push @ACL, (
-    { GroupId => 'DutyTeam',      # - principalId
-      GroupDomain => 'UserDefined',
-      Queue => 0,
-      Right => 'ModifySelf', },
-    { GroupId => 'DutyTeam',      # - principalId
-      GroupDomain => 'UserDefined',
-      Queue => 0,
-      Right => 'CreateSavedSearch', },
-    { GroupId => 'DutyTeam',      # - principalId
-      GroupDomain => 'UserDefined',
-      Queue => 0,
-      Right => 'EditSavedSearches', },
-    { GroupId => 'DutyTeam',      # - principalId
-      GroupDomain => 'UserDefined',
-      Queue => 0,
-      Right => 'LoadSavedSearch', },
-    { GroupId => 'DutyTeam',      # - principalId
-      GroupDomain => 'UserDefined',
-      Queue => 0,
-      Right => 'ShowSavedSearches', },
+    {   GroupId     => 'DutyTeam',      # - principalId
+        GroupDomain => 'UserDefined',
+        Queue       => 0,
+        Right       => 'ModifySelf',
+    },
+    {   GroupId     => 'DutyTeam',            # - principalId
+        GroupDomain => 'UserDefined',
+        Queue       => 0,
+        Right       => 'CreateSavedSearch',
+    },
+    {   GroupId     => 'DutyTeam',            # - principalId
+        GroupDomain => 'UserDefined',
+        Queue       => 0,
+        Right       => 'EditSavedSearches',
+    },
+    {   GroupId     => 'DutyTeam',            # - principalId
+        GroupDomain => 'UserDefined',
+        Queue       => 0,
+        Right       => 'LoadSavedSearch',
+    },
+    {   GroupId     => 'DutyTeam',            # - principalId
+        GroupDomain => 'UserDefined',
+        Queue       => 0,
+        Right       => 'ShowSavedSearches',
+    },
 );
 
 for my $cf (@CustomFields) {
-    push @ACL, (
-        { GroupId => 'DutyTeam',
-          GroupDomain => 'UserDefined',
-          CF => $cf->{Name},
-          Queue => $cf->{Queue},
-          Right => 'SeeCustomField', },
-        { GroupId => 'DutyTeam',
-          GroupDomain => 'UserDefined',
-          CF => $cf->{Name},
-          Queue => $cf->{Queue},
-          Right => 'ModifyCustomField', },
-    );
+    push @ACL,
+        (
+        {   GroupId     => 'DutyTeam',
+            GroupDomain => 'UserDefined',
+            CF          => $cf->{Name},
+            Queue       => $cf->{Queue},
+            Right       => 'SeeCustomField',
+        },
+        {   GroupId     => 'DutyTeam',
+            GroupDomain => 'UserDefined',
+            CF          => $cf->{Name},
+            Queue       => $cf->{Queue},
+            Right       => 'ModifyCustomField',
+        },
+        );
 }
 
-@Attributes = ( {
-    Name => 'RTIR_HomepageSettings',
-    Description => 'RTIR homepage settings',
-    Content => { 
-        body => [
-            { type => 'component',  name => '/RTIR/Elements/NewReports' },
-            { type => 'component',  name => '/RTIR/Elements/UserDueIncidents' },
-            { type => 'component',  name => '/RTIR/Elements/NobodyDueIncidents' },
-            { type => 'component',  name => '/RTIR/Elements/DueIncidents' },
-        ],
-        sidebar => [
-            { type => 'component', name => '/RTIR/Elements/WorkWithConstituency' },
-            { type => 'component', name => '/RTIR/Elements/QueueSummary' },
-            { type => 'component', name => 'RefreshHomepage' },
-        ]
-    },
-} );
+@Attributes = (
+    {   Name        => 'RTIR_HomepageSettings',
+        Description => 'RTIR homepage settings',
+        Content     => {
+            body => [
+                { type => 'component', name => '/RTIR/Elements/NewReports' },
+                {   type => 'component',
+                    name => '/RTIR/Elements/UserDueIncidents'
+                },
+                {   type => 'component',
+                    name => '/RTIR/Elements/NobodyDueIncidents'
+                },
+                {   type => 'component',
+                    name => '/RTIR/Elements/DueIncidents'
+                },
+            ],
+            sidebar => [
+                {   type => 'component',
+                    name => '/RTIR/Elements/WorkWithConstituency'
+                },
+                {   type => 'component',
+                    name => '/RTIR/Elements/QueueSummary'
+                },
+                { type => 'component', name => 'RefreshHomepage' },
+            ]
+        },
+    }
+);
 
-@Final = ( sub {
-    $| = 1;
-    my $CurrentUser = RT::CurrentUser->new();
-    $CurrentUser->LoadByName('RT_System');
+@Final = (
+    sub {
+        $| = 1;
+        my $CurrentUser = RT::CurrentUser->new();
+        $CurrentUser->LoadByName('RT_System');
 
-    require RT::Class;
-    my $class = RT::Class->new($CurrentUser);
-    $class->Load('Templates');
-    unless ($class->Id) {
-        $RT::Logger->info("Creating 'Templates' Article class.");
-        my ($id, $msg) = $class->Create(
-            Name => 'Templates',
-            Description => 'Response templates',
-            HotList => 1
-        );
-        die $msg unless $id;
+        require RT::Class;
+        my $class = RT::Class->new($CurrentUser);
+        $class->Load('Templates');
+        unless ( $class->Id ) {
+            $RT::Logger->info("Creating 'Templates' Article class.");
+            my ( $id, $msg ) = $class->Create(
+                Name        => 'Templates',
+                Description => 'Response templates',
+                HotList     => 1
+            );
+            die $msg unless $id;
 
-        foreach my $qname ( map $_->{'Name'}, @Queues ) {
-            my $queue = RT::Queue->new( $CurrentUser );
-            $queue->Load( $qname );
-            next unless $queue->id;
+            foreach my $qname ( map $_->{'Name'}, @Queues ) {
+                my $queue = RT::Queue->new($CurrentUser);
+                $queue->Load($qname);
+                next unless $queue->id;
 
-            my ($status, $msg) = $class->AddToObject( $queue );
-            $RT::Logger->error("Couldn't apply class to queue '$qname'")
-                unless $status;
+                my ( $status, $msg ) = $class->AddToObject($queue);
+                $RT::Logger->error("Couldn't apply class to queue '$qname'")
+                    unless $status;
+            }
         }
-    }
 
-    require RT::Article;
-    my $response = RT::CustomField->new($CurrentUser);
-    $response->Load('Response');
-    unless ($response->Id and $response->LookupType eq RT::Article->CustomFieldLookupType) {
-        $RT::Logger->info("Creating 'Response' Article custom field.");
-        my ($id, $msg) = $response->Create(
-            Name => 'Response',
-            Type => 'Text',
-            MaxValues => 1,
-            Description => 'Response to be inserted into the ticket',
-            LookupType => RT::Article->CustomFieldLookupType,
+        require RT::Article;
+        my $response = RT::CustomField->new($CurrentUser);
+        $response->Load('Response');
+        unless ($response->Id
+            and $response->LookupType eq RT::Article->CustomFieldLookupType )
+        {
+            $RT::Logger->info("Creating 'Response' Article custom field.");
+            my ( $id, $msg ) = $response->Create(
+                Name        => 'Response',
+                Type        => 'Text',
+                MaxValues   => 1,
+                Description => 'Response to be inserted into the ticket',
+                LookupType  => RT::Article->CustomFieldLookupType,
+            );
+            die $msg unless $id;
+        }
+
+        $response->AddToObject($class);
+        $class->SetAttribute( Name => "Skip-$_", Content => 1 )
+            for ( "Name", "Summary", "CF-Title-" . $response->Id );
+
+        my $group = RT::Group->new($CurrentUser);
+        $group->LoadUserDefinedGroup("DutyTeam");
+        die "Can't load group" unless $group->Id;
+        $group->PrincipalObj->GrantRight( Right => $_, Object => $response )
+            for qw/SeeCustomField ModifyCustomField/;
+        $group->PrincipalObj->GrantRight( Right => $_, Object => $class )
+            for
+            qw/AdminClass AdminTopics CreateArticle ModifyArticle ModifyArticleTopics SeeClass ShowArticle ShowArticleHistory DeleteArticle/;
+        $group->PrincipalObj->GrantRight(
+            Right  => ShowArticlesMenu,
+            Object => RT->System
         );
-        die $msg unless $id;
+
     }
-
-    $response->AddToObject($class);
-    $class->SetAttribute(Name => "Skip-$_", Content => 1)
-      for ("Name", "Summary", "CF-Title-".$response->Id);
-
-    my $group = RT::Group->new($CurrentUser);
-    $group->LoadUserDefinedGroup( "DutyTeam" );
-    die "Can't load group" unless $group->Id;
-    $group->PrincipalObj->GrantRight( Right => $_, Object => $response )
-      for qw/SeeCustomField ModifyCustomField/;
-    $group->PrincipalObj->GrantRight( Right => $_, Object => $class )
-      for qw/AdminClass AdminTopics CreateArticle ModifyArticle ModifyArticleTopics SeeClass ShowArticle ShowArticleHistory DeleteArticle/;
-    $group->PrincipalObj->GrantRight( Right => ShowArticlesMenu, Object => RT->System );
-
-} );
+);
 
