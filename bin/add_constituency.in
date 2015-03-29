@@ -207,20 +207,6 @@ foreach my $lifecycle (@lifecycles){
 my $dutyteam = create_or_load_group('DutyTeam '.$constituency);
 my $ro = create_or_load_group('ReadOnly '.$constituency);
 
-my @DUTYTEAM_QUEUE_RIGHTS = (
-
-       'OwnTicket', 
-       'CommentOnTicket', 
-       'ShowTicket', 
-       'ShowTicketComments', 
-       'StealTicket', 
-       'TakeTicket', 
-       'Watch', 
-       'CreateTicket', 
-       'SeeQueue', 
-       'ShowTemplate', 
-);
-
 
 my @RO_QUEUE_RIGHTS = (
        'ShowTicket', 
@@ -238,7 +224,7 @@ my @RO_CF_RIGHTS = ( 'SeeCustomField');
 # Grant that new dutyteam rights to see and update the CFs
     grant_group_cf_rights($dutyteam, @DUTYTEAM_CF_RIGHTS);
 # Grant that new dutyteam all the regular dutyteam rights for the new constituency queues
-    grant_group_queue_rights($dutyteam, \%queues, @DUTYTEAM_QUEUE_RIGHTS);
+    grant_group_queue_rights($dutyteam, \%queues, RT::IR->DutyTeamAllQueueRights);
 
 
 
