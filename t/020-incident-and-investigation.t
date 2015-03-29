@@ -34,7 +34,7 @@ $agent->display_ticket( $ir);
 
 # Okay, enough funny business. Now for some straightforward tests, how it should work
 {
-    my ($inc_id, $inv_id) = $agent->create_incident_and_investigation( 
+    my ($inc_id, $inv_id) = $agent->create_incident_and_investigation( '',
         {Subject => 'Incident for testing Incident-and-investigation-from-IR creation',
         InvestigationSubject => 'Investigation for testing Incident-and-Investigation-from-IR creation', 
         InvestigationRequestors => 'foo@example.com'}, {Classification => 'Spam', IP => '172.16.0.1'},

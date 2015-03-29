@@ -253,6 +253,7 @@ sub LinkChildToIncident {
 
 sub create_incident_and_investigation {
     my $self = shift;
+    my $constituency = shift;
     my $fields = shift || {};
     my $cfs = shift || {};
     my $ir_id = shift;
@@ -266,7 +267,7 @@ sub create_incident_and_investigation {
     }
     else 
     {
-        $self->goto_create_rtir_ticket('Incidents');
+        $self->goto_create_rtir_ticket('Incidents'.($constituency?' - '.$constituency : ''));
     }
 
     # Fill out forms
@@ -277,7 +278,7 @@ sub create_incident_and_investigation {
     }
 
     while (my ($f, $v) = each %$cfs) {
-        $self->set_custom_field( 'Incidents', $f, $v);
+        $self->set_custom_field( 'Incidents'.($constituency ? ' - '.$constituency:''), $f, $v);
     }
     $self->click("CreateWithInvestigation");
     my $msg = $ir_id
@@ -286,11 +287,11 @@ sub create_incident_and_investigation {
     Test::More::is ($self->status, 200, $msg);
     $msg = $ir_id ? "Incident created from child $ir_id." : "Incident created.";
 
-    my $re = qr/.*Ticket (\d+) created in queue &#39;Incidents&#39;/;
+    my $re = qr/.*Ticket (\d+) created in queue &#39;Incidents/;
     $self->content_like( $re, $msg );
       my ($incident_id) = ($self->content =~ $re);
       
-    $re = qr/.*Ticket (\d+) created in queue &#39;Investigations&#39;/;
+    $re = qr/.*Ticket (\d+) created in queue &#39;Investigations/;
     $self->content_like( $re, "Investigation created for Incident $incident_id." );
     my ($investigation_id) = ($self->content =~ $re);
 
