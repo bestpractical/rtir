@@ -115,7 +115,7 @@ sub Commit {
         my ($val,$msg) = $ticket->SetQueue($new_queue->id);
 
 
-        RT->Logger->info( "Couldn't change owner: $msg" ) unless $res;
+        RT->Logger->info( "Couldn't change owner: $msg" ) unless $val;
     }
     return 1;
 }
