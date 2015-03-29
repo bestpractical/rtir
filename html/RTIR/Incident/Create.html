@@ -55,12 +55,12 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <%PERL>
-if ( $SplitObj && !$SplitObj->CurrentUserHasRight('ModifyTicket') ) {
-    $m->out( loc('You are not allowed to split from #[_2].', $SplitObj->id ) );
+if ( $SplitObj && $SplitObj->id && !$SplitObj->CurrentUserHasRight('ModifyTicket') ) {
+    $m->out( loc('You are not allowed to split from #[_1].', $SplitObj->id ) );
     return;
 }
-if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
-    $m->out( loc('You are not allowed to link with #[_2].', $ChildObj->id ) );
+if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
+    $m->out( loc('You are not allowed to link with #[_1].', $ChildObj->id ) );
     return;
 }
 </%PERL>
