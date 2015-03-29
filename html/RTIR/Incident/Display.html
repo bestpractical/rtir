@@ -196,8 +196,8 @@ my $DoLinks = sub {
     my %args = ();
 
     if (RT::IR->StrictConstituencyLinking) {
-        if (RT::IR->ConstituencyFor($child) 
-            != RT::IR->ConstituencyFor($parent)) {
+        if ((RT::IR->ConstituencyFor($child) ||'')
+            ne (RT::IR->ConstituencyFor($parent) ||'')) {
             return loc("Link failed: Ticket #[_1] is associated with a different constituency", 
             $child->id );
         }
