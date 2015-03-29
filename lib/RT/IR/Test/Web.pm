@@ -74,11 +74,14 @@ sub goto_create_rtir_ticket {
     my $self = shift;
     my $queue = shift; # we play a dumb game to change queues to lifecycles
     local $Test::Builder::Level = $Test::Builder::Level + 1;
-
     my $lifecycle = lc( $queue);
     $lifecycle =~ s/ /_/;
    
-    $self->get_ok("/RTIR/Create.html?Lifecycle=$lifecycle");
+#    $self->get_ok("/RTIR/Create.html?Lifecycle=$lifecycle");
+
+
+    $self->get_ok("/RTIR/Create.html?Queue=$queue");
+
     # set the form
     return $self->form_number(3);
 }
@@ -150,7 +153,6 @@ sub create_incident_for_ir {
         $self->set_custom_field( 'Incidents', $f, $v);
     }
 
-    #warn $self->content;
     my @submits = $self->find_all_inputs(id => 'create-ticket');
     $self->click_button(input=>$submits[0]); 
     
