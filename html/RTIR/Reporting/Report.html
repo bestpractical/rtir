@@ -160,7 +160,7 @@ my @classifications;
 my $constituency_limit = $Constituency ? qq{ AND 'QueueCF.{RTIR Constituency}' = '$Constituency'} : '';
 # of new reports outstanding at start of the period
 my $outstanding = RT::Tickets->new( $session{'CurrentUser'} );
-$outstanding->FromSQL("Lifecycle = '".RT::IR->lifecycle_report."' AND Created < '$start' AND (Resolved = '1970-01-01 00:00:01' OR Resolved > '$start')" . $constituency_limit);
+$outstanding->FromSQL("Lifecycle = '".RT::IR->lifecycle_report."' AND Created < '$start' AND (Resolved = '1970-01-01 00:00:00' OR Resolved > '$start')" . $constituency_limit);
 my $outstanding_pruned;
 while ( my $t = $outstanding->Next ) {
     $outstanding_pruned->{ $t->Id } = $t;
@@ -179,7 +179,7 @@ while ( my $t = $tix_created->Next ) {
 # also closed during the period(or before which is insane but possible)"
 
 my $tix_resolved = RT::Tickets->new( $session{'CurrentUser'} );
-$tix_resolved->FromSQL("Lifecycle = '".RT::IR->lifecycle_report. "' AND Created > '$start' AND Created < '$end' AND (Resolved > '1970-01-01 00:00:01' AND Resolved < '$end')" . $constituency_limit);
+$tix_resolved->FromSQL("Lifecycle = '".RT::IR->lifecycle_report. "' AND Created > '$start' AND Created < '$end' AND (Resolved > '1970-01-01 00:00:00' AND Resolved < '$end')" . $constituency_limit);
 my $tix_resolved_pruned;
 while ( my $t = $tix_resolved->Next ) {
     $tix_resolved_pruned->{ $t->Id } = $t;
@@ -190,7 +190,7 @@ while ( my $t = $tix_resolved->Next ) {
 # closed during the period"
 
 my $tix_unresolved = RT::Tickets->new( $session{'CurrentUser'} );
-$tix_unresolved->FromSQL("Lifecycle = '".RT::IR->lifecycle_report."' AND Created > '$start' AND Created < '$end' AND ( Resolved = '1970-01-01 00:00:01' OR Resolved > '$end' )" . $constituency_limit);
+$tix_unresolved->FromSQL("Lifecycle = '".RT::IR->lifecycle_report."' AND Created > '$start' AND Created < '$end' AND ( Resolved = '1970-01-01 00:00:00' OR Resolved > '$end' )" . $constituency_limit);
 my $tix_unresolved_pruned;
 while ( my $t = $tix_unresolved->Next ) {
     $tix_unresolved_pruned->{ $t->Id } = $t;
