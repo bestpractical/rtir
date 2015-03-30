@@ -4,7 +4,56 @@ The following describes some of the key components of the upgrade
 to RTIR 3.4 from RTIR 3.2.  The other UPGRADING documents contain
 details for previous versions.
 
+=head2 Web interface
+
+=head3 Menus
+
+When working inside RTIR, RT's menus are moved under the C<RT>
+heading and RTIR's menus are expanded. We'd greatly appreciate your
+suggestions for filling out RTIR's menus with additional useful functionality.
+
+
+=head2 Queues
+
+It is now possible to have multiple incident report, incident,
+investigation and countermeasure queues in RTIR. RTIR uses a queue's
+lifecycle to determine what kind of queue it is, rather than its
+name. This functionality is very much in its infancy and we welcome
+your feedback.
+
 =head2 Constituency support
+
+=head3 Web interface
+
+If a user has permissions to work with multiple constituencies, it is
+now possible to limit RTIR's web interface to a single constituency
+by clicking a link from the B<Work with constituency> box on the RTIR
+homepage. They can also go directly to C</RTIR/c/I<ConstituencyName>.
+
+=head3 Changes to constituencies
+
+RTIR 3.4 features a major overhaul of the constituency system. The
+standard upgrade procedure should migrate old constituencies to the
+new system.
+
+The new constituency system replaces the ticket-level 'Constituency'
+custom field with a queue-level 'RTIR Constituency' custom field.
+Each RTIR constituency now consists of four or more RT queues.
+Tickets associated with a given consituency will be placed in
+consistency-specific queues, rather than in the generic RTIR queues.
+This has the advantage of being much faster, much simpler and much
+easier to understand. In essence, we've replaced an older hack with
+a standard RT feature.
+
+What makes an RTIR queue an RTIR queue is now that its lifecycle
+is set to one of the four RTIR lifecycles: 'investigations','
+incident_reports', 'incidents' and 'countermeasures'. If it has a
+value for the 'RTIR Constituency' custom field, it will also be
+associated with that constituency.
+
+Unlike earlier releases of RTIR, ACLS, Scrips, Custom Fields and
+queue configuration for constituency-specific queues is now drawn
+explicitly from those queues.
 
 =head3 Setting constituency based on email headers
 
