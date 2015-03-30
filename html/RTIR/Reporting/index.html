@@ -51,6 +51,16 @@
 <form action="index.html" method="post">
 <table>
   <tr>
+    <td class="label"><&|/l&>Constituency</&>:</td>
+    <td class="value">
+      <& /Elements/EditCustomField,
+           QueueObj => RT::Queue->new($session{CurrentUser}),
+           CustomField => $constituency_cf,
+           Name => 'Constituency',
+      &>
+    </td>
+  </tr>
+  <tr>
     <td class="label"><&|/l&>Start Date:</&></td>
     <td class="input">
       <& /Elements/SelectDate, Name => 'StartDate', Default => $start->AsString &>
@@ -81,13 +91,14 @@
 </form>
 
 <%INIT>
-my $QueueObj = RT::Queue->new($session{'CurrentUser'});
-# XXX TODO port to new non-queue-name implementation
-$QueueObj->Load('Incidents');
-RT::Logger->error('Unable to load Incidents queue') unless $QueueObj->Id;
+my $constituency_cf = RT::CustomField->new($session{CurrentUser});
+$constituency_cf->Load('RTIR Constituency', LookupType => 'RT::Queue');
 
 
 if ( $ARGS{'HTMLReport'} || $ARGS{'TextReport'} || $ARGS{'SpreadsheetReport'} ) {
+    $ARGS{'Constituency'} = delete $ARGS{ 'Object-RT::Queue--CustomField-'. $constituency_cf->Id .'-Values' };
+    delete $ARGS{ 'Object-RT::Queue--CustomField-'. $constituency_cf->Id .'-Values-Magic' };
+
     my $ext = 'html';
     $ext = 'txt' if $ARGS{'TextReport'};
     $ext = 'tsv' if $ARGS{'SpreadsheetReport'};

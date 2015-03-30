@@ -46,7 +46,12 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%PERL>
+if ( $Constituency ){
+    $m->comp("SELF:Heading$ReportAs", Text => loc('RTIR Periodic Report for [_1]', $Constituency) );
+}
+else{
     $m->comp("SELF:Heading$ReportAs", Text => loc('RTIR Periodic Report') );
+}
 
 $m->comp("SELF:TwoColumnsTable$ReportAs",
     Body => [
@@ -76,7 +81,7 @@ foreach my $incident_type( @functions ) {
         $tix_created->GotoFirstItem();
         my $filtered = $filter_by_incident_field->(
             $filter_by_incident_field->(
-                    $tix_created,
+                $tix_created_pruned,
                 'Function',
                 $incident_type,
             ),
@@ -110,15 +115,7 @@ my $get_incident_field = sub {
 
 my $filter_by_incident_field = sub {
     my ($tickets, $field, $condition) = (@_);
-    my $res = {};
-    unless ( ref $tickets eq 'HASH' ) {
-        while ( my $t = $tickets->Next ) { $res->{ $t->Id } = $t }
-    }
-    else {
-        %$res = %$tickets;
-    }
-
-
+    my $res = {%$tickets};
     while( my($id, $t) = each %$res ) {
         my $value = $get_incident_field->( $t, $field );
         delete $res->{$id} if $value? $value ne $condition: $condition;
@@ -160,31 +157,44 @@ my @classifications;
     push @classifications, 'Unclassified';
 }
 
+my $constituency_limit = $Constituency ? qq{ AND 'QueueCF.{RTIR Constituency}' = '$Constituency'} : '';
 # of new reports outstanding at start of the period
 my $outstanding = RT::Tickets->new( $session{'CurrentUser'} );
-$outstanding->FromSQL("Lifecycle = '".RT::IR->lifecycle_report."' AND Created < '$start' AND (Resolved = '1970-01-01 00:00:01' OR Resolved > '$start')");
-my $outstanding_pruned = $outstanding;
+$outstanding->FromSQL("Lifecycle = '".RT::IR->lifecycle_report."' AND Created < '$start' AND (Resolved = '1970-01-01 00:00:01' OR Resolved > '$start')" . $constituency_limit);
+my $outstanding_pruned;
+while ( my $t = $outstanding->Next ) {
+    $outstanding_pruned->{ $t->Id } = $t;
+}
 
 # of new reports created during the period
 my $tix_created = RT::Tickets->new( $session{'CurrentUser'} );
-$tix_created->FromSQL("Lifecycle = '".RT::IR->lifecycle_report."' AND Created > '$start' AND Created < '$end'");
-my $tix_created_pruned = $tix_created;
+$tix_created->FromSQL("Lifecycle = '".RT::IR->lifecycle_report."' AND Created > '$start' AND Created < '$end'" . $constituency_limit);
+my $tix_created_pruned;
+while ( my $t = $tix_created->Next ) {
+    $tix_created_pruned->{ $t->Id } = $t;
+}
 
 # of new reports resolved/closed/deleted during the period
 # this means "number of reports created during the period that were 
 # also closed during the period(or before which is insane but possible)"
 
 my $tix_resolved = RT::Tickets->new( $session{'CurrentUser'} );
-$tix_resolved->FromSQL("Lifecycle = '".RT::IR->lifecycle_report. "' AND Created > '$start' AND Created < '$end' AND (Resolved > '1970-01-01 00:00:01' AND Resolved < '$end')");
-my $tix_resolved_pruned = $tix_resolved;
+$tix_resolved->FromSQL("Lifecycle = '".RT::IR->lifecycle_report. "' AND Created > '$start' AND Created < '$end' AND (Resolved > '1970-01-01 00:00:01' AND Resolved < '$end')" . $constituency_limit);
+my $tix_resolved_pruned;
+while ( my $t = $tix_resolved->Next ) {
+    $tix_resolved_pruned->{ $t->Id } = $t;
+}
 
 # of new reports oustanding at end of the period
 # this is "number of reports created during the period that were also 
 # closed during the period"
 
 my $tix_unresolved = RT::Tickets->new( $session{'CurrentUser'} );
-$tix_unresolved->FromSQL("Lifecycle = '".RT::IR->lifecycle_report."' AND Created > '$start' AND Created < '$end' AND ( Resolved = '1970-01-01 00:00:01' OR Resolved > '$end' )");
-my $tix_unresolved_pruned = $tix_unresolved;
+$tix_unresolved->FromSQL("Lifecycle = '".RT::IR->lifecycle_report."' AND Created > '$start' AND Created < '$end' AND ( Resolved = '1970-01-01 00:00:01' OR Resolved > '$end' )" . $constituency_limit);
+my $tix_unresolved_pruned;
+while ( my $t = $tix_unresolved->Next ) {
+    $tix_unresolved_pruned->{ $t->Id } = $t;
+}
 
 if ( $TextReport ) {
     $r->content_type('text/plain');
@@ -196,6 +206,7 @@ if ( $TextReport ) {
 <%ARGS>
 $StartDate         => undef
 $EndDate           => undef
+$Constituency      => undef
 $HTMLReport        => 1
 $TextReport        => !$HTMLReport
 $SpreadsheetReport => !($HTMLReport || $TextReport)
