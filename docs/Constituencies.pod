@@ -41,6 +41,10 @@ Its correspondence email address.
 
 =item *
 
+Its queues
+
+=item *
+
 Associated ACLs (rights and permissions for queues, tickets, etc.)
 
 =back
@@ -64,11 +68,12 @@ from the launching ticket.
 =item *
 
 You can manually assign the constituency to any new tickets created
-in the RTIR web interface.
+in the RTIR web interface by selecting the an RTIR queue associated
+with a given constituency.
 
 =item *
 
-You can manually change the constituency of a ticket and all its
+You can manually change the constituency of an incident and all its
 related tickets.
 
 =back
@@ -80,7 +85,7 @@ according to the ACLs. All tickets must belong to a constituency.
 
 =head2 Mandatory
 
-The constituency field is a mandatory field, so users must select a value
+The constituency is based on the ticket's queue so users must select a value
 when creating RTIR tickets.
 
 =head2 Constituency Values
@@ -94,19 +99,17 @@ rename values, and change the sort order.
 However, to get advanced control over constituencies you have to create additional
 objects in the system. The steps below describe how to do this manually. A
 script (F<bin/add_constituency>) is also provided which helps add new constituency
-values, along with their associated groups and queues. These queues are there only 
-for technical reasons and are only visible for administrators of RTIR.
-The script is located in the F<etc> directory in your RTIR distribution.
+values, along with their associated groups and queues. In previous versions of RTIR,
+these queues were a hidden implementation detail. In RTIR 3.4, each constituency has
+its own queues, which work like regular RT queues.
 
 Then assign users to their corresponding F<DutyTeam> to give them control over
-objects from their constituency. As the permissions are based on the
-F<constituency> field of the ticket there is no need to move tickets
-from one queue to the newly created constituency queue.
+objects from their constituency.
 
 =head2 Manually Managing Constituency Values
 
 In some simple configurations, administrators may use the web interface
-to add, delete, or rename values for the 'Constituency' field, however
+to add, delete, or rename values for the 'RTIR Constituency' field, however
 if you need the advanced access control RTIR's Constituencies system
 provides, you need to create several queues and groups for each
 value.
@@ -129,10 +132,6 @@ the constituency 'EDUNET':
 =item * Group 'ReadOnly EDUNET'
 
 =back
-
-These queues are used to store limited per-constituency information for
-tickets in the master queue. For example, you
-can set the constituency base correspond and comment addresses.
 
 See L</"Access Control (ACLs)"> below for more about granting rights using
 special queues and groups.
@@ -200,7 +199,7 @@ The Advanced tab allows you to do things that generic RTIR
 interfaces don't, so you can merge arbitrary tickets, move tickets between
 queues and, most important for constituencies, it
 allows you to link tickets with different constituencies even if
-the propagation algorithm is set to 'reject'.
+C<RTIR_StrictConstituencyLinking> is set to 1.
 
 Permissions (ACLs) are still applied to such operations, but administrators
 should note that by default links don't require bi-directional ACL checking.
@@ -210,15 +209,14 @@ the C<$StrictLinkACL> option in RT's configuration.
 
 =head2 Outgoing Mail: "CorrespondAddress" and "CommentAddress"
 
-If you create queues as described in L</Managing Constituency Values>,
-the queue correspondence and comment addresses will override
-the original queue's where possible.
+Each constituency has its own queues in RTIR. As such, 
+C<CorrespondAddress> and C<CommentAddress> work just like they do 
+for any RT queue.
 
 For example, if a user replies to an IR with constituency EDUNET and RTIR
 sends notifications, the correspond address of the 'Incident Reports - EDUNET'
 queue is used in notifications, if one is set. If the field
-is empty, the correspond address of the 'Incident Reports' queue is used
-unless it's also empty. The last fallback address is the C<$CorrespondAddress>
+is empty, the fallback address is the C<$CorrespondAddress>
 in the RT's configuration file.
 
 It is important to note that these additional configuration do not also
@@ -233,76 +231,8 @@ constituency by means of "pseudo" queues ("Incidents - EDUNET" for
 the EDUNET constituency on the Incidents queue, for example).
 
 For example, assume you have two constituencies "EDUNET" and "GOVNET".
-Your RTIR instance consists of four queues: Incident Reports,
-Incidents, Investigations and Blocks. To grant the user Edward
-the right to work with EDUNET Incident Reports, you'll need to
-create a new queue, "Incident Reports - EDUNET". Make Edward an
+Your RTIR instance consists of four queues for each constituency: Incident Reports - EDUNET,
+Incidents - EDUNET, Investigations - EDUNET and Blocks - EDUNET. To grant the user Edward
+the right to work with EDUNET Incident Reports, make Edward an
 AdminCc of the new queue, either directly or as a member of a group
 like "DutyTeam EDUNET".
-
-You should grant that user or group the rights you want them to
-have to tickets in the "Incident Reports" queue. It is important
-that you I<not> grant the user or group "queue-wide" rights such as
-"See Queue" or "Create Ticket" in the pseudo-queue as the system
-will apply those rights to the pseudo-queue "Incident Reports -
-EUDNET" and I<not> to the "Incident Reports" queue.
-
-=head3 Constituency Specific Groups
-
-For each Constituency value, the RTIR admin can create a group
-'DutyTeam [constituency_value]' using either the web UI or the script.
-
-We've added some automation for such groups. Those groups
-are added as an AdminCc to a ticket according to value of the field
-and you can grant additional rights using this assignment. For example
-if you grant the 'TakeTicket' right to the AdminCc role on the IR queue
-then users that are members of the 'DutyTeam EDUNET' group will have
-this rights on all EDUNET tickets.
-
-Note that this method has some limitations and caveats. Users who
-have enough privileges still can add other users and groups as
-AdminCcs of a ticket and these principals will get the same set of
-additional rights that constituency-specific groups get via the AdminCc
-role. Since this uses the AdminCc role to grant constituency rights,
-you cannot use the role to grant one set of rights to group X and
-another set to group Y.
-
-Also, by default AdminCcs are notified on many ticket actions,
-so this feature can be a little bit noisy for members. You either
-can disable notifications of AdminCcs or disable this functionality.
-
-If you want to disable this functionality you just have to disable
-"SetConstituencyGroup" scrips in RTIR's queues. These scrips add or
-replace group in the AdminCc list when people set or change the ticket's
-constituency. If you still need more control over ACLs then you
-can use the pseudo-queues to add this control.
-
-=head3 DutyTeam Group vs. Constituency Specific Group
-
-By default DutyTeam has almost all rights on all RTIR's queues. This
-group's rights apply to tickets with all constituencies, so if you
-want to give access to group 'DutyTeam EDUNET' on EDUNET tickets only,
-then you don't want to make this group a member of DutyTeam.
-
-In RT/RTIR you cannot deny a right for a subgroup of a group if the
-parent group has it, so you should avoid adding groups into groups with higher
-privileges. We suggest leaving DutyTeam and constituency specific groups
-on the same level, however, you can join them using a new top level
-group.
-
-The same rules apply to user members of groups. Rights of all groups
-a user is a member of are summed up and if he is a member of DutyTeam with
-default of rights then he has more rights than any member of
-a constituency specific group (who is not member of other groups).
-Considering the above suggestion, a good way to manage users is to place
-each user in a constituency specific groups based on their access needs.
-Place users into DutyTeam only if they should work with all constituencies.
-
-=head2 Constituency issues
-
-Constituencies are very heavyweight, they add extra code to many
-permission checks in the system and also greatly complicate the number
-of groups and group members in the system.  If you are not going to use
-this functionality, you would be well served to disable the Constituency
-Custom Field, which will cause RTIR to remove a number of added
-complexities.
