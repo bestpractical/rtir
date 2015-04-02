@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 
+use Test::More skip_all => 'constituencies being rebuilt';
 use RT::IR::Test tests => undef;
 
 use_ok('RT::IR');
