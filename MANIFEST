@@ -10,6 +10,7 @@ docs/UPGRADING-2.4
 docs/UPGRADING-2.6
 docs/UPGRADING-3.0
 docs/UPGRADING-3.2
+docs/UPGRADING-3.4
 etc/add_constituency.in
 etc/initialdata
 etc/logo/gif/rtir-logo-badge-3d.gif
@@ -46,17 +47,14 @@ etc/upgrade/2.6.2/content
 etc/upgrade/2.9.0/content
 etc/upgrade/3.0.0rc2/content
 etc/upgrade/3.1.0/content
+etc/upgrade/3.3.0/content
 etc/upgrade/upgrade.pl.in
 html/Callbacks/RTIR/autohandler/SuccessfulLogin
-html/Callbacks/RTIR/Elements/EditCustomField/EditComponentName
-html/Callbacks/RTIR/Elements/EditCustomFields/MassageCustomFields
 html/Callbacks/RTIR/Elements/Header/Head
 html/Callbacks/RTIR/Elements/MakeClicky/Default
-html/Callbacks/RTIR/Elements/QueueSummaryByLifecycle/SQLFilter
-html/Callbacks/RTIR/Elements/QueueSummaryByStatus/SQLFilter
 html/Callbacks/RTIR/Elements/RT__Ticket/ColumnMap/Once
-html/Callbacks/RTIR/Elements/SelectOwner/UpdateObjectList
 html/Callbacks/RTIR/Elements/ShowHistory/SkipTransaction
+html/Callbacks/RTIR/Elements/ShowSearch/ModifySearch
 html/Callbacks/RTIR/Elements/Tabs/Privileged
 html/Callbacks/RTIR/Helpers/TicketHistory/ExtraShowHistoryArguments
 html/Callbacks/RTIR/Search/Elements/PickBasics/Default
@@ -64,6 +62,7 @@ html/Callbacks/RTIR/Search/Results.html/Initial
 html/Callbacks/RTIR/Ticket/Create.html/Default
 html/Callbacks/RTIR/Ticket/Display.html/Initial
 html/RTIR/Advanced.html
+html/RTIR/c/dhandler
 html/RTIR/Create.html
 html/RTIR/Crypt.html
 html/RTIR/Display.html
@@ -71,6 +70,7 @@ html/RTIR/Edit.html
 html/RTIR/EditUsername
 html/RTIR/Elements/AddWatchers
 html/RTIR/Elements/AttachReports
+html/RTIR/Elements/CreateTicketInQueue
 html/RTIR/Elements/DueIncidents
 html/RTIR/Elements/EditCustomFields
 html/RTIR/Elements/EditPeople
@@ -80,8 +80,13 @@ html/RTIR/Elements/MergeWith
 html/RTIR/Elements/NewReports
 html/RTIR/Elements/NobodyDueIncidents
 html/RTIR/Elements/PickRestriction
+html/RTIR/Elements/QueueSummary
 html/RTIR/Elements/Refresh
+html/RTIR/Elements/SelectConstituency
 html/RTIR/Elements/SelectIncident
+html/RTIR/Elements/SelectNewTicketQueue
+html/RTIR/Elements/SelectRTIRLifecycle
+html/RTIR/Elements/SelectRTIRQueue
 html/RTIR/Elements/ShowArticles
 html/RTIR/Elements/ShowChildren
 html/RTIR/Elements/ShowDates
@@ -91,6 +96,7 @@ html/RTIR/Elements/ShowRTIRField
 html/RTIR/Elements/TransactionData
 html/RTIR/Elements/UpdateData
 html/RTIR/Elements/UserDueIncidents
+html/RTIR/Elements/WorkWithConstituency
 html/RTIR/Forward.html
 html/RTIR/Incident/BulkAbandon.html
 html/RTIR/Incident/Children/index.html
@@ -166,6 +172,7 @@ lib/Net/Whois/RIPE/Object.pod
 lib/Net/Whois/RIPE/Object/Template.pm
 lib/RT/Action/RTIR.pm
 lib/RT/Action/RTIR_Activate.pm
+lib/RT/Action/RTIR_ChangeChildConstituencies.pm
 lib/RT/Action/RTIR_ChangeChildOwnership.pm
 lib/RT/Action/RTIR_ChangeParentOwnership.pm
 lib/RT/Action/RTIR_FindIP.pm
@@ -188,6 +195,7 @@ lib/RT/IR/Config.pm
 lib/RT/IR/Test.pm.in
 lib/RT/IR/Test/GnuPG.pm
 lib/RT/IR/Test/Web.pm
+lib/RT/IR/Web.pm
 Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP
@@ -218,14 +226,12 @@ t/block/pending-no-regexp.t
 t/block/pending-regexp.t
 t/block/status-basics.t
 t/block/status-editor-regression.t
-t/constituency/acl.t
 t/constituency/basics.t
 t/constituency/email.t
 t/constituency/email_outgoing.t
 t/constituency/propagation-inherit.t
 t/constituency/propagation-no.t
 t/constituency/propagation-reject.t
-t/constituency/visibility.t
 t/custom-fields/defaults-config.t
 t/custom-fields/defaults-on-linking.t
 t/custom-fields/ip.t
