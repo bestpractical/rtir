@@ -16,7 +16,7 @@
         InitialPriority   => (
             $_ eq 'incidents'
             ? 50
-            : undef
+            : 0
         )
     }
 } RT::IR->Lifecycles;
