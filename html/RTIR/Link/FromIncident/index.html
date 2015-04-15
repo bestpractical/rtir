@@ -75,6 +75,21 @@
 <& /Elements/Submit, Name => "SubmitTicket", Caption => $title, Label => loc("Link") &>
 </form>
 
+
+<form action="index.html" method="post">
+% while ( my( $name, $value) = each %RowsFormHiddens ) {
+%   if ( defined $value ) {
+  <input type="hidden" name="<% $name %>" value="<% $value %>" />
+%   }
+% }
+  <div style="white-space: nowrap">
+    Show
+    <input autocomplete="off" type="text" name="Rows" size="2" value="<% $Rows %>" />
+    Rows (of <% $total_count %> total)
+    <input type="submit" name="UpdateRows"  value="Update" class="button" />
+  </div>
+</form>
+
 <%ARGS>
 $id          => undef
 $Queue       => undef
@@ -99,6 +114,20 @@ my $BaseQuery = RT::IR->Query(
     NotMemberOf => $id,
     Constituency => $IncidentObj,
 );
+
+
+# Count the number of tickets for Rows form
+my $counter = RT::Tickets->new( $session{'CurrentUser'} );;
+$counter->FromSQL( join ' AND ', map "( $_ )", $BaseQuery, $Query );
+my $total_count = $counter->CountAll;
+
+# Prepare hidden fields for Rows form
+my %RowsFormHiddens = (
+  id => $id,
+  Queue => $Queue,
+  map { $_ => $ARGS{$_} } qw( Query Format Page Order OrderBy )
+);
+
 
 my $base_url = 'RTIR/Link/FromIncident/?'
     . $m->comp( '/Elements/QueryString', id => $id, Queue => $Queue );
