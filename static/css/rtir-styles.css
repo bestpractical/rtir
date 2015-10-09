@@ -49,11 +49,11 @@ body.rtir #topactions { min-width: 44em; white-space: no-wrap; }
     width: 80%;
 }
 
-body.rtir .titlebox.ticket-info-articles       .titlebox-title .left { background-color: #316531; color: #fff; }
-body.rtir .titlebox.tickets-list-report        .titlebox-title .left { background-color: #316531; color: #fff; }
-body.rtir .titlebox.tickets-list-incident      .titlebox-title .left { background-color: #316531; color: #fff; }
-body.rtir .titlebox.tickets-list-investigation .titlebox-title .left { background-color: #316531; color: #fff; }
-body.rtir .titlebox.tickets-list-block         .titlebox-title .left { background-color: #316531; color: #fff; }
+body.rtir .titlebox.ticket-info-articles            .titlebox-title .left { background-color: #316531; color: #fff; }
+body.rtir .titlebox.tickets-list-incident_reports   .titlebox-title .left { background-color: #316531; color: #fff; }
+body.rtir .titlebox.tickets-list-incidents          .titlebox-title .left { background-color: #316531; color: #fff; }
+body.rtir .titlebox.tickets-list-investigations     .titlebox-title .left { background-color: #316531; color: #fff; }
+body.rtir .titlebox.tickets-list-blocks             .titlebox-title .left { background-color: #316531; color: #fff; }
 
 
 body.rtir #comp-RTIR-Search #body {
