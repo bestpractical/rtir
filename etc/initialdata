@@ -17,7 +17,8 @@
             $_ eq 'incidents'
             ? 50
             : 0
-        )
+        ),
+        SLADisabled => ( $_ eq 'incidents' ? 1 : 0 ),
     }
 } RT::IR->Lifecycles;
 
