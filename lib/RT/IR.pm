@@ -824,8 +824,11 @@ XXX TODO this wants a better name.
 sub HREFTo {
     my $self = shift;
     my $page = shift;
-    my %args = ( Constituency => $HTML::Mason::Commands::m->{'RTIR_ConstituencyFilter'},
-                 @_); 
+    my %args = (
+        IncludeWebPath => 1,
+        Constituency   => $HTML::Mason::Commands::m->{'RTIR_ConstituencyFilter'},
+        @_
+    );
     # XXX TODO - this code has a dependency on the implementation
     # of the mason UI. It might want to be either in a web handler
     # related namespace or to have a better abstraction
@@ -833,7 +836,7 @@ sub HREFTo {
     if ($args{'Constituency'}) {  
         $c = 'c/'.$args{'Constituency'}."/";
     }
-    return RT->Config->Get('WebPath') .'/RTIR/'.$c.$page;
+    return ($args{IncludeWebPath} ? RT->Config->Get('WebPath') : '') .'/RTIR/'.$c.$page;
 }
 
 
