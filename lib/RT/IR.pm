@@ -105,6 +105,7 @@ sub DutyTeamAllQueueRights {
             TakeTicket
             Watch
             ShowOutgoingEmail
+            ForwardMessage
             ));
 
 }
