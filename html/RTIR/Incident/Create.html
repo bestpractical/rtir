@@ -219,7 +219,7 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
                 Default =>
                     defined $ARGS{'FinalPriority'} && length $ARGS{'FinalPriority'}
                     ? $ARGS{'FinalPriority'}
-                    : $QueueObj->InitialPriority
+                    : $QueueObj->FinalPriority
                 ,
             },
         },
