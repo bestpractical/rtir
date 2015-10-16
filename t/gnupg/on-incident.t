@@ -86,4 +86,5 @@ diag "check that things don't work if there is no key";
     ok !@mail, 'there are no outgoing emails';
 }
 
+undef $agent;
 done_testing;

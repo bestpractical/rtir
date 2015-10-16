@@ -86,4 +86,5 @@ SKIP: {
 	$agent->has_watchers( $solo_inv, 'AdminCc');
 }
 
+undef $agent;
 done_testing;

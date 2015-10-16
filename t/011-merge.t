@@ -106,4 +106,5 @@ diag "merge two IRs that are linked to different Incidents" if $ENV{'TEST_VERBOS
     $agent->ticket_is_linked_to_inc( $ir1_id, [$inc1_id, $inc2_id] );
 }
 
+undef $agent;
 done_testing;

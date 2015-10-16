@@ -159,4 +159,5 @@ diag "GOV user creates an IR under EDUNET, check addresses";
 }
 
 
+undef $agent;
 done_testing;

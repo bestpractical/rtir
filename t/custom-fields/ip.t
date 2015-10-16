@@ -622,4 +622,5 @@ diag "merge ticket with the same IP";
 }
 
 
+undef $agent;
 done_testing;

@@ -61,4 +61,5 @@ diag "create an IR and check that 'SkipNotification' feature works";
     ok $recipient_ok, 'no emails to requestor';
 }
 
+undef $agent;
 done_testing;

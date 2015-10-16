@@ -56,6 +56,7 @@ diag "abandon incident with resolved IR" if $ENV{'TEST_VERBOSE'};
     is $agent->ticket_status( $ir_id), 'resolved', 'resolved ir';
 }
 
+undef $agent;
 done_testing;
 
 

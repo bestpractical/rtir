@@ -32,4 +32,5 @@ my $agent = default_agent();
     is($agent->uri,$agent->rt_base_url."RTIR/Display.html?id=$ir_id","Directed to the Report Page");
 }
 
+undef $agent;
 done_testing;

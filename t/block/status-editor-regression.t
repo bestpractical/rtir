@@ -15,4 +15,5 @@ $agent->goto_edit_block( $block);
 
 $agent->content_unlike(qr{<option (?:value=.*)?>Use system default\(\)</option>}, "The option 'Use system default()' does not exist.");
 
+undef $agent;
 done_testing();

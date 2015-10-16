@@ -110,4 +110,5 @@ diag "started date of a block" if $ENV{'TEST_VERBOSE'};
 }
 
 
+undef $agent;
 done_testing;

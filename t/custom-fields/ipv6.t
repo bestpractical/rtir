@@ -550,4 +550,5 @@ diag "merge ticket with the same IP";
     is( $has[0], '0000:'x6 .'ac10:0001', "has value" );
 }
 
+undef $agent;
 done_testing();

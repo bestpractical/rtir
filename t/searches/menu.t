@@ -227,4 +227,5 @@ for my $type ( 'incident', 'ir', 'investigation', 'block' ) {
     }
 }
 
+undef $m;
 done_testing;

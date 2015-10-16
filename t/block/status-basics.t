@@ -102,4 +102,5 @@ diag "test activation after reply using Edit page";
 }
 
 
+undef $agent;
 done_testing;

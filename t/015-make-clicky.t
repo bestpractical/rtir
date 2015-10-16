@@ -120,5 +120,6 @@ diag "utf8 caching " if $ENV{'TEST_VERBOSE'};
 
 }
 
+undef $agent;
 done_testing;
 
