@@ -132,7 +132,7 @@
 </tr>
 
 % $ARGS{IncludeSignature} = 0 if $Action ne 'Respond' && !RT->Config->Get('MessageBoxIncludeSignatureOnComment');
-<& /RTIR/Elements/UpdateData, %ARGS, Ticket => $Ticket, Type => 'Incident', GnuPGWidget => $gnupg_widget &>
+<& /RTIR/Elements/UpdateData, %ARGS, Ticket => $Ticket, GnuPGWidget => $gnupg_widget &>
 
 </table>
 
