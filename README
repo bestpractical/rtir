@@ -40,19 +40,19 @@ Installation instructions:
 
 4) Type "make install".
 
-5a) If you are installing RTIR for the first time, initialize the RTIR
+5) Activate the RTIR extension in the RT_SiteConfig.pm file:
+
+    Plugin('RT::IR');
+
+6a) If you are installing RTIR for the first time, initialize the RTIR
     database by typing "make initdb".
 
     WARNING: Do not attempt to re-initialize the database if you are
     upgrading.
 
-5b) If you are UPGRADING from a previous installation, read the
+6b) If you are UPGRADING from a previous installation, read the
     UPGRADING file for instructions on how to upgrade your
     database.
-
-6) Activate the RTIR extension in the RT_SiteConfig.pm file:
-
-    Plugin('RT::IR');
 
 7) Stop and start your web server.
 
