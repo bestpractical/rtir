@@ -189,4 +189,5 @@ diag "create an incident under GOVNET and create a new IR "
 }
 
 
+undef $agent;
 done_testing;

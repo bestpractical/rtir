@@ -63,4 +63,5 @@ foreach( @irs ) {
     $agent->ticket_status_is( $_, 'rejected', "Ticket #$_ is rejected" );
 }
 
+undef $agent;
 done_testing;

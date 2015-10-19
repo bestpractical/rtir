@@ -76,4 +76,5 @@ foreach my $queue ( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' 
     like( $agent->field('UpdateContent'), qr/this is a content/ );
 }
 
+undef $agent;
 done_testing;

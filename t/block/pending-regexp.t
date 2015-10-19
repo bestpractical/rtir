@@ -87,4 +87,5 @@ EOF
     $agent->ticket_status_is( $block_id, 'removed');
 }
 
+undef $agent;
 done_testing;

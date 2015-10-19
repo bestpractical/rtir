@@ -121,4 +121,5 @@ EOF
 
 
 
+undef $agent;
 done_testing;

@@ -275,4 +275,5 @@ diag "check that constituency propagates from a child to a parent after 'Edit', 
 }
 
 
+undef $agent;
 done_testing;

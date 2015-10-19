@@ -33,4 +33,5 @@ diag "link IR to Inc after create" if $ENV{'TEST_VERBOSE'};
     is $agent->ticket_status($ir_id), 'open', 'auto open kicked in';
 }
 
+undef $agent;
 done_testing;

@@ -66,4 +66,5 @@ is($agent->value('SavedSearchOwner'), "RT::Group-$DT_id", "privacy is correct");
 
 # ... should also do tests for the RTIR "refine" thing, which is like QB.
 
+undef $agent;
 done_testing;

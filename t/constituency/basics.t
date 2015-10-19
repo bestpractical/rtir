@@ -303,4 +303,5 @@ diag "check defaults when creating inc with inv";
     }
 }
 
+undef $agent;
 done_testing;

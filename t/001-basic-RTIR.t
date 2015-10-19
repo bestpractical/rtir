@@ -42,4 +42,5 @@ $agent->LinkChildToIncident( $report, $second_incident_id);
 
 
 
+undef $agent;
 done_testing;

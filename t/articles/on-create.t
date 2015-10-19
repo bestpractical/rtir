@@ -71,4 +71,5 @@ foreach ( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
 }
 
 
+undef $agent;
 done_testing;

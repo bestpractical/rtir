@@ -306,4 +306,5 @@ diag "check that we can change constituency of an unlinked ticket using 'Edit' p
 }
 
 
+undef $agent;
 done_testing;

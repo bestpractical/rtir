@@ -68,6 +68,7 @@ diag "check that things don't work if there is no key";
     $agent->form_number(3);
     $agent->tick( SelectedReports => $ir_id );
     $agent->tick( Encrypt => 1 );
+    $agent->field( UpdateContent => 'Some content' );
     $agent->click('SubmitTicket');
     $agent->content_like(
         qr/You are going to encrypt outgoing email messages/i,
@@ -85,4 +86,5 @@ diag "check that things don't work if there is no key";
     ok !@mail, 'there are no outgoing emails';
 }
 
+undef $agent;
 done_testing;

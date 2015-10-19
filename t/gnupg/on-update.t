@@ -260,6 +260,7 @@ diag "check encrypting of attachments";
 }
 
 
+undef $agent;
 done_testing;
 
 sub check_text_emails {
