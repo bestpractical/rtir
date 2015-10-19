@@ -482,7 +482,8 @@ sub create_or_load_queue {
             Name              => $name,
             CommentAddress    => $opt{'comment'},
             CorrespondAddress => $opt{'correspond'},
-            Lifecycle         => $lifecycle
+            Lifecycle         => $lifecycle,
+            SLADisabled       => $basequeue->SLADisabled,
         );
         debug "Creating new queue '$name': $msg\n";
         debug "\tcomment address:\t$opt{'comment'}" if $opt{'comment'};
@@ -502,6 +503,15 @@ sub create_or_load_queue {
                 print STDERR "Couldn't set $type address of '$name' queue\n";
             } else {
                 debug "\tnew $type address: " . $opt{ lc $type };
+            }
+        }
+        if ( $queue->SLADisabled != $basequeue->SLADisabled ) {
+            my ( $status, $msg ) = $queue->SetSLADisabled( $basequeue->SLADisabled );
+            if ($status) {
+                debug "\tSLADisabled: " . $queue->SLADisabled;
+            }
+            else {
+                print STDERR "Couldn't set SLADisabled of '$name' queue: $msg\n";
             }
         }
     }

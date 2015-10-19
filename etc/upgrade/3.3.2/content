@@ -1,0 +1,41 @@
+use strict;
+use warnings;
+
+our @Initial = (
+    sub {
+        my $action = RT::ScripAction->new(RT->SystemUser);
+        $action->Load('RTIR Set Incident Due');
+        if ( $action->id ) {
+            my $scrips = RT::Scrips->new(RT->SystemUser);
+            $scrips->Limit( FIELD => 'ScripAction', VALUE => $action->id );
+            return unless $scrips->Count;
+            my $report_queues = RT::Queues->new(RT->SystemUser);
+            $report_queues->Limit( FIELD => 'Lifecycle', VALUE => RT::IR->lifecycle_report );
+            return unless $report_queues->Count;
+            my @report_queues = @{$report_queues->ItemsArrayRef};
+            my $incident_queues = RT::Queues->new(RT->SystemUser);
+            $incident_queues->Limit( FIELD => 'Lifecycle', VALUE => RT::IR->lifecycle_incident );
+            return unless $incident_queues->Count;
+            my @incident_queues = @{$incident_queues->ItemsArrayRef};
+            my %queue_map;
+            for my $incident_queue( @incident_queues ) {
+                $queue_map{$incident_queue->FirstCustomFieldValue('RTIR Constituency') || '' } = $incident_queue;
+            }
+
+            while ( my $scrip = $scrips->Next ) {
+                for my $report_queue ( @report_queues ) {
+                    if ( $scrip->IsAdded($report_queue->id) ) {
+                        my $incident_queue =
+                            $queue_map{$report_queue->FirstCustomFieldValue('RTIR Constituency') || ''};
+                        if ( $incident_queue && !$incident_queue->SLADisabled ) {
+                            my ($ret, $msg) = $incident_queue->SetSLADisabled(1);
+                            unless ( $ret ) {
+                                RT->Logger->error("Couldn't disable core SLA for queue #" . $incident_queue->id . ": $msg");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+);

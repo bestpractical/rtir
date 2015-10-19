@@ -389,11 +389,10 @@ L<RT::Extension::SLA> was prototyped on it, but vastly improved. In RTIR 3.0
 we removed the SLA implementation in the core of RTIR that was in conflict
 with the extension.
 
-If you install and configure L<RT::Extension::SLA> do not apply it to
-the Incidents queue.  You will encounter a race condition between the
-extension and the RTIR scrips that synchronize due dates between
-an incident and its most due active child.  If you need to manage
-incident due dates using the SLA extension, you can disable the RTIR
-scrips that manage due dates on the Incidents queue.
+RT 4.4 has cored L<RT::Extension::SLA>, please disable SLA on the Incidents
+queues.  You will encounter a race condition between the core SLA and the RTIR
+scrips that synchronize due dates between an incident and its most due active
+child.  If you need to manage incident due dates using the core SLA, you can
+disable the RTIR scrips that manage due dates on the Incidents queues.
 
 =cut
