@@ -3,7 +3,7 @@
 The following describes some of the key components of the upgrade
 to RTIR 2.4 from all previous versions of RTIR.
 
-The F<etc/upgrade/upgrade.pl> script is mentioned several times
+The F<etc/upgrade/rtir-2.4-upgrade.pl> script is mentioned several times
 for different versions. You only need to run it once and the most
 recent version is now included in the RTIR distribution.
 
@@ -29,7 +29,7 @@ update the DB.
 
 =head1 Upgrading from 2.3.15 and Earlier
 
-There was an error in an earlier version of the F<etc/upgrade/upgrade.pl>
+There was an error in an earlier version of the F<etc/upgrade/rtir-2.4-upgrade.pl>
 script where it could skip some incidents during upgrade. Run the new version
 of this script, especially if you never ran it or ran with earlier versions
 of RTIR.
@@ -124,7 +124,7 @@ the code of the scrips then you have to port changes.
 
 =item 2
 
-Run the F<etc/upgrade/upgrade.pl> script. This script updates Due Dates
+Run the F<etc/upgrade/rtir-2.4-upgrade.pl> script. This script updates Due Dates
 on active incidents where they are not set and sets them to the most
 recent due date of the active children.
 

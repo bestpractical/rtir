@@ -33,7 +33,7 @@ requires('Parse::BooleanLogic');
 # for tests
 build_requires('Test::More');
 build_requires('File::Find');
-# for etc/upgrade/upgrade.pl
+# for etc/upgrade/rtir-2.4-upgrade.pl
 build_requires('File::Temp');
 
 auto_install();
@@ -43,7 +43,7 @@ substitute( {
         PERL        => $ENV{PERL} || $secure_perl_path,
     },
     { sufix => '.in' },
-    'etc/upgrade/upgrade.pl',
+    'etc/upgrade/rtir-2.4-upgrade.pl',
     'etc/add_constituency',
     'bin/add_constituency',
     'lib/RT/IR/Test.pm',
