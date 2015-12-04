@@ -97,6 +97,7 @@
 
   <& /Ticket/Elements/EditBasics,
     InTable => 1,
+    QueueObj => $QueueObj,
     fields  => [
         {   name => 'Queue',
             comp => '/RTIR/Elements/SelectRTIRQueue',
@@ -156,6 +157,7 @@
 <table width="100%" border="0">
 <& /Ticket/Elements/EditBasics,
     InTable => 1,
+    QueueObj => $QueueObj,
     fields  => [
         {
             name => 'Starts',
@@ -175,6 +177,7 @@
 <table width="100%" border="0">
 <& /Ticket/Elements/EditBasics,
     InTable => 1,
+    QueueObj => $QueueObj,
     fields  => [
         {
             name => 'Time Estimated',
