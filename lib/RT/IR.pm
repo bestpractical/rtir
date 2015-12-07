@@ -74,8 +74,6 @@ sub lifecycle_countermeasure {'blocks'}
 
 my @LIFECYCLES = (RT::IR->lifecycle_incident, RT::IR->lifecycle_report, RT::IR->lifecycle_investigation, RT::IR->lifecycle_countermeasure);
 
-my @QUEUES = ('Incidents', 'Incident Reports', 'Investigations', 'Blocks');
-my %QUEUES = map { lc($_) => $_ } @QUEUES;
 my %TYPE = (
     'incidents'        => 'Incident',
     'incident reports' => 'Report',
@@ -241,7 +239,19 @@ Returns a list of the core RTIR Queue names
 =cut
 
 sub Queues {
-    return @QUEUES;
+    my $queues = RT::Queues->new( RT->SystemUser );
+
+    $queues->Limit(
+        FIELD => 'Lifecycle',
+        OPERATOR => 'IN',
+        VALUE => \@LIFECYCLES,
+    );
+
+    my @rtir_queues;
+    while (my $queue = $queues->Next) {
+        push @rtir_queues, $queue->Name;
+    }
+    return @rtir_queues;
 }
 
 =head2 Lifecycles
@@ -654,7 +664,7 @@ sub CustomFields {
     );
 
     unless ( keys %cache ) {
-        foreach my $qname ( @QUEUES ) {
+        foreach my $qname ( Queues() ) {
             my $type = TicketType( Queue => $qname );
             $cache{$type} = [];
 
