@@ -97,6 +97,7 @@
 
   <& /Ticket/Elements/EditBasics,
     InTable => 1,
+    QueueObj => $QueueObj,
     fields  => [
         {   name => 'Queue',
             comp => '/RTIR/Elements/SelectRTIRQueue',
@@ -130,6 +131,7 @@
                 QueueObj        => $QueueObj,
             },
         },
+        { special => 'roles' },
     ],
   &>
 
@@ -156,6 +158,7 @@
 <table width="100%" border="0">
 <& /Ticket/Elements/EditBasics,
     InTable => 1,
+    QueueObj => $QueueObj,
     fields  => [
         {
             name => 'Starts',
@@ -175,6 +178,7 @@
 <table width="100%" border="0">
 <& /Ticket/Elements/EditBasics,
     InTable => 1,
+    QueueObj => $QueueObj,
     fields  => [
         {
             name => 'Time Estimated',
@@ -255,6 +259,25 @@
         <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)</&>
     </font></i></td>
   </tr>
+
+% my $roles = $QueueObj->CustomRoles;
+% $roles->LimitToMultipleValue;
+% while (my $role = $roles->Next) {
+  <tr>
+    <td class="label"><% $role->Name %>:</td>
+    <td class="value"><& /Elements/EmailInput,
+        Name => $role->GroupType, Default => $ARGS{$role->GroupType}, Size => undef,
+    &></td>
+  </tr>
+% if ($role->EntryHint) {
+  <tr>
+    <td class="label">&nbsp;</td>
+    <td class="comment"><i><font size="-2">
+        <% $role->EntryHint %>
+    </font></i></td>
+  </tr>
+% }
+% }
 
   <tr>
     <td class="label"><&|/l&>Subject</&>:</td>

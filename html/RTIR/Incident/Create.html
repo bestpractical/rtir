@@ -198,6 +198,7 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
 <&| /Widgets/TitleBox, title => loc('Details'), class => 'ticket-info-details' &>
 <& /Ticket/Elements/EditBasics,
     InTable => 0,
+    QueueObj => $QueueObj,
     fields  => [
         {
             name => 'Priority',

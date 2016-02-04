@@ -82,6 +82,23 @@
       <& /Ticket/Elements/EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->AdminCc &>
     </td>
   </tr>
+
+% my $multi_roles = $Ticket->QueueObj->CustomRoles;
+% $multi_roles->LimitToMultipleValue;
+% while (my $role = $multi_roles->Next) {
+
+  <tr>
+    <td height="1" colspan="2" bgcolor="#999999"></td>
+  <tr>
+    <td class="labeltop">
+      <% $role->Name %>:
+    </td>
+    <td class="value">
+      <& /Ticket/Elements/EditWatchers, Watchers => $Ticket->RoleGroup($role->GroupType), TicketObj => $Ticket &>
+    </td>
+
+  </tr>
+% }
 </table>
 
 </td>
