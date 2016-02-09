@@ -1,0 +1,34 @@
+use strict;
+use warnings;
+
+our @Initial = (
+    sub {
+        my $cf = RT::CustomField->new(RT->SystemUser);
+        $cf->Load( "RTIR Constituency", LookupType => 'RT::Queue' );
+        my @constituencies = ('', map { $_->Name } @{$cf->Values->ItemsArrayRef || []} );
+
+        my %groups;
+        for my $constituency ( @constituencies ) {
+            my $group = RT::Group->new(RT->SystemUser);
+            $group->LoadUserDefinedGroup('DutyTeam' . ($constituency ? " $constituency" : '') );
+            $groups{$constituency} = $group if $group->id;
+        }
+        my $queues = RT::Queues->new(RT->SystemUser);
+        $queues->UnLimit;
+        while ( my $queue = $queues->Next ) {
+            my $constituency = $queue->FirstCustomFieldValue('RTIR Constituency');
+            if ( $constituency || $queue->Name =~ /^(?:Incidents|Incident Reports|Investigations|Blocks)$/ ) {
+                my $group = $groups{$constituency || ''};
+                if ( $group && !$group->PrincipalObj->HasRight( Right  => 'ForwardMessage', Object => $queue ) ) {
+                    my ( $ret, $msg ) = $group->PrincipalObj->GrantRight(
+                        Right  => 'ForwardMessage',
+                        Object => $queue,
+                    );
+                    unless ($ret) {
+                        RT->Logger->error("Couldn't grant ForwardMessage to DutyTeam of queue #" . $queue->id . ": $msg");
+                    }
+                }
+            }
+        }
+    },
+);
