@@ -346,8 +346,7 @@ while (my $queue = $collection->Next) {
 }
 
 if (!$QueueObj) {
-    $QueueObj->Load( 'Incidents' ) 
-        || Abort( loc("Queue could not be loaded.") );
+    Abort( loc("Queue could not be loaded.") );
 }
 
 
