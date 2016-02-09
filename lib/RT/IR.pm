@@ -74,8 +74,6 @@ sub lifecycle_countermeasure {'blocks'}
 
 my @LIFECYCLES = (RT::IR->lifecycle_incident, RT::IR->lifecycle_report, RT::IR->lifecycle_investigation, RT::IR->lifecycle_countermeasure);
 
-my @QUEUES = ('Incidents', 'Incident Reports', 'Investigations', 'Blocks');
-my %QUEUES = map { lc($_) => $_ } @QUEUES;
 my %TYPE = (
     'incidents'        => 'Incident',
     'incident reports' => 'Report',
@@ -241,9 +239,29 @@ Returns a list of the core RTIR Queue names
 
 =cut
 
+{ my @cache;
 sub Queues {
-    return @QUEUES;
+    unless (@cache) {
+        my $queues = RT::Queues->new( RT->SystemUser );
+
+        $queues->Limit(
+            FIELD => 'Lifecycle',
+            OPERATOR => 'IN',
+            VALUE => \@LIFECYCLES,
+        );
+
+        while (my $queue = $queues->Next) {
+            push @cache, $queue->Name;
+        }
+    }
+    return @cache;
 }
+
+sub FlushQueuesCache {
+    @cache = ();
+    return 1;
+} }
+
 
 =head2 Lifecycles
 
@@ -655,7 +673,7 @@ sub CustomFields {
     );
 
     unless ( keys %cache ) {
-        foreach my $qname ( @QUEUES ) {
+        foreach my $qname ( Queues() ) {
             my $type = TicketType( Queue => $qname );
             $cache{$type} = [];
 
@@ -709,6 +727,18 @@ sub FlushCustomFieldsCache {
     return 1;
 } }
 
+{
+    no warnings 'redefine';
+
+    # flush caches on each request
+    require RT::Interface::Web::Handler;
+    my $orig_CleanupRequest = RT::Interface::Web::Handler->can('CleanupRequest');
+    *RT::Interface::Web::Handler::CleanupRequest = sub {
+        RT::IR::FlushCustomFieldsCache();
+        RT::IR::FlushQueuesCache();
+        $orig_CleanupRequest->();
+    };
+}
 
 sub FilterRTAddresses {
     my $self = shift;
