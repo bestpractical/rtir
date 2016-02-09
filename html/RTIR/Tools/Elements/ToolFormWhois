@@ -45,17 +45,21 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<tr>
+<td valign="top" class="label"><%loc('WHOIS')%>:</td>
+<td valign="top">
 <form name="ToolFormWhois" action="Lookup.html" method="get">
 % foreach my $arg ( grep exists $ARGS{$_}, @PassArguments ) {
   <input type="hidden" name="<% $arg %>" value="<% $ARGS{ $arg } %>" />
 % }
-  <span class="label">WHOIS:</span>
   <span class="input">
     <input type="text" size="30" name="q" value="<% $q %>" /> at 
     <& SelectWhoisServer, Name => 'WhoisServer', Default => $WhoisServer &>
   </span>
   <input type="submit" value="<%loc('Go')%>" />
 </form>
+</td>
+</tr>
 <%args>
 $q => ''
 $WhoisServer => undef

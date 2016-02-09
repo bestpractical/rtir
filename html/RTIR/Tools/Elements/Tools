@@ -45,17 +45,22 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%perl>
+<%INIT>
 my $tools = RT->Config->Get('RTIRResearchTools') || ();
-for my $tool (@$tools) {
-    if ($m->comp_exists('ToolForm' . $tool)) {
-        $m->comp('ToolForm' . $tool, %ARGS);
-    }
-}
+</%INIT>
+
+<table class="lookup-tool-forms">
+% for my $tool (@$tools) {
+%     if ($m->comp_exists('ToolForm' . $tool)) {
+%         $m->comp('ToolForm' . $tool, %ARGS);
+%    }
+% }
+</table>
+
+<%perl>
 for my $tool (@$tools) {
     if ($m->comp_exists('ToolResults' . $tool)) {
         $m->comp('ToolResults' . $tool, %ARGS);
     }
 }
-
 </%perl>
