@@ -65,7 +65,10 @@
 
 % $m->callback(CallbackName => 'BeforeTools', %ARGS, ARGSRef => \%ARGS, Ticket => $TicketObj, LookupType => $type, q => $q);
 
+% if ($TicketObj || $q) {
 <hr>
+% }
+
 <h2><&|/l&>Look Up Information</&></h2>
 <& Elements/Tools,
     %ARGS,
