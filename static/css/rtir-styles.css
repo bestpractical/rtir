@@ -1,3 +1,22 @@
+body.rtir div#header {
+    background: #404080;
+    color: #fff;
+}
+
+body.rtir input[type="reset"],
+body.rtir input[type="submit"],
+body.rtir input[class="button"] {
+    background: #4040a0;
+    color: #fff;
+ }
+
+body.rtir input[type="reset"]:hover,
+body.rtir input[type="submit"]:hover,
+body.rtir input[class="button"]:hover {
+    background: #4040f0;
+    color: #fff;
+}
+
 body.rtir .overdue {
     color: red;
 }
