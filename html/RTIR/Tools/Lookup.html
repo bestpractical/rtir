@@ -48,6 +48,8 @@
 <& /RTIR/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
 
+% $m->callback(CallbackName => 'BeforeCurrent', %ARGS, ARGSRef => \%ARGS, Ticket => $TicketObj, LookupType => $type, q => $q);
+
 % if ( $TicketObj ) {
 <&| /Widgets/TitleBox, title => loc("Current [_1]: #[_2]", $TicketType, $ticket), class => 'ticket-info-basics' &>
 <& /Elements/CollectionList, Query => "id = $ticket", Format => RT->Config->Get('RTIRSearchResultFormats')->{$TicketType . 'Default'}, ShowNavigation => 0,
@@ -55,9 +57,13 @@
 </&>
 % }
 
+% $m->callback(CallbackName => 'AfterCurrent', %ARGS, ARGSRef => \%ARGS, Ticket => $TicketObj, LookupType => $type, q => $q);
+
 % if ( ! $HideResults ) {
 <& Elements/LookupRelatedTickets, TicketObj => $TicketObj, LookupType => $type, q => $q &>
 % }
+
+% $m->callback(CallbackName => 'BeforeTools', %ARGS, ARGSRef => \%ARGS, Ticket => $TicketObj, LookupType => $type, q => $q);
 
 <hr>
 <h2><&|/l&>Look Up Information</&></h2>
@@ -67,6 +73,8 @@
     TicketObj => $TicketObj,
     PassArguments => [qw(ticket type HideResults)],
 &>
+
+% $m->callback(CallbackName => 'AfterTools', %ARGS, ARGSRef => \%ARGS, Ticket => $TicketObj, LookupType => $type, q => $q);
 
 <%INIT>
 
