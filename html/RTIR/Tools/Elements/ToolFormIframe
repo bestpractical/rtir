@@ -45,11 +45,13 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<tr>
+<td valign="middle" class="label"><%loc('Research Tool')%>:</td>
+<td valign="middle">
 <form action="Lookup.html" method="get">
 % foreach my $arg ( grep exists $ARGS{$_}, @PassArguments ) {
   <input type="hidden" name="<% $arg %>" value="<% $ARGS{ $arg } %>" />
 % }
-    <span class="label"><%loc('Research Tool')%>:</span>
     <span class="input">
       <input type="text" size="30" name="q" value="<% $q %>" /> at
       <select name="ResearchTool">
@@ -60,6 +62,8 @@
     </span>
     <input type="submit" value="<%loc('Go')%>" />
 </form>
+</td>
+</tr>
 <%args>
 $q => ''
 $ResearchTool => ''

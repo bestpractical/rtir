@@ -164,3 +164,7 @@ body.rtir #editquery, body.rtir #editsearches {
 body.rtir .sf-menu a.sf-with-ul {
     padding-right:2em;
 }
+
+body.rtir table.lookup-tool-forms td {
+    vertical-align: middle;
+}

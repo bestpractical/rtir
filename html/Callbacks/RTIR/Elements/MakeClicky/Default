@@ -103,7 +103,7 @@ my %actions;
         $args{host} ||= $args{value};
         my $escaped_host = $escaper->($args{host});
         my $result .= qq{<a class="button" href="}. RT::IR->HREFTo("Tools/Lookup.html?".$args{lookup_params}."type=ip&q=".$escaped_host).qq{">}
-                      .loc('lookup IP') .q{</a>};
+                      .loc('Lookup IP') .q{</a>};
         if ( $args{incident} && !RT->Config->Get('RTIR_DisableBlocksQueue') ) {
             $result .= qq{<a class="button" href="} .
             RT::IR->HREFTo("Create.html?Incident=".$args{incident}."&Lifecycle=".RT::IR->lifecycle_countermeasure.qq{&IP-Value=$escaped_host})
