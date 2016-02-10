@@ -98,7 +98,11 @@ if ( not defined $session{$cache_key} ) {
     if ($Lifecycle) {
         $collection->Limit(FIELD => 'Lifecycle', VALUE => $Lifecycle);
     } else {
-        $collection->UnLimit();
+        $collection->Limit(
+            FIELD => 'Lifecycle',
+            OPERATOR => 'IN',
+            VALUE => [RT::IR->Lifecycles],
+        );
     }
     $m->callback( CallbackName => 'ModifyCollection', ARGSRef => \%ARGS,
                   Collection => $collection );
