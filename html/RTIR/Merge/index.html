@@ -137,7 +137,7 @@ if ( $MergeTicket && !$checks_failure ) {
 
     MaybeRedirectForResults(
         Actions   => \@results,
-        Path      => RT::IR->HREFTo("Display.html"),
+        Path      => RT::IR->HREFTo("Display.html", IncludeWebPath => 0),
         Arguments => { id => $Ticket->id },
     );
 }

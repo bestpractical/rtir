@@ -449,7 +449,7 @@ if ( !$checks_failure && $CreateIncident ) {
 
         MaybeRedirectForResults(
             Actions   => \@results,
-            Path      => RT::IR->HREFTo("Incident/Display.html"),
+            Path      => RT::IR->HREFTo("Incident/Display.html", IncludeWebPath => 0),
             Arguments => { id => $inc_obj->id },
         );
     }

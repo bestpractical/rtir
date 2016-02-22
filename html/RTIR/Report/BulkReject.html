@@ -147,7 +147,7 @@ if ( $BulkReject ) {
     if ( $BulkRejectAndReturn ) {
         MaybeRedirectForResults(
             Actions => \@results,
-            Path    => RT::IR->HREFTo(''),
+            Path    => RT::IR->HREFTo('', IncludeWebPath => 0),
             Force   => 1,
         );
     }

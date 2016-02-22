@@ -222,7 +222,7 @@ if ( $SubmitTicket && !$checks_failure ) {
     );
     MaybeRedirectForResults(
         Actions   => \@results,
-        Path      => RT::IR->HREFTo("Incident/Display.html"),
+        Path      => RT::IR->HREFTo("Incident/Display.html", IncludeWebPath => 0),
         Arguments => { %$pass, id => $id },
     );
 }

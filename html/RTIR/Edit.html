@@ -240,8 +240,8 @@ if ( $SaveChanges && !$checks_failure && !$OnlySearchForPeople ) {
     MaybeRedirectForResults(
         Actions   => \@results,
         Path      => RT->Config->Get('DisplayAfterEdit', $session{'CurrentUser'})
-        ? RT::IR->HREFTo("Display.html")
-        : RT::IR->HREFTo("Edit.html")
+        ? RT::IR->HREFTo("Display.html", IncludeWebPath => 0)
+        : RT::IR->HREFTo("Edit.html", IncludeWebPath => 0)
         ,
         Arguments => { id => $id },
     );
