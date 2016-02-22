@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<form action="<% RT->Config->Get('WebPath') %><% $SendTo %>" name="CreateTicketInQueue" id="CreateTicketInQueue" \
+<form action="<% $SendTo %>" name="CreateTicketInQueue" id="CreateTicketInQueue" \
 % $m->callback(CallbackName => 'InFormElement');
 >
 % my $button_start = '<input type="submit" class="button" value="';
