@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -45,6 +45,7 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
+
 package RT::IR::Test::Web;
 use strict;
 use warnings;
@@ -72,19 +73,15 @@ sub create_block {
 
 sub goto_create_rtir_ticket {
     my $self = shift;
-    my $queue = shift;
+    my $queue = shift; # we play a dumb game to change queues to lifecycles
     local $Test::Builder::Level = $Test::Builder::Level + 1;
+    my $lifecycle = lc( $queue);
+    $lifecycle =~ s/ /_/;
+   
+#    $self->get_ok("/RTIR/Create.html?Lifecycle=$lifecycle");
 
-    my $equeue = $queue;
-    $equeue =~ s/ /%20/;
-    my $link_text = "Create";
-    $link_text = "Launch" if $queue eq 'Investigations';
 
-    $self->get_ok("/RTIR/index.html", "Loaded home page");
-    $self->follow_link_ok(
-        {text => $link_text, url_regex => qr{RTIR/Create\.html.*(?i:$equeue)} },
-        "Followed create in '$queue' link"
-    );
+    $self->get_ok("/RTIR/Create.html?Queue=$queue");
 
     # set the form
     return $self->form_number(3);
@@ -94,10 +91,10 @@ sub create_rtir_ticket_ok {
     my $self = shift;
     my $queue = shift;
 
-    local $Test::Builder::Level = $Test::Builder::Level + 1;
+    local $Test::Builder::Level = $Test::Builder::Level + 2;
 
     my $id = $self->create_rtir_ticket( $queue, @_ );
-    Test::More::ok( $id, "Created ticket #$id in queue '$queue' successfully." );
+    Test::More::ok( $id, "Created ticket $id in queue '$queue' successfully." );
     return $id;
 }
 
@@ -127,16 +124,9 @@ sub create_rtir_ticket
     while (my ($f, $v) = each %$cfs) {
         $self->set_custom_field($queue, $f, $v);
     }
-
-    my %create = (
-        'Incident Reports' => 'Create',
-        'Investigations'   => 'Create',
-        'Blocks'           => 'Create',
-        'Incidents'        => 'CreateIncident'
-    );
     # Create it!
-    $self->click( $create{ $queue } );
-    
+    my @submits = $self->find_all_inputs(id => 'create-ticket');
+    $self->click_button(input=>$submits[0]); 
     Test::More::is ($self->status, 200, "Attempted to create the ticket");
 
     return $self->get_ticket_id;
@@ -151,8 +141,8 @@ sub create_incident_for_ir {
     $self->display_ticket( $ir_id );
 
     # Select the "New" link from the Display page
-    $self->follow_link_ok({text => "[New]"}, "Followed 'New (Incident)' link")
-        or diag $self->content;
+    $self->follow_link_ok({id => 'create-incident'}, "Followed 'New (Incident)' link")
+        or Test::More::diag $self->content;
 
     $self->form_number(3);
 
@@ -164,7 +154,8 @@ sub create_incident_for_ir {
         $self->set_custom_field( 'Incidents', $f, $v);
     }
 
-    $self->click("CreateIncident");
+    my @submits = $self->find_all_inputs(id => 'create-ticket');
+    $self->click_button(input=>$submits[0]); 
     
     Test::More::is ($self->status, 200, "Attempting to create new incident linked to child $ir_id");
 
@@ -179,7 +170,7 @@ sub display_ticket {
     my $self = shift;
     my $id = shift;
 
-    return $self->get_ok("/RTIR/Display.html?id=$id", "Loaded Display page for Ticket #$id");
+    return $self->get_ok("/RTIR/Display.html?id=$id", "Loaded Display page for Ticket $id");
 }
 
 sub ticket_is_linked_to_inc {
@@ -188,9 +179,9 @@ sub ticket_is_linked_to_inc {
     my $incs = shift;
     $self->display_ticket( $id );
     foreach my $inc( ref $incs? @$incs : ($incs) ) {
-        my $desc = shift || "Ticket #$id is linked to the Incident #$inc";
+        my $desc = shift || "Ticket $id is linked to the Incident #$inc";
         $self->content_like(
-            qr{Incident:\s*</td>\s*<td[^>]*?>.*?<td[^>]*?><b><a\s+href="/(?:RTIR|Ticket)/Display.html\?id=\Q$inc\E">\Q$inc\E</a></b></td>}ism,
+            qr{Incident:\s*</td>\s*<td[^>]*?>.*?<td[^>]*?><b><a\s+href="/RTIR/Incident/Display.html\?id=\Q$inc\E">\Q$inc\E</a></b></td>}ism,
             $desc
         ) or return 0;
     }
@@ -203,7 +194,7 @@ sub ticket_is_not_linked_to_inc {
     my $incs = shift;
     $self->display_ticket( $id );
     foreach my $inc( @$incs ) {
-        my $desc = shift || "Ticket #$id is not linked to the Incident #$inc";
+        my $desc = shift || "Ticket $id is not linked to the Incident #$inc";
         $self->content_unlike(
             qr{Incident:\s*</td>\s*<td[^>]*?>.*?<a\s+href="/RTIR/Display.html\?id=\Q$inc\E">\Q$inc\E:\s+}ism,
             $desc
@@ -233,13 +224,13 @@ sub LinkChildToIncident {
     $self->display_ticket( $id);
 
     # Select the "Link" link from the Display page
-    $self->follow_link_ok({text => "[Link]", n => "1"}, "Followed 'Link(to Incident)' link");
+    $self->follow_link_ok({text => "Link", n => "1"}, "Followed 'Link(to Incident)' link");
 
     
     # Check that the desired incident occurs in the list of available incidents; if not, keep
     # going to the next page until you find it (or get to the last page and don't find it,
     # whichever comes first)
-    while($self->content() !~ m|<a href="/Ticket/Display.html\?id=$incident">$incident</a>|) {
+    while($self->content() !~ m|<a href="/RTIR/Display.html\?id=$incident">$incident</a>|) {
         last unless $self->follow_link(text => 'Next');
     }
     
@@ -258,6 +249,7 @@ sub LinkChildToIncident {
 
 sub create_incident_and_investigation {
     my $self = shift;
+    my $constituency = shift;
     my $fields = shift || {};
     my $cfs = shift || {};
     my $ir_id = shift;
@@ -267,11 +259,11 @@ sub create_incident_and_investigation {
     if($ir_id) {
         $self->display_ticket( $ir_id );
         # Select the "New" link from the Display page
-        $self->follow_link_ok({text => "[New]"}, "Followed 'New (Incident)' link");
+        $self->follow_link_ok({text => "New"}, "Followed 'New (Incident)' link");
     }
     else 
     {
-        $self->goto_create_rtir_ticket('Incidents');
+        $self->goto_create_rtir_ticket('Incidents'.($constituency?' - '.$constituency : ''));
     }
 
     # Fill out forms
@@ -282,7 +274,7 @@ sub create_incident_and_investigation {
     }
 
     while (my ($f, $v) = each %$cfs) {
-        $self->set_custom_field( 'Incidents', $f, $v);
+        $self->set_custom_field( 'Incidents'.($constituency ? ' - '.$constituency:''), $f, $v);
     }
     $self->click("CreateWithInvestigation");
     my $msg = $ir_id
@@ -291,11 +283,11 @@ sub create_incident_and_investigation {
     Test::More::is ($self->status, 200, $msg);
     $msg = $ir_id ? "Incident created from child $ir_id." : "Incident created.";
 
-    my $re = qr/.*Ticket (\d+) created in queue &#39;Incidents&#39;/;
+    my $re = qr/.*Ticket (\d+) created in queue &#39;Incidents/;
     $self->content_like( $re, $msg );
       my ($incident_id) = ($self->content =~ $re);
       
-    $re = qr/.*Ticket (\d+) created in queue &#39;Investigations&#39;/;
+    $re = qr/.*Ticket (\d+) created in queue &#39;Investigations/;
     $self->content_like( $re, "Investigation created for Incident $incident_id." );
     my ($investigation_id) = ($self->content =~ $re);
 
@@ -367,7 +359,7 @@ sub bulk_abandon {
 # going to the next page until you find it (or get to the last page and don't find it,
 # whichever comes first)
     while ( $self->content() !~
-        qr{<a href="/Ticket/Display.html\?id=$to_abandon[0]">$to_abandon[0]</a>}
+        qr{<a href="/RTIR/Display.html\?id=$to_abandon[0]">$to_abandon[0]</a>}
       )
     {
         last unless $self->follow_link( text => 'Next' );

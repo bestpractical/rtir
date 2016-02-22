@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,30 +45,23 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%init>
-return unless $CustomField->LookupType eq 'RT::Queue-RT::Ticket';
-
-my $type = RT::IR->OurQueue( $ARGS{'QueueObj'} || $ARGS{'Queue'} || $Object->QueueObj );
-unless ( $type ) {
-    RT->Logger->error("Couldn't figure out queue from arguments")
-        unless defined $type;
-    return;
-}
-
-my $cf_name = $CustomField->Name;
-my @paths = (
-    "/RTIR/$type/Elements/Edit$cf_name",
-    "/RTIR/Elements/Edit$cf_name",
-);
-foreach my $path ( @paths ) {
-    next unless $m->comp_exists($path);
-
-    $$Name = $path;
-    return;
-}
-</%init>
+<select name="<%$Name%>" class="<%$Class%>">
+%     if ($ShowNullOption) {
+  <option value=""><% $DefaultLabel %></option>
+%     }
+%     for my $lifecycle (RT::IR->Lifecycles) {
+  <option value="<% $lifecycle %>"\
+% if ($lifecycle eq ($Default||'')) {
+ selected="selected"\
+% }
+><%RT::IR::FriendlyLifecycle($lifecycle) %>\
+</option>
+%     }
+</select>
 <%args>
-$Name
-$CustomField
-$Object
+$ShowNullOption => 0
+$Name => undef
+$DefaultLabel => "-"
+$Default => 0
+$Class => 'select-lifecycle'
 </%args>

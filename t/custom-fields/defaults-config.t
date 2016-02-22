@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 71;
+use RT::IR::Test tests => undef;
 
 my $defaults = RT->Config->Get('RTIR_CustomFieldsDefaults');
 $defaults->{'How Reported'}  = 'Telephone';   # IRs
@@ -80,3 +80,6 @@ my $agent = default_agent();
     }
 }
 
+
+undef $agent;
+done_testing;

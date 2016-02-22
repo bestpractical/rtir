@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -49,12 +49,12 @@
 Description => loc('Due Incidents')
 </%ATTR>
 <&| /Widgets/TitleBox,
-	title_href  => RT->Config->Get('WebPath') ."/RTIR/Search/Results.html?Queue=Incidents&$QueryString",
+	title_href  => RT::IR->HREFTo("Search/Results.html?Lifecycle=incidents&$QueryString"),
     title => $Title,
 &>
 
 <& /RTIR/Search/Elements/ShowResults,
-    Queue        => 'Incidents',
+    Lifecycle    => 'incidents',
     BaseQuery    => $BaseQuery,
     Query        => $Query,
     Format       => $Format,
@@ -86,8 +86,8 @@ my $QueryString = $m->comp('/Elements/QueryString',
 </%INIT>
 <%ARGS>
 $Title           => loc("Most due incidents")
-$BaseQuery       => RT::IR->Query( Queue => 'Incidents' )
-$Query           => RT::IR->ActiveQuery( Queue => 'Incidents' )
+$BaseQuery       => RT::IR->Query( Lifecycle => 'incidents', ($m->{'RTIR_ConstituencyFilter'} ? (Constituency => $m->{'RTIR_ConstituencyFilter'}) : () ))
+$Query           => RT::IR->ActiveQuery( Lifecycle => 'incidents',  ($m->{'RTIR_ConstituencyFilter'} ? (Constituency => $m->{'RTIR_ConstituencyFilter'}) : ()  ))
 $Format          => RT->Config->Get('RTIRSearchResultFormats')->{'DueIncidents'}
 $Rows            => undef
 $Page            => 1

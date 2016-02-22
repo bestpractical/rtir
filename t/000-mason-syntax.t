@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 4;
+use RT::IR::Test tests => undef;
 
 my $ok = 1;
 
@@ -42,4 +42,4 @@ sub compile_file {
     );
     return 1;
 }
-
+done_testing;

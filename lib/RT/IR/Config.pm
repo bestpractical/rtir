@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -93,16 +93,6 @@ sub Init {
     }
 
     RT->Config->Set(HomepageComponents => \@homepage_components);
-
-    $RT::Config::META{UseSQLForACLChecks}{PostLoadCheck} = sub {
-        my ($self,$value) = @_;
-        if ( RT::IR->HasConstituency ) {
-            if ( $value ) {
-                $self->Set('UseSQLForACLChecks',0);
-                RT->Logger->info('Disabling UseSQLForACLChecks because Constituencies are in use.  If you are not using Constituencies, you can disable that Custom Field.');
-            }
-        }
-    };
 
     return;
 }

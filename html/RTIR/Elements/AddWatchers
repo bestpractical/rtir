@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,7 +53,7 @@
 % if ( $Users ) {
 <tr><td><&|/l&>Type</&></td><td><&|/l&>Username</&></td></tr>
 % while ( my $u = $Users->Next ) {
-<tr><td><& /Elements/SelectWatcherType, Name => "Ticket-AddWatcher-Principal-". $u->PrincipalId &></td>
+<tr><td><& /Elements/SelectWatcherType, Name => "Ticket-AddWatcher-Principal-". $u->PrincipalId, Queue => $Ticket->QueueObj &></td>
 <td><& /Elements/ShowUser, User => $u &></td></tr>
 % }
 % }
@@ -61,20 +61,20 @@
 % if ( $Groups->Count ) {
 <tr><td><&|/l&>Type</&></td><td><&|/l&>Group</&></td></tr>
 % while ( my $g = $Groups->Next ) {
-<tr><td><& /Elements/SelectWatcherType, Name => "Ticket-AddWatcher-Principal-". $g->PrincipalId, Scope => 'queue' &></td>
+<tr><td><& /Elements/SelectWatcherType, Name => "Ticket-AddWatcher-Principal-". $g->PrincipalId, Scope => 'queue', Queue => $Ticket->QueueObj &></td>
 <td><% $g->Name %> (<% $g->Description||'' %>)</td></tr>
 % }
 % }
 
 <tr><td><&|/l&>Type</&></td><td><&|/l&>Email</&></td></tr>
 
-<tr><td><& /Elements/SelectWatcherType, Name => "WatcherTypeEmail1" &></td>
+<tr><td><& /Elements/SelectWatcherType, Name => "WatcherTypeEmail1", Queue => $Ticket->QueueObj &></td>
 <td><input type="text" name="WatcherAddressEmail1" size="15" /></td></tr>
 
-<tr><td><& /Elements/SelectWatcherType, Name => "WatcherTypeEmail2" &></td>
+<tr><td><& /Elements/SelectWatcherType, Name => "WatcherTypeEmail2", Queue => $Ticket->QueueObj &></td>
 <td><input type="text" name="WatcherAddressEmail2" size="15" /></td></tr>
 
-<tr><td><& /Elements/SelectWatcherType, Name => "WatcherTypeEmail3" &></td>
+<tr><td><& /Elements/SelectWatcherType, Name => "WatcherTypeEmail3", Queue => $Ticket->QueueObj &></td>
 <td><input type="text" name="WatcherAddressEmail3" size="15" /></td></tr>
 
 </table>
@@ -99,4 +99,5 @@ $Groups->LimitToUserDefinedGroups;
 $UserField => 'Name'
 $UserOp => '='
 $UserString => undef
+$Ticket
 </%ARGS>

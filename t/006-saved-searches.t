@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 20;
+use RT::IR::Test tests => undef;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -65,3 +65,6 @@ is($agent->value('SavedSearchOwner'), "RT::Group-$DT_id", "privacy is correct");
 
 
 # ... should also do tests for the RTIR "refine" thing, which is like QB.
+
+undef $agent;
+done_testing;

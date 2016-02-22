@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -45,6 +45,7 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
+
 package RT::Action::RTIR_SetDueIncident;
 use strict;
 use warnings;
@@ -74,7 +75,7 @@ Performs update.
 sub Commit {
     my $self = shift;
 
-    if ( $self->TicketObj->QueueObj->Name eq 'Incidents' ) {
+    if ( RT::IR->IsIncidentQueue($self->TicketObj->QueueObj) ) {
         return $self->UpdateDue( $self->TicketObj );
     }
 
@@ -97,7 +98,7 @@ sub UpdateDue {
     my $self = shift;
     my $incident = shift;
     return 1 unless $incident;
-    return 1 unless $incident->QueueObj->Name eq 'Incidents';
+    return 1 unless RT::IR->IsIncidentQueue($incident->QueueObj);
 
     my $children = RT::IR->IncidentChildren(
         $incident, Initial => 1, Active => 1,

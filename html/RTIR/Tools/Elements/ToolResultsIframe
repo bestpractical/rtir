@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,9 +45,11 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<h2><&|/l&><%$research_tools->{$ResearchTool}->{FriendlyName}%></&></h2>
-<iframe src="<%$url%>" name="rtir_research_<%$m->notes('rtir_research_iframe_id')%>" style="width: 100%; height: 70%;">
-</iframe>
+<h2><%loc($research_tools->{$ResearchTool}->{FriendlyName})%></h2>
+<iframe 
+    src="<%$url%>" 
+    name="rtir_research_<%$m->notes('rtir_research_iframe_id')%>" 
+    style="width: 100%; height: 70%;"></iframe>
 <%args>
 $q =>  undef
 $TicketType => undef
@@ -57,6 +59,11 @@ $ResearchTool => undef
 <%init>
 return unless ($ResearchTool);
 my $research_tools = RT->Config->Get('RTIRIframeResearchToolConfig');
+if (!$research_tools->{$ResearchTool}->{URL}) {
+    $RT::Logger->error(
+        "Couldn't find a URL for RTIR research tool $ResearchTool. You should check your RTIRIframeResearchToolConfig");
+    return;
+}
 my $url = $research_tools->{$ResearchTool}->{URL};
 $url =~ s/__SearchTerm__/$q/g;
 </%init>

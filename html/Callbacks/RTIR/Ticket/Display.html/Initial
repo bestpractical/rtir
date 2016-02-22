@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,21 +48,20 @@
 <%INIT>
 return if $ARGSRef->{'NoRedirect'};
 
-my $Queue;
+my $QueueObj;
 if ( $TicketObj ) {
     my $tmp = RT::Ticket->new( RT->SystemUser );
     $tmp->Load( $TicketObj->id );
-    $Queue = $tmp->QueueObj->Name;
+    $QueueObj = $tmp->QueueObj;
 } elsif ( $ARGSRef->{'id'} && $ARGSRef->{'id'} ne 'new' ) {
     my $tmp = RT::Ticket->new( RT->SystemUser );
     $tmp->Load( $ARGSRef->{'id'} );
-    $Queue = $tmp->QueueObj->Name;
+    $QueueObj = $tmp->QueueObj;
 } elsif ( $ARGSRef->{'Queue'} ) {
-    my $QueueObj = RT::Queue->new( RT->SystemUser );
+    $QueueObj = RT::Queue->new( RT->SystemUser );
     $QueueObj->Load( $ARGSRef->{'Queue'} );
-    $Queue = $QueueObj->Name;
 }
-return unless $Queue && RT::IR->OurQueue( $Queue );
+return unless $QueueObj && RT::IR->OurQueue( $QueueObj );
 
 # for something more complex use subexec
 if ( grep !/^(id|results)$/, keys %$ARGSRef ) {
@@ -71,9 +70,11 @@ if ( grep !/^(id|results)$/, keys %$ARGSRef ) {
 }
 
 # we should use redirect so tabs displayed correctly according to request_comp
-my $url = RT->Config->Get('WebURL') ."RTIR/Display.html?id=". $ARGSRef->{'id'};
-$url .= '&results='. $m->interp->apply_escapes( $ARGSRef->{'results'}, 'u' )
+my $url = RT::IR->HREFTo("Display.html?id=". $ARGSRef->{'id'});
+$url .= '&results='. 
+    $m->interp->apply_escapes( $ARGSRef->{'results'}, 'u' )
     if $ARGSRef->{'results'};
+
 RT::Interface::Web::Redirect( $url );
 
 </%INIT>

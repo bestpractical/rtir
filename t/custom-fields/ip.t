@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 449;
+use RT::IR::Test tests => undef;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -55,7 +55,6 @@ diag "create a ticket via web and set IP" if $ENV{'TEST_VERBOSE'};
         );
         $incident_id = $id if $queue eq 'Incidents';
 
-        $agent->display_ticket( $id);
         $agent->content_like( qr/\Q$val/, "IP on the page" );
 
         my $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -83,7 +82,6 @@ diag "create a ticket via web with IP in message" if $ENV{'TEST_VERBOSE'};
         );
         $incident_id = $id if $queue eq 'Incidents';
 
-        $agent->display_ticket( $id);
         $agent->content_like( qr/\Q$val/, "IP on the page" );
 
         my $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -111,7 +109,6 @@ diag "create a ticket via web with CIDR" if $ENV{'TEST_VERBOSE'};
         );
         $incident_id = $id if $queue eq 'Incidents';
 
-        $agent->display_ticket( $id);
         $agent->content_like( qr/172\.16\.$i\.0-172\.16\.$i\.1/, "IP range on the page" );
 
         my $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -142,7 +139,6 @@ diag "create a ticket via web with CIDR in message" if $ENV{'TEST_VERBOSE'};
         );
         $incident_id = $id if $queue eq 'Incidents';
 
-        $agent->display_ticket( $id);
         $agent->content_like( qr/172\.16\.$i\.0-172\.16\.$i\.1/, "IP range on the page" );
 
         my $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -170,7 +166,6 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
             },
         );
         $incident_id = $id if $queue eq 'Incidents';
-        $agent->display_ticket( $id);
 
         my $field_name = "Object-RT::Ticket-$id-CustomField:Networking-". $cf->id ."-Values";
 
@@ -626,3 +621,6 @@ diag "merge ticket with the same IP";
     is( $has[0], '172.16.0.1', "has value" );
 }
 
+
+undef $agent;
+done_testing;

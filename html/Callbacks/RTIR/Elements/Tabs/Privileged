@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,6 +47,11 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 
+if ( $m->request_comp->path !~ m{^/RTIR/} ) {
+    Menu()->child( rtir => title => loc('RTIR'), path => RT::IR->HREFTo('', IncludeWebPath => 0) );
+    return;
+}
+
 my $query_string = sub {
     my %args = @_;
     my $u    = URI->new();
@@ -70,77 +75,90 @@ my $search_arguments = sub {
     return %res;
 };
 
-my $root = Menu->child( rtir => title => loc('RTIR'), path => '/RTIR/' );
 
-my $search = $root->child( search => title => loc('Search'), path => '/RTIR/Search/' );
-$search->child( new => title => loc('New Search'), path => '/RTIR/Search/?NewQuery=1' );
+my $orig_menu = Menu();
+
+$HTML::Mason::Commands::m->notes('menu', RT::Interface::Web::Menu->new());
+
+my $rtmenu = Menu->child(rtkids => menu => $orig_menu);
+$rtmenu->title(loc('RT'));
+$rtmenu->path($RT::WebPath);
+$rtmenu->key('rt-menu');
+
+Menu->child(preferences => menu => $orig_menu->child('preferences'));
+$orig_menu->delete('preferences');
+
+my $root = Menu();
+
+my $search = $root->child( search => title => loc('RTIR'), path => RT::IR->HREFTo('', IncludeWebPath => 0) );
+$search->child( new => title => loc('New Search'), path => RT::IR->HREFTo('Search/?NewQuery=1', IncludeWebPath => 0) );
 
 {
 my $current_search = $session{'CurrentSearchHash'} ? { map { $_ => $session{'CurrentSearchHash'}{$_} } @query_fields } : {};
 my $has_query = 1 if ( $args->{'Query'} or $current_search->{'Query'} );
 
 if ( $has_query ) {
-    $search->child( build => title => loc('Edit Search'), path => '/RTIR/Search/' );
+    $search->child( build => title => loc('Edit Search'), path => RT::IR->HREFTo('Search/', IncludeWebPath => 0) );
     $search->child( results => title => loc('Show Results'),
-                    path => '/RTIR/Search/Results.html?' .
+                    path =>RT::IR->HREFTo('Search/Results.html?', IncludeWebPath => 0).
                     $query_string->( $args->{'Query'} ? $search_arguments->() : %$current_search ) );
 }
 }
 
 $root->child(
     incidents => title => loc('Incidents'),
-    path => '/RTIR/Search/Results.html?Queue=Incidents'
+    path => RT::IR->HREFTo('Search/Results.html?Lifecycle='.RT::IR->lifecycle_incident, IncludeWebPath => 0)
 )->child(
     create => title => loc('Create'),
-    path => '/RTIR/Create.html?Queue=Incidents',
+    path => RT::IR->HREFTo('Create.html?Lifecycle='.RT::IR->lifecycle_incident, IncludeWebPath => 0),
 );
 $root->child(
-    reports => title => loc('Incident Reports'),
-    path => '/RTIR/Search/Results.html?Queue=Incident%20Reports'
+    reports => title => loc('Reports'),
+    path => RT::IR->HREFTo('Search/Results.html?Lifecycle='. RT::IR->lifecycle_report, IncludeWebPath => 0)
 )->child(
     create => title => loc('Create'),
-    path => '/RTIR/Create.html?Queue=Incident%20Reports',
+    path => RT::IR->HREFTo('Create.html?Lifecycle='. RT::IR->lifecycle_report, IncludeWebPath => 0),
 );
 $root->child(
     investigations => title => loc('Investigations'),
-    path => '/RTIR/Search/Results.html?Queue=Investigations'
+    path => RT::IR->HREFTo('Search/Results.html?Lifecycle='.RT::IR->lifecycle_investigation, IncludeWebPath => 0)
 )->child(
     launch => title => loc('Launch'),
-    path => '/RTIR/Create.html?Queue=Investigations',
+    path => RT::IR->HREFTo('Create.html?Lifecycle='.RT::IR->lifecycle_investigation, IncludeWebPath => 0),
 );
 unless ( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
     $root->child(
         blocks => title => loc('Blocks'),
-        path => '/RTIR/Search/Results.html?Queue=Blocks'
+        path => RT::IR->HREFTo('Search/Results.html?Lifecycle='.RT::IR->lifecycle_countermeasure, IncludeWebPath => 0)
     )->child(
         create => title => loc('Create'),
-        path => '/RTIR/Create.html?Queue=Blocks',
+        path => RT::IR->HREFTo('Create.html?Lifecycle='.RT::IR->lifecycle_countermeasure, IncludeWebPath => 0),
     );
 }
 
-my $tools = $root->child( tools => title => loc('Tools'), path => '/RTIR/Tools/' );
-$tools->child( lookup => title => loc('Lookup'), path => '/RTIR/Tools/Lookup.html' );
-$tools->child( reporting => title => loc('Reporting'), path => '/RTIR/Reporting/' );
+my $tools = $root->child( tools => title => loc('Tools'), path => RT::IR->HREFTo('Tools/', IncludeWebPath => 0) );
+$tools->child( lookup => title => loc('Lookup'), path => RT::IR->HREFTo('Tools/Lookup.html', IncludeWebPath => 0));
+$tools->child( reporting => title => loc('Reporting'), path => RT::IR->HREFTo('Reporting/', IncludeWebPath => 0) );
 my $scripted_actions = $tools->child( scripted_actions => title => loc('Scripted Action') );
-$scripted_actions->child( email => title => loc('By Email address'), path => '/RTIR/Tools/ScriptedAction.html' );
-$scripted_actions->child( ip => title => loc('By IP address'), path => '/RTIR/Tools/ScriptedAction.html?loop=IP' );
+$scripted_actions->child( email => title => loc('By Email address'), path => RT::IR->HREFTo('Tools/ScriptedAction.html', IncludeWebPath => 0) );
+$scripted_actions->child( ip => title => loc('By IP address'), path => RT::IR->HREFTo('Tools/ScriptedAction.html?loop=IP', IncludeWebPath => 0) );
 
 my $request_path = $HTML::Mason::Commands::r->path_info;
 $request_path =~ s!/{2,}!/!g;
 return unless $request_path =~ m{^/RTIR/};
 
+
+my $re_rtir_path = qr'^/RTIR/(?:c/[^/]*/?)?';
+
 my $re_rtir_types = '(?:'. join( '|', map "\Q$_\E", RT::IR->Types ) .')';
 
-if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|Advanced)\.html$} ) {
+if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Update|Forward|Advanced)\.html$} ) {
     my $id = $args->{'id'};
 
     # we'll never get here unless ticket is there and it's rtir's type
     my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
     $ticket->Load($id);
     $id = $ticket->id;
-
-    my $queue = $ticket->QueueObj;
-    my $type = RT::IR::TicketType( Queue => $queue );
 
     my %can;
     my $can = sub {
@@ -150,7 +168,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
 
     my $actions_tab = PageMenu()->child( actions => title => loc('Actions'), sort_order  => 95 );
 
-    PageMenu()->child( display => title => loc('Display'), path => "/RTIR/Display.html?id=$id" );
+    PageMenu()->child( display => title => loc('Display'), path =>RT::IR->HREFTo( "Display.html?id=$id", IncludeWebPath => 0) );
 
     # RT4 TODO: something wrong, this doesn't work
     if ( $session{'tickets'} ) {
@@ -164,13 +182,13 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
         my $top = PageMenu();
         if ( my $t = $item_map->{$id}->{'prev'} ) {
             $top = $top->child(
-                previouse => path => "/RTIR/Display.html?id=$id",
+                previouse => path => RT::IR->HREFTo("Display.html?id=$id", IncludeWebPath => 0),
                 title => '< ' . loc('Prev')
             );
         }
         if ( my $t = $item_map->{'first'} ) {
             $top->child(
-                first => path  => "/RTIR/Display.html?id=$t",
+                first => path  => RT::IR->HREFTo("Display.html?id=$t", IncludeWebPath => 0),
                 title => '<< ' . loc('First')
             ) if $t != $id;
         }
@@ -178,68 +196,71 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
         $top = PageMenu();
         if ( my $t = $item_map->{$id}->{'next'} ) {
             $top = $top->child(
-                next => path  => "/RTIR/Display.html?id=$t",
+                next => path  => RT::IR->HREFTo("Display.html?id=$t", IncludeWebPath => 0),
                 title => loc('Next') . ' >'
             );
         }
         if ( my $t = $item_map->{'last'} ) {
             $top->child(
-                last => path  => "/RTIR/Display.html?id=$t",
+                last => path  => RT::IR->HREFTo("Display.html?id=$t", IncludeWebPath => 0),
                 title => loc('Last') . ' >>'
             ) if $t != $id;
         }
     }
 
     if ( $can->('ModifyTicket') ) {
-        PageMenu()->child( edit => title => loc('Edit'), path => "/RTIR/Edit.html?id=$id" );
-        PageMenu()->child( split => title => loc('Split'), path => "/RTIR/Split.html?Split=$id" );
+        PageMenu()->child( edit => title => loc('Edit'), path => RT::IR->HREFTo("Edit.html?id=$id", IncludeWebPath => 0) );
+        PageMenu()->child( split => title => loc('Split'), path => RT::IR->HREFTo("Split.html?Split=$id", IncludeWebPath => 0) );
         # XXX: we're missing query string here
-        PageMenu()->child( merge => title => loc('Merge'), path => "/RTIR/Merge/?id=$id" );
-        PageMenu()->child( advanced => title => loc('Advanced'), path => "/RTIR/Advanced.html?id=$id" );
+        PageMenu()->child( merge => title => loc('Merge'), path => RT::IR->HREFTo("Merge/?id=$id", IncludeWebPath => 0) );
+        PageMenu()->child( advanced => title => loc('Advanced'), path => RT::IR->HREFTo("Advanced.html?id=$id", IncludeWebPath => 0) );
     }
 
     if ( $can->('OwnTicket') ) {
         if ( $ticket->Owner == $RT::Nobody->id ) {
             $actions_tab->child(
                 take => title => loc('Take'),
-                path  => "/RTIR/Display.html?Action=Take&id=$id",
+                path  => RT::IR->HREFTo("Display.html?Action=Take&id=$id", IncludeWebPath => 0),
             ) if $can->('ModifyTicket') || $can->('TakeTicket');
         } elsif ( $ticket->Owner != $session{CurrentUser}->id ) {
             $actions_tab->child(
                 steal => title => loc('Steal'),
-                path  => "/RTIR/Display.html?Action=Steal&id=$id",
+                path  => RT::IR->HREFTo("Display.html?Action=Steal&id=$id", IncludeWebPath => 0),
             ) if $can->('ModifyTicket') || $can->('StealTicket');
         }
     }
 
+    my $LifecycleObj = $ticket->QueueObj->LifecycleObj;
+    my $lifecycle = $ticket->QueueObj->Lifecycle;
+
+
     if ( $can->('ModifyTicket') || $can->('ReplyToTicket') ) {
-        if ( $type eq 'Incident' ) {
+        if ( RT::IR->IsIncidentQueue($ticket->QueueObj)) {
             $actions_tab->child(
                 reply_reporters => title => loc('Reply to Reporters'),
-                path  => "/RTIR/Incident/Reply/?id=$id&SelectedReportsAll=1",
+                path  => RT::IR->HREFTo("Incident/Reply/?id=$id&SelectedReportsAll=1", IncludeWebPath => 0),
             );
             $actions_tab->child(
                 reply_all => title => loc('Reply to All'),
-                path  => "/RTIR/Incident/Reply/?id=$id&All=1&SelectedReportsAll=1&SelectedInvestigationsAll=1&SelectedBlocksAll=1",
+                path  => RT::IR->HREFTo("Incident/Reply/?id=$id&All=1&SelectedReportsAll=1&SelectedInvestigationsAll=1&SelectedBlocksAll=1", IncludeWebPath => 0),
             );
         } else {
             $actions_tab->child(
                 reply => title => loc('Reply'),
-                path  => "/RTIR/Update.html?id=$id&Action=Respond",
+                path  => RT::IR->HREFTo("Update.html?id=$id&Action=Respond", IncludeWebPath => 0),
             );
         }
     }
 
     if ( $can->('ForwardMessage') ) {
-        $actions_tab->child( forward => title => loc('Forward'), path => "/RTIR/Forward.html?id=" . $id );
+        $actions_tab->child( forward => title => loc('Forward'), path => RT::IR->HREFTo("Forward.html?id=" . $id, IncludeWebPath => 0) );
     }
 
     my $i = 0;
     my $status = $ticket->Status;
-    my $lifecycle = $queue->LifecycleObj;
-    foreach my $info ( $lifecycle->Actions( $status ) ) {
+    foreach my $info ( $LifecycleObj->Actions( $status ) ) {
         my $next = $info->{'to'};
-        next unless $lifecycle->IsTransition( $status => $next );
+        next unless $LifecycleObj->IsTransition( $status => $next );
 
         my %args = (%$info, id => $id);
         delete @args{qw(to from label update)};
@@ -247,14 +268,14 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
         # if user will be owner then he will get more rights
         # TODO: check actually if he will get required rights
         if ( !$args{'TakeOrStealFirst'} || $session{'CurrentUser'}->id == $ticket->Owner ) {
-            my $check = $lifecycle->CheckRight( $status => $next );
+            my $check = $LifecycleObj->CheckRight( $status => $next );
             next unless $can->( $check );
         }
 
-        my $path = '/RTIR/';
-        $path .= 'Incident/' if $type eq 'Incident';
+        my $path = '';
+        $path .= 'Incident/' if RT::IR->IsIncidentQueue($ticket->QueueObj);
         if ( my $update = $info->{'update'} ) {
-            $path .= $type eq 'Incident'? 'Reply/' : 'Update.html';
+            $path .= RT::IR->IsIncidentQueue($ticket->QueueObj) ? 'Reply/' : 'Update.html';
             $path .= "?". $m->comp(
                 '/Elements/QueryString',
                 %args,
@@ -268,6 +289,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
                 Status => $next,
             );
         }
+            $path=RT::IR->HREFTo($path, IncludeWebPath => 0);
         $actions_tab->child(
             lc($info->{'label'} || $next),
             title => loc( $info->{'label'} || ucfirst($next) ),
@@ -278,7 +300,7 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
     if ( $can->('ModifyTicket') || $can->('CommentOnTicket') ) {
         $actions_tab->child(
             comment => title => loc('Comment'),
-            path  => "/RTIR/Update.html?Action=Comment&id=$id",
+            path  => RT::IR->HREFTo("Update.html?Action=Comment&id=$id", IncludeWebPath => 0),
         );
     }
 
@@ -293,10 +315,10 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
         bookmark => raw_html => $m->scomp( '/Ticket/Elements/Bookmark', id => $id ),
         sort_order   => 99
     );
-} elsif ( $request_path =~ m{^/RTIR/Link/(ToIncident|FromIncident)/} ) {
+} elsif ( $request_path =~ m{(?:$re_rtir_path)Link/(ToIncident|FromIncident)} ) {
     my $direction = $1;
-    my $queue = $args->{'Queue'};
-    my $type = RT::IR::TicketType( Queue => $queue || 'Incidents' );
+
+    my $lifecycle = $args->{'Lifecycle'};
 
     my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
     $ticket->Load( $args->{'id'} );
@@ -305,31 +327,30 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
     my %args = (
         $search_arguments->(),
         id => $id,
-        Queue => $queue,
+        Lifecycle => $lifecycle,
     );
 
     PageMenu()->child(
         link => title => loc('Show Results'),
-        path => "/RTIR/Link/$direction/?". $query_string->( %args ),
+        path => RT::IR->HREFTo("Link/$direction/?". $query_string->( %args ), IncludeWebPath => 0),
     );
     PageMenu()->child(
         edit_search => title => loc('Edit Search'),
-        path => "/RTIR/Link/$direction/Refine.html?". $query_string->( %args ),
+        path => RT::IR->HREFTo("Link/$direction/Refine.html?". $query_string->( %args ), IncludeWebPath => 0),
     );
     PageMenu()->child(
-        new => title => loc("New $type"),
-        path => !$queue
-            ? "/RTIR/Create.html?Child=$id&Queue=Incidents"
-            : "/RTIR/Create.html?". $query_string->( Incident => $id, Queue => $queue )
+        new => title => loc("New [_1]", RT::IR::TicketType( Lifecycle => $lifecycle || RT::IR->lifecycle_incident ) ),
+        path => !$lifecycle
+            ? RT::IR->HREFTo("Create.html?Child=$id&Lifecycle=".RT::IR->lifecycle_incident, IncludeWebPath => 0)
+            : RT::IR->HREFTo("Create.html?". $query_string->( Incident => $id, Lifecycle => $lifecycle ), IncludeWebPath => 0)
         ,
     );
     PageMenu()->child(
-        back => title => loc('Back to ticket #[_1]', $id),
-        path => "/RTIR/Display.html?id=$id",
+        back => title => loc('Back to [_1] #[_2]',lc RT::IR::TicketType(Lifecycle => $ticket->QueueObj->Lifecycle), $id),
+        path => RT::IR->HREFTo("Display.html?id=$id", IncludeWebPath => 0),
     );
-} elsif ( $request_path =~ m{^/RTIR/Incident/Children/} ) {
-    my $queue = $args->{'Queue'} || 'Incident Reports';
-    my $type = RT::IR::TicketType( Queue => $queue );
+} elsif ( $request_path =~ m{(?:$re_rtir_path)Incident/Children} ) {
+    my $lifecycle = $args->{'Lifecycle'} ||  RT::IR->lifecycle_report;
 
     my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
     $ticket->Load( $args->{'id'} );
@@ -337,18 +358,18 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
 
     my %args = (
         id => $id,
-        Queue => $queue,
+        Lifecycle => $lifecycle,
     );
 
     PageMenu()->child(
-        new => title => loc("New $type"),
-        path => "/RTIR/Create.html?". $query_string->( Incident => $id, Queue => $queue ),
+        new => title => loc("New [_1]",RT::IR::TicketType( Lifecycle => $lifecycle ) ),
+        path => RT::IR->HREFTo("Create.html?". $query_string->( Incident => $id, Lifecycle => $lifecycle ), IncludeWebPath => 0),
     );
     PageMenu()->child(
-        back => title => loc('Back to ticket #[_1]', $id),
-        path => "/RTIR/Display.html?id=$id",
+        back => title => loc('Back to [_1] #[_2]', lc RT::IR::TicketType( Lifecycle => $ticket->QueueObj->Lifecycle), $id),
+        path => RT::IR->HREFTo( "Display.html?id=$id", IncludeWebPath => 0),
     );
-} elsif ( $request_path =~ m{^/RTIR/Merge/} ) {
+} elsif ( $request_path =~ m{^(?:$re_rtir_path)Merge} ) {
     my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
     $ticket->Load( $args->{'id'} );
     my $id = $ticket->id;
@@ -360,17 +381,17 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
 
     PageMenu()->child(
         link => title => loc('Merge'),
-        path => "/RTIR/Merge/?". $query_string->( %args ),
+        path => RT::IR->HREFTo("Merge/?". $query_string->( %args ), IncludeWebPath => 0),
     );
     PageMenu()->child(
         edit_search => title => loc('Edit Search'),
-        path => "/RTIR/Merge/Refine.html?". $query_string->( %args, Queue => $ticket->Queue ),
+        path => RT::IR->HREFTo("Merge/Refine.html?". $query_string->( %args, Lifecycle => $ticket->QueueObj->Lifecycle ), IncludeWebPath => 0),
     );
     PageMenu()->child(
-        back => title => loc('Back to ticket #[_1]', $id),
-        path => "/RTIR/Display.html?id=$id",
+        back => title => loc('Back to [_1] #[_2]', lc RT::IR::TicketType( Lifecycle => $ticket->QueueObj->Lifecycle), $id),
+        path => RT::IR->HREFTo("Display.html?id=$id", IncludeWebPath => 0),
     );
-} elsif ( $request_path =~ m{^/RTIR/Incident/Reply/} ) {
+} elsif ( $request_path =~ m{(?:$re_rtir_path)Incident/Reply} ) {
     my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
     $ticket->Load( $args->{'id'} );
     my $id = $ticket->id;
@@ -386,82 +407,81 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
 
     PageMenu()->child(
         link => title => loc('Reply'),
-        path => "/RTIR/Incident/Reply/?". $query_string->( %args ),
+        path => RT::IR->HREFTo("Incident/Reply/?". $query_string->( %args ), IncludeWebPath => 0),
     );
     PageMenu()->child(
         edit_search => title => loc('Edit Search'),
-        path => "/RTIR/Incident/Reply/Refine.html?". $query_string->( %args ),
+        path => RT::IR->HREFTo("Incident/Reply/Refine.html?". $query_string->( %args ), IncludeWebPath => 0),
     );
     PageMenu()->child(
-        back => title => loc('Back to ticket #[_1]', $id),
-        path => "/RTIR/Display.html?id=$id",
+        back => title => loc('Back to [_1] #[_2]', lc RT::IR::TicketType(Lifecycle => $ticket->QueueObj->Lifecycle), $id),
+        path => RT::IR->HREFTo("Display.html?id=$id", IncludeWebPath => 0),
     );
-} elsif ( $request_path =~ m{^/RTIR/(Search/|Incident/BulkAbandon\.html$|Report/BulkReject\.html$)} ) {
+} elsif ( $request_path =~ m{(?:$re_rtir_path)(Search/?|Incident/BulkAbandon\.html$|Report/BulkReject\.html$)} ) {
     my %args = $search_arguments->();
 
-    my $queue = $args->{'Queue'} || '';
-    unless ( $queue ) {
+    my $lifecycle = $args->{'Lifecycle'} || '';
+    unless ( $lifecycle ) {
         if ( $request_path =~ /Incident/ ) {
-            $queue = 'Incidents';
+            $lifecycle =  RT::IR->lifecycle_incident;
         }
         elsif ( $request_path =~ /Report/ ) {
-            $queue = 'Incident Reports';
+            $lifecycle =  RT::IR->lifecycle_report;
         }
     }
-    unless ( $queue ) {
-        my (undef, @queues) = RT::IR->OurQuery( $args{'Query'} );
-        $queue = $queues[0] if @queues == 1;
+    unless ( $lifecycle ) {
+        my (undef, @lifecycles) = RT::IR->OurQuery( $args{'Query'} );
+        $lifecycle = $lifecycles[0] if @lifecycles == 1;
     }
-    my $type = RT::IR::TicketType( Queue => $queue ) || '';
 
-    $args{'Queue'} = $queue if $queue;
+    $args{'Lifecycle'} = $lifecycle if $lifecycle;
 
     if ( $args{'Query'} ) {
         PageMenu()->child(
             link => title => loc('Show Results'),
-            path => "/RTIR/Search/Results.html?". $query_string->( %args ),
+            path => RT::IR->HREFTo("Search/Results.html?". $query_string->( %args ), IncludeWebPath => 0),
         );
     }
 
     # Refine.html doesn't let you change the Queue, so don't link there from the
     # full RTIR Search UI, only from the Bulk screens.
-    my $bulk_path = 1 if $request_path =~ m{^/RTIR/(Incident/BulkAbandon\.html$|Report/BulkReject\.html$)};
+    my $bulk_path = 1 if $request_path =~ m{(?:$re_rtir_path)(Incident/BulkAbandon\.html$|Report/BulkReject\.html$)};
 
     PageMenu()->child(
         edit_search => title => loc('Edit Search'),
-        path => "/RTIR/Search/" .
+        path => RT::IR->HREFTo("Search/" .
                     ($bulk_path ? "Refine.html?" : "?") .
-                    $query_string->( %args ),
+                    $query_string->( %args ), IncludeWebPath => 0),
     );
     if ( $args{'Query'} && !$bulk_path ) {
         PageMenu()->child(
             new_search => title => loc('New Search'),
-            path => "/RTIR/Search/?NewQuery=1"
+            path => RT::IR->HREFTo("Search/?NewQuery=1", IncludeWebPath => 0)
         );
     }
 
-    if ( $type eq 'Incident' ) {
+    if ( $lifecycle eq RT::IR->lifecycle_incident ) {
         PageMenu()->child(
             report => title => loc('Report'),
-            path => "/RTIR/Reporting/",
+            path => RT::IR->HREFTo("Reporting/", IncludeWebPath => 0),
         );
 
         PageMenu()->child(
             abandon => title => loc('Bulk Abandon'),
-            path => "/RTIR/Incident/BulkAbandon.html?". $query_string->( %args ),
+            path => RT::IR->HREFTo("Incident/BulkAbandon.html?". $query_string->( %args ), IncludeWebPath => 0),
         );
     }
-    elsif ( $type eq 'Report' ) {
+    elsif ( $lifecycle eq RT::IR->lifecycle_report) {
         PageMenu()->child(
             reject => title => loc('Bulk Reject'),
-            path => "/RTIR/Report/BulkReject.html?". $query_string->( %args ),
+            path => RT::IR->HREFTo("Report/BulkReject.html?". $query_string->( %args ), IncludeWebPath => 0),
         );
     }
 
     if ( $args{'Query'} ) {
         PageMenu()->child(
             chart => title => loc('Chart'),
-            path => "/RTIR/Search/Reporting.html?". $query_string->( %args ),
+            path => RT::IR->HREFTo("Search/Reporting.html?". $query_string->( %args ), IncludeWebPath => 0),
         );
 
         my $more = PageMenu->child( more => title => loc('Feeds') );
@@ -471,8 +491,8 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
         );
 
         # other paths need query defined
-        $args{'Query'} = RT::IR->Query( Queue => $args{'Queue'} )
-            if !$args{'Query'} && $args{'Queue'};
+        $args{'Query'} = RT::IR->Query( Lifecycle => $args{'Lifecycle'} )
+            if !$args{'Query'} && $args{'Lifecycle'};
 
         my $RSSPath = join '/', map $m->interp->apply_escapes( $_, 'u' ),
             $session{'CurrentUser'}->UserObj->Name,
@@ -507,29 +527,31 @@ if ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?(Display|Edit|Update|Forward|
             );
         }
     }
-} elsif ( $request_path =~ m{^/RTIR/(?:$re_rtir_types/)?Split\.html$} ) {
+} elsif ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?Split\.html$} ) {
     my $id = $args->{'Split'};
 
+    my $ticket = RT::Ticket->new($session{'CurrentUser'});
+    $ticket->Load($id);
     PageMenu()->child(
-        back => title => loc('Back to ticket #[_1]', $id),
-        path => "/RTIR/Display.html?id=$id",
+        back => title => loc('Back to  [_1] #[_2]',lc RT::IR::TicketType(Lifecycle => $ticket->QueueObj->Lifecycle), $id),
+        path => RT::IR->HREFTo("Display.html?id=$id", IncludeWebPath => 0),
     );
 }
 
 if ( $session{'CurrentUser'}->HasRight(Right => 'ModifySelf', Object => $RT::System) ) {
-    if ( $request_path =~ m{^/RTIR/(?:index\.html|)$} ) {
-        PageMenu()->child( edit => title => loc('Edit'), path => '/RTIR/Prefs/Home.html' )
+    if ( $request_path =~ m{(?:$re_rtir_path)(?:index\.html|)$} ) {
+        PageMenu()->child( edit => title => loc('Edit'), path => RT::IR->HREFTo('Prefs/Home.html', IncludeWebPath => 0 ))
     }
     Menu->child('preferences')->child('settings')->child(
         rtir_home_page => title => loc('RTIR at a glance'),
-        path => '/RTIR/Prefs/Home.html',
+        path => RT::IR->HREFTo('Prefs/Home.html', IncludeWebPath => 0),
     );
 }
 
 PageWidgets()->child('simple_search')->raw_html( $m->scomp(
     '/Elements/SimpleSearch',
-    SendTo => '/RTIR/index.html',
+    SendTo => RT::IR->HREFTo('index.html', IncludeWebPath => 0),
     Placeholder => 'Search Incidents'
 ) );
-
+PageWidgets()->child( create_ticket => raw_html => $m->scomp('/RTIR/Elements/CreateTicketInQueue') );
 </%INIT>

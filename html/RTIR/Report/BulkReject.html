@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -50,7 +50,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%RT->Config->Get('WebPath')%>/RTIR/Report/BulkReject.html" method="post">
+<form action="<%RT::IR->HREFTo("Report/BulkReject.html")|n%>" method="post">
 <input type="hidden" name="Status"  value="<% $Status %>" />
 
 <input type="hidden" name="Query"   value="<% $Query %>" />
@@ -61,9 +61,9 @@
 
 <%PERL>
 my $found = $m->comp( '/RTIR/Search/Elements/ShowResults',
-    Queue           => $Queue,
+    Lifecycle       => $Lifecycle,
     BaseURL         => $BaseURL,
-    BaseQuery       => RT::IR->ActiveQuery( Queue => $Queue ),
+    BaseQuery       => RT::IR->ActiveQuery( Lifecycle => $Lifecycle ),
     Query           => $Query,
     DisplayFormat   => "__CheckBox__, $Format",
     Format          => $Format,
@@ -147,7 +147,7 @@ if ( $BulkReject ) {
     if ( $BulkRejectAndReturn ) {
         MaybeRedirectForResults(
             Actions => \@results,
-            Path    => '/RTIR/',
+            Path    => RT::IR->HREFTo('', IncludeWebPath => 0),
             Force   => 1,
         );
     }
@@ -157,18 +157,18 @@ if ( $BulkReject ) {
         Arguments => {
             map { $_ => $ARGS{ $_ } }
             grep defined $ARGS{ $_ } && length $ARGS{ $_ },
-            qw(Status Queue Query Format Rows Page OrderBy Order)
+            qw(Status Lifecycle Query Format Rows Page OrderBy Order)
         },
     );
 }
 
-my $BaseURL = "RTIR/Report/BulkReject.html?"
-    . $m->comp('/Elements/QueryString', Queue => $Queue);
+my $BaseURL = RT::IR->HREFTo("Report/BulkReject.html?"
+    . $m->comp('/Elements/QueryString', Lifecycle => $Lifecycle));
 
 </%INIT>
 <%ARGS>
 $Status              => 'rejected'
-$Queue               => 'Incident Reports'
+$Lifecycle           => RT::IR->lifecycle_report
 
 $Query               => ''
 $Format              => RT->Config->Get('RTIRSearchResultFormats')->{'RejectReports'}

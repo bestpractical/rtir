@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 32;
+use RT::IR::Test tests => undef;
 
 my $cf_name = 'test';
 {
@@ -53,7 +53,7 @@ my $agent = default_agent();
 
     {
         $agent->display_ticket( $ir_id );
-        $agent->follow_link_ok({text => "[New]"}, "Followed 'New (Incident)' link")
+        $agent->follow_link_ok({text => "New"}, "Followed 'New (Incident)' link")
             or diag $agent->content;
         $agent->form_number(3);
 
@@ -74,3 +74,6 @@ my $agent = default_agent();
 }
 
 
+
+undef $agent;
+done_testing;

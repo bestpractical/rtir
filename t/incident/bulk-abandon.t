@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 112;
+use RT::IR::Test tests => undef;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -73,3 +73,5 @@ foreach my $id (@invests) {
     $agent->ticket_status_is( $id, 'resolved', 'correct status' );
 }
 
+undef $agent;
+done_testing;

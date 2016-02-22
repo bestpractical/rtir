@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -45,6 +45,7 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
+
 package RT::Condition::RTIR_LinkingToIncident;
 use strict;
 use warnings;
@@ -80,7 +81,7 @@ sub IsApplicable {
             RT->Logger->error( "Couldn't load linked ticket #". $self->TransactionObj->NewValue ." $msg");
             return 0;
         }
-        return $parent->QueueObj->Name eq 'Incidents';
+        return RT::IR->IsIncidentQueue($parent->QueueObj);
     }
     elsif ( $type eq 'AddLink' && $field eq 'MergedInto' ) {
         return RT::IR->Incidents( $self->TicketObj )->Count;

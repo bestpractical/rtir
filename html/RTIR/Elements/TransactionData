@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -63,7 +63,7 @@ while ( my $Transaction = $Transactions->Next ) {
         $m->print( $headers );
     }
 
-    my $content = $Transaction->Content( Quote => $QuoteText );
+    my $content = $Transaction->Content( Quote => $QuoteText, Type => RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ?  'text/html' : 'text/plain' );
     $content =~ s/\s+\z//;
     $m->print( $content );
     $m->print( "\n\n" );

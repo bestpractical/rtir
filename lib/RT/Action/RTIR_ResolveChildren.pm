@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -45,6 +45,7 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
+
 package RT::Action::RTIR_ResolveChildren;
 use strict;
 use warnings;
@@ -76,11 +77,11 @@ sub Commit {
     my $incident = $self->TicketObj;
     my $id = $incident->Id;
 
-    foreach my $qname ( 'Incident Reports', 'Investigations', 'Blocks' ) {
-        next if $qname eq 'Blocks' && RT->Config->Get('RTIR_DisableBlocksQueue');
+    foreach my $lifecycle ( RT::IR->lifecycle_report, RT::IR->lifecycle_investigation, RT::IR->lifecycle_countermeasure ) {
+        next if $lifecycle eq RT::IR->lifecycle_countermeasure && RT->Config->Get('RTIR_DisableBlocksQueue');
 
         my $members = RT::IR->IncidentChildren(
-            $incident, Queue => $qname,
+            $incident, Lifecycle => $lifecycle,
             Initial => 1, Active => 1,
         );
         while ( my $member = $members->Next ) {
@@ -92,7 +93,7 @@ Linked Incident \#$id was resolved, but ticket still has unresolved linked Incid
 END
                 next;
             }
-            my $set_to = RT::IR->MapStatus( $incident->Status, $incident => $qname );
+            my $set_to = RT::IR->MapStatus( $incident->Status, $incident => $lifecycle );
             next unless $set_to;
             next if $member->Status eq $set_to;
 

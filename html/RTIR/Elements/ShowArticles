@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox,
     title          => loc("Articles"),
-    title_href     => RT->Config->Get('WebPath') ."/RTIR/Advanced.html?id=".$id, 
+    title_href     => RT::IR->HREFTo("Advanced.html?id=".$id), 
     title_class    => 'inverse',
     class          => 'ticket-info-articles',
     hide_empty     => 1,

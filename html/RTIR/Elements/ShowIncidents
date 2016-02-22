@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,6 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<span class="incidents">
 <& /RTIR/Search/Elements/ShowResults,
     Query         => $query,
     Rows          => 0,
@@ -52,17 +53,17 @@
     DisplayFormat => $dformat,
     AllowSorting  => 0,
     ShowHeader    => 0,
-    EmptyLabel    => loc('(no Incidents)'),
+    EmptyLabel    => loc('(none)'),
 &>
-
-% my $wp = RT->Config->Get('WebPath');
+<div class="actions">
 % unless ( $action ) {
-<b><a href="<% $wp %>/RTIR/Link/ToIncident/?id=<% $id %>">[Link]</a></b>
-<b><a href="<% $wp %>/RTIR/Create.html?Child=<% $id %>&Queue=Incidents">[New]</a></b>
+<a class="button" id="link-incident" href="<% RT::IR->HREFTo('Link/ToIncident/?id='. $id ) %>">Link</a>
+<a class="button" id="create-incident" href="<% RT::IR->HREFTo('Incident/Create.html?Child='. $id ) %>">New</a>
 % } elsif ( $action ne 'No' ) {
-<a href="<% $wp %>/RTIR/Display.html?Action=<% $action %>&id=<% $id %>">[<% loc( $action ) %>]</a>
+<a class="button" href="<% RT::IR->HREFTo('Display.html?Action='. $action.'&id='. $id) %>"><% loc( $action ) %></a>
 % }
-
+</div>
+</span>
 <%INIT>
 my $id = $Ticket->id;
 
@@ -97,7 +98,7 @@ my $query = RT::IR->RelevantIncidentsQuery( $Ticket );
 my $format = RT->Config->Get('RTIRSearchResultFormats')->{'ListIncidents'};
 my $dformat = $format;
 if ( $show_unlink ) {
-    $dformat .= ", '<a href=\"__WebPath__/RTIR/Display.html?id=$id&DeleteLink--MemberOf-__id__=1\">". loc('Unlink') ."</a>/TITLE:'";
+    $dformat .= ", '<a class=\"button\" href=\"". RT::IR->HREFTo("Display.html?id=$id&DeleteLink--MemberOf-__id__=1").\">". loc('Unlink') ."</a>/TITLE:'";
 }
 </%INIT>
 

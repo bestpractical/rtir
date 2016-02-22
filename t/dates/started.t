@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 68;
+use RT::IR::Test tests => undef;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -109,3 +109,6 @@ diag "started date of a block" if $ENV{'TEST_VERBOSE'};
     ok( $block->StartedObj->Unix > 0, 'activation of a block sets started date');
 }
 
+
+undef $agent;
+done_testing;

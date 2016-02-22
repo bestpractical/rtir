@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,15 +46,41 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-# I'm not sure why this isn't just "Only run on */Refine.html"
-# That would make the intent clearer.
-my $path = $m->request_comp->path;
+my $path = $r->path_info;
 return unless $path =~ m{^/RTIR};
-return if $path =~ m{^/RTIR/Search/index.html};
 foreach( @$Conditions ) {
-    next unless ($_->{'Name'}||'') eq 'Queue';
-    $_ = undef;
+    if (($_->{'Name'}||'') eq 'Queue' ) {
+    $_->{'Value'}{'Path'} = '/RTIR/Elements/SelectRTIRQueue';
+        $_->{'Value'}{'Arguments'}{'ShowNullOption'} = 1;
+    if (defined $m->{'RTIR_ConstituencyFilter'}) {
+        $_->{'Value'}{'Arguments'}{'Constituency'} = $m->{'RTIR_ConstituencyFilter'};
+        $_->{'Value'}{'Arguments'}{'LimitToConstituency'} = 1;
+        if (defined $m->request_args->{'Lifecycle'})  {
+             $_->{'Value'}{'Arguments'}{'Lifecycle'} = $m->request_args->{'Lifecycle'};
+        }
+    }}
+    elsif (($_->{'Name'}||'') eq 'Status' ) {
+        $_->{'Value'}{'Path'} = '/Elements/SelectStatus';
+        if (!defined $_{'Value'}{'Queues'} && defined $m->request_args->{'Lifecycle'}){
+            $_->{'Value'}{'Arguments'}{'Lifecycles'} = 
+                [RT::Lifecycle->Load($m->request_args->{'Lifecycle'})]
+        } 
+    }
 }
+
+unshift @$Conditions, {
+        Name => 'Lifecycle',
+        Field => loc('Lifecycle'),
+        Op => {
+            Type => 'component',
+            Path => '/Elements/SelectBoolean',
+            Arguments => { TrueVal=> '=', FalseVal => '!=' },
+        },    
+        Value =>  {Type => 'component',
+                     Path => '/RTIR/Elements/SelectRTIRLifecycle',
+                    Arguments => { ShowNullOption => 1 }}
+
+};
 </%INIT>
 <%ARGS>
 $Conditions => [],

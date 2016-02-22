@@ -55,4 +55,6 @@ SKIP:{
 }
 
 undef $agent;
-done_testing();
+
+undef $agent;
+done_testing;

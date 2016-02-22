@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 24;
+use RT::IR::Test tests => undef;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -26,8 +26,11 @@ my $agent = default_agent();
     $agent->content_like(qr{test ir});
 
     $agent->get_ok( "/RTIR/index.html?q=$inc_id" );
-    is($agent->uri,$agent->rt_base_url."RTIR/Display.html?id=$inc_id","Directed to the Incident Page");
+    is($agent->uri,$agent->rt_base_url."RTIR/Incident/Display.html?id=$inc_id","Directed to the Incident Page");
 
     $agent->get_ok( "/RTIR/index.html?q=$ir_id" );
     is($agent->uri,$agent->rt_base_url."RTIR/Display.html?id=$ir_id","Directed to the Report Page");
 }
+
+undef $agent;
+done_testing;

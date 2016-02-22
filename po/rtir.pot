@@ -82,10 +82,6 @@ msgstr ""
 msgid "(no name)"
 msgstr ""
 
-#: html/RTIR/Elements/EditConstituency:59
-msgid "-"
-msgstr ""
-
 #: html/RTIR/Tools/Elements/ToolResultsIframe:48
 msgid "<%$research_tools->{$ResearchTool}->{FriendlyName}%>"
 msgstr ""
@@ -1462,7 +1458,7 @@ msgid "lookup"
 msgstr ""
 
 #: html/Callbacks/RTIR/Elements/MakeClicky/Default:96
-msgid "lookup IP"
+msgid "Lookup IP"
 msgstr ""
 
 #: html/Callbacks/RTIR/Elements/MakeClicky/Default:142 html/Callbacks/RTIR/Elements/MakeClicky/Default:77 html/Callbacks/RTIR/Elements/MakeClicky/Default:88

@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 53;
+use RT::IR::Test tests => undef;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -24,7 +24,7 @@ SKIP: {
 
 
 	# Testing creating an incident and investigation from an Incident Report
-	my ($ir_inc, $ir_inv) = $agent->create_incident_and_investigation( 
+	my ($ir_inc, $ir_inv) = $agent->create_incident_and_investigation( '',
 		{Subject => "Incident linked with IR $ir to test adding watchers", 
 		InvestigationSubject => "Investigation linked with Incident to test adding watchers",
 		InvestigationRequestors => 'requestor@example.com',
@@ -48,7 +48,7 @@ SKIP: {
 
 
 # Testing creating an incident and investigation not from an incident report
-my ($inc, $inv) = $agent->create_incident_and_investigation( 
+my ($inc, $inv) = $agent->create_incident_and_investigation( '',
 	{Subject => "Incident to test adding watchers", 
 	InvestigationSubject => "Investigation linked to Incident to test adding watchers",
 	InvestigationRequestors => 'requestor@example.com',
@@ -86,3 +86,5 @@ SKIP: {
 	$agent->has_watchers( $solo_inv, 'AdminCc');
 }
 
+undef $agent;
+done_testing;

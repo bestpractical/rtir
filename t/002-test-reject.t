@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 107;
+use RT::IR::Test tests => undef;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -92,7 +92,7 @@ diag "test that after reject links to incidents are still there" if $ENV{'TEST_V
 
     # go to incident and check that we still can see the child
     $agent->display_ticket( $inc_id);
-    $agent->follow_link_ok({text => "Incident Reports", n => 2}, "Followed 'Incident Reports' link");
+    $agent->follow_link_ok({text => "Incident Reports"}, "Followed 'Incident Reports' link");
     $agent->form_number(3);
     $agent->tick( Statuses => 'rejected' );
     $agent->click('RefineStatus');
@@ -122,7 +122,7 @@ diag "test that after quick reject links to incidents are still there" if $ENV{'
 
     # go to incident and check that we still can see the child
     $agent->display_ticket( $inc_id);
-    $agent->follow_link_ok({text => "Incident Reports", n => 2}, "Followed 'Incident Reports' link");
+    $agent->follow_link_ok({text => "Incident Reports"}, "Followed 'Incident Reports' link");
     $agent->form_number(3);
     $agent->tick( Statuses => 'rejected' );
     $agent->click('RefineStatus');
@@ -141,7 +141,7 @@ diag "test that after bulk reject links to incidents are still there" if $ENV{'T
     }
 
     $agent->display_ticket( $id);
-    $agent->follow_link_ok({text => "Incident Reports"}, "Followed 'Incident Reports' link");
+    $agent->follow_link_ok({text => "Reports"}, "Followed 'Incident Reports' link");
     while($agent->content() !~ m{Display.html\?id=$id">$id</a>}) {
         last unless $agent->follow_link(text => 'Next');
     }
@@ -161,7 +161,7 @@ diag "test that after bulk reject links to incidents are still there" if $ENV{'T
 
     # go to incident and check that we still can see the child
     $agent->display_ticket( $inc_id);
-    $agent->follow_link_ok({text => "Incident Reports", n => 2}, "Followed 'Incident Reports' link");
+    $agent->follow_link_ok({text => "Incident Reports"}, "Followed 'Incident Reports' link");
     $agent->form_number(3);
     $agent->tick( Statuses => 'rejected' );
     $agent->click('RefineStatus');
@@ -169,3 +169,5 @@ diag "test that after bulk reject links to incidents are still there" if $ENV{'T
     $agent->has_tag('a', "$id", 'we have link to ticket');
 }
 
+undef $agent;
+done_testing;

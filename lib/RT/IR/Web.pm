@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -45,32 +45,20 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-package RT::Condition::RTIR_RequireConstituencyGroupChange;
-use strict;
+
+package RT::IR::Web;
 use warnings;
-use base 'RT::Condition::RTIR';
+use strict;
 
-=head2 IsApplicable
+use RT::Interface::Web;
+package HTML::Mason::Commands;
 
-Applies to Ticket Creation and Constituency changes
+# Extend RT's html scribber to allow the custom RTIR ticket url helper
+# If we set this in the ColumnMap callback, it's too late, as RT's scrubber
+# has already been initialized
+#
+$HTML::Mason::Commands::SCRUBBER_ALLOWED_ATTRIBUTES{'href'} = '^(?:'.$HTML::Mason::Commands::SCRUBBER_ALLOWED_ATTRIBUTES{'href'} . ')|(?:__RTIRTicketURI__)';
 
-=cut
-
-sub IsApplicable {
-    my $self = shift;
-
-    my $ticket = $self->TicketObj;
-    my $cf = $ticket->LoadCustomFieldByIdentifier('Constituency');
-    # no constituency
-    return 0 unless $cf && $cf->id;
-
-    my $txn = $self->TransactionObj;
-    my $type = $txn->Type;
-    return 1 if $type eq 'Create';
-    return 1 if $type eq 'CustomField' && $cf->id == $txn->Field;
-    return 0;
-}
-
-RT::IR->ImportOverlays;
-
+package RT::IR::Web;
+RT::Base->_ImportOverlays();
 1;

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -45,6 +45,7 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
+
 package RT::Action::RTIR_ChangeParentOwnership;
 use strict;
 use warnings;
@@ -62,7 +63,7 @@ sub Commit {
     my $txn = $self->TransactionObj;
 
     # change owner of parent Incident(s)
-    my $query =  "Queue = 'Incidents'"
+    my $query =  "Lifecycle = 'incidents'"
                 ." AND HasMember = " . $self->TicketObj->Id
                 ." AND Owner != ". $txn->NewValue;
     my $parents = RT::Tickets->new( $self->CreatorCurrentUser );

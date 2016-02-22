@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -54,7 +54,7 @@
     <td class="label"><&|/l&>Starts</&>:</td>
     <td class="value"><% $Ticket->StartsObj->AsString %></td>
   </tr>
-% if ( $Type =~ /^(Report|Investigation|Block)$/i ) {
+% if ( RT::IR->IsReportQueue($Ticket->QueueObj) || RT::IR->IsInvestigationQueue($Ticket->QueueObj) || RT::IR->IsCountermeasureQueue($Ticket->QueueObj) ) {
   <tr>
     <td class="label"><&|/l&>Started</&>:</td>
     <td class="value"><% $Ticket->StartedObj->AsString %></td>
@@ -69,8 +69,12 @@
 % } else {
         <% $due->AsString %>
 % }
-% if ( $Type ne 'Incident' && $Due ) {
+% if ( !RT::IR->IsIncidentQueue($Ticket->QueueObj) && $Due ) {
+% if ( $Due =~ /^\d+$/ ) {
         [<a href="Display.html?Due_Date=now%20%2B%20<% $Due |u %>%20days&id=<% $Ticket->Id %>"><% loc("Set to [_1] days from now", $Due ) %></a>]
+% } else {
+        [<a href="Display.html?Due_Date=now%20%2B%20<% $Due |u %>&id=<% $Ticket->Id %>"><% loc("Set to [_1] from now", $Due ) %></a>]
+% }
 % }
     </td>
   </tr>
@@ -84,6 +88,5 @@
 $Ticket => undef
 </%ARGS>
 <%INIT>
-my $Type = RT::IR::TicketType( Ticket => $Ticket );
-my $Due = ( $Ticket->QueueObj->DefaultDueIn || (RT->Config->Get('OverdueAfter')) || 7 ) ;
+my $Due = $Ticket->QueueObj->DefaultValue('Due') || RT->Config->Get('OverdueAfter') || 7;
 </%INIT>

@@ -29,4 +29,5 @@ $m->content_contains( 'Spam Incident', 'has spam incident' );
 # we should only be finding Queue = 'Incidents' and CF.Classification = 'Spam'
 $m->content_lacks( 'Ham Incident', 'has not found the ham incident' );
 
+undef $m;
 done_testing;

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -97,7 +97,7 @@ if ( $SplitObj ) {
 my $config = RT->Config->Get('RTIR_IncidentChildren')->{ $Type };
 
 my $query = RT::IR->Query(
-    Queue => 'Incidents',
+    Lifecycle => 'incidents',
     And => join ' OR ', map "id = $_", @potential
 );
 my $format = RT->Config->Get('RTIRSearchResultFormats')->{'LinkIncident'};

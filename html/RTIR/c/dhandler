@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,26 +45,18 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%args>
-$CustomFields => undef
-$Object => undef
-</%args>
 <%init>
-return unless $Object->isa('RT::Ticket');
-my $queue;
-if ($Object->Id) {
-    $queue = $Object->QueueObj;
-} else {
-    # during ticket creation, we get an id'less ticket
-    # but the CustomFields object was created from Queue->TicketCustomFields
-    # so we can find the relevant Queue from that
-    $queue = $CustomFields->ContextObject;
-    return unless ($queue && $queue->isa('RT::Queue'));
-}
-return unless RT::IR->OurQueue( $queue );
+my @uri = split("/",$m->dhandler_arg);
+my $constituency= shift @uri;
+$m->{'RTIR_ConstituencyFilter'} = $constituency;
+my $path = join("/",'','RTIR',@uri);
+    $path =~ s!/$!!;
+    if (   !$m->interp->comp_exists( $path )
+         && $m->interp->comp_exists( $path . "/index.html" ) )
+    {
+        $path= $path . "/index.html";
+    }
 
-# We never want to see the RTIR's custom field Constituency in the edity ui
-$CustomFields->_OpenParen('RTIR');
-$CustomFields->Limit( SUBCLAUSE => 'RTIR', ENTRYAGGREGATOR => 'AND', FIELD => 'Name', OPERATOR => '!=', VALUE => 'Constituency', CASESENSITIVE => 0);
-$CustomFields->_CloseParen('RTIR');
+
+return $m->comp($path, %ARGS);
 </%init>

@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 80;
+use RT::IR::Test tests => undef;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -83,6 +83,8 @@ $agent->goto_create_rtir_ticket('Incident Reports');
 
 $agent->goto_create_rtir_ticket('Incident Reports');
 
+SKIP: {
+    skip "delete attach function is ajaxified, no checkbox anymore", 4;
 # let's try to create new IR
 # and add then delete attachment to see that it works as expected
 {
@@ -112,6 +114,7 @@ $agent->goto_create_rtir_ticket('Incident Reports');
     ok(!$attachment_link, "no link to attachment");
 
     unlink $filename or die "couldn't delete file '$filename': $!";
+}
 }
 
 $agent->goto_create_rtir_ticket('Incidents');
@@ -233,3 +236,6 @@ $agent->goto_create_rtir_ticket('Blocks');
 
     unlink $filename or die "couldn't delete file '$filename': $!";
 }
+
+undef $agent;
+done_testing;

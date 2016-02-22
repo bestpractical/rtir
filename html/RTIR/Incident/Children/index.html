@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -51,23 +51,26 @@
 <& /Elements/ListActions, actions => \@results &>
 
 % if( $children->CountAll == $all_children->CountAll ) {
-<h2><% loc('Total [_1]: [_2]', $Queue, $children->CountAll) %></h2>
+<h2><% loc('Total [_1]: [_2]', RT::IR::TicketType(Lifecycle => $Lifecycle), $children->CountAll) %></h2>
 % } else {
-<h2><% loc('Total [_1]: [_2]([_3])', $Queue, $children->CountAll, $all_children->CountAll) %></h2>
+<h2><% loc('Total [_1]: [_2]([_3])', RT::IR::TicketType(Lifecycle => $Lifecycle), $children->CountAll, $all_children->CountAll) %></h2>
 % }
 
 <form action="index.html" method="post">
 <input type="hidden" name="id" value="<% $id %>" />
-<input type="hidden" name="Queue" value="<% $Queue %>" />
+<input type="hidden" name="Lifecycle" value="<% $Lifecycle %>" />
 
 <& /RTIR/Elements/ShowChildren,
+    %ARGS,
     Ticket               => $Incident,
-    Queue                => $Queue,
+    Lifecycle            => $Lifecycle,
     Statuses             => [@Statuses],
-    FullList             => RT->Config->Get('WebPath')."/RTIR/Incident/Children/?Queue=$Queue&id=$id",
+    FullList             => RT::IR->HREFTo("Incident/Children/?Lifecycle=$Lifecycle&id=$id"),
     Delete               => $delete,
     ShowHeader           => 1,
     ShowStatusesSelector => 1,
+    AllowSorting         => 1,
+    PassArguments        => [qw(Query Format Rows Page Order OrderBy Queue id SelectedTicekts Statuses)],
 &>
 
 <& /Elements/Submit, Name => 'Unlink', Label => loc('Unlink Report') &>
@@ -89,36 +92,36 @@ if( $ARGS{'Unlink'} ) {
 
 MaybeRedirectForResults(
     Actions   => \@results,
-    Arguments => { id => $id, Queue => $Queue },
+    Arguments => { id => $id, Lifecycle => $Lifecycle },
 );
 
 unless ( $Incident->CurrentUserHasRight('ShowTicket') ) {
     Abort("No permission to view ticket");
 }
 
-my $Title = loc("$Queue for Incident #[_1]: [_2]", $id, $Incident->Subject);
+my $Title = loc("[_1] for Incident #[_2]: [_3]", RT::IR::TicketType(Lifecycle => $Lifecycle),$id, $Incident->Subject);
 
 my $delete = $Incident->CurrentUserHasRight('ModifyTicket') ? 1: 0;
 
-@Statuses = RT::IR->Statuses( Queue => $Queue )
+@Statuses = RT::IR->Statuses( Lifecycle => $Lifecycle ) 
     unless @Statuses;
 
 my $children = RT::Tickets->new( $session{'CurrentUser'} );
 $children->FromSQL( RT::IR->Query(
-    Queue    => $Queue,
+    Lifecycle =>  $Lifecycle,
     MemberOf => $Incident,
     Status   => [@Statuses],
 ) );
 
 my $all_children = RT::Tickets->new( $session{'CurrentUser'} );
 $all_children->FromSQL( RT::IR->Query(
-    Queue    => $Queue,
+    Lifecycle => $Lifecycle,
     MemberOf => $Incident,
 ) );
 </%INIT>
 <%ARGS>
 $id              => undef
-$Queue           => 'Incident Reports'
+$Lifecycle       =>  RT::IR->lifecycle_report
 
 @SelectedTickets => ()
 @Statuses        => ()

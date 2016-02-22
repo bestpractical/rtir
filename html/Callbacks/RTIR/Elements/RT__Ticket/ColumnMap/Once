@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,6 +48,19 @@
 <%INIT>
 use RT::Crypt::GnuPG;
 
+$COLUMN_MAP->{'RTIRTicketURI'} = {
+    value  =>sub {
+        my $t = shift;
+        my $link;
+        if (RT::IR->IsIncidentQueue($t->QueueObj)) {
+            $link =  RT::IR->HREFTo('Incident/Display.html?id='.$t->id);
+        } else {
+            $link = RT::IR->HREFTo('Display.html?id='.$t->id);
+        }
+        return \$link;
+    }
+};
+
 $COLUMN_MAP->{'Take'} = {
     title => 'Take',
     value => sub {
@@ -76,11 +89,13 @@ $COLUMN_MAP->{'HasIncident'} = {
     value => sub {
         my $t = shift;
         my $yesno;
-        if ( RT::IR->RelevantIncidents( $t )->Count ) {
-            $yesno = '<span class="yes">'. $t->loc('yes') .'</span>';
+        if (my $count = RT::IR->RelevantIncidents( $t )->Count ) {
+            $yesno = '<span class="yes">'. '<a href="'.RT::IR->HREFTo('/Search/Results.html?'.$m->comp('/Elements/QueryString', Query => RT::IR->RelevantIncidentsQuery($t))).'">'
+            .  $count
+            .'</a></span>';
         }
         else {
-            $yesno = '<span class="no">'. $t->loc('no') .'</span>';
+            $yesno = '<span class="no">-</span>';
         }
 
         return \$yesno;
@@ -96,7 +111,7 @@ $COLUMN_MAP->{'LookupToolChildrenActions'} = {
         my @res;
         if ( $show{'link'} ) {
             push @res, \'<a href="',
-                RT->Config->Get('WebPath') .'/RTIR/Display.html?Child='. $t->id .'&id='. $lid,
+                RT::IR->HREFTo('Display.html?Child='. $t->id .'&id='. $lid),
                 \'">',
                 '[' . $t->loc("Link") .']',
                 \'</a>'
@@ -104,7 +119,7 @@ $COLUMN_MAP->{'LookupToolChildrenActions'} = {
         }
         if ( $lid != $t->id && $show{'merge'} ) {
             push @res, \'<a href="',
-                RT->Config->Get('WebPath') .'/RTIR/Merge/?SelectedTicket='. $t->id .'&id='. $lid,
+                RT::IR->HREFTo('Merge/?SelectedTicket='. $t->id .'&id='. $lid),
                 \'">',
                 '[' . $t->loc("Merge") .']',
                 \'</a>'
@@ -123,7 +138,7 @@ $COLUMN_MAP->{'LookupToolIncidentActions'} = {
         my @res;
         if ( $show{'link'} ) {
             push @res, \'<a href="',
-                RT->Config->Get('WebPath') .'/RTIR/Display.html?Child='. $lid .'&id='. $t->id,
+                RT::IR->HREFTo('Display.html?Child='. $lid .'&id='. $t->id),
                 \'">',
                 '[' . $t->loc("Link") .']',
                 \'</a>'
@@ -131,14 +146,15 @@ $COLUMN_MAP->{'LookupToolIncidentActions'} = {
         }
         if ( $lid != $t->id && $show{'merge'} ) {
             push @res, \'<a href="',
-                RT->Config->Get('WebPath') .'/RTIR/Merge/?SelectedTicket='. $lid .'&id='. $t->id,
+                RT::IR->HREFTo('Merge/?SelectedTicket='. $lid .'&id='. $t->id),
                 \'">',
                 '[' . $t->loc("Merge") .']',
                 \'</a>'
             ;
         }
         push @res, \'<a href="',
-            RT->Config->Get('WebPath') .'/RTIR/Create.html?Queue=Investigations&Incident='. $t->id,
+            RT::IR->HREFTo('Create.html?Lifecycle='.RT::IR->lifecycle_investigation
+            .'&Incident='. $t->id),
             \'">',
             '[' . $t->loc("Investigate") .']',
             \'</a>'

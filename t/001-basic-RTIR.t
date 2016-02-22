@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 25;
+use RT::IR::Test tests => undef;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -42,4 +42,5 @@ $agent->LinkChildToIncident( $report, $second_incident_id);
 
 
 
-
+undef $agent;
+done_testing;

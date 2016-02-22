@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 50;
+use RT::IR::Test tests => undef;
 
 # link on create without due
 {
@@ -190,3 +190,5 @@ use RT::IR::Test tests => 50;
     $inc->Load( $inc->id ); # reload
     is $inc->DueObj->ISO, $ir1->DueObj->ISO;
 }
+
+done_testing;

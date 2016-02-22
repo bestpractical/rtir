@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -58,11 +58,29 @@
 
 <&| /Widgets/TitleBox,
     title => loc('Incident #[_1]', $id), 
-    title_href => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=".$id, 
+    title_href => RT::IR->HREFTo("Edit.html?id=".$id), 
     class=> 'ticket-info-basics',
 &>
 
 <table>
+  
+% if (my $constituency = RT::IR->ConstituencyFor($TicketObj)) {
+  <tr>
+    <td class="label"><% loc("Constituency") %>:</td>
+    <td class="value">
+      <% $constituency %>
+    </td>
+  </tr>
+  <tr>
+% }    
+
+
+  <tr>
+    <td class="label"><% loc("Queue") %>:</td>
+    <td class="value" colspan="2">
+        <% $TicketObj->QueueObj->Name %>
+    </td>
+  </tr>
   <tr>
     <td class="label"><% loc("Status") %>:</td>
     <td class="value" colspan="2">
@@ -93,12 +111,12 @@
 
 <& /Elements/ShowCustomFieldCustomGroupings,
     Object       => $TicketObj,
-    title_href => RT->Config->Get('WebPath') ."/RTIR/Edit.html",
+    title_href => RT::IR->HREFTo("Edit.html"),
 &>
 
 <&| /Widgets/TitleBox,
     title => loc("Dates"),
-    title_href => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=".$id,
+    title_href =>RT::IR->HREFTo("Edit.html?id=".$id),
     class => 'ticket-info-dates',
 &>
 <& /RTIR/Elements/ShowDates, Ticket => $TicketObj &>
@@ -106,15 +124,15 @@
 
 
 <& /Ticket/Elements/ShowAttachments, Ticket => $TicketObj, Attachments => $attachments &>
-<& /Ticket/Elements/ShowRequestor, Ticket => $TicketObj, DisplayPath => "/RTIR/Display.html" &>
+<& /Ticket/Elements/ShowRequestor, Ticket => $TicketObj, DisplayPath => RT::IR->HREFTo("Display.html") &>
 
 </td><td class="boxcontainer" valign="top">
 % $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'RightColumnStart' );
 
-% foreach my $queue ( 'Incident Reports', 'Investigations', 'Blocks' ) {
+% foreach my $lifecycle ( RT::IR->lifecycle_report, RT::IR->lifecycle_investigation, RT::IR->lifecycle_countermeasure ) {
 <& /RTIR/Incident/Elements/ShowChildren,
     IncidentObj => $TicketObj,
-    Queue       => $queue,
+    Lifecycle   => $lifecycle
 &>
 % }
 
@@ -139,11 +157,11 @@
     <& /Elements/ShowHistory,
         Object         => $TicketObj,
         ShowHeaders    => $ARGS{'ShowHeaders'},
-        DisplayPath    => RT->Config->Get('WebPath') ."/RTIR/Display.html?id=$id",
-        UpdatePath     => RT->Config->Get('WebPath') ."/RTIR/Update.html",
-        ForwardPath    => RT->Config->Get('WebPath') ."/RTIR/Forward.html",
-        EncryptionPath => RT->Config->Get('WebPath') ."/RTIR/Crypt.html",
-        PathPrefix     => RT->Config->Get('WebPath') ."/Ticket/",
+        DisplayPath    => RT::IR->HREFTo("Display.html?id=$id"),
+        UpdatePath     => RT::IR->HREFTo("Update.html"),
+        ForwardPath    => RT::IR->HREFTo("Forward.html"),
+        EncryptionPath => RT::IR->HREFTo("Crypt.html"),
+        PathPrefix     => RT::IR->HREFTo("Ticket/")
     &>
 % }
 
@@ -175,14 +193,15 @@ my $deleted_links = 0;
 my $DoLinks = sub {
     my ($child, $parent) = @_;
 
-    if ( RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject' ) {
-        return loc("Couldn't link tickets with different constituencies")
-            if lc $child->FirstCustomFieldValue('Constituency') 
-                ne lc $parent->FirstCustomFieldValue('Constituency')
-                && RT::IR->CustomFields('Constituency');
-    }
-
     my %args = ();
+
+    if (RT::IR->StrictConstituencyLinking) {
+        if ((RT::IR->ConstituencyFor($child) ||'')
+            ne (RT::IR->ConstituencyFor($parent) ||'')) {
+            return loc("Link failed: Ticket #[_1] is associated with a different constituency", 
+            $child->id );
+        }
+    }
 
     # Blocks or Incedent Reports can have multiple incidents
     my $Type = RT::IR::TicketType( Ticket => $child );
@@ -204,7 +223,7 @@ my $DoLinks = sub {
         push @results, $take_or_steal->( $parent );
     }
 
-    # turn off strict check localy
+    # turn off strict check locally
     my $strict_acl = RT->Config->Set( StrictLinkACL => 0 );
     $args{ $child->Id .'-MemberOf' } = $parent->Id;
     push @results, ProcessTicketLinks( TicketObj => $child, ARGSRef => \%args );
@@ -220,7 +239,7 @@ my $new_ticket = 0;
 if ( $id eq 'new' ) {
     my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
     $QueueObj->Load( $Queue ) || Abort(loc("Couldn't load queue."));
-    unless( $QueueObj->Name eq 'Incidents' ) {
+    unless( RT::IR->IsIncidentQueue($QueueObj) ) {
         return $m->comp('/RTIR/Display.html', %ARGS );
     }
     ($TicketObj, @results) = CreateTicket( %ARGS );
@@ -234,7 +253,7 @@ $m->callback(CallbackName => 'ProcessArguments',
             ARGSRef => \%ARGS,  
             Actions => \@results);
 
-unless( $TicketObj->QueueObj->Name eq 'Incidents' ) {
+unless( RT::IR->IsIncidentQueue($TicketObj->QueueObj) ) {
     return $m->comp('/RTIR/Display.html', %ARGS );
 }
 $ARGS{'id'} = $id = $TicketObj->Id;
@@ -297,7 +316,7 @@ if ( $ARGS{'MarkAsSeen'} ) {
 
 MaybeRedirectForResults(
     Actions   => \@results,
-    Path      => "/RTIR/Display.html",
+    Path      => RT::IR->HREFTo("Display.html", IncludeWebPath => 0),
     Arguments => { id => $TicketObj->id },
     Anchor    => $ARGS{'Anchor'},
 );
@@ -318,7 +337,7 @@ my $attachments = $TicketObj->Attachments;
 
 <%ARGS>
 $id => undef
-$Queue => 'Incidents'
+$Queue => RT::IR->lifecycle_incident
 $Child => undef
 $SelectedTicket => undef
 @SelectedTickets => ()

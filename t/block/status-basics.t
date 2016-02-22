@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 67;
+use RT::IR::Test tests => undef;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -101,3 +101,6 @@ diag "test activation after reply using Edit page";
     $agent->ticket_status_is( $block_id, 'active');
 }
 
+
+undef $agent;
+done_testing;

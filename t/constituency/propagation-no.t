@@ -3,7 +3,8 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 107;
+use Test::More skip_all => 'constituencies being rebuilt';
+use RT::IR::Test tests => undef;
 
 use_ok('RT::IR');
 RT->Config->Set('_RTIR_Constituency_Propagation' => 'no');
@@ -187,3 +188,6 @@ diag "create an incident under GOVNET and create a new IR "
     }
 }
 
+
+undef $agent;
+done_testing;

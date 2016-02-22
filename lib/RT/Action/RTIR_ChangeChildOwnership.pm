@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -45,6 +45,7 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
+
 package RT::Action::RTIR_ChangeChildOwnership;
 use strict;
 use warnings;
@@ -73,9 +74,9 @@ sub Commit {
     }
 
     # change owner of child Incident Reports, Investigations, Blocks
-    my $query =  "(Queue = 'Incident Reports'"
-                ." OR Queue = 'Investigations'"
-                ." OR Queue = 'Blocks'"
+    my $query =  "(Lifecycle = '".RT::IR->lifecycle_report."'"
+                ." OR Lifecycle ='". RT::IR->lifecycle_investigation."'"
+                ." OR Lifecycle = '".RT::IR->lifecycle_countermeasure."'"
                 .") AND MemberOf = ". $self->TicketObj->Id
                 ." AND Owner != ". $transaction->NewValue;
     my $members = RT::Tickets->new( $actor );

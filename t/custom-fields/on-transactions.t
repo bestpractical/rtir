@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 81;
+use RT::IR::Test tests => undef;
 
 my $cf_name = 'test';
 my $cf;
@@ -117,3 +117,6 @@ foreach my $id ( @tickets ) {
     is $txn->FirstCustomFieldValue( $cf_name ), 'not magic', 'correct value';
 }
 
+
+undef $agent;
+done_testing;

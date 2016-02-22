@@ -20,7 +20,7 @@ $agent->display_ticket( $ir);
 # of an empty correspondents field, while the above function tests if the creation succeeded,
 # and thus will fail if we get the result we want, and succeed if we don't!
 {
-    $agent->follow_link_ok({text => "[New]"}, "Followed 'New (Incident)' link");
+    $agent->follow_link_ok({text => "New"}, "Followed 'New (Incident)' link");
     $agent->form_number(3);
     $agent->field('Subject', 'Incident for testing empty Investigation correspondent');
     $agent->field('InvestigationSubject', 'Investigation for testing empty Investigation correspondent');
@@ -34,7 +34,7 @@ $agent->display_ticket( $ir);
 
 # Okay, enough funny business. Now for some straightforward tests, how it should work
 {
-    my ($inc_id, $inv_id) = $agent->create_incident_and_investigation( 
+    my ($inc_id, $inv_id) = $agent->create_incident_and_investigation( '',
         {Subject => 'Incident for testing Incident-and-investigation-from-IR creation',
         InvestigationSubject => 'Investigation for testing Incident-and-Investigation-from-IR creation', 
         InvestigationRequestors => 'foo@example.com'}, {Classification => 'Spam', IP => '172.16.0.1'},
@@ -131,4 +131,5 @@ like( $agent->uri, qr/RTIR\/Create.html/, 'still in the create page' );
 $agent->content_contains('Creation failed', 'failed to create');
 $agent->content_contains('You must enter an Incident ID');
 
+undef $agent;
 done_testing;

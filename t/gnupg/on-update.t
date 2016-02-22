@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test::GnuPG tests => 68, gnupg_options => { passphrase => 'rt-test' };
+use RT::IR::Test::GnuPG tests => undef, gnupg_options => { passphrase => 'rt-test' };
 
 my $queue = RT::Test->load_or_create_queue(
     Name              => 'Incident Reports',
@@ -258,6 +258,10 @@ diag "check encrypting of attachments";
     ok @mail, 'there are some emails';
     check_text_emails( { Encrypt => 1, Attachment => 1 }, @mail );
 }
+
+
+undef $agent;
+done_testing;
 
 sub check_text_emails {
     my %args = %{ shift @_ };

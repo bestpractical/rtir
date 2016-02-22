@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <span id="showuser-<%$User->id%>">
-% my $url = RT->Config->Get('WebPath') ."/RTIR/EditUsername?page=1&id=". $User->id;
+% my $url = RT::IR->HREFTo("EditUsername?page=1&id=". $User->id);
 <& /Elements/ShowUser, User => $User &>
 % if ( $can_modify ) {
 % my $modify_url = $can_see_admin? RT->Config->Get('WebPath') .'/Admin/Users/Modify.html?id='. $User->id : '#';

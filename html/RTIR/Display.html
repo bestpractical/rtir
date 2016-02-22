@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -62,10 +62,20 @@
 
 <&| /Widgets/TitleBox,
     title => loc("The Basics"),
-    title_href  => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=".$Ticket->Id,
+    title_href  => RT::IR->HREFTo("Edit.html?id=".$Ticket->Id),
     class => 'ticket-info-basics',
 &>
-<table>
+<table class="basics">
+% if (my $constituency = RT::IR->ConstituencyFor($Ticket)) {
+  <tr>
+    <td class="label"><% loc("Constituency") %>:</td>
+    <td class="value">
+      <% $constituency %>
+    </td>
+  </tr>
+  <tr>
+
+% }
   <tr>
     <td class="label"><% loc("Status") %>:</td>
     <td class="value">
@@ -91,7 +101,7 @@
 
 <& /Elements/ShowCustomFieldCustomGroupings,
     Object       => $Ticket,
-    title_href => RT->Config->Get('WebPath') ."/RTIR/Edit.html",
+    title_href => RT::IR->HREFTo("Edit.html"),
 &>
 
 <& /RTIR/Elements/ShowArticles, Ticket => $Ticket &>
@@ -101,13 +111,13 @@
 
     <&| /Widgets/TitleBox,
         title => loc('People'), 
-        title_href  => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=". $Ticket->Id,
+        title_href  => RT::IR->HREFTo("Edit.html?id=". $Ticket->Id),
         class => 'ticket-info-people',
     &>
     <& /RTIR/Elements/ShowPeople, Ticket => $Ticket &>
     </&>
     <&| /Widgets/TitleBox, title => loc("Dates"),
-        title_href  => RT->Config->Get('WebPath') ."/RTIR/Edit.html?id=". $Ticket->Id,
+    title_href  => RT::IR->HREFTo("Edit.html?id=". $Ticket->Id),
         class => 'ticket-info-dates',
     &>
     <& /RTIR/Elements/ShowDates, Ticket => $Ticket &>
@@ -122,7 +132,7 @@
        Attachments => $attachments &>
   </td>
   <td class="boxcontainer" valign="top">
-    <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket, DisplayPath => '/RTIR/Display.html' &>
+      <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket, DisplayPath => RT::IR->HREFTo("Display.html") &>
   </td>
 </tr>
 </table>
@@ -144,12 +154,12 @@
     <& /Elements/ShowHistory,
         Object         => $Ticket,
         ShowHeaders    => $ARGS{'ShowHeaders'},
-        DisplayPath    => RT->Config->Get('WebPath') ."/RTIR/Display.html?id=$id",
-        UpdatePath     => RT->Config->Get('WebPath') ."/RTIR/Update.html",
-        ForwardPath    => RT->Config->Get('WebPath') ."/RTIR/Forward.html",
-        EncryptionPath => RT->Config->Get('WebPath') ."/RTIR/Crypt.html",
+        DisplayPath    => RT::IR->HREFTo("Display.html?id=$id"),
+        UpdatePath     => RT::IR->HREFTo("Update.html"),
+        ForwardPath    => RT::IR->HREFTo("Forward.html"),
+        EncryptionPath => RT::IR->HREFTo("Crypt.html"),
         WarnUnsigned   => 1,
-        PathPrefix     => RT->Config->Get('WebPath') ."/Ticket/",
+        PathPrefix     => RT::IR->HREFTo("Ticket/"),
     &>
 % }
 
@@ -169,14 +179,20 @@ unless ( $id eq 'new' ) {
     $QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
 }
 
-my $Type = RT::IR::TicketType( Queue => $QueueObj );
-return $m->comp( '/Ticket/Display.html', %ARGS ) unless $Type;
+my $Type = RT::IR::TicketType( Lifecycle => $QueueObj->Lifecycle );
+# If it's not an RTIR ticket type, just show the regular 
+# RT ticket display page
+RT::Interface::Web::Redirect(RT->Config->Get('WebURL')
+    . 'Ticket/Display.html?'
+    . $m->comp('/Elements/QueryString', %ARGS )) unless $Type;
 
-if ($Type eq 'Block' && RT->Config->Get('RTIR_DisableBlocksQueue') ) {
+if (RT::IR->IsCountermeasureQueue($QueueObj) && RT->Config->Get('RTIR_DisableBlocksQueue') ) {
     Abort(loc("Blocks queue is disabled via config file"));
-}
+    }
+
+# If there's an RTIR specific display page for this kind of ticket, show that
 if ( $m->comp_exists("/RTIR/$Type/Display.html") ) {
-    return $m->comp("/RTIR/$Type/Display.html", %ARGS);
+RT::Interface::Web::Redirect(RT::IR->HREFTo("$Type/Display.html?".$m->comp('/Elements/QueryString', %ARGS )));
 }
 
 my @results;
@@ -250,7 +266,7 @@ if ( $ARGS{'MarkAsSeen'} ) {
 $ARGS{'id'} = $id = $Ticket->Id;
 
 MaybeRedirectForResults(
-    Path      => '/RTIR/Display.html',
+    Path      => RT::IR->HREFTo("Display.html", IncludeWebPath => 0),
     Actions   => \@results,
     Arguments => { id => $id },
     Anchor    => $ARGS{'Anchor'},

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,9 +47,10 @@
 %# END BPS TAGGED BLOCK }}}
 <%init>
 return unless $m->request_comp->path =~ m{^/RTIR/};
-$ARGSRef->{URL} //= RT->Config->Get('WebPath') ."/RTIR/index.html";
-$ARGSRef->{Name} //= loc("RTIR for [_1]", RT->Config->Get('rtirname'));
+$ARGSRef->{URL} //= RT::IR->HREFTo("index.html");
+$ARGSRef->{Name} //=  RT->Config->Get('rtirname');
 $ARGSRef->{LogoURL} //= RT->Config->Get('WebPath')."/static/images/RTIR/logo.png";
+push @{$ARGSRef->{BodyClass}},  'rtir';
 </%init>
 <%args>
 $ARGSRef

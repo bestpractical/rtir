@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,4 +45,27 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Callbacks/RTIR/Elements/QueueSummaryByLifecycle/SQLFilter, %ARGS &>
+<&| /Widgets/TitleBox, title => 'Work with constituency' &>
+<ul>
+<li><a href="<% RT::IR->HREFTo('',Constituency => '')%>">All constituencies</a></li>
+% for my $constituency (keys %known_constituencies) {
+<li><a href="<% RT::IR->HREFTo('', Constituency => $constituency)%>"><%$constituency%></a></li>
+% }
+</ul>
+</&>
+<%init>
+my %known_constituencies;
+my $queues = RT::Queues->new($session{'CurrentUser'});
+for my $lifecycle (RT::IR->Lifecycles) {
+    $queues->Limit(FIELD => 'Lifecycle', VALUE => $lifecycle, ENTRYAGGREGATOR =>'OR');
+}
+
+# This list is already filtered by queues the user can see
+for my $queue (@{$queues->ItemsArrayRef}) {
+    my $c = RT::IR->ConstituencyFor($queue);
+    next unless $c;
+   $known_constituencies{$c }++;  
+}
+# XXX TODO Caching
+# XXX TODO pull the current default
+</%init>

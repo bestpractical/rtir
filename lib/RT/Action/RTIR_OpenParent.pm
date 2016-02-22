@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -45,6 +45,7 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
+
 package RT::Action::RTIR_OpenParent;
 use strict;
 use warnings;
@@ -68,7 +69,7 @@ sub Commit {
 
     my $parents = RT::Tickets->new( $txn->CurrentUser );
     $parents->FromSQL( RT::IR->Query(
-        Queue     => 'Incidents',
+        Lifecycle     => 'incidents',
         HasMember => $ticket,
         Inactive  => 1,
     ) );

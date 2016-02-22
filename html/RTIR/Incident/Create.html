@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -55,12 +55,12 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <%PERL>
-if ( $SplitObj && !$SplitObj->CurrentUserHasRight('ModifyTicket') ) {
-    $m->out( loc('You are not allowed to split from #[_2].', $SplitObj->id ) );
+if ( $SplitObj && $SplitObj->id && !$SplitObj->CurrentUserHasRight('ModifyTicket') ) {
+    $m->out( loc('You are not allowed to split from #[_1].', $SplitObj->id ) );
     return;
 }
-if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
-    $m->out( loc('You are not allowed to link with #[_2].', $ChildObj->id ) );
+if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
+    $m->out( loc('You are not allowed to link with #[_1].', $ChildObj->id ) );
     return;
 }
 </%PERL>
@@ -73,7 +73,6 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 
 <input type="hidden" name="id"           value="new" />
 <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
-<input type="hidden" name="Queue"        value="<% $QueueObj->Name       || '' %>" />
 % if ( $ChildObj ) {
 <input type="hidden" name="Child"        value="<% $Child %>" />
 % }
@@ -88,22 +87,40 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 <a name="incident"></a>
 
 <div class="ticket-create-basics">
-<&| /Widgets/TitleBox, title => $Title, class => 'ticket-info-basics' &>
+<&| /Widgets/TitleBox, title => 'Basics', class => 'ticket-info-basics' &>
 <table width="100%" border="0">
+% if ($constituency) {
+<tr class="constituency"><td class="label"><% loc('Constituency') %>:</td>
+    <td class="value"><% $constituency %></td></tr>
 
+% }
 % if ( $Split ) {
-% my $Type = RT::IR::TicketType( Ticket => $SplitObj );
-<tr><td class="label"><% loc('Split from') %>:</td>
-<td class="value"><% loc("[_1] #[_2]: [_3]", $Type, $SplitObj->Id, $SplitObj->Subject) %></td></tr>
+<tr class="split-from"><td class="label"><% loc('Split from') %>:</td>
+    <td class="value"><a href="<%RT::IR->HREFTo('Incident/Display.html?id='.$SplitObj->id)%>"><% loc("[_1] #[_2]: [_3]", RT::IR::TicketType(Lifecycle => $SplitObj->QueueObj->Lifecycle), $SplitObj->Id, $SplitObj->Subject) %></a></td></tr>
 % }
 
 % if ( $ChildObj ) {
-% my $Type = RT::IR::TicketType( Ticket => $ChildObj );
-<tr><td class="label"><% loc('Link with') %>:</td>
-<td class="value"><% loc("[_1] #[_2]: [_3]", $Type, $ChildObj->Id, $ChildObj->Subject) %></td></tr>
+<tr class="link-with"><td class="label"><% loc('Link with') %>:</td>
+    <td class="value"><a href="<%RT::IR->HREFTo('Display.html?id='.$ChildObj->id)%>"><% loc("[_1] #[_2]: [_3]",  RT::IR::TicketType(Lifecycle => $ChildObj->QueueObj->Lifecycle), $ChildObj->Id, $ChildObj->Subject) %></a></td></tr>
 % }
 
-<tr>
+  
+<tr class="queue">
+  <td class="label"><&|/l&>Queue</&>:</td>
+  <td colspan="2">
+      <& /RTIR/Elements/SelectRTIRQueue,
+                Name => 'Queue',
+                Default => $ARGS{'Queue'} || $QueueObj->Id,
+                Lifecycle => RT::IR->lifecycle_incident,
+                LimitToConstituency => ($m->{'RTIR_ConstituencyFilter'} || RT::IR->StrictConstituencyLinking ) ? 1:0,
+                Constituency => $constituency
+    &>
+  </td>
+</tr>
+ 
+
+
+<tr class="status">
   <td class="label"><&|/l&>Status</&>:</td>
   <td colspan="2">
     <& /Elements/SelectStatus,
@@ -114,7 +131,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
     &>
   </td>
 </tr>
-<tr>
+<tr class="owner">
     <td class="label"><&|/l&>Owner</&>:</td>
 % if ( $ChildObj ) {
     <td class="value">
@@ -129,26 +146,6 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
     &></td>
 % }
 </tr>
-
-% if ( my $constituency_cf = RT::IR->CustomFields( 'Constituency', Queue => $QueueObj->Name ) ) {
-<tr><td class="label"><&|/l&>Constituency</&>:</td>
-<td class="value">
-% if ( !$ChildObj || RT->Config->Get('_RTIR_Constituency_Propagation') eq 'no' ) {
-<& /RTIR/Elements/EditRTIRField,
-    %ARGS,
-    QueueObj => $QueueObj,
-    Name     => 'Constituency',
-    PropagationObject => $ChildObj,
-&>
-% } else {
-% #TODO: hacks, we need way to define CF value on Create, but don't allow user to change it
-<input type="hidden" class="hidden" name="Constituency" value="Object-RT::Ticket--CustomField-<% $constituency_cf->id %>-Values" />
-<input type="hidden" class="hidden" name="Object-RT::Ticket--CustomField-<% $constituency_cf->id %>-Values-Magic" value="1" />
-<input type="hidden" class="hidden" name="Object-RT::Ticket--CustomField-<% $constituency_cf->id %>-Values" value="<% $ChildObj->FirstCustomFieldValue('Constituency') %>" />
-<& /RTIR/Elements/ShowRTIRField, Ticket => $ChildObj, Name => 'Constituency' &>
-% }
-</td></tr>
-% }
 
 <& /RTIR/Elements/EditCustomFields, 
     %ARGS,
@@ -175,7 +172,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 <&| /Widgets/TitleBox, title => $Title, class => 'ticket-info-message' &>
 <table width="100%" border="0">
 
-  <tr>
+  <tr class="subject">
     <td class="label"><&|/l&>Subject</&>:</td>
     <td class="value"><input type="text" name="Subject" maxsize="200" value="<% $ARGS{'Subject'} || '' %>" /></td>
   </tr>
@@ -186,7 +183,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 </td></tr>
 % }
 
-<tr><td class="labeltop"><&|/l&>Message</&>:</td>
+<tr class="message"><td class="labeltop"><&|/l&>Message</&>:</td>
 <td>
 <& /Elements/MessageBox,
     Default => $ARGS{'Content'},
@@ -201,6 +198,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 <&| /Widgets/TitleBox, title => loc('Details'), class => 'ticket-info-details' &>
 <& /Ticket/Elements/EditBasics,
     InTable => 0,
+    QueueObj => $QueueObj,
     fields  => [
         {
             name => 'Priority',
@@ -210,7 +208,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
                 Default =>
                     defined $ARGS{'InitialPriority'} && length $ARGS{'InitialPriority'}
                     ? $ARGS{'InitialPriority'}
-                    : $QueueObj->InitialPriority
+                    : $QueueObj->DefaultValue('InitialPriority')
                 ,
             },
         },
@@ -222,7 +220,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
                 Default =>
                     defined $ARGS{'FinalPriority'} && length $ARGS{'FinalPriority'}
                     ? $ARGS{'FinalPriority'}
-                    : $QueueObj->InitialPriority
+                    : $QueueObj->DefaultValue('FinalPriority')
                 ,
             },
         },
@@ -263,7 +261,7 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 </&>
 </div>
 
-<& /Elements/Submit, Name => 'CreateIncident', Label => $SubmitLabel &>
+<& /Elements/Submit, Name => 'CreateIncident', Label => $SubmitLabel, SubmitId => 'create-ticket' &>
 
 </div>
 
@@ -272,13 +270,15 @@ if ( $ChildObj && !$ChildObj->CurrentUserHasRight('ModifyTicket') ) {
 <& /RTIR/Investigation/Elements/Create,
     %ARGS,
     NamePrefix => 'Investigation',
-    Queue => 'Investigations',
+    Lifecycle => RT::IR->lifecycle_investigation,
+    Constituency => $constituency,
     SkipField => { Owner => 1, Attachments => 1, DateFields => 1 },
     IncludeSignature => (exists $ARGS{'InvestigationContent'} ? 0 : 1),
 &>
 <& /Elements/Submit,
     Name => 'CreateWithInvestigation',
     Label => loc("Create Incident and run Investigation"),
+    SubmitId => 'create-ticket-with-investigation'
 &>
 </div>
 
@@ -315,8 +315,40 @@ $m->callback(
     Child => $ChildObj
 );
 
-my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
-$QueueObj->Load( 'Incidents' ) || Abort( loc("Queue could not be loaded.") );
+
+my $constituency = $m->{'RTIR_ConstituencyFilter'} || '';
+
+
+for my $related_ticket ($ChildObj, $SplitObj) {
+    next if !$related_ticket;
+
+    my $related_constituency = RT::IR->ConstituencyFor($related_ticket);
+    if ($constituency && $constituency ne $related_constituency) {
+        push @results, loc("[_1] constituency '[_2]' does not match current constituency '[_3]'", RT::IR::TicketType(Ticket=>$related_ticket), $related_constituency, $constituency);
+    } elsif(!$constituency) {
+        $constituency = $related_constituency;
+        }
+        last;
+}
+
+
+my $QueueObj;
+
+# XXX TODO refactor this into library code
+# that 'finds the first plausible queue with the right constituency
+my $collection = RT::Queues->new($session{'CurrentUser'});
+$collection->Limit(FIELD => 'Lifecycle', VALUE => RT::IR->lifecycle_incident);
+while (my $queue = $collection->Next) {
+    if ((RT::IR->ConstituencyFor($queue)||'') eq ($constituency||'')) {
+        $QueueObj = $queue;
+        last;
+    }
+}
+
+if (!$QueueObj) {
+    Abort( loc("Queue could not be loaded.") );
+}
+
 
 my $ticket = RT::Ticket->new($session{'CurrentUser'}); # empty ticket object
 
@@ -380,21 +412,6 @@ if ( $CreateIncident ) {
         $checks_failure = 1;
     }
 
-    if ( $ChildObj
-        and RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject'
-        and my $constituency_cf = RT::IR->CustomFields(
-            'Constituency', Queue => 'Incidents'
-        )
-    ) {
-        my $constituency_field =
-            'Object-RT::Ticket--CustomField-' . $constituency_cf->id .'-Values';
-        unless ( lc $ARGS{ $constituency_field }
-            eq lc $ChildObj->FirstCustomFieldValue('Constituency') )
-        {
-            push @results, loc( "New incident and its child #[_1] must have the same constituency", $ChildObj->id );
-            $checks_failure = 1;
-        }
-    }
 }
 
 if ( !$checks_failure && $CreateIncident ) {
@@ -432,7 +449,7 @@ if ( !$checks_failure && $CreateIncident ) {
 
         MaybeRedirectForResults(
             Actions   => \@results,
-            Path      => "/RTIR/Incident/Display.html",
+            Path      => RT::IR->HREFTo("Incident/Display.html", IncludeWebPath => 0),
             Arguments => { id => $inc_obj->id },
         );
     }

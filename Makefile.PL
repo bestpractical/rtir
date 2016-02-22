@@ -6,8 +6,8 @@ author('Best Practical Solutions <sales@bestpractical.com>');
 all_from('lib/RT/IR.pm');
 
 # update README and docs/UPGRADING
-requires_rt('4.2.9');
-rt_too_new('4.4.0',"\nRTIR 3.2.x is only compatible with RT 4.2.x and you are using RT %s\n");
+requires_rt('4.4.0');
+rt_too_new('4.6.0',"\nThis version of RTIR is only compatible with RT 4.4.x and you are using RT %s\n");
 
 # XXX: This should be reported by M::I::RTx
 my ($lib_path) = $INC{'RT.pm'} =~ /^(.*)[\\\/]/;
@@ -33,7 +33,7 @@ requires('Parse::BooleanLogic');
 # for tests
 build_requires('Test::More');
 build_requires('File::Find');
-# for etc/upgrade/upgrade.pl
+# for etc/upgrade/rtir-2.4-upgrade.pl
 build_requires('File::Temp');
 
 auto_install();
@@ -43,7 +43,7 @@ substitute( {
         PERL        => $ENV{PERL} || $secure_perl_path,
     },
     { sufix => '.in' },
-    'etc/upgrade/upgrade.pl',
+    'etc/upgrade/rtir-2.4-upgrade.pl',
     'etc/add_constituency',
     'bin/add_constituency',
     'lib/RT/IR/Test.pm',

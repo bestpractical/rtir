@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -45,12 +45,13 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
+
 package RT::IR;
 use 5.008003;
 use strict;
 use warnings;
 
-our $VERSION = '3.3.HEAD';
+our $VERSION = '3.3.1';
 
 use Scalar::Util qw(blessed);
 
@@ -60,16 +61,72 @@ use Scalar::Util qw(blessed);
 # extensions in RT core
 
 use RT::IR::Config;
+use RT::IR::Web;
 RT::IR::Config::Init();
 
-my @QUEUES = ('Incidents', 'Incident Reports', 'Investigations', 'Blocks');
-my %QUEUES = map { lc($_) => $_ } @QUEUES;
+
+
+sub lifecycle_report {'incident_reports'}
+sub lifecycle_incident {'incidents'}
+sub lifecycle_investigation {'investigations'}
+sub lifecycle_countermeasure {'blocks'}
+
+
+my @LIFECYCLES = (RT::IR->lifecycle_incident, RT::IR->lifecycle_report, RT::IR->lifecycle_investigation, RT::IR->lifecycle_countermeasure);
+
 my %TYPE = (
     'incidents'        => 'Incident',
     'incident reports' => 'Report',
+    'incident_reports' => 'Report',
     'investigations'   => 'Investigation',
     'blocks'           => 'Block',
 );
+
+my %FRIENDLY_LIFECYCLE = (
+    RT::IR->lifecycle_incident        => 'Incidents',
+    RT::IR->lifecycle_report => 'Incident Reports',
+    RT::IR->lifecycle_investigation   => 'Investigations',
+    RT::IR->lifecycle_countermeasure           => 'Blocks',
+
+);
+
+sub DutyTeamAllQueueRights {
+    return (
+        qw( CreateTicket
+            ShowTemplate
+            OwnTicket
+            CommentOnTicket
+            SeeQueue
+            ShowTicket
+            ShowTicketComments
+            StealTicket
+            TakeTicket
+            Watch
+            ShowOutgoingEmail
+            ForwardMessage
+            ));
+
+}
+
+sub OwnerAllQueueRights {
+    return (qw(ModifyTicket));
+}
+
+sub EveryoneIncidentReportRights {
+    return (qw(CreateTicket ReplyToTicket));
+}
+
+sub EveryoneIncidentRights {
+    return ();
+}
+
+sub EveryoneBlockRights {
+    return (qw(ReplyToTicket));
+}
+
+sub EveryoneInvestigationRights {
+    return (qw(ReplyToTicket));
+}
 
 use Parse::BooleanLogic;
 my $ticket_sql_parser = Parse::BooleanLogic->new;
@@ -129,11 +186,41 @@ Returns empty string if queue is not one of RTIR's.
 sub OurQueue {
     my $self = shift;
     my $queue = shift;
-    $queue = $queue->Name if ref $queue;
-    return undef unless $queue;
-    return '' unless $QUEUES{ lc $queue };
-    return $TYPE{ lc $queue };
+
+    my $lifecycle;
+
+    if (ref $queue) {
+        $lifecycle = $queue->Lifecycle;
+    } else {
+        my $temp_queue = RT::Queue->new(RT->SystemUser);
+        $temp_queue->Load($queue);
+        $lifecycle = $temp_queue->Lifecycle
+    }
+
+    return undef unless $lifecycle;
+    return '' unless defined $TYPE{ $lifecycle };
+    return $TYPE{ $lifecycle };
 }
+
+
+=head2 OurLifecycle LIFECYCLE
+
+Takes a scalar lifecycle name or a lifecycle object.
+Returns true if this lifecycle is an RTIR lifecycle. Returns undef otherwise
+
+=cut
+
+sub OurLifecycle {
+    my $self = shift;
+    my $lifecycle = shift;
+    
+    if (ref $lifecycle) {
+        $lifecycle = $lifecycle->Name;
+    }
+    return defined  $FRIENDLY_LIFECYCLE{$lifecycle};
+
+}
+
 
 =head2 Types
 
@@ -152,13 +239,55 @@ Returns a list of the core RTIR Queue names
 
 =cut
 
+{ my @cache;
 sub Queues {
-    return @QUEUES;
+    unless (@cache) {
+        my $queues = RT::Queues->new( RT->SystemUser );
+
+        $queues->Limit(
+            FIELD => 'Lifecycle',
+            OPERATOR => 'IN',
+            VALUE => \@LIFECYCLES,
+        );
+
+        while (my $queue = $queues->Next) {
+            push @cache, $queue->Name;
+        }
+    }
+    return @cache;
+}
+
+sub FlushQueuesCache {
+    @cache = ();
+    return 1;
+} }
+
+
+=head2 Lifecycles
+
+Return a list of the core RTIR lifecycle names
+
+=cut
+
+sub Lifecycles {
+    return @LIFECYCLES;
+}
+
+=head2 FriendlyLifecycle
+
+XXX TODO 
+
+=cut
+
+sub FriendlyLifecycle {
+    my $lifecycle = shift;
+    return $FRIENDLY_LIFECYCLE{$lifecycle};
+
 }
 
 =head2 TicketType
 
-Returns type of a ticket. Takes either Ticket or Queue argument.
+Returns type of a ticket. Takes Ticket, Lifecycle or Queue as an argument.
 Both arguments could be objects or IDs, however, name of a queue
 works too for Queue argument. If the queue argument is defined then
 the ticket is ignored even if it's defined too.
@@ -166,37 +295,46 @@ the ticket is ignored even if it's defined too.
 =cut
 
 sub TicketType {
-    my %arg = ( Queue => undef, Ticket => undef, @_);
+    my %arg = ( Lifecycle => undef, Queue => undef, Ticket => undef, @_);
+    if ( defined $arg{'Lifecycle'}) {
+        return $TYPE{$arg{'Lifecycle'}};
+    }
 
     if ( defined $arg{'Ticket'} && !defined $arg{'Queue'} ) {
         my $obj = RT::Ticket->new( RT->SystemUser );
         $obj->Load( ref $arg{'Ticket'} ? $arg{'Ticket'}->id : $arg{'Ticket'} );
-        $arg{'Queue'} = $obj->QueueObj->Name if $obj->id;
+        return $TYPE{ $obj->QueueObj->Lifecycle } if $obj->id;
     }
     return undef unless defined $arg{'Queue'};
 
-    return $TYPE{ lc $arg{'Queue'} } if !ref $arg{'Queue'} && $arg{'Queue'} !~ /^\d+$/;
-
     my $obj = RT::Queue->new( RT->SystemUser );
-    $obj->Load( ref $arg{'Queue'}? $arg{'Queue'}->id : $arg{'Queue'} );
-    return $TYPE{ lc $obj->Name } if $obj->id;
+    if (ref $arg{'Queue'}) {
+        $obj->Load($arg{'Queue'}->id);
+    }
+    elsif ($arg{'Queue'} =~/^\d+$/) {
+        $obj->Load($arg{'Queue'});
+    } else {
+        $obj->LoadByCols(Name => $arg{'Queue'});
+    }
 
-    return;
+    return undef unless ($obj->id);
+
+    return $TYPE{ $obj->Lifecycle };
 }
 
 =head2 Statuses
 
 Return sorted list of unique statuses for one, many or all RTIR queues.
 
-Takes arguments 'Queue', 'Active' and 'Inactive'. By default returns
-initial and active statuses. Queue can be an array reference to list several
-queues.
+Takes arguments 'Lifecycle', 'Active' and 'Inactive'. By default returns
+initial and active statuses. Lifecycle can be an array reference to list several
+lifecycles.
 
 Examples:
 
     RT::IR->Statuses()
-    RT::IR->Statuses( Queue => 'Blocks' );
-    RT::IR->Statuses( Queue => [ 'Blocks', 'Incident Reports' ] );
+    RT::IR->Statuses( Lifecycle => 'blocks' );
+    RT::IR->Statuses( Lifecycle => [ 'blocks', 'incident_reports' ] );
     RT::IR->Statuses( Active => 0, Inactive => 1 );
 
 =cut
@@ -212,30 +350,35 @@ my $flat = sub {
 
 sub Statuses {
     my $self = shift;
-    my %arg = ( Queue => undef, Initial => 1, Active => 1, Inactive => 0, @_ );
-
-    my @queues = $flat->( $arg{'Queue'} || \@QUEUES );
+    my %arg = ( Lifecycle => undef, Initial => 1, Active => 1, Inactive => 0, @_ );
 
     my (@initial, @active, @inactive);
-    foreach my $queue (@queues) {
-        unless ( blessed $queue ) {
-            my $tmp = RT::Queue->new(RT->SystemUser);
-            $tmp->Load( $queue );
-            RT->Logger->error( "failed to load queue $queue" )
-                unless $tmp->id;
-            $queue = $tmp;
+
+        my @lifecycles = $flat->( $arg{'Lifecycle'} || \@LIFECYCLES );
+    
+        foreach my $cycle (@lifecycles) {
+            unless ( blessed $cycle ) {
+                my $tmp = RT::Lifecycle->Load( Name => $cycle);
+                RT->Logger->error( "failed to load lifecycle $cycle" )
+                    unless $tmp->Name;
+                $cycle = $tmp;
+            }
+            next unless $cycle->Name;
+    
+            push @initial, $cycle->Initial if $arg{'Initial'};
+            push @active, $cycle->Active if $arg{'Active'};
+            push @inactive, $cycle->Inactive if $arg{'Inactive'};
         }
-        next unless $queue->id;
-
-        my $cycle = $queue->LifecycleObj;
-        push @initial, $cycle->Initial if $arg{'Initial'};
-        push @active, $cycle->Active if $arg{'Active'};
-        push @inactive, $cycle->Inactive if $arg{'Inactive'};
-    }
-
     my %seen = ();
     return grep !$seen{$_}++, @initial, @active, @inactive;
 }
+
+=head2 ActiveQuery ARGS
+
+ActiveQuery is a wrapper around Query which automatically limits
+results to tickets in active or initial states.
+
+=cut
 
 sub ActiveQuery {
     return (shift)->Query( Initial => 1, Active => 1, @_ );
@@ -244,7 +387,7 @@ sub ActiveQuery {
 sub Query {
     my $self = shift;
     my %args = (
-        Queue        => undef,
+        Lifecycle    => undef,
         Status       => undef,
         Active       => undef,
         Inactive     => undef,
@@ -253,18 +396,18 @@ sub Query {
         HasNoMember  => undef,
         MemberOf     => undef,
         NotMemberOf  => undef,
-        Constituency => undef,
         And          => undef,
+        Constituency => undef,
         @_
     );
 
     my @res;
-    if ( $args{'Queue'} ) {
-        push @res, map "($_)", join ' OR ', map "Queue = '$_'",
-            $flat->( $args{'Queue'}, 'Name' );
+    if ( $args{'Lifecycle'} ) {
+        push @res, map "($_)", join ' OR ', map "Lifecycle = '$_'",
+            $flat->( $args{'Lifecycle'});
     }
     if ( !$args{'Status'} && ( $args{'Initial'} || $args{'Active'} || $args{'Inactive'} ) ) {
-        $args{'Status'} = [ $self->Statuses( %args ) ];
+        $args{'Status'} = [ $self->Statuses( Lifecycle => $args{'Lifecycle'}, Active => $args{'Active'}, Inactive => $args{'Inactive'}, Initial => $args{'Initial'})];
     }
     if ( my $s = $args{'Status'} ) {
         push @res, join ' OR ', map "Status = '$_'", $flat->( $s );
@@ -284,16 +427,8 @@ sub Query {
     if ( my $t = $args{'NotMemberOf'} ) {
         push @res, join ' AND ', map "MemberOf != $_", map int $_, $flat->( $t, 'id' );
     }
-    if (
-        my $t = $args{'Constituency'}
-        and RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject'
-    ) {
-        unless ( ref $t ) {
-            my $tmp = RT::Ticket->new( RT->SystemUser );
-            $tmp->Load( $t );
-            $t = $tmp;
-        }
-        push @res, "CustomField.{Constituency} = '". $t->FirstCustomFieldValue('Constituency') ."'";
+    if ( my $t = $args{'Constituency'} ) {
+        push @res, "'QueueCF.{RTIR Constituency}' = '$t'";
     }
     if ( my $c = $args{'And'} ) {
         push @res, ref $c? @$c : ($c);
@@ -324,8 +459,8 @@ sub ParseSimpleSearch {
         TicketsObj => RT::Tickets->new( $args{'CurrentUser'} ),
     );
     my $res = $search->QueryToSQL;
-    if ( $res && $res !~ /\bQueue\b/ ) {
-        $res = "Queue = 'Incidents' AND ($res)";
+    if ( $res && $res !~ /\bQueue\b/ && $res !~ /\bLifecycle\b/ ) {
+        $res = "Lifecycle = 'incidents' AND ($res)";
     }
     return $res;
 }
@@ -334,10 +469,11 @@ sub OurQuery {
     my $self = shift;
     my $query = shift;
 
-    my ($has_our, $has_other, @queues) = (0, 0);
+    my ($has_our, $has_other, @lifecycles) = (0, 0);
     $ticket_sql_parser->walk(
         RT::SQL::ParseToArray( $query ),
         { operand => sub {
+            # XXX TODO  also pull out lifecycle keys
             return undef unless $_[0]->{'key'} =~ /^Queue(?:\z|\.)/;
             my $queue = RT::Queue->new( RT->SystemUser );
             $queue->Load( $_[0]->{'value'} );
@@ -345,7 +481,7 @@ sub OurQuery {
             my ($negative) = ( $_[0]->{'op'} eq '!=' || $_[0]->{'op'} =~ /\bNOT\b/i );
             if ( $our && !$negative ) {
                 $has_our = 1;
-                push @queues, $queue->Name;
+                push @lifecycles, $queue->Lifecycle;
             } else {
                 $has_other = 1;
             }
@@ -355,9 +491,9 @@ sub OurQuery {
     return 1 unless wantarray;
 
     my %seen;
-    @queues = grep !$seen{ lc $_ }++, @queues;
+    @lifecycles = grep !$seen{ lc $_ }++, @lifecycles;
 
-    return (1, @queues);
+    return (1, @lifecycles);
 }
 
 =head2 Incidents
@@ -372,7 +508,7 @@ sub Incidents {
     my $ticket = shift;
 
     my $res = RT::Tickets->new( $ticket->CurrentUser );
-    $res->FromSQL( $self->Query( Queue => 'Incidents', HasMember => $ticket ) );
+    $res->FromSQL( $self->Query( Lifecycle => 'incidents', HasMember => $ticket ) );
     return $res;
 }
 
@@ -387,7 +523,7 @@ sub RelevantIncidentsQuery {
     my $self = shift;
     my $ticket = shift;
 
-    return "Queue = 'Incidents' AND HasMember = ". $ticket->id
+    return "Lifecycle = 'incidents' AND HasMember = ". $ticket->id
         ." AND Status != 'abandoned'"
     ;
 }
@@ -404,7 +540,7 @@ sub RelevantIncidents {
 sub IncidentChildren {
     my $self = shift;
     my $ticket = shift;
-    my %args = (Queue => \@QUEUES, @_);
+    my %args = (Lifecycle => \@LIFECYCLES, @_);
 
     my $res = RT::Tickets->new( $ticket->CurrentUser );
     $res->FromSQL( $self->Query( %args, MemberOf => $ticket->id ) );
@@ -420,7 +556,7 @@ sub IncidentHasActiveChildren {
     my $incident = shift;
 
     my $children = RT::Tickets->new( $incident->CurrentUser );
-    $children->FromSQL( $self->ActiveQuery( Queue => \@QUEUES, MemberOf => $incident->id ) );
+    $children->FromSQL( $self->ActiveQuery( Lifecycle => \@LIFECYCLES, MemberOf => $incident->id ) );
     while ( my $child = $children->Next ) {
         next if $self->IsLinkedToActiveIncidents( $child, $incident );
         return 1;
@@ -446,7 +582,7 @@ sub IsLinkedToActiveIncidents {
 
     my $tickets = RT::Tickets->new( $child->CurrentUser );
     $tickets->FromSQL( $self->ActiveQuery(
-        Queue     => 'Incidents',
+        Lifecycle     => 'incidents',
         HasMember => $child,
         ($parent ? (Exclude   => $parent->id) : ()),
     ) );
@@ -458,6 +594,7 @@ sub MapStatus {
     my ($status, $from, $to) = @_;
     return unless $status;
 
+    # Validate that the from and to are legitimate
     foreach my $e ($from, $to) {
         if ( blessed $e ) {
             if ( $e->isa('RT::Queue') ) {
@@ -471,9 +608,8 @@ sub MapStatus {
             }
         }
         else {
-            my $queue = RT::Queue->new( RT->SystemUser );
-            $queue->Load( $e );
-            $e = $queue->LifecycleObj;
+            my $lifecycle = RT::Lifecycle->Load( Name => $e );
+            $e = $lifecycle;
         }
         return unless $e;
     }
@@ -537,7 +673,7 @@ sub CustomFields {
     );
 
     unless ( keys %cache ) {
-        foreach my $qname ( @QUEUES ) {
+        foreach my $qname ( Queues() ) {
             my $type = TicketType( Queue => $qname );
             $cache{$type} = [];
 
@@ -591,6 +727,18 @@ sub FlushCustomFieldsCache {
     return 1;
 } }
 
+{
+    no warnings 'redefine';
+
+    # flush caches on each request
+    require RT::Interface::Web::Handler;
+    my $orig_CleanupRequest = RT::Interface::Web::Handler->can('CleanupRequest');
+    *RT::Interface::Web::Handler::CleanupRequest = sub {
+        RT::IR::FlushCustomFieldsCache();
+        RT::IR::FlushQueuesCache();
+        $orig_CleanupRequest->();
+    };
+}
 
 sub FilterRTAddresses {
     my $self = shift;
@@ -624,125 +772,6 @@ sub FilterRTAddresses {
     return $found;
 }
 
-{ my $cache;
-sub HasConstituency {
-    return $cache if defined $cache;
-
-    my $self = shift;
-    return $cache = $self->CustomFields('Constituency');
-}
-sub _FlushHasConstituencyCache {
-    undef $cache;
-} }
-
-sub DefaultConstituency {
-    my $queue = shift;
-    my $name = $queue->Name;
-
-    my @values;
-
-    my $queues = RT::Queues->new( RT->SystemUser );
-    $queues->Limit( FIELD => 'Name', OPERATOR => 'STARTSWITH', VALUE => "$name - ", CASESENSITIVE => 0 );
-    while ( my $pqueue = $queues->Next ) {
-        next unless $pqueue->HasRight( Principal => $queue->CurrentUser, Right => "ShowTicket" );
-        push @values, substr $pqueue->__Value('Name'), length("$name - ");
-    }
-    my $default = RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'} || '';
-    return $default if grep { lc $_ eq lc $default } @values;
-    return shift @values;
-}
-
-
-if ( RT::IR->HasConstituency ) {
-
-    # lots of wrapping going on
-    no warnings 'redefine';
-
-    # flush constituency caches on each request
-    require RT::Interface::Web::Handler;
-    my $orig_CleanupRequest = RT::Interface::Web::Handler->can('CleanupRequest');
-    *RT::Interface::Web::Handler::CleanupRequest = sub {
-        %RT::IR::ConstituencyCache = ();
-        %RT::IR::HasNoQueueCache = ();
-        RT::Queue::_FlushQueueHasRightCache();
-        RT::IR::FlushCustomFieldsCache();
-        RT::IR::_FlushHasConstituencyCache();
-        $orig_CleanupRequest->();
-    };
-
-    require RT::Ticket;
-    # flush constituency cache for a ticket when the Constituency CF is updated
-    # RT::Ticket currently uses RT::Record::_AddCustomFieldValue so we just insert not wrap
-    # I wonder what happens when you Delete an OCFV, since it doesn't hit this code path.
-    # This also clears the constituency cache when updating the IP Custom Field, intentional?
-    sub RT::Ticket::_AddCustomFieldValue {
-        my $self = shift;
-        $RT::IR::ConstituencyCache{$self->id}  = undef;
-        return $self->RT::Record::_AddCustomFieldValue(@_);
-    };
-
-    # Tickets with Constituencies CF values that point to a Constituency
-    # Queue such as Incidents - EDUNET should return multiple Queues as
-    # EquivalenceObjects for checking rights. Constituency DutyTeams
-    # have their rights granted on the relevant Constituency Queues, so
-    # RT needs to know to check in both places for the combination of
-    # their rights.
-    my $orig_ACLEquivaluenceObjects = RT::Ticket->can('ACLEquivalenceObjects');
-    *RT::Ticket::ACLEquivalenceObjects = sub {
-        my $self = shift;
-
-        my $queue = RT::Queue->new(RT->SystemUser);
-        $queue->Load($self->__Value('Queue'));
-
-        # For historical reasons, the System just returned a System Queue on this Ticket
-        # rather than delve into the overridden QueueObj.  It's possible this is no longer needed.
-        # The biggest thing that $self->QueueObj would do is return a queue with _for_ticket set
-        # which causes a lot of code to skip Constituency checks, so we'd need to duplicate that.
-        # We punt early on non-IR queues because otherwise we try to look for constituency Queues
-        # and the negative cache (_none) is disabled, leading to perf problems.
-        # It's also somewhat concerning that we return a SystemUser queue outside IR queues.
-        if ( ( $self->CurrentUser->id == RT->SystemUser->id ) ||
-             ( ! RT::IR->OurQueue( $queue ) ) ) {
-            return $queue;
-        }
-
-        # Old old bulletproofing, can probably delete.
-        unless ( UNIVERSAL::isa( $self, 'RT::Ticket' ) ) {
-            RT->Logger->crit("$self is not a ticket object like I expected");
-            return;
-        }
-
-        # We check both uncached constituencies and those explicitly negatively cached
-        # The commit that introduced this doesn't say what bug it was fixing, but it's definitely
-        # a perf hit.
-        my $const = $RT::IR::ConstituencyCache{ $self->id };
-        if (!$const || $const eq '_none' ) {
-            my $systicket = RT::Ticket->new(RT->SystemUser);
-            $systicket->Load( $self->id );
-            $const = $RT::IR::ConstituencyCache{ $self->id } =
-                $systicket->FirstCustomFieldValue('Constituency') || '_none';
-        }
-
-        # If this ticket still has no constituency, or the constituency it is assigned
-        # doesn't have a corresponding Constituency queue, return the default Queue.
-        if ( $const eq '_none' || $RT::IR::HasNoQueueCache{ $const } ) {
-            return $orig_ACLEquivaluenceObjects->($self,@_);
-        }
-
-        # Track that there is no Constituency queue for the Constituency recorded in the CF on this ticket.
-        my $constituency_queue = RT::Queue->new(RT->SystemUser);
-        $constituency_queue->LoadByCols( Name => $queue->Name . " - " . $const );
-        unless ( $constituency_queue->id ) {
-            $RT::IR::HasNoQueueCache{$const} = 1;
-            return $orig_ACLEquivaluenceObjects->($self,@_);
-        }
-
-        # If a constituency queue such as 'Incidents - EDUNET' exists, we want to check
-        # ACLs on both of them.
-        return $queue, $constituency_queue;
-    };
-}
-
 # Skip the global AutoOpen and AutoOpenInactive scrip on Blocks and Incident Reports
 # This points to RTIR wanting to muck with the global scrips using the 4.2 scrips
 # organization, although it possibly messes with Admins expectations of 'contained Queues'
@@ -754,9 +783,8 @@ require RT::Action::AutoOpen;
     my $prepare = RT::Action::AutoOpen->can('Prepare');
     *RT::Action::AutoOpen::Prepare = sub {
         my $self = shift;
-        my $ticket = $self->TicketObj;
-        my $type = RT::IR::TicketType( Ticket => $ticket );
-        return 0 if $type && ( $type eq 'Block' || $type eq 'Report' );
+        my $type = $self->TicketObj->QueueObj->Lifecycle;
+        return 0 if $type && ( $type eq RT::IR->lifecycle_countermeasure || $type eq RT::IR->lifecycle_report);
         return $self->$prepare(@_);
     };
 }
@@ -766,9 +794,8 @@ require RT::Action::AutoOpenInactive;
     my $prepare = RT::Action::AutoOpenInactive->can('Prepare');
     *RT::Action::AutoOpenInactive::Prepare = sub {
         my $self = shift;
-        my $ticket = $self->TicketObj;
-        my $type = RT::IR::TicketType( Ticket => $ticket );
-        return 0 if $type && ( $type eq 'Block' || $type eq 'Report' );
+        my $type = $self->TicketObj->QueueObj->Lifecycle;
+        return 0 if $type && ( $type eq RT::IR->lifecycle_countermeasure || $type eq RT::IR->lifecycle_report);
         return $self->$prepare(@_);
     };
 }
@@ -817,182 +844,98 @@ require RT::CustomField;
     };
 }
 
-if ( RT::IR->HasConstituency ) {
-    # Queue {Comment,Correspond}Address for multiple constituencies
 
-    no warnings 'redefine';
+=head2 HREFTo
 
-    # returns an RT::Queue that has _for_ticket set to indicate
-    # that we're using this Queue to check something about a ticket
-    # that may have a Constituency.
-    require RT::Ticket;
-    my $orig_QueueObj = RT::Ticket->can('QueueObj');
-    *RT::Ticket::QueueObj = sub {
-        my $self = shift;
-        # RT::Ticket::QueueObj uses a cache
-        my $queue = $orig_QueueObj->($self,@_);
-        # used to know that this Queue was retrieved from a ticket
-        # so we can skip a bunch of constituency checks...
-        $queue->{'_for_ticket'} = $self->id;
-        return $queue;
-    };
+XXX TODO this wants a better name.
 
-    require RT::Queue;
-    package RT::Queue;
 
-    { my $queue_cache = {};
-    # RT 4.2 removed RT::Queue's HasRight, meaning we can just stub one in
-    sub HasRight {
-        my $self = shift;
-        my %args = @_;
+=cut
 
-        return $self->SUPER::HasRight(@_) unless $self->id;
-        # currently only obviously used so that one right can be checked
-        # on Incidents not Incidents - EDUNET during Constituency CF
-        # editing.
-        return $self->SUPER::HasRight(@_) if $self->{'disable_constituency_right_check'};
-        # Not really convinced this is right, since it gets set on $ticket->QueueObj
-        # commit messages that add it are vague about why it was added.
-        return $self->SUPER::HasRight(@_) if $self->{'_for_ticket'};
-
-        my $name = $self->__Value('Name');
-        return $self->SUPER::HasRight(@_) unless $name =~
-            /^(Incidents|Incident Reports|Investigations|Blocks)$/i;
-
-        $args{'Principal'} ||= $self->CurrentUser->PrincipalObj;
-
-        # Avoid going to the database on every Queue->HasRight('ModifyCustomField') or any
-        # other Queue right, but in RTIR, CF rights checks at the Queue level are very heavy.
-        my $equiv_objects;
-        if ( $queue_cache->{$name} ) {
-            $equiv_objects = $queue_cache->{$name};
-        } else {
-            my $queues = RT::Queues->new( RT->SystemUser );
-            $queues->Limit( FIELD => 'Name', OPERATOR => 'STARTSWITH', VALUE => "$name - ", CASESENSITIVE => 0 );
-            $equiv_objects = $queues->ItemsArrayRef;
-            $queue_cache->{$name} = $equiv_objects;
-        }
-
-        my $has_right = $args{'Principal'}->HasRight(
-            %args,
-            Object => $self,
-            EquivObjects => $equiv_objects,
-        );
-        return $has_right;
-    };
-    sub _FlushQueueHasRightCache { undef $queue_cache  };
+sub HREFTo {
+    my $self = shift;
+    my $page = shift;
+    my %args = (
+        IncludeWebPath => 1,
+        Constituency   => $HTML::Mason::Commands::m->{'RTIR_ConstituencyFilter'},
+        @_
+    );
+    # XXX TODO - this code has a dependency on the implementation
+    # of the mason UI. It might want to be either in a web handler
+    # related namespace or to have a better abstraction
+    my $c = '';
+    if ($args{'Constituency'}) {  
+        $c = 'c/'.$args{'Constituency'}."/";
     }
-
-
-
-    # TODO SubjectTag and Encryption Keys need overriding also
-    sub CorrespondAddress { return GetQueueAttribute(shift, 'CorrespondAddress') }
-    sub CommentAddress { return GetQueueAttribute(shift, 'CommentAddress') }
-
-    # dive down to get Queue Attributes from Incidents - EDUNET rather than Incidents
-    # Populates ConstituencyCache and HasNoQueueCache, but has the same
-    # bug around always over-checking the Constituency CF if we've
-    # cached that a ticket has no Constituency.
-    sub GetQueueAttribute {
-        my $queue = shift;
-        my $attr  = shift;
-
-        if ( RT::IR->OurQueue($queue) ) {
-            if ( ( my $id = $queue->{'_for_ticket'} ) ) {
-                my $const = $RT::IR::ConstituencyCache{$id};
-                if (!$const || $const eq '_none' ) {
-                    my $ticket = RT::Ticket->new(RT->SystemUser);
-                    $ticket->Load($id);
-                    $const = $RT::IR::ConstituencyCache{$ticket->id}
-                        = $ticket->FirstCustomFieldValue('Constituency') || '_none';
-                }
-                if ($const ne '_none' && !$RT::IR::HasNoQueueCache{$const} ) {
-                    my $new_queue = RT::Queue->new(RT->SystemUser);
-                    $new_queue->LoadByCols( Name => $queue->Name . " - " . $const );
-                    if ( $new_queue->id && !$new_queue->Disabled ) {
-                        my $val = $new_queue->_Value($attr) || $queue->_Value($attr);
-                        RT->Logger->debug("Overriden $attr is $val for ticket #$id according to constituency $const");
-                        return $val;
-                    } else {
-                        $RT::IR::HasNoQueueCache{$const} = 1;
-                    }
-                }
-            }
-        }
-        return $queue->_Value($attr);
-    }
+    return ($args{IncludeWebPath} ? RT->Config->Get('WebPath') : '') .'/RTIR/'.$c.$page;
 }
 
 
-if ( RT::IR->HasConstituency ) {
-    # Set Constituency on Create
 
-    no warnings 'redefine';
+=head2 URL
 
-    require RT::Ticket;
-    my $orig_Create = RT::Ticket->can('Create');
-    *RT::Ticket::Create = sub {
-        my $self = shift;
-        my %args = @_;
+XXX TODO
 
-        # get out if there is constituency value in arguments
-        my $cf = GetCustomField( 'Constituency' );
-        unless ($cf && $cf->id) {
-            return $orig_Create->($self,%args);
-        }
-        if ($args{ 'CustomField-'. $cf->id }) {
-            return $orig_Create->($self,%args);
-        }
+=cut
 
-        # get out of here if it's not RTIR queue
-        my $QueueObj = RT::Queue->new( RT->SystemUser );
-        if ( ref $args{'Queue'} eq 'RT::Queue' ) {
-            $QueueObj->Load( $args{'Queue'}->Id );
-        }
-        elsif ( $args{'Queue'} ) {
-            $QueueObj->Load( $args{'Queue'} );
-        }
-        else {
-            return $orig_Create->($self,%args);
-        }
-        unless ( $QueueObj->id &&
-                 $QueueObj->Name =~ /^(Incidents|Incident Reports|Investigations|Blocks)$/i ) {
-            return $orig_Create->($self,%args);
-        }
+=head2 ConstituencyFor $Ticket|$Queue
 
-        
-        # fetch value
-        my $value;
-        if ( $args{'MIMEObj'} ) {
-            my $tmp = $args{'MIMEObj'}->head->get('X-RT-Mail-Extension');
-            if ( $tmp ) {
-                chomp $tmp;
-                $tmp = undef unless
-                    grep { lc $_->Name eq lc $tmp } @{ $cf->Values->ItemsArrayRef };
-            }
-            $value = $tmp;
-            RT->Logger->debug("Found Constituency '$tmp' in email") if $tmp;
-        }
-        $value ||= RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'};
-        unless ($value) {
-            return $orig_Create->($self,%args);
-        }
+Returns the textual constituency name for any RTIR ticket or queue
+Returns undef for non-RTIR tickets and queues.
 
-        my @res = $orig_Create->(
-            $self,
-            %args,
-            'CustomField-'. $cf->id => $value,
-        );
-        return @res;
-    };
+Dies if handed something that's not a ticket or queue
+
+=cut
+
+
+sub ConstituencyFor {
+    my $self = shift;
+    my $object = shift;
+    if ($object->isa('RT::Queue')) {
+        return $object->FirstCustomFieldValue('RTIR Constituency');
+    }
+
+    die "$object is not a ticket object" unless ref($object) && $object->isa('RT::Ticket');
+    return $object->QueueObj->FirstCustomFieldValue('RTIR Constituency');
 }
+
+sub IsReportQueue {
+    my $self  = shift;
+    my $queue = shift;
+    return $queue->Lifecycle eq $self->lifecycle_report;
+}
+
+sub IsIncidentQueue {
+    my $self  = shift;
+    my $queue = shift;
+    return $queue->Lifecycle eq $self->lifecycle_incident;
+}
+
+sub IsInvestigationQueue {
+    my $self  = shift;
+    my $queue = shift;
+    return $queue->Lifecycle eq $self->lifecycle_investigation;
+}
+
+sub IsCountermeasureQueue {
+    my $self  = shift;
+    my $queue = shift;
+    return $queue->Lifecycle eq $self->lifecycle_countermeasure;
+}
+
+
+sub StrictConstituencyLinking {
+    my $self = shift;
+    return RT->Config->Get('RTIR_StrictConstituencyLinking');
+}
+
 
 require RT::Search::Simple;
 package RT::Search::Simple;
 
 sub HandleRtirip {
     return 'RTIR IP' => RT::IR->Query(
-        Queue => ['Incidents', 'Incident Reports', 'Investigations', 'Blocks'],
+        Lifecycle => \@LIFECYCLES,
         And => "'CustomField.{IP}' = '$_[1]'",
     );
 }
@@ -1003,9 +946,9 @@ sub HandleRtirrequestor {
 
     my $children = RT::Tickets->new( $self->TicketsObj->CurrentUser );
     $children->FromSQL(
-        "( Queue = 'Incident Reports' OR
-           Queue = 'Investigations' OR
-           Queue = 'Blocks'
+        "( Lifecycle = '".RT::IR->lifecycle_report."' OR
+           Lifecycle = '".RT::IR->lifecycle_investigation."' OR
+           Lifecycle = '".RT::IR->lifecycle_countermeasure."'
          ) AND Requestor LIKE '$value'"
     );
     my $query = '';
@@ -1014,7 +957,7 @@ sub HandleRtirrequestor {
         $query .= "HasMember = " . $child->Id;
     }
     $query ||= 'id = 0';
-    return 'RTIR Requestor' => "Queue = 'Incidents' AND ($query)";
+    return 'RTIR Requestor' => "Lifecycle = '".RT::IR->lifecycle_incident."' AND ($query)";
 }
 
 package RT::IR;

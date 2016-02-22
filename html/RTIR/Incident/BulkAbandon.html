@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -50,7 +50,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%RT->Config->Get('WebPath')%>/RTIR/Incident/BulkAbandon.html" method="post">
+<form action="<%RT::IR->HREFTo("Incident/BulkAbandon.html") %>" method="post">
 % foreach my $arg (qw(Query Format Rows Page OrderBy Order) ) {
 % next unless defined $ARGS{ $arg } && length $ARGS{ $arg };
 <input type="hidden" name="<% $arg %>" value="<% $ARGS{ $arg } %>" />
@@ -58,9 +58,9 @@
 
 <%PERL>
 my $found = $m->comp('/RTIR/Search/Elements/ShowResults',
-    Queue         => 'Incidents',
-    BaseURL       => 'RTIR/Incident/BulkAbandon.html',
-    BaseQuery     => RT::IR->ActiveQuery( Queue => 'Incidents' ),
+Lifecycle     => RT::IR->lifecycle_incident,
+BaseURL       => RT::IR->HREFTo('Incident/BulkAbandon.html'),
+    BaseQuery     => RT::IR->ActiveQuery( Lifecycle => RT::IR->lifecycle_incident ),
     Query         => $Query,
     DisplayFormat => "__CheckBox__, $Format",
     Format        => $Format,
@@ -84,7 +84,7 @@ my $found = $m->comp('/RTIR/Search/Elements/ShowResults',
 </&>
 <br />
 
-<& Elements/ReplyForm &>
+<& Elements/ReplyForm, QueueObj => $queue &>
 
 <& /Elements/Submit,
     Name => "BulkAbandon",
@@ -120,7 +120,7 @@ if ( $ARGS{'BulkAbandon'} ) {
         }
         $id = $t->id;
 
-        unless( $t->QueueObj->Name eq 'Incidents' ) {
+        unless( RT::IR->IsIncidentQueue($t->QueueObj) ) {
             push @tempresults, [ $id, loc("Is not incident.") ];
             next;
         }
@@ -128,7 +128,7 @@ if ( $ARGS{'BulkAbandon'} ) {
         # process replies
         if ( @ReplyToAll ) {
             my $children = RT::IR->IncidentChildren(
-                $t, Queue => \@ReplyToAll, Initial => 1, Active => 1,
+                $t, Lifecycle => \@ReplyToAll, Initial => 1, Active => 1,
             );
             while ( my $child = $children->Next ) {
                 push @tempresults, ProcessUpdateMessage(
@@ -179,6 +179,11 @@ if ( $ARGS{'BulkAbandon'} ) {
         },
     );
 }
+
+# XXX TODO Don't make this assumption 
+my $queue = RT::Queue->new( $session{'CurrentUser'} );
+$queue->Load('Incidents');
+
 
 </%INIT>
 <%ARGS>

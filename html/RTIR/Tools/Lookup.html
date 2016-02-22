@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,6 +48,8 @@
 <& /RTIR/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
 
+% $m->callback(CallbackName => 'BeforeCurrent', %ARGS, ARGSRef => \%ARGS, Ticket => $TicketObj, LookupType => $type, q => $q);
+
 % if ( $TicketObj ) {
 <&| /Widgets/TitleBox, title => loc("Current [_1]: #[_2]", $TicketType, $ticket), class => 'ticket-info-basics' &>
 <& /Elements/CollectionList, Query => "id = $ticket", Format => RT->Config->Get('RTIRSearchResultFormats')->{$TicketType . 'Default'}, ShowNavigation => 0,
@@ -55,11 +57,18 @@
 </&>
 % }
 
+% $m->callback(CallbackName => 'AfterCurrent', %ARGS, ARGSRef => \%ARGS, Ticket => $TicketObj, LookupType => $type, q => $q);
+
 % if ( ! $HideResults ) {
 <& Elements/LookupRelatedTickets, TicketObj => $TicketObj, LookupType => $type, q => $q &>
 % }
 
+% $m->callback(CallbackName => 'BeforeTools', %ARGS, ARGSRef => \%ARGS, Ticket => $TicketObj, LookupType => $type, q => $q);
+
+% if ($TicketObj || $q) {
 <hr>
+% }
+
 <h2><&|/l&>Look Up Information</&></h2>
 <& Elements/Tools,
     %ARGS,
@@ -68,24 +77,26 @@
     PassArguments => [qw(ticket type HideResults)],
 &>
 
+% $m->callback(CallbackName => 'AfterTools', %ARGS, ARGSRef => \%ARGS, Ticket => $TicketObj, LookupType => $type, q => $q);
+
 <%INIT>
 
 # Redirect when necessary
 if ( $ARGS{'InvestigateTo'} ) {
     my $requestors = join ', ', map /^Requestorbox-(.*)/, keys %ARGS;
     return RT::Interface::Web::Redirect(
-        RT->Config->Get('WebURL')."RTIR/Create.html?"
+    RT::IR->HREFTo("Create.html?"
         . $m->comp('/Elements/QueryString',
-            Queue => 'Investigations',
+        Lifecycle => RT::IR->lifecycle_investigation,
             Requestors => $requestors,
             Incident => $ARGS{'incidentid'},
-        )
+        ))
     );
 } elsif ( $ARGS{'InvestigateWithScriptedActions'} ) {
     return RT::Interface::Web::Redirect(
-        RT->Config->Get('WebURL')."RTIR/Tools/ScriptedAction.html?"
+    RT::IR->HREFTo("Tools/ScriptedAction.html?"
         . $m->comp('/Elements/QueryString', %ARGS )
-    );
+    ));
 }
 
 my $title = $q ? loc("Lookup '[_1]'", $q) : loc("Lookup");

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -52,7 +52,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<% RT->Config->Get('WebPath') %>/RTIR/Merge/" method="post">
+<form action="<% RT::IR->HREFTo("Merge/") %>" method="post">
 <input type="hidden" name="id" value="<% $id %>" />
 
 % if ( $siblings_query ) {
@@ -67,12 +67,12 @@
 &>
 % }
 
-<& /RTIR/Elements/MergeWith, %defaults, %ARGS, Queue => $Ticket->QueueObj->Name, Ticket => $Ticket &>
+<& /RTIR/Elements/MergeWith, %defaults, %ARGS, Lifecycle => $Ticket->QueueObj->Lifecycle, Ticket => $Ticket &>
 
-% if ( $Type eq 'Report' ) {
-<& /RTIR/Elements/MergeWith, %defaults, %ARGS, Queue => "Investigations", Ticket => $Ticket &>
-% } elsif ( $Type eq 'Investigation' ) {
-<& /RTIR/Elements/MergeWith, %defaults, %ARGS, Queue => "Incident Reports", Ticket => $Ticket &>
+% if ( RT::IR->IsReportQueue($Ticket->QueueObj)) {
+<& /RTIR/Elements/MergeWith, %defaults, %ARGS, Lifecycle => RT::IR->lifecycle_investigation, Ticket => $Ticket &>
+% } elsif ( RT::IR->IsInvestigationQueue($Ticket->QueueObj)) {
+<& /RTIR/Elements/MergeWith, %defaults, %ARGS, Lifecycle => RT::IR->lifecycle_report, Ticket => $Ticket &>
 % }
 <& /Elements/Submit, Caption=> loc('Merge into selected Ticket'), Label => loc("Merge") &>
 </form>
@@ -89,29 +89,34 @@ $MergeTicket = LoadTicket( $SelectedTicket ) if $SelectedTicket;
 my (@results);
 my $checks_failure = 0;
 if ( $MergeTicket ) {
-    my @queues = sort map $_->Name, $Ticket->QueueObj, $MergeTicket->QueueObj;
+    my @lifecycles = sort map $_->Lifecycle, $Ticket->QueueObj, $MergeTicket->QueueObj;
     unless (
-        $queues[0] eq $queues[1]
-        or ($queues[0] eq "Incident Reports" and $queues[1] eq "Investigations")
+        $lifecycles[0] eq $lifecycles[1]
+        or ($lifecycles[0] eq RT::IR->lifecycle_report and $lifecycles[1] eq RT::IR->lifecycle_investigation)
     ) {
         push @results, loc("Merge failed: Ticket #[_1] is not the right type", $MergeTicket->Id );
         $checks_failure = 1;
-    }
-}
+        }
 
-if ( $MergeTicket && RT->Config->Get('_RTIR_Constituency_Propagation') eq 'reject' ) {
-    if ( lc $MergeTicket->FirstCustomFieldValue('Constituency')
-        ne lc $Ticket->FirstCustomFieldValue('Constituency')
-    ) {
-        push @results, loc("Merge failed: Tickets have different constituencies" );
-        $checks_failure = 1;
-    }
+        if (RT::IR->StrictConstituencyLinking) {
+        if (RT::IR->ConstituencyFor($Ticket) 
+            != RT::IR->ConstituencyFor($MergeTicket)) {
+            push @results, 
+            loc("Merge failed: Ticket #[_1] is associated with a different constituency", 
+                $MergeTicket->Id );
+	            $checks_failure = 1;
+	        }
+
+        }
+
+
+
 }
 
 if ( $MergeTicket && !$checks_failure ) {
 
-    my @queues = sort map $_->Name, $Ticket->QueueObj, $MergeTicket->QueueObj;
-    if ( $queues[0] ne $queues[1] && $queues[1] eq "Incident Reports" ) {
+    my @lifecycles = sort map $_->Lifecycle, $Ticket->QueueObj, $MergeTicket->QueueObj;
+    if ( $lifecycles[0] ne $lifecycles[1] && $lifecycles[1] eq RT::IR->lifecycle_report ) {
         # We always want to merge into the Investigation
         ($Ticket, $MergeTicket) = ($MergeTicket, $Ticket);
     }
@@ -132,18 +137,17 @@ if ( $MergeTicket && !$checks_failure ) {
 
     MaybeRedirectForResults(
         Actions   => \@results,
-        Path      => "/RTIR/Display.html",
+        Path      => RT::IR->HREFTo("Display.html", IncludeWebPath => 0),
         Arguments => { id => $Ticket->id },
     );
 }
 
-my $Type = RT::IR::TicketType( Ticket => $Ticket );
-my $Queue = $Ticket->QueueObj->Name;
+my $Lifecycle = $Ticket->QueueObj->Lifecycle;
 
-my $title = loc("Merge [_1] #[_2]: [_3]", $Type, $id, $Ticket->Subject);
+my $title = loc("Merge [_1] #[_2]: [_3]", RT::IR::TicketType( Ticket => $Ticket), $id, $Ticket->Subject);
 
-$Query      ||= RT::IR->ActiveQuery( Queue => $Queue );
-my $BaseQuery = RT::IR->Query( Queue => $Queue, Exclude => $id, Constituency => $Ticket );
+$Query      ||= RT::IR->ActiveQuery( Lifecycle => $Lifecycle );
+my $BaseQuery = RT::IR->Query( Lifecycle => $Lifecycle, Exclude => $id);
 
 my %defaults = (
     Format  => $Format,
@@ -154,14 +158,14 @@ my %defaults = (
 );
 
 my $siblings_query = '';
-if ( $Type ne 'Incident' ) {
+if ( !RT::IR->IsIncidentQueue($Ticket->QueueObj)) {
     my @parents = @{ RT::IR->Incidents( $Ticket )->ItemsArrayRef || [] };
     if ( @parents ) {
-        my @queues = ($Queue);
-        push @queues, 'Investigations' if $Type eq 'Report';
-        push @queues, 'Incident Reports' if $Type eq 'Investigation';
+        my @lifecycles = ($Lifecycle);
+        push @lifecycles, RT::IR->lifecycle_investigation if $Lifecycle eq RT::IR->lifecycle_report;
+        push @lifecycles, RT::IR->lifecycle_report if $Lifecycle eq RT::IR->lifecycle_investigation;
         $siblings_query = RT::IR->Query(
-            Queue    => \@queues,
+            Lifecycle    => \@lifecycles,
             MemberOf => \@parents,
             Exclude  => $id
         );

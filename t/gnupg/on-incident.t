@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test::GnuPG tests => 40, gnupg_options => { passphrase => 'rt-test' };
+use RT::IR::Test::GnuPG tests => undef, gnupg_options => { passphrase => 'rt-test' };
 
 my $queue = RT::Test->load_or_create_queue(
     Name              => 'Incident Reports',
@@ -68,6 +68,7 @@ diag "check that things don't work if there is no key";
     $agent->form_number(3);
     $agent->tick( SelectedReports => $ir_id );
     $agent->tick( Encrypt => 1 );
+    $agent->field( UpdateContent => 'Some content' );
     $agent->click('SubmitTicket');
     $agent->content_like(
         qr/You are going to encrypt outgoing email messages/i,
@@ -84,3 +85,6 @@ diag "check that things don't work if there is no key";
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails';
 }
+
+undef $agent;
+done_testing;

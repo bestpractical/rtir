@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 37;
+use RT::IR::Test tests => undef;
 
 RT->Config->Set('RTIR_BlockAproveActionRegexp', qr/TestPendingBlock/);
 
@@ -86,3 +86,6 @@ EOF
     is $id, $block_id, "replied to the ticket";
     $agent->ticket_status_is( $block_id, 'removed');
 }
+
+undef $agent;
+done_testing;

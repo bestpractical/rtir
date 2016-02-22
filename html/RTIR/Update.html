@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -117,11 +117,25 @@
 
 <div id="ticket-update-message">
 
-<& /Ticket/Elements/ShowSimplifiedRecipients, %ARGS, TicketObj => $Ticket &>
-
-% if (my $recips = $m->notes("DryRun-Recipients-".$Ticket->Id)) {
-<input type="hidden" name="TxnRecipients" value="<% join ",",sort keys %{$recips} %>" />
-% }
+<&|/Widgets/TitleBox, title => loc('Recipients'), id => 'recipients' &>
+</&>
+<script type="text/javascript">
+jQuery( function() {
+   var updateScrips = function() {
+       jQuery('#recipients div.titlebox-content').load( '<% RT->Config->Get('WebPath')%>/Helpers/ShowSimplifiedRecipients',
+           jQuery('form[name=TicketUpdate]').serialize(),
+           function() {
+               var txn_send_field = jQuery("#recipients input[name=TxnSendMailTo]");
+               txn_send_field.click( function () { setCheckbox(this) } );
+               jQuery("#recipients input[name=TxnSendMailToAll]").click( function() { setCheckbox(this, 'TxnSendMailTo'); } );
+               setCheckbox(txn_send_field);
+           }
+       );
+   };
+   updateScrips();
+   jQuery("#ticket-update-metadata :input, input[name^=UpdateCc], input[name^=UpdateBcc]").change( updateScrips );
+});
+</script>
 
 <&|/Widgets/TitleBox, title => loc('Message'), class => 'messagedetails' &>
 <table width="100%" border="0">
@@ -149,9 +163,7 @@ $id = $ARGS{'id'} = $Ticket->Id;
 
 $m->callback(CallbackName => 'Initial', %ARGS, Ticket => $Ticket);
 
-my $Type = RT::IR::TicketType( Ticket => $Ticket );
-
-my $title = loc("Update [_1] #[_2] ([_3])", $Type, $id, $Ticket->Subject);
+my $title = loc("Update [_1] #[_2] ([_3])",  RT::IR::TicketType( Ticket => $Ticket ), $id, $Ticket->Subject);
 
 my $CanRespond = 0;
 my $CanComment = 0;

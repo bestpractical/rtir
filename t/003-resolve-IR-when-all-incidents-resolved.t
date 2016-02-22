@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::IR::Test tests => 34;
+use RT::IR::Test tests => undef;
 
 RT::Test->started_ok;
 my $agent = default_agent();
@@ -43,6 +43,8 @@ like(
 
 ir_status('resolved');
 
+undef $agent;
+done_testing;
 
 sub ir_status {
     my $status = shift;

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,20 +48,20 @@
 <table width="100%" border="0" cellpadding="2" cellspacing="0">
 <tr><td valign="top" width="50%">
 
-<& LookupSummary, %ARGS, Queue => 'Incidents', Query => $query &>
+<& LookupSummary, %ARGS, Lifecycle => RT::IR->lifecycle_incident, Query => $query &>
 
 </td><td valign="top" width="50%">
 
-<& LookupSummary, %ARGS, Queue => 'Investigations', Query => $query &>
+<& LookupSummary, %ARGS, Lifecycle => RT::IR->lifecycle_investigation, Query => $query &>
 
 </td></tr><tr><td valign="top" width="50%">
 
-<& LookupSummary, %ARGS, Queue => 'Incident Reports', Query => $query &>
+<& LookupSummary, %ARGS, Lifecycle => RT::IR->lifecycle_report, Query => $query &>
 
 </td><td width="50%" valign="top">
 
 % unless ( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
-<& LookupSummary, %ARGS, Queue => 'Blocks', Query => $query &>
+<& LookupSummary, %ARGS, Lifecycle => RT::IR->lifecycle_countermeasure, Query => $query &>
 % }
 
 </td></tr>
