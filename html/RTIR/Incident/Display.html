@@ -316,7 +316,7 @@ if ( $ARGS{'MarkAsSeen'} ) {
 
 MaybeRedirectForResults(
     Actions   => \@results,
-    Path      => RT::IR->HREFTo("Display.html"),
+    Path      => RT::IR->HREFTo("Display.html", IncludeWebPath => 0),
     Arguments => { id => $TicketObj->id },
     Anchor    => $ARGS{'Anchor'},
 );
