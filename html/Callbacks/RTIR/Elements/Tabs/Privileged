@@ -82,7 +82,7 @@ $HTML::Mason::Commands::m->notes('menu', RT::Interface::Web::Menu->new());
 
 my $rtmenu = Menu->child(rtkids => menu => $orig_menu);
 $rtmenu->title(loc('RT'));
-$rtmenu->path($RT::WebPath);
+$rtmenu->path('/');
 $rtmenu->key('rt-menu');
 
 Menu->child(preferences => menu => $orig_menu->child('preferences'));
