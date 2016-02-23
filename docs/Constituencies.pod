@@ -25,6 +25,11 @@ in a single RTIR instance with shared workflows and global
 configuration that applies to all constituencies. This guide
 will help you configure RTIR to manage multiple constituencies.
 
+The implementation of the constituencies feature was updated
+in RTIR 3.4 and is described here. If you were using this
+functionality in previous versions, you can read about specific
+changes in L<UPGRADING-3.4>.
+
 =head2 Definitions
 
 A constituency is defined by:
@@ -33,7 +38,8 @@ A constituency is defined by:
 
 =item  *
 
-Its name.
+Its name, as defined in the RTIR Constituency custom field on the queue
+configuration page.
 
 =item  *
 
@@ -41,7 +47,9 @@ Its correspondence email address.
 
 =item *
 
-Its queues
+Its queues--typically a set with one each of Incident Reports,
+Incidents, Investigations, and Blocks--each with the same
+RTIR Constituency value defined.
 
 =item *
 
@@ -55,9 +63,10 @@ A ticket is assigned a constituency in a few different ways:
 
 =item *
 
-On new incoming incident report, the constituency is preset
-automatically based on the email address the email is sent to
-(the correspond address).
+On a new incoming incident report, the constituency set
+automatically based on the incoming email address
+(the correspond address) and the associated queue in which it
+creates tickets.
 
 =item *
 
@@ -67,34 +76,35 @@ from the launching ticket.
 
 =item *
 
-You can manually assign the constituency to any new tickets created
-in the RTIR web interface by selecting the an RTIR queue associated
+You can manually select the constituency to any new tickets created
+in the RTIR web interface by selecting the RTIR queue associated
 with a given constituency.
 
 =item *
 
 You can manually change the constituency of an incident and all its
-related tickets.
+related tickets by moving it to a new queue.
 
 =back
 
 Of course the last two points require that the user has the right to do so,
-according to the ACLs. All tickets must belong to a constituency.
+according to the ACLs.
 
 =head1 Implementation Details
 
-=head2 Mandatory
+=head2 RTIR Constituency Custom Field
 
-The constituency is based on the ticket's queue so users must select a value
-when creating RTIR tickets.
+RTIR Constituency is a queue-level custom field, so the queue a ticket is in
+determines the constituency. Constituencies is an optional feature of RTIR
+so you can choose to leave it unset.
 
 =head2 Constituency Values
 
 Constituency is a custom field that applies to all RTIR queues. The RTIR
-administrator can manage the field and its values via the web interface at
-Tools -> Configuration -> Custom Fields -> click on Constituency custom field.
-At the bottom of the page in the Values section, you can add, delete, and
-rename values, and change the sort order.
+administrator can manage the field and its values via the RT web interface at
+Tools -> Configuration -> Custom Fields -> click on the "RTIR Constituency"
+custom field. At the bottom of the page in the Values section, you can add,
+delete, and rename values, and change the sort order.
 
 However, to get advanced control over constituencies you have to create additional
 objects in the system. The steps below describe how to do this manually. A
@@ -102,9 +112,6 @@ script (F<bin/add_constituency>) is also provided which helps add new constituen
 values, along with their associated groups and queues. In previous versions of RTIR,
 these queues were a hidden implementation detail. In RTIR 3.4, each constituency has
 its own queues, which work like regular RT queues.
-
-Then assign users to their corresponding F<DutyTeam> to give them control over
-objects from their constituency.
 
 =head2 Manually Managing Constituency Values
 
@@ -135,6 +142,23 @@ the constituency 'EDUNET':
 
 See L</"Access Control (ACLs)"> below for more about granting rights using
 special queues and groups.
+
+=head2 Automatically Creating Constituencies
+
+To make it easier to create all of the objects in RT needed for a
+constituency, we have provided a tool to help. The tool can create
+everything needed for a new constituency configuration, including groups
+with some default permissions. It can also rename existing queues. You
+can read the docmentation for the tool online at L<add_constituency> or
+on your system. To run the tool, navigate to your base RT directory and
+run it as follows:
+
+    cd /opt/rt4    # Default location, yours may be different
+    local/plugins/RT-IR/bin/add_constituency --help  # View docs
+    local/plugins/RT-IR/bin/add_constituency --name EDUNET --correspond 'edunet@example.com'
+
+After you run the tool, you can look at the permissions granted for the
+groups created and modify them as needed.
 
 =head2 Constituency Propagation
 
@@ -175,7 +199,7 @@ If C<RTIR_StrictConstituencyLinking> is set to 1, the list of available
 queues for the new ticket will be limited to the Constituency of the source
 ticket.
 
-=item Creating a new ticket with Incident id
+=item Creating a new ticket with Incident Id
 
 This case is similar to the first case, but the user provides
 an Incident Id in the Incident field. Since the new ticket references
@@ -219,10 +243,10 @@ queue is used in notifications, if one is set. If the field
 is empty, the fallback address is the C<$CorrespondAddress>
 in the RT's configuration file.
 
-It is important to note that these additional configuration do not also
+It is important to note that these additional configurations do not also
 add new mail routing rules.  It is your responsibility to configure
-rt-mailgate to handle mail coming to the constituency correspond
-addresses.
+C</etc/aliases>, C<rt-mailgate> and other parts of your email infrastructure
+to handle mail coming to the constituency correspond addresses.
 
 =head2 Access Control (ACLs)
 
