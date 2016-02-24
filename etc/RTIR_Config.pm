@@ -255,7 +255,7 @@ an Incident on creation in UI or it's optional.
 By default IRs can be linked to many incident and
 it's not required to link them right away.
 Investigations can be linked only to one incident
-and it can be done later. Blocks can not be created
+and it can be done later. Countermeasures can not be created
 without incident, however can be linked to many of
 them.
 
@@ -270,7 +270,7 @@ Set(%RTIR_IncidentChildren,
         Multiple => 0,
         Required => 0,
     },
-    Block => {
+    Countermeasure => {
         Multiple => 1,
         Required => 1,
     },
@@ -595,13 +595,13 @@ Set(%CustomFieldGroupings,
 
 =back
 
-=head1 Blocks
+=head1 Countermeasures
 
 =over 4
 
 =item C<$RTIR_DisableBlocksQueue>
 
-If true then Blocks queue functionality inactive and disabled.
+If true then Countermeasure queue functionality inactive and disabled.
 
 =cut
 
