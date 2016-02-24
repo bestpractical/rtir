@@ -62,7 +62,7 @@ diag "load and check basic properties of the IP CF" if $ENV{'TEST_VERBOSE'};
 
 diag "check that CF applies to all RTIR's queues" if $ENV{'TEST_VERBOSE'};
 {
-    foreach ( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+    foreach ( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
         my $queue = RT::Queue->new( $RT::SystemUser );
         $queue->Load( $_ );
         ok( $queue->id, 'loaded queue '. $_ );
@@ -78,14 +78,14 @@ for my $short (sort keys %valid) {
     my $full = $valid{$short};
     my $abbrev = $abbrev_of{$short};
     my $incident_id; # block couldn't be created without incident id
-    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $id = $agent->create_rtir_ticket_ok(
             $queue,
             {
                 Subject => "test ip",
-                ( $queue eq 'Blocks' ? ( Incident => $incident_id ) : () ),
+                ( $queue eq 'Countermeasures' ? ( Incident => $incident_id ) : () ),
             },
             { IP => $short },
         );
@@ -105,14 +105,14 @@ for my $short (sort keys %test_set) {
     my $full = $valid{$short};
     my $abbrev = $abbrev_of{$short};
     my $incident_id; # block couldn't be created without incident id
-    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $id = $agent->create_rtir_ticket_ok(
             $queue,
             {
                 Subject => "test ip in message",
-                ($queue eq 'Blocks'? (Incident => $incident_id): ()),
+                ($queue eq 'Countermeasures'? (Incident => $incident_id): ()),
                 Content => "$short",
             },
         );
@@ -132,14 +132,14 @@ for my $short (sort keys %test_cidr) {
     my $full = $test_cidr{$short};
     my $abbrev = $abbrev_of{$short};
     my $incident_id; # block couldn't be created without incident id
-    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $id = $agent->create_rtir_ticket_ok(
             $queue,
             {
                 Subject => "test ip",
-                ($queue eq 'Blocks'? (Incident => $incident_id): ()),
+                ($queue eq 'Countermeasures'? (Incident => $incident_id): ()),
             },
             { IP => $short },
         );
@@ -163,14 +163,14 @@ for my $short (sort keys %test_cidr) {
     my $abbrev = $abbrev_of{$short};
 
     my $incident_id; # block couldn't be created without incident id
-    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $id = $agent->create_rtir_ticket_ok(
             $queue,
             {
                 Subject => "test ip in message",
-                ($queue eq 'Blocks'? (Incident => $incident_id): ()),
+                ($queue eq 'Countermeasures'? (Incident => $incident_id): ()),
                 Content => "$short",
             },
         );
@@ -192,14 +192,14 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
 {
     my $i = 0;
     my $incident_id; # block couldn't be created without incident id
-    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $id = $agent->create_rtir_ticket_ok(
             $queue,
             {
                 Subject => "test ip in message",
-                ($queue eq 'Blocks'? (Incident => $incident_id): ()),
+                ($queue eq 'Countermeasures'? (Incident => $incident_id): ()),
             },
         );
         $incident_id = $id if $queue eq 'Incidents';

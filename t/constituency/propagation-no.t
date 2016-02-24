@@ -40,7 +40,7 @@ diag "create an incident with EDUNET and then linked tickets with GOVNET,"
             'EDUNET', 'correct value';
     }
 
-    foreach my $queue( 'Incident Reports', 'Investigations', 'Blocks' ) {
+    foreach my $queue( 'Incident Reports', 'Investigations', 'Countermeasures' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $id = $agent->create_rtir_ticket_ok(

@@ -17,7 +17,7 @@ my $cf;
     );
     ok( $id, "created custom field" ) or diag "error: $msg";
 
-    for my $q ('Incident Reports', 'Investigations', 'Incidents', 'Blocks') {
+    for my $q ('Incident Reports', 'Investigations', 'Incidents', 'Countermeasures') {
         my $q_obj = RT::Queue->new($RT::SystemUser);
         $q_obj->Load($q);
         ok( $q_obj->id, "Loaded queue '$q'" );
@@ -41,7 +41,7 @@ my $inc_id = $agent->create_incident( { Subject => "incident" } );
 ok $inc_id, "created an incident";
 
 my @tickets;
-foreach my $qname ('Incident Reports', 'Investigations', 'Blocks') {
+foreach my $qname ('Incident Reports', 'Investigations', 'Countermeasures') {
     $agent->goto_create_rtir_ticket( $qname );
     my $form = $agent->form_name('TicketCreate');
 

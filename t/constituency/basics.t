@@ -25,7 +25,7 @@ diag "load and check basic properties of the CF" if $ENV{'TEST_VERBOSE'};
 
 diag "check that CF applies to all RTIR's queues" if $ENV{'TEST_VERBOSE'};
 {
-    foreach ( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+    foreach ( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
         my $queue = RT::Queue->new( $RT::SystemUser );
         $queue->Load( $_ );
         ok( $queue->id, 'loaded queue '. $_ );
@@ -50,7 +50,7 @@ diag "fetch list of constituencies and check that groups exist" if $ENV{'TEST_VE
 diag "check that there is no option to set 'no value' on create" if $ENV{'TEST_VERBOSE'};
 {
     my $default = RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'};
-    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
         diag "'$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         $agent->goto_create_rtir_ticket( $queue );
@@ -121,7 +121,7 @@ ok( RT::Test->add_rights(
     { Principal => 'Privileged', Right => [qw(ModifyCustomField SeeCustomField)], },
 ), 'set rights');
 
-foreach my $name('Incident Reports', 'Incidents', 'Investigations', 'Blocks' ) {
+foreach my $name('Incident Reports', 'Incidents', 'Investigations', 'Countermeasures' ) {
     my $queue = RT::Test->load_or_create_queue(
         Name => "$name",
         CorrespondAddress => 'rt@example.com',

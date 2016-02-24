@@ -149,7 +149,7 @@ $agent->goto_create_rtir_ticket('Investigations');
     unlink $filename or die "couldn't delete file '$filename': $!";
 }
 
-$agent->goto_create_rtir_ticket('Blocks');
+$agent->goto_create_rtir_ticket('Countermeasures');
 
 {
     my $content = "this is test";

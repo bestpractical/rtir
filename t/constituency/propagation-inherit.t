@@ -105,7 +105,7 @@ diag "create an incident with EDUNET, then create children using Incident input 
             'EDUNET', 'correct value';
     }
 
-    foreach my $queue( 'Incident Reports', 'Investigations', 'Blocks' ) {
+    foreach my $queue( 'Incident Reports', 'Investigations', 'Countermeasures' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $id = $agent->create_rtir_ticket_ok(
@@ -139,7 +139,7 @@ diag "create an incident with EDUNET, then create children using Incident input 
 diag "check that constituency propagates from a child to a parent after 'Edit', and back"
     if $ENV{'TEST_VERBOSE'};
 {
-    foreach my $queue( 'Incident Reports', 'Investigations', 'Blocks' ) {
+    foreach my $queue( 'Incident Reports', 'Investigations', 'Countermeasures' ) {
         diag "create an incident for linking" if $ENV{'TEST_VERBOSE'};
 
         my $incident_id = $agent->create_rtir_ticket_ok(

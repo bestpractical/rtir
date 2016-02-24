@@ -28,7 +28,7 @@ Subject: [$rtname #$block_id] This is a test
 
 some text
 EOF
-    my ($status, $id) = RT::Test->send_via_mailgate($text, queue => 'Blocks');
+    my ($status, $id) = RT::Test->send_via_mailgate($text, queue => 'Countermeasures');
     is $status >> 8, 0, "The mail gateway exited ok";
     is $id, $block_id, "replied to the ticket";
     $agent->ticket_status_is( $block_id, 'pending activation');
@@ -43,7 +43,7 @@ Subject: [$rtname #$block_id] This is a test
 TestPendingBlock
 
 EOF
-    my ($status, $id) = RT::Test->send_via_mailgate($text, queue => 'Blocks');
+    my ($status, $id) = RT::Test->send_via_mailgate($text, queue => 'Countermeasures');
     is $status >> 8, 0, "The mail gateway exited ok";
     is $id, $block_id, "replied to the ticket";
     $agent->ticket_status_is( $block_id, 'active');
@@ -66,7 +66,7 @@ Subject: [$rtname #$block_id] This is a test
 
 some text
 EOF
-    my ($status, $id) = RT::Test->send_via_mailgate($text, queue => 'Blocks');
+    my ($status, $id) = RT::Test->send_via_mailgate($text, queue => 'Countermeasures');
     is $status >> 8, 0, "The mail gateway exited ok";
     is $id, $block_id, "replied to the ticket";
     $agent->ticket_status_is( $block_id, 'pending removal');
@@ -81,7 +81,7 @@ Subject: [$rtname #$block_id] This is a test
 TestPendingBlock
 
 EOF
-    my ($status, $id) = RT::Test->send_via_mailgate($text, queue => 'Blocks');
+    my ($status, $id) = RT::Test->send_via_mailgate($text, queue => 'Countermeasures');
     is $status >> 8, 0, "The mail gateway exited ok";
     is $id, $block_id, "replied to the ticket";
     $agent->ticket_status_is( $block_id, 'removed');

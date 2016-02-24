@@ -58,7 +58,7 @@ diag "create a ticket via gate" if $ENV{'TEST_VERBOSE'};
 {
     my $i = 0;
     my $val = RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Constituency'}; # we have one default
-    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $text = <<EOF;
@@ -92,7 +92,7 @@ diag "create a ticket via gate using Extension header" if $ENV{'TEST_VERBOSE'};
     ok $val, 'find not default value';
 
     my $incident_id; # block couldn't be created without incident id
-    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $text = <<EOF;

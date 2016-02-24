@@ -15,7 +15,7 @@ my $cf_name = 'test';
     );
     ok( $id, "created custom field" ) or diag "error: $msg";
 
-    for my $q ('Incident Reports', 'Investigations', 'Incidents', 'Blocks') {
+    for my $q ('Incident Reports', 'Investigations', 'Incidents', 'Countermeasures') {
         my $q_obj = RT::Queue->new($RT::SystemUser);
         $q_obj->Load($q);
         ok( $q_obj->id, "Loaded queue '$q'" );
