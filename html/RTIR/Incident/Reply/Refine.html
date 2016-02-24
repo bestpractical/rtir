@@ -58,14 +58,14 @@ return $m->comp(
         Status => $ARGS{'Status'}, Action => $ARGS{'Action'},
         SelectedReportsAll => $ARGS{'SelectedReportsAll'},
         SelectedInvestigationsAll => $ARGS{'SelectedInvestigationsAll'},
-        SelectedBlocksAll => $ARGS{'SelectedBlocksAll'},
+        SelectedCountermeasuresAll => $ARGS{'SelectedCountermeasuresAll'},
     ),
     BaseQuery => RT::IR->Query(
     Lifecycle    => \@lifecycles,
         MemberOf => $ARGS{'id'},
     ),
     ExtraQueryParams => [qw(SelectedReportsAll SelectedInvestigationsAll
-                            All Status Action SelectedBlocksAll)],
+                            All Status Action SelectedCountermeasuresAll)],
 
 );
 </%INIT>

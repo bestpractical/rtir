@@ -97,7 +97,7 @@
     BaseURL       => $BaseURL,
     BaseQuery     => RT::IR->Query(Lifecycle => RT::IR->lifecycle_countermeasure, MemberOf => $id),
     Query         => $Query,
-    DisplayFormat => "__CheckBox.{SelectedBlocks}__, $Format",
+    DisplayFormat => "__CheckBox.{SelectedCountermeasures}__, $Format",
     Format        => $Format,
     Rows          => $Rows,
     Page          => $Page,
@@ -149,7 +149,7 @@ $m->comp( '/Elements/Crypt/SignEncryptWidget:Process',
 );
 
 my @selected_children;
-foreach my $id( @SelectedReports, @SelectedInvestigations, @SelectedBlocks ) {
+foreach my $id( @SelectedReports, @SelectedInvestigations, @SelectedCountermeasures ) {
     my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
     $ticket->Load( $id );
     unless( $ticket->id ) {
@@ -271,8 +271,8 @@ $Page            => 1
 $OrderBy         => RT->Config->Get('DefaultSearchResultOrderBy')
 $Order           => RT->Config->Get('DefaultSearchResultOrder')
 
-@SelectedReports        => ()
-@SelectedInvestigations => ()
-@SelectedBlocks         => ()
-$SubmitTicket           => 0
+@SelectedReports         => ()
+@SelectedInvestigations  => ()
+@SelectedCountermeasures => ()
+$SubmitTicket            => 0
 </%ARGS>

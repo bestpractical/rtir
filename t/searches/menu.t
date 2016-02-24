@@ -199,7 +199,7 @@ for my $type ( 'incident', 'ir', 'investigation', 'block' ) {
     ($checkbox) = $m->find_all_inputs( name => 'SelectedInvestigations' );
     is( $checkbox->value, $ticket{investigation}[0], '$ticket{investigation}[0] is checked' );
 
-    ($checkbox) = $m->find_all_inputs( name => 'SelectedBlocks' );
+    ($checkbox) = $m->find_all_inputs( name => 'SelectedCountermeasures' );
     is( $checkbox->value, $ticket{block}[0], '$ticket{block}[0] is checked' );
 
     $m->follow_link_ok( { text => "Edit Search", n => 2 } );

@@ -62,7 +62,7 @@ Set(
             'open -> resolved'  => {
                 label => 'Resolve', update => 'Comment',
                 All => 1,
-                SelectedReportsAll => 1, SelectedInvestigationsAll => 1, SelectedBlocksAll => 1,
+                SelectedReportsAll => 1, SelectedInvestigationsAll => 1, SelectedCountermeasuresAll => 1,
             },
             'open -> resolved'  => {
                 label => 'Quick Resolve',
@@ -70,12 +70,12 @@ Set(
             'open -> abandoned' => {
                 label => 'Abandon', update => 'Comment',
                 All => 1,
-                SelectedReportsAll => 1, SelectedInvestigationsAll => 1, SelectedBlocksAll => 1,
+                SelectedReportsAll => 1, SelectedInvestigationsAll => 1, SelectedCountermeasuresAll => 1,
             },
             '* -> open'  => {
                 label => 'Re-open',
                 All => 1,
-                SelectedReportsAll => 1, SelectedInvestigationsAll => 1, SelectedBlocksAll => 1,
+                SelectedReportsAll => 1, SelectedInvestigationsAll => 1, SelectedCountermeasuresAll => 1,
             },
         ],
     },
