@@ -133,7 +133,7 @@ for my $short (sort keys %test_cidr) {
         ok( $ticket->id, 'loaded ticket' );
         my $values = $ticket->CustomFieldValues('IP');
         my %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
-        ok( $has{ $full }, "has value" )
+        ok( $has{ $full }, "has value $full" )
             or diag "but has values ". join ", ", keys %has;
     }
 }
@@ -162,7 +162,7 @@ for my $short (sort keys %test_cidr) {
         ok( $ticket->id, 'loaded ticket' );
         my $values = $ticket->CustomFieldValues('IP');
         my %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
-        ok( $has{ $full }, "has value" )
+        ok( $has{ $full }, "has value $full" )
             or diag "but has values ". join ", ", keys %has;
     }
 }
@@ -201,7 +201,7 @@ diag "set IP" if $ENV{'TEST_VERBOSE'};
         my $values = $ticket->CustomFieldValues('IP');
         my %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
         is( scalar values %has, 1, "one IP were added");
-        ok( $has{ $valid{ $val } }, "has value" )
+        ok( $has{ $valid{ $val } }, "has value $valid{$val}" )
             or diag "but has values ". join ", ", keys %has;
 
 diag "set IP with spaces around" if $ENV{'TEST_VERBOSE'};
@@ -220,7 +220,7 @@ diag "set IP with spaces around" if $ENV{'TEST_VERBOSE'};
         $values = $ticket->CustomFieldValues('IP');
         %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
         is( scalar values %has, 1, "one IP were added");
-        ok( $has{ $valid{'::192.168.1.1'} }, "has value" )
+        ok( $has{ $valid{'::192.168.1.1'} }, "has value ::192.168.1.1" )
             or diag "but has values ". join ", ", keys %has;
 
 diag "replace IP with a range" if $ENV{'TEST_VERBOSE'};
@@ -239,7 +239,7 @@ diag "replace IP with a range" if $ENV{'TEST_VERBOSE'};
         $values = $ticket->CustomFieldValues('IP');
         %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
         is( scalar values %has, 1, "one IP were added");
-        ok( $has{ $test_cidr{ $val } }, "has value" )
+        ok( $has{ $test_cidr{ $val } }, "has value $test_cidr{$val}" )
             or diag "but has values ". join ", ", keys %has;
     }
 }
@@ -265,7 +265,7 @@ diag "check that IPs in messages don't add duplicates" if $ENV{'TEST_VERBOSE'};
     is(scalar values %has, 1, "one IP were added");
     ok(!grep( $_ != 1, values %has ), "no duplicated values")
         or diag "duplicates: ". join ',', grep $has{$_}>1, keys %has;
-    ok($has{ $valid{ 'abcd::192.168.1.1' } }, "IP is there")
+    ok($has{ $valid{ 'abcd::192.168.1.1' } }, "abcd::192.168.1.1 is there")
             or diag "but has values ". join ", ", keys %has;
 }
 
@@ -310,6 +310,7 @@ diag "search tickets by IP range" if $ENV{'TEST_VERBOSE'};
         my %has = map { $_->Content => 1 } @{ $ticket->CustomFieldValues('IP')->ItemsArrayRef };
         next if grep /^0000(:0000){5}:c0a8:01/, keys %has;
         $flag = 0;
+        diag 'has IPs: ' . join ', ', sort keys %has;
         ok(0, "ticket #". $ticket->id ." has no IP from '::c0a8::-::c0a8:01ff', but should");
         last;
     }
@@ -511,9 +512,9 @@ diag "merge ticket, IPs should be merged";
     my $values = $ticket->CustomFieldValues('IP');
     my %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
     is( scalar values %has, 2, "both IPs are there");
-    ok( $has{ '0000:'x6 .'ac10:0001' }, "has value" )
+    ok( $abbrev_of{ '0000:'x6 .'ac10:0001' }, "has value" )
         or diag "but has values ". join ", ", keys %has;
-    ok( $has{ '0000:'x6 .'ac10:0002' }, "has value" )
+    ok( $abbrev_of{ '0000:'x6 .'ac10:0002' }, "has value" )
         or diag "but has values ". join ", ", keys %has;
 }
 
