@@ -69,7 +69,7 @@ RT::IR::Config::Init();
 sub lifecycle_report {'incident_reports'}
 sub lifecycle_incident {'incidents'}
 sub lifecycle_investigation {'investigations'}
-sub lifecycle_countermeasure {'blocks'}
+sub lifecycle_countermeasure {'countermeasures'}
 
 
 my @LIFECYCLES = (RT::IR->lifecycle_incident, RT::IR->lifecycle_report, RT::IR->lifecycle_investigation, RT::IR->lifecycle_countermeasure);
