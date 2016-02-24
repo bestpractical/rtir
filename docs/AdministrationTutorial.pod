@@ -22,7 +22,7 @@ your custom configuration values there.
 You may disable the Blocks queue by putting the following into your
 F<RTIR_SiteConfig.pm> config:
 
-    Set($RTIR_DisableBlocksQueue, 1);
+    Set($RTIR_DisableCountermeasures, 1);
 
 You will probably also want to disable the Queue using the RT
 Administrative interface.  Tools -> Configuration -> Queues -> Blocks,

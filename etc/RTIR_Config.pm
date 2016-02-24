@@ -599,13 +599,13 @@ Set(%CustomFieldGroupings,
 
 =over 4
 
-=item C<$RTIR_DisableBlocksQueue>
+=item C<$RTIR_DisableCountermeasures>
 
 If true then Countermeasure queue functionality inactive and disabled.
 
 =cut
 
-Set($RTIR_DisableBlocksQueue, 0);
+Set($RTIR_DisableCountermeasures, 0);
 
 =item C<$RTIR_BlockAproveActionRegexp>
 

@@ -126,7 +126,7 @@ $root->child(
     launch => title => loc('Launch'),
     path => RT::IR->HREFTo('Create.html?Lifecycle='.RT::IR->lifecycle_investigation, IncludeWebPath => 0),
 );
-unless ( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
+unless ( RT->Config->Get('RTIR_DisableCountermeasures') ) {
     $root->child(
         blocks => title => loc('Countermeasures'),
         path => RT::IR->HREFTo('Search/Results.html?Lifecycle='.RT::IR->lifecycle_countermeasure, IncludeWebPath => 0)

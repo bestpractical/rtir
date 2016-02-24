@@ -60,7 +60,7 @@
 
 </td><td width="50%" valign="top">
 
-% unless ( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
+% unless ( RT->Config->Get('RTIR_DisableCountermeasures') ) {
 <& LookupSummary, %ARGS, Lifecycle => RT::IR->lifecycle_countermeasure, Query => $query &>
 % }
 

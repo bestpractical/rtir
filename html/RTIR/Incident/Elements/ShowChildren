@@ -82,7 +82,7 @@ $Rows  => 8
 <%INIT>
 
 
-return if $Lifecycle eq RT::IR->lifecycle_countermeasure && RT->Config->Get('RTIR_DisableBlocksQueue');
+return if $Lifecycle eq RT::IR->lifecycle_countermeasure && RT->Config->Get('RTIR_DisableCountermeasures');
 
 
 my $FriendlyLifecycle = RT::IR::FriendlyLifecycle($Lifecycle);

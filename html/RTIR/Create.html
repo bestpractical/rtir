@@ -378,7 +378,7 @@ my $ticket = RT::Ticket->new($session{'CurrentUser'}); # empty ticket object
 
 
 if (RT::IR->IsCountermeasureQueue($QueueObj) 
-    && RT->Config->Get('RTIR_DisableBlocksQueue') ) {
+    && RT->Config->Get('RTIR_DisableCountermeasures') ) {
     Abort(loc("Countermeasure queues are disabled via config file"));
 }
 

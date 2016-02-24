@@ -91,7 +91,7 @@
     OrderBy       => $OrderBy,
     Order         => $Order,
 &>
-% unless( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
+% unless( RT->Config->Get('RTIR_DisableCountermeasures') ) {
 <h2><&|/l&>Countermeasure Correspondents</&></h2>
 <& /RTIR/Search/Elements/ShowResults,
     BaseURL       => $BaseURL,
@@ -242,7 +242,7 @@ if ($Status eq 'resolved') {
 
 my @lifecycles = (RT::IR->lifecycle_report);
 push @lifecycles, RT::IR->lifecycle_investigation if $All;
-push @lifecycles, RT::IR->lifecycle_countermeasure unless RT->Config->Get('RTIR_DisableBlocksQueue');
+push @lifecycles, RT::IR->lifecycle_countermeasure unless RT->Config->Get('RTIR_DisableCountermeasures');
 
 $Query ||= RT::IR->ActiveQuery( Lifecycle => \@lifecycles );
 
