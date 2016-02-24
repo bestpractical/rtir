@@ -75,11 +75,12 @@ sub lifecycle_countermeasure {'countermeasures'}
 my @LIFECYCLES = (RT::IR->lifecycle_incident, RT::IR->lifecycle_report, RT::IR->lifecycle_investigation, RT::IR->lifecycle_countermeasure);
 
 my %TYPE = (
-    'incidents'        => 'Incident',
+    RT::IR->lifecycle_incident       => 'Incident',
+    RT::IR->lifecycle_report         => 'Report',
+    RT::IR->lifecycle_investigation  => 'Investigation',
+    RT::IR->lifecycle_countermeasure => 'Countermeasure',
+
     'incident reports' => 'Report',
-    'incident_reports' => 'Report',
-    'investigations'   => 'Investigation',
-    'blocks'           => 'Block',
 );
 
 # these are used by initialdata to form the default queue names
