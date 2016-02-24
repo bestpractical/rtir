@@ -30,6 +30,22 @@ my %test_cidr = (
     '::192.168.1.1/120'     => '0000:' x 6 . 'c0a8:0100' .'-'. '0000:' x 6 . 'c0a8:01ff',
 );
 
+my %abbrev_of = (
+    'abcd:' x 7 . 'abcd' => 'abcd:' x 7 . 'abcd',
+    '034:' x 7 . '034'   => '34:' x 7 . '34',
+    'abcd::'             => 'abcd::',
+    '::abcd'             => '::abcd',
+    'abcd::034'          => 'abcd::34',
+    'abcd::192.168.1.1'  => 'abcd::c0a8:101',
+    '::192.168.1.1'      => '::c0a8:101',
+
+    'abcd:' x 7 . 'abcd/32' => 'abcd:abcd::-abcd:abcd' . ':ffff' x 6,
+    '::192.168.1.1/120' => '::c0a8:100-::c0a8:1ff',
+
+    '0000:'x6 .'ac10:0001' => '::ac10:1',
+    '0000:'x6 .'ac10:0002' => '::ac10:2',
+);
+
 my $cf;
 diag "load and check basic properties of the IP CF" if $ENV{'TEST_VERBOSE'};
 {
@@ -60,6 +76,7 @@ my $rtir_user = RT::CurrentUser->new( rtir_user() );
 diag "create a ticket via web and set IP" if $ENV{'TEST_VERBOSE'};
 for my $short (sort keys %valid) {
     my $full = $valid{$short};
+    my $abbrev = $abbrev_of{$short};
     my $incident_id; # block couldn't be created without incident id
     foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
@@ -74,18 +91,19 @@ for my $short (sort keys %valid) {
         );
         $incident_id = $id if $queue eq 'Incidents';
 
-        $agent->content_like( qr/\Q$full/, "IP on the page" );
+        $agent->content_like( qr/\Q$abbrev/, "IP on the page" );
 
         my $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $id );
         ok( $ticket->id, 'loaded ticket' );
-        is( $ticket->FirstCustomFieldValue('IP'), $full, 'correct value' );
+        is( $ticket->FirstCustomFieldValue('IP'), $abbrev, 'correct value' );
     }
 }
 
 diag "create a ticket via web with IP in message" if $ENV{'TEST_VERBOSE'};
 for my $short (sort keys %test_set) {
     my $full = $valid{$short};
+    my $abbrev = $abbrev_of{$short};
     my $incident_id; # block couldn't be created without incident id
     foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
@@ -100,18 +118,19 @@ for my $short (sort keys %test_set) {
         );
         $incident_id = $id if $queue eq 'Incidents';
 
-        $agent->content_like( qr/\Q$full/, "IP on the page" );
+        $agent->content_like( qr/\Q$abbrev/, "IP on the page" );
 
         my $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $id );
         ok( $ticket->id, 'loaded ticket' );
-        is( $ticket->FirstCustomFieldValue('IP'), $full, 'correct value' );
+        is( $ticket->FirstCustomFieldValue('IP'), $abbrev, 'correct value' );
     }
 }
 
 diag "create a ticket via web with CIDR" if $ENV{'TEST_VERBOSE'};
 for my $short (sort keys %test_cidr) {
     my $full = $test_cidr{$short};
+    my $abbrev = $abbrev_of{$short};
     my $incident_id; # block couldn't be created without incident id
     foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
@@ -126,14 +145,14 @@ for my $short (sort keys %test_cidr) {
         );
         $incident_id = $id if $queue eq 'Incidents';
 
-        $agent->content_like( qr/\Q$full/, "IP range on the page" );
+        $agent->content_like( qr/\Q$abbrev/, "IP range on the page" );
 
         my $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $id );
         ok( $ticket->id, 'loaded ticket' );
         my $values = $ticket->CustomFieldValues('IP');
         my %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
-        ok( $has{ $full }, "has value $full" )
+        ok( $has{ $abbrev }, "has value $abbrev" )
             or diag "but has values ". join ", ", keys %has;
     }
 }
@@ -141,6 +160,8 @@ for my $short (sort keys %test_cidr) {
 diag "create a ticket via web with CIDR in message" if $ENV{'TEST_VERBOSE'};
 for my $short (sort keys %test_cidr) {
     my $full = $test_cidr{$short};
+    my $abbrev = $abbrev_of{$short};
+
     my $incident_id; # block couldn't be created without incident id
     foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
@@ -155,14 +176,14 @@ for my $short (sort keys %test_cidr) {
         );
         $incident_id = $id if $queue eq 'Incidents';
 
-        $agent->content_like( qr/\Q$full/, "IP range on the page" );
+        $agent->content_like( qr/\Q$abbrev/, "IP range on the page" );
 
         my $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $id );
         ok( $ticket->id, 'loaded ticket' );
         my $values = $ticket->CustomFieldValues('IP');
         my %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
-        ok( $has{ $full }, "has value $full" )
+        ok( $has{ $abbrev }, "has value $abbrev" )
             or diag "but has values ". join ", ", keys %has;
     }
 }
@@ -193,7 +214,7 @@ diag "set IP" if $ENV{'TEST_VERBOSE'};
         $agent->field( $field_name => $val );
         $agent->click('SaveChanges');
 
-        $agent->content_like( qr/\Q$valid{$val}/, "IP on the page" );
+        $agent->content_like( qr/\Q$abbrev_of{$val}/, "IP on the page" );
 
         my $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $id );
@@ -201,18 +222,18 @@ diag "set IP" if $ENV{'TEST_VERBOSE'};
         my $values = $ticket->CustomFieldValues('IP');
         my %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
         is( scalar values %has, 1, "one IP were added");
-        ok( $has{ $valid{ $val } }, "has value $valid{$val}" )
+        ok( $has{ $abbrev_of{ $val } }, "has value $abbrev_of{$val}" )
             or diag "but has values ". join ", ", keys %has;
 
 diag "set IP with spaces around" if $ENV{'TEST_VERBOSE'};
         $val = "  ::192.168.1.1  \n  ";
         $agent->follow_link_ok({text => 'Edit', n => "1"}, "Followed 'Edit' link");
         $agent->form_number(3);
-        like( $agent->value($field_name), qr/^\s*\Q$valid{'abcd::192.168.1.1'}\E\s*$/, 'IP is in input box' );
+        like( $agent->value($field_name), qr/^\s*\Q$abbrev_of{'abcd::192.168.1.1'}\E\s*$/, 'IP is in input box' );
         $agent->field( $field_name => $val );
         $agent->click('SaveChanges');
 
-        $agent->content_like( qr/\Q$valid{'::192.168.1.1'}/, "IP on the page" );
+        $agent->content_like( qr/\Q$abbrev_of{'::192.168.1.1'}/, "IP on the page" );
 
         $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $id );
@@ -220,18 +241,18 @@ diag "set IP with spaces around" if $ENV{'TEST_VERBOSE'};
         $values = $ticket->CustomFieldValues('IP');
         %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
         is( scalar values %has, 1, "one IP were added");
-        ok( $has{ $valid{'::192.168.1.1'} }, "has value ::192.168.1.1" )
+        ok( $has{ $abbrev_of{'::192.168.1.1'} }, "has value ::192.168.1.1" )
             or diag "but has values ". join ", ", keys %has;
 
 diag "replace IP with a range" if $ENV{'TEST_VERBOSE'};
         $val = '::192.168.1.1/120';
         $agent->follow_link_ok({text => 'Edit', n => "1"}, "Followed 'Edit' link");
         $agent->form_number(3);
-        like( $agent->value($field_name), qr/^\s*\Q$valid{'::192.168.1.1'}\E\s*$/, 'IP is in input box' );
+        like( $agent->value($field_name), qr/^\s*\Q$abbrev_of{'::192.168.1.1'}\E\s*$/, 'IP is in input box' );
         $agent->field( $field_name => $val );
         $agent->click('SaveChanges');
 
-        $agent->content_like( qr/\Q$test_cidr{ $val }/, "IP on the page" );
+        $agent->content_like( qr/\Q$abbrev_of{ $val }/, "IP on the page" );
 
         $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $id );
@@ -239,7 +260,7 @@ diag "replace IP with a range" if $ENV{'TEST_VERBOSE'};
         $values = $ticket->CustomFieldValues('IP');
         %has = map { $_->Content => 1 } @{ $values->ItemsArrayRef };
         is( scalar values %has, 1, "one IP were added");
-        ok( $has{ $test_cidr{ $val } }, "has value $test_cidr{$val}" )
+        ok( $has{ $abbrev_of{ $val } }, "has value $abbrev_of{$val}" )
             or diag "but has values ". join ", ", keys %has;
     }
 }
@@ -265,7 +286,7 @@ diag "check that IPs in messages don't add duplicates" if $ENV{'TEST_VERBOSE'};
     is(scalar values %has, 1, "one IP were added");
     ok(!grep( $_ != 1, values %has ), "no duplicated values")
         or diag "duplicates: ". join ',', grep $has{$_}>1, keys %has;
-    ok($has{ $valid{ 'abcd::192.168.1.1' } }, "abcd::192.168.1.1 is there")
+    ok($has{ $abbrev_of{ 'abcd::192.168.1.1' } }, "abcd::192.168.1.1 is there")
             or diag "but has values ". join ", ", keys %has;
 }
 
@@ -284,7 +305,7 @@ diag "search tickets by IP" if $ENV{'TEST_VERBOSE'};
     my $flag = 1;
     while ( my $ticket = $tickets->Next ) {
         my %has = map { $_->Content => 1 } @{ $ticket->CustomFieldValues('IP')->ItemsArrayRef };
-        next if $has{ $test_cidr{'::192.168.1.1/120'} };
+        next if $has{ $abbrev_of{'::192.168.1.1/120'} };
         $flag = 0;
         ok(0, "ticket #". $ticket->id ." has no range ::192.168.1.1/120, but should")
             or diag "but has values ". join ", ", keys %has;
@@ -308,7 +329,7 @@ diag "search tickets by IP range" if $ENV{'TEST_VERBOSE'};
     my $flag = 1;
     while ( my $ticket = $tickets->Next ) {
         my %has = map { $_->Content => 1 } @{ $ticket->CustomFieldValues('IP')->ItemsArrayRef };
-        next if grep /^0000(:0000){5}:c0a8:01/, keys %has;
+        next if $has{'::c0a8:1a0'};
         $flag = 0;
         diag 'has IPs: ' . join ', ', sort keys %has;
         ok(0, "ticket #". $ticket->id ." has no IP from '::c0a8::-::c0a8:01ff', but should");
@@ -552,7 +573,7 @@ diag "merge ticket with the same IP";
     my $values = $ticket->CustomFieldValues('IP');
     my @has = map $_->Content, @{ $values->ItemsArrayRef };
     is( scalar @has, 1, "only one IP") or diag "values: @has";
-    is( $has[0], '0000:'x6 .'ac10:0001', "has value" );
+    is( $has[0], '::ac10:1', "has value" );
 }
 
 undef $agent;
