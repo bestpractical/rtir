@@ -293,16 +293,16 @@ sub grant_role_queue_rights {
         debug "Granting role rights to Everyone for queue " . $queue->Name . "\n";
         my @rights;
 
-        if ( $queue->Lifecycle eq 'incident_reports' ) {
+        if ( $queue->Lifecycle eq RT::IR->lifecycle_report ) {
             @rights = RT::IR->EveryoneIncidentReportRights();
-        } elsif ( $queue->Lifecycle eq 'incidents' ) {
+        } elsif ( $queue->Lifecycle eq RT::IR->lifecycle_incident ) {
             @rights = RT::IR->EveryoneIncidentRights();
 
         }
-        if ( $queue->Lifecycle eq 'investigations' ) {
+        if ( $queue->Lifecycle eq RT::IR->lifecycle_investigation ) {
             @rights = RT::IR->EveryoneInvestigationRights();
 
-        } elsif ( $queue->Lifecycle eq 'countermeaures' ) {
+        } elsif ( $queue->Lifecycle eq RT::IR->lifecycle_countermeasure ) {
             @rights = RT::IR->EveryoneBlockRights();
         }
         # grant 'everyone' rights
