@@ -66,9 +66,9 @@ sub create_investigation {
     local $Test::Builder::Level = $Test::Builder::Level + 1;
     return (shift)->create_rtir_ticket_ok( 'Investigations', @_ );
 }
-sub create_block {
+sub create_countermeasure {
     local $Test::Builder::Level = $Test::Builder::Level + 1;
-    return (shift)->create_rtir_ticket_ok( 'Blocks', @_ );
+    return (shift)->create_rtir_ticket_ok( 'Countermeasures', @_ );
 }
 
 sub goto_create_rtir_ticket {
@@ -308,14 +308,14 @@ qr{<td class="labeltop">Correspondents:</td>\s*<td class="value">\s*<span class=
     );
 }
 
-sub goto_edit_block {
+sub goto_edit_countermeasure {
     my $self = shift;
     my $id   = shift;
 
     $self->display_ticket($id);
 
     return $self->follow_link_ok( { text => 'Edit', n => '1' },
-        "Followed 'Edit' (block) link" );
+        "Followed 'Edit' (countermeasure) link" );
 }
 
 sub resolve_rtir_ticket {

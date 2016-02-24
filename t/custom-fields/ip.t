@@ -550,14 +550,14 @@ diag "merge ticket, IPs should be merged";
         'Incidents',
         { Subject => "test" },
     );
-    my $b1_id = $agent->create_block(
+    my $b1_id = $agent->create_countermeasure(
         {
             Subject => "test ip",
             Incident => $incident_id,
         },
         { IP => '172.16.0.1' },
     );
-    my $b2_id = $agent->create_block(
+    my $b2_id = $agent->create_countermeasure(
         {
             Subject => "test ip",
             Incident => $incident_id,
@@ -590,14 +590,14 @@ diag "merge ticket with the same IP";
         'Incidents',
         { Subject => "test" },
     );
-    my $b1_id = $agent->create_block(
+    my $b1_id = $agent->create_countermeasure(
         {
             Subject => "test ip",
             Incident => $incident_id,
         },
         { IP => '172.16.0.1' },
     );
-    my $b2_id = $agent->create_block(
+    my $b2_id = $agent->create_countermeasure(
         {
             Subject => "test ip",
             Incident => $incident_id,

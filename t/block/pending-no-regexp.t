@@ -12,7 +12,7 @@ my $agent = default_agent();
 
 my $inc_id   = $agent->create_incident( {Subject => "incident with block"});
 my $rtname = RT->Config->Get('rtname');
-my $block_id = $agent->create_block( {
+my $block_id = $agent->create_countermeasure( {
     Subject => "block",
     Incident => $inc_id,
     Requestors => 'rt-test@example.com',

@@ -9,7 +9,7 @@ RT::Test->started_ok;
 my $agent = default_agent();
 
 my $inc_id   = $agent->create_incident( {Subject => "incident with block"});
-my $block_id = $agent->create_block( {Subject => "block", Incident => $inc_id});
+my $block_id = $agent->create_countermeasure( {Subject => "block", Incident => $inc_id});
 
 $agent->ticket_status_is( $block_id, 'pending activation');
 
@@ -62,7 +62,7 @@ diag "prepare for removing using the link";
 
 diag "test activation after reply using 'Activate' link";
 {
-    my $block_id = $agent->create_block( {Subject => "block", Incident => $inc_id});
+    my $block_id = $agent->create_countermeasure( {Subject => "block", Incident => $inc_id});
     $agent->ticket_status_is( $block_id, 'pending activation');
 
     $agent->follow_link_ok({ text => 'Reply' }, "Go to reply page");
@@ -83,7 +83,7 @@ diag "test activation after reply using 'Activate' link";
 
 diag "test activation after reply using Edit page";
 {
-    my $block_id = $agent->create_block( {Subject => "block", Incident => $inc_id});
+    my $block_id = $agent->create_countermeasure( {Subject => "block", Incident => $inc_id});
     $agent->ticket_status_is( $block_id, 'pending activation');
 
     $agent->follow_link_ok({ text => 'Reply' }, "Go to reply page");

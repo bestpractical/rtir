@@ -85,7 +85,7 @@ diag "started date of an IR" if $ENV{'TEST_VERBOSE'};
 diag "started date of a block" if $ENV{'TEST_VERBOSE'};
 {
     my $inc_id = $agent->create_incident( {Subject => "started date"});
-    my $block_id = $agent->create_block( {Subject => "started date", Incident => $inc_id});
+    my $block_id = $agent->create_countermeasure( {Subject => "started date", Incident => $inc_id});
 
     my $block = RT::Ticket->new( $RT::SystemUser );
     $block->Load( $block_id );
