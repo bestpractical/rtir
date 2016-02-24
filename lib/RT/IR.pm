@@ -82,11 +82,12 @@ my %TYPE = (
     'blocks'           => 'Block',
 );
 
+# these are used by initialdata to form the default queue names
 my %FRIENDLY_LIFECYCLE = (
-    RT::IR->lifecycle_incident        => 'Incidents',
-    RT::IR->lifecycle_report => 'Incident Reports',
-    RT::IR->lifecycle_investigation   => 'Investigations',
-    RT::IR->lifecycle_countermeasure           => 'Blocks',
+    RT::IR->lifecycle_incident       => 'Incidents',
+    RT::IR->lifecycle_report         => 'Incident Reports',
+    RT::IR->lifecycle_investigation  => 'Investigations',
+    RT::IR->lifecycle_countermeasure => 'Countermeasures',
 
 );
 

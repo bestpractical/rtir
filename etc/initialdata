@@ -115,7 +115,7 @@
     {   Name => 'IP',
         Type => 'IPAddressRangeMultiple',
         Queue =>
-            [ 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ],
+            [ 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ],
         Disabled    => 0,
         Description => 'IP address for RTIR queues',
         LinkValueTo =>
@@ -123,19 +123,19 @@
     },
     {   Name        => 'Netmask',
         Type        => 'FreeformSingle',
-        Queue       => 'Blocks',
+        Queue       => 'Countermeasures',
         Disabled    => 0,
         Description => 'Network mask for Blocks RTIR queue',
     },
     {   Name        => 'Port',
         Type        => 'FreeformSingle',
-        Queue       => 'Blocks',
+        Queue       => 'Countermeasures',
         Disabled    => 0,
         Description => 'Port for Blocks RTIR queue',
     },
     {   Name        => 'Where Blocked',
         Type        => 'FreeformSingle',
-        Queue       => 'Blocks',
+        Queue       => 'Countermeasures',
         Disabled    => 0,
         Description => 'Where the block is placed for Blocks RTIR queue',
     },
@@ -266,7 +266,7 @@
     },
 
     {   Description    => "On Correspond Change Status of the Block",
-        Queue          => 'Blocks',
+        Queue          => 'Countermeasures',
         ScripCondition => 'On Correspond',
         ScripAction    => 'RTIR Set Block Status',
         Template       => 'Blank',
@@ -291,7 +291,7 @@
     },
 
     {   Description    => "Set Due Date On Incident",
-        Queue          => [ 'Incident Reports', 'Investigations', 'Blocks' ],
+        Queue          => [ 'Incident Reports', 'Investigations', 'Countermeasures' ],
         ScripCondition => 'RTIR Require Due Change',
         ScripAction    => 'RTIR Set Incident Due',
         Template       => 'Blank',
@@ -318,14 +318,14 @@
         Template       => 'Blank',
     },
     {   Description    => "FixOwnership",
-        Queue          => [ 'Incident Reports', 'Investigations', 'Blocks' ],
+        Queue          => [ 'Incident Reports', 'Investigations', 'Countermeasures' ],
         ScripCondition => 'On Owner Change',
         ScripAction    => 'RTIR Change Parent Ownership',
         Template       => 'Blank',
     },
 
     {   Description    => "ReopenIncident",
-        Queue          => [ 'Incident Reports', 'Investigations', 'Blocks' ],
+        Queue          => [ 'Incident Reports', 'Investigations', 'Countermeasures' ],
         ScripCondition => 'On Status Change',
         ScripAction    => 'RTIR Open Parent',
         Template       => 'Blank',
@@ -339,7 +339,7 @@
     },
 
     {   Description    => "NotifyOnClose",
-        Queue          => 'Blocks',
+        Queue          => 'Countermeasures',
         ScripCondition => 'RTIR Close Ticket',
         ScripAction    => 'Notify Requestors',
         Template       => 'BlockRemoved'
@@ -347,14 +347,14 @@
 
     {   Description => "SetIPFromContent",
         Queue =>
-            [ 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ],
+            [ 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ],
         ScripCondition => 'On Correspond',
         ScripAction    => 'RTIR parse message for IPs',
         Template       => 'Blank'
     },
     {   Description => "SetIPFromContent",
         Queue =>
-            [ 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ],
+            [ 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ],
         ScripCondition => 'On Create',
         ScripAction    => 'RTIR parse message for IPs',
         Template       => 'Blank'
@@ -362,7 +362,7 @@
 
     {   Description => "MergeIPs",
         Queue =>
-            [ 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ],
+            [ 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ],
         ScripCondition => 'RTIR Merge',
         ScripAction    => 'RTIR merge IPs',
         Template       => 'Blank'
@@ -374,7 +374,7 @@
 # mention it in the UPGRADING file
 
 @Templates = (
-    {   Queue       => 'Blocks',
+    {   Queue       => 'Countermeasures',
         Name        => 'Autoreply',
         Description => 'Sent when a block is created',
         Content     => 'RT-Attach-Message: yes
@@ -408,7 +408,7 @@ you may reply to this message.
                         Thank you,
                         { $Ticket->QueueObj->CorrespondAddress }',
     },
-    {   Queue       => 'Blocks',
+    {   Queue       => 'Countermeasures',
         Name        => 'BlockRemoved',
         Description => 'Sent when a block is removed',
         Content     => 'Subject: {$Ticket->Subject}
@@ -526,7 +526,7 @@ push @ACL, map {
 push @ACL, map {
     {   GroupType   => 'Everyone',
         GroupDomain => 'SystemInternal',
-        Queue       => 'Blocks',
+        Queue       => 'Countermeasures',
         Right       => $_
     }
 } RT::IR->EveryoneBlockRights();
