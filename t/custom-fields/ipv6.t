@@ -58,7 +58,8 @@ diag "check that CF applies to all RTIR's queues" if $ENV{'TEST_VERBOSE'};
 my $rtir_user = RT::CurrentUser->new( rtir_user() );
 
 diag "create a ticket via web and set IP" if $ENV{'TEST_VERBOSE'};
-while ( my ($short, $full) = each %valid ) {
+for my $short (sort keys %valid) {
+    my $full = $valid{$short};
     my $incident_id; # block couldn't be created without incident id
     foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
@@ -83,7 +84,8 @@ while ( my ($short, $full) = each %valid ) {
 }
 
 diag "create a ticket via web with IP in message" if $ENV{'TEST_VERBOSE'};
-while ( my ($short, $full) = each %test_set ) {
+for my $short (sort keys %test_set) {
+    my $full = $valid{$short};
     my $incident_id; # block couldn't be created without incident id
     foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
@@ -108,7 +110,8 @@ while ( my ($short, $full) = each %test_set ) {
 }
 
 diag "create a ticket via web with CIDR" if $ENV{'TEST_VERBOSE'};
-while ( my ($short, $full) = each %test_cidr ) {
+for my $short (sort keys %test_cidr) {
+    my $full = $test_cidr{$short};
     my $incident_id; # block couldn't be created without incident id
     foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
@@ -136,7 +139,8 @@ while ( my ($short, $full) = each %test_cidr ) {
 }
 
 diag "create a ticket via web with CIDR in message" if $ENV{'TEST_VERBOSE'};
-while ( my ($short, $full) = each %test_cidr ) {
+for my $short (sort keys %test_cidr) {
+    my $full = $test_cidr{$short};
     my $incident_id; # block couldn't be created without incident id
     foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
