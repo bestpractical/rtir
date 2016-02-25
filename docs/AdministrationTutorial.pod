@@ -17,21 +17,21 @@ To change a configuration value, copy the Set code from F<RT_Config.pm>
 or F<RTIR_Config.pm> and add it to the relevant Site Config. Then set
 your custom configuration values there.
 
-=head2 Blocks Queue
+=head2 Countermeasures Queue
 
-You may disable the Blocks queue by putting the following into your
+You may disable the Countermeasures queue by putting the following into your
 F<RTIR_SiteConfig.pm> config:
 
     Set($RTIR_DisableCountermeasures, 1);
 
 You will probably also want to disable the Queue using the RT
-Administrative interface.  Tools -> Configuration -> Queues -> Blocks,
+Administrative interface.  Tools -> Configuration -> Queues -> Countermeasures,
 uncheck Enabled and click Save Changes.
 
 =head2 Status
 
-The various states an incident, IR, investigation, or block can be in, such as
-'open', 'stalled', 'abandoned', etc.
+The various states an incident, IR, investigation, or countermeasure can be in,
+such as 'open', 'stalled', 'abandoned', etc.
 
 This field contains custom statuses for tickets, and values are different in
 different queues. The status values are set via the C<%Lifecycles> option in
@@ -54,7 +54,7 @@ but other fields can be.
 
 =item Constituency
 
-The constituency of an incident, IR, investigation, or block.
+The constituency of an incident, IR, investigation, or countermeasure.
 
 Additional quite heavy automation is tied to this field. This
 is described in L<Constituencies> doc. Don't rename this field
@@ -87,7 +87,7 @@ or external individual.
 
 =item IP
 
-IP addresses related to the incident, IR, investigation, or block.
+IP addresses related to the incident, IR, investigation, or countermeasure.
 
 Don't rename this custom field or it will lose all associated features.
 It's possible to change this CF from multiple values to single value.
@@ -98,15 +98,15 @@ See also L</SetIPFromContent> below.
 
 =item Netmask
 
-Network mask for a Block.
+Network mask for a block countermeasure.
 
 =item Port
 
-Port for a Block.
+Port for a network block.
 
 =item Where Blocked
 
-Where the block is placed.
+Where the network block is placed.
 
 =item Customer
 
@@ -181,12 +181,12 @@ Applies to the Incident Reports queue.
 On ticket creation, sets the HowReported custom field to a default
 value of Email if it isn't otherwise specified.
 
-=item On Correspond Change Status of the Block
+=item On Correspond Change Status of the Countermeasure
 
-On replies, changes the status of blocks according to a few rules
+On replies, changes the status of countermeasures according to a few rules
 that are described in L<RT::Action::RTIR_SetBlockStatus/DESCRIPTION>.
 
-RT's default L<RT::Action::AutoOpen> is disabled for blocks to
+RT's default L<RT::Action::AutoOpen> is disabled for countermeasures to
 avoid unwanted changes of status from 'pending activation'
 to 'active'.
 
@@ -223,10 +223,10 @@ not copied down to Children).
 
 Applies to the Incidents queue.
 
-If an incident is changed to an inactive status,
-looks for linked tickets in the Incident Reports, Investigations or Blocks
-queues and resolves them.  If any of these linked tickets are linked
-to other ongoing incidents, a comment is added and they remain unresolved.
+If an incident is changed to an inactive status, looks for linked tickets in
+the Incident Reports, Investigations or Countermeasures queues and resolves
+them.  If any of these linked tickets are linked to other ongoing incidents, a
+comment is added and they remain unresolved.
 
 =item FixOwnership
 
@@ -235,14 +235,14 @@ Applies to the Incidents queue.
 When the Owner of an incident is changed, the Owner of linked children
 tickets are changed to the same owner.
 
-Applies to the Incident Reports, Blocks and Investigations queues.
+Applies to the Incident Reports, Countermeasures and Investigations queues.
 
 When the Owner of a ticket in these queues is changed, that change
 is also applied to the linked incident.
 
 =item ReopenIncident
 
-Applies to the Incident Reports, Blocks and Investigations queues.
+Applies to the Incident Reports, Countermeasures and Investigations queues.
 
 If the status of a ticket in these queues is changed from rejected or
 resolved, the linked parent incident ticket status is set to open.
@@ -260,15 +260,16 @@ F<RTIR_Config.pm>.
 
 =item NotifyOnClose
 
-Applies to the Blocks queue.
+Applies to the Countermeasures queue.
 
-When a block ticket is moved from an active status to an inactive
-status (closed), the requestors on the block are notified using the
-L<Templates/BlockRemoved in Blocks queue> template.
+When a countermeasure ticket is moved from an active status to an inactive
+status (closed), the requestors on the countermeasure are notified using the
+L<Templates/BlockRemoved in Countermeasure queue> template.
 
 =item SetIPFromContent
 
-Applies to the Incident Reports, Blocks, Incidents and Investigations queues.
+Applies to the Incident Reports, Countermeasures, Incidents and Investigations
+queues.
 
 Updates the ticket custom field IP to have a list of all IPs and IP ranges
 found in the body of the ticket during Create and Correspond.
@@ -280,7 +281,7 @@ It's OK to disable this scrip.
 
 =item SetConstituency
 
-Applies to the Incident Reports, Blocks, Incidents and Investigations queues.
+Applies to the Incident Reports, Countermeasures, Incidents and Investigations queues.
 
 Uses the Constituency algorithms discussed in F<docs/Constituencies.pod> to
 set and propagate changes to the Constituency custom field.  On ticket
@@ -294,7 +295,7 @@ _RTIR_Constituency_Propagation in your F<RTIR_Config.pm>
 
 =item SetConstituencyGroup
 
-Applies to the Incident Reports, Blocks, Incidents and Investigations queues.
+Applies to the Incident Reports, Countermeasures, Incidents and Investigations queues.
 
 When tickets are created, or the Constituency custom field is updated,
 this scrip manages the assignment of DutyTeam groups as AdminCcs.
@@ -309,13 +310,13 @@ how to use these groups.
 
 =over 4
 
-=item Autoreply in Blocks queue
+=item Autoreply in Countermeasures queue
 
-This template is sent when a block is created.
+This template is sent when a countermeasure is created.
 
-=item BlockRemoved in Blocks queue
+=item BlockRemoved in Countermeasure queue
 
-This template is sent when a block is removed.
+This template is sent when a countermeasure is removed.
 
 =item Autoreply in Investigations queue
 

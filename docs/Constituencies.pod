@@ -48,7 +48,7 @@ Its correspondence email address.
 =item *
 
 Its queues--typically a set with one each of Incident Reports,
-Incidents, Investigations, and Blocks--each with the same
+Incidents, Investigations, and Countermeasures--each with the same
 RTIR Constituency value defined.
 
 =item *
@@ -70,7 +70,7 @@ creates tickets.
 
 =item *
 
-Any new incidents created from incident reports, or blocks and
+Any new incidents created from incident reports, or countermeasures and
 investigations created from incidents, inherit the constituency
 from the launching ticket.
 
@@ -132,7 +132,7 @@ the constituency 'EDUNET':
 
 =item * Queue 'Inestigations - EDUNET'
 
-=item * Queue 'Blocks - EDUNET'
+=item * Queue 'Countermeasures - EDUNET'
 
 =item * Group 'DutyTeam EDUNET'
 
@@ -256,7 +256,7 @@ the EDUNET constituency on the Incidents queue, for example).
 
 For example, assume you have two constituencies "EDUNET" and "GOVNET".
 Your RTIR instance consists of four queues for each constituency: Incident Reports - EDUNET,
-Incidents - EDUNET, Investigations - EDUNET and Blocks - EDUNET. To grant the user Edward
+Incidents - EDUNET, Investigations - EDUNET and Countermeasures - EDUNET. To grant the user Edward
 the right to work with EDUNET Incident Reports, make Edward an
 AdminCc of the new queue, either directly or as a member of a group
 like "DutyTeam EDUNET".

@@ -23,9 +23,9 @@ Mailgate help: rt/bin/rt-mailgate --help
 
 See L<RT::Crypt::GnuPG> and L<AdministrationTutorial/GnuPG Encryption>
 
-=head3 Create new block via web-interface
+=head3 Create new countermeasure via web-interface
 
-L<Tutorial/Creating a Block>
+L<Tutorial/Creating a Countermeasure>
 
 =head2 Managing Incident Responses
 
@@ -75,11 +75,11 @@ L<Tutorial/Linking Incidents to IRs, Investigations, etc.>
 
 L<Tutorial/Linking Incidents to IRs, Investigations, etc.>
 
-=head2 Link Incident with new Block
+=head2 Link Incident with new Countermeasure
 
 L<Tutorial/Linking Incidents to IRs, Investigations, etc.>
 
-=head2 Link Incident with existing Block
+=head2 Link Incident with existing Countermeasure
 
 L<Tutorial/Linking Incidents to IRs, Investigations, etc.>
 
@@ -111,19 +111,19 @@ L<Tutorial/Linking Incidents to IRs, Investigations, etc.>
 
 L<Tutorial/Correspond with Correspondent>
 
-=head2 Remove Blocks
+=head2 Remove Countermeasures
 
-L<Tutorial/Blocks>
+L<Tutorial/Countermeasures>
 
-=head2 Activate Blocks
+=head2 Activate Countermeasures
 
-L<Tutorial/Blocks>
+L<Tutorial/Countermeasures>
 
-=head2 Split Blocks, Split Investigation, Split Incident
+=head2 Split Countermeasures, Split Investigation, Split Incident
 
 L<Tutorial/Merging Tickets>
 
-=head2 Merge Blocks, Split Investigation, Split Incident
+=head2 Merge Countermeasures, Split Investigation, Split Incident
 
 L<Tutorial/Merging Tickets>
 
@@ -137,9 +137,9 @@ L<Tutorial/Merging Tickets>
 
 =item Reopen Incident
 
-=item Comment Blocks via web-interface
+=item Comment Countermeasures via web-interface
 
-=item Steal Blocks
+=item Steal Countermeasures
 
 =item Reply IR via web-interface
 
@@ -147,7 +147,7 @@ L<Tutorial/Merging Tickets>
 
 =item Reply from correspondent on Investigation via e-mail
 
-=item Reply from correspondent on Blocks via e-mail
+=item Reply from correspondent on Countermeasures via e-mail
 
 =item Comment on Investigation via web-interface
 
