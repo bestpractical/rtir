@@ -404,7 +404,7 @@ Set(%RTIRSearchResultFormats,
         q{Status,TimeLeft,DueRelative,CreatedRelative,__NEWLINE__,}.
         q{'',Requestors,QueueName,OwnerName,ToldRelative,LastUpdatedRelative },
 
-    BlockDefault =>
+    CountermeasureDefault =>
         q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
         q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
         q{Status,TimeLeft,DueRelative,CreatedRelative,__NEWLINE__,}.
@@ -469,7 +469,7 @@ Set(%RTIRSearchResultFormats,
         q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
         q{Status,DueRelative},
 
-    ChildBlock =>
+    ChildCountermeasure =>
         q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
         q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
         q{Status,DueRelative},
