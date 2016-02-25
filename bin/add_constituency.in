@@ -303,7 +303,7 @@ sub grant_role_queue_rights {
             @rights = RT::IR->EveryoneInvestigationRights();
 
         } elsif ( $queue->Lifecycle eq RT::IR->lifecycle_countermeasure ) {
-            @rights = RT::IR->EveryoneBlockRights();
+            @rights = RT::IR->EveryoneCountermeasureRights();
         }
         # grant 'everyone' rights
         for my $right (@rights) {

@@ -122,7 +122,7 @@ sub EveryoneIncidentRights {
     return ();
 }
 
-sub EveryoneBlockRights {
+sub EveryoneCountermeasureRights {
     return (qw(ReplyToTicket));
 }
 

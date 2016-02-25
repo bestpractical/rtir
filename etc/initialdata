@@ -529,7 +529,7 @@ push @ACL, map {
         Queue       => 'Countermeasures',
         Right       => $_
     }
-} RT::IR->EveryoneBlockRights();
+} RT::IR->EveryoneCountermeasureRights();
 
 push @ACL, (
     {   GroupId     => 'DutyTeam',      # - principalId
