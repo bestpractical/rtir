@@ -60,8 +60,8 @@ Installation instructions:
 Additional Extensions:
 ----------------------
 
-o  To maintain Due date for Reports, Investigations and Blocks, install
-   RT::Extension::SLA following the installation instructions in that
+o  To maintain Due date for Reports, Investigations and Countermeasures,
+   install RT::Extension::SLA following the installation instructions in that
    extension's README file.
 
 Configuring RTIR
@@ -69,11 +69,12 @@ Configuring RTIR
 
 1) Using RT's configuration interface, add the email address
    of the Network Operations Team (the people who will handle
-   activating and removing Blocks) as AdminCC on the Blocks queue.
-   RT -> Queues -> Blocks -> Watchers
+   activating and removing network blocks) as AdminCC on the
+   Countermeasures queue.
+   RT -> Queues -> Countermeasures -> Watchers
 
 2) You may want to modify the email messages that are automatically
-   sent on the creation of Investigations and Blocks.
+   sent on the creation of Investigations and Countermeasures.
    RT -> Queues -> <Select RTIR's Queue> -> Templates.
    RT -> Global -> Templates.
 
