@@ -179,7 +179,7 @@ lib/RT/Action/RTIR_FindIP.pm
 lib/RT/Action/RTIR_MergeIPs.pm
 lib/RT/Action/RTIR_OpenParent.pm
 lib/RT/Action/RTIR_ResolveChildren.pm
-lib/RT/Action/RTIR_SetBlockStatus.pm
+lib/RT/Action/RTIR_SetCountermeasureStatus.pm
 lib/RT/Action/RTIR_SetDueIncident.pm
 lib/RT/Action/RTIR_SetHowReported.pm
 lib/RT/Action/RTIR_SetIncidentResolution.pm

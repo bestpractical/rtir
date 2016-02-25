@@ -49,12 +49,12 @@
 use strict;
 use warnings;
 
-package RT::Action::RTIR_SetBlockStatus;
+package RT::Action::RTIR_SetCountermeasureStatus;
 use base 'RT::Action::RTIR';
 
 =head1 NAME
 
-RT::Action::RTIR_SetBlockStatus - sets status of the block acording to a few rules
+RT::Action::RTIR_SetCountermeasureStatus - sets status of the countermeasure according to a few rules
 
 =head1 DESCRIPTION
 

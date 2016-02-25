@@ -184,7 +184,7 @@ value of Email if it isn't otherwise specified.
 =item On Correspond Change Status of the Countermeasure
 
 On replies, changes the status of countermeasures according to a few rules
-that are described in L<RT::Action::RTIR_SetBlockStatus/DESCRIPTION>.
+that are described in L<RT::Action::RTIR_SetCountermeasureStatus/DESCRIPTION>.
 
 RT's default L<RT::Action::AutoOpen> is disabled for countermeasures to
 avoid unwanted changes of status from 'pending activation'
