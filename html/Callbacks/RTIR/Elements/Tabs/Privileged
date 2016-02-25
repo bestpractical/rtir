@@ -128,7 +128,7 @@ $root->child(
 );
 unless ( RT->Config->Get('RTIR_DisableCountermeasures') ) {
     $root->child(
-        blocks => title => loc('Countermeasures'),
+        countermeasures => title => loc('Countermeasures'),
         path => RT::IR->HREFTo('Search/Results.html?Lifecycle='.RT::IR->lifecycle_countermeasure, IncludeWebPath => 0)
     )->child(
         create => title => loc('Create'),
