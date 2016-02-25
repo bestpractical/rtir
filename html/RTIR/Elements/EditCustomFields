@@ -45,14 +45,14 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/EditCustomFields,
+<& /Elements/AjaxEditCustomFields,
   Object => $TicketObj,
   QueueObj => $QueueObj,
   ($TicketObj->Id ? () : (CustomFields => $QueueObj->TicketCustomFields)), # on ticket creation, use Queue CFs
   %ARGS,
   %$CFDefaults,
   ($AllGroupings ? () : (Grouping => 'Basics')), # Groupings comes in as an ARGS on Edit.html
-  InTable => 1,
+  InTable => 0,
 &>
 
 <%INIT>

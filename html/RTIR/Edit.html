@@ -125,15 +125,16 @@
     <td class="value"><&/Elements/SelectPriority, Name => 'Priority', Default => $ARGS{'Priority'} || $Ticket->Priority &></td>
   </tr>
 % }
-  <& /RTIR/Elements/EditCustomFields, %ARGS, TicketObj => $Ticket &>
 </table>
+
+<& /RTIR/Elements/EditCustomFields, %ARGS, TicketObj => $Ticket &>
 
 </&>
 
-<& /Elements/EditCustomFieldCustomGroupings,
+<& /Elements/AjaxEditCustomFieldCustomGroupings,
     %ARGS,
     Object => $Ticket,
-    CustomFieldGenerator => sub { $Ticket->QueueObj->TicketCustomFields },
+   #CustomFieldGenerator => sub { $Ticket->QueueObj->TicketCustomFields },
     Groupings => [ RT::CustomField->CustomGroupings('RTIR::Ticket'), '' ],
 &>
 
