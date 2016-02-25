@@ -265,10 +265,10 @@
         Template       => 'Blank'
     },
 
-    {   Description    => "On Correspond Change Status of the Block",
+    {   Description    => "On Correspond Change Status of the Countermeasure",
         Queue          => 'Countermeasures',
         ScripCondition => 'On Correspond',
-        ScripAction    => 'RTIR Set Block Status',
+        ScripAction    => 'RTIR Set Countermeasure Status',
         Template       => 'Blank',
     },
     {   Description    => "On Linking To Incident Activate Report",
