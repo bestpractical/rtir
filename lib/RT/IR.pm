@@ -335,8 +335,8 @@ lifecycles.
 Examples:
 
     RT::IR->Statuses()
-    RT::IR->Statuses( Lifecycle => 'blocks' );
-    RT::IR->Statuses( Lifecycle => [ 'blocks', 'incident_reports' ] );
+    RT::IR->Statuses( Lifecycle => 'countermeasures' );
+    RT::IR->Statuses( Lifecycle => [ 'countermeasures', 'incident_reports' ] );
     RT::IR->Statuses( Active => 0, Inactive => 1 );
 
 =cut

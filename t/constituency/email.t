@@ -91,7 +91,7 @@ diag "create a ticket via gate using Extension header" if $ENV{'TEST_VERBOSE'};
     my $val = (grep lc($_) ne lc($default), @values)[0];
     ok $val, 'find not default value';
 
-    my $incident_id; # block couldn't be created without incident id
+    my $incident_id; # countermeasure can't be created without incident id
     foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 

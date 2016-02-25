@@ -234,10 +234,10 @@ Set(
 =item C<%RTIR_IncidentChildren>
 
 Option controls relations between an incident and
-reports, investigations and blocks. Each entry
-of the hash is a pair where key is type of child
-and value is hash with Multiple and Required keys
-and boolean values, for example:
+reports, investigations and countermeasures. Each
+entry of the hash is a pair where key is type of
+child and value is hash with Multiple and Required
+keys and boolean values, for example:
 
     Set(%RTIR_IncidentChildren,
         Report => {

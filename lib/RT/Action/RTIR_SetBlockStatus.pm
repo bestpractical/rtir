@@ -65,9 +65,9 @@ option. Content of the transaction should match the regexp
 if it's defined. Statuses are hardcoded and can not be
 changed or this will not work properly.
 
-If block is in an inactive status (by default 'removed')
+If countermeasure is in an inactive status (by default 'removed')
 then status changed to first possible active status
-for blocks' lifecycle (by default 'active').
+for countermeasures's lifecycle (by default 'active').
 
 In all other cases status left unchanged.
 
