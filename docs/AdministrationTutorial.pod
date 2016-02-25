@@ -190,7 +190,7 @@ RT's default L<RT::Action::AutoOpen> is disabled for countermeasures to
 avoid unwanted changes of status from 'pending activation'
 to 'active'.
 
-See also the C<$RTIR_BlockAproveActionRegexp> option
+See also the C<$RTIR_CountermeasureApproveActionRegexp> option
 in the config.
 
 =item On Linking To Incident Activate Report

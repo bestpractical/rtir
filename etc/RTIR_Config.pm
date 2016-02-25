@@ -607,7 +607,7 @@ If true then Countermeasure queue functionality inactive and disabled.
 
 Set($RTIR_DisableCountermeasures, 0);
 
-=item C<$RTIR_BlockAproveActionRegexp>
+=item C<$RTIR_CountermeasureApproveActionRegexp>
 
 When requestor replies on the block in pending state RTIR
 changes state, you can set regular expresion so state would
@@ -617,7 +617,7 @@ See also L<RT::Action::RTIR_SetCountermeasureStatus/DESCRIPTION>.
 
 =cut
 
-Set($RTIR_BlockAproveActionRegexp, undef);
+Set($RTIR_CountermeasureApproveActionRegexp, undef);
 
 =back
 

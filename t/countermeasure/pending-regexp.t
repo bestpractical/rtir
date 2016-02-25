@@ -5,7 +5,7 @@ use warnings;
 
 use RT::IR::Test tests => undef;
 
-RT->Config->Set('RTIR_BlockAproveActionRegexp', qr/TestPendingBlock/);
+RT->Config->Set('RTIR_CountermeasureApproveActionRegexp', qr/TestPendingBlock/);
 
 RT::Test->started_ok;
 my $agent = default_agent();

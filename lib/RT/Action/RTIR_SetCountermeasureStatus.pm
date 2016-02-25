@@ -60,7 +60,7 @@ RT::Action::RTIR_SetCountermeasureStatus - sets status of the countermeasure acc
 
 If transaction is inbound and status is pending then
 change it to corresponding not pending status. This
-rule can be protected with C<$RTIR_BlockAproveActionRegexp>
+rule can be protected with C<$RTIR_CountermeasureApproveActionRegexp>
 option. Content of the transaction should match the regexp
 if it's defined. Statuses are hardcoded and can not be
 changed or this will not work properly.
@@ -89,7 +89,7 @@ sub Commit {
 
     my $current = lc $t->Status;
     if ( $current =~ /^pending / && $txn->IsInbound ) {
-        if ( my $re = RT->Config->Get('RTIR_BlockAproveActionRegexp') ) {
+        if ( my $re = RT->Config->Get('RTIR_CountermeasureApproveActionRegexp') ) {
             my $content = $txn->Content;
             return 1 if !$content || $content !~ /$re/;
         }
