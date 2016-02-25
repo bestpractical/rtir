@@ -224,7 +224,7 @@ diag "check that constituency propagates from a child to a parent after 'Edit', 
 diag "check that constituency propagates from a child to a parent after 'Edit', and back"
     if $ENV{'TEST_VERBOSE'};
 {
-    # can not test this for blocks as those require incident on create
+    # can not test this for countermeasures as those require incident on create
     foreach my $queue( 'Incident Reports', 'Investigations' ) {
         diag "create an incident for linking" if $ENV{'TEST_VERBOSE'};
 

@@ -203,7 +203,7 @@ my $DoLinks = sub {
         }
     }
 
-    # Blocks or Incedent Reports can have multiple incidents
+    # Countermeasure or Incident Reports can have multiple incidents
     my $Type = RT::IR::TicketType( Ticket => $child );
     my $config = RT->Config->Get('RTIR_IncidentChildren')->{$Type};
     unless( $config->{'Multiple'} ) {

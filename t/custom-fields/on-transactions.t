@@ -49,7 +49,7 @@ foreach my $qname ('Incident Reports', 'Investigations', 'Countermeasures') {
     my $input = $form->find_input( $input_name );
     ok $input, 'input for the field is on the page';
 
-    $agent->field( Incident => $inc_id ); # for blocks
+    $agent->field( Incident => $inc_id ); # for countermeasures
     $agent->field( Requestors => 'rt-test@example.com' ); # for invs
     $agent->field( $input_name => 'magic' );
     $agent->click('Create');

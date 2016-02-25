@@ -222,7 +222,7 @@ diag "create an IR create an Incident with different constituency"
 diag "check that we can change constituency of an unlinked ticket using 'Edit' page"
     if $ENV{'TEST_VERBOSE'};
 {
-    # blocks are always linked to an incident
+    # countermeasures are always linked to an incident
     foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations' ) {
         my $id = $agent->create_rtir_ticket_ok(
             $queue .' - GOVNET',

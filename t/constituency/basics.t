@@ -65,7 +65,7 @@ diag "check that there is no option to set 'no value' on create" if $ENV{'TEST_V
 
 diag "create a ticket via web and set field" if $ENV{'TEST_VERBOSE'};
 {
-    # we skip blocks here, as they are always connected to
+    # we skip countermeasures here, as they are always connected to
     # an incident and constituency inheritance comes into game
     foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};

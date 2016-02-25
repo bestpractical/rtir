@@ -569,7 +569,7 @@ sub IncidentHasActiveChildren {
 =head2 IsLinkedToActiveIncidents $ChildObj [$IncidentObj]
 
 Returns number of active incidents linked to child ticket
-(IR, Investigation, Block or other). If second argument provided
+(IR, Investigation, Countermeasure or other). If second argument provided
 then it's excluded from count.
 
 When function return zero that means that object has no active
@@ -774,7 +774,7 @@ sub FilterRTAddresses {
     return $found;
 }
 
-# Skip the global AutoOpen and AutoOpenInactive scrip on Blocks and Incident Reports
+# Skip the global AutoOpen and AutoOpenInactive scrip on Countermeasures and Incident Reports
 # This points to RTIR wanting to muck with the global scrips using the 4.2 scrips
 # organization, although it possibly messes with Admins expectations of 'contained Queues'
 # We have to hit both because the first is installed on upgraded RTs while the latter is
