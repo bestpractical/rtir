@@ -264,7 +264,7 @@ Applies to the Countermeasures queue.
 
 When a countermeasure ticket is moved from an active status to an inactive
 status (closed), the requestors on the countermeasure are notified using the
-L<Templates/BlockRemoved in Countermeasure queue> template.
+L<Templates/CountermeasureRemoved in Countermeasure queue> template.
 
 =item SetIPFromContent
 
@@ -314,7 +314,7 @@ how to use these groups.
 
 This template is sent when a countermeasure is created.
 
-=item BlockRemoved in Countermeasure queue
+=item CountermeasureRemoved in Countermeasure queue
 
 This template is sent when a countermeasure is removed.
 

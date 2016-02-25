@@ -342,7 +342,7 @@
         Queue          => 'Countermeasures',
         ScripCondition => 'RTIR Close Ticket',
         ScripAction    => 'Notify Requestors',
-        Template       => 'BlockRemoved'
+        Template       => 'CountermeasureRemoved'
     },
 
     {   Description => "SetIPFromContent",
@@ -409,11 +409,11 @@ you may reply to this message.
                         { $Ticket->QueueObj->CorrespondAddress }',
     },
     {   Queue       => 'Countermeasures',
-        Name        => 'BlockRemoved',
-        Description => 'Sent when a block is removed',
+        Name        => 'CountermeasureRemoved',
+        Description => 'Sent when a countermeasure is removed',
         Content     => 'Subject: {$Ticket->Subject}
 
-Block #{$Ticket->id} was removed.
+Countermeasure #{$Ticket->id} was removed.
 
 { my $output = "";
   my @mailfields = ( "IP", "Netmask", "Port", "Where Blocked" );
