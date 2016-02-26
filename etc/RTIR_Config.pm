@@ -318,7 +318,7 @@ unless (defined $default_queue) {
 
 Set constituency enforcement algorithm.
 
-Read more about constituencies in F<lib/RT/IR/Constituencies.pod>.
+Read more about constituencies in F<docs/Constituencies.pod>.
 Algorithms are described in
 L<Constituencies/Constituency Propagation>.
 
