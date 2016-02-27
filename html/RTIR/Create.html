@@ -64,6 +64,7 @@
 <form action="<%RT::IR->HREFTo("Split.html") %>" method="post" enctype="multipart/form-data" name="TicketCreate">
 % }
 <input type="hidden" name="id" value="new" />
+<input type="hidden" class="hidden" name="Queue" value="<% $QueueObj->Id %>" />
 <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
 % if ( $Split ) {
 <input type="hidden" name="Split" value="<% $SplitObj->id %>" />
@@ -100,15 +101,10 @@
     QueueObj => $QueueObj,
     fields  => [
         {   name => 'Queue',
-            comp => '/RTIR/Elements/SelectRTIRQueue',
+            comp => '/Ticket/Elements/ShowQueue',
             args => {
-                Name => 'Queue',
-                Default => $ARGS{'Queue'} || $QueueObj->Id,
-                ShowNullOption => 0,
-                Lifecycle => $QueueObj->Lifecycle,
-                LimitToConstituency => (RT::IR->StrictConstituencyLinking ? 1:0),
-                Constituency => $constituency
-            }
+                QueueObj => $QueueObj,
+            },
         },
         {
             name => 'Status',

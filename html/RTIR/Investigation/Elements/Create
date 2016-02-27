@@ -46,6 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <input type="hidden" name="<% $NamePrefix %>Status" value="<% $ARGS{ $NamePrefix .'Status' } || $QueueObj->LifecycleObj->DefaultOnCreate %>" />
+<input type="hidden" class="hidden" name="<% $NamePrefix %>Queue" value="<% $QueueObj->Id %>" />
 
 <div class="ticket-create-basics">
 <&| /Widgets/TitleBox, title => loc("Basics"), class => 'ticket-info-basics' &>
@@ -60,13 +61,7 @@
 <tr class="queue">
   <td class="label"><&|/l&>Queue</&>:</td>
   <td>
-      <& /RTIR/Elements/SelectRTIRQueue,
-                Name => $NamePrefix.'Queue',
-                Default => $ARGS{'Queue'} || $QueueObj->Id,
-                Lifecycle => RT::IR->lifecycle_investigation,
-                LimitToConstituency => ($m->{'RTIR_ConstituencyFilter'} || RT::IR->StrictConstituencyLinking ) ? 1:0,
-                Constituency => $Constituency
-    &>
+      <& /Ticket/Elements/ShowQueue, QueueObj => $QueueObj &>
   </td>
 </tr>
 % unless ( $SkipField{'Owner'} || $HideField{'Owner'} ) {

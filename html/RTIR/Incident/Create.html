@@ -72,6 +72,7 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
 % }
 
 <input type="hidden" name="id"           value="new" />
+<input type="hidden" class="hidden" name="Queue" value="<% $QueueObj->Id %>" />
 <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
 % if ( $ChildObj ) {
 <input type="hidden" name="Child"        value="<% $Child %>" />
@@ -108,13 +109,7 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
 <tr class="queue">
   <td class="label"><&|/l&>Queue</&>:</td>
   <td colspan="2">
-      <& /RTIR/Elements/SelectRTIRQueue,
-                Name => 'Queue',
-                Default => $ARGS{'Queue'} || $QueueObj->Id,
-                Lifecycle => RT::IR->lifecycle_incident,
-                LimitToConstituency => ($m->{'RTIR_ConstituencyFilter'} || RT::IR->StrictConstituencyLinking ) ? 1:0,
-                Constituency => $constituency
-    &>
+      <& /Ticket/Elements/ShowQueue, QueueObj => $QueueObj &>
   </td>
 </tr>
  
@@ -270,6 +265,7 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
 <& /RTIR/Investigation/Elements/Create,
     %ARGS,
     NamePrefix => 'Investigation',
+    Queue => $ARGS{InvestigationQueue},
     Lifecycle => RT::IR->lifecycle_investigation,
     Constituency => $constituency,
     SkipField => { Owner => 1, Attachments => 1, DateFields => 1 },
@@ -332,22 +328,14 @@ for my $related_ticket ($ChildObj, $SplitObj) {
 }
 
 
-my $QueueObj;
+my $QueueObj = RT::Queue->new($session{'CurrentUser'});
+$QueueObj->Load( $ARGS{Queue} );
 
-# XXX TODO refactor this into library code
-# that 'finds the first plausible queue with the right constituency
-my $collection = RT::Queues->new($session{'CurrentUser'});
-$collection->Limit(FIELD => 'Lifecycle', VALUE => RT::IR->lifecycle_incident);
-while (my $queue = $collection->Next) {
-    if ((RT::IR->ConstituencyFor($queue)||'') eq ($constituency||'')) {
-        $QueueObj = $queue;
-        last;
-    }
-}
+if (!$QueueObj->Name) {
+Abort( loc("Queue '[_1]' could not be loaded.", $ARGS{Queue}) );
+ }
 
-if (!$QueueObj) {
-    Abort( loc("Queue could not be loaded.") );
-}
+
 
 
 my $ticket = RT::Ticket->new($session{'CurrentUser'}); # empty ticket object
