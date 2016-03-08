@@ -62,6 +62,10 @@ body.rtir .no-recipients {
 body.rtir #topactions #simple-search input.button {
 }
 
+body.rtir #topactions #simple-search input.field {
+    width: 150px;
+}
+
 body.rtir #topactions { min-width: 44em; white-space: no-wrap; }
 
 #comp-RTIR .myrt>table>tr>td:first-child {
