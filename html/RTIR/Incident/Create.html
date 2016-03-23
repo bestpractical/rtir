@@ -47,7 +47,6 @@
 %# END BPS TAGGED BLOCK }}}
 <& /RTIR/Elements/Header,
     Title => $Title,
-    onload => "function () { hide('ticket-create-investigation') }",
 &>
 <& /Elements/Tabs &>
 
@@ -260,24 +259,6 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
 
 </div>
 
-<div id="ticket-create-investigation">
-<a name="investigation"></a>
-<& /RTIR/Investigation/Elements/Create,
-    %ARGS,
-    NamePrefix => 'Investigation',
-    Queue => $ARGS{InvestigationQueue},
-    Lifecycle => RT::IR->lifecycle_investigation,
-    Constituency => $constituency,
-    SkipField => { Owner => 1, Attachments => 1, DateFields => 1 },
-    IncludeSignature => (exists $ARGS{'InvestigationContent'} ? 0 : 1),
-&>
-<& /Elements/Submit,
-    Name => 'CreateWithInvestigation',
-    Label => loc("Create Incident and run Investigation"),
-    SubmitId => 'create-ticket-with-investigation'
-&>
-</div>
-
 </form>
 
 
@@ -382,24 +363,6 @@ if ( $CreateIncident ) {
         Fields => { Requestors => 'Requestor', Cc => 'Cc', AdminCc => 'AdminCc' },
         results => \@results,
     );
-
-    if ( $CreateWithInvestigation ) {
-        $checks_failure += RT::IR->FilterRTAddresses(
-            ARGSRef => \%ARGS,
-            Fields => {
-                InvestigationRequestors => 'Requestor',
-                InvestigationCc => 'Cc',
-                InvestigationAdminCc => 'AdminCc',
-            },
-            results => \@results,
-        );
-    }
-
-    if ( $CreateWithInvestigation && !$ARGS{'InvestigationRequestors'} ) {
-        push @results, loc( "You must enter a correspondent for the investigation" );
-        $checks_failure = 1;
-    }
-
 }
 
 if ( !$checks_failure && $CreateIncident ) {
@@ -413,25 +376,6 @@ if ( !$checks_failure && $CreateIncident ) {
     );
     push @results, @tmp;
 
-    my $inv_obj;
-    if ( $inc_obj && $CreateWithInvestigation ) {
-        my (@tmp);
-        ($inv_obj, @tmp) = $m->comp(
-            '/RTIR/Investigation/Elements/Create:Process',
-            %ARGS,
-            NamePrefix => 'Investigation',
-            DefaultsNamePrefix => '',
-        );
-        push @results, @tmp;
-        if ( $inv_obj ) {
-            my($id, $msg) = $inv_obj->AddLink(
-                Type => 'MemberOf',
-                Target => $inc_obj->id
-            );
-            #XXX: correct message on success
-            push @results, $msg if !$id || $msg;
-        }
-    }
     if( $inc_obj ) {
         $m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Child => $ChildObj);
 
@@ -450,19 +394,6 @@ if ( $Split ) {
 else {
     $SubmitLabel = loc('Create');
 }
-
-PageMenu->child(
-    incident => raw_html =>
-    q{<a href="#incident"}
-    . q{onclick="return switchVisibility('ticket-create-incident','ticket-create-investigation');"}
-    . q{>} . loc('Incident') . q{</a>}
-);
-PageMenu->child(
-    investigation => raw_html =>
-    q[<a href="#investigation"]
-    . q[ onclick="return switchVisibility('ticket-create-investigation','ticket-create-incident');"]
-    . q[>] . loc('Launch Investigation') . q[</a>]
-);
 
 unless ( exists $ARGS{'Content'} ) {
     my $Transactions;
@@ -486,8 +417,7 @@ unless ( exists $ARGS{'Content'} ) {
 $Title                   => loc("Create a new Incident")
 $QuoteTransaction        => undef
 
-$CreateWithInvestigation => 0
-$CreateIncident          => $CreateWithInvestigation
+$CreateIncident          => 0
 
 $Split                   => undef
 
