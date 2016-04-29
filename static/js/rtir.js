@@ -7,16 +7,17 @@ jQuery(function() {
         return href.substring(questionMarkIndex+1);
     };
 
-    var showModal = function(lifecycle, lifecycleDesc) {
-        var queryString = getQueryString(this);
+    var showModal = function(lifecycle, lifecycleDesc, triggeringObject) {
+        var queryString = getQueryString(triggeringObject);
+        console.log(queryString);
         jQuery.get(
             RT.Config.WebHomePath + '/RTIR/Helpers/CreateInRTIRQueueModal?Lifecycle=' + lifecycle + '&LifecycleDesc=' + lifecycleDesc + '&' + queryString,
             function(html) {
                 // If there's only one queue, just create a ticket in it and skip the modal
                 var queues = jQuery(html).find("select[name='Queue'] > option");
                 if (queues.length === 1) {
-                    window.location.href = RT.Config .WebHomePath + '/RTIR/Create.html?Queue=' + queues.first().val();
-                    return;
+                    window.location.href = RT.Config .WebHomePath + '/RTIR/Create.html?Queue=' + queues.first().val() + '&' + queryString;
+                     return;
                 }
 
                 jQuery("<div class='modal'></div>")
@@ -29,22 +30,22 @@ jQuery(function() {
 
     var showReportsModal = function(e) {
         e.preventDefault();
-        showModal('incident_reports', 'report');
+        showModal('incident_reports', 'report', this);
     };
 
     var showInvestigationsModal = function(e) {
         e.preventDefault();
-        showModal('investigations', 'investigation');
+        showModal('investigations', 'investigation', this);
     };
 
     var showBlocksModal = function(e) {
         e.preventDefault();
-        showModal('blocks', 'block');
+        showModal('blocks', 'block', this);
     };
 
     var showIncidentsModal = function(e) {
         e.preventDefault();
-        showModal('incidents', 'incident');
+        showModal('incidents', 'incident', this);
     };
 
     jQuery("#reports-create").click(showReportsModal);
