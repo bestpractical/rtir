@@ -30,8 +30,8 @@ uncheck Enabled and click Save Changes.
 
 =head2 Status
 
-The various states an incident, IR, investigation, or block can be in, such as
-'open', 'stalled', 'abandoned', etc.
+The various states an incident, incident report, investigation, or block can be
+in, such as 'open', 'stalled', 'abandoned', etc.
 
 This field contains custom statuses for tickets, and values are different in
 different queues. The status values are set via the C<%Lifecycles> option in
@@ -45,9 +45,9 @@ of L</Scrips> below.
 
 =head2 Custom Fields
 
-When RTIR is installed several custom fields are created and applied
+When RTIR is installed, several custom fields are created and applied
 to queues in RTIR. Some of these custom fields are important for
-RTIR functionality and can not be renamed, disabled or un-applied,
+RTIR functionality and must not be renamed, disabled or un-applied,
 but other fields can be.
 
 =over 4
@@ -56,9 +56,9 @@ but other fields can be.
 
 The constituency of an incident, incident report, investigation, or block.
 
-Additional quite heavy automation is tied to this field. This
-is described in L<Constituencies> doc. Don't rename this field
-if you want to use this functionality.
+Heavy automation is tied to this field. This is described in the
+L<Constituencies> doc. Don't rename this field if you want to use this
+functionality.
 
 =item Description
 
@@ -116,9 +116,9 @@ Customer for an IR or Investigation.
 
 =head2 Managing "RT at a glance" and "RTIR at a glance" pages
 
-In the config you can set the @RTIR_HomepageComponents option to control
+In the config you can set the C<@RTIR_HomepageComponents> option to control
 allowed portlets people can add to thier workspace. RT has its own
-option $HomepageComponents so you can list different sets for RT and
+option C<$HomepageComponents> so you can list different sets for RT and
 RTIR. See L<Tutorial> for more information.
 
 =head2 Notifications
