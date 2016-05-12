@@ -64,6 +64,9 @@ sub Init {
                 Description => 'Display ticket after edit (don\'t stay on the edit page)',
             },
         },
+        'RTIR_HomepageComponents' => {
+            Type => 'ARRAY',
+        },
     );
     %RT::Config::META = (%meta, %RT::Config::META);
 
