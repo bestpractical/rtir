@@ -50,6 +50,15 @@ our @Final = (
               for ( 'RTIR_RequireConstituencyChange', 'RTIR_RequireConstituencyGroupChange' );
         }
 
+        # rename blocks to countermeasures
+        {
+            my $queues = RT::Queues->new(RT->SystemUser);
+            $queues->Limit(FIELD => 'Lifecycle', VALUE => 'blocks');
+            while (my $queue = $queues->Next) {
+                $queue->SetLifecycle(RT::IR->lifecycle_countermeasure);
+            }
+        }
+
         # update values of rtir constituency
         my @constituencies;
         {
