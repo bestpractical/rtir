@@ -8,11 +8,30 @@ BEGIN { unless ( $ENV{RTIR_TEST_UPGRADE} ) {
     Test::More->import( skip_all => "Skipping upgrade tests, it's only for developers" );
 } }
 
+BEGIN { unless ( -d "../rt/etc/upgrade/" ) {
+    require Test::More;
+    Test::More->import( skip_all => "Skipping upgrade tests, must have a sibling ../rt/ directory for running upgrades" );
+} }
+
 use RT::IR::Test tests => undef;
+use Sort::Versions;
+
 {
     RT::IR::Test->import_snapshot( 'rtir-2.6.after-rt-upgrade.sql' );
-    my ($status, $msg) = RT::IR::Test->apply_upgrade( 'etc/upgrade/', '2.9.0' );
-    ok $status, "applied upgrade" or diag "error: $msg";
+
+    # upgrade database for RT 4.2.0 on
+    for my $version (sort { versioncmp($a, $b) } map { m{upgrade/([\w.]+)/} && $1 } glob('../rt/etc/upgrade/4.*/')) {
+        next if versioncmp($version, '4.2.0') == -1;
+        next if versioncmp($version, $RT::VERSION) == 1;
+
+        my ($status, $msg) = RT::IR::Test->apply_upgrade( '../rt/etc/upgrade/', $version);
+        ok $status, "applied RT $version upgrade" or diag "error: $msg";
+    }
+
+    {
+        my ($status, $msg) = RT::IR::Test->apply_upgrade( 'etc/upgrade/', '2.9.0' );
+        ok $status, "applied RTIR 2.9.0 upgrade" or diag "error: $msg";
+    }
 }
 
 my @state_cf_ids;
