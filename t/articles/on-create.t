@@ -44,7 +44,7 @@ foreach ( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
     my $prefix = $queue->Name eq 'Incidents'? 'InvestigationContent-': '';
 
     $agent->form_name('TicketCreate');
-    is( $agent->field( $content_name ), '' );
+    like( $agent->field( $content_name ), qr/^\s*$/ );
     $agent->field($prefix.'Articles-Include-Article-Named' => $article_name);
     $agent->click('Go');
     $agent->form_name('TicketCreate');
@@ -52,7 +52,7 @@ foreach ( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
 
     ok $agent->goto_create_ticket( $queue ), "UI -> create ticket";
     $agent->form_name('TicketCreate');
-    is( $agent->field( $content_name ), '' );
+    like( $agent->field( $content_name ), qr/^\s*$/ );
     $agent->select($prefix .'Articles-Include-Article-Named-Hotlist' => $article_id);
     $agent->click('Go');
     $agent->form_name('TicketCreate');
@@ -60,11 +60,11 @@ foreach ( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
 
     ok $agent->goto_create_ticket( $queue ), "UI -> create ticket";
     $agent->form_name('TicketCreate');
-    is( $agent->field( $content_name ), '' );
+    like( $agent->field( $content_name ), qr/^\s*$/ );
     $agent->field($prefix .'Articles_Content' => $article_name);
     $agent->click('Go');
     $agent->form_name('TicketCreate');
-    is( $agent->field( $content_name ), '' );
+    like( $agent->field( $content_name ), qr/^\s*$/ );
     $agent->click($prefix .'Articles-Include-Article-'. $article_id);
     $agent->form_name('TicketCreate');
     like( $agent->field( $content_name ), qr/this is a content/ );
