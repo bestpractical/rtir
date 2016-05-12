@@ -53,11 +53,11 @@ If it turns out that two Incidents are actually the same
 (which can occur when, for example, dynamic IP addresses are
 involved), they may be merged. The merge operation effectively
 makes one ticket out of two, containing the data and
-correspondence of both. Only tickets within the same queue
-should be merged, with the notable exception of merging an
-Incident Report into an Investigation when a correspondent's
-reply accidentally could not be recognized as such and thus
-got misfiled as new Incident Report.
+correspondence of both. Only tickets within the queues of the
+same type should be merged, with the notable exception of
+merging an Incident Report into an Investigation when a
+correspondent's reply accidentally could not be recognized as
+such and thus got misfiled as new Incident Report.
 
 You can find the Merge link on the ticket display page.
 The Merge page is split into two
@@ -117,7 +117,7 @@ on both tickets.
 
 You can also access RT's standard merge from an RTIR ticket's
 'Advanced' tab. This option allows you to merge any ticket into
-any other, avoiding 'the same queue' and other RTIR restrictions.
+any other, avoiding 'the same queue type' and other RTIR restrictions.
 For example, you can merge an Investigation into an IR, or an IR
 into a ticket in non-RTIR queues. Access checks and permissions still
 apply. In the normal course of work, this operation should be avoided.
