@@ -1,5 +1,8 @@
 # Initial data for a fresh RTIR Installation.
 
+die "Please add RT::IR to your Plugins configuration before initializing the database. See README for more information."
+    unless grep { $_ eq 'RT::IR' } RT->Config->Get('Plugins');
+
 @Initial = (
     sub {
         use RT::IR;
