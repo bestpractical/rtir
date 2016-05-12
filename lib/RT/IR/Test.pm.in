@@ -126,7 +126,7 @@ sub import_snapshot {
         # drop the old database (which has a modern schema bringing new
         # tables and such), then create a fresh one *with no schema*,
         # which will be populated by the snapshot in the next step
-        RT::Test::__create_database();
+        RT::Test::__create_database(DropDatabase => 1);
 
         Test::More::diag("About to run `". join(' ', $cmd, @args) ."`");
 
