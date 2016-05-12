@@ -67,10 +67,10 @@ sub Prepare {
     my $q2 = RT::Queue->new(RT->SystemUser);
     $q2->Load($self->TransactionObj->NewValue);
 
-    return 0 unless (RT::IR->ConstituencyFor($q2) ne RT::IR->ConstituencyFor($q1));
+    return 0 unless ((RT::IR->ConstituencyFor($q2)||'') ne (RT::IR->ConstituencyFor($q1)||''));
 
-    $self->{'old_constituency'} = RT::IR->ConstituencyFor($q1);
-    $self->{'new_constituency'} = RT::IR->ConstituencyFor($q2);
+    $self->{'old_constituency'} = RT::IR->ConstituencyFor($q1) || '';
+    $self->{'new_constituency'} = RT::IR->ConstituencyFor($q2) || '';
     return 1;
 }
 
@@ -85,6 +85,7 @@ sub Commit {
     my $self = shift;
 
     my $new_constituency = $self->{'new_constituency'};
+    my $old_constituency = $self->{'old_constituency'};
 
     # find all the tickets related to this ticket
 
@@ -92,7 +93,7 @@ sub Commit {
 
     # for each ticket,
     while ( my $ticket = $kids->Next) {
-        my $kid_constituency = RT::IR->ConstituencyFor($ticket);
+        my $kid_constituency = RT::IR->ConstituencyFor($ticket) || '';
         next if ($kid_constituency eq $new_constituency);
         next if ($kid_constituency ne $old_constituency);
         # if the constituency of the other ticket isn't the same as the new 
@@ -104,12 +105,12 @@ sub Commit {
         my $new_queue = RT::Queue->new(RT->SystemUser);
         $new_queue->Load($kid_queue);
         if (    !$new_queue->id
-             || ( RT::IR->ConstituencyFor($new_queue) ne $new_constituency) 
+             || ( (RT::IR->ConstituencyFor($new_queue)||'') ne $new_constituency)
              || ($new_queue->Lifecycle ne $ticket->QueueObj->Lifecycle)) {
             my $queues = RT::Queues->new(RT->SystemUser);
             $queues->Limit(FIELD => 'Lifecycle', VALUE => $ticket->QueueObj->Lifecycle);
             while (my $temp_queue = $queues->Next) {
-                if (RT::IR->ConstituencyFor($temp_queue) eq $new_constituency) {
+                if ((RT::IR->ConstituencyFor($temp_queue)||'') eq $new_constituency) {
                     $new_queue = $temp_queue;
                     last;
                 }
