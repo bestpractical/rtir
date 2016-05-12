@@ -29,7 +29,8 @@ information.
 Installation instructions:
 --------------------------
 
-1) Install the current release of the RT 4.4 series following RT's regular installation instructions
+1) Install the current release of the RT 4.4 series following RT's
+   regular installation instructions
 
 2) Run "perl Makefile.PL" to generate a makefile for RTIR.
 
@@ -96,7 +97,8 @@ You should substitute the URL for RT's web interface for http://rt.example.com/.
 o  If your webserver uses SSL, rt-mailgate will require several new
    Perl libraries. See the RT README for more details on this option.
 
-o  See "perldoc /opt/rt4/bin/rt-mailgate" for more info about the rt-mailgate script.
+o  See "perldoc /opt/rt4/bin/rt-mailgate" for more info about the rt-mailgate
+   script.
 
 o  If you're configuring RTIR with support for multiple constituencies, please
    refer to the instructions in the file docs/Constituencies.pod which is also
@@ -129,7 +131,8 @@ Documentation for RTIR
         Information about setting up RTIR for Administrators
 
    * etc/RTIR_Config.pm
-        (Contains a number of RTIR-specific configuration options and instructions for their use)
+        (Contains a number of RTIR-specific configuration options and
+        instructions for their use)
         http://www.bestpractical.com/docs/rtir/3.4/RTIR_Config.html
 
    * RTIR mailing list
