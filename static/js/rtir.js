@@ -9,9 +9,18 @@ jQuery(function() {
 
     var showModal = function(lifecycle, lifecycleDesc, triggeringObject) {
         var queryString = getQueryString(triggeringObject);
-        console.log(queryString);
+        var constituency = '';
+
+        var uri = window.location.href.split('/');
+        for (var i = 0; i < uri.length; i++) {
+            if (uri[i] === 'c') {
+                constituency = '/c/' + uri[i+1];
+                break;
+            }
+        }
+
         jQuery.get(
-            RT.Config.WebHomePath + '/RTIR/Helpers/CreateInRTIRQueueModal?Lifecycle=' + lifecycle + '&LifecycleDesc=' + lifecycleDesc + '&' + queryString,
+            RT.Config.WebHomePath + '/RTIR' + constituency + '/Helpers/CreateInRTIRQueueModal?Lifecycle=' + lifecycle + '&LifecycleDesc=' + lifecycleDesc + '&' + queryString,
             function(html) {
                 // If there's only one queue, just create a ticket in it and skip the modal
                 var queues = jQuery(html).find("select[name='Queue'] > option");
