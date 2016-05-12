@@ -57,13 +57,6 @@ Installation instructions:
 7) Stop and start your web server.
 
 
-Additional Extensions:
-----------------------
-
-o  To maintain Due date for Reports, Investigations and Blocks, install
-   RT::Extension::SLA following the installation instructions in that
-   extension's README file.
-
 Configuring RTIR
 ----------------
 
