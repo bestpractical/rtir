@@ -46,11 +46,20 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%init>
-return unless $m->request_comp->path =~ m{^/RTIR/};
-$ARGSRef->{URL} //= RT::IR->HREFTo("index.html");
-$ARGSRef->{Name} //=  RT->Config->Get('rtirname');
-$ARGSRef->{LogoURL} //= RT->Config->Get('WebPath')."/static/images/RTIR/logo.png";
-push @{$ARGSRef->{BodyClass}},  'rtir';
+if ($m->request_comp->path =~ m{^/RTIR/}) {
+    $ARGSRef->{URL} //= RT::IR->HREFTo("index.html");
+    $ARGSRef->{Name} //=  RT->Config->Get('rtirname');
+    $ARGSRef->{LogoURL} //= RT->Config->Get('WebPath')."/static/images/RTIR/logo.png";
+    push @{$ARGSRef->{BodyClass}},  'rtir';
+}
+# add rtir body class if it's a ticket timer for an RTIR ticket
+elsif ($m->request_comp->path =~ m{^/Helpers/TicketTimer}) {
+    my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
+    my ($ok) = $ticket->Load($DECODED_ARGS->{id});
+    if ($ok && RT::IR->OurQueue($ticket->QueueObj)) {
+        push @{$ARGSRef->{BodyClass}}, 'rtir';
+    }
+}
 </%init>
 <%args>
 $ARGSRef
