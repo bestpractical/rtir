@@ -123,6 +123,11 @@ sub import_snapshot {
         push @args, RT->Config->Get('DatabaseName');
         my $cmd = $ENV{'RT_TEST_MYSQL_CLIENT'} || 'mysql';
 
+        # drop the old database (which has a modern schema bringing new
+        # tables and such), then create a fresh one *with no schema*,
+        # which will be populated by the snapshot in the next step
+        RT::Test::__create_database(DropDatabase => 1);
+
         Test::More::diag("About to run `". join(' ', $cmd, @args) ."`");
 
         open my $fh, "|-", $cmd, @args
