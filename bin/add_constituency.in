@@ -473,7 +473,14 @@ sub create_or_load_queue {
 
     my $basequeue = RT::Queue->new( RT->SystemUser );
 
-    $basequeue->LoadByCols( Name => RT::IR::FriendlyLifecycle($lifecycle) );
+    my $basequeue_name = RT::IR::FriendlyLifecycle($lifecycle);
+    my ($ok, $msg) = $basequeue->LoadByCols( Name => $basequeue_name );
+
+    # support old name for Countermeasures
+    ($ok, $msg) = $basequeue->LoadByCols( Name => 'Blocks' )
+        if !$ok && $basequeue_name eq 'Countermeasures';
+
+    die "Unable to load queue named '$basequeue_name': $msg" if !$ok;
 
     my $queue = RT::Queue->new($RT::SystemUser);
     $queue->LoadByCols( Name => $name );
