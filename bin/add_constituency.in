@@ -146,8 +146,6 @@ unless ( defined $constituency && length $constituency ) {
 
 my @lifecycles = RT::IR->Lifecycles;
 
-my @queue_prefixes = map { RT::IR::FriendlyLifecycle($_) } @lifecycles;
-
 if ( exists $opt{'rename'} ) {
     exit rename_value( $constituency => sanitize_value( $opt{'rename'} ) );
 }
@@ -390,8 +388,8 @@ sub grant_group_cf_rights {
     my @rights = (@_);
 
     my $cfs = RT::CustomFields->new($RT::SystemUser);
-    for my $queue (@queue_prefixes) {
-        my $q = load_queue($queue);
+    for my $lifecycle (@lifecycles) {
+        my $q = base_queue_for_lifecycle($lifecycle);
         $cfs->LimitToObjectId( $q->Id );
     }
     while ( my $cf = $cfs->Next ) {
@@ -466,21 +464,30 @@ sub load_queue {
     return $queue;
 }
 
+# load the first queue with the lifecycle we're after, which is meant
+# a proxy for the "original" RTIR queue of that lifecycle. we can't rely
+# on the name because the base countermeasures queue may be named Blocks
+# due to historical reasons
+sub base_queue_for_lifecycle {
+    my $lifecycle = shift;
+
+    my $queues = RT::Queues->new(RT->SystemUser);
+    $queues->Limit(FIELD => 'Lifecycle', VALUE => $lifecycle);
+    $queues->OrderByCols({
+        ALIAS => 'main',
+        FIELD => 'id',
+        ORDER => 'ASC',
+    });
+
+    return $queues->First;
+}
+
 sub create_or_load_queue {
     my $name            = shift;
     my $lifecycle       = shift;
     my $constituency_cf = shift;
 
-    my $basequeue = RT::Queue->new( RT->SystemUser );
-
-    my $basequeue_name = RT::IR::FriendlyLifecycle($lifecycle);
-    my ($ok, $msg) = $basequeue->LoadByCols( Name => $basequeue_name );
-
-    # support old name for Countermeasures
-    ($ok, $msg) = $basequeue->LoadByCols( Name => 'Blocks' )
-        if !$ok && $basequeue_name eq 'Countermeasures';
-
-    die "Unable to load queue named '$basequeue_name': $msg" if !$ok;
+    my $basequeue = base_queue_for_lifecycle($lifecycle);
 
     my $queue = RT::Queue->new($RT::SystemUser);
     $queue->LoadByCols( Name => $name );
@@ -612,8 +619,6 @@ sub rename_value {
         debug "* rename queue '$oldname' to '$newname'.\n";
     }
 
-    foreach my $basename (@queue_prefixes) {
-    }
     debug <<END;
 * rename group 'DutyTeam $old' if it exists into 'DutyTeam $new'
 * rename group 'ReadOnly $old' if it exists into 'ReadOnly $new'
