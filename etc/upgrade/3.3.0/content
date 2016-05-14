@@ -50,12 +50,32 @@ our @Final = (
               for ( 'RTIR_RequireConstituencyChange', 'RTIR_RequireConstituencyGroupChange' );
         }
 
-        # rename blocks to countermeasures
+        # fix lifecycle from blocks to countermeasures
         {
             my $queues = RT::Queues->new(RT->SystemUser);
             $queues->Limit(FIELD => 'Lifecycle', VALUE => 'blocks');
             while (my $queue = $queues->Next) {
                 $queue->SetLifecycle(RT::IR->lifecycle_countermeasure);
+            }
+        }
+
+        # fix queue name from Blocks to Countermeasures
+        {
+            my $queues = RT::Queues->new(RT->SystemUser);
+            $queues->Limit(
+                  FIELD    => 'Name',
+                  OPERATOR => 'STARTSWITH',
+                  VALUE    => 'Blocks',
+            );
+
+            while (my $queue = $queues->Next) {
+                next unless $queue->Name eq 'Blocks'
+                         || $queue->Name =~ /^Blocks - /;
+
+                my $new = $queue->Name;
+                $new =~ s/^Blocks/Countermeasures/;
+
+                $queue->SetName($new);
             }
         }
 

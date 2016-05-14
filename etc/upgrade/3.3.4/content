@@ -18,7 +18,7 @@ our @Initial = (
             elsif ($name =~ /^Investigations - /) {
                 $lifecycle = RT::IR->lifecycle_investigation;
             }
-            elsif ($name =~ /^(Blocks|Countermeasures) - /) {
+            elsif ($name =~ /^Countermeasures - /) {
                 $lifecycle = RT::IR->lifecycle_countermeasure;
             }
             else {
