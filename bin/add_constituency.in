@@ -384,6 +384,42 @@ sub grant_group_queue_rights {
     return 1;
 }
 
+sub grant_group_single_cf_rights {
+    my ( $cf, $group, $rights_ref ) = @_;
+    my @rights = @$rights_ref;
+
+    debug "Granting rights for custom field "
+        . $cf->Name
+        . " to group "
+        . $group->Name . "\n";
+
+    foreach my $right (@rights) {
+        debug "\t$right";
+        if ($group->PrincipalObj->HasRight(
+                Right  => $right,
+                Object => $cf
+            )
+           )
+        {
+            debug "\t...skipped, already granted\n";
+            next;
+        }
+        my ( $val, $msg ) = $group->PrincipalObj->GrantRight(
+            Right  => $right,
+            Object => $cf
+        );
+        if ($val) {
+            debug "\t...done.\n";
+        } else {
+            die "Failed to grant $right to "
+                . $group->Name
+                . " for Custom Field "
+                . $cf->Name
+                . ".\nError: $msg";
+        }
+    }
+}
+
 # XXX TODO this should be looking at cfs on the new queues
 sub grant_group_cf_rights {
     my $group  = shift;
@@ -394,38 +430,15 @@ sub grant_group_cf_rights {
         my $q = load_queue($queue);
         $cfs->LimitToObjectId( $q->Id );
     }
-    while ( my $cf = $cfs->Next ) {
-        debug "Granting rights for custom field "
-            . $cf->Name
-            . " to group "
-            . $group->Name . "\n";
 
-        foreach my $right (@rights) {
-            debug "\t$right";
-            if ($group->PrincipalObj->HasRight(
-                    Right  => $right,
-                    Object => $cf
-                )
-               )
-            {
-                debug "\t...skipped, already granted\n";
-                next;
-            }
-            my ( $val, $msg ) = $group->PrincipalObj->GrantRight(
-                Right  => $right,
-                Object => $cf
-            );
-            if ($val) {
-                debug "\t...done.\n";
-            } else {
-                die "Failed to grant $right to "
-                    . $group->Name
-                    . " for Custom Field "
-                    . $cf->Name
-                    . ".\nError: $msg";
-            }
-        }
+    while ( my $cf = $cfs->Next ) {
+        grant_group_single_cf_rights( $cf, $group, \@rights );
     }
+
+    # explicitly grant rights on 'RTIR Constituency' cf as well
+    my $rtir_constituency_cf = get_constituency_cf();
+    grant_group_single_cf_rights( $rtir_constituency_cf, $group, \@rights );
+
     return 1;
 }
 
