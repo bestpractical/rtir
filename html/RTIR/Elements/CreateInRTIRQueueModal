@@ -45,12 +45,24 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%ARGS>
-$Lifecycle
-$LifecycleDesc => $Lifecycle
-$Incident => undef
-$Child => undef
-</%ARGS>
+<form action="<% RT::IR->HREFTo('Create.html') %>" id="CreateInQueue">
+% if ($Incident) {
+<input type="hidden" name="Incident" value="<%$Incident%>"/>
+% }
+% if ($Child) {
+<input type="hidden" name="Child" value="<%$Child%>"/>
+% }
+  <&|/l_unsafe, $LifecycleDesc,
+      $m->scomp('/RTIR/Elements/SelectRTIRQueue',
+        Name => 'Queue',
+        Lifecycle => $Lifecycle,
+        ShowNullOption => 0,
+        LimitToConstituency => $limit_to_constituency,
+        Constituency => $m->{'RTIR_ConstituencyFilter'} || $linked_constituency)
+
+    &>Create a new [_1] in the queue [_2]</&>
+  <& /Elements/Submit, Label => loc("Go"), Caption => loc("This will take you to a partially prefilled [_1] creation form.", $LifecycleDesc) &>
+</form>
 <%INIT>
 $Lifecycle = $Lifecycle->[0] if (ref $Lifecycle eq 'ARRAY');
 
@@ -77,21 +89,10 @@ my $limit_to_constituency =
     (RT::IR->StrictConstituencyLinking && $linked_constituency)
     ? 1:0;
 </%INIT>
-<form action="<% RT::IR->HREFTo('Create.html') %>" id="CreateInQueue">
-% if ($Incident) {
-<input type="hidden" name="Incident" value="<%$Incident%>"/>
-% }
-% if ($Child) {
-<input type="hidden" name="Child" value="<%$Child%>"/>
-% }
-  <&|/l_unsafe, $LifecycleDesc,
-      $m->scomp('/RTIR/Elements/SelectRTIRQueue',
-        Name => 'Queue',
-        Lifecycle => $Lifecycle,
-        ShowNullOption => 0,
-        LimitToConstituency => $limit_to_constituency,
-        Constituency => $m->{'RTIR_ConstituencyFilter'} || $linked_constituency)
+<%ARGS>
+$Lifecycle
+$LifecycleDesc => $Lifecycle
+$Incident => undef
+$Child => undef
+</%ARGS>
 
-    &>Create a new [_1] in the queue [_2]</&>
-  <& /Elements/Submit, Label => loc("Go"), Caption => loc("This will take you to a partially prefilled [_1] creation form.", $LifecycleDesc) &>
-</form>
