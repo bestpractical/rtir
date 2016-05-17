@@ -313,8 +313,15 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
 
     PageMenu()->child(
         bookmark => raw_html => $m->scomp( '/Ticket/Elements/Bookmark', id => $id ),
-        sort_order   => 99
+        sort_order   => 98
     );
+    if ($can->('ModifyTicket')) {
+        PageMenu()->child(
+            timer => raw_html => $m->scomp( '/Ticket/Elements/PopupTimerLink', id => $id ),
+            sort_order => 99
+        );
+    }
+
 } elsif ( $request_path =~ m{(?:$re_rtir_path)Link/(ToIncident|FromIncident)} ) {
     my $direction = $1;
 

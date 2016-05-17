@@ -1,4 +1,5 @@
-body.rtir div#header {
+body.rtir div#header,
+body.rtir .ticket-timer .ticket-link {
     background: #404080;
     color: #fff;
 }
