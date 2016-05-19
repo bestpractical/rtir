@@ -17,21 +17,21 @@ To change a configuration value, copy the Set code from F<RT_Config.pm>
 or F<RTIR_Config.pm> and add it to the relevant Site Config. Then set
 your custom configuration values there.
 
-=head2 Blocks Queue
+=head2 Blocks Feature
 
-You may disable the Blocks queue by putting the following into your
+You may disable Blocks feature by putting the following into your
 F<RTIR_SiteConfig.pm> config:
 
     Set($RTIR_DisableBlocksQueue, 1);
 
-You will probably also want to disable the Queue using the RT
-Administrative interface.  Tools -> Configuration -> Queues -> Blocks,
+You will probably also want to disable any Blocks queues using the RT
+Administrative interface.  Tools -> Configuration -> Queues -> (select one),
 uncheck Enabled and click Save Changes.
 
 =head2 Status
 
-The various states an incident, IR, investigation, or block can be in, such as
-'open', 'stalled', 'abandoned', etc.
+The various states an incident, incident report, investigation, or block can be
+in, such as 'open', 'stalled', 'abandoned', etc.
 
 This field contains custom statuses for tickets, and values are different in
 different queues. The status values are set via the C<%Lifecycles> option in
@@ -43,22 +43,39 @@ Status is a critical field for functionality.
 For more information, read the description in F<RTIR_Config.pm> and description
 of L</Scrips> below.
 
+=head2 Custom Queues
+
+While RTIR ships with four queues by default--Incident Reports, Incidents,
+Investigations, and Blocks--you can create your own versions of these queues.
+This functionality (new in RTIR 3.4) is what powers the L<Constituencies>
+feature, but its use is not limited to Constituencies. For example you can have
+multiple queues for Incident Reports, one for each of your monitoring tools,
+each with its own set of custom fields, watchers, automation with scrips,
+templates, watchers, etc.
+
+To create a new RTIR queue, visit RT's Admin -> Queue -> Create menu. Create
+the queue as normal, but be sure to select an RTIR lifecycle (incident_reports,
+incidents, investigations, or blocks). By doing so you include the queue into
+the RTIR system. After creating the queue, it will be available throughout RTIR
+alongside the four builtin incident response queues. Assign custom fields,
+watchers, etc. as desired.
+
 =head2 Custom Fields
 
-When RTIR is installed several custom fields are created and applied
+When RTIR is installed, several custom fields are created and applied
 to queues in RTIR. Some of these custom fields are important for
-RTIR functionality and can not be renamed, disabled or un-applied,
+RTIR functionality and must not be renamed, disabled or un-applied,
 but other fields can be.
 
 =over 4
 
-=item Constituency
+=item RTIR Constituency
 
-The constituency of an incident, IR, investigation, or block.
+The constituency of a queue.
 
-Additional quite heavy automation is tied to this field. This
-is described in L<Constituencies> doc. Don't rename this field
-if you want to use this functionality.
+Heavy automation is tied to this field. This is described in the
+L<Constituencies> doc. Don't rename this field if you want to use this
+functionality.
 
 =item Description
 
@@ -116,9 +133,9 @@ Customer for an IR or Investigation.
 
 =head2 Managing "RT at a glance" and "RTIR at a glance" pages
 
-In the config you can set the @RTIR_HomepageComponents option to control
+In the config you can set the C<@RTIR_HomepageComponents> option to control
 allowed portlets people can add to thier workspace. RT has its own
-option $HomepageComponents so you can list different sets for RT and
+option C<$HomepageComponents> so you can list different sets for RT and
 RTIR. See L<Tutorial> for more information.
 
 =head2 Notifications
@@ -177,7 +194,7 @@ updating a status or replying to a requestor.
 
 =item SetHowReported
 
-Applies to the Incident Reports queue.
+Applies to Incident Reports.
 On ticket creation, sets the HowReported custom field to a default
 value of Email if it isn't otherwise specified.
 
@@ -221,35 +238,31 @@ not copied down to Children).
 
 =item ResolveAllChildren
 
-Applies to the Incidents queue.
+Applies to Incidents.
 
 If an incident is changed to an inactive status,
-looks for linked tickets in the Incident Reports, Investigations or Blocks
+looks for linked tickets in Incident Reports, Investigations or Blocks
 queues and resolves them.  If any of these linked tickets are linked
 to other ongoing incidents, a comment is added and they remain unresolved.
 
 =item FixOwnership
 
-Applies to the Incidents queue.
+For Incidents: When the Owner of an incident is changed, the Owner of linked
+children tickets are changed to the same owner.
 
-When the Owner of an incident is changed, the Owner of linked children
-tickets are changed to the same owner.
-
-Applies to the Incident Reports, Blocks and Investigations queues.
-
-When the Owner of a ticket in these queues is changed, that change
-is also applied to the linked incident.
+For Incident Reports, Blocks and Investigations: When the Owner of a ticket in
+such queues is changed, that change is also applied to the linked Incident.
 
 =item ReopenIncident
 
-Applies to the Incident Reports, Blocks and Investigations queues.
+Applies to Incident Reports, Blocks and Investigations.
 
-If the status of a ticket in these queues is changed from rejected or
-resolved, the linked parent incident ticket status is set to open.
+If the status of a ticket in such queues is changed from rejected or
+resolved, the linked parent Incident ticket status is set to open.
 
 =item SetDefaultIncidentResolution
 
-Applies to the Incidents queue.
+Applies to Incidents.
 
 When an incident's status is changed, if it is changed from an
 inactive status to an active status, the Resolution custom field
@@ -260,7 +273,7 @@ F<RTIR_Config.pm>.
 
 =item NotifyOnClose
 
-Applies to the Blocks queue.
+Applies to Blocks.
 
 When a block ticket is moved from an active status to an inactive
 status (closed), the requestors on the block are notified using the
@@ -268,7 +281,7 @@ L<Templates/BlockRemoved in Blocks queue> template.
 
 =item SetIPFromContent
 
-Applies to the Incident Reports, Blocks, Incidents and Investigations queues.
+Applies to Incident Reports, Blocks, Incidents and Investigations.
 
 Updates the ticket custom field IP to have a list of all IPs and IP ranges
 found in the body of the ticket during Create and Correspond.
@@ -277,31 +290,6 @@ If configuration of the CF allows only one value then only first IP
 from the content is used.
 
 It's OK to disable this scrip.
-
-=item SetConstituency
-
-Applies to the Incident Reports, Blocks, Incidents and Investigations queues.
-
-Uses the Constituency algorithms discussed in F<docs/Constituencies.pod> to
-set and propagate changes to the Constituency custom field.  On ticket
-creation, Constituency is set based on the parent ticket, the
-X-RT-Mail-Extension header (see F<docs/Constituencies.pod>) or the default set
-in your F<RTIR_Config.pm>
-
-When linking tickets or changing the Constituency custom field, this
-scrip ensures that the change is propagated based on your choice of
-_RTIR_Constituency_Propagation in your F<RTIR_Config.pm>
-
-=item SetConstituencyGroup
-
-Applies to the Incident Reports, Blocks, Incidents and Investigations queues.
-
-When tickets are created, or the Constituency custom field is updated,
-this scrip manages the assignment of DutyTeam groups as AdminCcs.
-It makes sure that for a Constituency EDUNET, a DutyTeam group
-named 'DutyTeam EDUNET' is assigned as AdminCc and removes other DutyTeam
-groups from the AdminCc.  L<Constituencies/ACLs> discusses
-how to use these groups.
 
 =back
 
@@ -389,10 +377,10 @@ L<RT::Extension::SLA> was prototyped on it, but vastly improved. In RTIR 3.0
 we removed the SLA implementation in the core of RTIR that was in conflict
 with the extension.
 
-RT 4.4 has cored L<RT::Extension::SLA>, please disable SLA on the Incidents
-queues.  You will encounter a race condition between the core SLA and the RTIR
+RT 4.4 has cored L<RT::Extension::SLA>, please disable SLA on Incidents.
+You will encounter a race condition between the core SLA and the RTIR
 scrips that synchronize due dates between an incident and its most due active
 child.  If you need to manage incident due dates using the core SLA, you can
-disable the RTIR scrips that manage due dates on the Incidents queues.
+disable the RTIR scrips that manage due dates on Incidents.
 
 =cut

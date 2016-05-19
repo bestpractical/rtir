@@ -3,7 +3,7 @@
 In some cases, your incident response team may provide
 services to multiple different "customers" or constituent
 groups. For example, you my provide incident support for both
-educational and governemental institutions.
+educational and government institutions.
 You may have different contact mechanisms for members
 of these groups including different email addresses for reporting
 incidents. For a variety of reasons, it makes sense to identify and
