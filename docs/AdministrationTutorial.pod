@@ -69,9 +69,9 @@ but other fields can be.
 
 =over 4
 
-=item Constituency
+=item RTIR Constituency
 
-The constituency of an incident, incident report, investigation, or block.
+The constituency of a queue.
 
 Heavy automation is tied to this field. This is described in the
 L<Constituencies> doc. Don't rename this field if you want to use this
@@ -290,31 +290,6 @@ If configuration of the CF allows only one value then only first IP
 from the content is used.
 
 It's OK to disable this scrip.
-
-=item SetConstituency
-
-Applies to Incident Reports, Blocks, Incidents and Investigations.
-
-Uses the Constituency algorithms discussed in F<docs/Constituencies.pod> to
-set and propagate changes to the Constituency custom field.  On ticket
-creation, Constituency is set based on the parent ticket, the
-X-RT-Mail-Extension header (see F<docs/Constituencies.pod>) or the default set
-in your F<RTIR_Config.pm>
-
-When linking tickets or changing the Constituency custom field, this
-scrip ensures that the change is propagated based on your choice of
-_RTIR_Constituency_Propagation in your F<RTIR_Config.pm>
-
-=item SetConstituencyGroup
-
-Applies to Incident Reports, Blocks, Incidents and Investigations.
-
-When tickets are created, or the Constituency custom field is updated,
-this scrip manages the assignment of DutyTeam groups as AdminCcs.
-It makes sure that for a Constituency EDUNET, a DutyTeam group
-named 'DutyTeam EDUNET' is assigned as AdminCc and removes other DutyTeam
-groups from the AdminCc.  L<Constituencies/ACLs> discusses
-how to use these groups.
 
 =back
 
