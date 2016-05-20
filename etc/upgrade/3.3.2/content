@@ -18,7 +18,7 @@ our @CustomFields = (
         Disabled    => 0,
         LookupType  => 'RT::Queue',
         Description => 'If set, defines the default WHOIS server for an RTIR Queue',
-        ApplyTo     => [ 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ],
+        ApplyTo     => [ 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ],
     },
 
 );
@@ -87,7 +87,7 @@ our @Final = (
         }
 
         # move tickets
-        for my $queue ( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+        for my $queue ( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
             my $tickets = RT::Tickets->new( RT->SystemUser );
             $tickets->FromSQL( qq{Queue = '$queue' AND CF.{Constituency} IS NOT NULL} );
             while ( my $ticket = $tickets->Next ) {

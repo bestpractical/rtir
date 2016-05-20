@@ -17,7 +17,7 @@ our @Initial = (
         $queues->UnLimit;
         while ( my $queue = $queues->Next ) {
             my $constituency = $queue->FirstCustomFieldValue('RTIR Constituency');
-            if ( $constituency || $queue->Name =~ /^(?:Incidents|Incident Reports|Investigations|Blocks)$/ ) {
+            if ( $constituency || $queue->Name =~ /^(?:Incidents|Incident Reports|Investigations|Countermeasures)$/ ) {
                 my $group = $groups{$constituency || ''};
                 if ( $group && !$group->PrincipalObj->HasRight( Right  => 'ForwardMessage', Object => $queue ) ) {
                     my ( $ret, $msg ) = $group->PrincipalObj->GrantRight(
