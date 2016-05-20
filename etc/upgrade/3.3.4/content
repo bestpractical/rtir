@@ -3,41 +3,32 @@ use warnings;
 
 our @Initial = (
     sub {
+        my $cf = RT::CustomField->new(RT->SystemUser);
+        $cf->Load( "RTIR Constituency", LookupType => 'RT::Queue' );
+        my @constituencies = ('', map { $_->Name } @{$cf->Values->ItemsArrayRef || []} );
+
+        my %groups;
+        for my $constituency ( @constituencies ) {
+            my $group = RT::Group->new(RT->SystemUser);
+            $group->LoadUserDefinedGroup('DutyTeam' . ($constituency ? " $constituency" : '') );
+            $groups{$constituency} = $group if $group->id;
+        }
         my $queues = RT::Queues->new(RT->SystemUser);
         $queues->UnLimit;
-        while (my $queue = $queues->Next) {
-            my $name = $queue->Name;
-            my $lifecycle;
-
-            if ($name =~ /^Incident Reports - /) {
-                $lifecycle = RT::IR->lifecycle_report;
+        while ( my $queue = $queues->Next ) {
+            my $constituency = $queue->FirstCustomFieldValue('RTIR Constituency');
+            if ( $constituency || $queue->Name =~ /^(?:Incidents|Incident Reports|Investigations|Blocks)$/ ) {
+                my $group = $groups{$constituency || ''};
+                if ( $group && !$group->PrincipalObj->HasRight( Right  => 'ForwardMessage', Object => $queue ) ) {
+                    my ( $ret, $msg ) = $group->PrincipalObj->GrantRight(
+                        Right  => 'ForwardMessage',
+                        Object => $queue,
+                    );
+                    unless ($ret) {
+                        RT->Logger->error("Couldn't grant ForwardMessage to DutyTeam of queue #" . $queue->id . ": $msg");
+                    }
+                }
             }
-            elsif ($name =~ /^Incidents - /) {
-                $lifecycle = RT::IR->lifecycle_incident;
-            }
-            elsif ($name =~ /^Investigations - /) {
-                $lifecycle = RT::IR->lifecycle_investigation;
-            }
-            elsif ($name =~ /^Countermeasures - /) {
-                $lifecycle = RT::IR->lifecycle_countermeasure;
-            }
-            else {
-                next;
-            }
-
-            my $old_lifecycle = $queue->Lifecycle;
-
-            next if $old_lifecycle eq $lifecycle;
-
-            if ($old_lifecycle ne 'default') {
-                RT->Logger->warning( "Unwilling to change queue $name lifecycle from unexpected lifecycle of $old_lifecycle to $lifecycle. (expected lifecycle default)" );
-                next;
-            }
-
-            RT->Logger->debug( "Changing queue $name lifecycle from $old_lifecycle to $lifecycle" );
-
-            my ($ok, $msg) = $queue->SetLifecycle($lifecycle);
-            RT->Logger->error( "Unable to change queue $name lifecycle from $old_lifecycle to $lifecycle: $msg" ) if !$ok;
         }
     },
 );

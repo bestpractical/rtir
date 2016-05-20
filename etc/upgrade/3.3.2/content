@@ -1,41 +1,202 @@
 use strict;
 use warnings;
 
-our @Initial = (
-    sub {
-        my $action = RT::ScripAction->new(RT->SystemUser);
-        $action->Load('RTIR Set Incident Due');
-        if ( $action->id ) {
-            my $scrips = RT::Scrips->new(RT->SystemUser);
-            $scrips->Limit( FIELD => 'ScripAction', VALUE => $action->id );
-            return unless $scrips->Count;
-            my $report_queues = RT::Queues->new(RT->SystemUser);
-            $report_queues->Limit( FIELD => 'Lifecycle', VALUE => RT::IR->lifecycle_report );
-            return unless $report_queues->Count;
-            my @report_queues = @{$report_queues->ItemsArrayRef};
-            my $incident_queues = RT::Queues->new(RT->SystemUser);
-            $incident_queues->Limit( FIELD => 'Lifecycle', VALUE => RT::IR->lifecycle_incident );
-            return unless $incident_queues->Count;
-            my @incident_queues = @{$incident_queues->ItemsArrayRef};
-            my %queue_map;
-            for my $incident_queue( @incident_queues ) {
-                $queue_map{$incident_queue->FirstCustomFieldValue('RTIR Constituency') || '' } = $incident_queue;
-            }
+our @CustomFields = (
+    {
+        Name        => 'RTIR Constituency',
+        Type        => 'SelectSingle',
+        Disabled    => 0,
+        RenderType  => 'Dropdown',
+        LookupType  => 'RT::Queue',
+        Description => 'Associates RTIR queues with constituencies',
+        Values      => [],
+    },
+    {
 
-            while ( my $scrip = $scrips->Next ) {
-                for my $report_queue ( @report_queues ) {
-                    if ( $scrip->IsAdded($report_queue->id) ) {
-                        my $incident_queue =
-                            $queue_map{$report_queue->FirstCustomFieldValue('RTIR Constituency') || ''};
-                        if ( $incident_queue && !$incident_queue->SLADisabled ) {
-                            my ($ret, $msg) = $incident_queue->SetSLADisabled(1);
-                            unless ( $ret ) {
-                                RT->Logger->error("Couldn't disable core SLA for queue #" . $incident_queue->id . ": $msg");
-                            }
+        Name        => 'RTIR default WHOIS server',
+        Type        => 'FreeformSingle',
+        Disabled    => 0,
+        LookupType  => 'RT::Queue',
+        Description => 'If set, defines the default WHOIS server for an RTIR Queue',
+        ApplyTo     => [ 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ],
+    },
+
+);
+
+our @ScripActions = (
+    {
+        Name        => 'RTIR Change Child Constituencies',
+        Description => 'Move all tickets related to an incident to a new constituency',
+        ExecModule  => 'RTIR_ChangeChildConstituencies',
+    },
+);
+
+our @Scrips = (
+    {
+        Description    => "Propagate Constituency Changes",
+        Queue          => 'Incidents',
+        ScripCondition => 'On Queue Change',
+        ScripAction    => 'RTIR Change Child Constituencies',
+        Template       => 'Blank',
+    },
+);
+
+our @Final = (
+    sub {
+        # remove old code
+        {
+            remove_scrip_action( $_ ) for ( 'RTIR_SetConstituency', 'RTIR_SetConstituencyGroup' );
+            remove_scrip_condition( $_ )
+              for ( 'RTIR_RequireConstituencyChange', 'RTIR_RequireConstituencyGroupChange' );
+        }
+
+        # update values of rtir constituency
+        my @constituencies;
+        {
+            my $cf = RT::CustomField->new( RT->SystemUser );
+            $cf->LoadByName( Name => 'Constituency', LookupType => 'RT::Queue-RT::Ticket' );
+            if ( $cf->id ) {
+                my $values = $cf->Values;
+                while ( my $value = $values->Next ) {
+                    push @constituencies, $value->Name;
+                }
+            }
+            else {
+                RT->Logger->error( "Failed to load Constituency cf" );
+            }
+            my $queue_cf = RT::CustomField->new( RT->SystemUser );
+            $queue_cf->LoadByName( Name => 'RTIR Constituency', LookupType => 'RT::Queue' );
+            if ( $queue_cf->id ) {
+                for my $constituency ( @constituencies ) {
+                    my ( $ret, $msg ) = $queue_cf->AddValue( Name => $constituency );
+                    if ( !$ret ) {
+                        RT->Logger->error( "Failed to add $constituency to 'RTIR Constituency': $msg " );
+                    }
+                }
+            }
+            else {
+                RT->Logger->error( "Failed to load 'RTIR Constituency' cf" );
+            }
+        }
+
+        # create new queues
+        my $add_constituency_cmd = File::Spec->catfile( $RT::LocalPluginPath, 'RT-IR', 'bin', 'add_constituency' );
+
+        for my $constituency ( @constituencies ) {
+            system( $add_constituency_cmd, '--name', $constituency, '--force' );
+        }
+
+        # move tickets
+        for my $queue ( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+            my $tickets = RT::Tickets->new( RT->SystemUser );
+            $tickets->FromSQL( qq{Queue = '$queue' AND CF.{Constituency} IS NOT NULL} );
+            while ( my $ticket = $tickets->Next ) {
+                my $constituency = $ticket->FirstCustomFieldValue( 'Constituency' );
+                my $new_queue    = RT::Queue->new( RT->SystemUser );
+                $new_queue->Load( "$queue - $constituency" );
+                if ( $new_queue->id ) {
+                    my ( $ret, $msg ) = $ticket->_Set( Field => 'Queue', Value => $new_queue->id );
+                    if ( !$ret ) {
+                        RT->Logger->error(
+                            "Failed to move ticket #" . $ticket->id . qq{ to "$queue - $constituency": $msg} );
+                    }
+                }
+                else {
+                    RT->Logger->warning( "Failed to load queue '$queue - $constituency'" );
+                }
+            }
+        }
+
+        # update code
+        {
+            my $attrs = RT::Attributes->new( RT->SystemUser );
+            $attrs->Limit( FIELD => 'Name', VALUE => 'RTIR_HomepageSettings' );
+            while ( my $attr = $attrs->Next ) {
+                my $content = $attr->Content;
+                my $sidebar_has_refresh;
+                my $sidebar_has_constituency;
+                for my $pane ( qw/body sidebar/ ) {
+                    my @new;
+                    for my $value ( @{ $content->{ $pane } } ) {
+                        if ( $value->{ name } eq 'Quicksearch' && $value->{ type } eq 'component' ) {
+                            push @new, { %$value, name => '/RTIR/Elements/QueueSummary' };
+                        }
+                        elsif ($pane eq 'sidebar'
+                            && $value->{ name } eq 'RefreshHomepage'
+                            && $value->{ type } eq 'component' )
+                        {
+                            # we want to put refresh component to the end of the list
+                            $sidebar_has_refresh = 1;
+                        }
+                        elsif ($pane eq 'sidebar'
+                            && $value->{ name } eq '/RTIR/Elements/WorkWithConstituency'
+                            && $value->{ type } eq 'component' )
+                        {
+                            $sidebar_has_constituency = 1;
+                            push @new, $value;
+                        }
+                        else {
+                            push @new, $value;
                         }
                     }
+                    $content->{ $pane } = \@new;
+                }
+                unless ( $sidebar_has_constituency ) {
+                    unshift @{ $content->{ sidebar } },
+                      { type => 'component', name => '/RTIR/Elements/WorkWithConstituency' };
+                }
+
+                if ( $sidebar_has_refresh ) {
+                    push @{ $content->{ sidebar } }, { type => 'component', name => 'RefreshHomepage' };
+                }
+
+                my ( $ret, $msg ) = $attr->SetContent( $content );
+                unless ( $ret ) {
+                    RT->Logger->error( "Failed to update content of attribute #" . $attr->id . ": $msg" );
+                }
+            }
+        }
+
+        # disable old Constituency cf
+        {
+            my $cf = RT::CustomField->new( RT->SystemUser );
+            $cf->LoadByName( Name => 'Constituency', LookupType => 'RT::Queue-RT::Ticket' );
+            if ( $cf->id && !$cf->Disabled ) {
+                my ( $ret, $msg ) = $cf->SetDisabled( 1 );
+                if ( !$ret ) {
+                    RT->Logger->error( "Couldn't disable old Constituency cf: $msg" );
                 }
             }
         }
     },
 );
+
+sub remove_scrip_action {
+    my $module = shift;
+
+    my $actions = RT::ScripActions->new( RT->SystemUser );
+    $actions->Limit( FIELD => 'ExecModule', VALUE => $module );
+    while ( my $action = $actions->Next ) {
+        my $scrips = RT::Scrips->new( $RT::SystemUser );
+        $scrips->Limit( FIELD => 'ScripAction', VALUE => $action->id );
+        while ( my $scrip = $scrips->Next ) {
+            $scrip->Delete;
+        }
+        $action->DBIx::SearchBuilder::Record::Delete();
+    }
+}
+
+sub remove_scrip_condition {
+    my $module = shift;
+
+    my $conditions = RT::ScripConditions->new( RT->SystemUser );
+    $conditions->Limit( FIELD => 'ExecModule', VALUE => $module );
+    while ( my $condition = $conditions->Next ) {
+        my $scrips = RT::Scrips->new( $RT::SystemUser );
+        $scrips->Limit( FIELD => 'ScripCondition', VALUE => $condition->id );
+        while ( my $scrip = $scrips->Next ) {
+            $scrip->Delete;
+        }
+        $condition->DBIx::SearchBuilder::Record::Delete();
+    }
+}

@@ -1,202 +1,43 @@
 use strict;
 use warnings;
 
-our @CustomFields = (
-    {
-        Name        => 'RTIR Constituency',
-        Type        => 'SelectSingle',
-        Disabled    => 0,
-        RenderType  => 'Dropdown',
-        LookupType  => 'RT::Queue',
-        Description => 'Associates RTIR queues with constituencies',
-        Values      => [],
-    },
-    {
-
-        Name        => 'RTIR default WHOIS server',
-        Type        => 'FreeformSingle',
-        Disabled    => 0,
-        LookupType  => 'RT::Queue',
-        Description => 'If set, defines the default WHOIS server for an RTIR Queue',
-        ApplyTo     => [ 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ],
-    },
-
-);
-
-our @ScripActions = (
-    {
-        Name        => 'RTIR Change Child Constituencies',
-        Description => 'Move all tickets related to an incident to a new constituency',
-        ExecModule  => 'RTIR_ChangeChildConstituencies',
-    },
-);
-
-our @Scrips = (
-    {
-        Description    => "Propagate Constituency Changes",
-        Queue          => 'Incidents',
-        ScripCondition => 'On Queue Change',
-        ScripAction    => 'RTIR Change Child Constituencies',
-        Template       => 'Blank',
-    },
-);
-
-our @Final = (
+our @Initial = (
     sub {
-        # remove old code
-        {
-            remove_scrip_action( $_ ) for ( 'RTIR_SetConstituency', 'RTIR_SetConstituencyGroup' );
-            remove_scrip_condition( $_ )
-              for ( 'RTIR_RequireConstituencyChange', 'RTIR_RequireConstituencyGroupChange' );
-        }
+        my $queues = RT::Queues->new(RT->SystemUser);
+        $queues->UnLimit;
+        while (my $queue = $queues->Next) {
+            my $name = $queue->Name;
+            my $lifecycle;
 
-        # update values of rtir constituency
-        my @constituencies;
-        {
-            my $cf = RT::CustomField->new( RT->SystemUser );
-            $cf->LoadByName( Name => 'Constituency', LookupType => 'RT::Queue-RT::Ticket' );
-            if ( $cf->id ) {
-                my $values = $cf->Values;
-                while ( my $value = $values->Next ) {
-                    push @constituencies, $value->Name;
-                }
+            if ($name =~ /^Incident Reports - /) {
+                $lifecycle = RT::IR->lifecycle_report;
+            }
+            elsif ($name =~ /^Incidents - /) {
+                $lifecycle = RT::IR->lifecycle_incident;
+            }
+            elsif ($name =~ /^Investigations - /) {
+                $lifecycle = RT::IR->lifecycle_investigation;
+            }
+            elsif ($name =~ /^Countermeasures - /) {
+                $lifecycle = RT::IR->lifecycle_countermeasure;
             }
             else {
-                RT->Logger->error( "Failed to load Constituency cf" );
+                next;
             }
-            my $queue_cf = RT::CustomField->new( RT->SystemUser );
-            $queue_cf->LoadByName( Name => 'RTIR Constituency', LookupType => 'RT::Queue' );
-            if ( $queue_cf->id ) {
-                for my $constituency ( @constituencies ) {
-                    my ( $ret, $msg ) = $queue_cf->AddValue( Name => $constituency );
-                    if ( !$ret ) {
-                        RT->Logger->error( "Failed to add $constituency to 'RTIR Constituency': $msg " );
-                    }
-                }
+
+            my $old_lifecycle = $queue->Lifecycle;
+
+            next if $old_lifecycle eq $lifecycle;
+
+            if ($old_lifecycle ne 'default') {
+                RT->Logger->warning( "Unwilling to change queue $name lifecycle from unexpected lifecycle of $old_lifecycle to $lifecycle. (expected lifecycle default)" );
+                next;
             }
-            else {
-                RT->Logger->error( "Failed to load 'RTIR Constituency' cf" );
-            }
-        }
 
-        # create new queues
-        my $add_constituency_cmd = File::Spec->catfile( $RT::LocalPluginPath, 'RT-IR', 'bin', 'add_constituency' );
+            RT->Logger->debug( "Changing queue $name lifecycle from $old_lifecycle to $lifecycle" );
 
-        for my $constituency ( @constituencies ) {
-            system( $add_constituency_cmd, '--name', $constituency, '--force' );
-        }
-
-        # move tickets
-        for my $queue ( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
-            my $tickets = RT::Tickets->new( RT->SystemUser );
-            $tickets->FromSQL( qq{Queue = '$queue' AND CF.{Constituency} IS NOT NULL} );
-            while ( my $ticket = $tickets->Next ) {
-                my $constituency = $ticket->FirstCustomFieldValue( 'Constituency' );
-                my $new_queue    = RT::Queue->new( RT->SystemUser );
-                $new_queue->Load( "$queue - $constituency" );
-                if ( $new_queue->id ) {
-                    my ( $ret, $msg ) = $ticket->_Set( Field => 'Queue', Value => $new_queue->id );
-                    if ( !$ret ) {
-                        RT->Logger->error(
-                            "Failed to move ticket #" . $ticket->id . qq{ to "$queue - $constituency": $msg} );
-                    }
-                }
-                else {
-                    RT->Logger->warning( "Failed to load queue '$queue - $constituency'" );
-                }
-            }
-        }
-
-        # update code
-        {
-            my $attrs = RT::Attributes->new( RT->SystemUser );
-            $attrs->Limit( FIELD => 'Name', VALUE => 'RTIR_HomepageSettings' );
-            while ( my $attr = $attrs->Next ) {
-                my $content = $attr->Content;
-                my $sidebar_has_refresh;
-                my $sidebar_has_constituency;
-                for my $pane ( qw/body sidebar/ ) {
-                    my @new;
-                    for my $value ( @{ $content->{ $pane } } ) {
-                        if ( $value->{ name } eq 'Quicksearch' && $value->{ type } eq 'component' ) {
-                            push @new, { %$value, name => '/RTIR/Elements/QueueSummary' };
-                        }
-                        elsif ($pane eq 'sidebar'
-                            && $value->{ name } eq 'RefreshHomepage'
-                            && $value->{ type } eq 'component' )
-                        {
-                            # we want to put refresh component to the end of the list
-                            $sidebar_has_refresh = 1;
-                        }
-                        elsif ($pane eq 'sidebar'
-                            && $value->{ name } eq '/RTIR/Elements/WorkWithConstituency'
-                            && $value->{ type } eq 'component' )
-                        {
-                            $sidebar_has_constituency = 1;
-                            push @new, $value;
-                        }
-                        else {
-                            push @new, $value;
-                        }
-                    }
-                    $content->{ $pane } = \@new;
-                }
-                unless ( $sidebar_has_constituency ) {
-                    unshift @{ $content->{ sidebar } },
-                      { type => 'component', name => '/RTIR/Elements/WorkWithConstituency' };
-                }
-
-                if ( $sidebar_has_refresh ) {
-                    push @{ $content->{ sidebar } }, { type => 'component', name => 'RefreshHomepage' };
-                }
-
-                my ( $ret, $msg ) = $attr->SetContent( $content );
-                unless ( $ret ) {
-                    RT->Logger->error( "Failed to update content of attribute #" . $attr->id . ": $msg" );
-                }
-            }
-        }
-
-        # disable old Constituency cf
-        {
-            my $cf = RT::CustomField->new( RT->SystemUser );
-            $cf->LoadByName( Name => 'Constituency', LookupType => 'RT::Queue-RT::Ticket' );
-            if ( $cf->id && !$cf->Disabled ) {
-                my ( $ret, $msg ) = $cf->SetDisabled( 1 );
-                if ( !$ret ) {
-                    RT->Logger->error( "Couldn't disable old Constituency cf: $msg" );
-                }
-            }
+            my ($ok, $msg) = $queue->SetLifecycle($lifecycle);
+            RT->Logger->error( "Unable to change queue $name lifecycle from $old_lifecycle to $lifecycle: $msg" ) if !$ok;
         }
     },
 );
-
-sub remove_scrip_action {
-    my $module = shift;
-
-    my $actions = RT::ScripActions->new( RT->SystemUser );
-    $actions->Limit( FIELD => 'ExecModule', VALUE => $module );
-    while ( my $action = $actions->Next ) {
-        my $scrips = RT::Scrips->new( $RT::SystemUser );
-        $scrips->Limit( FIELD => 'ScripAction', VALUE => $action->id );
-        while ( my $scrip = $scrips->Next ) {
-            $scrip->Delete;
-        }
-        $action->DBIx::SearchBuilder::Record::Delete();
-    }
-}
-
-sub remove_scrip_condition {
-    my $module = shift;
-
-    my $conditions = RT::ScripConditions->new( RT->SystemUser );
-    $conditions->Limit( FIELD => 'ExecModule', VALUE => $module );
-    while ( my $condition = $conditions->Next ) {
-        my $scrips = RT::Scrips->new( $RT::SystemUser );
-        $scrips->Limit( FIELD => 'ScripCondition', VALUE => $condition->id );
-        while ( my $scrip = $scrips->Next ) {
-            $scrip->Delete;
-        }
-        $condition->DBIx::SearchBuilder::Record::Delete();
-    }
-}
