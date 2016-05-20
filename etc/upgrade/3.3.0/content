@@ -12,7 +12,7 @@ our @Final = (
             }
         }
 
-        # fix queue name from Blocks to Countermeasures
+        # fix queue names from Blocks to Countermeasures
         {
             my $queues = RT::Queues->new(RT->SystemUser);
             $queues->Limit(
@@ -29,6 +29,41 @@ our @Final = (
                 $new =~ s/^Blocks/Countermeasures/;
 
                 $queue->SetName($new);
+            }
+        }
+
+        # fix RTIR Set Block Status action
+        {
+            my $action = RT::ScripAction->new(RT->SystemUser);
+            $action->Load('RTIR Set Block Status');
+
+            my ($ok, $msg) = $action->SetName('RTIR Set Countermeasure Status');
+            RT->Logger->error($msg) if !$ok;
+
+            ($ok, $msg) = $action->SetDescription('Set the status of a Countermeasure');
+            RT->Logger->error($msg) if !$ok;
+
+            ($ok, $msg) = $action->SetExecModule('RTIR_SetCountermeasureStatus');
+            RT->Logger->error($msg) if !$ok;
+        }
+
+        # fix BlockRemoved templates
+        {
+            my $templates = RT::Templates->new(RT->SystemUser);
+            $templates->Limit(FIELD => 'Name', VALUE => 'BlockRemoved');
+            while (my $template = $templates->Next) {
+                my ($ok, $msg) = $template->SetName('CountermeasureRemoved');
+                RT->Logger->error($msg) if !$ok;
+            }
+        }
+
+        # fix scrips that use BlockRemoved
+        {
+            my $scrips = RT::Scrips->new(RT->SystemUser);
+            $scrips->Limit(FIELD => 'Template', VALUE => 'BlockRemoved');
+            while (my $scrip = $scrips->Next) {
+                my ($ok, $msg) = $scrip->SetTemplate('CountermeasureRemoved');
+                RT->Logger->error($msg) if !$ok;
             }
         }
     },
