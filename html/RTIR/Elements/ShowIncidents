@@ -58,7 +58,7 @@
 <div class="actions">
 % unless ( $action ) {
 <a class="button" id="link-incident" href="<% RT::IR->HREFTo('Link/ToIncident/?id='. $id ) %>">Link</a>
-<a class="button" id="create-incident" href="<% RT::IR->HREFTo('Incident/Create.html?Child='. $id ) %>">New</a>
+<a class="button" id="create-incident" href="<% RT::IR->HREFTo('CreateInQueue.html?Lifecycle=' . RT::IR->lifecycle_incident . '&Child='. $id ) %>">New</a>
 % } elsif ( $action ne 'No' ) {
 <a class="button" href="<% RT::IR->HREFTo('Display.html?Action='. $action.'&id='. $id) %>"><% loc( $action ) %></a>
 % }

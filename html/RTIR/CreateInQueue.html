@@ -45,58 +45,21 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<form action="<% RT::IR->HREFTo('Create.html') %>" id="CreateInQueue">
-% if ($Incident) {
-<input type="hidden" name="Incident" value="<%$Incident%>"/>
-% }
-% if ($Child) {
-<input type="hidden" name="Child" value="<%$Child%>"/>
-% }
-  <&|/l_unsafe, $lifecycle_desc,
-      $m->scomp('/RTIR/Elements/SelectRTIRQueue',
-        Name => 'Queue',
-        Lifecycle => $Lifecycle,
-        ShowNullOption => 0,
-        LimitToConstituency => $limit_to_constituency,
-        Constituency => $m->{'RTIR_ConstituencyFilter'} || $linked_constituency)
+<& /RTIR/Elements/Header,
+    Title => $title,
+&>
+<& /Elements/Tabs &>
 
-    &>Create a new [_1] in the queue [_2]</&>
-  <& /Elements/Submit, Label => loc("Go"), Caption => loc("This will take you to a partially prefilled [_1] creation form.", $lifecycle_desc) &>
-</form>
+<& /RTIR/Elements/CreateInRTIRQueueModal, %ARGS &>
+
 <%INIT>
-$Lifecycle = $Lifecycle->[0] if (ref $Lifecycle eq 'ARRAY');
+my $lifecycle_desc = $Lifecycle eq 'incidents'        ? 'Incident'        :
+                     $Lifecycle eq 'incident_reports' ? 'Incident Report' :
+                     $Lifecycle eq 'blocks'           ? 'Block'           :
+                     $Lifecycle eq 'investigations'   ? 'Investigation'   : '';
 
-my ($linked_ticket, $linked_constituency);
-
-if ($Incident) {
-    $linked_ticket = RT::Ticket->new( $session{CurrentUser} );
-    $linked_ticket->Load($Incident);
-}
-
-if ($Child) {
-    $linked_ticket = RT::Ticket->new( $session{CurrentUser} );
-    $linked_ticket->Load($Child);
-}
-
-if ($linked_ticket && $linked_ticket->id) {
-    $linked_constituency = RT::IR->ConstituencyFor($linked_ticket);
-}
-
-my $limit_to_constituency =
-    # Limit no matter what if we have a filter
-    $m->{'RTIR_ConstituencyFilter'} ||
-    # Also limit if we have a linked constituency and StrictConstituencyLinking is set
-    (RT::IR->StrictConstituencyLinking && $linked_constituency)
-    ? 1:0;
-
-my $lifecycle_desc = $Lifecycle eq 'incidents'        ? 'incident'        :
-                     $Lifecycle eq 'incident_reports' ? 'incident report' :
-                     $Lifecycle eq 'blocks'           ? 'block'           :
-                     $Lifecycle eq 'investigations'   ? 'investigation'   : '';
+my $title = "Select Queue for New $lifecycle_desc";
 </%INIT>
 <%ARGS>
 $Lifecycle
-$Incident => undef
-$Child => undef
 </%ARGS>
-

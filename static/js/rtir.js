@@ -7,7 +7,7 @@ jQuery(function() {
         return href.substring(questionMarkIndex+1);
     };
 
-    var showModal = function(lifecycle, lifecycleDesc, triggeringObject) {
+    var showModal = function(lifecycle, triggeringObject) {
         var queryString = getQueryString(triggeringObject);
         var constituency = '';
 
@@ -20,7 +20,7 @@ jQuery(function() {
         }
 
         jQuery.get(
-            RT.Config.WebHomePath + '/RTIR' + constituency + '/Helpers/CreateInRTIRQueueModal?Lifecycle=' + lifecycle + '&LifecycleDesc=' + lifecycleDesc + '&' + queryString,
+            RT.Config.WebHomePath + '/RTIR' + constituency + '/Helpers/CreateInRTIRQueueModal?Lifecycle=' + lifecycle + '&' + queryString,
             function(html) {
                 // If there's only one queue, just create a ticket in it and skip the modal
                 var queues = jQuery(html).find("select[name='Queue'] > option");
@@ -39,31 +39,31 @@ jQuery(function() {
 
     var showReportsModal = function(e) {
         e.preventDefault();
-        showModal('incident_reports', 'report', this);
+        showModal('incident_reports', this);
     };
 
     var showInvestigationsModal = function(e) {
         e.preventDefault();
-        showModal('investigations', 'investigation', this);
+        showModal('investigations', this);
     };
 
     var showBlocksModal = function(e) {
         e.preventDefault();
-        showModal('blocks', 'block', this);
+        showModal('blocks', this);
     };
 
     var showIncidentsModal = function(e) {
         e.preventDefault();
-        showModal('incidents', 'incident', this);
+        showModal('incidents', this);
     };
 
-    jQuery("#reports-create").click(showReportsModal);
-    jQuery("#investigations-launch").click(showInvestigationsModal);
-    jQuery("#blocks-create").click(showBlocksModal);
-    jQuery("#incidents-create").click(showIncidentsModal);
-    jQuery("#create-incident").click(showIncidentsModal);
+    jQuery('body').on('click', '#reports-create', showReportsModal);
+    jQuery('body').on('click', '#investigations-launch', showInvestigationsModal);
+    jQuery('body').on('click', '#blocks-create', showBlocksModal);
+    jQuery('body').on('click', '#incidents-create', showIncidentsModal);
+    jQuery('body').on('click', '#create-incident', showIncidentsModal);
 
-    jQuery(".create_child_incident_reports").click(showReportsModal);
-    jQuery(".create_child_investigations").click(showInvestigationsModal);
-    jQuery(".create_child_blocks").click(showBlocksModal);
+    jQuery('body').on('click', '.create_child_incident_reports', showReportsModal);
+    jQuery('body').on('click', '.create_child_investigations', showInvestigationsModal);
+    jQuery('body').on('click', '.create_child_blocks', showBlocksModal);
 });

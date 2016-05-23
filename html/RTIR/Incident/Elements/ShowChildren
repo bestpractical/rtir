@@ -116,7 +116,7 @@ if ( $IncidentObj->CurrentUserHasRight('ModifyTicket') ) {
         push @box_actions, {
             title => $Lifecycle ne RT::IR->lifecycle_investigation? loc('Create') : loc('Launch'),
             class => 'create_child' . ($Lifecycle ? '_'.$Lifecycle : ''),
-            path => RT::IR->HREFTo("Create.html?Incident=$id&Lifecycle=".$Lifecycle),
+            path => RT::IR->HREFTo("CreateInQueue.html?Incident=$id&Lifecycle=".$Lifecycle),
         };
     }
     push @box_actions, {
