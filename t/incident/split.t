@@ -26,10 +26,11 @@ my $rtir_user = rtir_user();
     ok ($new_id, "Ticket created successfully: #$new_id.");
 
     $agent->follow_link_ok({text => "Launch", n => 2 }, "Followed link");
+    $agent->click_through_createinqueue;
     $agent->form_number(3);
     $agent->field('Requestors', $rtir_user->EmailAddress);
     $agent->click('Create');
-    
+
     is ($agent->status, 200, "Attempted to create the ticket");
     my $inv_id = ($agent->content =~ /.*Ticket (\d+) created.*/i )[0];
     ok ($inv_id, "Ticket created successfully: #$inv_id.");

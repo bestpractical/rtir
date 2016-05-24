@@ -13,6 +13,7 @@ my $ir = $agent->create_ir( {Subject => 'IR to test watcher add bug',
 
 
 SKIP: {
+	skip "Create incident and investigation functionality disabled for now", 19;
 	skip "No IR created", 19 if(!$ir);
 
 	$agent->content_unlike(qr/permission denied/i, "No permissions problems");
@@ -46,7 +47,7 @@ SKIP: {
 }
 
 
-
+SKIP: { skip "Create incident and investigation functionality disabled for now", 5;
 # Testing creating an incident and investigation not from an incident report
 my ($inc, $inv) = $agent->create_incident_and_investigation( '',
 	{Subject => "Incident to test adding watchers", 
@@ -65,6 +66,7 @@ SKIP: {
 	$agent->has_watchers( $inv, 'Cc');
 	$agent->has_watchers( $inv, 'AdminCc');
 
+}
 }
 
 

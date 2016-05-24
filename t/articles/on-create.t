@@ -35,7 +35,9 @@ diag "create an article" if $ENV{'TEST_VERBOSE'};
     is($agent->status, 200, "attempt to create succeeded");
 }
 
-foreach ( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
+# TODO: Once incident+investigation creation is re-added, this should be put back
+#foreach ( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
+foreach ( 'Incident Reports', 'Investigations', 'Countermeasures' ) {
     my $queue = RT::Queue->new(RT->SystemUser);
     $queue->Load( $_ );
     ok $agent->goto_create_ticket( $queue ), "UI -> create ticket";

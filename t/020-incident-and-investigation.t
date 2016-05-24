@@ -19,7 +19,7 @@ $agent->display_ticket( $ir);
 # that function is not used here is that we want to check that the creation failed in the case
 # of an empty correspondents field, while the above function tests if the creation succeeded,
 # and thus will fail if we get the result we want, and succeed if we don't!
-{
+SKIP: { skip 'Create incident and investigation functionality disabled for now', 3;
     $agent->follow_link_ok({text => "New"}, "Followed 'New (Incident)' link");
     $agent->form_number(3);
     $agent->field('Subject', 'Incident for testing empty Investigation correspondent');
@@ -33,7 +33,7 @@ $agent->display_ticket( $ir);
 
 
 # Okay, enough funny business. Now for some straightforward tests, how it should work
-{
+SKIP: { skip 'Create incident and investigation functionality disabled for now', 4;
     my ($inc_id, $inv_id) = $agent->create_incident_and_investigation( '',
         {Subject => 'Incident for testing Incident-and-investigation-from-IR creation',
         InvestigationSubject => 'Investigation for testing Incident-and-Investigation-from-IR creation', 
@@ -72,6 +72,7 @@ my $incident_bar = $agent->create_incident(
 $agent->display_ticket($incident_foo);
 
 $agent->follow_link_ok({text => 'Launch', n => 2}, "Followed 'Launch' link");
+$agent->click_through_createinqueue;
 $agent->form_name('TicketCreate');
 is($agent->value('Incident'), $incident_foo, 'Incident foo is checked');
 $agent->field('Incident', $incident_bar);
