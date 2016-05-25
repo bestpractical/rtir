@@ -1,4 +1,5 @@
 #!/usr/bin/env perl
+### before: #!@PERL@
 # BEGIN BPS TAGGED BLOCK {{{
 #
 # COPYRIGHT:
@@ -46,7 +47,6 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-### before: #!@PERL@
 
 =head1 NAME
 
