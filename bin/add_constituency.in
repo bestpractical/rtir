@@ -114,7 +114,7 @@ RT::Init;
 
 my %opt;
 
-sub debug {
+sub notify {
     return if $opt{'quiet'};
     print @_;
     return 1;
@@ -158,17 +158,17 @@ sub add_constituency {
 
     my $exist = $manager->CustomFieldValueExists($constituency);
 
-    debug "\nIf you continue then we'll...\n";
+    notify "\nIf you continue then we'll...\n";
     if ($exist) {
-        debug "* WARNING: skip adding constituency value, already exists.\n";
+        notify "* WARNING: skip adding constituency value, already exists.\n";
     } else {
-        debug "* add new constituency value: '$constituency'.\n";
+        notify "* add new constituency value: '$constituency'.\n";
     }
 
     foreach my $name ($manager->QueueNames) {
-        debug "* create queue '$name' if it doesn't exist\n";
+        notify "* create queue '$name' if it doesn't exist\n";
     }
-    debug <<END;
+    notify <<END;
 * create group 'DutyTeam $constituency' if it don't exist
 * create group 'ReadOnly $constituency' if it don't exist
 * grant basic set of rights to the groups on the queues
@@ -192,12 +192,12 @@ END
 
     if ($ok) {
         $RT::Handle->Commit;
-        debug "Done. Enjoy your new constituency.\n";
+        notify "Done. Enjoy your new constituency.\n";
         return 0;
     }
     else {
         $RT::Handle->Rollback;
-        debug "An error occurred; constituency not created.\n";
+        notify "An error occurred; constituency not created.\n";
         return 1;
     }
 }
@@ -215,8 +215,8 @@ sub rename_constituency {
 
     $RT::Handle->BeginTransaction;
 
-    debug "\nIf you continue then we'll...\n";
-    debug "* rename constituency value '$old' into '$new'.\n";
+    notify "\nIf you continue then we'll...\n";
+    notify "* rename constituency value '$old' into '$new'.\n";
 
     my $queues = $manager->Queues;
     while (my $queue = $queues->Next) {
@@ -224,10 +224,10 @@ sub rename_constituency {
         my $newname = $oldname;
         $newname =~ s/$old/$new/;
 
-        debug "* rename queue '$oldname' to '$newname'.\n";
+        notify "* rename queue '$oldname' to '$newname'.\n";
     }
 
-    debug <<END;
+    notify <<END;
 * rename group 'DutyTeam $old' if it exists into 'DutyTeam $new'
 * rename group 'ReadOnly $old' if it exists into 'ReadOnly $new'
 
@@ -239,12 +239,12 @@ END
 
     if ($ok) {
         $RT::Handle->Commit;
-        debug "Renamed constituency '$old' to '$new'.\n";
+        notify "Renamed constituency '$old' to '$new'.\n";
         return 0;
     }
     else {
         $RT::Handle->Rollback;
-        debug "An error occurred; constituency not renamed.\n";
+        notify "An error occurred; constituency not renamed.\n";
         return 1;
     }
 }
