@@ -112,6 +112,8 @@ use RT;
 RT::LoadConfig;
 RT::Init;
 
+my $manager = RT::IR::ConstituencyManager->new;
+
 my %opt;
 
 sub debug {

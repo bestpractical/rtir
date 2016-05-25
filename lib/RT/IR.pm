@@ -62,6 +62,7 @@ use Scalar::Util qw(blessed);
 
 use RT::IR::Config;
 use RT::IR::Web;
+use RT::IR::ConstituencyManager;
 RT::IR::Config::Init();
 
 
