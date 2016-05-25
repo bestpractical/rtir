@@ -127,7 +127,7 @@ diag "check queues names on page - eduhandler";
 {
     $agent->login('eduhandler', 'eduhandler', logout => 1 );
 
-    for my $queue_name ('Incident Reports', 'Incidents', 'Blocks', 'Investigations') {
+    for my $queue_name ('Incident Reports', 'Incidents', 'Countermeasures', 'Investigations') {
         $agent->content_contains($queue_name . $edunet_suffix);
         $agent->content_lacks($queue_name . $govnet_suffix);
     }
@@ -137,7 +137,7 @@ diag "check queue names on page - govhandler";
 {
     $agent->login('govhandler', 'govhandler', logout => 1);
 
-    for my $queue_name ('Incident Reports', 'Incidents', 'Blocks', 'Investigations') {
+    for my $queue_name ('Incident Reports', 'Incidents', 'Countermeasures', 'Investigations') {
         $agent->content_lacks($queue_name . $edunet_suffix);
         $agent->content_contains($queue_name . $govnet_suffix);
     }

@@ -51,9 +51,9 @@ diag "check queue visibility in modal" if $ENV{'TEST_VERBOSE'};
     $m->content_like(qr{<option value="\d+">Investigations - GOVNET</option>}, 'Queue dropdown has GOVNET investigations queue');
 
     $m->get("$baseurl/RTIR/Helpers/CreateInRTIRQueueModal?Lifecycle=blocks");
-    $m->content_like(qr{<option value="\d+">Blocks</option>}, 'Queue dropdown has standard blocks queue');
-    $m->content_like(qr{<option value="\d+">Blocks - EDUNET</option>}, 'Queue dropdown has EDUNET blocks queue');
-    $m->content_like(qr{<option value="\d+">Blocks - GOVNET</option>}, 'Queue dropdown has GOVNET blocks queue');
+    $m->content_like(qr{<option value="\d+">Countermeasures</option>}, 'Queue dropdown has standard blocks queue');
+    $m->content_like(qr{<option value="\d+">Countermeasures - EDUNET</option>}, 'Queue dropdown has EDUNET blocks queue');
+    $m->content_like(qr{<option value="\d+">Countermeasures - GOVNET</option>}, 'Queue dropdown has GOVNET blocks queue');
 }
 
 diag "check queue visibility in modal when created from incident" if $ENV{'TEST_VERBOSE'};
@@ -76,9 +76,9 @@ diag "check queue visibility in modal when created from incident" if $ENV{'TEST_
     $m->content_unlike(qr{<option value="\d+">Investigations - EDUNET</option>}, 'Queue dropdown doesn\'t have EDUNET investigations queue');
 
     $m->get("$baseurl/RTIR/Helpers/CreateInRTIRQueueModal?Lifecycle=blocks&Incident=".$i->id);
-    $m->content_like(qr{<option value="\d+">Blocks - GOVNET</option>}, 'Queue dropdown has GOVNET blocks queue');
-    $m->content_unlike(qr{<option value="\d+">Blocks</option>}, 'Queue dropdown doesn\'t have standard blocks queue');
-    $m->content_unlike(qr{<option value="\d+">Blocks - EDUNET</option>}, 'Queue dropdown doesn\'t have EDUNET blocks queue');
+    $m->content_like(qr{<option value="\d+">Countermeasures - GOVNET</option>}, 'Queue dropdown has GOVNET blocks queue');
+    $m->content_unlike(qr{<option value="\d+">Countermeasures</option>}, 'Queue dropdown doesn\'t have standard blocks queue');
+    $m->content_unlike(qr{<option value="\d+">Countermeasures - EDUNET</option>}, 'Queue dropdown doesn\'t have EDUNET blocks queue');
 }
 
 diag "check queue visibility in modal when created from incident report" if $ENV{'TEST_VERBOSE'};
@@ -129,9 +129,9 @@ diag "check queue visibility in modal - eduhandler" if $ENV{'TEST_VERBOSE'};
     $m->content_unlike(qr{<option value="\d+">Investigations - GOVNET</option>}, 'Queue dropdown doesn\'t have GOVNET investigations queue');
 
     $m->get("$baseurl/RTIR/Helpers/CreateInRTIRQueueModal?Lifecycle=blocks");
-    $m->content_like(qr{<option value="\d+">Blocks - EDUNET</option>}, 'Queue dropdown has EDUNET blocks queue');
-    $m->content_unlike(qr{<option value="\d+">Blocks</option>}, 'Queue dropdown doesn\'t have standard blocks queue');
-    $m->content_unlike(qr{<option value="\d+">Blocks - GOVNET</option>}, 'Queue dropdown doesn\'t have GOVNET blocks queue');
+    $m->content_like(qr{<option value="\d+">Countermeasures - EDUNET</option>}, 'Queue dropdown has EDUNET blocks queue');
+    $m->content_unlike(qr{<option value="\d+">Countermeasures</option>}, 'Queue dropdown doesn\'t have standard blocks queue');
+    $m->content_unlike(qr{<option value="\d+">Countermeasures - GOVNET</option>}, 'Queue dropdown doesn\'t have GOVNET blocks queue');
 }
 
 diag "check queue visibility in modal - govhandler" if $ENV{'TEST_VERBOSE'};
@@ -154,9 +154,9 @@ diag "check queue visibility in modal - govhandler" if $ENV{'TEST_VERBOSE'};
     $m->content_unlike(qr{<option value="\d+">Investigations</option>}, 'Queue dropdown doesn\'t have standard investigations queue');
 
     $m->get("$baseurl/RTIR/Helpers/CreateInRTIRQueueModal?Lifecycle=blocks");
-    $m->content_like(qr{<option value="\d+">Blocks - GOVNET</option>}, 'Queue dropdown has GOVNET blocks queue');
-    $m->content_unlike(qr{<option value="\d+">Blocks - EDUNET</option>}, 'Queue dropdown doesn\'t have EDUNET blocks queue');
-    $m->content_unlike(qr{<option value="\d+">Blocks</option>}, 'Queue dropdown doesn\'t have standard blocks queue');
+    $m->content_like(qr{<option value="\d+">Countermeasures - GOVNET</option>}, 'Queue dropdown has GOVNET blocks queue');
+    $m->content_unlike(qr{<option value="\d+">Countermeasures - EDUNET</option>}, 'Queue dropdown doesn\'t have EDUNET blocks queue');
+    $m->content_unlike(qr{<option value="\d+">Countermeasures</option>}, 'Queue dropdown doesn\'t have standard blocks queue');
 }
 
 undef $m;
