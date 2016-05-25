@@ -9,13 +9,13 @@ my $defaults = RT->Config->Get('RTIR_CustomFieldsDefaults');
 $defaults->{'How Reported'}  = 'Telephone';   # IRs
 $defaults->{'Description'}   = 'Bloody mess'; # Incs
 $defaults->{'IP'}            = '127.0.0.1';   # Invs and all
-$defaults->{'Where Blocked'} = 'On the Moon'; # Blocks
+$defaults->{'Where Blocked'} = 'On the Moon'; # Countermeasures
 
 my %test_on = (
     'Incident Reports' => 'How Reported',
     'Incidents'        => 'Description',
     'Investigations'   => 'IP',
-    'Blocks'           => 'Where Blocked',
+    'Countermeasures'  => 'Where Blocked',
 );
 
 my %replace_with = (
@@ -30,7 +30,7 @@ my $agent = default_agent();
 
 {
     my $incident_id; # block couldn't be created without incident id
-    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
         my $cf_name = $test_on{ $queue };
         my $cf_default = $defaults->{ $cf_name };
         my $cf_replace = $replace_with{ $cf_name };
@@ -49,7 +49,7 @@ my $agent = default_agent();
                 $queue,
                 {
                     Subject => "test",
-                    ( $queue eq 'Blocks' ? ( Incident => $incident_id ) : () ),
+                    ( $queue eq 'Countermeasures' ? ( Incident => $incident_id ) : () ),
                 },
             );
             $incident_id = $id if $queue eq 'Incidents';
@@ -66,7 +66,7 @@ my $agent = default_agent();
                 $queue,
                 {
                     Subject => "test",
-                    ( $queue eq 'Blocks' ? ( Incident => $incident_id ) : () ),
+                    ( $queue eq 'Countermeasures' ? ( Incident => $incident_id ) : () ),
                 },
                 { $cf_name => $cf_replace }
             );

@@ -9,7 +9,7 @@ my $m = default_agent();
 my %ticket;
 
 for my $subject (qw/foo bar baz/) {
-    for my $type ( 'incident', 'ir', 'investigation', 'block' ) {
+    for my $type ( 'incident', 'ir', 'investigation', 'countermeasure' ) {
         my $create_sub = "create_$type";
         push @{ $ticket{$type} },
             $m->$create_sub(
@@ -22,7 +22,7 @@ for my $subject (qw/foo bar baz/) {
 }
 
 # Merge
-for my $type ( 'incident', 'ir', 'investigation', 'block' ) {
+for my $type ( 'incident', 'ir', 'investigation', 'countermeasure' ) {
     $m->display_ticket( $ticket{$type}[0] );
     $m->follow_link_ok( { text => 'Merge' } );
     $m->title_like(qr/Merge .+ #$ticket{$type}[0]:/);
@@ -148,7 +148,7 @@ for my $type ( 'incident', 'ir', 'investigation', 'block' ) {
     ok( $m->find_link( url_regex => qr{/RTIR/Display.html\?id=$ticket{ir}[0]$} ),
         "found link to incident report $ticket{ir}[0]" );
 
-    for my $type (qw/investigation block/) {
+    for my $type (qw/investigation countermeasure/) {
         ok( !$m->find_link( url_regex => qr{/RTIR/Display.html\?id=$ticket{$type}[0]$} ),
             "didn't find link to $type $ticket{$type}[0]" );
     }
@@ -176,7 +176,7 @@ for my $type ( 'incident', 'ir', 'investigation', 'block' ) {
         "didn't find link to incident report $ticket{ir}[0]"
     );
 
-    for my $type (qw/investigation block/) {
+    for my $type (qw/investigation countermeasure/) {
         ok( !$m->find_link( url_regex => qr{/RTIR/Display.html\?id=$ticket{$type}[0]$} ),
             "didn't find link to $type $ticket{$type}[0]" );
     }
@@ -188,7 +188,7 @@ for my $type ( 'incident', 'ir', 'investigation', 'block' ) {
     $m->follow_link_ok( { text => 'Reply to All' } );
     $m->title_like(qr/#$ticket{incident}[0]: Reply to All/);
 
-    for my $type (qw/ir investigation block/) {
+    for my $type (qw/ir investigation countermeasure/) {
         ok( $m->find_link( url_regex => qr{/RTIR/Display.html\?id=$ticket{$type}[0]$} ),
             "found link to $type $ticket{$type}[0]" );
     }
@@ -199,8 +199,8 @@ for my $type ( 'incident', 'ir', 'investigation', 'block' ) {
     ($checkbox) = $m->find_all_inputs( name => 'SelectedInvestigations' );
     is( $checkbox->value, $ticket{investigation}[0], '$ticket{investigation}[0] is checked' );
 
-    ($checkbox) = $m->find_all_inputs( name => 'SelectedBlocks' );
-    is( $checkbox->value, $ticket{block}[0], '$ticket{block}[0] is checked' );
+    ($checkbox) = $m->find_all_inputs( name => 'SelectedCountermeasures' );
+    is( $checkbox->value, $ticket{countermeasure}[0], '$ticket{countermeasure}[0] is checked' );
 
     $m->follow_link_ok( { text => "Edit Search", n => 2 } );
     $m->form_name('BuildQuery');
@@ -221,7 +221,7 @@ for my $type ( 'incident', 'ir', 'investigation', 'block' ) {
         "didn't find link to incident report $ticket{ir}[0]"
     );
 
-    for my $type (qw/investigation block/) {
+    for my $type (qw/investigation countermeasure/) {
         ok( $m->find_link( url_regex => qr{/RTIR/Display.html\?id=$ticket{$type}[0]$} ),
             "found link to $type $ticket{$type}[0]" );
     }

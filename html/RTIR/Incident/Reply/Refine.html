@@ -48,7 +48,7 @@
 <%INIT>
 my @lifecycles = (RT::IR->lifecycle_report);
 push @lifecycles, RT::IR->lifecycle_investigation if $ARGS{'All'};
-push @lifecycles, RT::IR->lifecycle_countermeasure if $ARGS{'All'} && !RT->Config->Get('RTIR_DisableBlocksQueue');
+push @lifecycles, RT::IR->lifecycle_countermeasure if $ARGS{'All'} && !RT->Config->Get('RTIR_DisableCountermeasures');
 
 return $m->comp(
     '/RTIR/Search/Elements/RefinePage',
@@ -58,14 +58,14 @@ return $m->comp(
         Status => $ARGS{'Status'}, Action => $ARGS{'Action'},
         SelectedReportsAll => $ARGS{'SelectedReportsAll'},
         SelectedInvestigationsAll => $ARGS{'SelectedInvestigationsAll'},
-        SelectedBlocksAll => $ARGS{'SelectedBlocksAll'},
+        SelectedCountermeasuresAll => $ARGS{'SelectedCountermeasuresAll'},
     ),
     BaseQuery => RT::IR->Query(
     Lifecycle    => \@lifecycles,
         MemberOf => $ARGS{'id'},
     ),
     ExtraQueryParams => [qw(SelectedReportsAll SelectedInvestigationsAll
-                            All Status Action SelectedBlocksAll)],
+                            All Status Action SelectedCountermeasuresAll)],
 
 );
 </%INIT>

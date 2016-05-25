@@ -69,24 +69,26 @@ RT::IR::Config::Init();
 sub lifecycle_report {'incident_reports'}
 sub lifecycle_incident {'incidents'}
 sub lifecycle_investigation {'investigations'}
-sub lifecycle_countermeasure {'blocks'}
+sub lifecycle_countermeasure {'countermeasures'}
 
 
 my @LIFECYCLES = (RT::IR->lifecycle_incident, RT::IR->lifecycle_report, RT::IR->lifecycle_investigation, RT::IR->lifecycle_countermeasure);
 
 my %TYPE = (
-    'incidents'        => 'Incident',
+    RT::IR->lifecycle_incident       => 'Incident',
+    RT::IR->lifecycle_report         => 'Report',
+    RT::IR->lifecycle_investigation  => 'Investigation',
+    RT::IR->lifecycle_countermeasure => 'Countermeasure',
+
     'incident reports' => 'Report',
-    'incident_reports' => 'Report',
-    'investigations'   => 'Investigation',
-    'blocks'           => 'Block',
 );
 
+# these are used by initialdata to form the default queue names
 my %FRIENDLY_LIFECYCLE = (
-    RT::IR->lifecycle_incident        => 'Incidents',
-    RT::IR->lifecycle_report => 'Incident Reports',
-    RT::IR->lifecycle_investigation   => 'Investigations',
-    RT::IR->lifecycle_countermeasure           => 'Blocks',
+    RT::IR->lifecycle_incident       => 'Incidents',
+    RT::IR->lifecycle_report         => 'Incident Reports',
+    RT::IR->lifecycle_investigation  => 'Investigations',
+    RT::IR->lifecycle_countermeasure => 'Countermeasures',
 
 );
 
@@ -120,7 +122,7 @@ sub EveryoneIncidentRights {
     return ();
 }
 
-sub EveryoneBlockRights {
+sub EveryoneCountermeasureRights {
     return (qw(ReplyToTicket));
 }
 
@@ -333,8 +335,8 @@ lifecycles.
 Examples:
 
     RT::IR->Statuses()
-    RT::IR->Statuses( Lifecycle => 'blocks' );
-    RT::IR->Statuses( Lifecycle => [ 'blocks', 'incident_reports' ] );
+    RT::IR->Statuses( Lifecycle => 'countermeasures' );
+    RT::IR->Statuses( Lifecycle => [ 'countermeasures', 'incident_reports' ] );
     RT::IR->Statuses( Active => 0, Inactive => 1 );
 
 =cut
@@ -567,7 +569,7 @@ sub IncidentHasActiveChildren {
 =head2 IsLinkedToActiveIncidents $ChildObj [$IncidentObj]
 
 Returns number of active incidents linked to child ticket
-(IR, Investigation, Block or other). If second argument provided
+(IR, Investigation, Countermeasure or other). If second argument provided
 then it's excluded from count.
 
 When function return zero that means that object has no active
@@ -772,7 +774,7 @@ sub FilterRTAddresses {
     return $found;
 }
 
-# Skip the global AutoOpen and AutoOpenInactive scrip on Blocks and Incident Reports
+# Skip the global AutoOpen and AutoOpenInactive scrip on Countermeasures and Incident Reports
 # This points to RTIR wanting to muck with the global scrips using the 4.2 scrips
 # organization, although it possibly messes with Admins expectations of 'contained Queues'
 # We have to hit both because the first is installed on upgraded RTs while the latter is

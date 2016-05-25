@@ -3,7 +3,7 @@
 =head2 Incident Response Workflow
 
 RTIR automatically creates four RT queues for tracking incidents: Incident
-Reports, Incidents, Investigations and Blocks.
+Reports, Incidents, Investigations and Countermeasures.
 
 =head3 Incident Reports
 
@@ -27,13 +27,14 @@ asking them to look into and/or fix a problem. Once again, relevant
 information from the Incident is filled in when you create the new
 Investigation, so there's no need to cut-and-paste.
 
-=head3 Blocks
+=head3 Countermeasures
 
-Blocks are used to track any blocks placed on the borders of the network. You
-can create them from an existing Incident. Some sites don't require blocks, so
-they may be disabled by your Administrator. Blocks have several states: pending
-activation, active, pending removal, removed. These states can be set from
-sub-menu items on ticket display pages.
+Countermeasures are used to track any blocks placed on the borders of the
+network. You can create them from an existing Incident. Some sites don't
+require countermeasures, so they may be disabled by your Administrator.
+Countermeasures have several states: pending activation, active, pending
+removal, removed. These states can be set from sub-menu items on ticket display
+pages.
 
 =head2 Operations with Tickets
 
@@ -187,7 +188,7 @@ IRs owned by others will be skipped with a warning even if you selected them.
 
 This operation is quite similar to rejecting an IR, but when you're
 abandoning an Incident you also reject IRs, resolve Investigations and
-remove Blocks linked to it.
+remove Countermeasures linked to it.
 
 Once you open the Abandon page under the Incidents tab you see a list of its
 children grouped by queue. You can select children with checkboxes and only
@@ -262,10 +263,9 @@ their name.
 
 =head4 Reply to All
 
-This operation lets you send a message to all of the parties who created
-IRs, those involved in the Investigation, and those involved in the
-Blocks. You may exclude individual recipients by removing the check next
-to their name.
+This operation lets you send a message to all of the parties who created IRs,
+those involved in the Investigation, and those involved in the Countermeasures.
+You may exclude individual recipients by removing the check next to their name.
 
 =head4 Correspond with Correspondent
 
@@ -287,8 +287,8 @@ and link them to the IR by clicking the "[New]" button next to the
 =head4 Linking Incidents to IRs, Investigations, etc.
 
 You may link Incidents with existing Incident Reports, Investigations,
-Blocks, and Articles. On the Incident display page there are sections for
-each of these, each with a C<Link> button and the list of already-linked
+Countermeasures, and Articles. On the Incident display page there are sections
+for each of these, each with a C<Link> button and the list of already-linked
 tickets. Clicking on C<Link> lets you link one or more tickets of that type to
 the Incident.
 
@@ -327,12 +327,12 @@ attach files, etc.
 To launch a new Investigation, create a new ticket in the Investigations queue.
 You will be required to provide one or more correspondents.
 
-=head3 Blocks
+=head3 Countermeasures
 
-=head4 Creating a Block
+=head4 Creating a Countermeasure
 
-To create a new Block, create a new ticket in the Blocks queue. You will be
-required to link the Block to an Incident.
+To create a new Countermeasure, create a new ticket in the Countermeasures
+queue. You will be required to link the Countermeasure to an Incident.
 
 =head2 Managing 'RT at glance' and 'RTIR at a glance' Pages
 
@@ -402,12 +402,12 @@ An active ticket in RTIR is a ticket with a status that indicates work will
 still be done on it. RTIR uses this to determine what tickets should be shown
 by default in various searches and pages in the user interface.
 
-The available active statuses are defined as part of the
-RTIR configuration and differ for each queue (see C<%Lifecycles> in
-F<RTIR_Config.pm> and F<RT_Config.pm> for more information). Active tickets
-in the incidents queue, for example, are those with a status of C<open>. In
-the blocks queue, tickets can be C<active> or C<pending removal>. These values
-are configurable and may be different on your system.
+The available active statuses are defined as part of the RTIR configuration and
+differ for each queue (see C<%Lifecycles> in F<RTIR_Config.pm> and
+F<RT_Config.pm> for more information). Active tickets in the incidents queue,
+for example, are those with a status of C<open>. In the Countermeasures queue,
+tickets can be C<active> or C<pending removal>. These values are configurable
+and may be different on your system.
 
 =item inactive ticket
 
@@ -415,12 +415,12 @@ An inactive ticket in RTIR is a ticket with a status that indicates work on it
 is complete. RTIR uses this to filter tickets out of various searches and pages
 in the user interface, although the tickets can still be found with searches.
 
-Inactive statuses are defined as part of the
-RTIR configuration and differ for each queue (see C<%Lifecycles> in
-F<RTIR_Config.pm> and F<RT_Config.pm> for more information). Inactive tickets
-in the incidents queue, for example, can be C<resolved> or C<abandoned>. In
-the blocks queue, tickets can have a status of C<removed>. These values
-are configurable and may be different on your system.
+Inactive statuses are defined as part of the RTIR configuration and differ for
+each queue (see C<%Lifecycles> in F<RTIR_Config.pm> and F<RT_Config.pm> for
+more information). Inactive tickets in the incidents queue, for example, can be
+C<resolved> or C<abandoned>. In the Countermeasures queue, tickets can have a
+status of C<removed>. These values are configurable and may be different on
+your system.
 
 =back
 

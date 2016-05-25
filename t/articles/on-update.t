@@ -34,12 +34,12 @@ diag "create an article" if $ENV{'TEST_VERBOSE'};
 }
 
 my $incident_id;
-foreach my $queue ( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+foreach my $queue ( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
     my $id = $agent->create_rtir_ticket_ok(
         $queue,
         {
             Subject => "test",
-            ( $queue eq 'Blocks' ? ( Incident => $incident_id ) : () ),
+            ( $queue eq 'Countermeasures' ? ( Incident => $incident_id ) : () ),
         },
     );
     $incident_id = $id if $queue eq 'Incidents';

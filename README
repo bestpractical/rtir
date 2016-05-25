@@ -63,11 +63,12 @@ Configuring RTIR
 
 1) Using RT's configuration interface, add the email address
    of the Network Operations Team (the people who will handle
-   activating and removing Blocks) as AdminCc on the Blocks queue.
-   RT -> Queues -> Blocks -> Watchers
+   activating and removing network blocks) as AdminCc on the
+   Countermeasures queue.
+   RT -> Queues -> Countermeasures -> Watchers
 
 2) You may want to modify the email messages that are automatically
-   sent on the creation of Investigations and Blocks.
+   sent on the creation of Investigations and Countermeasures.
    RT -> Queues -> <Select RTIR's Queue> -> Templates.
    RT -> Global -> Templates.
 

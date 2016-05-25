@@ -186,8 +186,8 @@ RT::Interface::Web::Redirect(RT->Config->Get('WebURL')
     . 'Ticket/Display.html?'
     . $m->comp('/Elements/QueryString', %ARGS )) unless $Type;
 
-if (RT::IR->IsCountermeasureQueue($QueueObj) && RT->Config->Get('RTIR_DisableBlocksQueue') ) {
-    Abort(loc("Blocks queue is disabled via config file"));
+if (RT::IR->IsCountermeasureQueue($QueueObj) && RT->Config->Get('RTIR_DisableCountermeasures') ) {
+    Abort(loc("Countermeasure queues are disabled via config file"));
     }
 
 # If there's an RTIR specific display page for this kind of ticket, show that

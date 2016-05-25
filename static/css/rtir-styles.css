@@ -77,7 +77,7 @@ body.rtir .titlebox.ticket-info-articles        .titlebox-title .left { backgrou
 body.rtir .titlebox.tickets-list-report         .titlebox-title .left { background-color: #316531; color: #fff; }
 body.rtir .titlebox.tickets-list-incident       .titlebox-title .left { background-color: #316531; color: #fff; }
 body.rtir .titlebox.tickets-list-investigation  .titlebox-title .left { background-color: #316531; color: #fff; }
-body.rtir .titlebox.tickets-list-block          .titlebox-title .left { background-color: #316531; color: #fff; }
+body.rtir .titlebox.tickets-list-countermeasure .titlebox-title .left { background-color: #316531; color: #fff; }
 
 
 body.rtir #comp-RTIR-Search #body {

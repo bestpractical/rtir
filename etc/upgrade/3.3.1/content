@@ -1,0 +1,43 @@
+use strict;
+use warnings;
+
+our @Initial = (
+    sub {
+        my $queues = RT::Queues->new(RT->SystemUser);
+        $queues->UnLimit;
+        while (my $queue = $queues->Next) {
+            my $name = $queue->Name;
+            my $lifecycle;
+
+            if ($name =~ /^Incident Reports - /) {
+                $lifecycle = RT::IR->lifecycle_report;
+            }
+            elsif ($name =~ /^Incidents - /) {
+                $lifecycle = RT::IR->lifecycle_incident;
+            }
+            elsif ($name =~ /^Investigations - /) {
+                $lifecycle = RT::IR->lifecycle_investigation;
+            }
+            elsif ($name =~ /^Countermeasures - /) {
+                $lifecycle = RT::IR->lifecycle_countermeasure;
+            }
+            else {
+                next;
+            }
+
+            my $old_lifecycle = $queue->Lifecycle;
+
+            next if $old_lifecycle eq $lifecycle;
+
+            if ($old_lifecycle ne 'default') {
+                RT->Logger->warning( "Unwilling to change queue $name lifecycle from unexpected lifecycle of $old_lifecycle to $lifecycle. (expected lifecycle default)" );
+                next;
+            }
+
+            RT->Logger->debug( "Changing queue $name lifecycle from $old_lifecycle to $lifecycle" );
+
+            my ($ok, $msg) = $queue->SetLifecycle($lifecycle);
+            RT->Logger->error( "Unable to change queue $name lifecycle from $old_lifecycle to $lifecycle: $msg" ) if !$ok;
+        }
+    },
+);

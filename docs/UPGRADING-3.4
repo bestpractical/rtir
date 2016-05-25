@@ -21,6 +21,32 @@ lifecycle to determine what kind of queue it is, rather than its
 name. This functionality is very much in its infancy and we welcome
 your feedback.
 
+=head2 Countermeasures
+
+The Blocks queue was renamed to Countermeasures to indicate it is more
+generic than just network blocks. The normal RTIR upgrade process
+handles most of the renaming process, but you may need to adjust some of
+your configuration and customizations.
+
+The "blocks" lifecycle has been renamed to "countermeasures". If you
+copied the RTIR lifecycle config, regardless of whether you customized
+it, you'll need to rename the "blocks" lifecycle to "countermeasures" in
+your config.
+
+If you use RT_Config option RTIR_DisableBlocksQueue, please update your
+config to instead set that option by its new name:
+RTIR_DisableCountermeasures.
+
+Similarly if you use RT_Config option RTIR_BlockAproveActionRegexp,
+please update its name to RTIR_CountermeasureApproveActionRegexp (beware
+the typo fix in the word "Approve").
+
+If you set the RTIR_IncidentChildren config option, you'll need to
+adjust the key "Block" to "Countermeasure" (note: not "Countermeasures").
+
+If you have any custom code that deals with Blocks queues by name,
+you'll need to update it.
+
 =head2 Constituency support
 
 =head3 Web interface

@@ -26,7 +26,7 @@ diag "load and check basic properties of the IP CF" if $ENV{'TEST_VERBOSE'};
 
 diag "check that CF applies to all RTIR's queues" if $ENV{'TEST_VERBOSE'};
 {
-    foreach ( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+    foreach ( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
         my $queue = RT::Queue->new( $RT::SystemUser );
         $queue->Load( $_ );
         ok( $queue->id, 'loaded queue '. $_ );
@@ -41,7 +41,7 @@ diag "create a ticket via web and set IP" if $ENV{'TEST_VERBOSE'};
 {
     my $i = 0;
     my $incident_id; # block couldn't be created without incident id
-    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $val = '192.168.20.'. ++$i;
@@ -49,7 +49,7 @@ diag "create a ticket via web and set IP" if $ENV{'TEST_VERBOSE'};
             $queue,
             {
                 Subject => "test ip",
-                ( $queue eq 'Blocks' ? ( Incident => $incident_id ) : () ),
+                ( $queue eq 'Countermeasures' ? ( Incident => $incident_id ) : () ),
             },
             { IP => $val },
         );
@@ -68,7 +68,7 @@ diag "create a ticket via web with IP in message" if $ENV{'TEST_VERBOSE'};
 {
     my $i = 0;
     my $incident_id; # block couldn't be created without incident id
-    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $val = '192.168.20.'. ++$i;
@@ -76,7 +76,7 @@ diag "create a ticket via web with IP in message" if $ENV{'TEST_VERBOSE'};
             $queue,
             {
                 Subject => "test ip in message",
-                ($queue eq 'Blocks'? (Incident => $incident_id): ()),
+                ($queue eq 'Countermeasures'? (Incident => $incident_id): ()),
                 Content => "$val",
             },
         );
@@ -95,7 +95,7 @@ diag "create a ticket via web with CIDR" if $ENV{'TEST_VERBOSE'};
 {
     my $i = 0;
     my $incident_id; # block couldn't be created without incident id
-    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $val = '172.16.'. ++$i .'/31'; # add two hosts
@@ -103,7 +103,7 @@ diag "create a ticket via web with CIDR" if $ENV{'TEST_VERBOSE'};
             $queue,
             {
                 Subject => "test ip",
-                ($queue eq 'Blocks'? (Incident => $incident_id): ()),
+                ($queue eq 'Countermeasures'? (Incident => $incident_id): ()),
             },
             { IP => $val },
         );
@@ -125,7 +125,7 @@ diag "create a ticket via web with CIDR in message" if $ENV{'TEST_VERBOSE'};
 {
     my $i = 0;
     my $incident_id; # block couldn't be created without incident id
-    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $val = '172.16.'. ++$i .'/31'; # add two hosts
@@ -133,7 +133,7 @@ diag "create a ticket via web with CIDR in message" if $ENV{'TEST_VERBOSE'};
             $queue,
             {
                 Subject => "test ip in message",
-                ($queue eq 'Blocks'? (Incident => $incident_id): ()),
+                ($queue eq 'Countermeasures'? (Incident => $incident_id): ()),
                 Content => "$val",
             },
         );
@@ -155,14 +155,14 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
 {
     my $i = 0;
     my $incident_id; # block couldn't be created without incident id
-    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Blocks' ) {
+    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
         my $id = $agent->create_rtir_ticket_ok(
             $queue,
             {
                 Subject => "test ip in message",
-                ($queue eq 'Blocks'? (Incident => $incident_id): ()),
+                ($queue eq 'Countermeasures'? (Incident => $incident_id): ()),
             },
         );
         $incident_id = $id if $queue eq 'Incidents';
@@ -550,14 +550,14 @@ diag "merge ticket, IPs should be merged";
         'Incidents',
         { Subject => "test" },
     );
-    my $b1_id = $agent->create_block(
+    my $b1_id = $agent->create_countermeasure(
         {
             Subject => "test ip",
             Incident => $incident_id,
         },
         { IP => '172.16.0.1' },
     );
-    my $b2_id = $agent->create_block(
+    my $b2_id = $agent->create_countermeasure(
         {
             Subject => "test ip",
             Incident => $incident_id,
@@ -590,14 +590,14 @@ diag "merge ticket with the same IP";
         'Incidents',
         { Subject => "test" },
     );
-    my $b1_id = $agent->create_block(
+    my $b1_id = $agent->create_countermeasure(
         {
             Subject => "test ip",
             Incident => $incident_id,
         },
         { IP => '172.16.0.1' },
     );
-    my $b2_id = $agent->create_block(
+    my $b2_id = $agent->create_countermeasure(
         {
             Subject => "test ip",
             Incident => $incident_id,

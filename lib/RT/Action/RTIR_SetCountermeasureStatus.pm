@@ -49,25 +49,25 @@
 use strict;
 use warnings;
 
-package RT::Action::RTIR_SetBlockStatus;
+package RT::Action::RTIR_SetCountermeasureStatus;
 use base 'RT::Action::RTIR';
 
 =head1 NAME
 
-RT::Action::RTIR_SetBlockStatus - sets status of the block acording to a few rules
+RT::Action::RTIR_SetCountermeasureStatus - sets status of the countermeasure according to a few rules
 
 =head1 DESCRIPTION
 
 If transaction is inbound and status is pending then
 change it to corresponding not pending status. This
-rule can be protected with C<$RTIR_BlockAproveActionRegexp>
+rule can be protected with C<$RTIR_CountermeasureApproveActionRegexp>
 option. Content of the transaction should match the regexp
 if it's defined. Statuses are hardcoded and can not be
 changed or this will not work properly.
 
-If block is in an inactive status (by default 'removed')
+If countermeasure is in an inactive status (by default 'removed')
 then status changed to first possible active status
-for blocks' lifecycle (by default 'active').
+for countermeasures's lifecycle (by default 'active').
 
 In all other cases status left unchanged.
 
@@ -89,7 +89,7 @@ sub Commit {
 
     my $current = lc $t->Status;
     if ( $current =~ /^pending / && $txn->IsInbound ) {
-        if ( my $re = RT->Config->Get('RTIR_BlockAproveActionRegexp') ) {
+        if ( my $re = RT->Config->Get('RTIR_CountermeasureApproveActionRegexp') ) {
             my $content = $txn->Content;
             return 1 if !$content || $content !~ /$re/;
         }

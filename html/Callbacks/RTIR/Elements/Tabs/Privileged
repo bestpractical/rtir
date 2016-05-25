@@ -126,9 +126,9 @@ $root->child(
     launch => title => loc('Launch'),
     path => RT::IR->HREFTo('Create.html?Lifecycle='.RT::IR->lifecycle_investigation, IncludeWebPath => 0),
 );
-unless ( RT->Config->Get('RTIR_DisableBlocksQueue') ) {
+unless ( RT->Config->Get('RTIR_DisableCountermeasures') ) {
     $root->child(
-        blocks => title => loc('Blocks'),
+        countermeasures => title => loc('Countermeasures'),
         path => RT::IR->HREFTo('Search/Results.html?Lifecycle='.RT::IR->lifecycle_countermeasure, IncludeWebPath => 0)
     )->child(
         create => title => loc('Create'),
@@ -242,7 +242,7 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
             );
             $actions_tab->child(
                 reply_all => title => loc('Reply to All'),
-                path  => RT::IR->HREFTo("Incident/Reply/?id=$id&All=1&SelectedReportsAll=1&SelectedInvestigationsAll=1&SelectedBlocksAll=1", IncludeWebPath => 0),
+                path  => RT::IR->HREFTo("Incident/Reply/?id=$id&All=1&SelectedReportsAll=1&SelectedInvestigationsAll=1&SelectedCountermeasuresAll=1", IncludeWebPath => 0),
             );
         } else {
             $actions_tab->child(

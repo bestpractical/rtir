@@ -73,7 +73,7 @@ sub Commit {
         $action_cb = sub { return $_[0]->SetOwner( $transaction->NewValue ) }
     }
 
-    # change owner of child Incident Reports, Investigations, Blocks
+    # change owner of child Incident Reports, Investigations, Countermeasures
     my $query =  "(Lifecycle = '".RT::IR->lifecycle_report."'"
                 ." OR Lifecycle ='". RT::IR->lifecycle_investigation."'"
                 ." OR Lifecycle = '".RT::IR->lifecycle_countermeasure."'"

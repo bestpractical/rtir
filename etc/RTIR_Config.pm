@@ -25,7 +25,7 @@ Set( $rtirname, RT->Config->Get('rtname') );
 =item C<%Lifecycles>
 
 RTIR defines four lifecycles for each its queue: 'incidents',
-'incident_reports', 'investigations' and 'blocks'.
+'incident_reports', 'investigations' and 'countermeasures'.
 
 Note that all four lifecycles are mapped to each other, so
 in theory it's possible to move tickets between queues, but
@@ -62,7 +62,7 @@ Set(
             'open -> resolved'  => {
                 label => 'Resolve', update => 'Comment',
                 All => 1,
-                SelectedReportsAll => 1, SelectedInvestigationsAll => 1, SelectedBlocksAll => 1,
+                SelectedReportsAll => 1, SelectedInvestigationsAll => 1, SelectedCountermeasuresAll => 1,
             },
             'open -> resolved'  => {
                 label => 'Quick Resolve',
@@ -70,12 +70,12 @@ Set(
             'open -> abandoned' => {
                 label => 'Abandon', update => 'Comment',
                 All => 1,
-                SelectedReportsAll => 1, SelectedInvestigationsAll => 1, SelectedBlocksAll => 1,
+                SelectedReportsAll => 1, SelectedInvestigationsAll => 1, SelectedCountermeasuresAll => 1,
             },
             '* -> open'  => {
                 label => 'Re-open',
                 All => 1,
-                SelectedReportsAll => 1, SelectedInvestigationsAll => 1, SelectedBlocksAll => 1,
+                SelectedReportsAll => 1, SelectedInvestigationsAll => 1, SelectedCountermeasuresAll => 1,
             },
         ],
     },
@@ -135,7 +135,7 @@ Set(
             'resolved -> open' => { label => 'Re-open' },
         ],
     },
-    blocks => {
+    countermeasures => {
         initial         => ['pending activation'],
         active          => [ 'active', 'pending removal' ],
         inactive        => ['removed'],
@@ -174,7 +174,7 @@ Set(
             'resolved'  => 'resolved',
             'abandoned' => 'resolved',
         },
-        'incidents -> blocks' => {
+        'incidents -> countermeasures' => {
             'open'      => 'active',
             'resolved'  => 'removed',
             'abandoned' => 'removed',
@@ -191,7 +191,7 @@ Set(
             'resolved' => 'resolved',
             'rejected' => 'resolved',
         },
-        'incident_reports -> blocks' => {
+        'incident_reports -> countermeasures' => {
             'new'      => 'pending activation',
             'open'     => 'active',
             'resolved' => 'removed',
@@ -205,23 +205,23 @@ Set(
             'open'     => 'open',
             'resolved' => 'resolved',
         },
-        'investigations -> blocks' => {
+        'investigations -> countermeasures' => {
             'open'     => 'active',
             'resolved' => 'removed',
         },
-        'blocks -> incidents' => {
+        'countermeasures -> incidents' => {
             'pending activation' => 'open',
             'active'             => 'open',
             'pending removal'    => 'open',
             'removed'            => 'resolved',
         },
-        'blocks -> incident_reports' => {
+        'countermeasures -> incident_reports' => {
             'pending activation' => 'new',
             'active'             => 'open',
             'pending removal'    => 'open',
             'removed'            => 'resolved',
         },
-        'blocks -> investigations' => {
+        'countermeasures -> investigations' => {
             'pending activation' => 'open',
             'active'             => 'open',
             'pending removal'    => 'open',
@@ -234,10 +234,10 @@ Set(
 =item C<%RTIR_IncidentChildren>
 
 Option controls relations between an incident and
-reports, investigations and blocks. Each entry
-of the hash is a pair where key is type of child
-and value is hash with Multiple and Required keys
-and boolean values, for example:
+reports, investigations and countermeasures. Each
+entry of the hash is a pair where key is type of
+child and value is hash with Multiple and Required
+keys and boolean values, for example:
 
     Set(%RTIR_IncidentChildren,
         Report => {
@@ -255,7 +255,7 @@ an Incident on creation in UI or it's optional.
 By default IRs can be linked to many incident and
 it's not required to link them right away.
 Investigations can be linked only to one incident
-and it can be done later. Blocks can not be created
+and it can be done later. Countermeasures can not be created
 without incident, however can be linked to many of
 them.
 
@@ -270,7 +270,7 @@ Set(%RTIR_IncidentChildren,
         Multiple => 0,
         Required => 0,
     },
-    Block => {
+    Countermeasure => {
         Multiple => 1,
         Required => 1,
     },
@@ -404,7 +404,7 @@ Set(%RTIRSearchResultFormats,
         q{Status,TimeLeft,DueRelative,CreatedRelative,__NEWLINE__,}.
         q{'',Requestors,QueueName,OwnerName,ToldRelative,LastUpdatedRelative },
 
-    BlockDefault =>
+    CountermeasureDefault =>
         q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
         q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
         q{Status,TimeLeft,DueRelative,CreatedRelative,__NEWLINE__,}.
@@ -469,7 +469,7 @@ Set(%RTIRSearchResultFormats,
         q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
         q{Status,DueRelative},
 
-    ChildBlock =>
+    ChildCountermeasure =>
         q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
         q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
         q{Status,DueRelative},
@@ -595,29 +595,29 @@ Set(%CustomFieldGroupings,
 
 =back
 
-=head1 Blocks
+=head1 Countermeasures
 
 =over 4
 
-=item C<$RTIR_DisableBlocksQueue>
+=item C<$RTIR_DisableCountermeasures>
 
-If true then Blocks queue functionality inactive and disabled.
+If true then Countermeasure queue functionality inactive and disabled.
 
 =cut
 
-Set($RTIR_DisableBlocksQueue, 0);
+Set($RTIR_DisableCountermeasures, 0);
 
-=item C<$RTIR_BlockAproveActionRegexp>
+=item C<$RTIR_CountermeasureApproveActionRegexp>
 
 When requestor replies on the block in pending state RTIR
 changes state, you can set regular expresion so state would
 be changed only when content matches the regexp.
 
-See also L<RT::Action::RTIR_SetBlockStatus/DESCRIPTION>.
+See also L<RT::Action::RTIR_SetCountermeasureStatus/DESCRIPTION>.
 
 =cut
 
-Set($RTIR_BlockAproveActionRegexp, undef);
+Set($RTIR_CountermeasureApproveActionRegexp, undef);
 
 =back
 

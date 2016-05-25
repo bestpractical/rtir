@@ -146,8 +146,6 @@ unless ( defined $constituency && length $constituency ) {
 
 my @lifecycles = RT::IR->Lifecycles;
 
-my @queue_prefixes = map { RT::IR::FriendlyLifecycle($_) } @lifecycles;
-
 if ( exists $opt{'rename'} ) {
     exit rename_value( $constituency => sanitize_value( $opt{'rename'} ) );
 }
@@ -293,17 +291,17 @@ sub grant_role_queue_rights {
         debug "Granting role rights to Everyone for queue " . $queue->Name . "\n";
         my @rights;
 
-        if ( $queue->Lifecycle eq 'incident_reports' ) {
+        if ( $queue->Lifecycle eq RT::IR->lifecycle_report ) {
             @rights = RT::IR->EveryoneIncidentReportRights();
-        } elsif ( $queue->Lifecycle eq 'incidents' ) {
+        } elsif ( $queue->Lifecycle eq RT::IR->lifecycle_incident ) {
             @rights = RT::IR->EveryoneIncidentRights();
 
         }
-        if ( $queue->Lifecycle eq 'investigations' ) {
+        if ( $queue->Lifecycle eq RT::IR->lifecycle_investigation ) {
             @rights = RT::IR->EveryoneInvestigationRights();
 
-        } elsif ( $queue->Lifecycle eq 'countermeaures' ) {
-            @rights = RT::IR->EveryoneBlockRights();
+        } elsif ( $queue->Lifecycle eq RT::IR->lifecycle_countermeasure ) {
+            @rights = RT::IR->EveryoneCountermeasureRights();
         }
         # grant 'everyone' rights
         for my $right (@rights) {
@@ -426,8 +424,8 @@ sub grant_group_cf_rights {
     my @rights = (@_);
 
     my $cfs = RT::CustomFields->new($RT::SystemUser);
-    for my $queue (@queue_prefixes) {
-        my $q = load_queue($queue);
+    for my $lifecycle (@lifecycles) {
+        my $q = base_queue_for_lifecycle($lifecycle);
         $cfs->LimitToObjectId( $q->Id );
     }
 
@@ -479,14 +477,30 @@ sub load_queue {
     return $queue;
 }
 
+# load the first queue with the lifecycle we're after, which is meant
+# a proxy for the "original" RTIR queue of that lifecycle. we can't rely
+# on the name because the base countermeasures queue may be named Blocks
+# due to historical reasons
+sub base_queue_for_lifecycle {
+    my $lifecycle = shift;
+
+    my $queues = RT::Queues->new(RT->SystemUser);
+    $queues->Limit(FIELD => 'Lifecycle', VALUE => $lifecycle);
+    $queues->OrderByCols({
+        ALIAS => 'main',
+        FIELD => 'id',
+        ORDER => 'ASC',
+    });
+
+    return $queues->First;
+}
+
 sub create_or_load_queue {
     my $name            = shift;
     my $lifecycle       = shift;
     my $constituency_cf = shift;
 
-    my $basequeue = RT::Queue->new( RT->SystemUser );
-
-    $basequeue->LoadByCols( Name => RT::IR::FriendlyLifecycle($lifecycle) );
+    my $basequeue = base_queue_for_lifecycle($lifecycle);
 
     my $queue = RT::Queue->new($RT::SystemUser);
     $queue->LoadByCols( Name => $name );
@@ -618,8 +632,6 @@ sub rename_value {
         debug "* rename queue '$oldname' to '$newname'.\n";
     }
 
-    foreach my $basename (@queue_prefixes) {
-    }
     debug <<END;
 * rename group 'DutyTeam $old' if it exists into 'DutyTeam $new'
 * rename group 'ReadOnly $old' if it exists into 'ReadOnly $new'
