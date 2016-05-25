@@ -57,9 +57,9 @@ add_constituency - add or update constitiuensies
     add_constituency --help
     add_constituency --name <constituency> [options]
     add_constituency --name EDUNET
-    add_constituency --name EDUNET --correspond 'edunet@example.com' --quiet
+    add_constituency --name EDUNET --correspond 'edunet@example.com' --verbose
 
-    add_constituency --name <constituency> --rename <new value>
+    add_constituency --name <constituency> --rename <new value> --quiet
 
     add_constituency --name EDUNET --force
 
@@ -85,7 +85,11 @@ Rename constituency, use this option to set new value when --name defines old.
 
 =item --quiet
 
-Disable output.
+Limit output to only errors.
+
+=item --verbose
+
+Additional debugging output.
 
 =item --force
 
@@ -110,7 +114,6 @@ use lib qw(/opt/rt4/local/lib /opt/rt4/lib);
 
 use RT;
 RT::LoadConfig;
-RT::Init;
 
 my %opt;
 
@@ -122,7 +125,7 @@ sub notify {
 
 use Getopt::Long;
 GetOptions( \%opt, "name=s", "rename=s", "correspond=s", "comment=s", "help",
-    "quiet", "force" );
+    "quiet", "verbose", "force" );
 
 if ( $opt{'help'} ) {
     require Pod::Usage;
@@ -133,6 +136,18 @@ if ( $opt{'help'} ) {
         -exitval => 0,
     );
 }
+
+if ($opt{verbose}) {
+    RT->Config->Set(LogToSTDERR => 'debug');
+}
+elsif ($opt{quiet}) {
+    RT->Config->Set(LogToSTDERR => 'error');
+}
+else {
+    RT->Config->Set(LogToSTDERR => 'info');
+}
+
+RT::Init;
 
 my $manager = RT::IR::ConstituencyManager->new(Constituency => $opt{name});
 
