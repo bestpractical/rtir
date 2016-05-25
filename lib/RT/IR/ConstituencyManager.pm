@@ -93,6 +93,17 @@ sub QueueNames {
            map { RT::IR::FriendlyLifecycle($_) } RT::IR->Lifecycles;
 }
 
+sub Queues {
+    my $self = shift;
+
+    my $queues = RT::Queues->new( RT->SystemUser );
+    $queues->LimitCustomField(
+        CUSTOMFIELD => $self->ConstituencyCustomField->Id,
+        VALUE       => $self->Constituency,
+    );
+    return $queues;
+}
+
 sub WhoisCustomField {
     my $self = shift;
 
@@ -552,20 +563,17 @@ sub RenameConstituency {
         RT->Logger->info("Renamed constituency value '$old' -> '$new'.");
     }
 
-    my $queues = RT::Queues->new( RT->SystemUser );
-    $queues->UnLimit;
-    while ( my $queue = $queues->Next ) {
-        next
-            unless (
-            ( $queue->FirstCustomFieldValue('RTIR Constituency') || '' ) eq
-            $old );
-        my $oldname = $queue->Name;
-        my $newname = $oldname;
-        $newname =~ s/$old/$new/;
+    my $queues = $self->Queues;
+    while (my $queue = $queues->Next) {
         $queue->AddCustomFieldValue(
             Field => $constituency_cf->id,
             Value => $new
         );
+
+        my $oldname = $queue->Name;
+        my $newname = $oldname;
+        $newname =~ s/$old/$new/;
+
         my ( $status, $msg ) = $queue->SetName($newname);
         die $msg unless $status;
 

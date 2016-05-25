@@ -218,13 +218,8 @@ sub rename_constituency {
     debug "\nIf you continue then we'll...\n";
     debug "* rename constituency value '$old' into '$new'.\n";
 
-    my $queues = RT::Queues->new( RT->SystemUser );
-    $queues->UnLimit;
-    while ( my $queue = $queues->Next ) {
-        next
-            unless (
-            ( $queue->FirstCustomFieldValue('RTIR Constituency') || '' ) eq
-            $old );
+    my $queues = $manager->Queues;
+    while (my $queue = $queues->Next) {
         my $oldname = $queue->Name;
         my $newname = $oldname;
         $newname =~ s/$old/$new/;
