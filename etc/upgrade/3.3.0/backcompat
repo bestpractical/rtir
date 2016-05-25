@@ -1,0 +1,13 @@
+my ($upgrade) = @_;
+
+$RT::Logger->debug("Temporarily adding blocks lifecycle");
+
+my $lifecycles = RT->Config->Get('Lifecycles');
+$lifecycles->{blocks} = $lifecycles->{countermeasures};
+RT::Lifecycle->FillCache;
+
+$upgrade->();
+
+delete $lifecycles->{blocks};
+RT::Lifecycle->FillCache;
+
