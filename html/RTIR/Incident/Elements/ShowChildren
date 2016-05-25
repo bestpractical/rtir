@@ -115,7 +115,8 @@ if ( $IncidentObj->CurrentUserHasRight('ModifyTicket') ) {
     # $QueueObj->Id and $QueueObj->CurrentUserHasRight('CreateTicket') ) {
         push @box_actions, {
             title => $Lifecycle ne RT::IR->lifecycle_investigation? loc('Create') : loc('Launch'),
-            path => RT::IR->HREFTo("Create.html?Incident=$id&Lifecycle=".$Lifecycle),
+            class => 'create_child' . ($Lifecycle ? '_'.$Lifecycle : ''),
+            path => RT::IR->HREFTo("CreateInQueue.html?Incident=$id&Lifecycle=".$Lifecycle),
         };
     }
     push @box_actions, {
@@ -131,7 +132,7 @@ if ( $total_count > $Rows ) {
     };
 }
 my $box_actions = join '&nbsp;'x3,
-    map qq{<a href="}. $_->{'path'} .q{">}
+    map q{<a href="} . $_->{'path'} . ( $_->{'class'} ? q{" class="} . $_->{'class'} : '' ) . q{">}
         . $m->interp->apply_escapes( $_->{title}, 'h' ) . q{</a>},
     @box_actions;
 

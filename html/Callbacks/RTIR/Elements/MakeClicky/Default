@@ -105,8 +105,8 @@ my %actions;
         my $result .= qq{<a class="button" href="}. RT::IR->HREFTo("Tools/Lookup.html?".$args{lookup_params}."type=ip&q=".$escaped_host).qq{">}
                       .loc('Lookup IP') .q{</a>};
         if ( $args{incident} && !RT->Config->Get('RTIR_DisableCountermeasures') ) {
-            $result .= qq{<a class="button" href="} .
-            RT::IR->HREFTo("Create.html?Incident=".$args{incident}."&Lifecycle=".RT::IR->lifecycle_countermeasure.qq{&IP-Value=$escaped_host})
+            $result .= qq{<a class="button create_child_blocks" href="} .
+            RT::IR->HREFTo("CreateInQueue.html?Incident=".$args{incident}."&Lifecycle=".RT::IR->lifecycle_countermeasure.qq{&IP-Value=$escaped_host})
             .qq{">block</a>};
         }
         if ( $args{'object'} && $args{'object'}->id ) {
@@ -156,7 +156,7 @@ my %actions;
                 $result .= qq{<input type="checkbox" name="Requestorbox-$escaped_email" unchecked />};
             }
             $result .= qq{<a class="button" href="}.
-                RT::IR->HREFTo( "Create.html"
+                RT::IR->HREFTo( "CreateInQueue.html"
                 . qq{?Incident=$args{'incident'}}
                 . qq{&Lifecycle=}.RT::IR->lifecycle_investigation
                 . "&Requestors=$escaped_email")

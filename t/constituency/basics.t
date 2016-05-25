@@ -127,7 +127,7 @@ diag "check queues names on page - eduhandler";
 {
     $agent->login('eduhandler', 'eduhandler', logout => 1 );
 
-    for my $queue_name ('Incident Reports', 'Incidents', 'Blocks', 'Investigations') {
+    for my $queue_name ('Incident Reports', 'Incidents', 'Countermeasures', 'Investigations') {
         $agent->content_contains($queue_name . $edunet_suffix);
         $agent->content_lacks($queue_name . $govnet_suffix);
     }
@@ -137,12 +137,13 @@ diag "check queue names on page - govhandler";
 {
     $agent->login('govhandler', 'govhandler', logout => 1);
 
-    for my $queue_name ('Incident Reports', 'Incidents', 'Blocks', 'Investigations') {
+    for my $queue_name ('Incident Reports', 'Incidents', 'Countermeasures', 'Investigations') {
         $agent->content_lacks($queue_name . $edunet_suffix);
         $agent->content_contains($queue_name . $govnet_suffix);
     }
 }
 
+SKIP: { skip "Create incident and investigation functionality disabled for now", 6;
 diag "check queues when creating inc with inv - govhandler";
 {
     $agent->login('govhandler', 'govhandler', logout => 1);
@@ -156,7 +157,9 @@ diag "check queues when creating inc with inv - govhandler";
     $agent->content_contains('Incidents'.$govnet_suffix);
     $agent->content_contains('Investigations'.$govnet_suffix);
 }
+}
 
+SKIP: { skip "Create incident and investigation functionality disabled for now", 6;
 diag "check queues when creating inc with inv - eduhandler";
 {
     $agent->login('eduhandler', 'eduhandler', logout => 1);
@@ -169,6 +172,7 @@ diag "check queues when creating inc with inv - eduhandler";
     );
     $agent->content_contains('Incidents'.$edunet_suffix);
     $agent->content_contains('Investigations'.$edunet_suffix);
+}
 }
 
 undef $agent;

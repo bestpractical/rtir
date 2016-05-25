@@ -45,63 +45,58 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<span class="incidents">
-<& /RTIR/Search/Elements/ShowResults,
-    Query         => $query,
-    Rows          => 0,
-    Format        => $format,
-    DisplayFormat => $dformat,
-    AllowSorting  => 0,
-    ShowHeader    => 0,
-    EmptyLabel    => loc('(none)'),
-&>
-<div class="actions">
-% unless ( $action ) {
-<a class="button" id="link-incident" href="<% RT::IR->HREFTo('Link/ToIncident/?id='. $id ) %>">Link</a>
-<a class="button" id="create-incident" href="<% RT::IR->HREFTo('CreateInQueue.html?Lifecycle=' . RT::IR->lifecycle_incident . '&Child='. $id ) %>">New</a>
-% } elsif ( $action ne 'No' ) {
-<a class="button" href="<% RT::IR->HREFTo('Display.html?Action='. $action.'&id='. $id) %>"><% loc( $action ) %></a>
+<form action="<% RT::IR->HREFTo('Create.html') %>" id="CreateInQueue">
+% if ($Incident) {
+<input type="hidden" name="Incident" value="<%$Incident%>"/>
 % }
-</div>
-</span>
+% if ($Child) {
+<input type="hidden" name="Child" value="<%$Child%>"/>
+% }
+  <&|/l_unsafe, $lifecycle_desc,
+      $m->scomp('/RTIR/Elements/SelectRTIRQueue',
+        Name => 'Queue',
+        Lifecycle => $Lifecycle,
+        ShowNullOption => 0,
+        LimitToConstituency => $limit_to_constituency,
+        Constituency => $m->{'RTIR_ConstituencyFilter'} || $linked_constituency)
+
+    &>Create a new [_1] in the queue [_2]</&>
+  <& /Elements/Submit, Label => loc("Go"), Caption => loc("This will take you to a partially prefilled [_1] creation form.", $lifecycle_desc) &>
+</form>
 <%INIT>
-my $id = $Ticket->id;
+$Lifecycle = $Lifecycle->[0] if (ref $Lifecycle eq 'ARRAY');
 
-my $action = '';
-if ( $Ticket->Owner != $session{'CurrentUser'}->Id ) {
-    unless ( $Ticket->CurrentUserHasRight('OwnTicket') ) {
-        $action = 'No';
-    }
-    elsif ( $Ticket->Owner == $RT::Nobody->Id ) {
-        $action = 'Take'
-            if $Ticket->CurrentUserHasRight('ModifyTicket')
-            || $Ticket->CurrentUserHasRight('TakeTicket');
-    } else {
-        $action = 'Steal'
-            if $Ticket->CurrentUserHasRight('ModifyTicket')
-            || $Ticket->CurrentUserHasRight('StealTicket');
-    }
+my ($linked_ticket, $linked_constituency);
+
+if ($Incident) {
+    $linked_ticket = RT::Ticket->new( $session{CurrentUser} );
+    $linked_ticket->Load($Incident);
 }
 
-my $config = RT->Config->Get('RTIR_IncidentChildren')
-    ->{ RT::IR::TicketType( Ticket => $Ticket ) };
-
-my $has_incidents = RT::IR->Incidents( $Ticket )->Count;
-
-my $show_unlink = 1;
-if ( $config->{'Required'} && $has_incidents <= 1 ) {
-    $show_unlink = 0;
+if ($Child) {
+    $linked_ticket = RT::Ticket->new( $session{CurrentUser} );
+    $linked_ticket->Load($Child);
 }
 
-my $query = RT::IR->RelevantIncidentsQuery( $Ticket );
-
-my $format = RT->Config->Get('RTIRSearchResultFormats')->{'ListIncidents'};
-my $dformat = $format;
-if ( $show_unlink ) {
-    $dformat .= ", '<a class=\"button\" href=\"". RT::IR->HREFTo("Display.html?id=$id&DeleteLink--MemberOf-__id__=1").\">". loc('Unlink') ."</a>/TITLE:'";
+if ($linked_ticket && $linked_ticket->id) {
+    $linked_constituency = RT::IR->ConstituencyFor($linked_ticket);
 }
+
+my $limit_to_constituency =
+    # Limit no matter what if we have a filter
+    $m->{'RTIR_ConstituencyFilter'} ||
+    # Also limit if we have a linked constituency and StrictConstituencyLinking is set
+    (RT::IR->StrictConstituencyLinking && $linked_constituency)
+    ? 1:0;
+
+my $lifecycle_desc = $Lifecycle eq 'incidents'        ? 'incident'        :
+                     $Lifecycle eq 'incident_reports' ? 'incident report' :
+                     $Lifecycle eq 'blocks'           ? 'block'           :
+                     $Lifecycle eq 'investigations'   ? 'investigation'   : '';
 </%INIT>
-
 <%ARGS>
-$Ticket => undef
+$Lifecycle
+$Incident => undef
+$Child => undef
 </%ARGS>
+

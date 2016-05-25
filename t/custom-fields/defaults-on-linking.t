@@ -55,6 +55,7 @@ my $agent = default_agent();
         $agent->display_ticket( $ir_id );
         $agent->follow_link_ok({text => "New"}, "Followed 'New (Incident)' link")
             or diag $agent->content;
+        $agent->click_through_createinqueue;
         $agent->form_number(3);
 
         my $input = $agent->custom_field_input( 'Incidents', $cf_name );
