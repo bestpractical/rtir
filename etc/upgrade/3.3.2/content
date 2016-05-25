@@ -79,11 +79,10 @@ our @Final = (
             }
         }
 
-        # create new queues
-        my $add_constituency_cmd = File::Spec->catfile( $RT::LocalPluginPath, 'RT-IR', 'bin', 'add_constituency' );
-
+        # create new queues etc
         for my $constituency ( @constituencies ) {
-            system( $add_constituency_cmd, '--name', $constituency, '--force' );
+            my $manager = RT::IR::ConstituencyManager->new(Constituency => $con
+            $manager->AddConstituency;
         }
 
         # move tickets

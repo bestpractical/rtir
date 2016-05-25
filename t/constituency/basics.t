@@ -43,7 +43,8 @@ diag "check that CF applies to all RTIR's queues" if $ENV{'TEST_VERBOSE'};
 diag "create constituencies EDUNET and GOVNET" if $ENV{'TEST_VERBOSE'};
 {
     for my $constituency_name ( qw(EDUNET GOVNET) ) {
-        ok !system("bin/add_constituency --quiet --force --name $constituency_name 2>&1"), "add_constituency $constituency_name ran successfully";
+        my $manager = RT::IR::ConstituencyManager->new(Constituency => $constituency_name);
+        ok($manager->AddConstituency, "added constituency $constituency_name");
     }
 }
 
