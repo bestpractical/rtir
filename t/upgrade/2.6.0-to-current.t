@@ -20,17 +20,29 @@ use Sort::Versions;
     RT::IR::Test->import_snapshot( 'rtir-2.6.after-rt-upgrade.sql' );
 
     # upgrade database for RT 4.2.0 on
-    for my $version (sort { versioncmp($a, $b) } map { m{upgrade/([\w.]+)/} && $1 } glob('../rt/etc/upgrade/4.*/')) {
-        next if versioncmp($version, '4.2.0') == -1;
-        next if versioncmp($version, $RT::VERSION) == 1;
+    {
+        my @versions;
+        for my $version (sort { versioncmp($a, $b) } map { m{upgrade/([\w.]+)/} && $1 } glob('../rt/etc/upgrade/4.*/')) {
+            next if versioncmp($version, '4.2.0') == -1;
+            next if versioncmp($version, $RT::VERSION) == 1;
+            push @versions, $version;
+        }
 
-        my ($status, $msg) = RT::IR::Test->apply_upgrade( '../rt/etc/upgrade/', $version);
-        ok $status, "applied RT $version upgrade" or diag "error: $msg";
+        my ($status, $msg) = RT::IR::Test->apply_upgrade( '../rt/etc/upgrade/', @versions);
+        ok $status, "applied " . scalar(@versions) . " RT version upgrades" or diag "error: $msg";
     }
 
+    # upgrade database for RTIR 2.6.0 on
     {
-        my ($status, $msg) = RT::IR::Test->apply_upgrade( 'etc/upgrade/', '2.9.0' );
-        ok $status, "applied RTIR 2.9.0 upgrade" or diag "error: $msg";
+        my @versions;
+        for my $version (sort { versioncmp($a, $b) } map { m{upgrade/([\w.]+)/} && $1 } glob('etc/upgrade/*/')) {
+            next if versioncmp($version, '2.6.0') == -1;
+
+            push @versions, $version;
+        }
+
+        my ($status, $msg) = RT::IR::Test->apply_upgrade( 'etc/upgrade/', @versions);
+        ok $status, "applied " . scalar(@versions) . " RTIR upgrades" or diag "error: $msg";
     }
 }
 
@@ -48,7 +60,7 @@ my @state_cf_ids;
     $ticket->Load(4);
 
     my $queue = $ticket->QueueObj;
-    is( $queue->Name, 'Incident Reports', 'an IR' );
+    is( $queue->Name, 'Incident Reports - EDUNET', 'an IR' );
     is( $queue->LifecycleObj->Name, 'incident_reports', 'incidents cycle' );
 
     is( $ticket->Subject, 'IR for reject' );
@@ -63,7 +75,7 @@ my @state_cf_ids;
     $ticket->Load(5);
 
     my $queue = $ticket->QueueObj;
-    is( $queue->Name, 'Incidents', 'an incident' );
+    is( $queue->Name, 'Incidents - EDUNET', 'an incident' );
     is( $queue->LifecycleObj->Name, 'incidents', 'incidents cycle' );
 
     is( $ticket->Subject, 'Inc for abandon' );
