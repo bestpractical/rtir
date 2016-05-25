@@ -192,7 +192,7 @@ END
 
     unless ( $opt{'force'} ) {
         if ($exist) {
-            exit 0 unless prompt_yN("Do you want to proceed with update?");
+            exit 0 unless prompt_yN("Do you want to proceed with adding this constituency?");
         } else {
             exit 0
                 unless prompt_yN(
@@ -248,7 +248,7 @@ sub rename_constituency {
 
 END
 
-    return 0 unless prompt_yN("Do you want to proceed?");
+    return 0 unless prompt_yN("Do you want to proceed with renaming this constituency?");
 
     my ($ok) = $manager->RenameConstituency($new);
 
