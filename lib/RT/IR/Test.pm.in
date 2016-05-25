@@ -167,6 +167,8 @@ sub apply_upgrade {
                 return ( $ret, $msg ) unless $ret;
             }
         }
+
+        RT::Test::__reconnect_rt();
     };
 
     foreach my $n ( 0..$#versions ) {
@@ -188,7 +190,7 @@ sub apply_upgrade {
 
     $upgrade->();
 
-    RT::Test::__reconnect_rt();
+    return 1;
 }
 
 sub get_admin_dbh {
