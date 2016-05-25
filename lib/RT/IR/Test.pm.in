@@ -147,24 +147,47 @@ sub apply_upgrade {
     my @versions = @_;
 
     my $db_type = RT->Config->Get('DatabaseType');
+
+    my $upgrade = sub {
+        foreach my $n ( 0..$#versions ) {
+            my $v = $versions[$n];
+
+            my $datadir = "$base_dir/$v";
+            if ( -e "$datadir/schema.$db_type" ) {
+                my ( $ret, $msg ) = RT::Handle->InsertSchema( get_admin_dbh(), $datadir );
+                return ( $ret, $msg ) unless $ret;
+            }
+            if ( -e "$datadir/acl.$db_type" ) {
+                my ( $ret, $msg ) = RT::Handle->InsertACL( get_admin_dbh(), $datadir );
+                return ( $ret, $msg ) unless $ret;
+            }
+            if ( -e "$datadir/content" ) {
+                RT::Test::__reconnect_rt();
+                my ( $ret, $msg ) = $RT::Handle->InsertData( "$datadir/content" );
+                return ( $ret, $msg ) unless $ret;
+            }
+        }
+    };
+
     foreach my $n ( 0..$#versions ) {
         my $v = $versions[$n];
 
         my $datadir = "$base_dir/$v";
-        if ( -e "$datadir/schema.$db_type" ) {
-            my ( $ret, $msg ) = RT::Handle->InsertSchema( get_admin_dbh(), $datadir );
-            return ( $ret, $msg ) unless $ret;
-        }
-        if ( -e "$datadir/acl.$db_type" ) {
-            my ( $ret, $msg ) = RT::Handle->InsertACL( get_admin_dbh(), $datadir );
-            return ( $ret, $msg ) unless $ret;
-        }
-        if ( -e "$datadir/content" ) {
-            RT::Test::__reconnect_rt();
-            my ( $ret, $msg ) = $RT::Handle->InsertData( "$datadir/content" );
-            return ( $ret, $msg ) unless $ret;
+        my $file = "$datadir/backcompat";
+        if ( -e $file ) {
+            my $lines = do {local $/; local @ARGV = ($file); <>};
+            my $sub = eval "sub {\n# line 1 $file\n$lines\n}";
+            unless ($sub) {
+                warn "Failed to load backcompat $file: $@";
+                next;
+            }
+            my $current = $upgrade;
+            $upgrade = sub { $sub->($current) };
         }
     }
+
+    $upgrade->();
+
     RT::Test::__reconnect_rt();
 }
 
