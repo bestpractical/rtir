@@ -16,9 +16,10 @@ our @Final = (
         {
             my $queues = RT::Queues->new(RT->SystemUser);
             $queues->Limit(
-                  FIELD    => 'Name',
-                  OPERATOR => 'STARTSWITH',
-                  VALUE    => 'Blocks',
+                  FIELD         => 'Name',
+                  OPERATOR      => 'STARTSWITH',
+                  VALUE         => 'Blocks',
+                  CASESENSITIVE => 1,
             );
 
             while (my $queue = $queues->Next) {
