@@ -111,7 +111,7 @@ our @Final = (
 
         # create new queues etc
         for my $constituency ( @constituencies ) {
-            my $manager = RT::IR::ConstituencyManager->new(Constituency => $con
+            my $manager = RT::IR::ConstituencyManager->new(Constituency => $constituency);
             $manager->AddConstituency;
         }
 
