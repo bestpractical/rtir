@@ -47,9 +47,9 @@ jQuery(function() {
         showModal('investigations', this);
     };
 
-    var showBlocksModal = function(e) {
+    var showCountermeasuresModal = function(e) {
         e.preventDefault();
-        showModal('blocks', this);
+        showModal('countermeasures', this);
     };
 
     var showIncidentsModal = function(e) {
@@ -59,11 +59,11 @@ jQuery(function() {
 
     jQuery('body').on('click', '#reports-create', showReportsModal);
     jQuery('body').on('click', '#investigations-launch', showInvestigationsModal);
-    jQuery('body').on('click', '#blocks-create', showBlocksModal);
+    jQuery('body').on('click', '#countermeasures-create', showCountermeasuresModal);
     jQuery('body').on('click', '#incidents-create', showIncidentsModal);
     jQuery('body').on('click', '#create-incident', showIncidentsModal);
 
     jQuery('body').on('click', '.create_child_incident_reports', showReportsModal);
     jQuery('body').on('click', '.create_child_investigations', showInvestigationsModal);
-    jQuery('body').on('click', '.create_child_blocks', showBlocksModal);
+    jQuery('body').on('click', '.create_child_countermeasures', showCountermeasuresModal);
 });
