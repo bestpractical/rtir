@@ -8,10 +8,10 @@ use RT::IR::Test tests => undef;
 RT::Test->started_ok;
 my $agent = default_agent();
 
-my $incident = $agent->create_incident( {Subject => 'Incident to test Block editing'});
-my $block = $agent->create_countermeasure( {Incident => $incident});
+my $incident = $agent->create_incident( {Subject => 'Incident to test Countermeasure editing'});
+my $countermeasure = $agent->create_countermeasure( {Incident => $incident});
 
-$agent->goto_edit_countermeasure( $block);
+$agent->goto_edit_countermeasure( $countermeasure);
 
 $agent->content_unlike(qr{<option (?:value=.*)?>Use system default\(\)</option>}, "The option 'Use system default()' does not exist.");
 

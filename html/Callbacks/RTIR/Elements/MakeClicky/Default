@@ -105,9 +105,9 @@ my %actions;
         my $result .= qq{<a class="button" href="}. RT::IR->HREFTo("Tools/Lookup.html?".$args{lookup_params}."type=ip&q=".$escaped_host).qq{">}
                       .loc('Lookup IP') .q{</a>};
         if ( $args{incident} && !RT->Config->Get('RTIR_DisableCountermeasures') ) {
-            $result .= qq{<a class="button create_child_blocks" href="} .
+            $result .= qq{<a class="button create_child_} . RT::IR->lifecycle_countermeasure . qq{" href="} .
             RT::IR->HREFTo("CreateInQueue.html?Incident=".$args{incident}."&Lifecycle=".RT::IR->lifecycle_countermeasure.qq{&IP-Value=$escaped_host})
-            .qq{">block</a>};
+            .qq{">Block</a>};
         }
         if ( $args{'object'} && $args{'object'}->id ) {
             my $cf = RT::IR::GetCustomField('IP');

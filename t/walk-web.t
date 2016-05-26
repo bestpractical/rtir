@@ -16,7 +16,7 @@ my @tickets;
 push @tickets, $m->create_incident({ Subject => "test Incident" });
 push @tickets, $m->create_ir({ Subject => "test IR" });
 push @tickets, $m->create_investigation({ Subject => "test Inv", Requestor => 'root@example.com' });
-push @tickets, $m->create_countermeasure({ Subject => "test Block", Incident => $tickets[0] });
+push @tickets, $m->create_countermeasure({ Subject => "test Countermeasure", Incident => $tickets[0] });
 
 my @links = (
     '/RTIR/',

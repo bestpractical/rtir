@@ -82,31 +82,31 @@ diag "started date of an IR" if $ENV{'TEST_VERBOSE'};
     ok( abs($ir->StartedObj->Unix - $ir->CreatedObj->Unix) <= 2, 'for an IR started date == linking to inc time');
 }
 
-diag "started date of a block" if $ENV{'TEST_VERBOSE'};
+diag "started date of a countermeasure" if $ENV{'TEST_VERBOSE'};
 {
     my $inc_id = $agent->create_incident( {Subject => "started date"});
-    my $block_id = $agent->create_countermeasure( {Subject => "started date", Incident => $inc_id});
+    my $countermeasure_id = $agent->create_countermeasure( {Subject => "started date", Incident => $inc_id});
 
-    my $block = RT::Ticket->new( $RT::SystemUser );
-    $block->Load( $block_id );
-    is($block->id, $block_id, 'loaded block');
-    ok( $block->StartedObj->Unix <= 0, 'a new block is not active');
+    my $countermeasure = RT::Ticket->new( $RT::SystemUser );
+    $countermeasure->Load( $countermeasure_id );
+    is($countermeasure->id, $countermeasure_id, 'loaded countermeasure');
+    ok( $countermeasure->StartedObj->Unix <= 0, 'a new countermeasure is not active');
 
-    $agent->display_ticket( $block_id);
+    $agent->display_ticket( $countermeasure_id);
     $agent->follow_link_ok({text => 'Activate'}, "activate it");
     is($agent->status, 200, "request successful");
 
     $agent->form_number(3);
-    $agent->field( UpdateContent => 'activating block' );
+    $agent->field( UpdateContent => 'activating countermeasure' );
     $agent->click('SubmitTicket');
     is($agent->status, 200, "request successful");
 
     DBIx::SearchBuilder::Record::Cachable::FlushCache();
 
-    $block = RT::Ticket->new( $RT::SystemUser );
-    $block->Load( $block_id );
-    is($block->id, $block_id, 'loaded block');
-    ok( $block->StartedObj->Unix > 0, 'activation of a block sets started date');
+    $countermeasure = RT::Ticket->new( $RT::SystemUser );
+    $countermeasure->Load( $countermeasure_id );
+    is($countermeasure->id, $countermeasure_id, 'loaded countermeasure');
+    ok( $countermeasure->StartedObj->Unix > 0, 'activation of a countermeasure sets started date');
 }
 
 
