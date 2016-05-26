@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox,
     title => loc($display_lifecycle) .': '. $q,
-    class => 'tickets-list-'. $Lifecycle,
+    class => 'tickets-list-'. lc(RT::IR::TicketType( Lifecycle => $Lifecycle )),
     titleright_raw => $box_actions,
     title_class => 'inverse',
 &>
