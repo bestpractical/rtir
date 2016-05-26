@@ -53,12 +53,8 @@
 <& /RTIR/Elements/CreateInRTIRQueueModal, %ARGS &>
 
 <%INIT>
-my $lifecycle_desc = $Lifecycle eq 'incidents'        ? 'Incident'        :
-                     $Lifecycle eq 'incident_reports' ? 'Incident Report' :
-                     $Lifecycle eq 'blocks'           ? 'Block'           :
-                     $Lifecycle eq 'investigations'   ? 'Investigation'   : '';
-
-my $title = "Select Queue for New $lifecycle_desc";
+my $ticket_type = RT::IR::TicketType( Lifecycle => $Lifecycle );
+my $title = "Select Queue for New $ticket_type";
 </%INIT>
 <%ARGS>
 $Lifecycle

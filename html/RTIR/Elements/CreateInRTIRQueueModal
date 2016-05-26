@@ -52,7 +52,7 @@
 % if ($Child) {
 <input type="hidden" name="Child" value="<%$Child%>"/>
 % }
-  <&|/l_unsafe, $lifecycle_desc,
+  <&|/l_unsafe, $ticket_type,
       $m->scomp('/RTIR/Elements/SelectRTIRQueue',
         Name => 'Queue',
         Lifecycle => $Lifecycle,
@@ -61,7 +61,7 @@
         Constituency => $m->{'RTIR_ConstituencyFilter'} || $linked_constituency)
 
     &>Create a new [_1] in the queue [_2]</&>
-  <& /Elements/Submit, Label => loc("Go"), Caption => loc("This will take you to a partially prefilled [_1] creation form.", $lifecycle_desc) &>
+  <& /Elements/Submit, Label => loc("Go"), Caption => loc("This will take you to a partially prefilled [_1] creation form.", $ticket_type) &>
 </form>
 <%INIT>
 $Lifecycle = $Lifecycle->[0] if (ref $Lifecycle eq 'ARRAY');
@@ -89,10 +89,7 @@ my $limit_to_constituency =
     (RT::IR->StrictConstituencyLinking && $linked_constituency)
     ? 1:0;
 
-my $lifecycle_desc = $Lifecycle eq 'incidents'        ? 'incident'        :
-                     $Lifecycle eq 'incident_reports' ? 'incident report' :
-                     $Lifecycle eq 'blocks'           ? 'block'           :
-                     $Lifecycle eq 'investigations'   ? 'investigation'   : '';
+my $ticket_type = lc RT::IR::TicketType( Lifecycle => $Lifecycle );
 </%INIT>
 <%ARGS>
 $Lifecycle
