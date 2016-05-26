@@ -47,7 +47,7 @@ of L</Scrips> below.
 
 While RTIR ships with four queues by default (Incident Reports, Incidents,
 Investigations, and Countermeasures) you can create your own versions of these
-queues.  This functionality (new in RTIR 3.4) is what powers the
+queues.  This functionality (new in RTIR 4.0) is what powers the
 L<Constituencies> feature, but its use is not limited to Constituencies. For
 example you can have multiple queues for Incident Reports, one for each of your
 monitoring tools, each with its own set of custom fields, watchers, automation

@@ -26,9 +26,9 @@ configuration that applies to all constituencies. This guide
 will help you configure RTIR to manage multiple constituencies.
 
 The implementation of the constituencies feature was updated
-in RTIR 3.4 and is described here. If you were using this
+in RTIR 4.0 and is described here. If you were using this
 functionality in previous versions, you can read about specific
-changes in L<UPGRADING-3.4>.
+changes in L<UPGRADING-4.0>.
 
 =head2 Definitions
 
@@ -110,7 +110,7 @@ However, to get advanced control over constituencies you have to create addition
 objects in the system. The steps below describe how to do this manually. A
 script (F<bin/add_constituency>) is also provided which helps add new constituency
 values, along with their associated groups and queues. In previous versions of RTIR,
-these queues were a hidden implementation detail. In RTIR 3.4, each constituency has
+these queues were a hidden implementation detail. In RTIR 4.0, each constituency has
 its own queues, which work like regular RT queues.
 
 =head2 Manually Managing Constituency Values
@@ -162,7 +162,7 @@ groups created and modify them as needed.
 
 =head2 Constituency Propagation
 
-Starting in RTIR 3.4, the C<$RTIR_StrictConstituencyLinking> option replaces the old C<$_RTIR_Constituency_Propagation> configuration option.
+Starting in RTIR 4.0, the C<$RTIR_StrictConstituencyLinking> option replaces the old C<$_RTIR_Constituency_Propagation> configuration option.
 
 C<$RTIR_StrictConstituencyLinking> is a simple boolean which implements the most common behaviors of C<$_RTIR_Constituency_Propagation>.
 

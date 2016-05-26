@@ -1,7 +1,7 @@
-=head1 Upgrading to 3.4
+=head1 Upgrading to 4.0
 
 The following describes some of the key components of the upgrade
-to RTIR 3.4 from RTIR 3.2.  The other UPGRADING documents contain
+to RTIR 4.0 from RTIR 3.2.  The other UPGRADING documents contain
 details for previous versions.
 
 =head2 Web interface
@@ -17,7 +17,7 @@ suggestions for filling out RTIR's menus with additional useful functionality.
 It is no longer possible to launch an investigation on the incident creation
 page. Users will find the 'Launch Investigation' menu item missing when
 creating an incident. This removal is a result of the flexibility granted by
-the constituency rewrite in RTIR 3.4.
+the constituency rewrite in RTIR 4.0.
 
 =head3 MaxInlineBody
 
@@ -63,7 +63,7 @@ you'll need to update it.
 
 =head3 Changes to constituencies
 
-RTIR 3.4 features a major overhaul of the constituency system. The
+RTIR 4.0 features a major overhaul of the constituency system. The
 standard upgrade procedure should migrate old constituencies to the
 new system.
 
