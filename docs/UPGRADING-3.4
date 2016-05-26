@@ -19,6 +19,12 @@ page. Users will find the 'Launch Investigation' menu item missing when
 creating an incident. This removal is a result of the flexibility granted by
 the constituency rewrite in RTIR 3.4.
 
+=head3 MaxInlineBody
+
+The default value for the $MaxInlineBody config has changed from 0 (meaning
+unlimited) to 25kb. You may wish to adjust this if you were relying on
+RTIR's default.
+
 =head2 Queues
 
 It is now possible to have multiple incident report, incident,
@@ -53,14 +59,7 @@ adjust the key "Block" to "Countermeasure" (note: not "Countermeasures").
 If you have any custom code that deals with Blocks queues by name,
 you'll need to update it.
 
-=head2 Constituency support
-
-=head3 Web interface
-
-If a user has permissions to work with multiple constituencies, it is
-now possible to limit RTIR's web interface to a single constituency
-by clicking a link from the B<Work with constituency> box on the RTIR
-homepage. They can also go directly to C</RTIR/c/I<ConstituencyName>.
+=head2 Constituencies
 
 =head3 Changes to constituencies
 
@@ -87,6 +86,26 @@ Unlike earlier releases of RTIR, ACLS, Scrips, Custom Fields and
 queue configuration for constituency-specific queues is now drawn
 explicitly from those queues.
 
+=head3 Web interface
+
+If a user has permissions to work with multiple constituencies, it is
+now possible to limit RTIR's web interface to a single constituency
+by clicking a link from the B<Work with constituency> box on the RTIR
+homepage. They can also go directly to C</RTIR/c/I<ConstituencyName>.
+
+=head3 Ticket linking
+
+The C<$RTIR_StrictConstituencyLinking> option replaces the old
+C<$_RTIR_Constituency_Propagation> configuration option.
+C<$RTIR_StrictConstituencyLinking> is a simple boolean which implements the
+most common behaviors of C<$_RTIR_Constituency_Propagation>.
+
+If C<$RTIR_StrictConstituencyLinking> is set to 1, any attempt to link RTIR
+tickets across constituencies will result in an error.
+
+If C<$RTIR_StrictConstituencyLinking> is set to 0, RTIR will allow users to
+link tickets across multiple constituencies.
+
 =head3 Setting constituency based on email headers
 
 RTIR 3.2 allowed sites to set ticket constituencies based on
@@ -98,4 +117,4 @@ message headers to set RTIR constituencies is no longer available.
 
 =head3 ForwardMessage
 
-DutyTeams now have C<ForwardMessage> right by default.
+DutyTeams now have the C<ForwardMessage> right by default.
