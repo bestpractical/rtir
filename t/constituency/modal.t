@@ -13,7 +13,8 @@ my ($ok, $msg);
 diag "create constituencies EDUNET and GOVNET" if $ENV{'TEST_VERBOSE'};
 {
     for my $constituency_name ( qw(EDUNET GOVNET) ) {
-        ok !system("bin/add_constituency --quiet --force --name $constituency_name 2>&1"), "add_constituency $constituency_name ran successfully";
+        my $manager = RT::IR::ConstituencyManager->new(Constituency => $constituency_name);
+        ok($manager->AddConstituency, "added constituency $constituency_name");
     }
 }
 
@@ -50,10 +51,10 @@ diag "check queue visibility in modal" if $ENV{'TEST_VERBOSE'};
     $m->content_like(qr{<option value="\d+">Investigations - EDUNET</option>}, 'Queue dropdown has EDUNET investigations queue');
     $m->content_like(qr{<option value="\d+">Investigations - GOVNET</option>}, 'Queue dropdown has GOVNET investigations queue');
 
-    $m->get("$baseurl/RTIR/Helpers/CreateInRTIRQueueModal?Lifecycle=blocks");
-    $m->content_like(qr{<option value="\d+">Countermeasures</option>}, 'Queue dropdown has standard blocks queue');
-    $m->content_like(qr{<option value="\d+">Countermeasures - EDUNET</option>}, 'Queue dropdown has EDUNET blocks queue');
-    $m->content_like(qr{<option value="\d+">Countermeasures - GOVNET</option>}, 'Queue dropdown has GOVNET blocks queue');
+    $m->get("$baseurl/RTIR/Helpers/CreateInRTIRQueueModal?Lifecycle=countermeasures");
+    $m->content_like(qr{<option value="\d+">Countermeasures</option>}, 'Queue dropdown has standard countermeasures queue');
+    $m->content_like(qr{<option value="\d+">Countermeasures - EDUNET</option>}, 'Queue dropdown has EDUNET countermeasures queue');
+    $m->content_like(qr{<option value="\d+">Countermeasures - GOVNET</option>}, 'Queue dropdown has GOVNET countermeasures queue');
 }
 
 diag "check queue visibility in modal when created from incident" if $ENV{'TEST_VERBOSE'};
@@ -75,10 +76,10 @@ diag "check queue visibility in modal when created from incident" if $ENV{'TEST_
     $m->content_unlike(qr{<option value="\d+">Investigations</option>}, 'Queue dropdown doesn\'t have standard investigations queue');
     $m->content_unlike(qr{<option value="\d+">Investigations - EDUNET</option>}, 'Queue dropdown doesn\'t have EDUNET investigations queue');
 
-    $m->get("$baseurl/RTIR/Helpers/CreateInRTIRQueueModal?Lifecycle=blocks&Incident=".$i->id);
-    $m->content_like(qr{<option value="\d+">Countermeasures - GOVNET</option>}, 'Queue dropdown has GOVNET blocks queue');
-    $m->content_unlike(qr{<option value="\d+">Countermeasures</option>}, 'Queue dropdown doesn\'t have standard blocks queue');
-    $m->content_unlike(qr{<option value="\d+">Countermeasures - EDUNET</option>}, 'Queue dropdown doesn\'t have EDUNET blocks queue');
+    $m->get("$baseurl/RTIR/Helpers/CreateInRTIRQueueModal?Lifecycle=countermeasures&Incident=".$i->id);
+    $m->content_like(qr{<option value="\d+">Countermeasures - GOVNET</option>}, 'Queue dropdown has GOVNET countermeasures queue');
+    $m->content_unlike(qr{<option value="\d+">Countermeasures</option>}, 'Queue dropdown doesn\'t have standard countermeasures queue');
+    $m->content_unlike(qr{<option value="\d+">Countermeasures - EDUNET</option>}, 'Queue dropdown doesn\'t have EDUNET countermeasures queue');
 }
 
 diag "check queue visibility in modal when created from incident report" if $ENV{'TEST_VERBOSE'};
@@ -128,10 +129,10 @@ diag "check queue visibility in modal - eduhandler" if $ENV{'TEST_VERBOSE'};
     $m->content_unlike(qr{<option value="\d+">Investigations</option>}, 'Queue dropdown doesn\'t have standard investigations queue');
     $m->content_unlike(qr{<option value="\d+">Investigations - GOVNET</option>}, 'Queue dropdown doesn\'t have GOVNET investigations queue');
 
-    $m->get("$baseurl/RTIR/Helpers/CreateInRTIRQueueModal?Lifecycle=blocks");
-    $m->content_like(qr{<option value="\d+">Countermeasures - EDUNET</option>}, 'Queue dropdown has EDUNET blocks queue');
-    $m->content_unlike(qr{<option value="\d+">Countermeasures</option>}, 'Queue dropdown doesn\'t have standard blocks queue');
-    $m->content_unlike(qr{<option value="\d+">Countermeasures - GOVNET</option>}, 'Queue dropdown doesn\'t have GOVNET blocks queue');
+    $m->get("$baseurl/RTIR/Helpers/CreateInRTIRQueueModal?Lifecycle=countermeasures");
+    $m->content_like(qr{<option value="\d+">Countermeasures - EDUNET</option>}, 'Queue dropdown has EDUNET countermeasures queue');
+    $m->content_unlike(qr{<option value="\d+">Countermeasures</option>}, 'Queue dropdown doesn\'t have standard countermeasures queue');
+    $m->content_unlike(qr{<option value="\d+">Countermeasures - GOVNET</option>}, 'Queue dropdown doesn\'t have GOVNET countermeasures queue');
 }
 
 diag "check queue visibility in modal - govhandler" if $ENV{'TEST_VERBOSE'};
@@ -153,10 +154,10 @@ diag "check queue visibility in modal - govhandler" if $ENV{'TEST_VERBOSE'};
     $m->content_unlike(qr{<option value="\d+">Investigations - EDUNET</option>}, 'Queue dropdown doesn\'t have EDUNET investigations queue');
     $m->content_unlike(qr{<option value="\d+">Investigations</option>}, 'Queue dropdown doesn\'t have standard investigations queue');
 
-    $m->get("$baseurl/RTIR/Helpers/CreateInRTIRQueueModal?Lifecycle=blocks");
-    $m->content_like(qr{<option value="\d+">Countermeasures - GOVNET</option>}, 'Queue dropdown has GOVNET blocks queue');
-    $m->content_unlike(qr{<option value="\d+">Countermeasures - EDUNET</option>}, 'Queue dropdown doesn\'t have EDUNET blocks queue');
-    $m->content_unlike(qr{<option value="\d+">Countermeasures</option>}, 'Queue dropdown doesn\'t have standard blocks queue');
+    $m->get("$baseurl/RTIR/Helpers/CreateInRTIRQueueModal?Lifecycle=countermeasures");
+    $m->content_like(qr{<option value="\d+">Countermeasures - GOVNET</option>}, 'Queue dropdown has GOVNET countermeasures queue');
+    $m->content_unlike(qr{<option value="\d+">Countermeasures - EDUNET</option>}, 'Queue dropdown doesn\'t have EDUNET countermeasures queue');
+    $m->content_unlike(qr{<option value="\d+">Countermeasures</option>}, 'Queue dropdown doesn\'t have standard countermeasures queue');
 }
 
 undef $m;
