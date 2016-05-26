@@ -8,7 +8,7 @@ use ExtUtils::MakeMaker ();
 
 use vars qw{$VERSION};
 BEGIN {
-	$VERSION = '1.12';
+	$VERSION = '1.16';
 }
 
 # special map on pre-defined feature sets
@@ -537,7 +537,7 @@ sub _install_cpan {
     while ( my ( $opt, $arg ) = splice( @config, 0, 2 ) ) {
         ( $args{$opt} = $arg, next )
           if $opt =~ /^(?:force|notest)$/;    # pseudo-option
-        $CPAN::Config->{$opt} = $arg;
+        $CPAN::Config->{$opt} = $opt eq 'urllist' ? [$arg] : $arg;
     }
 
     if ($args{notest} && (not CPAN::Shell->can('notest'))) {
