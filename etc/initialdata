@@ -379,7 +379,7 @@ die "Please add RT::IR to your Plugins configuration before initializing the dat
 @Templates = (
     {   Queue       => 'Countermeasures',
         Name        => 'Autoreply',
-        Description => 'Sent when a block is created',
+        Description => 'Sent when a countermeasure is created',
         Content     => 'RT-Attach-Message: yes
 Subject: { $Ticket->Subject }
 

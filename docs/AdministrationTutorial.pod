@@ -45,20 +45,20 @@ of L</Scrips> below.
 
 =head2 Custom Queues
 
-While RTIR ships with four queues by default--Incident Reports, Incidents,
-Investigations, and Blocks--you can create your own versions of these queues.
-This functionality (new in RTIR 3.4) is what powers the L<Constituencies>
-feature, but its use is not limited to Constituencies. For example you can have
-multiple queues for Incident Reports, one for each of your monitoring tools,
-each with its own set of custom fields, watchers, automation with scrips,
-templates, watchers, etc.
+While RTIR ships with four queues by default (Incident Reports, Incidents,
+Investigations, and Countermeasures) you can create your own versions of these
+queues.  This functionality (new in RTIR 3.4) is what powers the
+L<Constituencies> feature, but its use is not limited to Constituencies. For
+example you can have multiple queues for Incident Reports, one for each of your
+monitoring tools, each with its own set of custom fields, watchers, automation
+with scrips, templates, watchers, etc.
 
 To create a new RTIR queue, visit RT's Admin -> Queue -> Create menu. Create
 the queue as normal, but be sure to select an RTIR lifecycle (incident_reports,
-incidents, investigations, or blocks). By doing so you include the queue into
-the RTIR system. After creating the queue, it will be available throughout RTIR
-alongside the four builtin incident response queues. Assign custom fields,
-watchers, etc. as desired.
+incidents, investigations, or countermeasures). By doing so you include the
+queue into the RTIR system. After creating the queue, it will be available
+throughout RTIR alongside the four builtin incident response queues. Assign
+custom fields, watchers, etc. as desired.
 
 =head2 Custom Fields
 

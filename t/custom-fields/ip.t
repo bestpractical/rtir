@@ -40,7 +40,7 @@ my $rtir_user = RT::CurrentUser->new( rtir_user() );
 diag "create a ticket via web and set IP" if $ENV{'TEST_VERBOSE'};
 {
     my $i = 0;
-    my $incident_id; # block couldn't be created without incident id
+    my $incident_id; # countermeasure couldn't be created without incident id
     foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
@@ -67,7 +67,7 @@ diag "create a ticket via web and set IP" if $ENV{'TEST_VERBOSE'};
 diag "create a ticket via web with IP in message" if $ENV{'TEST_VERBOSE'};
 {
     my $i = 0;
-    my $incident_id; # block couldn't be created without incident id
+    my $incident_id; # countermeasure couldn't be created without incident id
     foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
@@ -94,7 +94,7 @@ diag "create a ticket via web with IP in message" if $ENV{'TEST_VERBOSE'};
 diag "create a ticket via web with CIDR" if $ENV{'TEST_VERBOSE'};
 {
     my $i = 0;
-    my $incident_id; # block couldn't be created without incident id
+    my $incident_id; # countermeasure couldn't be created without incident id
     foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
@@ -124,7 +124,7 @@ diag "create a ticket via web with CIDR" if $ENV{'TEST_VERBOSE'};
 diag "create a ticket via web with CIDR in message" if $ENV{'TEST_VERBOSE'};
 {
     my $i = 0;
-    my $incident_id; # block couldn't be created without incident id
+    my $incident_id; # countermeasure couldn't be created without incident id
     foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
@@ -154,7 +154,7 @@ diag "create a ticket via web with CIDR in message" if $ENV{'TEST_VERBOSE'};
 diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'};
 {
     my $i = 0;
-    my $incident_id; # block couldn't be created without incident id
+    my $incident_id; # countermeasure couldn't be created without incident id
     foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
         diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
 
