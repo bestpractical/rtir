@@ -91,7 +91,7 @@ explicitly from those queues.
 If a user has permissions to work with multiple constituencies, it is
 now possible to limit RTIR's web interface to a single constituency
 by clicking a link from the B<Work with constituency> box on the RTIR
-homepage. They can also go directly to C</RTIR/c/I<ConstituencyName>.
+homepage. They can also go directly to C</RTIR/c/ConstituencyName>.
 
 =head3 Ticket linking
 
