@@ -63,6 +63,7 @@ jQuery(function() {
     jQuery('body').on('click', '#incidents-create', showIncidentsModal);
     jQuery('body').on('click', '#create-incident', showIncidentsModal);
 
+    jQuery('body').on('click', '.create_child_incidents', showIncidentsModal);
     jQuery('body').on('click', '.create_child_incident_reports', showReportsModal);
     jQuery('body').on('click', '.create_child_investigations', showInvestigationsModal);
     jQuery('body').on('click', '.create_child_countermeasures', showCountermeasuresModal);
