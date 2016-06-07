@@ -41,7 +41,8 @@ Installation instructions:
 
 4) Type "make install".
 
-5) Activate the RTIR extension in the RT_SiteConfig.pm file:
+5) Activate the RTIR extension by putting the following line in your
+   RT's etc/RT_SiteConfig.pm file:
 
     Plugin('RT::IR');
 
