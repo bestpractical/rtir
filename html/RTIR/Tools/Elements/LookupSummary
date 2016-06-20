@@ -52,7 +52,7 @@
     title_class => 'inverse',
 &>
 % if ( $lookup_cf_not_applies ) {
-<i><% loc("Custom field '[_1]' doesn't applies to this queue", loc($LookupType) ) %></i>
+<i><% loc("Custom field '[_1]' doesn't apply to this queue", loc($LookupType) ) %></i>
 % } else {
 <& /RTIR/Search/Elements/ShowResults,
     BaseQuery     => RT::IR->Query( Lifecycle => $Lifecycle ),
