@@ -65,8 +65,7 @@
 </&>
 <%INIT>
 
-my $display_lifecycle = $Lifecycle;
-$display_lifecycle =~ s/_/ /; # TODO replace with a function in RT::IR
+my $display_lifecycle = RT::IR::FriendlyLifecycle($Lifecycle);
 
 my $lookup_cf_not_applies = 0;
 if ( $LookupType && RT::IR->CustomFields( Field => $LookupType )
