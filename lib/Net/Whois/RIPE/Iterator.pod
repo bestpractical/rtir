@@ -21,6 +21,8 @@ Implements an iterator for Net::Whois::RIPE::Objects.
 
 =head1 CONSTRUCTOR
 
+=over 4
+
 =item B<new (WHOIS, QUERY)>
 
 The constructor returns undef on failure. If B<debug> is on then a message
@@ -31,7 +33,11 @@ I<WHOIS> is an object of class I<Net::Whois::RIPE>
 I<QUERY> is a query string to be sent to the I<WHOIS> object to
 retrieve the whois objects.
 
+=back
+
 =head1 METHODS
+
+=over 4
 
 =item B<next()>
 
@@ -45,6 +51,8 @@ Sets/gets debugging level on the class or an object.
 
  0 - no debugging
  1 - debugging on
+
+=back
 
 =head1 AUTHOR
 
