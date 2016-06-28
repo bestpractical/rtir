@@ -161,7 +161,8 @@
         UpdatePath     => RT::IR->HREFTo("Update.html"),
         ForwardPath    => RT::IR->HREFTo("Forward.html"),
         EncryptionPath => RT::IR->HREFTo("Crypt.html"),
-        PathPrefix     => RT::IR->HREFTo("Ticket/")
+        PathPrefix     => RT::IR->HREFTo("Ticket/"),
+        AttachmentPath => RT->Config->Get('WebPath') ."/Ticket/Attachment",
     &>
 % }
 

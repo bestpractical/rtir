@@ -57,6 +57,7 @@ my $id = $Ticket->Id;
         EncryptionPath =>  RT::IR->HREFTo("Crypt.html"),
         (($type eq "Incident") ? () : (WarnUnsigned   => 1)),
         PathPrefix     => RT->Config->Get('WebPath') ."/Ticket/",
+        AttachmentPath => RT->Config->Get('WebPath') ."/Ticket/Attachment",
 );
 
 </%INIT>
