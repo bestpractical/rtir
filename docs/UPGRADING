@@ -24,7 +24,7 @@ lose data.
 
 =item 2
 
-Upgrade your RT installation to RT 4.4.0 or newer following
+Upgrade your RT installation to RT 4.4.1 or newer following
 its upgrade instructions. Make sure you follow all of the
 steps and upgrade both the code and the database.
 
