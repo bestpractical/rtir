@@ -140,7 +140,11 @@
 </&></div>
 
 % my $ShowHistory = RT->Config->Get("ShowHistory", $session{'CurrentUser'});
-% if ($ShowHistory eq "delay") {
+% if ($ShowHistory eq "scroll") {
+    <& /Ticket/Elements/ScrollShowHistory,
+        Ticket => $Ticket
+    &>
+% } elsif ($ShowHistory eq "delay") {
     <& /Ticket/Elements/DelayShowHistory,
         Ticket => $Ticket,
         ShowHeaders => $ARGS{'ShowHeaders'},
