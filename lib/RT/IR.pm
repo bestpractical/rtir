@@ -51,7 +51,7 @@ use 5.008003;
 use strict;
 use warnings;
 
-our $VERSION = '4.0.0rc1';
+our $VERSION = '4.0.0rc2';
 
 use Scalar::Util qw(blessed);
 
