@@ -139,6 +139,17 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
         Default  => $ARGS{'Owner'} || $session{'CurrentUser'}->Id
     &></td>
 % }
+% if ( !$ticket->QueueObj->SLADisabled ) {
+  <tr class="sla">
+    <td class="label"><&|/l&>SLA</&>:</td>
+    <td class="value"><& /Elements/SelectSLA,
+        Name         => 'SLA',
+        Default      => $ARGS{SLA} || RT::SLA->GetDefaultServiceLevel(Queue => $QueueObj),
+        DefaultValue => RT::SLA->GetDefaultServiceLevel(Queue => $QueueObj) ? 0 : 1,
+        QueueObj     => $QueueObj,
+    &></td>
+  </tr>
+% }
 </tr>
 
 <& /RTIR/Elements/EditCustomFields, 

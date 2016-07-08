@@ -102,10 +102,15 @@
         Constituency => RT::IR->ConstituencyFor($Ticket)
     &></td>
   </tr>
-
-
-
-
+% if ( !$Ticket->QueueObj->SLADisabled ) {
+  <tr class="sla">
+    <td class="label"><&|/l&>SLA</&>:</td>
+    <td class="value"><& /Elements/SelectSLA,
+        Name => 'SLA',
+        Default => loc($Ticket->SLA)
+    &></td>
+  </tr>
+% }
 % if (!RT::IR->IsIncidentQueue($Ticket->QueueObj) ) {
   <tr class="incidents">
     <td class="label"><%loc("Incident")%>:</td>
