@@ -710,9 +710,9 @@ sub CustomFields {
 
     my @list;
     if ( $type ) {
-        @list = (@{ $cache{'Global'} }, @{ $cache{$type} });
+        @list = (@{ $cache{'Global'} }, @{ $cache{$type} || [] });
     } else {
-        @list = (@{ $cache{'Global'} }, map { @$_ } @cache{values %TYPE});
+        @list = (@{ $cache{'Global'} }, map { @{ $_ || [] } } @cache{values %TYPE});
     }
 
     if ( my $field = $arg{'Field'} ) {
