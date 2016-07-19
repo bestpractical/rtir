@@ -87,6 +87,12 @@
       <% $TicketObj->Status %>
     </td>
   </tr>
+% if ( !$TicketObj->QueueObj->SLADisabled ) {
+  <tr class="sla">
+    <td class="label"><&|/l&>SLA</&>:</td>
+    <td class="value"><% loc($TicketObj->SLA) %></td>
+  </tr>
+% }
   <tr>
     <td class="label"><&|/l&>Owner</&>:</td>
     <td class="value"><& /Elements/ShowUser, User => $TicketObj->OwnerObj &></td>
