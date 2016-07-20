@@ -8,7 +8,7 @@ no warnings 'once';
 
 use Module::Install::Base;
 use base 'Module::Install::Base';
-our $VERSION = '0.37';
+our $VERSION = '0.38';
 
 use FindBin;
 use File::Glob     ();
@@ -36,6 +36,13 @@ sub RTx {
                             { options => [ quotes => "none" ] } );
     }
     $self->add_metadata("x_module_install_rtx_version", $VERSION );
+
+    my $installdirs = $ENV{INSTALLDIRS};
+    for ( @ARGV ) {
+        if ( /INSTALLDIRS=(.*)/ ) {
+            $installdirs = $1;
+        }
+    }
 
     # Try to find RT.pm
     my @prefixes = qw( /opt /usr/local /home /usr /sw /usr/share/request-tracker4);
@@ -71,7 +78,13 @@ sub RTx {
 
     # Installation locations
     my %path;
-    $path{$_} = $RT::LocalPluginPath . "/$name/$_"
+    my $plugin_path;
+    if ( $installdirs && $installdirs eq 'vendor' ) {
+        $plugin_path = $RT::PluginPath;
+    } else {
+        $plugin_path = $RT::LocalPluginPath;
+    }
+    $path{$_} = $plugin_path . "/$name/$_"
         foreach @DIRS;
 
     # Copy RT 4.2.0 static files into NoAuth; insufficient for
@@ -85,7 +98,7 @@ sub RTx {
     my %index = map { $_ => 1 } @INDEX_DIRS;
     $self->no_index( directory => $_ ) foreach grep !$index{$_}, @DIRS;
 
-    my $args = join ', ', map "q($_)", map { ($_, $path{$_}) }
+    my $args = join ', ', map "q($_)", map { ($_, "\$(DESTDIR)$path{$_}") }
         sort keys %path;
 
     printf "%-10s => %s\n", $_, $path{$_} for sort keys %path;
@@ -131,6 +144,7 @@ install ::
     if ( $path{lib} ) {
         $self->makemaker_args( INSTALLSITELIB => $path{'lib'} );
         $self->makemaker_args( INSTALLARCHLIB => $path{'lib'} );
+        $self->makemaker_args( INSTALLVENDORLIB => $path{'lib'} )
     } else {
         $self->makemaker_args( PM => { "" => "" }, );
     }
@@ -138,6 +152,13 @@ install ::
     $self->makemaker_args( INSTALLSITEMAN1DIR => "$RT::LocalPath/man/man1" );
     $self->makemaker_args( INSTALLSITEMAN3DIR => "$RT::LocalPath/man/man3" );
     $self->makemaker_args( INSTALLSITEARCH => "$RT::LocalPath/man" );
+
+    # INSTALLDIRS=vendor should install manpages into /usr/share/man.
+    # That is the default path in most distributions. Need input from
+    # Redhat, Centos etc.
+    $self->makemaker_args( INSTALLVENDORMAN1DIR => "/usr/share/man/man1" );
+    $self->makemaker_args( INSTALLVENDORMAN3DIR => "/usr/share/man/man3" );
+    $self->makemaker_args( INSTALLVENDORARCH => "/usr/share/man" );
 
     if (%has_etc) {
         print "For first-time installation, type 'make initdb'.\n";
@@ -258,4 +279,4 @@ sub _load_rt_handle {
 
 __END__
 
-#line 390
+#line 428
