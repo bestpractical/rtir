@@ -32,7 +32,7 @@ requires:
   perl: 5.10.1
 resources:
   license: http://opensource.org/licenses/gpl-license.php
-version: 4.0.0rc2
+version: 4.0.0
 x_module_install_rtx_version: '0.38'
 x_requires_rt: 4.4.1
 x_rt_too_new: 4.6.0
