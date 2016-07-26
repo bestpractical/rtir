@@ -29,7 +29,7 @@ RT::Test->started_ok;
 my $agent = default_agent();
 
 {
-    my $incident_id; # block couldn't be created without incident id
+    my $incident_id; # countermeasure couldn't be created without incident id
     foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
         my $cf_name = $test_on{ $queue };
         my $cf_default = $defaults->{ $cf_name };

@@ -79,13 +79,19 @@ Attributes that had a dash '-' are converted to underscore '_' for method names.
 
 =head1 CONSTRUCTOR
 
+=over 4
+
 =item B<new(HANDLE)>
 
 Creates a new RIPE object. Attempts to parse lines from I<HANDLE>. Any
 parsing failure causes the constructor to return undef. Error messages are
 available via B<errstr>. I<HANDLE> may be a file handle or a socket.
 
+=back
+
 =head1 METHODS
+
+=over 4
 
 =item B<content()>
 
@@ -130,6 +136,8 @@ Returns 1 if no errors defined, 0 otherwise
 
 Sets/gets the debug level.
 
+=back
+
 =head1 CAVEATS
 
 =head1 AUTHOR
@@ -142,8 +150,6 @@ Sets/gets the debug level.
 =head1 SEE ALSO
 
  Net::Whois::RIPE
-
-=cut
 
 =head1 COPYRIGHT
 

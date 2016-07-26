@@ -10,7 +10,7 @@ docs/UPGRADING-2.4
 docs/UPGRADING-2.6
 docs/UPGRADING-3.0
 docs/UPGRADING-3.2
-docs/UPGRADING-3.4
+docs/UPGRADING-4.0
 etc/add_constituency.in
 etc/initialdata
 etc/logo/gif/rtir-logo-badge-3d.gif
@@ -47,13 +47,18 @@ etc/upgrade/2.6.2/content
 etc/upgrade/2.9.0/content
 etc/upgrade/3.0.0rc2/content
 etc/upgrade/3.1.0/content
+etc/upgrade/3.3.0/backcompat
 etc/upgrade/3.3.0/content
+etc/upgrade/3.3.1/content
+etc/upgrade/3.3.2/content
+etc/upgrade/3.3.3/content
+etc/upgrade/3.3.4/content
 etc/upgrade/rtir-2.4-upgrade.pl.in
 html/Callbacks/RTIR/autohandler/SuccessfulLogin
 html/Callbacks/RTIR/Elements/Header/Head
 html/Callbacks/RTIR/Elements/MakeClicky/Default
 html/Callbacks/RTIR/Elements/RT__Ticket/ColumnMap/Once
-html/Callbacks/RTIR/Elements/ShowHistory/SkipTransaction
+html/Callbacks/RTIR/Elements/ShowHistoryPage/SkipTransaction
 html/Callbacks/RTIR/Elements/ShowSearch/ModifySearch
 html/Callbacks/RTIR/Elements/Tabs/Privileged
 html/Callbacks/RTIR/Helpers/TicketHistory/ExtraShowHistoryArguments
@@ -64,12 +69,14 @@ html/Callbacks/RTIR/Ticket/Display.html/Initial
 html/RTIR/Advanced.html
 html/RTIR/c/dhandler
 html/RTIR/Create.html
+html/RTIR/CreateInQueue.html
 html/RTIR/Crypt.html
 html/RTIR/Display.html
 html/RTIR/Edit.html
 html/RTIR/EditUsername
 html/RTIR/Elements/AddWatchers
 html/RTIR/Elements/AttachReports
+html/RTIR/Elements/CreateInRTIRQueueModal
 html/RTIR/Elements/CreateTicketInQueue
 html/RTIR/Elements/DueIncidents
 html/RTIR/Elements/EditCustomFields
@@ -98,6 +105,7 @@ html/RTIR/Elements/UpdateData
 html/RTIR/Elements/UserDueIncidents
 html/RTIR/Elements/WorkWithConstituency
 html/RTIR/Forward.html
+html/RTIR/Helpers/CreateInRTIRQueueModal
 html/RTIR/Incident/BulkAbandon.html
 html/RTIR/Incident/Children/index.html
 html/RTIR/Incident/Create.html
@@ -161,7 +169,6 @@ inc/Module/Install/RTx/Runtime.pm
 inc/Module/Install/Substitute.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
-inc/unicore/Name.pm
 inc/YAML/Tiny.pm
 lib/Net/Whois/RIPE.pm
 lib/Net/Whois/RIPE.pod
@@ -192,6 +199,7 @@ lib/RT/Condition/RTIR_RequireReportActivation.pm
 lib/RT/Condition/RTIR_StaffResponse.pm
 lib/RT/IR.pm
 lib/RT/IR/Config.pm
+lib/RT/IR/ConstituencyManager.pm
 lib/RT/IR/Test.pm.in
 lib/RT/IR/Test/GnuPG.pm
 lib/RT/IR/Test/Web.pm
@@ -206,6 +214,7 @@ README
 static/css/rtir-styles.css
 static/images/RTIR/logo.png
 static/js/jquery.uncheckable-radio-0.1.js
+static/js/rtir.js
 t/000-mason-syntax.t
 t/001-basic-RTIR.t
 t/002-test-reject.t
@@ -223,11 +232,7 @@ t/articles/basics.t
 t/articles/on-create.t
 t/articles/on-update.t
 t/constituency/basics.t
-t/constituency/email.t
-t/constituency/email_outgoing.t
-t/constituency/propagation-inherit.t
-t/constituency/propagation-no.t
-t/constituency/propagation-reject.t
+t/constituency/modal.t
 t/countermeasure/pending-no-regexp.t
 t/countermeasure/pending-regexp.t
 t/countermeasure/status-basics.t
@@ -265,5 +270,5 @@ t/searches/cf.t
 t/searches/menu.t
 t/searches/simple.t
 t/tools/lookup.t
-t/upgrade/2.6.0-to-2.9.0.t
+t/upgrade/2.6.0-to-current.t
 t/walk-web.t

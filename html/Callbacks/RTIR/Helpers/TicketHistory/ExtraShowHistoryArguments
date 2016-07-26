@@ -51,11 +51,11 @@ return unless $type;
 
 my $id = $Ticket->Id;
 %$ExtraArgs = (
-        DisplayPath    => RT::IR->HREFTo("Display.html?id=$id"),
-        UpdatePath     =>  RT::IR->HREFTo("Update.html"),
+        DisplayPath    => RT::IR->HREFTo("Display.html"),
+        UpdatePath     => RT::IR->HREFTo("Update.html"),
         ForwardPath    => RT::IR->HREFTo("Forward.html"),
-        EncryptionPath =>  RT::IR->HREFTo("Crypt.html"),
-        (($type eq "Incident") ? () : (WarnUnsigned   => 1)),
+        EncryptionPath => RT::IR->HREFTo("Crypt.html"),
+        (($type eq "Incident") ? () : (WarnUnsigned => 1)),
         PathPrefix     => RT->Config->Get('WebPath') ."/Ticket/",
 );
 

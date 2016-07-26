@@ -50,7 +50,7 @@
 %# XXX TODO - this really ought to use HREFTo, but to do that
 %# we'd need to strip off the RTIR UIR prefix
 <div class="search-form">
-<form method="post" action="<% $r->path_info %>" name="BuildQuery" id="BuildQuery">
+<form method="post" action="<% RT->Config->Get('WebPath') %><% $r->path_info %>" name="BuildQuery" id="BuildQuery">
 <input type="hidden" class="hidden" name="SavedSearchId" value="<% $saved_search{'Id'} %>" />
 <input type="hidden" class="hidden" name="ResultPage" value="<% $ResultPage %>" />
 <input type="hidden" class="hidden" name="BaseQuery" value="<% $BaseQuery %>" />

@@ -87,6 +87,12 @@
       <% $TicketObj->Status %>
     </td>
   </tr>
+% if ( !$TicketObj->QueueObj->SLADisabled ) {
+  <tr class="sla">
+    <td class="label"><&|/l&>SLA</&>:</td>
+    <td class="value"><% loc($TicketObj->SLA) %></td>
+  </tr>
+% }
   <tr>
     <td class="label"><&|/l&>Owner</&>:</td>
     <td class="value"><& /Elements/ShowUser, User => $TicketObj->OwnerObj &></td>
@@ -143,7 +149,11 @@
 </&></div>
 
 % my $ShowHistory = RT->Config->Get("ShowHistory", $session{'CurrentUser'});
-% if ($ShowHistory eq "delay") {
+% if ($ShowHistory eq "scroll") {
+    <& /Ticket/Elements/ScrollShowHistory,
+        Ticket => $TicketObj
+    &>
+% } elsif ($ShowHistory eq "delay") {
     <& /Ticket/Elements/DelayShowHistory,
         Ticket => $TicketObj,
         ShowHeaders => $ARGS{'ShowHeaders'},
@@ -157,7 +167,7 @@
     <& /Elements/ShowHistory,
         Object         => $TicketObj,
         ShowHeaders    => $ARGS{'ShowHeaders'},
-        DisplayPath    => RT::IR->HREFTo("Display.html?id=$id"),
+        DisplayPath    => RT::IR->HREFTo("Display.html"),
         UpdatePath     => RT::IR->HREFTo("Update.html"),
         ForwardPath    => RT::IR->HREFTo("Forward.html"),
         EncryptionPath => RT::IR->HREFTo("Crypt.html"),

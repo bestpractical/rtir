@@ -11,7 +11,7 @@ configure_requires:
   ExtUtils::MakeMaker: 6.59
 distribution_type: module
 dynamic_config: 1
-generated_by: 'Module::Install version 1.12'
+generated_by: 'Module::Install version 1.16'
 license: gpl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -32,7 +32,7 @@ requires:
   perl: 5.10.1
 resources:
   license: http://opensource.org/licenses/gpl-license.php
-version: 3.3.HEAD
-x_module_install_rtx_version: '0.36'
-x_requires_rt: 4.2.9
-x_rt_too_new: 4.4.0
+version: 4.0.0
+x_module_install_rtx_version: '0.38'
+x_requires_rt: 4.4.1
+x_rt_too_new: 4.6.0

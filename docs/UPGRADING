@@ -24,7 +24,7 @@ lose data.
 
 =item 2
 
-Upgrade your RT installation to RT 4.4.0 or newer following
+Upgrade your RT installation to RT 4.4.1 or newer following
 its upgrade instructions. Make sure you follow all of the
 steps and upgrade both the code and the database.
 
@@ -36,7 +36,7 @@ so don't copy an old RTIR's files.
 
     RTIR 3.2 is only compatible with RT 4.2 releases.
 
-    RTIR 3.4 is only compatible with RT 4.4 releases.
+    RTIR 4.0 is only compatible with RT 4.4 releases.
 
 =item 3
 
@@ -51,7 +51,7 @@ Install the new version of RTIR. B<DO NOT> run C<make initdb>.
 
 Review all of the upgrade notes in docs/UPGRADING-*. If you were
 coming from 2.6.1, you would read UPGRADING-2.6, UPGRADING-3.0, UPGRADING-3.2,
-and UPGRADING-3.4.
+and UPGRADING-4.0.
 
 =item 6
 

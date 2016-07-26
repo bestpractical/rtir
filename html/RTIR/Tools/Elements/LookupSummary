@@ -47,12 +47,12 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox,
     title => loc($display_lifecycle) .': '. $q,
-    class => 'tickets-list-'. $Lifecycle,
+    class => 'tickets-list-'. lc(RT::IR::TicketType( Lifecycle => $Lifecycle )),
     titleright_raw => $box_actions,
     title_class => 'inverse',
 &>
 % if ( $lookup_cf_not_applies ) {
-<i><% loc("Custom field '[_1]' doesn't applies to this queue", loc($LookupType) ) %></i>
+<i><% loc("Custom field '[_1]' doesn't apply to this queue", loc($LookupType) ) %></i>
 % } else {
 <& /RTIR/Search/Elements/ShowResults,
     BaseQuery     => RT::IR->Query( Lifecycle => $Lifecycle ),
@@ -65,8 +65,7 @@
 </&>
 <%INIT>
 
-my $display_lifecycle = $Lifecycle;
-$display_lifecycle =~ s/_/ /; # TODO replace with a function in RT::IR
+my $display_lifecycle = RT::IR::FriendlyLifecycle($Lifecycle);
 
 my $lookup_cf_not_applies = 0;
 if ( $LookupType && RT::IR->CustomFields( Field => $LookupType )

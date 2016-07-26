@@ -51,7 +51,7 @@ use 5.008003;
 use strict;
 use warnings;
 
-our $VERSION = '3.3.1';
+our $VERSION = '4.0.0';
 
 use Scalar::Util qw(blessed);
 
@@ -710,9 +710,9 @@ sub CustomFields {
 
     my @list;
     if ( $type ) {
-        @list = (@{ $cache{'Global'} }, @{ $cache{$type} });
+        @list = (@{ $cache{'Global'} }, @{ $cache{$type} || [] });
     } else {
-        @list = (@{ $cache{'Global'} }, map { @$_ } @cache{values %TYPE});
+        @list = (@{ $cache{'Global'} }, map { @{ $_ || [] } } @cache{values %TYPE});
     }
 
     if ( my $field = $arg{'Field'} ) {
