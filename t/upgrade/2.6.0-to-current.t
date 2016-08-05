@@ -14,7 +14,6 @@ BEGIN { unless ( -d "../rt/etc/upgrade/" ) {
 } }
 
 use RT::IR::Test tests => undef;
-use Sort::Versions;
 
 {
     RT::IR::Test->import_snapshot( 'rtir-2.6.after-rt-upgrade.sql' );
@@ -22,9 +21,9 @@ use Sort::Versions;
     # upgrade database for RT 4.2.0 on
     {
         my @versions;
-        for my $version (sort { versioncmp($a, $b) } map { m{upgrade/([\w.]+)/} && $1 } glob('../rt/etc/upgrade/4.*/')) {
-            next if versioncmp($version, '4.2.0') == -1;
-            next if versioncmp($version, $RT::VERSION) == 1;
+        for my $version (sort { RT::Handle::cmp_version($a, $b) } map { m{upgrade/([\w.]+)/} && $1 } glob('../rt/etc/upgrade/4.*/')) {
+            next if RT::Handle::cmp_version($version, '4.2.0') == -1;
+            next if RT::Handle::cmp_version($version, $RT::VERSION) == 1;
             push @versions, $version;
         }
 
@@ -35,8 +34,8 @@ use Sort::Versions;
     # upgrade database for RTIR 2.6.0 on
     {
         my @versions;
-        for my $version (sort { versioncmp($a, $b) } map { m{upgrade/([\w.]+)/} && $1 } glob('etc/upgrade/*/')) {
-            next if versioncmp($version, '2.6.0') == -1;
+        for my $version (sort { RT::Handle::cmp_version($a, $b) } map { m{upgrade/([\w.]+)/} && $1 } glob('etc/upgrade/*/')) {
+            next if RT::Handle::cmp_version($version, '2.6.0') == -1;
 
             push @versions, $version;
         }
