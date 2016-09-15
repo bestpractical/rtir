@@ -64,6 +64,8 @@
 <input type="hidden" name="All" value="<% $All %>" />
 <input type="hidden" name="Query" value="<% $Query %>" />
 
+% $m->callback(CallbackName => 'AfterHidden', Ticket => $IncidentObj );
+
 <& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
 <h2><&|/l&>Reporters</&></h2>
