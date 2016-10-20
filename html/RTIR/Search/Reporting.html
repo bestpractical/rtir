@@ -45,42 +45,123 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<%init>
+my $default_value = {
+    Query => RT::IR->ActiveQuery( Lifecycle => $ARGS{Lifecycle} ) || RT::IR->Query( Lifecycle => $ARGS{Lifecycle}) || 'id > 0',
+    GroupBy => ['Status'],
+    ChartStyle => 'bar+table+sql',
+    ChartFunction => ['COUNT'],
+};
+    
+$m->callback( ARGSRef => \%ARGS, CallbackName => 'Initial' );
+
+my $title = loc( "Grouped search results");
+
+my @search_fields = qw(Query GroupBy ChartStyle ChartFunction Width Height);
+my $saved_search = $m->comp( '/Widgets/SavedSearch:new',
+    SearchType   => 'Chart',
+    SearchFields => [@search_fields],
+);
+
+my @actions = $m->comp( '/Widgets/SavedSearch:process',
+    args     => \%ARGS,
+    defaults => $default_value,
+    self     => $saved_search,
+);
+
+my %query;
+
+{
+    if ($saved_search->{'CurrentSearch'}->{'Object'}) {
+        foreach my $search_field (@{ $saved_search->{'SearchFields'} }) {
+            $query{$search_field} = $saved_search->{'CurrentSearch'}->{'Object'}->Content->{$search_field};
+        }
+    }
+
+    my $current = $session{'CurrentSearchHash'};
+
+    my @session_fields = qw(
+        Lifecycle
+        Query
+        SavedChartSearchId
+        SavedSearchDescription
+        SavedSearchLoad
+        SavedSearchLoadButton
+        SavedSearchOwner
+    );
+
+    for(@session_fields) {
+        $query{$_} = $DECODED_ARGS->{$_} unless defined $query{$_};
+        $query{$_} = $current->{$_} unless defined $query{$_};
+    }
+
+    if ($DECODED_ARGS->{'SavedSearchLoadSubmit'}) {
+        $query{'SavedChartSearchId'} = $DECODED_ARGS->{'SavedSearchLoad'};
+    }
+
+    if ($DECODED_ARGS->{'SavedSearchSave'}) {
+        $query{'SavedChartSearchId'} = $saved_search->{'SearchId'};
+    }
+
+}
+
+foreach (@search_fields) {
+    if ( ref $default_value->{$_} ) {
+        $query{$_} = ref $ARGS{$_} ? $ARGS{$_} : [ $ARGS{$_} ];
+        $query{$_} = $default_value->{$_}
+            unless defined $query{$_} && defined $query{$_}[0];
+    }
+    else {
+        $query{$_} = ref $ARGS{$_} ? $ARGS{$_} : $ARGS{$_};
+        $query{$_} = $default_value->{$_}
+            unless defined $query{$_};
+    }
+}
+
+RT->Logger->debug("query is " . $query{Query});
+
+$m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
+
+</%init>
 <& /Elements/Header, Title => $title &>
-<& /Elements/Tabs &>
-<& /Elements/ListActions &>
+<& /Elements/Tabs, QueryArgs => \%query &>
+<& /Elements/ListActions, actions => \@actions &>
 
-% if ( $ShowChart ) {
+% $m->callback( ARGSRef => \%ARGS, CallbackName => 'BeforeChart' );
+
 <& /Search/Elements/Chart, %ARGS &>
-% }
 
-<form method="get" action="<% RT::IR->HREFTo("Search/Reporting.html")%>">
-% my %hiddens = (Lifecycle => $Lifecycle, Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order);
-% while ( my ($key, $val) = each %hiddens ) {
-% next unless defined $val;
-<input type="hidden" class="hidden" name="<% $key %>" value="<% $val %>" />
-% }
+% $m->callback( ARGSRef => \%ARGS, CallbackName => 'AfterChart' );
+
+<div class="chart-meta">
+<div class="chart-type">
+
+<form method="get" action="<% RT->Config->Get('WebPath') %>/RTIR/Search/Reporting.html">
+<input type="hidden" class="hidden" name="Lifecycle" value="<% $query{Lifecycle} %>" />
+<input type="hidden" class="hidden" name="Query" value="<% $query{Query} %>" />
+<input type="hidden" class="hidden" name="SavedChartSearchId" value="<% $saved_search->{SearchId} || 'new' %>" />
 
 <&| /Widgets/TitleBox, title => loc('Group by'), class => "chart-group-by" &>
 <fieldset><legend><% loc('Group tickets by') %></legend>
 <& /Search/Elements/SelectGroupBy,
     Name => 'GroupBy',
-    Query => $ARGS{Query},
-    Default => $GroupBy[0],
+    Query => $query{Query},
+    Default => $query{'GroupBy'}[0],
     &>
 </fieldset>
 <fieldset><legend><% loc('and then') %></legend>
 <& /Search/Elements/SelectGroupBy,
     Name => 'GroupBy',
-    Query => $ARGS{Query},
-    Default => $GroupBy[1],
+    Query => $query{Query},
+    Default => $query{'GroupBy'}[1] // q{},
     ShowEmpty => 1,
     &>
 </fieldset>
 <fieldset><legend><% loc('and then') %></legend>
 <& /Search/Elements/SelectGroupBy,
     Name => 'GroupBy',
-    Query => $ARGS{Query},
-    Default => $GroupBy[2],
+    Query => $query{Query},
+    Default => $query{'GroupBy'}[2] // q{},
     ShowEmpty => 1,
     &>
 </fieldset>
@@ -89,66 +170,62 @@
 <&| /Widgets/TitleBox, title => loc("Calculate"), class => "chart-calculate" &>
 
 <fieldset><legend><% loc('Calculate values of') %></legend>
-<& /Search/Elements/SelectChartFunction, Default => $ChartFunction[0] &>
+<& /Search/Elements/SelectChartFunction, Default => $query{'ChartFunction'}[0] &>
 </fieldset>
 <fieldset><legend><% loc('and then') %></legend>
-<& /Search/Elements/SelectChartFunction, Default => $ChartFunction[1], ShowEmpty => 1 &>
+<& /Search/Elements/SelectChartFunction, Default => $query{'ChartFunction'}[1] // q{}, ShowEmpty => 1 &>
 </fieldset>
 <fieldset><legend><% loc('and then') %></legend>
-<& /Search/Elements/SelectChartFunction, Default => $ChartFunction[2], ShowEmpty => 1 &>
+<& /Search/Elements/SelectChartFunction, Default => $query{'ChartFunction'}[2] // q{}, ShowEmpty => 1 &>
 </fieldset>
 
 </&>
 
 <&| /Widgets/TitleBox, title => loc('Picture'), class => "chart-picture" &>
-<label><% loc('Style') %>: <& /Search/Elements/SelectChartType, Default => $ChartStyle, Name => 'ChartStyle' &></label>
-<label><% loc("Width") %>: <input type="text" name="Width" value="<% $Width || "" %>"> <% loc("px") %></label>
+<input name="ChartStyle" type="hidden" value="<% $query{ChartStyle} %>" />
+<label><% loc('Style') %>: <& /Search/Elements/SelectChartType, Default => $query{ChartStyle} =~ /^(pie|bar|table)\b/ ? $1 : undef &></label>
+<span class="width">
+<label><% loc("Width") %>: <input type="text" name="Width" value="<% $query{'Width'} || q{} %>"> <% loc("px") %></label>
+</span>
 <span class="height">
   &#x00d7;
-  <label><% loc("Height") %>: <input type="text" name="Height" value="<% $Height || "" %>"> <% loc("px") %></label>
+  <label><% loc("Height") %>: <input type="text" name="Height" value="<% $query{'Height'} || q{} %>"> <% loc("px") %></label>
 </span>
+<div class="include-table">
+    <input type="checkbox" name="ChartStyleIncludeTable" <% $query{ChartStyle} =~ /\btable\b/ ? 'checked="checked"' : '' |n %>> <% loc('Include data table') %>
+</div>
+<div class="include-sql">
+    <input type="checkbox" name="ChartStyleIncludeSQL" <% $query{ChartStyle} =~ /\bsql\b/ ? 'checked="checked"' : '' |n %>> <% loc('Include TicketSQL query') %>
+</div>
 </&>
 <script type="text/javascript">
-jQuery(".chart-picture [name=ChartStyle]").change(function(){
+var updateChartStyle = function() {
+    var val = jQuery(".chart-picture [name=ChartType]").val();
+    if ( val != 'table' && jQuery(".chart-picture [name=ChartStyleIncludeTable]").is(':checked') ) {
+        val += '+table';
+    }
+    if ( jQuery(".chart-picture [name=ChartStyleIncludeSQL]").is(':checked') ) {
+        val += '+sql';
+    }
+    jQuery(".chart-picture [name=ChartStyle]").val(val);
+};
+jQuery(".chart-picture [name=ChartType]").change(function(){
     var t = jQuery(this);
-    t.closest("form").find("[name=Height]").closest(".height").toggle( t.val() !== "pie" );
+    t.closest("form").find("[name=Height]").closest(".height").toggle( t.val() == 'bar' );
+    t.closest("form").find("[name=Width]").closest(".width").toggle( t.val() !== 'table' );
+    t.closest("form .chart-picture").find("div.include-table").toggle( t.val() !== 'table' );
+    updateChartStyle();
 }).change();
+
+jQuery(".chart-picture [name=ChartStyleIncludeTable]").change( updateChartStyle );
+jQuery(".chart-picture [name=ChartStyleIncludeSQL]").change( updateChartStyle );
 </script>
 
 <& /Elements/Submit, Label => loc('Update Chart'), Name => 'Update' &>
 </form>
 
-<%INIT>
-my $title = loc('Reporting');
-
-my $FullQuery;
-
-if ( $BaseQuery && $Query ) {
-    $FullQuery = join ' AND ', map "( $_ )", $BaseQuery, $Query;
-}
-else {
-    $FullQuery = $BaseQuery || $Query;
-}
-
-</%INIT>
-
-<%ARGS>
-$ShowChart      => 1
-
-@GroupBy => 'Status'
-$ChartStyle => 'bar'
-@ChartFunction => ('COUNT')
-$Description => undef
-$Width => undef
-$Height => undef
-
-$Lifecycle     => ''
-
-$BaseQuery => RT::IR->Query( Lifecycle => $Lifecycle )
-$Query     => RT::IR->ActiveQuery( Lifecycle => $Lifecycle )
-$Format    => undef
-$Rows      => 50
-$Page      => 1
-$OrderBy   => RT->Config->Get('DefaultSearchResultOrderBy')
-$Order     => RT->Config->Get('DefaultSearchResultOrder')
-</%ARGS>
+</div>
+<div class="saved-search">
+    <& /Widgets/SavedSearch:show, %ARGS, Action => 'Reporting.html', self => $saved_search, Title => loc('Saved charts') &>
+</div>
+</div>
