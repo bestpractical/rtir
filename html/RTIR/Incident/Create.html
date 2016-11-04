@@ -79,6 +79,9 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
 % if ( $Split ) {
 <input type="hidden" name="Split"        value="<% $SplitObj->id %>" />
 % }
+
+% $m->callback( CallbackName => 'AfterHidden', ARGSRef => \%ARGS );
+
 <a name="top"></a>
 
 <& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
