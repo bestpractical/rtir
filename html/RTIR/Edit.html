@@ -170,7 +170,8 @@
 my $Ticket = LoadTicket($id);
 $id = $ARGS{'id'} = $Ticket->Id;
 
-$m->callback(CallbackName => 'Initial', %ARGS, Ticket => $Ticket);
+$m->callback(CallbackName => 'Initial', %ARGS, Ticket => $Ticket,
+    ARGSRef => \%ARGS, SaveChanges => \$SaveChanges);
 
 my $Type = RT::IR::TicketType( Lifecycle => $Ticket->QueueObj->Lifecycle );
 # If it's not an RTIR ticket type, just show the 
