@@ -77,7 +77,7 @@
 % unless ( RT::IR->IsCountermeasureQueue($Ticket->QueueObj) ) {
       <% loc($Ticket->Status) %>
 % } else {
-      <& /Elements/SelectStatus,
+      <& /Ticket/Elements/SelectStatus,
           Name => 'Status',
           Object => $Ticket->QueueObj,
           DefaultValue => 0,

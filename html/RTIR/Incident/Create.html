@@ -120,7 +120,7 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
 <tr class="status">
   <td class="label"><&|/l&>Status</&>:</td>
   <td colspan="2">
-    <& /Elements/SelectStatus,
+    <& /Ticket/Elements/SelectStatus,
         Name => 'Status',
         Object => $QueueObj,
         DefaultValue => 0,
