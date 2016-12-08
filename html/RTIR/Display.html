@@ -272,6 +272,13 @@ if ( $ARGS{'MarkAsSeen'} ) {
     push @results, loc('Marked all messages as seen');
 }
 
+$m->callback(
+    CallbackName => 'BeforeDisplay',
+    TicketObj => \$Ticket,
+    Actions => \@results,
+    ARGSRef => \%ARGS,
+);
+
 # update id argument in the case we took merged or created new
 $ARGS{'id'} = $id = $Ticket->Id;
 
