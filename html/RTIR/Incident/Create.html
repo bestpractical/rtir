@@ -391,7 +391,7 @@ if ( !$checks_failure && $CreateIncident ) {
     push @results, @tmp;
 
     if( $inc_obj ) {
-        $m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Child => $ChildObj);
+        $m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Child => $ChildObj, TicketObj => $inc_obj);
 
         MaybeRedirectForResults(
             Actions   => \@results,
