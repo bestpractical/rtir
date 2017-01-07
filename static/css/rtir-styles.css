@@ -156,9 +156,38 @@ body.rtir .cftype-Select td.cflabel .type {
 }
 
 
+body.rtir .basics table.collection-as-table {
+    margin-bottom: 4px;
+}
 
 body.rtir .incidents .actions {
     text-align: right;
+    margin-bottom: 1em;
+}
+
+body.rtir .incidents .actions .button {
+    border: none;
+    padding: 0.95em;
+    padding-top: 0.2em;
+    padding-bottom: 0.2em;
+}
+
+body.rtir .incidents .actions #create-incident {
+    background: #4040a0;
+}
+
+body.rtir .incidents .actions #create-incident:hover {
+    background: #4040f0;
+    cursor: pointer;
+}
+
+body.rtir .incidents .actions #link-incident {
+    background: #316531;
+}
+
+body.rtir .incidents .actions #link-incident:hover {
+    background: #3f833f;
+    cursor: pointer;
 }
 
 body.rtir #editquery, body.rtir #editsearches {
