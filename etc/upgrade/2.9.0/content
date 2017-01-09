@@ -419,7 +419,7 @@ our @Final = (
             my $props = $search->Content;
             next unless $props && ref($props) eq 'HASH' && $props->{'Format'};
 
-            next unless $props->{'Format'} =~ s{'__CustomField\.{State}__(?:/TITLE:State)?'}{__Status__}g;
+            next unless $props->{'Format'} =~ s%'__CustomField\.\{State\}__(?:/TITLE:State)?'%__Status__%g;
 
             my ($status, $msg) = $search->SetContent( $props );
             RT->Logger->error("Couldn't update saved search: $msg")
