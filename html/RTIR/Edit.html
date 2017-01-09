@@ -266,6 +266,9 @@ if (RT::IR->IsReportQueue($Ticket->QueueObj)) {
 unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
     Abort("No permission to view ticket");
 }
+
+$Ticket->CurrentUser->AddRecentlyViewedTicket($Ticket);
+
 </%INIT>
 
 <%ARGS>

@@ -246,6 +246,8 @@ if ( !$checks_failure && $SubmitTicket ) {
     return $m->comp('/RTIR/Display.html', %ARGS);
 }
 
+$Ticket->CurrentUser->AddRecentlyViewedTicket($Ticket);
+
 </%INIT>
 
 <%ARGS>

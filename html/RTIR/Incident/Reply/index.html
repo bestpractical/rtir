@@ -258,6 +258,8 @@ my $BaseURL = RT::IR->HREFTo("Incident/Reply/?".
 
 my $candidates = RT::IR->IncidentChildren( $IncidentObj, Lifecycle => \@lifecycles )->Count;
 
+$IncidentObj->CurrentUser->AddRecentlyViewedTicket($IncidentObj);
+
 </%INIT>
 
 <%ARGS>

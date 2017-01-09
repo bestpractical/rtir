@@ -343,6 +343,8 @@ if ( defined $TicketObj->TimeLeft && $TicketObj->TimeLeft > 0 ) {
 
 my $attachments = $TicketObj->Attachments;
 
+$TicketObj->CurrentUser->AddRecentlyViewedTicket($TicketObj);
+
 </%INIT>
 
 <%ARGS>
