@@ -297,6 +297,9 @@ if (defined $Ticket->TimeLeft && $Ticket->TimeLeft > 0 ) {
 
 my $attachments = $Ticket->Attachments;
 
+$Ticket->CurrentUser->AddRecentlyViewedTicket($Ticket)
+    if $Ticket->CurrentUser->can('AddRecentlyViewedTicket');
+
 </%INIT>
 
 <%ARGS>
