@@ -24,10 +24,10 @@ $m->submit_form(
     button    => 'DoSearch',
 );
 
-$m->content_contains( 'Spam Incident', 'has spam incident' );
+like($m->dom->at('table.ticket-list')->all_text, qr/Spam Incident/, 'has spam incident' );
 # failure mode is that the CF isn't added and so we find all incidents
 # we should only be finding Queue = 'Incidents' and CF.Classification = 'Spam'
-$m->content_lacks( 'Ham Incident', 'has not found the ham incident' );
+unlike($m->dom->at('table.ticket-list')->all_text, qr/Ham Incident/, 'has not found the ham incident' );
 
 undef $m;
 done_testing;

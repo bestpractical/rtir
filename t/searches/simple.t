@@ -19,11 +19,11 @@ my $agent = default_agent();
         $ir_id, { Subject => 'test inc' },
     );
     $agent->get_ok( '/RTIR/index.html?q=test%40example.com' );
-    $agent->content_like(qr{test inc});
-    $agent->content_unlike(qr{test ir});
+    like($agent->dom->at('table.ticket-list')->all_text, qr{test inc});
+    unlike($agent->dom->at('table.ticket-list')->all_text, qr{test ir});
 
     $agent->get_ok( '/RTIR/index.html?q=192.168.1.1' );
-    $agent->content_like(qr{test ir});
+    like($agent->dom->at('table.ticket-list')->all_text, qr{test ir});
 
     $agent->get_ok( "/RTIR/index.html?q=$inc_id" );
     is($agent->uri,$agent->rt_base_url."RTIR/Incident/Display.html?id=$inc_id","Directed to the Incident Page");
