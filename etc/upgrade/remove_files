@@ -1,0 +1,9 @@
+package Module::Install::RTx;
+
+@remove_files = (
+    # RTIR 4.0.1
+    'html/Callbacks/RTIR/Elements/EditCustomField/EditComponentName',
+);
+
+1;
+
