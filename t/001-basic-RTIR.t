@@ -40,6 +40,14 @@ $agent->LinkChildToIncident( $report, $second_incident_id);
 
 # TODO: verify in DB that report has 1 parent, and the right parent
 
+# Confirm we show the rich text editor for Incident comment since that is now
+# default for RT
+diag("Incident comment loaded rich text editor");
+{
+    ok($agent->display_ticket( $first_incident_id ), "Displayed incident ticket");
+    $agent->follow_link_ok({text => "Comment"}, "Followed link to comment");
+    $agent->content_contains("id=\"UpdateContentType\" value=\"text/html\"", "Update content type is html");
+}
 
 
 undef $agent;
