@@ -52,7 +52,7 @@ my $default_value = {
     ChartStyle => 'bar+table+sql',
     ChartFunction => ['COUNT'],
 };
-    
+
 $m->callback( ARGSRef => \%ARGS, CallbackName => 'Initial' );
 
 my $title = loc( "Grouped search results");
@@ -117,8 +117,6 @@ foreach (@search_fields) {
             unless defined $query{$_};
     }
 }
-
-RT->Logger->debug("query is " . $query{Query});
 
 $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 
