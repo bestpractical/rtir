@@ -118,6 +118,11 @@ foreach (@search_fields) {
     }
 }
 
+use Data::Dumper;
+if ( not $query{Lifecycle} ){
+    warn "Lifecycle not found, query is: " . Dumper($query);
+}
+
 $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 
 </%init>
