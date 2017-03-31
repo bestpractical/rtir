@@ -169,7 +169,7 @@
         ForwardPath    => RT::IR->HREFTo("Forward.html"),
         EncryptionPath => RT::IR->HREFTo("Crypt.html"),
         WarnUnsigned   => 1,
-        PathPrefix     => RT::IR->HREFTo("Ticket/"),
+        PathPrefix     => RT->Config->Get('WebPath') ."/Ticket/",
     &>
 % }
 
