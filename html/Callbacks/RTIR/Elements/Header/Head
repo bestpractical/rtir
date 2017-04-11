@@ -49,7 +49,7 @@
 return unless $m->request_comp->path =~ m{^/RTIR/};
 $ARGSRef->{URL} //= RT->Config->Get('WebPath') ."/RTIR/index.html";
 $ARGSRef->{Name} //= loc("RTIR for [_1]", RT->Config->Get('rtirname'));
-$ARGSRef->{LogoURL} //= RT->Config->Get('WebPath')."/static/images/RTIR/logo.png";
+$ARGSRef->{LogoURL} //= RT->Config->Get('WebPath')."/static/images/RTIR/rtir-logo.png";
 </%init>
 <%args>
 $ARGSRef
