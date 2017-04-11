@@ -214,6 +214,7 @@ po/rtir.pot
 README
 static/css/rtir-styles.css
 static/images/RTIR/logo.png
+static/images/RTIR/rtir-logo.png
 static/js/jquery.uncheckable-radio-0.1.js
 static/js/rtir.js
 t/000-mason-syntax.t

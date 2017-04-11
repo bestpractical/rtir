@@ -49,7 +49,7 @@
 if ($m->request_comp->path =~ m{^/RTIR/}) {
     $ARGSRef->{URL} //= RT::IR->HREFTo("index.html");
     $ARGSRef->{Name} //=  RT->Config->Get('rtirname');
-    $ARGSRef->{LogoURL} //= RT->Config->Get('WebPath')."/static/images/RTIR/logo.png";
+    $ARGSRef->{LogoURL} //= RT->Config->Get('WebPath')."/static/images/RTIR/rtir-logo.png";
     push @{$ARGSRef->{BodyClass}},  'rtir';
 }
 # add rtir body class if it's a ticket timer for an RTIR ticket
