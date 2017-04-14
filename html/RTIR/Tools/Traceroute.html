@@ -50,13 +50,19 @@
 
 <div style="margin: 2em;">
 
+% my $SavedContent = '';
+
 <&| /Widgets/TitleBox,
     title => $title,
     class => 'traceroute',
 &>
+% if ($TicketObj) {
+    <button onClick="jQuery('#save-results-to-ticket').click()"><% loc('Save these results to the ticket') %></button>
+% }
 <pre>
 <%PERL>
 while (my $content = <$tr>) {
+    $SavedContent = $SavedContent . $content . "\n";
     $m->comp('/Elements/MakeClicky', content => \$content, ($TicketObj? (object => $TicketObj):()) );
     $m->out( $content );
     $m->out('<br />');
@@ -65,6 +71,21 @@ while (my $content = <$tr>) {
 </%PERL>
 </pre>
 </&>
+
+% if ($TicketObj and $SavedContent) {
+%   my $url = RT::IR->HREFTo(
+%       "Tools/Lookup.html?"
+%       . $m->comp(
+%           '/Elements/QueryString',
+%           ticket => $ticket,
+%           q => $q,
+%       )
+%   );
+    <form method="post" action="<% $url %>">
+    <input type="hidden" name="LookupResults" value="<% $SavedContent %>" />
+    <input type="submit" value="<% loc('Save these results to the ticket') %>" id="save-results-to-ticket" />
+    </form>
+% }
 
 </div>
 <%INIT>
