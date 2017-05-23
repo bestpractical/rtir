@@ -135,8 +135,8 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 <div class="chart-type">
 
 <form method="get" action="<% RT->Config->Get('WebPath') %>/RTIR/Search/Reporting.html">
-<input type="hidden" class="hidden" name="Lifecycle" value="<% $query{Lifecycle} %>" />
-<input type="hidden" class="hidden" name="Query" value="<% $query{Query} %>" />
+<input type="hidden" class="hidden" name="Lifecycle" value="<% $query{Lifecycle} // '' %>" />
+<input type="hidden" class="hidden" name="Query" value="<% $query{Query} // '' %>" />
 <input type="hidden" class="hidden" name="SavedChartSearchId" value="<% $saved_search->{SearchId} || 'new' %>" />
 
 <&| /Widgets/TitleBox, title => loc('Group by'), class => "chart-group-by" &>
