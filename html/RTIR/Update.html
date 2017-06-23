@@ -243,6 +243,13 @@ if ( !$checks_failure && $SubmitTicket ) {
 if ( !$checks_failure && $SubmitTicket ) {
     $m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Ticket => $Ticket);
 
+    # Use the custom display page for this type if it exists
+    my $RTIR_Lifecycle = RT::IR::TicketType( Lifecycle => $Ticket->QueueObj->Lifecycle );
+    if ( $RTIR_Lifecycle and $m->comp_exists("/RTIR/$RTIR_Lifecycle/Display.html") ) {
+        return $m->comp("/RTIR/$RTIR_Lifecycle/Display.html", %ARGS);
+    }
+
+    # Default display page for remaining lifecycles
     return $m->comp('/RTIR/Display.html', %ARGS);
 }
 
