@@ -68,6 +68,15 @@
 <%INIT>
 my $title = loc("Results");
 
+# Some queries, like those from the RTIR home page, won't provide Lifecycle
+if ( not $Lifecycle ){
+    my ($our, @lifecycles) = RT::IR->OurQuery( $Query );
+    if ( $our and scalar @lifecycles == 1 ) {
+        # If we found only one lifecycle, set it so we get the right Format below
+        $Lifecycle = $lifecycles[0];
+    }
+}
+
 my $Type = RT::IR::TicketType( Lifecycle => $Lifecycle ) || '';
 $Format ||= RT->Config->Get('RTIRSearchResultFormats')->{ $Type . 'Default' };
 
