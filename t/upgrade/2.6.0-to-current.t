@@ -42,6 +42,13 @@ use RT::IR::Test tests => undef;
             if $RT::VERSION =~ /-/
             && RT::Handle::cmp_version($all_versions[-2], $upgrades[-1]) == 0;
 
+        # Avoid spurious warning in 4.4.2 causing the warn test failure
+        my $old_warn = $SIG{__WARN__};
+        local $SIG{__WARN__} = sub {
+            return if $_[0] =~ /Unable to load scrip On TimeWorked Change Update User TimeWorked/;
+            goto $old_warn;
+        };
+
         my ($status, $msg) = RT::IR::Test->apply_upgrade( '../rt/etc/upgrade/', @upgrades);
         ok $status, "applied " . scalar(@upgrades) . " RT version upgrades" or diag "error: $msg";
     }
