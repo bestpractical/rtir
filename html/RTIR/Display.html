@@ -112,6 +112,9 @@
 
 <& /RTIR/Elements/ShowArticles, Ticket => $Ticket &>
 
+<& /Ticket/Elements/ShowAttachments, Ticket => $Ticket,
+   Attachments => $attachments &>
+
 </td> <td class="boxcontainer" valign="top">
 % $m->callback( %ARGS, Ticket => $Ticket, CallbackName => 'RightColumnStart' );
 
@@ -129,15 +132,6 @@
     <& /RTIR/Elements/ShowDates, Ticket => $Ticket &>
     </&>
     <br />  
-  </td>
-</tr>
-
-<tr>
-  <td class="boxcontainer" valign="top">
-    <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, 
-       Attachments => $attachments &>
-  </td>
-  <td class="boxcontainer" valign="top">
       <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket, DisplayPath => RT::IR->HREFTo("Display.html") &>
   </td>
 </tr>
