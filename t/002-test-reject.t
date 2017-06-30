@@ -141,7 +141,7 @@ diag "test that after bulk reject links to incidents are still there" if $ENV{'T
     }
 
     $agent->display_ticket( $id);
-    $agent->follow_link_ok({text => "Reports"}, "Followed 'Incident Reports' link");
+    $agent->follow_link_ok({text => "Reports", url_regex => qr/RTIR/}, "Followed 'Incident Reports' link");
     while($agent->content() !~ m{Display.html\?id=$id">$id</a>}) {
         last unless $agent->follow_link(text => 'Next');
     }
