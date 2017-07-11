@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+use Test::Warn;
 
 BEGIN { unless ( $ENV{RTIR_TEST_UPGRADE} ) {
     require Test::More;
@@ -42,7 +43,11 @@ use RT::IR::Test tests => undef;
             if $RT::VERSION =~ /-/
             && RT::Handle::cmp_version($all_versions[-2], $upgrades[-1]) == 0;
 
-        my ($status, $msg) = RT::IR::Test->apply_upgrade( '../rt/etc/upgrade/', @upgrades);
+        my ($status, $msg);
+        warnings_like {
+            ($status, $msg) = RT::IR::Test->apply_upgrade( '../rt/etc/upgrade/', @upgrades);
+        } [ qr{Unable to load scrip} ];
+
         ok $status, "applied " . scalar(@upgrades) . " RT version upgrades" or diag "error: $msg";
     }
 
