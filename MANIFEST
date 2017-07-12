@@ -166,6 +166,7 @@ inc/Module/Install/Include.pm
 inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
 inc/Module/Install/RTx.pm
+inc/Module/Install/RTx/Remove.pm
 inc/Module/Install/RTx/Runtime.pm
 inc/Module/Install/Substitute.pm
 inc/Module/Install/Win32.pm
