@@ -137,7 +137,12 @@ $server => undef
 $WhoisServer = $server unless defined $WhoisServer;
 unless ($WhoisServer) {
     return unless RT->Config->Get('RunWhoisRequestByDefault');
-    $WhoisServer = $TicketObj->QueueObj->FirstCustomFieldValue('RTIR default WHOIS server') || RT::IR->FirstWhoisServer;
+
+    $WhoisServer = RT::IR->FirstWhoisServer;
+
+    if ( $TicketObj and $TicketObj->QueueObj->FirstCustomFieldValue('RTIR default WHOIS server') ){
+        $WhoisServer = $TicketObj->QueueObj->FirstCustomFieldValue('RTIR default WHOIS server');
+    }
 }
 
 return unless $q;
