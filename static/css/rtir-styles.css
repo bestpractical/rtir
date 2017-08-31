@@ -93,26 +93,26 @@ body.rtir #ticket-create-investigation input[type=text]
     width: 90%;
 }
 
-body.rtir #ticket-create-incident .ticket-create-basics,
-body.rtir #ticket-create-investigation .ticket-create-basics
+body.sidebyside.rtir #ticket-create-incident .ticket-create-basics,
+body.sidebyside.rtir #ticket-create-investigation .ticket-create-basics
 {
     float: right;
     width: 40%;
     clear: right;
 }
 
-body.rtir #ticket-create-incident .ticket-create-details,
-body.rtir #ticket-create-investigation .ticket-create-details
+body.sidebyside.rtir #ticket-create-incident .ticket-create-details,
+body.sidebyside.rtir #ticket-create-investigation .ticket-create-details
 {
     float: left;
     width: 58%;
     clear: left;
 }
 @media (max-width: 950px) {
-    body.rtir #ticket-create-incident .ticket-create-basics,
-    body.rtir #ticket-create-investigation .ticket-create-basics,
-    body.rtir #ticket-create-incident .ticket-create-details,
-    body.rtir #ticket-create-investigation .ticket-create-details
+    body.sidebyside.rtir #ticket-create-incident .ticket-create-basics,
+    body.sidebyside.rtir #ticket-create-investigation .ticket-create-basics,
+    body.sidebyside.rtir #ticket-create-incident .ticket-create-details,
+    body.sidebyside.rtir #ticket-create-investigation .ticket-create-details
     {
         float: none;
         width: auto;
