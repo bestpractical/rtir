@@ -289,6 +289,16 @@ Home page.
 
 Set($RTIR_RedirectOnLogin, 1);
 
+=item C<$RTIR_RedirectOnSearch>
+
+If set to a true value, searches initiated on the RT search page
+that contain RTIR-related queues will redirect to the RTIR search
+page. The default is true.
+
+=cut
+
+Set($RTIR_RedirectOnSearch, 1);
+
 =item DefaultQueue
 
 By default, RT does not specify a Default Queue.
