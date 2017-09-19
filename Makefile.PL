@@ -1,3 +1,4 @@
+BEGIN { push @INC, '.' }
 use inc::Module::Install;
 
 RTx('RT-IR', { no_readme_generation => 1, remove_files => 1 });
