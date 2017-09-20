@@ -165,16 +165,14 @@ our @Final = (
             my @states = custom_field_real_values( $cf );
 
             foreach my $state ( @states ) {
-                my $values = RT::ObjectCustomFieldValues->new( $RT::SystemUser );
-                $values->Limit( FIELD => 'CustomField', VALUE => $cf->id );
-                $values->Limit( FIELD => 'Disabled', VALUE => 0 );
-                $values->Limit( FIELD => 'Content', VALUE => $state );
-                $values->Limit( FIELD => 'ObjectType', VALUE => 'RT::Ticket' );
-                $values->Columns('ObjectId');
-                $values->OrderBy();
+                my $ticket_select = "select Tickets.id from Tickets, ObjectCustomFieldValues"
+                . " where Tickets.Queue = " . $queue->Id
+                . " and ObjectCustomFieldValues.ObjectId = Tickets.id and"
+                . " ObjectCustomFieldValues.CustomField = " . $cf->Id
+                . " and ObjectCustomFieldValues.Content = '$state'";
 
                 my $res = $RT::Handle->SimpleUpdateFromSelect(
-                    'Tickets', { Status => $state }, $values->BuildSelectQuery
+                    'Tickets', { Status => $state }, $ticket_select
                 );
                 $RT::Logger->error("Couldn't update tickets: $res")
                     unless $res;
