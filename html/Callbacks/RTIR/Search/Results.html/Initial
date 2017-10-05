@@ -49,6 +49,7 @@
 $ARGSRef => {}
 </%ARGS>
 <%INIT>
+return unless RT->Config->Get('RTIR_RedirectOnSearch');
 
 # this callback redirects search results from a standard 
 # RT search results page to the RTIR search results page
