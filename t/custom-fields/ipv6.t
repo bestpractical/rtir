@@ -576,5 +576,32 @@ diag "merge ticket with the same IP";
     is( $has[0], '::ac10:1', "has value" );
 }
 
+diag "create a ticket via web with IP in error prone message" if $ENV{'TEST_VERBOSE'};
+{
+    my $content = 'Scan::Address_Scan 123.45.678.123 ffe:1900:4545:3:200:f8ff:fe21:67cf';
+    my $expected = "ffe:1900:4545:3:200:f8ff:fe21:67cf";
+
+    my $incident_id; # countermeasure couldn't be created without incident id
+    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
+        diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
+
+        my $id = $agent->create_rtir_ticket_ok(
+            $queue,
+            {
+                Subject => "test ip in message",
+                ($queue eq 'Countermeasures'? (Incident => $incident_id): ()),
+                Content => "$content",
+            },
+        );
+        $incident_id = $id if $queue eq 'Incidents';
+
+        $agent->content_like( qr/\Q$expected/, "IP on the page" );
+
+        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        $ticket->Load( $id );
+        ok( $ticket->id, 'loaded ticket' );
+        is( $ticket->FirstCustomFieldValue('IP'), $expected, 'correct value' );
+    }
+}
 undef $agent;
 done_testing();
