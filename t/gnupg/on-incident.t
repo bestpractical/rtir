@@ -43,6 +43,11 @@ diag "check that things don't work if there is no key";
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails'
         or diag "Emails' have been sent: \n". join "\n\n", @mail;
+
+    $agent->next_warning_like(qr/public key not found/) for 1 .. 2;
+    $agent->next_warning_like(qr/keyring.+created/);
+    $agent->next_warning_like(qr/public key not found/) for 1 .. 2;
+    $agent->no_leftover_warnings_ok;
 }
 
 diag 'import rt-recipient@example.com key and sign it';
@@ -84,6 +89,8 @@ diag "check that things don't work if there is no key";
 
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails';
+    $agent->next_warning_like(qr/public key not found/) for 1 .. 8;
+    $agent->no_leftover_warnings_ok;
 }
 
 undef $agent;
