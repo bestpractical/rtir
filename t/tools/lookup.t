@@ -50,7 +50,7 @@ SKIP:{
     $agent->form_name('ToolFormWhois');
     $agent->click;
     $agent->content_contains('WHOIS Results');
-    $agent->content_contains('Domain names in the .com and .net domains');
+    $agent->content_contains('No match');
 }
 }
 
