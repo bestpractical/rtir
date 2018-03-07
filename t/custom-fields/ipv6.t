@@ -576,5 +576,29 @@ diag "merge ticket with the same IP";
     is( $has[0], '::ac10:1', "has value" );
 }
 
+diag "create a ticket via web with invalid IPv6 address" if $ENV{'TEST_VERBOSE'};
+{
+    my $content = 'Scan::Address_Scan';
+
+    my $incident_id;
+    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
+        diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
+
+        my $id = $agent->create_rtir_ticket_ok(
+            $queue,
+            {
+                Subject => "test invalid IPv6 in message",
+                ($queue eq 'Countermeasures'? (Incident => $incident_id): ()),
+                Content => "$content",
+            },
+        );
+        $incident_id = $id if $queue eq 'Incidents';
+
+        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        $ticket->Load( $id );
+        ok( $ticket->id, 'loaded ticket' );
+        is( $ticket->FirstCustomFieldValue('IP'), undef, 'correct value' );
+    }
+}
 undef $agent;
 done_testing();
