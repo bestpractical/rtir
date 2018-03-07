@@ -58,5 +58,6 @@ return $m->comp(
         Lifecycle       => $ARGS{'Lifecycle'},
         NotMemberOf => $ARGS{'id'},
     ),
+    ExtraQueryParams => [ 'Lifecycle' ],
 );
 </%INIT>
