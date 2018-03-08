@@ -169,7 +169,8 @@ our @Final = (
                 . " where Tickets.Queue = " . $queue->Id
                 . " and ObjectCustomFieldValues.ObjectId = Tickets.id and"
                 . " ObjectCustomFieldValues.CustomField = " . $cf->Id
-                . " and ObjectCustomFieldValues.Content = '$state'";
+                . " and ObjectCustomFieldValues.Content = '$state'"
+                . " and ObjectCustomFieldValues.Disabled != 1";
 
                 my $res = $RT::Handle->SimpleUpdateFromSelect(
                     'Tickets', { Status => $state }, $ticket_select

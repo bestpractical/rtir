@@ -44,9 +44,14 @@ use RT::IR::Test tests => undef;
             && RT::Handle::cmp_version($all_versions[-2], $upgrades[-1]) == 0;
 
         my ($status, $msg);
+        my @expected_warnings;
+
+        push @expected_warnings, qr{Unable to load scrip}
+            if RT::Handle::cmp_version($RT::VERSION, '4.4.1') > 0;
+
         warnings_like {
             ($status, $msg) = RT::IR::Test->apply_upgrade( '../rt/etc/upgrade/', @upgrades);
-        } [ qr{Unable to load scrip} ];
+        } \@expected_warnings;
 
         ok $status, "applied " . scalar(@upgrades) . " RT version upgrades" or diag "error: $msg";
     }
