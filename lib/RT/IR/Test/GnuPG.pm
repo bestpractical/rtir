@@ -96,7 +96,7 @@ Set(\%GnuPG, (
     OutgoingMessagesFormat => 'RFC',
 ));
 Set(\%GnuPGOptions => \%{ $dumped_gnupg_options });
-Set(\@MailPlugins => qw(Auth::MailFrom Auth::Crypt));
+Set(\@MailPlugins => qw(Auth::MailFrom));
 };
 
 }

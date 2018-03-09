@@ -3,6 +3,8 @@ use warnings;
 
 use RT::IR::Test tests => undef;
 
+RT->Config->Set( LogToFile => 'info' );
+
 RT::Test->started_ok;
 my $agent = default_agent();
 
@@ -20,13 +22,14 @@ diag "Test Lookup page directly";
     $agent->get_ok("/RTIR/Tools/Lookup.html", "Loaded Lookup page");
 
 SKIP:{
-    skip "No network", 2 if $no_network;
+    skip "No network", 3 if $no_network;
     $agent->form_name('ToolFormWhois');
     $agent->field('q', 'mit.edu');
     $agent->select('WhoisServer', 'IANA');
     $agent->click;
     $agent->content_contains('WHOIS Results');
     $agent->content_contains('IANA WHOIS server');
+    $agent->next_warning_like( qr/Asked to run a full text search from Lookup\.html/ );
 }
 }
 
@@ -50,11 +53,9 @@ SKIP:{
     $agent->form_name('ToolFormWhois');
     $agent->click;
     $agent->content_contains('WHOIS Results');
-    $agent->content_contains('Domain names in the .com and .net domains');
+    $agent->content_contains('No match');
 }
 }
-
-undef $agent;
 
 undef $agent;
 done_testing;

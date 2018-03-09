@@ -99,8 +99,8 @@ if ( $MergeTicket ) {
         }
 
         if (RT::IR->StrictConstituencyLinking) {
-        if (RT::IR->ConstituencyFor($Ticket) 
-            != RT::IR->ConstituencyFor($MergeTicket)) {
+        if ( (RT::IR->ConstituencyFor($Ticket) // '')
+            ne (RT::IR->ConstituencyFor($MergeTicket) // '') ) {
             push @results, 
             loc("Merge failed: Ticket #[_1] is associated with a different constituency", 
                 $MergeTicket->Id );
