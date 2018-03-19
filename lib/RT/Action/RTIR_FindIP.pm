@@ -73,8 +73,8 @@ my $IPv4_re = qr[
 ]x;
 
 my $IPv6_mask_re = qr{12[0-8]|1[01][0-9]|[1-9]?[0-9]};
-my $IPv6_prefix_check_re = qr{(?<![0-9a-fA-F:.])};
-my $IPv6_sufix_check_re = qr{(?!(?:\:{0,2}|\.)[0-9a-fA-F])};
+my $IPv6_prefix_check_re = qr{(?<![0-9a-zA-Z:.])};
+my $IPv6_sufix_check_re = qr{(?!\.?[0-9a-zA-Z:])};
 my $IPv6_re = qr[
     $IPv6_prefix_check_re
     ($Regexp::IPv6::IPv6_re)
