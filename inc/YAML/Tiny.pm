@@ -2,16 +2,12 @@
 use 5.008001; # sane UTF-8 support
 use strict;
 use warnings;
-package YAML::Tiny;
-BEGIN {
-  $YAML::Tiny::AUTHORITY = 'cpan:ADAMK';
-}
-# git description: v1.61-3-g0a82466
-$YAML::Tiny::VERSION = '1.62';
+package YAML::Tiny; # git description: v1.72-7-g8682f63
 # XXX-INGY is 5.8.1 too old/broken for utf8?
 # XXX-XDG Lancaster consensus was that it was sufficient until
 # proven otherwise
 
+our $VERSION = '1.73';
 
 #####################################################################
 # The YAML::Tiny API.
@@ -300,10 +296,11 @@ Did you decode with lax ":utf8" instead of strict ":encoding(UTF-8)"?
             }
         }
     };
-    if ( ref $@ eq 'SCALAR' ) {
-        $self->_error(${$@});
-    } elsif ( $@ ) {
-        $self->_error($@);
+    my $err = $@;
+    if ( ref $err eq 'SCALAR' ) {
+        $self->_error(${$err});
+    } elsif ( $err ) {
+        $self->_error($err);
     }
 
     return $self;
@@ -377,7 +374,7 @@ sub _load_scalar {
     while ( @$lines ) {
         $lines->[0] =~ /^(\s*)/;
         last unless length($1) >= $indent->[-1];
-        push @multiline, substr(shift(@$lines), length($1));
+        push @multiline, substr(shift(@$lines), $indent->[-1]);
     }
 
     my $j = (substr($string, 0, 1) eq '>') ? ' ' : "\n";
@@ -515,6 +512,10 @@ sub _load_hash {
             die \"YAML::Tiny failed to classify line '$lines->[0]'";
         }
 
+        if ( exists $hash->{$key} ) {
+            warn "YAML::Tiny found a duplicate key '$key' in line '$lines->[0]'";
+        }
+
         # Do we have a value?
         if ( length $lines->[0] ) {
             # Yes
@@ -569,10 +570,8 @@ sub _dump_file {
     if ( _can_flock() ) {
         # Open without truncation (truncate comes after lock)
         my $flags = Fcntl::O_WRONLY()|Fcntl::O_CREAT();
-        sysopen( $fh, $file, $flags );
-        unless ( $fh ) {
-            $self->_error("Failed to open file '$file' for writing: $!");
-        }
+        sysopen( $fh, $file, $flags )
+            or $self->_error("Failed to open file '$file' for writing: $!");
 
         # Use no translation and strict UTF-8
         binmode( $fh, ":raw:encoding(UTF-8)");
@@ -828,9 +827,10 @@ sub _can_flock {
 #####################################################################
 # Use Scalar::Util if possible, otherwise emulate it
 
+use Scalar::Util ();
 BEGIN {
     local $@;
-    if ( eval { require Scalar::Util; Scalar::Util->VERSION(1.18); } ) {
+    if ( eval { Scalar::Util->VERSION(1.18); } ) {
         *refaddr = *Scalar::Util::refaddr;
     }
     else {
@@ -852,8 +852,7 @@ END_PERL
     }
 }
 
-
-
+delete $YAML::Tiny::{refaddr};
 
 1;
 
@@ -870,4 +869,4 @@ END_PERL
 
 __END__
 
-#line 1488
+#line 1487
