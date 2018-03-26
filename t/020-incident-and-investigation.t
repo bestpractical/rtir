@@ -42,6 +42,10 @@ $agent->display_ticket( $ir);
     );
     # regression test
     $agent->content_unlike(qr{<li>Custom field (\d+) does not apply to this object</li>}, "Custom field allowed");
+    for ( 1 .. 4 ) {
+        $agent->next_warning_like( qr/Invalid context object RT::Queue \(5\) for CF \d+; skipping CF/,
+            "Investigations queue doesn't have incidents' all CFs" );
+    }
 
     my $inc = RT::Ticket->new( $RT::SystemUser );
     $inc->Load( $inc_id );
