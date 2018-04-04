@@ -161,7 +161,7 @@ jQuery( function() {
 my $Ticket = LoadTicket($id);
 $id = $ARGS{'id'} = $Ticket->Id;
 
-$m->callback(CallbackName => 'Initial', %ARGS, Ticket => $Ticket);
+$m->callback(CallbackName => 'Initial', ARGSRef => \%ARGS, Ticket => $Ticket);
 
 my $title = loc("Update [_1] #[_2] ([_3])",  RT::IR::TicketType( Ticket => $Ticket ), $id, $Ticket->Subject);
 
