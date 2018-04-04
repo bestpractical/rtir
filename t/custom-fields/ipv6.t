@@ -24,6 +24,10 @@ my %test_set = (
     'abcd:' x 7 . 'abcd' => 'abcd:' x 7 . 'abcd',
     'abcd::034'          => 'abcd:' . '0000:' x 6 . '0034',
     '::192.168.1.1'      => '0000:' x 6 . 'c0a8:0101',
+
+    # A trailing dot is allowed since it's commonly used as end of sentence,
+    'abcd::034.'         => 'abcd::34',
+    'abcd::192.168.1.1.' => 'abcd::c0a8:101',
 );
 my %test_cidr = (
     'abcd:' x 7 . 'abcd/32' => 'abcd:abcd'. ':0000' x 6 .'-'. 'abcd:abcd'. ':ffff' x 6,
@@ -44,6 +48,9 @@ my %abbrev_of = (
 
     '0000:'x6 .'ac10:0001' => '::ac10:1',
     '0000:'x6 .'ac10:0002' => '::ac10:2',
+
+    'abcd::034.'         => 'abcd::34',
+    'abcd::192.168.1.1.' => 'abcd::c0a8:101',
 );
 
 my $cf;
@@ -576,5 +583,39 @@ diag "merge ticket with the same IP";
     is( $has[0], '::ac10:1', "has value" );
 }
 
+diag "create a ticket via web with invalid IPv6 addresses" if $ENV{'TEST_VERBOSE'};
+
+my @invalid = (
+    'Scan::Address_Scan', 'scan::add', 'z::a',  'a::z',
+    '::z',                'Foo::Bar',  'Foo::', '::Bar',
+    'RT::',               'RT::IR',
+
+    # A trailing dot is allowed but not if there are words right after it
+    'abcd::34.3', 'abcd::192.168.1.2.3', '::add.z',
+);
+
+
+for my $content ( @invalid ) {
+
+    my $incident_id;
+    foreach my $queue( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
+        diag "create a ticket in the '$queue' queue" if $ENV{'TEST_VERBOSE'};
+
+        my $id = $agent->create_rtir_ticket_ok(
+            $queue,
+            {
+                Subject => "test invalid IPv6 in message",
+                ($queue eq 'Countermeasures'? (Incident => $incident_id): ()),
+                Content => "$content",
+            },
+        );
+        $incident_id = $id if $queue eq 'Incidents';
+
+        my $ticket = RT::Ticket->new( $RT::SystemUser );
+        $ticket->Load( $id );
+        ok( $ticket->id, 'loaded ticket' );
+        is( $ticket->FirstCustomFieldValue('IP'), undef, 'correct value' );
+    }
+}
 undef $agent;
 done_testing();
