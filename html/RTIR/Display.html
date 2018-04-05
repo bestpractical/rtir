@@ -131,6 +131,7 @@
     &>
     <& /RTIR/Elements/ShowDates, Ticket => $Ticket &>
     </&>
+% $m->callback( %ARGS, Ticket => $Ticket, CallbackName => 'BeforeRequestor' );
     <br />  
       <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket, DisplayPath => RT::IR->HREFTo("Display.html") &>
   </td>
