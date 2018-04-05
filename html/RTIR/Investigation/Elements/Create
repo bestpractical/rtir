@@ -211,7 +211,10 @@ email addresses. These people <b>will</b> receive future updates.)</&></font></i
 <& /RTIR/Create.html:AttachmentsForm &>
 % }
 
-</table></&></div>
+</table></&>
+% $m->callback( CallbackName => 'AfterTable', ARGSRef => \%ARGS, TicketObj  => $ticket,
+%    QueueObj   => $QueueObj, DefaultsFrom => $TicketObj );
+</div>
 
 <%ARGS>
 $NamePrefix => ''
