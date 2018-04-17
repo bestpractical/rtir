@@ -161,8 +161,7 @@ body.rtir .basics table.collection-as-table {
 }
 
 body.rtir .incidents .actions {
-    text-align: right;
-    margin-bottom: 1em;
+    float: right;
 }
 
 body.rtir .incidents .actions .button {
