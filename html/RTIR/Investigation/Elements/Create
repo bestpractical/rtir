@@ -304,12 +304,10 @@ if ( ($DefaultsNamePrefix||'') ne $NamePrefix ) {
         Abort('Queue not found');
     }
 
-    my $prefix = 'Object-RT::Ticket--CustomField-';
-
     my %cf_map;
     foreach my $k( keys %ARGS ) {
-        next unless $k =~ /^\Q$prefix\E(\d+)(.*?)$/;
-        my ($cf_id, $rest) = ($1, $2);
+        next unless $k =~ /^(Object-RT::Ticket--CustomField(?::\w+)?-)(\d+)(.*?)$/;
+        my ($prefix, $cf_id, $rest) = ($1, $2, $3);
 
         unless ( exists $cf_map{ $cf_id } ) {
             my $src_cf = $queue->LoadCustomFieldByIdentifier($cf_id);
