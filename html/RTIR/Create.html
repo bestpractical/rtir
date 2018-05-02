@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -355,6 +355,9 @@
 </form>
 
 <%INIT>
+# Make sure even a single checkbox value becomes an arrayref
+$ARGS{'SkipNotification'} = \@SkipNotification;
+
 # XXX TODO remove this code that maps lifecycles to queues
 if ($Lifecycle && ! $Queue) {
     $Queue=ucfirst($Lifecycle);
@@ -513,7 +516,7 @@ unless ( $skip_create || $checks_failure ) {
     $ARGS{'new-MemberOf'} = join ' ', @Incident;
     $m->callback(CallbackName => 'BeforeDisplay', Ticket => $SplitObj, ARGSRef => \%ARGS);
     push @{ $session{'Actions'}{''} ||= [] }, @results;
-    return $m->comp( 'Display.html', %ARGS, SkipNotification => \@SkipNotification );
+    return $m->comp( 'Display.html', %ARGS );
 }
 
 unshift @results, loc("Creation failed:")

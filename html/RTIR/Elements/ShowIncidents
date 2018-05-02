@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -57,10 +57,10 @@
 &>
 <div class="actions">
 % unless ( $action ) {
-<a class="button" id="link-incident" href="<% RT::IR->HREFTo('Link/ToIncident/?id='. $id ) %>">Link</a>
-<a class="button" id="create-incident" href="<% RT::IR->HREFTo('CreateInQueue.html?Lifecycle=' . RT::IR->lifecycle_incident . '&Child='. $id ) %>">New</a>
+<a class="button button-small" id="link-incident" href="<% RT::IR->HREFTo('Link/ToIncident/?id='. $id ) %>">Link</a>
+<a class="button button-small" id="create-incident" href="<% RT::IR->HREFTo('CreateInQueue.html?Lifecycle=' . RT::IR->lifecycle_incident . '&Child='. $id ) %>">New</a>
 % } elsif ( $action ne 'No' ) {
-<a class="button" href="<% RT::IR->HREFTo('Display.html?Action='. $action.'&id='. $id) %>"><% loc( $action ) %></a>
+<a class="button button-small" href="<% RT::IR->HREFTo('Display.html?Action='. $action.'&id='. $id) %>"><% loc( $action ) %></a>
 % }
 </div>
 </span>

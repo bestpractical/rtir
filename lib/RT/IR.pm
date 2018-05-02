@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -651,7 +651,14 @@ sub WhoisLookup {
     $port = 43 unless ($port || '') =~ /^\d+$/;
 
     use Net::Whois::RIPE;
-    my $whois = Net::Whois::RIPE->new( $host, Port => $port, Debug => 1 );
+    my $debug;
+    for my $log_config ( qw/LogToSyslog LogToSTDERR LogToFile/ ) {
+        if ( ( RT->Config->Get( $log_config ) // '' ) eq 'debug' ) {
+            $debug = 1;
+            last;
+        }
+    }
+    my $whois = Net::Whois::RIPE->new( $host, Port => $port, Debug => $debug || 0 );
     my $iterator;
     $iterator = $whois->query_iterator( $args{'Query'} )
         if $whois;

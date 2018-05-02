@@ -161,15 +161,11 @@ body.rtir .basics table.collection-as-table {
 }
 
 body.rtir .incidents .actions {
-    text-align: right;
-    margin-bottom: 1em;
+    float: right;
 }
 
 body.rtir .incidents .actions .button {
     border: none;
-    padding: 0.95em;
-    padding-top: 0.2em;
-    padding-bottom: 0.2em;
 }
 
 body.rtir .incidents .actions #create-incident {
@@ -199,4 +195,8 @@ body.rtir .sf-menu a.sf-with-ul {
 
 body.rtir table.lookup-tool-forms td {
     vertical-align: middle;
+}
+
+body.rtir .button.button-small {
+    padding: 0.2em 0.5em;
 }

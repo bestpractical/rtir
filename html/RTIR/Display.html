@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -112,6 +112,9 @@
 
 <& /RTIR/Elements/ShowArticles, Ticket => $Ticket &>
 
+<& /Ticket/Elements/ShowAttachments, Ticket => $Ticket,
+   Attachments => $attachments &>
+
 </td> <td class="boxcontainer" valign="top">
 % $m->callback( %ARGS, Ticket => $Ticket, CallbackName => 'RightColumnStart' );
 
@@ -128,16 +131,8 @@
     &>
     <& /RTIR/Elements/ShowDates, Ticket => $Ticket &>
     </&>
+% $m->callback( %ARGS, Ticket => $Ticket, CallbackName => 'BeforeRequestor' );
     <br />  
-  </td>
-</tr>
-
-<tr>
-  <td class="boxcontainer" valign="top">
-    <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, 
-       Attachments => $attachments &>
-  </td>
-  <td class="boxcontainer" valign="top">
       <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket, DisplayPath => RT::IR->HREFTo("Display.html") &>
   </td>
 </tr>

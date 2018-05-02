@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -163,7 +163,7 @@ jQuery( function() {
 my $Ticket = LoadTicket($id);
 $id = $ARGS{'id'} = $Ticket->Id;
 
-$m->callback(CallbackName => 'Initial', %ARGS, Ticket => $Ticket);
+$m->callback(CallbackName => 'Initial', %ARGS, ARGSRef => \%ARGS, Ticket => $Ticket);
 
 my $title = loc("Update [_1] #[_2] ([_3])",  RT::IR::TicketType( Ticket => $Ticket ), $id, $Ticket->Subject);
 
@@ -243,6 +243,13 @@ if ( !$checks_failure && $SubmitTicket ) {
 if ( !$checks_failure && $SubmitTicket ) {
     $m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Ticket => $Ticket);
 
+    # Use the custom display page for this type if it exists
+    my $RTIR_Lifecycle = RT::IR::TicketType( Lifecycle => $Ticket->QueueObj->Lifecycle );
+    if ( $RTIR_Lifecycle and $m->comp_exists("/RTIR/$RTIR_Lifecycle/Display.html") ) {
+        return $m->comp("/RTIR/$RTIR_Lifecycle/Display.html", %ARGS);
+    }
+
+    # Default display page for remaining lifecycles
     return $m->comp('/RTIR/Display.html', %ARGS);
 }
 

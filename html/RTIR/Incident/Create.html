@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -273,8 +273,10 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
 
 </div>
 
-</form>
+% $m->callback( CallbackName => 'FormEnd', QueueObj => $QueueObj, Constituency => $constituency,
+%    ChildObj => $ChildObj, SplitObj => $SplitObj, ARGSRef => \%ARGS );
 
+</form>
 
 <%INIT>
 my %CFDefaults;
@@ -303,7 +305,8 @@ $m->callback(
     CallbackName => 'ProcessArguments',
     ARGSRef => \%ARGS,
     Ticket => $SplitObj,
-    Child => $ChildObj
+    Child => $ChildObj,
+    CreateIncident => \$CreateIncident
 );
 
 
@@ -379,6 +382,9 @@ if ( $CreateIncident ) {
     );
 }
 
+$m->callback( CallbackName => 'BeforeCreateRedirect', ARGSRef => \%ARGS,
+    Child => $ChildObj, results => \@results, checks_failure => \$checks_failure );
+
 if ( !$checks_failure && $CreateIncident ) {
     my ($inc_obj, @tmp) = $m->comp(
         '/RTIR/Investigation/Elements/Create:Process',
@@ -391,7 +397,8 @@ if ( !$checks_failure && $CreateIncident ) {
     push @results, @tmp;
 
     if( $inc_obj ) {
-        $m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Child => $ChildObj, TicketObj => $inc_obj);
+        $m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Child => $ChildObj, TicketObj => $inc_obj,
+            results => \@results );
 
         MaybeRedirectForResults(
             Actions   => \@results,

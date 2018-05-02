@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -96,7 +96,7 @@ Set(\%GnuPG, (
     OutgoingMessagesFormat => 'RFC',
 ));
 Set(\%GnuPGOptions => \%{ $dumped_gnupg_options });
-Set(\@MailPlugins => qw(Auth::MailFrom Auth::Crypt));
+Set(\@MailPlugins => qw(Auth::MailFrom));
 };
 
 }
