@@ -61,12 +61,14 @@ diag "clicky email" if $ENV{'TEST_VERBOSE'};
       )
     {
         for my $email (
-            'foo@example.com',
+            'foo@example.com',  'foo-bar+baz@example.me',
             'foo@example.mobi', 'foo@localhost.localhost',
             )
         {
             diag "test valid email $email" if $ENV{TEST_VERBOSE};
             my ( $name, $domain ) = split /@/, $email, 2;
+            my $uri_escaped_email = $email;
+            RT::Interface::Web::EscapeURI(\$uri_escaped_email);
 
             my $id =
               $create_method_ref->( { Subject => 'clicky email', Content => $email } );
@@ -77,7 +79,7 @@ diag "clicky email" if $ENV{'TEST_VERBOSE'};
             my $email_link = $agent->find_link( url_regex => qr/\Qq=$email\E/, text_regex => qr/\Qlookup email\E$/ );
             my $domain_link = $agent->find_link( text_regex => qr/^\Qlookup "$domain"\E$/i );
 
-            my $investigate_link = $agent->find_link( url_regex => qr/\QRequestors=$email\E/,
+            my $investigate_link = $agent->find_link( url_regex => qr/\QRequestors=$uri_escaped_email\E/,
                                                    text_regex => qr/^\Qinvestigate to\E$/i ) if $is_incident;
 
             if ( $clicky{'email'} ) {
@@ -91,7 +93,7 @@ diag "clicky email" if $ENV{'TEST_VERBOSE'};
                 # Then test taht the Correspondents field is populated with the given email address.
                 if ( $is_incident ) {
                     ok( $investigate_link, "found investigate link" );
-                    ok( $investigate_link->url =~ /(?<!\w)\QRequestors=$email\E(?!\w)/,
+                    ok( $investigate_link->url =~ /(?<!\w)\QRequestors=$uri_escaped_email\E(?!\w)/,
                         'url '.$investigate_link->url.' has Requestors email' );
                     $agent->follow_link_ok( { url => $investigate_link->url }, 'followed "investigate to" link' );
                     $agent->title_is( 'Select Queue for New Investigation',
