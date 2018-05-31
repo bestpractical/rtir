@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -143,6 +143,7 @@
 % }
 
 <& /RTIR/Elements/ShowArticles, Ticket => $TicketObj &>
+% $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'RightColumnEnd' );
 
 </td></tr></table>
 
@@ -171,7 +172,7 @@
         UpdatePath     => RT::IR->HREFTo("Update.html"),
         ForwardPath    => RT::IR->HREFTo("Forward.html"),
         EncryptionPath => RT::IR->HREFTo("Crypt.html"),
-        PathPrefix     => RT::IR->HREFTo("Ticket/")
+        PathPrefix     => RT->Config->Get('WebPath') ."/Ticket/",
     &>
 % }
 
@@ -342,6 +343,9 @@ if ( defined $TicketObj->TimeLeft && $TicketObj->TimeLeft > 0 ) {
 }
 
 my $attachments = $TicketObj->Attachments;
+
+$TicketObj->CurrentUser->AddRecentlyViewedTicket($TicketObj)
+    if $TicketObj->CurrentUser->can('AddRecentlyViewedTicket');
 
 </%INIT>
 

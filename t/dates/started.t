@@ -79,7 +79,12 @@ diag "started date of an IR" if $ENV{'TEST_VERBOSE'};
     my $ir = RT::Ticket->new( $RT::SystemUser );
     $ir->Load( $ir_id );
     is($ir->id, $ir_id, 'loaded ir');
-    ok( abs($ir->StartedObj->Unix - $ir->CreatedObj->Unix) <= 2, 'for an IR started date == linking to inc time');
+    ok(
+        abs( $ir->StartedObj->Unix - $ir->CreatedObj->Unix ) <= 4,
+        'for an IR started date == linking to inc time: '
+          . $ir->StartedObj->Unix . ' VS '
+          . $ir->CreatedObj->Unix
+    );
 }
 
 diag "started date of a countermeasure" if $ENV{'TEST_VERBOSE'};

@@ -53,6 +53,7 @@ etc/upgrade/3.3.1/content
 etc/upgrade/3.3.2/content
 etc/upgrade/3.3.3/content
 etc/upgrade/3.3.4/content
+etc/upgrade/remove_files
 etc/upgrade/rtir-2.4-upgrade.pl.in
 html/Callbacks/RTIR/autohandler/SuccessfulLogin
 html/Callbacks/RTIR/Elements/Header/Head
@@ -165,6 +166,7 @@ inc/Module/Install/Include.pm
 inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
 inc/Module/Install/RTx.pm
+inc/Module/Install/RTx/Remove.pm
 inc/Module/Install/RTx/Runtime.pm
 inc/Module/Install/Substitute.pm
 inc/Module/Install/Win32.pm
@@ -213,6 +215,7 @@ po/rtir.pot
 README
 static/css/rtir-styles.css
 static/images/RTIR/logo.png
+static/images/RTIR/rtir-logo.png
 static/js/jquery.uncheckable-radio-0.1.js
 static/js/rtir.js
 t/000-mason-syntax.t

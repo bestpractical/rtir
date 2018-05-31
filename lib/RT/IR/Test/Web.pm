@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -73,10 +73,18 @@ sub create_countermeasure {
 
 sub goto_create_rtir_ticket {
     my $self = shift;
-    my $queue = shift; # we play a dumb game to change queues to lifecycles
+    my $queue = shift;
     local $Test::Builder::Level = $Test::Builder::Level + 1;
-    my $lifecycle = lc( $queue);
-    $lifecycle =~ s/ /_/;
+
+    my $queue_obj = RT::Queue->new(RT->SystemUser);
+    $queue_obj->Load($queue);
+    my $lifecycle;
+    if ( $queue_obj->id ) {
+        $lifecycle = $queue_obj->Lifecycle;
+    }
+    else {
+        warn "Failed to load queue: $queue";
+    }
 
     $self->get_ok("/RTIR/CreateInQueue.html?Lifecycle=$lifecycle");
     $self->click_through_createinqueue( $queue );

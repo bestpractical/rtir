@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -112,6 +112,9 @@
 
 <& /RTIR/Elements/ShowArticles, Ticket => $Ticket &>
 
+<& /Ticket/Elements/ShowAttachments, Ticket => $Ticket,
+   Attachments => $attachments &>
+
 </td> <td class="boxcontainer" valign="top">
 % $m->callback( %ARGS, Ticket => $Ticket, CallbackName => 'RightColumnStart' );
 
@@ -128,16 +131,8 @@
     &>
     <& /RTIR/Elements/ShowDates, Ticket => $Ticket &>
     </&>
+% $m->callback( %ARGS, Ticket => $Ticket, CallbackName => 'BeforeRequestor' );
     <br />  
-  </td>
-</tr>
-
-<tr>
-  <td class="boxcontainer" valign="top">
-    <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, 
-       Attachments => $attachments &>
-  </td>
-  <td class="boxcontainer" valign="top">
       <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket, DisplayPath => RT::IR->HREFTo("Display.html") &>
   </td>
 </tr>
@@ -169,7 +164,7 @@
         ForwardPath    => RT::IR->HREFTo("Forward.html"),
         EncryptionPath => RT::IR->HREFTo("Crypt.html"),
         WarnUnsigned   => 1,
-        PathPrefix     => RT::IR->HREFTo("Ticket/"),
+        PathPrefix     => RT->Config->Get('WebPath') ."/Ticket/",
     &>
 % }
 
@@ -272,6 +267,13 @@ if ( $ARGS{'MarkAsSeen'} ) {
     push @results, loc('Marked all messages as seen');
 }
 
+$m->callback(
+    CallbackName => 'BeforeDisplay',
+    TicketObj => \$Ticket,
+    Actions => \@results,
+    ARGSRef => \%ARGS,
+);
+
 # update id argument in the case we took merged or created new
 $ARGS{'id'} = $id = $Ticket->Id;
 
@@ -296,6 +298,9 @@ if (defined $Ticket->TimeLeft && $Ticket->TimeLeft > 0 ) {
 }
 
 my $attachments = $Ticket->Attachments;
+
+$Ticket->CurrentUser->AddRecentlyViewedTicket($Ticket)
+    if $Ticket->CurrentUser->can('AddRecentlyViewedTicket');
 
 </%INIT>
 

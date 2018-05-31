@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -61,7 +61,7 @@ sub Commit {
     my $self = shift;
 
     my $txn = $self->TransactionObj;
-    my $uri = $txn->NewValue ||'';
+    my $uri = $txn->NewValue or return 1;
 
     my $uri_obj = RT::URI->new( $self->CurrentUser );
     my ($status) = $uri_obj->FromURI( $uri );

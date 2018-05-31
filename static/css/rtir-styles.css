@@ -87,32 +87,32 @@ body.rtir #comp-RTIR-Search .submit {
     width: 58%;
 }
 
-body.rtir #ticket-create-incident input[type=text],
+body.rtir #ticket-create-incident input[type=text]:not(.datepicker),
 body.rtir #ticket-create-investigation input[type=text]
 {
     width: 90%;
 }
 
-body.rtir #ticket-create-incident .ticket-create-basics,
-body.rtir #ticket-create-investigation .ticket-create-basics
+body.sidebyside.rtir #ticket-create-incident .ticket-create-basics,
+body.sidebyside.rtir #ticket-create-investigation .ticket-create-basics
 {
     float: right;
     width: 40%;
     clear: right;
 }
 
-body.rtir #ticket-create-incident .ticket-create-details,
-body.rtir #ticket-create-investigation .ticket-create-details
+body.sidebyside.rtir #ticket-create-incident .ticket-create-details,
+body.sidebyside.rtir #ticket-create-investigation .ticket-create-details
 {
     float: left;
     width: 58%;
     clear: left;
 }
 @media (max-width: 950px) {
-    body.rtir #ticket-create-incident .ticket-create-basics,
-    body.rtir #ticket-create-investigation .ticket-create-basics,
-    body.rtir #ticket-create-incident .ticket-create-details,
-    body.rtir #ticket-create-investigation .ticket-create-details
+    body.sidebyside.rtir #ticket-create-incident .ticket-create-basics,
+    body.sidebyside.rtir #ticket-create-investigation .ticket-create-basics,
+    body.sidebyside.rtir #ticket-create-incident .ticket-create-details,
+    body.sidebyside.rtir #ticket-create-investigation .ticket-create-details
     {
         float: none;
         width: auto;
@@ -156,9 +156,32 @@ body.rtir .cftype-Select td.cflabel .type {
 }
 
 
+body.rtir .basics table.collection-as-table {
+    margin-bottom: 4px;
+}
 
 body.rtir .incidents .actions {
-    text-align: right;
+    float: right;
+}
+
+body.rtir .incidents .actions .button {
+    border: none;
+}
+
+body.rtir .incidents .actions #create-incident {
+    background: #4040a0;
+}
+
+body.rtir .incidents .actions #create-incident:hover {
+    background: #4040f0;
+}
+
+body.rtir .incidents .actions #link-incident {
+    background: #316531;
+}
+
+body.rtir .incidents .actions #link-incident:hover {
+    background: #3f833f;
 }
 
 body.rtir #editquery, body.rtir #editsearches {
@@ -172,4 +195,8 @@ body.rtir .sf-menu a.sf-with-ul {
 
 body.rtir table.lookup-tool-forms td {
     vertical-align: middle;
+}
+
+body.rtir .button.button-small {
+    padding: 0.2em 0.5em;
 }

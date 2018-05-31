@@ -36,10 +36,10 @@ diag "create an article" if $ENV{'TEST_VERBOSE'};
 }
 
 # TODO: Once incident+investigation creation is re-added, this should be put back
-#foreach ( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
-foreach ( 'Incident Reports', 'Investigations', 'Countermeasures' ) {
+#foreach my $q_name ( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
+foreach my $q_name ( 'Incident Reports', 'Investigations', 'Countermeasures' ) {
     my $queue = RT::Queue->new(RT->SystemUser);
-    $queue->Load( $_ );
+    $queue->Load( $q_name );
     ok $agent->goto_create_ticket( $queue ), "UI -> create ticket";
 
     my $content_name = $queue->Name eq 'Incidents'? 'InvestigationContent': 'Content';

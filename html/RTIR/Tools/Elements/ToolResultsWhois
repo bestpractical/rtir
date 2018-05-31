@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -60,6 +60,7 @@
 my $DoInvestigate = 0;
 if ($WhoisIterator) {
     while (my $obj = $WhoisIterator->next) {
+        $SavedContent .= $obj->content . "\n";
         my @lines_starting_with_space = grep /^(\s+)(\w+)/, $obj->content;
         if ($handparse || $#lines_starting_with_space >= 4) {    #we couldn't parse that. suck
             my $content = join "", $obj->content;
@@ -72,7 +73,7 @@ if ($WhoisIterator) {
 <pre><% $content |n %></pre><br />
 %       } else {
 Structured RIPE whois data returned.
-lick <a href="Lookup.html?q=<% $q |u %>&server=<% $WhoisServer |u %>&handparse=1">here</a> to manually parse this data.
+Click <a href="Lookup.html?q=<% $q |u %>&server=<% $WhoisServer |u %>&handparse=1">here</a> to manually parse this data.
 <br />Warnings <% $obj->warnings %>
 <br />errors <% $obj->errors %>
 <hr />
@@ -108,6 +109,22 @@ foreach my $attribute ( $obj->attributes ) {
 &>
 % }
 </form>
+
+% if ($TicketObj and $WhoisIterator and $SavedContent) {
+%   my $url = RT::IR->HREFTo(
+%       "Tools/Lookup.html?"
+%       . $m->comp(
+%           '/Elements/QueryString',
+%           ticket => $TicketObj->id,
+%           q => $q,
+%       )
+%   );
+    <form method="post" action="<% $url %>">
+    <input type="hidden" name="LookupResults" value="<% $SavedContent %>" />
+    <input type="submit" value="<% loc('Save these results to the ticket') %>" id="save-results-to-ticket" />
+    </form>
+% }
+
 <%args>
 $q =>  undef
 $handparse => 1
@@ -120,7 +137,12 @@ $server => undef
 $WhoisServer = $server unless defined $WhoisServer;
 unless ($WhoisServer) {
     return unless RT->Config->Get('RunWhoisRequestByDefault');
-    $WhoisServer = $TicketObj->QueueObj->FirstCustomFieldValue('RTIR default WHOIS server') || RT::IR->FirstWhoisServer;
+
+    $WhoisServer = RT::IR->FirstWhoisServer;
+
+    if ( $TicketObj and $TicketObj->QueueObj->FirstCustomFieldValue('RTIR default WHOIS server') ){
+        $WhoisServer = $TicketObj->QueueObj->FirstCustomFieldValue('RTIR default WHOIS server');
+    }
 }
 
 return unless $q;
@@ -131,4 +153,5 @@ my ($WhoisIterator, $WhoisError) = RT::IR->WhoisLookup(
     CurrentUser => $session{'CurrentUser'},
 );
 
+my $SavedContent = '';
 </%init>

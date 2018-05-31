@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+use Test::Warn;
 
 BEGIN { unless ( $ENV{RTIR_TEST_UPGRADE} ) {
     require Test::More;
@@ -14,29 +15,52 @@ BEGIN { unless ( -d "../rt/etc/upgrade/" ) {
 } }
 
 use RT::IR::Test tests => undef;
-use Sort::Versions;
 
 {
     RT::IR::Test->import_snapshot( 'rtir-2.6.after-rt-upgrade.sql' );
 
     # upgrade database for RT 4.2.0 on
     {
-        my @versions;
-        for my $version (sort { versioncmp($a, $b) } map { m{upgrade/([\w.]+)/} && $1 } glob('../rt/etc/upgrade/4.*/')) {
-            next if versioncmp($version, '4.2.0') == -1;
-            next if versioncmp($version, $RT::VERSION) == 1;
-            push @versions, $version;
+        my @all_versions = sort { RT::Handle::cmp_version($a, $b) } map { m{upgrade/([\w.]+)/} && $1 } glob('../rt/etc/upgrade/4.*/');
+        my @upgrades;
+        for my $version (@all_versions) {
+            next if RT::Handle::cmp_version($version, '4.2.0') == -1;
+            next if RT::Handle::cmp_version($version, $RT::VERSION) == 1;
+            push @upgrades, $version;
         }
 
-        my ($status, $msg) = RT::IR::Test->apply_upgrade( '../rt/etc/upgrade/', @versions);
-        ok $status, "applied " . scalar(@versions) . " RT version upgrades" or diag "error: $msg";
+        # if we're between versions *and* the last version we collected above
+        # is the same as the penultimate version, then collect the next
+        # version too
+        # as a concrete example, if the RT version is 4.4.1-147-g602fd00
+        # then the above code selects all the upgrades up to and
+        # including 4.4.1, but doesn't include 4.4.2 because it's a
+        # future version. that will cause the test to explode because
+        # 4.4.1-147-g602fd00 needs to include the 4.4.2 schema changes
+        # as well, even though 4.4.2 hasn't even been tagged
+        # yet. so the following check adds that "future" version, 4.4.2
+        push @upgrades, $all_versions[-1]
+            if $RT::VERSION =~ /-/
+            && RT::Handle::cmp_version($all_versions[-2], $upgrades[-1]) == 0;
+
+        my ($status, $msg);
+        my @expected_warnings;
+
+        push @expected_warnings, qr{Unable to load scrip}
+            if RT::Handle::cmp_version($RT::VERSION, '4.4.1') > 0;
+
+        warnings_like {
+            ($status, $msg) = RT::IR::Test->apply_upgrade( '../rt/etc/upgrade/', @upgrades);
+        } \@expected_warnings;
+
+        ok $status, "applied " . scalar(@upgrades) . " RT version upgrades" or diag "error: $msg";
     }
 
     # upgrade database for RTIR 2.6.0 on
     {
         my @versions;
-        for my $version (sort { versioncmp($a, $b) } map { m{upgrade/([\w.]+)/} && $1 } glob('etc/upgrade/*/')) {
-            next if versioncmp($version, '2.6.0') == -1;
+        for my $version (sort { RT::Handle::cmp_version($a, $b) } map { m{upgrade/([\w.]+)/} && $1 } glob('etc/upgrade/*/')) {
+            next if RT::Handle::cmp_version($version, '2.6.0') == -1;
 
             push @versions, $version;
         }

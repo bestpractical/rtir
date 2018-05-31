@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -63,6 +63,8 @@
 <input type="hidden" name="Status" value="<% $Status %>" />
 <input type="hidden" name="All" value="<% $All %>" />
 <input type="hidden" name="Query" value="<% $Query %>" />
+
+% $m->callback(CallbackName => 'AfterHidden', Ticket => $IncidentObj );
 
 <& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
@@ -255,6 +257,9 @@ my $BaseURL = RT::IR->HREFTo("Incident/Reply/?".
     ));
 
 my $candidates = RT::IR->IncidentChildren( $IncidentObj, Lifecycle => \@lifecycles )->Count;
+
+$IncidentObj->CurrentUser->AddRecentlyViewedTicket($IncidentObj)
+    if $IncidentObj->CurrentUser->can('AddRecentlyViewedTicket');
 
 </%INIT>
 

@@ -33,6 +33,7 @@ sub RTxDatabase {
 
     my $lib_path = File::Basename::dirname($INC{'RT.pm'});
     my @args = (
+        "-I.",
         "-Ilib",
         "-I$RT::LocalLibPath",
         "-I$lib_path",

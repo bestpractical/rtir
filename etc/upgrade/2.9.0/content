@@ -165,16 +165,15 @@ our @Final = (
             my @states = custom_field_real_values( $cf );
 
             foreach my $state ( @states ) {
-                my $values = RT::ObjectCustomFieldValues->new( $RT::SystemUser );
-                $values->Limit( FIELD => 'CustomField', VALUE => $cf->id );
-                $values->Limit( FIELD => 'Disabled', VALUE => 0 );
-                $values->Limit( FIELD => 'Content', VALUE => $state );
-                $values->Limit( FIELD => 'ObjectType', VALUE => 'RT::Ticket' );
-                $values->Columns('ObjectId');
-                $values->OrderBy();
+                my $ticket_select = "select Tickets.id from Tickets, ObjectCustomFieldValues"
+                . " where Tickets.Queue = " . $queue->Id
+                . " and ObjectCustomFieldValues.ObjectId = Tickets.id and"
+                . " ObjectCustomFieldValues.CustomField = " . $cf->Id
+                . " and ObjectCustomFieldValues.Content = '$state'"
+                . " and ObjectCustomFieldValues.Disabled != 1";
 
                 my $res = $RT::Handle->SimpleUpdateFromSelect(
-                    'Tickets', { Status => $state }, $values->BuildSelectQuery
+                    'Tickets', { Status => $state }, $ticket_select
                 );
                 $RT::Logger->error("Couldn't update tickets: $res")
                     unless $res;
@@ -419,7 +418,7 @@ our @Final = (
             my $props = $search->Content;
             next unless $props && ref($props) eq 'HASH' && $props->{'Format'};
 
-            next unless $props->{'Format'} =~ s{'__CustomField\.{State}__(?:/TITLE:State)?'}{__Status__}g;
+            next unless $props->{'Format'} =~ s%'__CustomField\.\{State\}__(?:/TITLE:State)?'%__Status__%g;
 
             my ($status, $msg) = $search->SetContent( $props );
             RT->Logger->error("Couldn't update saved search: $msg")

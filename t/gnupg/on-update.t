@@ -59,6 +59,9 @@ diag "check that things don't work if there is no key";
 
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails';
+
+    $agent->next_warning_like(qr/public key not found/) for 1 .. 2;
+    $agent->no_leftover_warnings_ok;
 }
 
 diag "import first key of rt-test\@example.com";
