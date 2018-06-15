@@ -89,10 +89,11 @@ if ( $TicketObj ) {
 my @box_actions;
 push @box_actions, {
     title => loc('Search'),
-    path => RT::IR->HREFTo("Search/Refine.html?". $m->comp('/Elements/QueryString', 
-        Lifecycle => $Lifecycle,
-        Query => $Query,
-    )),
+    path => "/Search/Build.html?". $m->comp('/Elements/QueryString',
+        ExtraQueryParams => 'RTIR',
+        RTIR => 1,
+        Query => join( ' AND ', RT::IR->Query( Lifecycle => $Lifecycle ), "( $Query )" ),
+    ),
 };
 if ( $TicketObj && RT::IR->IsIncidentQueue($TicketObj->QueueObj) 
     && $Lifecycle ne RT::IR->lifecycle_incident

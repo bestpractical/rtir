@@ -72,9 +72,9 @@ if ( defined $q && length $q ) {
     );
 
     return RT::Interface::Web::Redirect(
-        RT::IR->HREFTo('Search/Results.html?Query='
+        RT->Config->Get('WebURL') .  'Search/Results.html?ExtraQueryParams=RTIR&RTIR=1&Query='
         . $m->interp->apply_escapes( $query, 'u' )
-    ));
+    );
 }
 
 my @results;

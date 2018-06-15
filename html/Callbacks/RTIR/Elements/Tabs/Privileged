@@ -56,54 +56,117 @@ my $query_string = sub {
 
 my $args = $DECODED_ARGS;
 
-my @query_fields = qw(Query Format RowsPerPage Page OrderBy Order);
+my @query_fields = qw(Query Format RowsPerPage Page OrderBy Order ExtraQueryParams);
 
 my $search_arguments = sub {
     my %res = ();
     my $caller_args = $m->caller_args(1);
     if ( $caller_args->{'SearchArgs'} ) {
         @res{ @query_fields } = @{ $caller_args->{'SearchArgs'} }{ @query_fields };
+        if ( $res{ExtraQueryParams} ) {
+            $res{$_} = $caller_args->{'SearchArgs'}{$_}
+              for ref $res{ExtraQueryParams} ? @{ $res{ExtraQueryParams} } : $res{ExtraQueryParams};
+        }
     } else {
         @res{ @query_fields } = @{ $args }{ @query_fields };
+        if ( $res{ExtraQueryParams} ) {
+            $res{$_} = $args->{$_}
+              for ref $res{ExtraQueryParams} ? @{ $res{ExtraQueryParams} } : $res{ExtraQueryParams};
+        }
     }
+
     delete $res{$_} foreach grep !defined $res{$_}, keys %res;
     return %res;
 };
 
+if ( $m->request_comp->path =~ m{^/Search/} ) {
+    my %args;
+    if ( $ARGS{ARGSRef}{QueryArgs} ) {
+        %args = %{ $ARGS{ARGSRef}{QueryArgs} };
+    }
+    else {
+        %args = %$DECODED_ARGS;
+    }
+
+    my $rtir_search;
+    ( $rtir_search, my @lifecycles ) = RT::IR->OurQuery( $args{'Query'} ) if $args{Query};
+    $rtir_search ||= $args{RTIR};
+    if ( $rtir_search ) {
+        my $lifecycle = '';
+        $lifecycle = $lifecycles[ 0 ] if @lifecycles == 1;
+
+        if ( $args{Query} ) {
+            PageMenu()->child(
+                new_search => title => loc( 'New Search' ),
+                path       => '/Search/Build.html?NewQuery=1&ExtraQueryParams=RTIR&RTIR=1',
+            );
+        }
+
+        if ( $lifecycle eq RT::IR->lifecycle_incident ) {
+            PageMenu()->child(
+                report     => title => loc( 'Report' ),
+                path       => RT::IR->HREFTo( "Reporting/", IncludeWebPath => 0 ),
+            );
+
+            PageMenu()->child(
+                abandon => title => loc( 'Bulk Abandon' ),
+                path => RT::IR->HREFTo( "Incident/BulkAbandon.html?" . $query_string->( %args ), IncludeWebPath => 0 ),
+            );
+        }
+        elsif ( $lifecycle eq RT::IR->lifecycle_report ) {
+            PageMenu()->child(
+                reject => title => loc( 'Bulk Reject' ),
+                path   => RT::IR->HREFTo( "Report/BulkReject.html?" . $query_string->( %args ), IncludeWebPath => 0 ),
+            );
+        }
+
+        if ( $args{Query} ) {
+            PageMenu()->child( 'more' )->{sort_order} = 99;
+        }
+    }
+}
+
 my $root = Menu->child( rtir => title => loc('RTIR'), path => '/RTIR/' );
 
 my $search = $root->child( search => title => loc('Search'), path => RT::IR->HREFTo('', IncludeWebPath => 0) );
-$search->child( new => title => loc('New Search'), path => RT::IR->HREFTo('Search/?NewQuery=1', IncludeWebPath => 0) );
+$search->child( new => title => loc('New Search'), path => '/Search/Build.html?NewQuery=1&ExtraQueryParams=RTIR&RTIR=1' );
 
 {
 my $current_search = $session{'CurrentSearchHash'} ? { map { $_ => $session{'CurrentSearchHash'}{$_} } @query_fields } : {};
+
+if ( my $extra_params = $current_search->{ExtraQueryParams} ) {
+    for my $param ( ref $extra_params eq 'ARRAY' ? @$extra_params : $extra_params ) {
+        $current_search->{$param} = $session{'CurrentSearchHash'}{$param};
+    }
+}
+
 my $has_query = 1 if ( $args->{'Query'} or $current_search->{'Query'} );
 
 if ( $has_query ) {
-    $search->child( build => title => loc('Edit Search'), path => RT::IR->HREFTo('Search/', IncludeWebPath => 0) );
+    $search->child( build => title => loc('Edit Search'), path => '/Search/Build.html', );
     $search->child( results => title => loc('Show Results'),
-                    path =>RT::IR->HREFTo('Search/Results.html?', IncludeWebPath => 0).
+                    path =>'/Search/Results.html?'.
                     $query_string->( $args->{'Query'} ? $search_arguments->() : %$current_search ) );
 }
 }
 
 $root->child(
     incidents => title => loc('Incidents'),
-    path => RT::IR->HREFTo('Search/Results.html?Lifecycle='.RT::IR->lifecycle_incident, IncludeWebPath => 0)
+    path => '/Search/Results.html?ExtraQueryParams=RTIR&RTIR=1&Lifecycle='.RT::IR->lifecycle_incident,
 )->child(
     create => title => loc('Create'),
     path => RT::IR->HREFTo('Incident/Create.html?Lifecycle='.RT::IR->lifecycle_incident, IncludeWebPath => 0),
 );
 $root->child(
     reports => title => loc('Incident Reports'),
-    path => RT::IR->HREFTo('Search/Results.html?Lifecycle='. RT::IR->lifecycle_report, IncludeWebPath => 0)
+    path => '/Search/Results.html?ExtraQueryParams=RTIR&RTIR=1&Lifecycle='. RT::IR->lifecycle_report,
 )->child(
     create => title => loc('Create'),
     path => RT::IR->HREFTo('Create.html?Lifecycle='.RT::IR->lifecycle_report, IncludeWebPath => 0),
 );
 $root->child(
     investigations => title => loc('Investigations'),
-    path => RT::IR->HREFTo('Search/Results.html?Lifecycle='.RT::IR->lifecycle_investigation, IncludeWebPath => 0)
+    path => '/Search/Results.html?ExtraQueryParams=RTIR&RTIR=1&Lifecycle='.RT::IR->lifecycle_investigation,
 )->child(
     launch => title => loc('Launch'),
     path => RT::IR->HREFTo('Create.html?Lifecycle='.RT::IR->lifecycle_investigation, IncludeWebPath => 0),
@@ -111,7 +174,7 @@ $root->child(
 unless ( RT->Config->Get('RTIR_DisableCountermeasures') ) {
     $root->child(
         countermeasures => title => loc('Countermeasures'),
-        path => RT::IR->HREFTo('Search/Results.html?Lifecycle='.RT::IR->lifecycle_countermeasure, IncludeWebPath => 0)
+        path => '/Search/Results.html?ExtraQueryParams=RTIR&RTIR=1&Lifecycle='.RT::IR->lifecycle_countermeasure,
     )->child(
         create => title => loc('Create'),
         path => RT::IR->HREFTo('Create.html?Lifecycle='.RT::IR->lifecycle_countermeasure, IncludeWebPath => 0),
@@ -317,6 +380,8 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
         $search_arguments->(),
         id => $id,
         Lifecycle => $lifecycle,
+        ExtraQueryParams => [ 'RTIR', 'id', 'Lifecycle' ],
+        RTIR => 1,
     );
 
     PageMenu()->child(
@@ -325,7 +390,7 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
     );
     PageMenu()->child(
         edit_search => title => loc('Edit Search'),
-        path => RT::IR->HREFTo("Link/$direction/Refine.html?". $query_string->( %args ), IncludeWebPath => 0),
+        path => '/Search/Build.html?' . $query_string->( %args, ResultPage => RT::IR->HREFTo("Link/$direction/") ),
     );
     PageMenu()->child(
         new => title => loc("New [_1]", RT::IR::TicketType( Lifecycle => $lifecycle || RT::IR->lifecycle_incident ) ),
@@ -365,7 +430,13 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
 
     my %args = (
         $search_arguments->(),
-        id => $id,
+        id    => $id,
+        Query => RT::IR->Query(
+            Lifecycle => $ARGS{'Lifecycle'},
+            Exclude   => $ARGS{'id'},
+        ),
+        ExtraQueryParams => [ 'RTIR', 'id' ],
+        RTIR             => 1,
     );
 
     PageMenu()->child(
@@ -374,7 +445,7 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
     );
     PageMenu()->child(
         edit_search => title => loc('Edit Search'),
-        path => RT::IR->HREFTo("Merge/Refine.html?". $query_string->( %args, Lifecycle => $ticket->QueueObj->Lifecycle ), IncludeWebPath => 0),
+        path => '/Search/Build.html?' . $query_string->( %args, ResultPage => RT::IR->HREFTo("Merge/") ),
     );
     PageMenu()->child(
         back => title => loc('Back to [_1] #[_2]', lc RT::IR::TicketType( Lifecycle => $ticket->QueueObj->Lifecycle), $id),
@@ -391,7 +462,9 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
         All => $args->{'All'},
         Status => $args->{'Status'},
         Action => $args->{'Action'},
-        map { $_ => $DECODED_ARGS->{$_} } grep { /Selected\w+All/ } keys %$DECODED_ARGS,
+        map( { $_ => $DECODED_ARGS->{$_} } grep { /Selected\w+All/ } keys %$DECODED_ARGS ),
+        ExtraQueryParams => [ 'RTIR', 'id', 'All', grep { /Selected\w+All/ } keys %$DECODED_ARGS ],
+        RTIR             => 1,
     );
 
     PageMenu()->child(
@@ -400,13 +473,13 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
     );
     PageMenu()->child(
         edit_search => title => loc('Edit Search'),
-        path => RT::IR->HREFTo("Incident/Reply/Refine.html?". $query_string->( %args ), IncludeWebPath => 0),
+        path => '/Search/Build.html?' . $query_string->( %args, ResultPage => RT::IR->HREFTo('Incident/Reply/') ),
     );
     PageMenu()->child(
         back => title => loc('Back to [_1] #[_2]', lc RT::IR::TicketType(Lifecycle => $ticket->QueueObj->Lifecycle), $id),
         path => RT::IR->HREFTo("Display.html?id=$id", IncludeWebPath => 0),
     );
-} elsif ( $request_path =~ m{(?:$re_rtir_path)(Search/?|Incident/BulkAbandon\.html$|Report/BulkReject\.html$)} ) {
+} elsif ( $request_path =~ m{(?:$re_rtir_path)(Incident/BulkAbandon\.html$|Report/BulkReject\.html$)} ) {
     my %args = $search_arguments->();
 
     my $lifecycle = $args->{'Lifecycle'} || '';
@@ -428,7 +501,7 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
     if ( $args{'Query'} ) {
         PageMenu()->child(
             link => title => loc('Show Results'),
-            path => RT::IR->HREFTo("Search/Results.html?". $query_string->( %args ), IncludeWebPath => 0),
+            path => "/Search/Results.html?". $query_string->( %args ),
         );
     }
 
@@ -436,16 +509,16 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
     # full RTIR Search UI, only from the Bulk screens.
     my $bulk_path = 1 if $request_path =~ m{(?:$re_rtir_path)(Incident/BulkAbandon\.html$|Report/BulkReject\.html$)};
 
+    $search->child( build => title => loc('Edit Search'), path => '/Search/Build.html?RTIR=1', );
     PageMenu()->child(
         edit_search => title => loc('Edit Search'),
-        path => RT::IR->HREFTo("Search/" .
-                    ($bulk_path ? "Refine.html?" : "?") .
-                    $query_string->( %args ), IncludeWebPath => 0),
+        path => '/Search/Build.html?' . $query_string->( %args ),
     );
     if ( $args{'Query'} && !$bulk_path ) {
+        $search->child( new => title => loc('New Search'), path => '/Search/Build.html?NewQuery=1&ExtraQueryParams=RTIR&RTIR=1' );
         PageMenu()->child(
             new_search => title => loc('New Search'),
-            path => RT::IR->HREFTo("Search/?NewQuery=1", IncludeWebPath => 0)
+            path => '/Search/Build.html?NewQuery=1&ExtraQueryParams=RTIR&RTIR=1'
         );
     }
 
@@ -468,11 +541,6 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
     }
 
     if ( $args{'Query'} ) {
-        PageMenu()->child(
-            chart => title => loc('Chart'),
-            path => RT::IR->HREFTo("Search/Reporting.html?". $query_string->( %args ), IncludeWebPath => 0),
-        );
-
         my $more = PageMenu->child( more => title => loc('Feeds') );
         $more->child(
                 spreadsheet => title => loc('Spreadsheet'),

@@ -49,7 +49,7 @@
 Description => loc('Due Incidents')
 </%ATTR>
 <&| /Widgets/TitleBox,
-	title_href  => RT::IR->HREFTo("Search/Results.html?Lifecycle=incidents&$QueryString"),
+	title_href  => RT->Config->Get('WebPath') . "/Search/Results.html?Lifecycle=incidents&$QueryString",
     title => $Title,
 &>
 
@@ -81,6 +81,8 @@ my $QueryString = $m->comp('/Elements/QueryString',
     Page    => $Page,
     OrderBy => $OrderBy,
     Order   => $Order,
+    ExtraQueryParams => 'RTIR',
+    RTIR    => 1,
 );
 
 </%INIT>

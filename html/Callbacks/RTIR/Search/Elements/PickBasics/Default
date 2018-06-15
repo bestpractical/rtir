@@ -46,8 +46,8 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-my $path = $r->path_info;
-return unless $path =~ m{^/RTIR};
+return unless $DECODED_ARGS->{RTIR};
+
 foreach( @$Conditions ) {
     if (($_->{'Name'}||'') eq 'Queue' ) {
     $_->{'Value'}{'Path'} = '/RTIR/Elements/SelectRTIRQueue';
