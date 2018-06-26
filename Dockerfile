@@ -22,5 +22,6 @@ RUN cd /usr/local/src \
 
 RUN cpanm Net::Whois::RIPE
 RUN cpanm Parse::BooleanLogic
+RUN cpanm Net::Domain::TLD
 
 CMD tail -f /dev/null

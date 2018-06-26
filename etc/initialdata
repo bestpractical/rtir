@@ -157,6 +157,15 @@ die "Please add RT::IR to your Plugins configuration before initializing the dat
         Values      => [],
         Description => 'Customer for Investigations RTIR queue',
     },
+    {
+        Name        => 'Domain',
+        Type        => 'FreeformMultiple',
+        Queue       => [ 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ],
+        Disabled    => 0,
+        Description => 'Domain for RTIR queues',
+        LinkValueTo =>
+            '__WebPath__/RTIR/Tools/Lookup.html?type=host&q=__CustomField__&ticket=__id__'
+    },
 );
 
 @ScripActions = (
@@ -208,7 +217,15 @@ die "Please add RT::IR to your Plugins configuration before initializing the dat
         Description =>
             'Move all tickets related to an incident to a new constituency',
         ExecModule => 'RTIR_ChangeChildConstituencies'
-    }
+    },
+    {   Name        => 'RTIR parse message for Domains',                 # loc
+        Description => 'Set Domain custom field from message content',   # loc
+        ExecModule  => 'RTIR_FindDomain',
+    },
+    {   Name        => 'RTIR merge Domains',                                 # loc
+        Description => 'Merge multiple Domains on ticket merge',             # loc
+        ExecModule  => 'RTIR_MergeDomains',
+    },
 );
 
 @ScripConditions = (
@@ -368,6 +385,34 @@ die "Please add RT::IR to your Plugins configuration before initializing the dat
             [ 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ],
         ScripCondition => 'RTIR Merge',
         ScripAction    => 'RTIR merge IPs',
+        Template       => 'Blank'
+    },
+
+    {
+        Description    => "SetDomainFromContent",
+        Queue          => [ 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ],
+        ScripCondition => 'On Correspond',
+        ScripAction    => 'RTIR parse message for Domains',
+        Template       => 'Blank'
+    },
+    {
+        Description    => "SetDomainFromContent",
+        Queue          => [ 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ],
+        ScripCondition => 'On Create',
+        ScripAction    => 'RTIR parse message for Domains',
+        Template       => 'Blank'
+    },
+    {   Description => "MergeDomains",
+        Queue =>
+            [ 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ],
+        ScripCondition => 'RTIR Merge',
+        ScripAction    => 'RTIR merge Domains',
+        Template       => 'Blank'
+    },
+    {   Description    => "On Linking To Incident Copy Domains",
+        Queue          => 'Incident Reports',
+        ScripCondition => 'RTIR Linking To Incident',
+        ScripAction    => 'RTIR merge Domains',
         Template       => 'Blank'
     },
 
