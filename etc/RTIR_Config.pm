@@ -646,7 +646,7 @@ available in all screens in RTIR so may not be the best place for Custom Fields.
 
 Set(%CustomFieldGroupings,
     'RTIR::Ticket' => [
-        'Networking'     => ['IP'],
+        'Networking'     => ['IP', 'Domain'],
         'Details' => ['How Reported','Reporter Type','Customer',
                       'Description', 'Resolution', 'Function', 'Classification',
                       'Customer',

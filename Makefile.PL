@@ -31,6 +31,9 @@ requires('Regexp::Common');
 # queries parsing
 requires('Parse::BooleanLogic');
 
+# Domain searching
+requires('Net::Domain::TLD');
+
 # for tests
 build_requires('Test::More');
 build_requires('File::Find');
