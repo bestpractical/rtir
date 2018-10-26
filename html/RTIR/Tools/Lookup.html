@@ -51,6 +51,13 @@
 
 % $m->callback(CallbackName => 'BeforeCurrent', %ARGS, ARGSRef => \%ARGS, Ticket => $TicketObj, LookupType => $type, q => $q);
 
+% if ( ! $TicketObj ) {
+    <& Elements/ToolFormLookup,
+        %ARGS,
+        q => $q,
+    &>
+% }
+
 % if ( $TicketObj ) {
 <&| /Widgets/TitleBox, title => loc("Current [_1]: #[_2]", $TicketType, $ticket), class => 'ticket-info-basics' &>
 <& /Elements/CollectionList, Query => "id = $ticket", Format => RT->Config->Get('RTIRSearchResultFormats')->{$TicketType . 'Default'}, ShowNavigation => 0,

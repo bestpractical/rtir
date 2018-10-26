@@ -1,0 +1,18 @@
+<table>
+    <tr>
+        <td valign="top" class="label"><%loc('Lookup Fields')%>:</td>
+        <td valign="top">
+            <form name="ToolLookupField" action="Lookup.html" method="get">
+                <input type="text" size="30" name="q" value="<% $q %>" /> for
+                <select name="type">
+                    <option value="ip">IP</option>
+                </select>
+            <input type="submit" value="<%loc('Go')%>" />
+            </form>
+        </td>
+    </tr>
+</table>
+
+<%args>
+$q => ''
+</%args>
