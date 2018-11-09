@@ -1,0 +1,26 @@
+<%INIT>
+my $id = $ARGSRef->{ TicketObj }->id;
+
+my %lifecycles = (
+    'Incident Reports'  => 'incident_reports',
+    'Investigations'    => 'investigations',
+    'Countermeasures'   => 'countermeasures',
+);
+
+foreach my $lifecycle_name ( keys %lifecycles ) {
+    if( $ARGSRef->{ QueueName } eq $lifecycle_name ) {
+        my $lifecycle = $lifecycles{ $lifecycle_name };
+        my $fulllist = RT::IR->HREFTo("Incident/Children/?Lifecycle=$lifecycle&id=$id");
+        $$FullList = $fulllist;
+        my $Type = RT::IR::TicketType( Lifecycle => $lifecycle );
+        $$Format ||= RT->Config->Get('RTIRSearchResultFormats')->{'Child' . $Type};
+    }
+}
+
+</%INIT>
+
+<%ARGS>
+$ARGSRef
+$FullList
+$Format
+</%ARGS>

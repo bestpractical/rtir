@@ -1,0 +1,50 @@
+<%INIT>
+my @queues = ( 'Incident Reports','Investigations', 'Countermeasures' );
+
+my %lifecycles = (
+    'Incident Reports'  => 'incident_reports',
+    'Investigations'    => 'investigations',
+    'Countermeasures'   => 'countermeasures',
+);
+
+my $id = $ARGSRef->{ TicketObj }->id;
+
+foreach my $title ( @queues ) {
+    if( $queue_name eq $title ) {
+        my $lifecycle = $lifecycles{ $title };
+        $$class = 'tickets-list-'. lc(RT::IR::TicketType( Lifecycle => $lifecycle ));
+        $$title_class = 'inverse';
+        $$title_href = RT::IR->HREFTo("Incident/Children/?Lifecycle=$lifecycle&id=$id");
+
+    my @titleright_raw;
+    if( $ARGSRef->{ TicketObj }->CurrentUserHasRight('ModifyTicket') ) {
+        if (1) { # XXX TODO RESTORE THIS ACL CHECK
+        # $QueueObj->Id and $QueueObj->CurrentUserHasRight('CreateTicket') ) {
+            push @titleright_raw, {
+                title => $lifecycle ne RT::IR->lifecycle_investigation? loc('Create') : loc('Launch'),
+                class => 'create_child' . ($lifecycle ? '_'.$lifecycle : ''),
+                path => RT::IR->HREFTo("CreateInQueue.html?Incident=$id&Lifecycle=".$lifecycle),
+            };
+        }
+        push @titleright_raw, {
+            title => loc('Link'),
+            path  => RT::IR->HREFTo("Link/FromIncident/?id=$id&Lifecycle=".$lifecycle),
+        };
+    }
+
+    $$titleright_raw = join '&nbsp;'x3,
+        map q{<a href="} . $_->{'path'} . ( $_->{'class'} ? q{" class="} . $_->{'class'} : '' ) . q{">}
+            . $m->interp->apply_escapes( $_->{title}, 'h' ) . q{</a>},
+        @titleright_raw;
+    }
+}
+</%INIT>
+
+<%ARGS>
+$ARGSRef
+$queue_name
+$class => undef
+$title_href => undef
+$titleright_raw => undef
+$title_class => undef
+</%ARGS>
