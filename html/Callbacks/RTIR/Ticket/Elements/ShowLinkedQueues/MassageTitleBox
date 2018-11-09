@@ -1,0 +1,52 @@
+<%INIT>
+# this callback provides a means to manipulate the values being sent to the TitleBox element
+# for ShowLinkedQueues before they are run and displayed on the page.
+my @queues = ( 'Incident Reports','Investigations', 'Countermeasures' );
+
+my %lifecycles = (
+    'Incident Reports'  => 'incident_reports',
+    'Investigations'    => 'investigations',
+    'Countermeasures'   => 'countermeasures',
+);
+
+my $id = $ARGSRef->{ TicketObj }->id;
+
+foreach my $queue ( @queues ) {
+    if ( $queue eq $$title ) {
+        my $lifecycle = $lifecycles{ $queue };
+        $$class = 'tickets-list-'. lc(RT::IR::TicketType( Lifecycle => $lifecycle ));
+        $$title_href = RT::IR->HREFTo("Incident/Children/?Lifecycle=$lifecycle&id=$id");
+
+        my @titleright_raw;
+        if ( $ARGSRef->{ TicketObj }->CurrentUserHasRight('ModifyTicket') ) {
+            my $QueueObj = RT::Queue->new($session{CurrentUser});
+            $QueueObj->Load($queue);
+
+            if ( $QueueObj->Id and $QueueObj->CurrentUserHasRight('CreateTicket') ) {
+                push @titleright_raw, {
+                    title => $lifecycle ne RT::IR->lifecycle_investigation? loc('Create') : loc('Launch'),
+                    class => 'create_child' . ($lifecycle ? '_'.$lifecycle : ''),
+                    path => RT::IR->HREFTo("CreateInQueue.html?Incident=$id&Lifecycle=".$lifecycle),
+                };
+            }
+            push @titleright_raw, {
+                title => loc('Link'),
+                path  => RT::IR->HREFTo("Link/FromIncident/?id=$id&Lifecycle=".$lifecycle),
+            };
+        }
+
+        $$titleright_raw = join '&nbsp;'x3,
+            map q{<a href="} . $_->{'path'} . ( $_->{'class'} ? q{" class="} . $_->{'class'} : '' ) . q{">}
+                . $m->interp->apply_escapes( $_->{title}, 'h' ) . q{</a>},
+            @titleright_raw;
+    }
+}
+</%INIT>
+
+<%ARGS>
+$ARGSRef
+$title
+$class => undef
+$title_href => undef
+$titleright_raw => undef
+</%ARGS>

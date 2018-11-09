@@ -230,6 +230,28 @@ Set(
     },
 );
 
+=item C<%LinkedQueuePortlets>
+
+C<%LinkedQueuePortlets> allows you to display links to tickets in
+another queue in a stand-alone portlet on the ticket display page.
+This makes it easier to highlight specific ticket links separate from
+the standard Links portlet.
+
+You can include multiple linked queues in each ticket and they are
+displayed in the order you define them in the configuration. The values
+are RT link types: 'DependsOn', 'DependedOnBy', 'HasMember'
+(children), 'MemberOf' (parents), 'RefersTo', and 'ReferredToBy'.
+'All' lists all linked tickets. You can include multiple link types.
+
+=cut
+
+Set( %LinkedQueuePortlets, (
+    Incidents   => [
+        { 'Incident Reports'  => [ 'All' ] },
+        { Investigations      => [ 'All' ] },
+        { Countermeasures     => [ 'All' ] },
+    ],
+));
 
 =item C<%RTIR_IncidentChildren>
 
