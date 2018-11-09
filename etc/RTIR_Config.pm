@@ -230,6 +230,25 @@ Set(
     },
 );
 
+=item C<%LinkedQueuePortlets%>
+
+This config adds portlets, containing a list of linked
+tickets by queue (Incident Reports, Investigations,
+Countermeasures) to each Incident display page. By
+default, all link types are shown. Additional accepted
+link types include, 'DependsOn', 'DependedOnBy',
+'HasMember' (children), 'MemberOf' (parents), 'RefersTo',
+and 'ReferredToBy'.
+
+=cut
+
+Set( %LinkedQueuePortlets, (
+    Incidents   => [
+        { 'Incident Reports'  => [ 'All' ] },
+        { Investigations      => [ 'All' ] },
+        { Countermeasures     => [ 'All' ] },
+    ],
+));
 
 =item C<%RTIR_IncidentChildren>
 
