@@ -99,8 +99,8 @@ sub Commit {
 
     my $how_many_can = $cf->MaxValues;
 
-    my $attach = $self->TransactionObj->ContentObj;
-    return 1 unless $attach && $attach->id;
+    my $attachments = $ticket->Attachments;
+    return 1 unless $attachments && $attachments->Count;
 
     my %existing;
     for( @{$cf->ValuesForObject( $ticket )->ItemsArrayRef} ) {
@@ -114,33 +114,35 @@ sub Commit {
 
     my $spots_left = $how_many_can - keys %existing;
 
-    my $content = $attach->Content || '';
-    while ( $content =~ m/$IP_re/go ) {
-        if ( $1 && defined $2 ) { # IPv6/mask
-            my $range = $2 == 128 ? $1 : (Net::CIDR::cidr2range( "$1/$2" ))[0]
-                or next;
-            $spots_left -= $self->AddIP(
-                IP => $range, CustomField => $cf, Skip => \%existing
-            );
+    while ( my $attach = $attachments->Next ) {
+        my $content = $attach->Content || '';
+        while ( $content =~ m/$IP_re/go ) {
+            if ( $1 && defined $2 ) { # IPv6/mask
+                my $range = $2 == 128 ? $1 : (Net::CIDR::cidr2range( "$1/$2" ))[0]
+                    or next;
+                $spots_left -= $self->AddIP(
+                    IP => $range, CustomField => $cf, Skip => \%existing
+                );
+            }
+            elsif ( $1 ) { # IPv6
+                $spots_left -= $self->AddIP(
+                    IP => $1, CustomField => $cf, Skip => \%existing
+                );
+            }
+            elsif ( $3 ) { # IPv4
+                $spots_left -= $self->AddIP(
+                    IP => $3, CustomField => $cf, Skip => \%existing
+                );
+            }
+            elsif ( $4 && defined $5 ) { # IPv4/mask
+                my $cidr = join( '.', map { $_||0 } (split /\./, $4)[0..3] ) ."/$5";
+                my $range = (Net::CIDR::cidr2range( $cidr ))[0] or next;
+                $spots_left -= $self->AddIP(
+                    IP => $range, CustomField => $cf, Skip => \%existing
+                );
+            }
+            return 1 unless $spots_left;
         }
-        elsif ( $1 ) { # IPv6
-            $spots_left -= $self->AddIP(
-                IP => $1, CustomField => $cf, Skip => \%existing
-            );
-        }
-        elsif ( $3 ) { # IPv4
-            $spots_left -= $self->AddIP(
-                IP => $3, CustomField => $cf, Skip => \%existing
-            );
-        }
-        elsif ( $4 && defined $5 ) { # IPv4/mask
-            my $cidr = join( '.', map { $_||0 } (split /\./, $4)[0..3] ) ."/$5";
-            my $range = (Net::CIDR::cidr2range( $cidr ))[0] or next;
-            $spots_left -= $self->AddIP(
-                IP => $range, CustomField => $cf, Skip => \%existing
-            );
-        }
-        return 1 unless $spots_left;
     }
 
     return 1;
