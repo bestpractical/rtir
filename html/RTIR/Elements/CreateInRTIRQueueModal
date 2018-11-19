@@ -46,6 +46,9 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <form action="<% RT::IR->HREFTo('Create.html') %>" id="CreateInQueue">
+% $m->callback( CallbackName => 'FormStart', Lifecycle => $Lifecycle, LinkedConstituency => $linked_constituency,
+%     LinkedTicket => $linked_ticket, Incident => $Incident, ARGSRef => \%ARGS );
+
 % if ($Incident) {
 <input type="hidden" name="Incident" value="<%$Incident%>"/>
 % }
@@ -62,6 +65,9 @@
 
     &>Create a new [_1] in the queue [_2]</&>
   <& /Elements/Submit, Label => loc("Go"), Caption => loc("This will take you to a partially prefilled [_1] creation form.", $ticket_type) &>
+
+% $m->callback( CallbackName => 'FormEnd', Lifecycle => $Lifecycle, LinkedConstituency => $linked_constituency,
+%     LinkedTicket => $linked_ticket, Incident => $Incident, ARGSRef => \%ARGS );
 </form>
 <%INIT>
 $Lifecycle = $Lifecycle->[0] if (ref $Lifecycle eq 'ARRAY');
