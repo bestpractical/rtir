@@ -57,7 +57,7 @@ package HTML::Mason::Commands;
 # If we set this in the ColumnMap callback, it's too late, as RT's scrubber
 # has already been initialized
 #
-$HTML::Mason::Commands::SCRUBBER_ALLOWED_ATTRIBUTES{'href'} = '^(?:'.$HTML::Mason::Commands::SCRUBBER_ALLOWED_ATTRIBUTES{'href'} . ')|(?:__RTIRTicketURI__)';
+$RT::Interface::Web::Scrubber::ALLOWED_ATTRIBUTES{'href'} = '^(?:'.$RT::Interface::Web::Scrubber::ALLOWED_ATTRIBUTES{'href'} . ')|(?:__RTIRTicketURI__)';
 
 package RT::IR::Web;
 RT::Base->_ImportOverlays();
