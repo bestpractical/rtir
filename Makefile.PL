@@ -7,8 +7,8 @@ author('Best Practical Solutions <sales@bestpractical.com>');
 all_from('lib/RT/IR.pm');
 
 # update README and docs/UPGRADING
-requires_rt('4.4.1');
-rt_too_new('4.6.0',"\nThis version of RTIR is only compatible with RT 4.4.x and you are using RT %s\n");
+requires_rt('4.6.0');
+rt_too_new('4.8.0',"\nThis version of RTIR is only compatible with RT 4.6.x and you are using RT %s\n");
 
 # XXX: This should be reported by M::I::RTx
 my ($lib_path) = $INC{'RT.pm'} =~ /^(.*)[\\\/]/;
