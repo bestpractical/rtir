@@ -124,6 +124,14 @@
 % }
 % }
 
+<div class="form-row">
+  <div class="col-12">
+    <h4><&|/l&>Incident</&></h4>
+    <input type="checkbox" id="SelectedIncident" name="SelectedIncident" <% $ARGS{SelectedIncident} ? 'checked="checked"' : '' |n %> value="<% $IncidentObj->Id %>">
+    <label for="SelectedIncident"><b><% loc('Add the correspondence/comment to current incident ticket also') %></b></label>
+  </div>
+</div>
+
 % unless ( $candidates ) {
 <& /Elements/ListActions, actions => loc('Warning: no recipients!'), titlebox => { class => 'error-titlebox', bodyclass => 'py-0' } &>
 % }
@@ -212,6 +220,12 @@ if ( $SubmitTicket && !$checks_failure ) {
             );
         }
     }
+
+    if ( $SelectedIncident ) {
+        push @results, map { loc("Ticket [_1]: [_2]", $id, $_) }
+            ProcessUpdateMessage( TicketObj => $IncidentObj, ARGSRef => \%ARGS, KeepAttachments => 1 );
+    }
+
     # manually clear this out since we told ProcessUpdateMessage to KeepAttachments
     delete $session{'Attachments'}{ $ARGS{'Token'} };
 
@@ -299,5 +313,6 @@ $Order           => RT->Config->Get('DefaultSearchResultOrder')
 @SelectedReports         => ()
 @SelectedInvestigations  => ()
 @SelectedCountermeasures => ()
+$SelectedIncident        => undef
 $SubmitTicket            => 0
 </%ARGS>
