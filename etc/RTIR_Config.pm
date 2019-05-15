@@ -179,6 +179,11 @@ Set(
             'resolved'  => 'removed',
             'abandoned' => 'removed',
         },
+        'incidents -> default' => {
+            'open'      => 'open',
+            'resolved'  => 'resolved',
+            'abandoned' => 'rejected',
+        },
         'incident_reports -> incidents' => {
             'new'      => 'open',
             'open'     => 'open',
@@ -197,6 +202,12 @@ Set(
             'resolved' => 'removed',
             'rejected' => 'removed',
         },
+        'incident_reports -> default' => {
+            'new'      => 'new',
+            'open'     => 'open',
+            'resolved' => 'resolved',
+            'rejected' => 'rejected',
+        },
         'investigations -> incidents' => {
             'open'     => 'open',
             'resolved' => 'resolved',
@@ -208,6 +219,10 @@ Set(
         'investigations -> countermeasures' => {
             'open'     => 'active',
             'resolved' => 'removed',
+        },
+        'investigations -> default' => {
+            'open'     => 'open',
+            'resolved' => 'resolved',
         },
         'countermeasures -> incidents' => {
             'pending activation' => 'open',
@@ -226,6 +241,40 @@ Set(
             'active'             => 'open',
             'pending removal'    => 'open',
             'removed'            => 'resolved',
+        },
+        'countermeasures -> default' => {
+            'pending activation' => 'new',
+            'active'             => 'open',
+            'pending removal'    => 'open',
+            'removed'            => 'resolved',
+        },
+        'default -> incident_reports' => {
+            'new'       => 'new',
+            'open'      => 'open',
+            'resolved'  => 'resolved',
+            'rejected'  => 'rejected',
+            'stalled'   => 'open',
+        },
+        'default -> incidents' => {
+            'new'       => 'open',
+            'open'      => 'open',
+            'resolved'  => 'resolved',
+            'rejected'  => 'abandoned',
+            'stalled'   => 'open',
+        },
+        'default -> investigations' => {
+            'new'       => 'open',
+            'open'      => 'open',
+            'resolved'  => 'resolved',
+            'rejected'  => 'resolved',
+            'stalled'   => 'open',
+        },
+        'default -> countermeasures' => {
+            'new'       => 'active',
+            'open'      => 'active',
+            'resolved'  => 'removed',
+            'rejected'  => 'removed',
+            'stalled'   => 'pending activation',
         },
     },
 );
