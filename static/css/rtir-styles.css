@@ -67,6 +67,14 @@ body.rtir #topactions #simple-search input.field {
     width: 150px;
 }
 
+body.rtir #topactions #simple-search input[type="search"]:focus {
+    width: 16em;
+    -webkit-transition: width 0.25s ease-in-out;
+    -moz-transition: width 0.25s ease-in-out;
+    -ms-transition: width 0.25s ease-in-out;
+    transition: width 0.25s ease-in-out;
+}
+
 body.rtir #topactions { min-width: 44em; white-space: no-wrap; }
 
 #comp-RTIR .myrt>table>tr>td:first-child {
