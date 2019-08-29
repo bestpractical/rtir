@@ -57,10 +57,10 @@
 &>
 <div class="actions">
 % unless ( $action ) {
-<a class="button button-small" id="link-incident" href="<% RT::IR->HREFTo('Link/ToIncident/?id='. $id ) %>">Link</a>
-<a class="button button-small" id="create-incident" href="<% RT::IR->HREFTo('CreateInQueue.html?Lifecycle=' . RT::IR->lifecycle_incident . '&Child='. $id ) %>">New</a>
+<a class="button button-small btn btn-lg btn-primary" id="link-incident" href="<% RT::IR->HREFTo('Link/ToIncident/?id='. $id ) %>">Link</a>
+<a class="button button-small btn btn-lg btn-primary" id="create-incident" href="<% RT::IR->HREFTo('CreateInQueue.html?Lifecycle=' . RT::IR->lifecycle_incident . '&Child='. $id ) %>">New</a>
 % } elsif ( $action ne 'No' ) {
-<a class="button button-small" href="<% RT::IR->HREFTo('Display.html?Action='. $action.'&id='. $id) %>"><% loc( $action ) %></a>
+<a class="button button-small btn btn-lg btn-primary" href="<% RT::IR->HREFTo('Display.html?Action='. $action.'&id='. $id) %>"><% loc( $action ) %></a>
 % }
 </div>
 </span>
@@ -98,7 +98,7 @@ my $query = RT::IR->RelevantIncidentsQuery( $Ticket );
 my $format = RT->Config->Get('RTIRSearchResultFormats')->{'ListIncidents'};
 my $dformat = $format;
 if ( $show_unlink ) {
-    $dformat .= ", '<a class=\"button\" href=\"". RT::IR->HREFTo("Display.html?id=$id&DeleteLink--MemberOf-__id__=1").\">". loc('Unlink') ."</a>/TITLE:'";
+    $dformat .= ", '<a class=\"button button-small btn btn-lg btn-primary\" href=\"". RT::IR->HREFTo("Display.html?id=$id&DeleteLink--MemberOf-__id__=1").\">". loc('Unlink') ."</a>/TITLE:'";
 }
 </%INIT>
 
