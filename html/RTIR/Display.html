@@ -55,9 +55,8 @@
 
 <div class="summary"><&| /Widgets/TitleBox, title => loc('Ticket metadata') &>
 
-<table class="ticket-summary" width="100%">
-<tr>
-<td class="boxcontainer" valign="top">
+<div class="row ticket-summary">
+  <div class="boxcontainer col-md-6">
 % $m->callback( %ARGS, Ticket => $Ticket, CallbackName => 'LeftColumnStart' );
 
 <&| /Widgets/TitleBox,
@@ -65,43 +64,55 @@
     title_href  => RT::IR->HREFTo("Edit.html?id=".$Ticket->Id),
     class => 'ticket-info-basics',
 &>
-<table class="basics">
+    <div>
 % if (my $constituency = RT::IR->ConstituencyFor($Ticket)) {
-  <tr>
-    <td class="label"><% loc("Constituency") %>:</td>
-    <td class="value">
-      <% $constituency %>
-    </td>
-  </tr>
-  <tr>
-
+      <div class="form-row">
+        <div class="label col-md-3">
+          <% loc("Constituency") %>:
+        </div>
+        <div class="value col-md-9">
+          <span class="current-value"><% $constituency %></span>
+        </div>
+      </div>
 % }
-  <tr>
-    <td class="label"><% loc("Status") %>:</td>
-    <td class="value">
-      <% $Ticket->Status %>
-    </td>
-  </tr>
+      <div class="form-row">
+        <div class="label col-md-3">
+          <% loc("Status") %>:
+        </div>
+        <div class="value col-md-9">
+          <span class="current-value"><% $Ticket->Status %></span>
+        </div>
+      </div>
 % if ( !$Ticket->QueueObj->SLADisabled ) {
-  <tr class="sla">
-    <td class="label"><&|/l&>SLA</&>:</td>
-    <td class="value"><% loc($Ticket->SLA) %></td>
-  </tr>
+      <div class="form-row">
+        <div class="label col-md-3">
+          <&|/l&>SLA</&>:
+        </div>
+        <div class="value col-md-9">
+          <span class="current-value"><% loc($Ticket->SLA) %></span>
+        </div>
+      </div>
 % }
-  <tr>
-    <td class="label"><% loc("Incident") %>:</td>
-    <td class="value">
-      <& /RTIR/Elements/ShowIncidents, Ticket => $Ticket &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Time Worked</&>:</td>
-    <td class="value"><%loc('[_1] min', $TimeWorked)%></td>
-  </tr>
+      <div class="form-row">
+        <div class="label col-md-3">
+          <% loc("Incident") %>:
+        </div>
+        <div class="value col-md-9">
+          <& /RTIR/Elements/ShowIncidents, Ticket => $Ticket &>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="label col-md-3">
+          <&|/l&>Time Worked</&>:
+        </div>
+        <div class="value col-md-9">
+          <span class="current-value"><%loc('[_1] min', $TimeWorked)%></span>
+        </div>
+      </div>
 
   <& /Elements/ShowCustomFields, Grouping => 'Basics', Object => $Ticket, Table => 0 &>
 
-</table>
+    </div>
 
 </&>
 
@@ -115,7 +126,8 @@
 <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket,
    Attachments => $attachments &>
 
-</td> <td class="boxcontainer" valign="top">
+  </div>
+  <div class="boxcontainer col-md-6">
 % $m->callback( %ARGS, Ticket => $Ticket, CallbackName => 'RightColumnStart' );
 
     <&| /Widgets/TitleBox,
@@ -134,9 +146,8 @@
 % $m->callback( %ARGS, Ticket => $Ticket, CallbackName => 'BeforeRequestor' );
     <br />  
       <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket, DisplayPath => RT::IR->HREFTo("Display.html") &>
-  </td>
-</tr>
-</table>
+  </div>
+</div>
 
 </&></div>
 
