@@ -70,7 +70,7 @@ my %actions;
         $args{value} = $escaper->($args{value});
         # don't execute on non-rtir tickets or in SelfService
         return $args{value} unless defined $args{type} and !$SelfService;
-        return qq{<a href="}. RT::IR->HREFTo("Tools/Lookup.html?".$args{lookup_params}."q=".$args{value}).qq{">$args{value}</a>};
+        return qq{ <a href="}. RT::IR->HREFTo("Tools/Lookup.html?".$args{lookup_params}."q=".$args{value}).qq{">$args{value}</a>};
     },
     url => sub {
         my %args = @_;
