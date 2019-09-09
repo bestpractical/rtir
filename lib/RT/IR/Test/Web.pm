@@ -188,7 +188,7 @@ sub ticket_is_linked_to_inc {
     foreach my $inc( ref $incs? @$incs : ($incs) ) {
         my $desc = shift || "Ticket $id is linked to the Incident #$inc";
         $self->content_like(
-            qr{Incident:\s*</td>\s*<td[^>]*?>.*?<td[^>]*?><b><a\s+href="/RTIR/Incident/Display.html\?id=\Q$inc\E">\Q$inc\E</a></b></td>}ism,
+            qr{<td[^>]*?><b><a\s+href="/RTIR/Incident/Display.html\?id=\Q$inc\E">\Q$inc\E</a></b></td>}ism,
             $desc
         ) or return 0;
     }
@@ -203,7 +203,7 @@ sub ticket_is_not_linked_to_inc {
     foreach my $inc( @$incs ) {
         my $desc = shift || "Ticket $id is not linked to the Incident #$inc";
         $self->content_unlike(
-            qr{Incident:\s*</td>\s*<td[^>]*?>.*?<a\s+href="/RTIR/Display.html\?id=\Q$inc\E">\Q$inc\E:\s+}ism,
+            qr{<td[^>]*?><b><a\s+href="/RTIR/Incident/Display.html\?id=\Q$inc\E">\Q$inc\E</a></b></td>}ism,
             $desc
         ) or return 0;
     }
