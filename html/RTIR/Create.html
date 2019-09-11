@@ -81,13 +81,16 @@
 
 <div id="ticket-create-metadata">
 <&| /Widgets/TitleBox, title => loc("Basics"), class=>'ticket-info-basics' &>
-<table width="100%" border="0">
 
 % if ( $SplitObj ) {
-  <tr class="split">
-    <td class="label"><&|/l&>Split from</&>:</td>
-    <td class="value"><% $SplitObj->id %></td>
-  </tr>
+  <div class="form-row">
+    <div class="label col-md-3">
+      <&|/l&>Split from</&>:
+    </div>
+    <div class="value col-md-9">
+      <span class="current-value form-control"><% $SplitObj->id %></span>
+    </div>
+  </div>
 % }
 
   <& /RTIR/Elements/SelectIncident,
@@ -104,6 +107,7 @@
             comp => '/Ticket/Elements/ShowQueue',
             args => {
                 QueueObj => $QueueObj,
+                Wrap => 1,
             },
         },
         {
@@ -153,7 +157,7 @@
   <& /Ticket/Elements/EditTransactionCustomFields,
     %ARGS, QueueObj => $QueueObj, InTable => 1,
   &>
-</table></&>
+</&>
 
 <& /Elements/EditCustomFieldCustomGroupings,
     %ARGS,
@@ -163,7 +167,7 @@
     Groupings => [ RT::CustomField->CustomGroupings('RTIR::Ticket'), '' ],
 &>
 <&| /Widgets/TitleBox, title => loc("Dates"), class=>'ticket-info-dates' &>
-<table width="100%" border="0">
+
 <& /Ticket/Elements/EditBasics,
     InTable => 1,
     QueueObj => $QueueObj,
@@ -180,10 +184,9 @@
         },
     ],
 &>
-</table></&>
+</&>
 
 <&| /Widgets/TitleBox, title => loc("Time"), class=>'ticket-info-time' &>
-<table width="100%" border="0">
 <& /Ticket/Elements/EditBasics,
     InTable => 1,
     QueueObj => $QueueObj,
@@ -214,7 +217,7 @@
         },
     ],
 &>
-</table></&>
+</&>
 
 % if ( RT::IR->IsInvestigationQueue($QueueObj) && @IncidentObj ) {
   <& /RTIR/Elements/AttachReports, Ticket => \@IncidentObj &>
@@ -225,82 +228,107 @@
 
 <div id="ticket-create-message">
 <&| /Widgets/TitleBox, title => $Title, class => 'messagedetails' &>
-<table width="100%" border="0">
 
-  <tr>
-    <td class="label"><&|/l&>Correspondents</&>:</td>
-    <td class="value"><& /Elements/EmailInput,
+  <div class="form-row">
+    <div class="label col-md-2">
+      <&|/l&>Correspondents</&>:
+    </div>
+    <div class="value col-md-9">
+      <& /Elements/EmailInput,
         Name => 'Requestors', Default => $ARGS{'Requestors'}, Size => undef,
-    &></td>
-  </tr>
-  <tr>
-    <td class="label">&nbsp;</td>
-    <td class="comment">
-      <input type="checkbox" name="SkipNotification" value="Requestors" <% (grep $_ eq 'Requestors', @SkipNotification)? 'checked': '' %> />
-      <&|/l&>Don't send any emails to correspondents.</&>
-    </td>
-  </tr>
+      &>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="label col-md-2"></div>
+    <div class="value col-md-9">
+      <div class="custom-control custom-checkbox">
+        <input class="custom-control-input checkbox" type="checkbox" name="SkipNotification" id="SkipNotification" value="Requestors" <% (grep $_ eq 'Requestors', @SkipNotification)? 'checked': '' %> />
+        <label class="custom-control-label" for="SkipNotification"><&|/l&>Don't send any emails to correspondents.</&></label>
+      </div>
+    </div>
+  </div>
+
 % $m->callback( CallbackName => 'AfterRequestors', ARGSRef => \%ARGS );
 
-  <tr>
-    <td class="label"><&|/l&>Cc</&>:</td>
-    <td class="value"><& /Elements/EmailInput,
+  <div class="form-row">
+    <div class="label col-md-2">
+      <&|/l&>Cc</&>:
+    </div>
+    <div class="value col-md-9">
+      <& /Elements/EmailInput,
         Name => 'Cc', Default => $ARGS{'Cc'}, Size => undef,
-    &></td>
-  </tr>
-  <tr>
-    <td class="label">&nbsp;</td>
-    <td class="comment"><i><font size="-2">
-        <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)</&>
-    </font></i></td>
-  </tr>
+      &>
+    </div>
+  </div>
 
-  <tr>
-    <td class="label"><&|/l&>Admin Cc</&>:</td>
-    <td class="value"><& /Elements/EmailInput,
+  <div class="form-row">
+    <div class="label col-md-2"></div>
+    <div class="value col-md-9">
+      <i><&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)</&></i>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="label col-md-2">
+      <&|/l&>Admin Cc</&>:
+    </div>
+    <div class="value col-md-9">
+      <& /Elements/EmailInput,
         Name => 'AdminCc', Default => $ARGS{'AdminCc'}, Size => undef,
-    &></td>
-  </tr>
-  <tr>
-    <td class="label">&nbsp;</td>
-    <td class="comment"><i><font size="-2">
-        <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)</&>
-    </font></i></td>
-  </tr>
+      &>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="label col-md-2"></div>
+    <div class="value col-md-9">
+      <i><&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)</&></i>
+    </div>
+  </div>
 
 % my $roles = $QueueObj->CustomRoles;
 % $roles->LimitToMultipleValue;
 % while (my $role = $roles->Next) {
-  <tr>
-    <td class="label"><% $role->Name %>:</td>
-    <td class="value"><& /Elements/EmailInput,
+  <div class="form-row">
+    <div class="label col-md-2">
+      <% $role->Name %>:
+    </div>
+    <div class="value col-md-9">
+      <& /Elements/EmailInput,
         Name => $role->GroupType, Default => $ARGS{$role->GroupType}, Size => undef,
-    &></td>
-  </tr>
+      &>
+    </div>
+  </div>
 % if ($role->EntryHint) {
-  <tr>
-    <td class="label">&nbsp;</td>
-    <td class="comment"><i><font size="-2">
-        <% $role->EntryHint %>
-    </font></i></td>
-  </tr>
+  <div class="form-row">
+    <div class="label col-md-2"></div>
+    <div class="value col-md-9">
+      <i><% $role->EntryHint %></i>
+    </div>
+  </div>
 % }
 % }
 
-  <tr>
-    <td class="label"><&|/l&>Subject</&>:</td>
-    <td class="value"><input type="text" name="Subject" maxsize="200" value="<% $Subject || '' %>" /></td>
-  </tr>
+  <div class="form-row">
+    <div class="form-group label col-md-2">
+      <&|/l&>Subject</&>:
+    </div>
+    <div class="form-group value col-md-9">
+      <input class="form-control" type="text" name="Subject" value="<% $Subject || '' %>" />
+    </div>
+  </div>
 
 % if ( $gnupg_widget ) {
-  <tr><td>&nbsp;</td><td class="value">
-  <& /Elements/Crypt/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &>
-  </td></tr>
+  <div class="form-row">
+    <div class="label col-md-2"></div>
+    <div class="value col-md-9">
+      <& /Elements/Crypt/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &>
+    </div>
+  </div>
 % }
 
-  <tr>
-    <td class="label"><&|/l&>Message</&>:</td>
-    <td class="value">
+  <div class="form-group">
 <%perl>
  my $include_signature = 1;
  unless (exists $ARGS{Content}) {
@@ -339,14 +367,18 @@
 % } else {
 <& /Elements/MessageBox, QuoteTransaction => $QuoteTransaction &>
 % }
-    </td>
-  </tr>
+  </div>
 
   <& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $QueueObj &>
 
-</table></&>
+</&>
 
-<& /Elements/Submit, Name => "Create", Label => $SubmitCaption, SubmitId => 'create-ticket' &>
+<div class="form-row">
+  <div class="col-md-12">
+    <& /Elements/Submit, Name => "Create", Label => $SubmitCaption, SubmitId => 'create-ticket' &>
+  </div>
+</div>
+
 </div></div>
 
 
