@@ -91,71 +91,98 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
 
 <div class="ticket-create-basics">
 <&| /Widgets/TitleBox, title => 'Basics', class => 'ticket-info-basics' &>
-<table width="100%" border="0">
 % if ($constituency) {
-<tr class="constituency"><td class="label"><% loc('Constituency') %>:</td>
-    <td class="value"><% $constituency %></td></tr>
-
+  <div class="form-row">
+    <div class="label col-md-3">
+      <% loc('Constituency') %>:
+    </div>
+    <div class="value col-md-9">
+      <span class="current-value"><% $constituency %></span>
+    </div>
+  </div>
 % }
 % if ( $Split ) {
-<tr class="split-from"><td class="label"><% loc('Split from') %>:</td>
-    <td class="value"><a href="<%RT::IR->HREFTo('Incident/Display.html?id='.$SplitObj->id)%>"><% loc("[_1] #[_2]: [_3]", RT::IR::TicketType(Lifecycle => $SplitObj->QueueObj->Lifecycle), $SplitObj->Id, $SplitObj->Subject) %></a></td></tr>
+  <div class="form-row">
+    <div class="label col-md-3">
+      <% loc('Split from') %>:
+    </div>
+    <div class="value col-md-9">
+      <span class="current-value form-control">
+        <a href="<%RT::IR->HREFTo('Incident/Display.html?id='.$SplitObj->id)%>"><% loc("[_1] #[_2]: [_3]", RT::IR::TicketType(Lifecycle => $SplitObj->QueueObj->Lifecycle), $SplitObj->Id, $SplitObj->Subject) %></a>
+      </span>
+    </div>
+  </div>
 % }
-
 % if ( $ChildObj ) {
-<tr class="link-with"><td class="label"><% loc('Link with') %>:</td>
-    <td class="value"><a href="<%RT::IR->HREFTo('Display.html?id='.$ChildObj->id)%>"><% loc("[_1] #[_2]: [_3]",  RT::IR::TicketType(Lifecycle => $ChildObj->QueueObj->Lifecycle), $ChildObj->Id, $ChildObj->Subject) %></a></td></tr>
+  <div class="form-row">
+    <div class="label col-md-3">
+      <% loc('Link with') %>:
+    </div>
+    <div class="value col-md-9">
+      <span class="current-value form-control">
+        <a href="<%RT::IR->HREFTo('Display.html?id='.$ChildObj->id)%>"><% loc("[_1] #[_2]: [_3]",  RT::IR::TicketType(Lifecycle => $ChildObj->QueueObj->Lifecycle), $ChildObj->Id, $ChildObj->Subject) %></a>
+      </span>
+    </div>
+  </div>
 % }
+  <div class="form-row">
+    <div class="label col-md-3">
+      <&|/l&>Queue</&>:
+    </div>
+    <div class="value col-md-9">
+      <span class="current-value form-control"><& /Ticket/Elements/ShowQueue, QueueObj => $QueueObj &></span>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="label col-md-3">
+      <&|/l&>Status</&>:
+    </div>
+    <div class="value col-md-9">
+      <& /Ticket/Elements/SelectStatus,
+          Name => 'Status',
+          Object => $QueueObj,
+          DefaultValue => 0,
+          Default => $ARGS{Status} || $QueueObj->LifecycleObj->DefaultOnCreate,
+      &>
+    </div>
+  </div>
 
-  
-<tr class="queue">
-  <td class="label"><&|/l&>Queue</&>:</td>
-  <td colspan="2">
-      <& /Ticket/Elements/ShowQueue, QueueObj => $QueueObj &>
-  </td>
-</tr>
- 
-
-
-<tr class="status">
-  <td class="label"><&|/l&>Status</&>:</td>
-  <td colspan="2">
-    <& /Ticket/Elements/SelectStatus,
-        Name => 'Status',
-        Object => $QueueObj,
-        DefaultValue => 0,
-        Default => $ARGS{Status} || $QueueObj->LifecycleObj->DefaultOnCreate,
-    &>
-  </td>
-</tr>
-<tr class="owner">
-    <td class="label"><&|/l&>Owner</&>:</td>
+  <div class="form-row owner">
+    <div class="label col-md-3">
+      <&|/l&>Owner</&>:
+    </div>
 % if ( $ChildObj ) {
-    <td class="value">
+    <div class="value col-md-9">
       <& /Elements/ShowUser, User => $ChildObj->OwnerObj &>
       <input type="hidden" name="Owner" value="<% $ChildObj->Owner %>" />
-    </td>
+    </div>
 % } else {
-    <td class="value"><& /Elements/SelectOwner, 
+    <div class="value col-md-9">
+      <& /Elements/SelectOwner,
         Name     => 'Owner',
         QueueObj => $QueueObj,
         Default  => $ARGS{'Owner'} || $session{'CurrentUser'}->Id
-    &></td>
+      &>
+    </div>
 % }
+  </div>
 % if ( !$QueueObj->SLADisabled ) {
-  <tr class="sla">
-    <td class="label"><&|/l&>SLA</&>:</td>
-    <td class="value"><& /Elements/SelectSLA,
-        Name         => 'SLA',
-        Default      => $ARGS{SLA} || RT::SLA->GetDefaultServiceLevel(Queue => $QueueObj),
-        DefaultValue => RT::SLA->GetDefaultServiceLevel(Queue => $QueueObj) ? 0 : 1,
-        QueueObj     => $QueueObj,
-    &></td>
-  </tr>
+  <div class="form-row">
+    <div class="label col-md-3">
+      <&|/l&>SLA</&>:
+    </div>
+    <div class="value col-md-9">
+      <& /Elements/SelectSLA,
+          Name         => 'SLA',
+          Default      => $ARGS{SLA} || RT::SLA->GetDefaultServiceLevel(Queue => $QueueObj),
+          DefaultValue => RT::SLA->GetDefaultServiceLevel(Queue => $QueueObj) ? 0 : 1,
+          QueueObj     => $QueueObj,
+      &>
+    </div>
+  </div>
 % }
-</tr>
 
-<& /RTIR/Elements/EditCustomFields, 
+<& /RTIR/Elements/EditCustomFields,
     %ARGS,
     TicketObj    => $ticket,
     QueueObj     => $QueueObj,
@@ -163,7 +190,7 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
     CFDefaults => \%CFDefaults,
 &>
 
-</table></&>
+</&>
 
 <& /Elements/EditCustomFieldCustomGroupings,
     %ARGS,
@@ -173,35 +200,41 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
     Groupings => [ RT::CustomField->CustomGroupings('RTIR::Ticket'), '' ],
 &>
 
-</div>
+</div>  <!-- end ticket-create-basics -->
 
 <div class="ticket-create-details">
 
 <&| /Widgets/TitleBox, title => $Title, class => 'ticket-info-message' &>
-<table width="100%" border="0">
-
-  <tr class="subject">
-    <td class="label"><&|/l&>Subject</&>:</td>
-    <td class="value"><input type="text" name="Subject" maxsize="200" value="<% $ARGS{'Subject'} || '' %>" /></td>
-  </tr>
+  <div class="form-row">
+    <div class="form-group label col-md-2">
+      <&|/l&>Subject</&>:
+    </div>
+    <div class="form-group value col-md-9">
+      <input class="form-control" type="text" name="Subject" value="<% $ARGS{'Subject'} || '' %>" />
+    </div>
+  </div>
 
 % if ( $gnupg_widget ) {
-<tr><td>&nbsp;</td><td>
-<& /Elements/Crypt/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &>
-</td></tr>
+  <div class="form-row">
+    <div class="label col-md-2">
+      &nbsp;
+    </div>
+    <div class="value col-md-9">
+      <& /Elements/Crypt/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &>
+    </div>
+  </div>
 % }
 
-<tr class="message"><td class="labeltop"><&|/l&>Message</&>:</td>
-<td>
-<& /Elements/MessageBox,
-    Default => $ARGS{'Content'},
-    IncludeSignature => 0,
-&>
-</td></tr>
+  <div class="form-group">
+    <& /Elements/MessageBox,
+        Default => $ARGS{'Content'},
+        IncludeSignature => 0,
+    &>
+  </div>
 
 <& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $QueueObj &>
 
-</table></&>
+</&>
 
 <&| /Widgets/TitleBox, title => loc('Details'), class => 'ticket-info-details' &>
 <& /Ticket/Elements/EditBasics,
@@ -267,11 +300,16 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
     ],
 &>
 </&>
+
+<div class="form-row">
+  <div class="col-md-12">
+    <& /Elements/Submit, Name => 'CreateIncident', Label => $SubmitLabel, SubmitId => 'create-ticket' &>
+  </div>
 </div>
 
-<& /Elements/Submit, Name => 'CreateIncident', Label => $SubmitLabel, SubmitId => 'create-ticket' &>
+</div>  <!-- end ticket-create-details -->
 
-</div>
+</div>  <!-- end ticket-create-incident -->
 
 % $m->callback( CallbackName => 'FormEnd', QueueObj => $QueueObj, Constituency => $constituency,
 %    ChildObj => $ChildObj, SplitObj => $SplitObj, ARGSRef => \%ARGS );
