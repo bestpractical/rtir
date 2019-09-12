@@ -45,28 +45,18 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table width="100%" border="0" cellpadding="2" cellspacing="0">
-<tr><td valign="top" width="50%">
-
-<& LookupSummary, %ARGS, Lifecycle => RT::IR->lifecycle_incident, Query => $query &>
-
-</td><td valign="top" width="50%">
-
-<& LookupSummary, %ARGS, Lifecycle => RT::IR->lifecycle_investigation, Query => $query &>
-
-</td></tr><tr><td valign="top" width="50%">
-
-<& LookupSummary, %ARGS, Lifecycle => RT::IR->lifecycle_report, Query => $query &>
-
-</td><td width="50%" valign="top">
-
+<div class="row">
+  <div class="boxcontainer col-md-6">
+    <& LookupSummary, %ARGS, Lifecycle => RT::IR->lifecycle_incident, Query => $query &>
+    <& LookupSummary, %ARGS, Lifecycle => RT::IR->lifecycle_investigation, Query => $query &>
+  </div>
+  <div class="boxcontainer col-md-6">
+    <& LookupSummary, %ARGS, Lifecycle => RT::IR->lifecycle_report, Query => $query &>
 % unless ( RT->Config->Get('RTIR_DisableCountermeasures') ) {
-<& LookupSummary, %ARGS, Lifecycle => RT::IR->lifecycle_countermeasure, Query => $query &>
+    <& LookupSummary, %ARGS, Lifecycle => RT::IR->lifecycle_countermeasure, Query => $query &>
 % }
-
-</td></tr>
-
-</table>
+  </div>
+</div>
 <%args>
 $LookupType => undef
 $q => undef
