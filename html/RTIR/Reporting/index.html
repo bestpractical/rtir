@@ -49,45 +49,58 @@
 <& /Elements/Tabs &>
 
 <form action="index.html" method="post">
-<table>
-  <tr>
-    <td class="label"><&|/l&>Constituency</&>:</td>
-    <td class="value">
-      <& /Elements/EditCustomField,
-           QueueObj => RT::Queue->new($session{CurrentUser}),
-           CustomField => $constituency_cf,
-           Name => 'Constituency',
-      &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Start Date:</&></td>
-    <td class="input">
-      <& /Elements/SelectDate, Name => 'StartDate', Default => $start->AsString &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>End Date:</&></td>
-    <td class="input">
-      <& /Elements/SelectDate, Name => 'EndDate', Default => $end->AsString &>
-    </td>
-  </tr>
-</table>
-<& /Elements/Submit,
-    Caption => loc("Generate a delimited text report"),
-    Name    => "TextReport",
-    Label   => loc("Text"),
-&>
-<& /Elements/Submit,
-    Name    => "HTMLReport",
-    Caption => loc("Generate a HTML report"),
-    Label   => loc("HTML"),
-&>
-<& /Elements/Submit,
-    Name    => "SpreadsheetReport",
-    Caption => loc("Generate a spreadsheet report"),
-    Label   => loc("Spreadsheet"),
-&>
+<div class="row">
+  <div class="col-md-3">
+    <div class="form-row">
+      <div class="label col-md-3">
+        <&|/l&>Constituency</&>:
+      </div>
+      <div class="value col-md-9">
+        <& /Elements/EditCustomField,
+            QueueObj => RT::Queue->new($session{CurrentUser}),
+            CustomField => $constituency_cf,
+            Name => 'Constituency',
+        &>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="label col-md-3">
+        <&|/l&>Start Date:</&>
+      </div>
+      <div class="value col-md-9">
+        <& /Elements/SelectDate, Name => 'StartDate', Default => $start->AsString &>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="label col-md-3">
+        <&|/l&>End Date:</&>
+      </div>
+      <div class="value col-md-9">
+        <& /Elements/SelectDate, Name => 'EndDate', Default => $end->AsString &>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <& /Elements/Submit,
+        Caption => loc("Generate a delimited text report"),
+        Name    => "TextReport",
+        Label   => loc("Text"),
+    &>
+    <& /Elements/Submit,
+        Name    => "HTMLReport",
+        Caption => loc("Generate a HTML report"),
+        Label   => loc("HTML"),
+    &>
+    <& /Elements/Submit,
+        Name    => "SpreadsheetReport",
+        Caption => loc("Generate a spreadsheet report"),
+        Label   => loc("Spreadsheet"),
+    &>
+  </div>
+</div>
 </form>
 
 <%INIT>
