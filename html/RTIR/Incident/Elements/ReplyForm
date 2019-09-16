@@ -47,53 +47,73 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => $Title &>
 
-<table width="100%">
-<tr class="subject"><td class="label"><&|/l&>Subject</&>:</td>
-<td class="value"><i>(<&|/l&>uses subjects from tickets</&>)</i></td></tr>
-
-<tr><td class="label"><&|/l&>Update Type</&>:</td>
-<td class="value">
-<select name="UpdateType">
+<div class="form-row">
+  <div class="label col-md-2">
+    <&|/l&>Subject</&>:
+  </div>
+  <div class="value col-md-9">
+    <span class="current-value form-control"><i>(<&|/l&>uses subjects from tickets</&>)</i></span>
+  </div>
+</div>
+<div class="form-row">
+  <div class="label col-md-2">
+    <&|/l&>Update Type</&>:
+  </div>
+  <div class="value col-md-9">
+    <select class="selectpicker form-control" name="UpdateType">
 % if( $AllowComment ) {
-  <option value="private" <% $CommentDefault %>><&|/l&>Comments (Not sent to requestors)</&></option>
+      <option value="private" <% $CommentDefault %>><&|/l&>Comments (Not sent to requestors)</&></option>
 % }
 % if( $AllowResponse ) {
-  <option value="response" <% $ResponseDefault %>><&|/l&>Response to requestors</&></option>
+      <option value="response" <% $ResponseDefault %>><&|/l&>Response to requestors</&></option>
 % }
-</select>
-</td></tr>
+    </select>
+  </div>
+</div>
 
 % if ( $TicketObj ) {
-<tr><td class="label"><&|/l&>Resolution</&>:</td>
-<td class="value">
-<& /RTIR/Elements/EditRTIRField,
-    TicketObj => $TicketObj,
-    QueueObj  => $TicketObj->QueueObj,
-    Name      => 'Resolution',
-    Default   => (
-        $TicketObj->FirstCustomFieldValue('Resolution') ||
-        RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Resolution'}{$Status}
-    ),
-    Rows      => 1,
-&></td></tr>
+<div class="form-row">
+  <div class="label col-md-2">
+    <&|/l&>Resolution</&>:
+  </div>
+  <div class="value col-md-9">
+    <& /RTIR/Elements/EditRTIRField,
+        TicketObj => $TicketObj,
+        QueueObj  => $TicketObj->QueueObj,
+        Name      => 'Resolution',
+        Default   => (
+            $TicketObj->FirstCustomFieldValue('Resolution') ||
+            RT->Config->Get('RTIR_CustomFieldsDefaults')->{'Resolution'}{$Status}
+        ),
+        Rows      => 1,
+    &>
+  </div>
+</div>
 % }
-
-<tr class="owner"><td class="label"><&|/l&>Owner</&>:</td>
-<td class="value">
-<& /Elements/SelectOwner,
-    Name    => "Owner",
-    Default => $Owner || $session{'CurrentUser'}->Id || undef,
-&>
-<&|/l&>Worked</&>:
-<& /Elements/EditTimeValue,
-    Name => 'UpdateTimeWorked',
-    Default => $ARGS{'UpdateTimeWorked'} || '',
-&>
-</td></tr>
+<div class="form-row">
+  <div class="label col-md-2">
+    <&|/l&>Owner</&>:
+  </div>
+  <div class="value col-md-9">
+    <& /Elements/SelectOwner,
+        Name    => "Owner",
+        Default => $Owner || $session{'CurrentUser'}->Id || undef,
+    &>
+  </div>
+</div>
+<div class="form-row">
+  <div class="label col-md-2">
+    <&|/l&>Worked</&>:
+  </div>
+  <div class="value col-md-9">
+    <& /Elements/EditTimeValue,
+        Name => 'UpdateTimeWorked',
+        Default => $ARGS{'UpdateTimeWorked'} || '',
+    &>
+  </div>
+</div>
 
 <& /RTIR/Elements/UpdateData, %ARGS, Ticket => $TicketObj, QueueObj => $QueueObj &>
-
-</table>
 
 </&>
 <%INIT>
