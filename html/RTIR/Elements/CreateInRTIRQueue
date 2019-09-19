@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,26 +45,64 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="modal-dialog modal-dialog-centered" role="document">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h5 class="modal-title"><&|/l, $ARGS{ticket_type} &>Create [_1]</&></h5>
-      <a href="javascript:void(0)" class="close" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </a>
-    </div>
-    <div class="modal-body">
-      <& /RTIR/Elements/CreateInRTIRQueue, %ARGS &>
-    </div>
-  </div>
-</div>
+      <form action="<% RT::IR->HREFTo('Create.html') %>" id="CreateInQueue">
+% if ($Incident) {
+        <input type="hidden" name="Incident" value="<%$Incident%>"/>
+% }
+% if ($Child) {
+        <input type="hidden" name="Child" value="<%$Child%>"/>
+% }
+        <div class="form-row">
+          <div class="col-md-12 text-center">
+            <&|/l, $ticket_type &>Create a new [_1] in the queue</&>:
+              <div class="d-inline-block">
+                <& /RTIR/Elements/SelectRTIRQueue,
+                    Name => 'Queue',
+                    Lifecycle => $Lifecycle,
+                    ShowNullOption => 0,
+                    LimitToConstituency => $limit_to_constituency,
+                    Constituency => $m->{'RTIR_ConstituencyFilter'} || $linked_constituency
+                &>
+              </div>
+            </div>
+          </div>
+        <div class="form-row">
+          <div class="col-md-12">
+            <& /Elements/Submit, Label => loc("Go"), Caption => loc("This will take you to a partially prefilled [_1] creation form.", $ticket_type) &>
+          </div>
+        </div>
+      </form>
 <%INIT>
 $Lifecycle = $Lifecycle->[0] if (ref $Lifecycle eq 'ARRAY');
-$ARGS{ticket_type} = RT::IR::TicketType( Lifecycle => $Lifecycle );
+
+my ($linked_ticket, $linked_constituency);
+
+if ($Incident) {
+    $linked_ticket = RT::Ticket->new( $session{CurrentUser} );
+    $linked_ticket->Load($Incident);
+}
+
+if ($Child) {
+    $linked_ticket = RT::Ticket->new( $session{CurrentUser} );
+    $linked_ticket->Load($Child);
+}
+
+if ($linked_ticket && $linked_ticket->id) {
+    $linked_constituency = RT::IR->ConstituencyFor($linked_ticket);
+}
+
+my $limit_to_constituency =
+    # Limit no matter what if we have a filter
+    $m->{'RTIR_ConstituencyFilter'} ||
+    # Also limit if we have a linked constituency and StrictConstituencyLinking is set
+    (RT::IR->StrictConstituencyLinking && $linked_constituency)
+    ? 1:0;
+
+$ticket_type = lc $ticket_type;
 </%INIT>
 <%ARGS>
 $Lifecycle
 $Incident => undef
 $Child => undef
+$ticket_type => undef
 </%ARGS>
-
