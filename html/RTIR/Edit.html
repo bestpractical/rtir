@@ -61,99 +61,121 @@
 <form method="post" action="Edit.html" enctype="multipart/form-data">
 <input type="hidden" name="id" value="<% $id %>" />
 
-<table border="0" cellspacing="2" cellpadding="0" width="100%">
-<tr>
-<td valign="top" width="50%">
-<&| /Widgets/TitleBox, title => loc("The Basics"), class => 'ticket-info-basics' &>
+<div class="row">
+  <div class="col-md-6">
+    <&| /Widgets/TitleBox, title => loc("The Basics"), class => 'ticket-info-basics' &>
 
-<table>
-  <tr class="subject">
-    <td class="label"><&|/l&>Subject</&>:</td>
-    <td class="value"><input type="text" name="Subject" value="<% $ARGS{'Subject'} || $Ticket->Subject %>" size="50" /></td>
-  </tr>
-  <tr class="status">
-    <td class="label"><&|/l&>Status</&>:</td>
-    <td class="value" colspan="2">
+    <div class="form-row">
+      <div class="label col-md-3">
+        <&|/l&>Subject</&>:
+      </div>
+      <div class="value col-md-9">
+        <input class="form-control" type="text" name="Subject" value="<% $ARGS{'Subject'} || $Ticket->Subject %>" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="label col-md-3">
+        <&|/l&>Status</&>:
+      </div>
+      <div class="value col-md-9">
 % unless ( RT::IR->IsCountermeasureQueue($Ticket->QueueObj) ) {
-      <% loc($Ticket->Status) %>
+        <span class="current-value form-control"><% loc($Ticket->Status) %></span>
 % } else {
-      <& /Ticket/Elements/SelectStatus,
-          Name => 'Status',
-          Object => $Ticket->QueueObj,
-          DefaultValue => 0,
-          Default => $ARGS{'Status'} || $Ticket->Status,
-      &>
+        <& /Ticket/Elements/SelectStatus,
+            Name => 'Status',
+            Object => $Ticket->QueueObj,
+            DefaultValue => 0,
+            Default => $ARGS{'Status'} || $Ticket->Status,
+        &>
 % }
-    </td>
-  </tr>
-  <tr class="owner">
-    <td class="label"><&|/l&>Owner</&>:</td>
-    <td class="value"><& /Elements/SelectOwner,
-        Name => 'Owner', Default => $ARGS{'Owner'} || $Ticket->Owner,
-        TicketObj => $Ticket, QueueObj => $Ticket->QueueObj,
-    &></td>
-  </tr>
-  <tr class="queue">
-    <td class="label"><&|/l&>Queue</&>:</td>
-    <td class="value"><& /RTIR/Elements/SelectRTIRQueue,
-        Name => 'Queue', Default => $ARGS{'Queue'} || $Ticket->Queue,
-        TicketObj => $Ticket, Lifecycle => $Ticket->QueueObj->Lifecycle,
-        LimitToConstituency => ($m->{'RTIR_ConstituencyFilter'} || RT::IR->StrictConstituencyLinking) ? 1 : 0,
-        Constituency => RT::IR->ConstituencyFor($Ticket)
-    &></td>
-  </tr>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="label col-md-3">
+        <&|/l&>Owner</&>:
+      </div>
+      <div class="value col-md-9">
+        <& /Elements/SelectOwner,
+            Name => 'Owner', Default => $ARGS{'Owner'} || $Ticket->Owner,
+            TicketObj => $Ticket, QueueObj => $Ticket->QueueObj,
+        &>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="label col-md-3">
+        <&|/l&>Queue</&>:
+      </div>
+      <div class="value col-md-9">
+        <& /RTIR/Elements/SelectRTIRQueue,
+            Name => 'Queue', Default => $ARGS{'Queue'} || $Ticket->Queue,
+            TicketObj => $Ticket, Lifecycle => $Ticket->QueueObj->Lifecycle,
+            LimitToConstituency => ($m->{'RTIR_ConstituencyFilter'} || RT::IR->StrictConstituencyLinking) ? 1 : 0,
+              Constituency => RT::IR->ConstituencyFor($Ticket)
+        &>
+      </div>
+    </div>
 % if ( !$Ticket->QueueObj->SLADisabled ) {
-  <tr class="sla">
-    <td class="label"><&|/l&>SLA</&>:</td>
-    <td class="value"><& /Elements/SelectSLA,
-        Name => 'SLA',
-        Default => loc($Ticket->SLA)
-    &></td>
-  </tr>
+    <div class="form-row">
+      <div class="label col-md-3">
+        <&|/l&>SLA</&>:
+      </div>
+      <div class="value col-md-9">
+        <& /Elements/SelectSLA,
+            Name => 'SLA',
+            Default => loc($Ticket->SLA)
+        &>
+      </div>
+    </div>
 % }
 % if (!RT::IR->IsIncidentQueue($Ticket->QueueObj) ) {
-  <tr class="incidents">
-    <td class="label"><%loc("Incident")%>:</td>
-    <td class="value"><& /RTIR/Elements/ShowIncidents, Ticket => $Ticket &></td>
-  </tr>
+    <div class="form-row">
+      <div class="label col-md-3">
+        <%loc("Incident")%>:
+      </div>
+      <div class="value col-md-9">
+        <& /RTIR/Elements/ShowIncidents, Ticket => $Ticket &>
+      </div>
+    </div>
 % }
-  <tr class="time-worked">
-    <td class="label"><&|/l&>Time Worked</&>:</td>
-    <td class="value"><& /Elements/EditTimeValue,
-        Name => 'TimeWorked',
-        Default => $ARGS{'TimeWorked'} || $Ticket->TimeWorked || '',
-    &></td>
-  </tr>
+    <div class="form-row">
+      <div class="label col-md-3">
+        <&|/l&>Time Worked</&>:
+      </div>
+      <div class="value col-md-9">
+        <& /Elements/EditTimeValue,
+            Name => 'TimeWorked',
+            Default => $ARGS{'TimeWorked'} || $Ticket->TimeWorked || '',
+        &>
+      </div>
+    </div>
 % if ( RT::IR->IsIncidentQueue($Ticket->QueueObj)) {
-  <tr class="priority">
-    <td class="label"><&|/l&>Priority</&>:</td>
-    <td class="value"><&/Elements/SelectPriority, Name => 'Priority', Default => $ARGS{'Priority'} || $Ticket->Priority &></td>
-  </tr>
+    <div class="form-row">
+      <div class="label col-md-3">
+        <&|/l&>Priority</&>:
+      </div>
+      <div class="value col-md-9">
+        <&/Elements/SelectPriority, Name => 'Priority', Default => $ARGS{'Priority'} || $Ticket->Priority &>
+      </div>
+    </div>
 % }
-  <& /RTIR/Elements/EditCustomFields, %ARGS, TicketObj => $Ticket &>
-</table>
+    <& /RTIR/Elements/EditCustomFields, %ARGS, TicketObj => $Ticket &>
 
-</&>
+    </&>
 
-<& /Elements/EditCustomFieldCustomGroupings,
-    %ARGS,
-    Object => $Ticket,
-    CustomFieldGenerator => sub { $Ticket->QueueObj->TicketCustomFields },
-    Groupings => [ RT::CustomField->CustomGroupings('RTIR::Ticket'), '' ],
-&>
+    <& /Elements/EditCustomFieldCustomGroupings,
+        %ARGS,
+        Object => $Ticket,
+        CustomFieldGenerator => sub { $Ticket->QueueObj->TicketCustomFields },
+        Groupings => [ RT::CustomField->CustomGroupings('RTIR::Ticket'), '' ],
+    &>
 
-
-</td>
-<td valign="top" width="50%">
-
-<&| /Widgets/TitleBox, title => loc('Dates'), class => 'ticket-info-dates'  &>
-<& /Ticket/Elements/EditDates, %ARGS, TicketObj => $Ticket &>
-</&>
-
-</td>
-</tr>
-</table>
-<br />
+  </div>
+  <div class="col-md-6">
+    <&| /Widgets/TitleBox, title => loc('Dates'), class => 'ticket-info-dates'  &>
+    <& /Ticket/Elements/EditDates, %ARGS, TicketObj => $Ticket &>
+    </&>
+  </div>
+</div>
 
 % if ( !RT::IR->IsIncidentQueue($Ticket->QueueObj)) {
 <&| /Widgets/TitleBox, title => loc('People'), class => 'ticket-info-people' &>
@@ -161,9 +183,13 @@
 </&>
 % }
 
-<& /Elements/Submit, Name => 'SaveChanges', Label => loc('Save Changes'),
-    Caption => loc("If you've updated anything above, be sure to"), color => "#333399",
-&>
+<div class="form-row">
+  <div class="col-md-12">
+    <& /Elements/Submit, Name => 'SaveChanges', Label => loc('Save Changes'),
+        Caption => loc("If you've updated anything above, be sure to"), color => "#333399",
+    &>
+  </div>
+</div>
 </form>
 
 <%INIT>

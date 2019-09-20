@@ -45,78 +45,71 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table>
-<tr>
-<td valign="top" width="50%">
-<h3><&|/l&>Current Correspondents</&></h3>
-<table>
-  <tr>
-    <td>&nbsp;</td>
-    <td><&|/l&>(Check box to delete)</&></td>
-  <tr>
-    <td class="labeltop">
-      <&|/l&>Correspondents</&>:
-    </td>
-    <td class="value">
-      <& /Ticket/Elements/EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Requestors &>
-    </td>
-  </tr>
-  <tr>
-    <td height="1" colspan="2" bgcolor="#999999"></td>
-  <tr>
-  <tr>
-    <td class="labeltop">
-      <&|/l&>Cc</&>:
-    </td>
-    <td class="value">
-      <& /Ticket/Elements/EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Cc &>
-    </td>
-  </tr>
-  <tr>
-    <td height="1" colspan="2" bgcolor="#999999"></td>
-  <tr>
-    <td class="labeltop">
-      <&|/l&>Admin Cc</&>:
-    </td>
-    <td class="value">
-      <& /Ticket/Elements/EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->AdminCc &>
-    </td>
-  </tr>
+<div class="row">
 
+  <div class="col-md-6">
+    <h3><&|/l&>Current Correspondents</&></h3>
+    <div class="form-row">
+      <div class="label col-md-3 empty">
+      </div>
+      <div class="value col-md-9">
+        <span class="current-value form-control"><&|/l&>(Check box to delete)</&></span>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="label col-md-3">
+        <&|/l&>Correspondents</&>:
+      </div>
+      <div class="value col-md-9">
+        <& /Ticket/Elements/EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Requestors &>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="label col-md-3">
+        <&|/l&>Cc</&>:
+      </div>
+      <div class="value col-md-9">
+         <& /Ticket/Elements/EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Cc &>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="label col-md-3">
+        <&|/l&>Admin Cc</&>:
+      </div>
+      <div class="value col-md-9">
+        <& /Ticket/Elements/EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->AdminCc &>
+      </div>
+    </div>
 % my $multi_roles = $Ticket->QueueObj->CustomRoles;
 % $multi_roles->LimitToMultipleValue;
 % while (my $role = $multi_roles->Next) {
-
-  <tr>
-    <td height="1" colspan="2" bgcolor="#999999"></td>
-  <tr>
-    <td class="labeltop">
-      <% $role->Name %>:
-    </td>
-    <td class="value">
-      <& /Ticket/Elements/EditWatchers, Watchers => $Ticket->RoleGroup($role->GroupType), TicketObj => $Ticket &>
-    </td>
-
-  </tr>
+    <div class="form-row">
+      <div class="label col-md-3">
+        <% $role->Name %>:
+      </div>
+      <div class="value col-md-9">
+        <& /Ticket/Elements/EditWatchers, Watchers => $Ticket->RoleGroup($role->GroupType), TicketObj => $Ticket &>
+      </div>
+    </div>
 % }
-</table>
+  </div>
 
-</td>
-<td valign="top" width="50%">
+  <div class="col-md-6">
+    <h3><&|/l&>New Correspondents</&></h3>
+    <&|/l&>Find people whose</&><br />
+    <div class="form-row">
+      <& /Elements/SelectUsers &>
+      <div class="col-auto">
+        <input type="submit" class="button btn btn-primary form-control" name="OnlySearchForPeople" value="<&|/l&>Go!</&>" />
+      </div>
+    </div>
 
-<h3><&|/l&>New Correspondents</&></h3>
-<&|/l&>Find people whose</&><br />
-<& /Elements/SelectUsers &>
-<input type="submit" name="OnlySearchForPeople" value="<&|/l&>Go!</&>" />
+    <& AddWatchers, Ticket => $Ticket, UserString => $UserString, UserOp => $UserOp, UserField => $UserField &> 
+  </div>
 
-<& AddWatchers, Ticket => $Ticket, UserString => $UserString,
-        UserOp => $UserOp, UserField => $UserField &> 
-</td>
-</tr>
+  <& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'People', InTable => 1 &>
 
-<& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'People', InTable => 1 &>
-
-</table>
+</div>
 
 <%ARGS>
 $UserField => undef
