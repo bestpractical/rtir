@@ -35,6 +35,8 @@ diag "create an article" if $ENV{'TEST_VERBOSE'};
 
 my $incident_id;
 foreach my $queue ( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
+    note( "testing article in '$queue' ticket update" );
+
     my $id = $agent->create_rtir_ticket_ok(
         $queue,
         {
@@ -49,31 +51,7 @@ foreach my $queue ( 'Incidents', 'Incident Reports', 'Investigations', 'Counterm
     $agent->follow_link_ok({text => "$reply_text"}, "followed '$reply_text' link");
     $agent->form_name('TicketUpdate');
     like( $agent->field('UpdateContent'), qr/^\s*$/ );
-    $agent->field('Articles-Include-Article-Named' => $article_name);
-    $agent->click('Go');
-    $agent->form_name('TicketUpdate');
-    like( $agent->field('UpdateContent'), qr/this is a content/ );
-
-    $agent->goto_ticket( $id );
-    $agent->follow_link_ok({text => "$reply_text"}, "followed '$reply_text' link");
-    $agent->form_name('TicketUpdate');
-    like( $agent->field('UpdateContent'), qr/^\s*$/ );
-    $agent->select('Articles-Include-Article-Named-Hotlist' => $article_id);
-    $agent->click('Go');
-    $agent->form_name('TicketUpdate');
-    like( $agent->field('UpdateContent'), qr/this is a content/ );
-
-    $agent->goto_ticket( $id );
-    $agent->follow_link_ok({text => "$reply_text"}, "followed '$reply_text' link");
-    $agent->form_name('TicketUpdate');
-    like( $agent->field('UpdateContent'), qr/^\s*$/ );
-    $agent->field('Articles_Content' => $article_name);
-    $agent->click('Go');
-    $agent->form_name('TicketUpdate');
-    like( $agent->field('UpdateContent'), qr/^\s*$/ );
-    $agent->click('Articles-Include-Article-'. $article_id);
-    $agent->form_name('TicketUpdate');
-    like( $agent->field('UpdateContent'), qr/this is a content/ );
+    $agent->content_contains( $article_name, 'got article in dropdown' );
 }
 
 undef $agent;

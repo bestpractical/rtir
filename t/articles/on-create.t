@@ -38,6 +38,8 @@ diag "create an article" if $ENV{'TEST_VERBOSE'};
 # TODO: Once incident+investigation creation is re-added, this should be put back
 #foreach my $q_name ( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
 foreach my $q_name ( 'Incident Reports', 'Investigations', 'Countermeasures' ) {
+    note( "testing article in '$q_name' ticket create" );
+
     my $queue = RT::Queue->new(RT->SystemUser);
     $queue->Load( $q_name );
     ok $agent->goto_create_ticket( $queue ), "UI -> create ticket";
@@ -47,29 +49,7 @@ foreach my $q_name ( 'Incident Reports', 'Investigations', 'Countermeasures' ) {
 
     $agent->form_name('TicketCreate');
     like( $agent->field( $content_name ), qr/^\s*$/ );
-    $agent->field($prefix.'Articles-Include-Article-Named' => $article_name);
-    $agent->click('Go');
-    $agent->form_name('TicketCreate');
-    like( $agent->field( $content_name ), qr/this is a content/ );
-
-    ok $agent->goto_create_ticket( $queue ), "UI -> create ticket";
-    $agent->form_name('TicketCreate');
-    like( $agent->field( $content_name ), qr/^\s*$/ );
-    $agent->select($prefix .'Articles-Include-Article-Named-Hotlist' => $article_id);
-    $agent->click('Go');
-    $agent->form_name('TicketCreate');
-    like( $agent->field( $content_name ), qr/this is a content/ );
-
-    ok $agent->goto_create_ticket( $queue ), "UI -> create ticket";
-    $agent->form_name('TicketCreate');
-    like( $agent->field( $content_name ), qr/^\s*$/ );
-    $agent->field($prefix .'Articles_Content' => $article_name);
-    $agent->click('Go');
-    $agent->form_name('TicketCreate');
-    like( $agent->field( $content_name ), qr/^\s*$/ );
-    $agent->click($prefix .'Articles-Include-Article-'. $article_id);
-    $agent->form_name('TicketCreate');
-    like( $agent->field( $content_name ), qr/this is a content/ );
+    $agent->content_contains( $article_name, 'got article in dropdown' );
 }
 
 
