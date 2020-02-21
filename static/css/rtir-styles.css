@@ -202,3 +202,8 @@ body.rtir .sf-menu a.sf-with-ul {
 body.rtir table.lookup-tool-forms td {
     vertical-align: middle;
 }
+
+body.rtir .titlebox.external-feeds tr.oddline+.oddline .collection-as-table,
+body.rtir .titlebox.external-feeds tr.evenline+.evenline .collection-as-table {
+    padding-bottom: 0.7rem;
+}

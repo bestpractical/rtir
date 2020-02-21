@@ -31,6 +31,10 @@ requires('Regexp::Common');
 # queries parsing
 requires('Parse::BooleanLogic');
 
+# For RSS feeds
+requires('HTML::Entities');
+requires('XML::RSS');
+
 # for tests
 build_requires('Test::More');
 build_requires('File::Find');

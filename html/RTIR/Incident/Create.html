@@ -71,6 +71,7 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
 % }
 
 <input type="hidden" name="id"           value="new" />
+<input type="hidden" class="hidden" name="new-RefersTo" value="<% $ARGS{'new-RefersTo'} %>" />
 <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
 <input type="hidden" name="QueueChanged" value="0" />
 % if ( $ChildObj ) {
@@ -442,6 +443,8 @@ if ( $CreateIncident ) {
         }
         $checks_failure = 1;
     }
+
+    my $links = ProcessLinksForCreate(ARGSRef => \%ARGS);
 
     $checks_failure += RT::IR->FilterRTAddresses(
         ARGSRef => \%ARGS,
