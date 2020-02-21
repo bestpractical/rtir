@@ -7,7 +7,7 @@ author('Best Practical Solutions <sales@bestpractical.com>');
 all_from('lib/RT/IR.pm');
 
 # update README and docs/UPGRADING
-requires_rt('4.6.0');
+requires_rt('4.2.0');
 rt_too_new('4.8.0',"\nThis version of RTIR is only compatible with RT 4.6.x and you are using RT %s\n");
 
 # XXX: This should be reported by M::I::RTx
@@ -30,6 +30,10 @@ requires('DBIx::SearchBuilder', 1.61);
 requires('Regexp::Common');
 # queries parsing
 requires('Parse::BooleanLogic');
+
+# For RSS feeds
+requires('HTML::Entities');
+requires('XML::RSS');
 
 # for tests
 build_requires('Test::More');

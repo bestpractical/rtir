@@ -1,0 +1,121 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+
+<& /RTIR/Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
+% my $i = 0;
+% if ($FeedName) {
+%   my $feed = $ExternalFeeds->fetch_rss_feed($FeedName);
+  <h2><% $feed->{Title} %></h2>
+  <% $feed->{Description} %> <i>updated <% $feed->{PubDate} || $feed->{LastBuildDate} || '-'%></i>
+  <table cellspacing="0" class="collection-as-table">
+  <tr class="collection-as-table">
+    <th class="collection-as-table"><&|/l&>Name</&></th>
+    <th class="collection-as-table" colspan="2"><&|/l&>Description</&></th>
+  </tr>
+%   foreach my $item (@{ $feed->{items} }) {
+%      my $GeneratedSubject = sprintf('Incident from RSS feed %s : %s', $feed->{Title}, $item->{Title});
+%      my $GeneratedMessage = join("\n",
+%         sprintf('Incident created from RSS feed %s : %s', $feed->{Title}, $item->{Title}),
+%         sprintf('Source : %s on %s', $item->{Link} , $item->{PubDate} || $item->{LastBuildDate} || '-'),
+%         $item->{Description} || '' );
+  <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
+    <td class="collection-as-table"><% $item->{Title} %></td>
+    <td class="collection-as-table">
+      <form action="<% $CreateURI %>" name="CreateIncident-<% $i %>" id="CreateIncident-<% $i %>"  method="post">
+        <input type="hidden" value="<% $GeneratedSubject %>" name="Subject">
+        <input type="hidden" value="<% $GeneratedMessage %>" name="Content">
+        <&|/l_unsafe, $ticket_type,
+                     $m->scomp('/RTIR/Elements/SelectRTIRQueue',
+                                Name => 'Queue',
+                                ShowNullOption => 0,
+                                Lifecycle => $Lifecycle,
+                                LimitToConstituency => 1,
+                                Constituency => $m->{'RTIR_ConstituencyFilter'})
+          &>Create a new [_1] in the queue [_2]</&>
+          <& /Elements/Submit, Label => loc("Go"), Caption => loc("This will take you to a partially prefilled [_1] creation form.", $ticket_type) &>
+      </form>
+    </td>
+    <td class="collection-as-table">&nbsp;</td>
+  </tr>
+  <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
+    <td class="collection-as-table" colspan="3"><% substr($item->{Description}, 0, 1024) %></td>
+  </tr>
+% $i++; 
+%   }
+</table>
+% }
+% else {
+<h2>RSS Feeds</h2>
+<table cellspacing="0" class="collection-as-table">
+<tr class="collection-as-table">
+<th class="collection-as-table"><&|/l&>Name</&></th>
+<th class="collection-as-table"><&|/l&>Description</&></th>
+</tr>
+% foreach my $feed ($ExternalFeeds->rss_feeds) {
+<tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
+  <td class="collection-as-table"><a href="/RTIR/Tools/ExternalFeeds.html?FeedName=<% uri_escape($feed->{Name}) %>"><%$feed->{Name}%></a></td>
+  <td class="collection-as-table"><%$feed->{Description}%></td>
+</tr>
+% $i++;
+%    }
+</table>
+% }
+<%INIT>
+use URI::Escape;
+use RT::IR::ExternalFeeds;
+my $CreateURI = RT::IR->HREFTo('Incident/Create.html');
+my $ExternalFeeds = new RT::IR::ExternalFeeds;
+my $Lifecycle = 'incidents';
+my $ticket_type = lc RT::IR::TicketType( Lifecycle => $Lifecycle );
+my $title = 'External Feeds';
+</%INIT>
+<%ARGS>
+$FeedName => undef
+</%ARGS>
+
