@@ -62,10 +62,11 @@ unless ( $iterator ) {
 
 $field ||= 'notify';
 
+my @objects = Net::Whois::Object->new($iterator);
 my @res;
-while ( my $query = $iterator->next ) {
-    foreach my $attr ( grep lc $_ eq lc $field, $query->attributes ) {
-        push @res, $query->$attr();
+foreach my $obj (@objects) {
+    foreach my $attr ( grep lc $_ eq lc $field, $obj->attributes ) {
+        push @res, $obj->$attr();
     }
 }
 unless ( @res ) {
