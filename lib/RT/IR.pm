@@ -64,8 +64,7 @@ use RT::IR::Config;
 use RT::IR::Web;
 use RT::IR::ConstituencyManager;
 RT::IR::Config::Init();
-
-
+use Net::Whois::RIPE;
 
 sub lifecycle_report {'incident_reports'}
 sub lifecycle_incident {'incidents'}
@@ -650,7 +649,6 @@ sub WhoisLookup {
     my ($host, $port) = split /\s*:\s*/, $server, 2;
     $port = 43 unless ($port || '') =~ /^\d+$/;
 
-    use Net::Whois::RIPE;
     my $debug;
     for my $log_config ( qw/LogToSyslog LogToSTDERR LogToFile/ ) {
         if ( ( RT->Config->Get( $log_config ) // '' ) eq 'debug' ) {
@@ -658,9 +656,10 @@ sub WhoisLookup {
             last;
         }
     }
-    my $whois = Net::Whois::RIPE->new( $host, Port => $port, Debug => $debug || 0 );
+
+    my $whois = Net::Whois::RIPE->new( hostname => $host, port => $port );
     my $iterator;
-    $iterator = $whois->query_iterator( $args{'Query'} )
+    $iterator = $whois->query( $args{'Query'} )
         if $whois;
     return (undef, $args{'CurrentUser'}->loc("Unable to connect to WHOIS server '[_1]'", $server) )
         unless $iterator;
