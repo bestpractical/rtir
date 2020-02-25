@@ -29,6 +29,7 @@ requires:
   DBIx::SearchBuilder: 1.61
   Parse::BooleanLogic: 0
   Regexp::Common: 0
+  Net::Whois::RIPE: 2.006001
   perl: 5.10.1
 resources:
   license: http://opensource.org/licenses/gpl-license.php
