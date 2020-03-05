@@ -54,6 +54,7 @@
     AllowSorting  => 0,
     ShowHeader    => 0,
     EmptyLabel    => loc('(none)'),
+    InlineEdit    => $InlineEdit,
 &>
 <div class="actions">
 % unless ( $action ) {
@@ -104,4 +105,5 @@ if ( $show_unlink ) {
 
 <%ARGS>
 $Ticket => undef
+$InlineEdit => RT->Config->Get('InlineEdit', $session{CurrentUser})
 </%ARGS>

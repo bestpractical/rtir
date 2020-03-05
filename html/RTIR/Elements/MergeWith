@@ -59,6 +59,7 @@
         OrderBy       => $OrderBy,
         Order         => $Order,
         BaseURL       => RT::IR->HREFTo("Merge/?id=$id"),
+        InlineEdit    => 0,
     &>
   </div>
 </div>

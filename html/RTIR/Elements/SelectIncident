@@ -59,6 +59,7 @@
            DisplayFormat => $dformat,
            AllowSorting  => 0,
            ShowHeader    => 0,
+           InlineEdit    => 0,
         &>
 % }
 % if ( $hide ) {

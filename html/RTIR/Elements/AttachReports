@@ -52,6 +52,7 @@
     Format         => $Format,
     ShowHeader     => 1,
     ShowNavigation => 0,
+    InlineEdit     => 0,
 &>
 </&>
 <%ARGS>
