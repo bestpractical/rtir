@@ -45,19 +45,24 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<h3><% $Title %></h3>
-<& /RTIR/Search/Elements/ShowResults,
-    Lifecycle     => $Lifecycle,
-    BaseQuery     => $BaseQuery,
-    Query         => $Query,
-    DisplayFormat => "__RadioButton__, $Format",
-    Format        => $Format,
-    Rows          => $Rows,
-    Page          => $Page,
-    OrderBy       => $OrderBy,
-    Order         => $Order,
-    BaseURL       => RT::IR->HREFTo("Merge/?id=$id"),
-&>
+<div class="form-row">
+  <div class="col-md-12">
+    <h3><% $Title %></h3>
+    <& /RTIR/Search/Elements/ShowResults,
+        Lifecycle     => $Lifecycle,
+        BaseQuery     => $BaseQuery,
+        Query         => $Query,
+        DisplayFormat => "__RadioButton__, $Format",
+        Format        => $Format,
+        Rows          => $Rows,
+        Page          => $Page,
+        OrderBy       => $OrderBy,
+        Order         => $Order,
+        BaseURL       => RT::IR->HREFTo("Merge/?id=$id"),
+        InlineEdit    => 0,
+    &>
+  </div>
+</div>
 
 <%INIT>
 my $Type = RT::IR::TicketType( Lifecycle => $Lifecycle );

@@ -188,7 +188,7 @@ sub ticket_is_linked_to_inc {
     foreach my $inc( ref $incs? @$incs : ($incs) ) {
         my $desc = shift || "Ticket $id is linked to the Incident #$inc";
         $self->content_like(
-            qr{Incident:\s*</td>\s*<td[^>]*?>.*?<td[^>]*?><b><a\s+href="/RTIR/Incident/Display.html\?id=\Q$inc\E">\Q$inc\E</a></b></td>}ism,
+            qr{<td[^>]*?><b><a\s+href="/RTIR/Incident/Display.html\?id=\Q$inc\E">\Q$inc\E</a></b></td>}ism,
             $desc
         ) or return 0;
     }
@@ -203,7 +203,7 @@ sub ticket_is_not_linked_to_inc {
     foreach my $inc( @$incs ) {
         my $desc = shift || "Ticket $id is not linked to the Incident #$inc";
         $self->content_unlike(
-            qr{Incident:\s*</td>\s*<td[^>]*?>.*?<a\s+href="/RTIR/Display.html\?id=\Q$inc\E">\Q$inc\E:\s+}ism,
+            qr{<td[^>]*?><b><a\s+href="/RTIR/Incident/Display.html\?id=\Q$inc\E">\Q$inc\E</a></b></td>}ism,
             $desc
         ) or return 0;
     }
@@ -310,7 +310,7 @@ sub has_watchers {
     $self->display_ticket($id);
 
     return $self->content_like(
-qr{<td class="labeltop">Correspondents:</td>\s*<td class="value">\s*<span class="user" data-user-id="\d+">\s*<a href="/User/Summary\.html\?id=\d+">\s*([@\w\.&;]+)\s*</a></span>}ms,
+qr{Correspondents:\s*</div>\s*<div class="value col-md-9">\s*<span[^>]*?\s*class="\w+[^>]*?><span class="user" data-user-id="\d+">\s*<a href="/User/Summary\.html\?id=\d+">\s*([@\w\.&;]+)\s*</a></span>}ms,
         "Found $type",
     );
 }

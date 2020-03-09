@@ -68,44 +68,59 @@
 
 <& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
-<h2><&|/l&>Reporters</&></h2>
-<& /RTIR/Search/Elements/ShowResults,
-    BaseURL       => $BaseURL,
-    BaseQuery     => RT::IR->Query(Lifecycle => RT::IR->lifecycle_report, MemberOf => $id),
-    Query         => $Query,
-    DisplayFormat => "__CheckBox.{SelectedReports}__, $Format",
-    Format        => $Format,
-    Rows          => $Rows,
-    Page          => $Page,
-    OrderBy       => $OrderBy,
-    Order         => $Order,
-&>
+<div class="form-row">
+  <div class="col-md-12">
+    <h2><&|/l&>Reporters</&></h2>
+    <& /RTIR/Search/Elements/ShowResults,
+        BaseURL       => $BaseURL,
+        BaseQuery     => RT::IR->Query(Lifecycle => RT::IR->lifecycle_report, MemberOf => $id),
+        Query         => $Query,
+        DisplayFormat => "__CheckBox.{SelectedReports}__, $Format",
+        Format        => $Format,
+        Rows          => $Rows,
+        Page          => $Page,
+        OrderBy       => $OrderBy,
+        Order         => $Order,
+        InlineEdit    => 0,
+    &>
+  </div>
+</div>
 % if ( $All ) {
-<h2><&|/l&>Investigation Correspondents</&></h2>
-<& /RTIR/Search/Elements/ShowResults,
-    BaseURL       => $BaseURL,
-    BaseQuery     => RT::IR->Query(Lifecycle => RT::IR->lifecycle_investigation, MemberOf => $id),
-    Query         => $Query,
-    DisplayFormat => "__CheckBox.{SelectedInvestigations}__, $Format",
-    Format        => $Format,
-    Rows          => $Rows,
-    Page          => $Page,
-    OrderBy       => $OrderBy,
-    Order         => $Order,
-&>
+<div class="form-row">
+  <div class="col-md-12">
+    <h2><&|/l&>Investigation Correspondents</&></h2>
+    <& /RTIR/Search/Elements/ShowResults,
+        BaseURL       => $BaseURL,
+        BaseQuery     => RT::IR->Query(Lifecycle => RT::IR->lifecycle_investigation, MemberOf => $id),
+        Query         => $Query,
+        DisplayFormat => "__CheckBox.{SelectedInvestigations}__, $Format",
+        Format        => $Format,
+        Rows          => $Rows,
+        Page          => $Page,
+        OrderBy       => $OrderBy,
+        Order         => $Order,
+        InlineEdit    => 0,
+    &>
+  </div>
+</div>
 % unless( RT->Config->Get('RTIR_DisableCountermeasures') ) {
-<h2><&|/l&>Countermeasure Correspondents</&></h2>
-<& /RTIR/Search/Elements/ShowResults,
-    BaseURL       => $BaseURL,
-    BaseQuery     => RT::IR->Query(Lifecycle => RT::IR->lifecycle_countermeasure, MemberOf => $id),
-    Query         => $Query,
-    DisplayFormat => "__CheckBox.{SelectedCountermeasures}__, $Format",
-    Format        => $Format,
-    Rows          => $Rows,
-    Page          => $Page,
-    OrderBy       => $OrderBy,
-    Order         => $Order,
-&>
+<div class="form-row">
+  <div class="col-md-12">
+    <h2><&|/l&>Countermeasure Correspondents</&></h2>
+    <& /RTIR/Search/Elements/ShowResults,
+        BaseURL       => $BaseURL,
+        BaseQuery     => RT::IR->Query(Lifecycle => RT::IR->lifecycle_countermeasure, MemberOf => $id),
+        Query         => $Query,
+        DisplayFormat => "__CheckBox.{SelectedCountermeasures}__, $Format",
+        Format        => $Format,
+        Rows          => $Rows,
+        Page          => $Page,
+        OrderBy       => $OrderBy,
+        Order         => $Order,
+        InlineEdit    => 0,
+    &>
+  </div>
+</div>
 % }
 % }
 
@@ -119,7 +134,11 @@
     GnuPGWidget => $gnupg_widget,
 &>
 
-<& /Elements/Submit, Name => "SubmitTicket", Label => loc("Update Incident") &>
+<div class="form-row">
+  <div class="col-md-12">
+    <& /Elements/Submit, Name => "SubmitTicket", Label => loc("Update Incident") &>
+  </div>
+</div>
 </form>
 
 <%INIT>

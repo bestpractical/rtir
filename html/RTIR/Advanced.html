@@ -54,47 +54,71 @@
 <input type="hidden" name="id" value="<% $Ticket->Id %>" />
 
 <&| /Widgets/TitleBox, title => loc('Edit basics') &>
-<table>
-  <tr>
-    <td class="label"><&|/l&>Subject</&>:</td>
-    <td class="value"><input type="text" name="Subject" value="<% $Ticket->Subject %>" /></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Queue</&>:</td>
-    <td class="value"><& /Elements/SelectQueue, Name => 'Queue', Default => $Ticket->Queue &></td>
-  </tr>
-
-  <tr>
-    <td class="label"><&|/l&>Time Estimated</&>:</td>
-    <td class="value"><& /Elements/EditTimeValue,
+<div class="form-row">
+  <div class="label col-md-3">
+    <&|/l&>Subject</&>:
+  </div>
+  <div class="value col-md-9">
+    <input class="form-control" type="text" name="Subject" value="<% $Ticket->Subject %>" />
+  </div>
+</div>
+<div class="form-row">
+  <div class="label col-md-3">
+    <&|/l&>Queue</&>:
+  </div>
+  <div class="value col-md-9">
+    <& /Elements/SelectQueue, Name => 'Queue', Default => $Ticket->Queue &>
+  </div>
+</div>
+<div class="form-row">
+  <div class="label col-md-3">
+    <&|/l&>Time Estimated</&>:
+  </div>
+  <div class="value col-md-9">
+    <& /Elements/EditTimeValue,
         Name => 'TimeEstimated',
         Default => $ARGS{'TimeEstimated'} || $Ticket->TimeEstimated || '',
-    &></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Time Worked</&>:</td>
-    <td class="value"><& /Elements/EditTimeValue,
+    &>
+  </div>
+</div>
+<div class="form-row">
+  <div class="label col-md-3">
+    <&|/l&>Time Worked</&>:
+  </div>
+  <div class="value col-md-9">
+    <& /Elements/EditTimeValue,
         Name => 'TimeWorked',
         Default => $ARGS{'TimeWorked'} || $Ticket->TimeWorked || '',
-    &></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Time Left</&>:</td>
-    <td class="value"><& /Elements/EditTimeValue,
+    &>
+  </div>
+</div>
+<div class="form-row">
+  <div class="label col-md-3">
+    <&|/l&>Time Left</&>:
+  </div>
+  <div class="value col-md-9">
+    <& /Elements/EditTimeValue,
         Name => 'TimeLeft',
         Default => $ARGS{'TimeLeft'} || $Ticket->TimeLeft || '',
-    &></td>
-  </tr>
-
-  <tr>
-    <td class="label"><&|/l&>Priority</&>:</td>
-    <td class="value"><&/Elements/SelectPriority, Name=>"Priority", Default=>$Ticket->Priority &></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Final Priority</&>:</td>
-    <td class="value"><&/Elements/SelectPriority, Name=>"FinalPriority", Default=>$Ticket->FinalPriority &></td>
-  </tr>
-</table>
+    &>
+  </div>
+</div>
+<div class="form-row">
+  <div class="label col-md-3">
+    <&|/l&>Priority</&>:
+  </div>
+  <div class="value col-md-9">
+    <&/Elements/SelectPriority, Name=>"Priority", Default=>$Ticket->Priority &>
+  </div>
+</div>
+<div class="form-row">
+  <div class="label col-md-3">
+    <&|/l&>Final Priority</&>:
+  </div>
+  <div class="value col-md-9">
+    <&/Elements/SelectPriority, Name=>"FinalPriority", Default=>$Ticket->FinalPriority &>
+  </div>
+</div>
 </&>
 
 <&| /Widgets/TitleBox, title => loc('Edit Links') &>
@@ -105,11 +129,16 @@
 <& /Ticket/Elements/EditMerge, Ticket => $Ticket, %ARGS &>
 </&>
 
-<& /Elements/Submit,
-    Name => 'SaveChanges',
-    Label => loc('Save Changes'),
-    Caption => loc("If you've updated anything above, be sure to"),
-&>
+<div class="form-row">
+  <div class="col-md-12">
+    <& /Elements/Submit,
+        Name => 'SaveChanges',
+        Label => loc('Save Changes'),
+        Caption => loc("If you've updated anything above, be sure to"),
+    &>
+  </div>
+</div>
+
 </form>
 
 <%INIT>

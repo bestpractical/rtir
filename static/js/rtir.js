@@ -26,13 +26,18 @@ jQuery(function() {
                 var queues = jQuery(html).find("select[name='Queue'] > option");
                 if (queues.length === 1) {
                     window.location.href = RT.Config .WebHomePath + '/RTIR/Create.html?Queue=' + queues.first().val() + '&' + queryString;
-                     return;
+                    return;
                 }
 
-                jQuery("<div class='modal'></div>")
-                    .append(html).appendTo("body")
-                    .bind('modal:close', function(ev,modal) { modal.elm.remove(); })
-                    .modal();
+                var modal = jQuery("<div class='modal'></div>");
+                modal.append(html).appendTo("body");
+                modal.bind('modal:close', function(ev) { modal.remove(); })
+                modal.on('hide.bs.modal', function(ev) { modal.remove(); })
+                modal.modal('show');
+
+                // We need to refresh the select picker plugin on AJAX calls
+                // since the plugin only runs on page load.
+                jQuery('.selectpicker').selectpicker('refresh');
             }
         );
     };

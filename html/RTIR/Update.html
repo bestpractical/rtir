@@ -63,23 +63,31 @@
 
 <div id="ticket-update-metadata">
 <&|/Widgets/TitleBox, title => loc('Ticket and Transaction') &>
-<table width="100%" border="0">
 
-<tr><td class="label"><&|/l&>Update Type</&>:</td>
-<td class="value"><select name="UpdateType">
+  <div class="form-row">
+    <div class="label col-md-3">
+      <&|/l&>Update Type</&>:
+    </div>
+    <div class="value col-md-9">
+      <select class="selectpicker form-control" name="UpdateType">
 % if ($CanComment) {
-  <option value="private" <% $CommentDefault || '' %>><&|/l&>Comments (Not sent to requestors)</&></option>
+        <option value="private" <% $CommentDefault || '' %>><&|/l&>Comments (Not sent to requestors)</&></option>
 % }
 % if ($CanRespond) {
-   <option value="response" <% $ResponseDefault || '' %>><&|/l&>Response to requestors</&></option>
+        <option value="response" <% $ResponseDefault || '' %>><&|/l&>Response to requestors</&></option>
 % }
-</select>
-</td></tr>
+      </select>
+    </div>
+  </div>
 
-<tr>
-    <td class="label"><&|/l&>Status</&>:</td>
-    <td class="value"><% loc($Ticket->Status) %></td>
-</tr>
+  <div class="form-row">
+    <div class="label col-md-3">
+      <&|/l&>Status</&>:
+    </div>
+    <div class="value col-md-9">
+      <span class="current-value form-control"><% loc($Ticket->Status) %></span>
+    </div>
+  </div>
 
 <& /Ticket/Elements/EditBasics,
     TicketObj => $Ticket,
@@ -115,7 +123,7 @@
     %ARGS, TicketObj => $Ticket, InTable => 1,
 &>
 
-</table></&></div>
+</&></div>  <!-- end ticket-update-metadata -->
 
 <div id="ticket-update-message">
 
@@ -124,7 +132,7 @@
 <script type="text/javascript">
 jQuery( function() {
    var updateScrips = function() {
-       jQuery('#recipients div.titlebox-content').load( '<% RT->Config->Get('WebPath')%>/Helpers/ShowSimplifiedRecipients',
+       jQuery('#recipients div.titlebox-content div.card-body').load( '<% RT->Config->Get('WebPath')%>/Helpers/ShowSimplifiedRecipients',
            jQuery('form[name=TicketUpdate]').serialize(),
            function() {
                var txn_send_field = jQuery("#recipients input[name=TxnSendMailTo]");
@@ -140,21 +148,28 @@ jQuery( function() {
 </script>
 
 <&|/Widgets/TitleBox, title => loc('Message'), class => 'messagedetails' &>
-<table width="100%" border="0">
 
-<tr>
-    <td class="label"><&|/l&>Subject</&>:</td>
-    <td class="value"><input type="text" name="UpdateSubject" value="<% $Subject || '' %>" /></td>
-</tr>
+  <div class="form-row">
+    <div class="label col-md-2">
+      <&|/l&>Subject</&>:
+    </div>
+    <div class="value col-md-9">
+      <input class="form-control" type="text" name="UpdateSubject" value="<% $Subject || '' %>" />
+    </div>
+  </div>
 
 % $ARGS{IncludeSignature} = 0 if $Action ne 'Respond' && !RT->Config->Get('MessageBoxIncludeSignatureOnComment');
 <& /RTIR/Elements/UpdateData, %ARGS, Ticket => $Ticket, GnuPGWidget => $gnupg_widget &>
 
-</table>
+</&>
 
-<& /Elements/Submit, Name => 'SubmitTicket' &>
+<div class="form-row">
+  <div class="col-md-12">
+    <& /Elements/Submit, Name => 'SubmitTicket' &>
+  </div>
+</div>
 
-</&></div>
+</div>  <!-- end ticket-update-message -->
 
 </form>
 

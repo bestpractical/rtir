@@ -13,12 +13,10 @@ my $article_name = 'some article';
 
 diag "create an article" if $ENV{'TEST_VERBOSE'};
 {
-    $agent->get_ok('/', "followed 'Articles' overview link");
-    $agent->follow_link_ok({text => "Articles"}, "followed 'Articles' overview link");
-    $agent->follow_link_ok({text => "New Article" }, "followed new article link");
-    if ($agent->content =~ /in class Templates/) { 
-        $agent->follow_link_ok({text => "in class Templates"}, "chose a class");
-    }
+    $agent->follow_link_ok( { text => "Articles", url_regex => qr{/Articles/index\.html} },
+        "followed 'Articles' overview link" );
+    $agent->follow_link_ok( { text => "Templates", url_regex => qr{Article/Edit\.html} },
+        "followed new article link" );
 
     my $cf = RT::CustomField->new( RT->SystemUser );
     $cf->Load('Response');
@@ -35,6 +33,8 @@ diag "create an article" if $ENV{'TEST_VERBOSE'};
 
 my $incident_id;
 foreach my $queue ( 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ) {
+    note( "testing article in '$queue' ticket update" );
+
     my $id = $agent->create_rtir_ticket_ok(
         $queue,
         {
@@ -49,31 +49,7 @@ foreach my $queue ( 'Incidents', 'Incident Reports', 'Investigations', 'Counterm
     $agent->follow_link_ok({text => "$reply_text"}, "followed '$reply_text' link");
     $agent->form_name('TicketUpdate');
     like( $agent->field('UpdateContent'), qr/^\s*$/ );
-    $agent->field('Articles-Include-Article-Named' => $article_name);
-    $agent->click('Go');
-    $agent->form_name('TicketUpdate');
-    like( $agent->field('UpdateContent'), qr/this is a content/ );
-
-    $agent->goto_ticket( $id );
-    $agent->follow_link_ok({text => "$reply_text"}, "followed '$reply_text' link");
-    $agent->form_name('TicketUpdate');
-    like( $agent->field('UpdateContent'), qr/^\s*$/ );
-    $agent->select('Articles-Include-Article-Named-Hotlist' => $article_id);
-    $agent->click('Go');
-    $agent->form_name('TicketUpdate');
-    like( $agent->field('UpdateContent'), qr/this is a content/ );
-
-    $agent->goto_ticket( $id );
-    $agent->follow_link_ok({text => "$reply_text"}, "followed '$reply_text' link");
-    $agent->form_name('TicketUpdate');
-    like( $agent->field('UpdateContent'), qr/^\s*$/ );
-    $agent->field('Articles_Content' => $article_name);
-    $agent->click('Go');
-    $agent->form_name('TicketUpdate');
-    like( $agent->field('UpdateContent'), qr/^\s*$/ );
-    $agent->click('Articles-Include-Article-'. $article_id);
-    $agent->form_name('TicketUpdate');
-    like( $agent->field('UpdateContent'), qr/this is a content/ );
+    $agent->content_contains( $article_name, 'got article in dropdown' );
 }
 
 undef $agent;

@@ -53,7 +53,9 @@
 <& /Ticket/Elements/ShowUpdateStatus, Ticket => $TicketObj, DisplayPath => 'RTIR'  &>
 
 <div class="summary"><&| /Widgets/TitleBox, title => loc('Ticket metadata') &>
-<table class="ticket-summary" width="100%"><tr><td class="boxcontainer" valign="top">
+
+<div class="row ticket-summary">
+  <div class="boxcontainer col-md-6">
 % $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'LeftColumnStart' );
 
 <&| /Widgets/TitleBox,
@@ -61,58 +63,80 @@
     title_href => RT::IR->HREFTo("Edit.html?id=".$id), 
     class=> 'ticket-info-basics',
 &>
-
-<table>
-  
+    <div>
 % if (my $constituency = RT::IR->ConstituencyFor($TicketObj)) {
-  <tr>
-    <td class="label"><% loc("Constituency") %>:</td>
-    <td class="value">
-      <% $constituency %>
-    </td>
-  </tr>
-  <tr>
-% }    
-
-
-  <tr>
-    <td class="label"><% loc("Queue") %>:</td>
-    <td class="value" colspan="2">
-        <% $TicketObj->QueueObj->Name %>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><% loc("Status") %>:</td>
-    <td class="value" colspan="2">
-      <% $TicketObj->Status %>
-    </td>
-  </tr>
-% if ( !$TicketObj->QueueObj->SLADisabled ) {
-  <tr class="sla">
-    <td class="label"><&|/l&>SLA</&>:</td>
-    <td class="value"><% loc($TicketObj->SLA) %></td>
-  </tr>
+      <div class="form-row">
+        <div class="label col-md-3">
+          <% loc("Constituency") %>:
+        </div>
+        <div class="value col-md-9">
+          <span class="current-value"><% $constituency %></span>
+        </div>
+      </div>
 % }
-  <tr>
-    <td class="label"><&|/l&>Owner</&>:</td>
-    <td class="value"><& /Elements/ShowUser, User => $TicketObj->OwnerObj &></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Subject</&>:</td>
-    <td class="value"><% $TicketObj->Subject %></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Priority</&>:</td>
-    <td class="value"><& /Ticket/Elements/ShowPriority, Ticket => $TicketObj &></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Time Worked</&>:</td>
-    <td class="value"><%loc('[_1] min', $TimeWorked)%></td>
-  </tr>
+      <div class="form-row">
+        <div class="label col-md-3">
+          <% loc("Queue") %>:
+        </div>
+        <div class="value col-md-9">
+          <span class="current-value"><% $TicketObj->QueueObj->Name %></span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="label col-md-3">
+          <% loc("Status") %>:
+        </div>
+        <div class="value col-md-9">
+          <span class="current-value"><% $TicketObj->Status %></span>
+        </div>
+      </div>
+% if ( !$TicketObj->QueueObj->SLADisabled ) {
+      <div class="form-row">
+        <div class="label col-md-3">
+          <&|/l&>SLA</&>:
+        </div>
+        <div class="value col-md-9">
+          <span class="current-value"><% loc($TicketObj->SLA) %></span>
+        </div>
+      </div>
+% }
+      <div class="form-row">
+        <div class="label col-md-3">
+          <&|/l&>Owner</&>:
+        </div>
+        <div class="value col-md-9">
+          <span class="current-value"><& /Elements/ShowUser, User => $TicketObj->OwnerObj &></span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="label col-md-3">
+          <&|/l&>Subject</&>:
+        </div>
+        <div class="value col-md-9">
+          <span class="current-value"><% $TicketObj->Subject %></span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="label col-md-3">
+          <&|/l&>Priority</&>:
+        </div>
+        <div class="value col-md-9">
+          <span class="current-value"><& /Ticket/Elements/ShowPriority, Ticket => $TicketObj &></span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="label col-md-3">
+          <&|/l&>Time Worked</&>:
+        </div>
+        <div class="value col-md-9">
+          <span class="current-value"><%loc('[_1] min', $TimeWorked)%></span>
+        </div>
+      </div>
 
   <& /Elements/ShowCustomFields, Grouping => 'Basics', Object => $TicketObj, Table => 0 &>
 
-</table>
+    </div>
+
 </&>
 
 <& /Elements/ShowCustomFieldCustomGroupings,
@@ -132,7 +156,8 @@
 <& /Ticket/Elements/ShowAttachments, Ticket => $TicketObj, Attachments => $attachments &>
 <& /Ticket/Elements/ShowRequestor, Ticket => $TicketObj, DisplayPath => RT::IR->HREFTo("Display.html") &>
 
-</td><td class="boxcontainer" valign="top">
+  </div>
+  <div class="boxcontainer col-md-6">
 % $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'RightColumnStart' );
 
 % foreach my $lifecycle ( RT::IR->lifecycle_report, RT::IR->lifecycle_investigation, RT::IR->lifecycle_countermeasure ) {
@@ -144,8 +169,8 @@
 
 <& /RTIR/Elements/ShowArticles, Ticket => $TicketObj &>
 % $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'RightColumnEnd' );
-
-</td></tr></table>
+  </div>
+</div>
 
 </&></div>
 

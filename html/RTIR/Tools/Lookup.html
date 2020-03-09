@@ -70,15 +70,20 @@
 <hr>
 % }
 
-<h2><&|/l&>Look Up Information</&></h2>
-<& Elements/Tools,
-    %ARGS,
-    q => $q,
-    TicketObj => $TicketObj,
-    PassArguments => [qw(ticket type HideResults)],
-&>
+<div class="form-row">
+  <div class="col-md-12">
+    <h2><&|/l&>Look Up Information</&></h2>
+    <& Elements/Tools,
+       %ARGS,
+       q => $q,
+       TicketObj => $TicketObj,
+       PassArguments => [qw(ticket type HideResults)],
+    &>
 
 % $m->callback(CallbackName => 'AfterTools', %ARGS, ARGSRef => \%ARGS, Ticket => $TicketObj, LookupType => $type, q => $q);
+
+  </div>
+</div>
 
 <%INIT>
 my @results;

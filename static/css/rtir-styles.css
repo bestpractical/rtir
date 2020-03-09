@@ -1,8 +1,10 @@
+/* TODO: this section of stlying has been commented out to disable the colored header until we re-implement.
 body.rtir div#header,
 body.rtir .ticket-timer .ticket-link {
     background: #404080;
     color: #fff;
 }
+*/
 
 body.rtir input[type="reset"],
 body.rtir input[type="submit"],
@@ -67,17 +69,30 @@ body.rtir #topactions #simple-search input.field {
     width: 150px;
 }
 
-body.rtir #topactions { min-width: 44em; white-space: no-wrap; }
+body.rtir #topactions #simple-search input[type="search"]:focus {
+    width: 16em;
+    -webkit-transition: width 0.25s ease-in-out;
+    -moz-transition: width 0.25s ease-in-out;
+    -ms-transition: width 0.25s ease-in-out;
+    transition: width 0.25s ease-in-out;
+}
+
+body.rtir #topactions {
+    white-space: no-wrap;
+    right: 22.7em;
+}
 
 #comp-RTIR .myrt>table>tr>td:first-child {
     width: 80%;
 }
 
+/* TODO: this section of styling has been commented out to disable colored tabs until we re-implement.
 body.rtir .titlebox.ticket-info-articles        .titlebox-title .left { background-color: #316531; color: #fff; }
 body.rtir .titlebox.tickets-list-report         .titlebox-title .left { background-color: #316531; color: #fff; }
 body.rtir .titlebox.tickets-list-incident       .titlebox-title .left { background-color: #316531; color: #fff; }
 body.rtir .titlebox.tickets-list-investigation  .titlebox-title .left { background-color: #316531; color: #fff; }
 body.rtir .titlebox.tickets-list-countermeasure .titlebox-title .left { background-color: #316531; color: #fff; }
+*/
 
 
 body.rtir #comp-RTIR-Search #body {
@@ -85,12 +100,6 @@ body.rtir #comp-RTIR-Search #body {
 }
 body.rtir #comp-RTIR-Search .submit {
     width: 58%;
-}
-
-body.rtir #ticket-create-incident input[type=text]:not(.datepicker),
-body.rtir #ticket-create-investigation input[type=text]
-{
-    width: 90%;
 }
 
 body.sidebyside.rtir #ticket-create-incident .ticket-create-basics,
@@ -188,15 +197,10 @@ body.rtir #editquery, body.rtir #editsearches {
     margin-top:8.1em;
 }
 
-
 body.rtir .sf-menu a.sf-with-ul {
-    padding-right:2em;
+    padding-right: 1rem;
 }
 
 body.rtir table.lookup-tool-forms td {
     vertical-align: middle;
-}
-
-body.rtir .button.button-small {
-    padding: 0.2em 0.5em;
 }

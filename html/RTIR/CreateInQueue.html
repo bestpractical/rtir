@@ -50,11 +50,11 @@
 &>
 <& /Elements/Tabs &>
 
-<& /RTIR/Elements/CreateInRTIRQueueModal, %ARGS &>
+<& /RTIR/Elements/CreateInRTIRQueue, %ARGS &>
 
 <%INIT>
-my $ticket_type = RT::IR::TicketType( Lifecycle => $Lifecycle );
-my $title = "Select Queue for New $ticket_type";
+$ARGS{ticket_type} = RT::IR::TicketType( Lifecycle => $Lifecycle );
+my $title = "Select Queue for New $ARGS{ticket_type}";
 </%INIT>
 <%ARGS>
 $Lifecycle

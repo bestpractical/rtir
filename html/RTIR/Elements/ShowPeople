@@ -48,15 +48,17 @@
 %# XXX: this is a duplication of RT's /Ticket/Elements/ShowPeople
 %# the only difference is s/Requestor/Correspondent/, keep in sync
 
-<table>
-  <tr>
-    <td class="label"><&|/l&>Owner</&>:</td>
+  <div class="form-row">
+    <div class="label col-md-3">
+      <&|/l&>Owner</&>:
+    </div>
 % my $owner = $Ticket->OwnerObj;
-    <td class="value"><& /Elements/ShowUser, User => $owner, Ticket => $Ticket &>
-    <& /Elements/ShowUserEmailFrequency, User => $owner, Ticket => $Ticket &>
+    <div class="value col-md-9">
+      <span class="current-value"><& /Elements/ShowUser, User => $owner, Ticket => $Ticket &></span>
+      <& /Elements/ShowUserEmailFrequency, User => $owner, Ticket => $Ticket &>
 % $m->callback( User => $owner, Ticket => $Ticket, %ARGS, CallbackName => 'AboutThisUser' );
-    </td>
-  </tr>
+    </div>
+  </div>
 
 % my $single_roles = $Ticket->QueueObj->CustomRoles;
 % $single_roles->LimitToSingleValue;
@@ -68,38 +70,57 @@
 %# so fall back to nobody
 
 %     my $user = $users->First || RT->Nobody;
-  <tr>
-    <td class="label"><% $role->Name %>:</td>
-    <td class="value"><& /Elements/ShowUser, User => $user, Ticket => $Ticket &></td>
-    <& /Elements/ShowUserEmailFrequency, User => $user, Ticket => $Ticket &>
+  <div class="form-row">
+    <div class="label col-md-3">
+      <% $role->Name %>:
+    </div>
+    <div class="value col-md-9">
+      <span class="current-value"><& /Elements/ShowUser, User => $user, Ticket => $Ticket &></span>
+      <& /Elements/ShowUserEmailFrequency, User => $user, Ticket => $Ticket &>
 % $m->callback( User => $user, Ticket => $Ticket, %ARGS, CallbackName => 'AboutThisUser' );
-  </tr>
+    </div>
+  </div>
 % }
 
-  <tr>
-    <td class="labeltop"><&|/l&>Correspondents</&>:</td>
-    <td class="value"><& /Ticket/Elements/ShowGroupMembers, Group => $Ticket->Requestors, Ticket => $Ticket &></td>
-  </tr>
-  <tr>
-    <td class="labeltop"><&|/l&>Cc</&>:</td>
-    <td class="value"><& /Ticket/Elements/ShowGroupMembers, Group => $Ticket->Cc, Ticket => $Ticket &></td>
-  </tr>
-  <tr>
-    <td class="labeltop"><&|/l&>AdminCc</&>:</td>
-    <td class="value"><& /Ticket/Elements/ShowGroupMembers, Group => $Ticket->AdminCc, Ticket => $Ticket &></td>
-  </tr>
+  <div class="form-row">
+    <div class="label col-md-3">
+      <&|/l&>Correspondents</&>:
+    </div>
+    <div class="value col-md-9">
+      <span class="current-value"><& /Ticket/Elements/ShowGroupMembers, Group => $Ticket->Requestors, Ticket => $Ticket &></span>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="label col-md-3">
+      <&|/l&>Cc</&>:
+    </div>
+    <div class="value col-md-9">
+      <span class="current-value"><& /Ticket/Elements/ShowGroupMembers, Group => $Ticket->Cc, Ticket => $Ticket &></span>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="label col-md-3">
+      <&|/l&>AdminCc</&>:
+    </div>
+    <div class="value col-md-9">
+      <span class="current-value"><& /Ticket/Elements/ShowGroupMembers, Group => $Ticket->AdminCc, Ticket => $Ticket &></span>
+    </div>
+  </div>
 
 % my $multi_roles = $Ticket->QueueObj->CustomRoles;
 % $multi_roles->LimitToMultipleValue;
 % while (my $role = $multi_roles->Next) {
-  <tr>
-    <td class="labeltop"><% $role->Name %>:</td>
-    <td class="value"><& /Ticket/Elements/ShowGroupMembers, Group => $Ticket->RoleGroup($role->GroupType), Ticket => $Ticket &></td>
-  </tr>
+  <div class="form-row">
+    <div class="label col-md-3">
+      <% $role->Name %>:
+    </div>
+    <div class="value col-md-9">
+      <span class="current-value"><& /Ticket/Elements/ShowGroupMembers, Group => $Ticket->RoleGroup($role->GroupType), Ticket => $Ticket &></span>
+    </div>
+  </div>
 % }
 
 <& /Elements/ShowCustomFields, Grouping => 'People', Object => $Ticket, Table => 0 &>
-</table>
 <%ARGS>
 $Ticket => undef
 </%ARGS>

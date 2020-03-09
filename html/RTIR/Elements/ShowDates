@@ -45,24 +45,38 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table>
-  <tr>
-    <td class="label"><&|/l&>Created</&>:</td>
-    <td class="value"><% $Ticket->CreatedObj->AsString %></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Starts</&>:</td>
-    <td class="value"><% $Ticket->StartsObj->AsString %></td>
-  </tr>
+  <div class="form-row">
+    <div class="label col-md-3">
+      <&|/l&>Created</&>:
+    </div>
+    <div class="value col-md-9">
+      <span class="current-value"><% $Ticket->CreatedObj->AsString %></span>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="label col-md-3">
+      <&|/l&>Starts</&>:
+    </div>
+    <div class="value col-md-9">
+      <span class="current-value"><% $Ticket->StartsObj->AsString %></span>
+    </div>
+  </div>
 % if ( RT::IR->IsReportQueue($Ticket->QueueObj) || RT::IR->IsInvestigationQueue($Ticket->QueueObj) || RT::IR->IsCountermeasureQueue($Ticket->QueueObj) ) {
-  <tr>
-    <td class="label"><&|/l&>Started</&>:</td>
-    <td class="value"><% $Ticket->StartedObj->AsString %></td>
-  </tr>
+  <div class="form-row">
+    <div class="label col-md-3">
+      <&|/l&>Started</&>:
+    </div>
+    <div class="value col-md-9">
+      <span class="current-value"><% $Ticket->StartedObj->AsString %></span>
+    </div>
+  </div>
 % }
-  <tr>
-    <td class="labeltop"><&|/l&>Due</&>:</td>
-    <td class="value">
+  <div class="form-row">
+    <div class="label col-md-3">
+      <&|/l&>Due</&>:
+    </div>
+    <div class="value col-md-9">
+      <span class="current-value">
 % my $due = $Ticket->DueObj;
 % if ( ($due->Diff || 0) < 0 ) {
         <span class="overdue"><% $due->AsString %></span>
@@ -76,14 +90,18 @@
         [<a href="Display.html?Due_Date=now%20%2B%20<% $Due |u %>&id=<% $Ticket->Id %>"><% loc("Set to [_1] from now", $Due ) %></a>]
 % }
 % }
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Updated</&>:</td>
-    <td class="value"><a href="#lasttrans"><% $Ticket->LastUpdated ? (loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)) : loc("Never") | h %></a></td>
-  </tr>
+      </span>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="label col-md-3">
+      <&|/l&>Updated</&>:
+    </div>
+    <div class="value col-md-9">
+      <span class="current-value"><a href="#lasttrans"><% $Ticket->LastUpdated ? (loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)) : loc("Never") | h %></a></span>
+    </div>
+  </div>
 <& /Elements/ShowCustomFields, Grouping => 'Dates', Object => $Ticket, Table => 0 &>
-</table>
 <%ARGS>
 $Ticket => undef
 </%ARGS>

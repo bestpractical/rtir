@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<% $Name %>">
+<select class="form-control selectpicker" name="<% $Name %>">
 <%PERL>
 foreach my $s ( sort grep $servers{ $_ }, keys %servers ) {
     my $srv = $servers{ $s };

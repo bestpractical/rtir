@@ -7,8 +7,8 @@ author('Best Practical Solutions <sales@bestpractical.com>');
 all_from('lib/RT/IR.pm');
 
 # update README and docs/UPGRADING
-requires_rt('4.6.0');
-rt_too_new('4.8.0',"\nThis version of RTIR is only compatible with RT 4.6.x and you are using RT %s\n");
+requires_rt('4.6.0');  # NOTE: we’ll update this to 5.0.0 once an official 5.0.0 is available. fails for alpha tags otherwise.
+rt_too_new('5.2.0',"\nThis version of RTIR is only compatible with RT 5.0.x and you are using RT %s\n");
 
 # XXX: This should be reported by M::I::RTx
 my ($lib_path) = $INC{'RT.pm'} =~ /^(.*)[\\\/]/;
