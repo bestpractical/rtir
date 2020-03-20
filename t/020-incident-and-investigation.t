@@ -131,5 +131,4 @@ like( $agent->uri, qr/RTIR\/Create.html/, 'still in the create page' );
 $agent->content_contains('Creation failed', 'failed to create');
 $agent->content_contains('You must enter an Incident ID');
 
-undef $agent;
 done_testing;
