@@ -53,7 +53,7 @@
 <form method="post" action="Advanced.html" enctype="multipart/form-data">
 <input type="hidden" name="id" value="<% $Ticket->Id %>" />
 
-<&| /Widgets/TitleBox, title => loc('Edit basics') &>
+<&| /Widgets/TitleBox, title => loc('Edit basics'), class => 'ticket-info-basics' &>
 <div class="form-row">
   <div class="label col-md-3">
     <&|/l&>Subject</&>:
@@ -121,7 +121,7 @@
 </div>
 </&>
 
-<&| /Widgets/TitleBox, title => loc('Edit Links') &>
+<&| /Widgets/TitleBox, title => loc('Edit Links'), class => 'ticket-info-links' &>
 <& /Elements/EditLinks, Object => $Ticket &>
 </&>
 

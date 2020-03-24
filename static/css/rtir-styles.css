@@ -86,14 +86,12 @@ body.rtir #topactions {
     width: 80%;
 }
 
-/* TODO: this section of styling has been commented out to disable colored tabs until we re-implement.
-body.rtir .titlebox.ticket-info-articles        .titlebox-title .left { background-color: #316531; color: #fff; }
-body.rtir .titlebox.tickets-list-report         .titlebox-title .left { background-color: #316531; color: #fff; }
-body.rtir .titlebox.tickets-list-incident       .titlebox-title .left { background-color: #316531; color: #fff; }
-body.rtir .titlebox.tickets-list-investigation  .titlebox-title .left { background-color: #316531; color: #fff; }
-body.rtir .titlebox.tickets-list-countermeasure .titlebox-title .left { background-color: #316531; color: #fff; }
-*/
-
+/* top border colors */
+body.rtir .titlebox.ticket-info-articles, body.rtir .titlebox.tickets-list-report, body.rtir .titlebox.tickets-list-incident,
+body.rtir .titlebox.tickets-list-investigation, body.rtir .titlebox.tickets-list-countermeasure { border-top: 3px solid #388E3C; }
+body.rtir .titlebox.ticket-info-time { border-top: 3px solid #7B1FA2; }
+body.rtir .titlebox.ticket-info-message { border-top: 3px solid #1976D2; }
+body.rtir .titlebox.ticket-info-details { border-top: 3px solid #D32F2F; }
 
 body.rtir #comp-RTIR-Search #body {
     position: relative;
