@@ -71,6 +71,7 @@ $CacheNeedsUpdate => RT->System->QueueCacheNeedsUpdate
 $Lifecycle => ''
 $LimitToConstituency => 0
 $Constituency => undef
+$AutoSubmit      => 0
 </%args>
 <%init>
 my $Class    = "select-rtir-queue-".$Lifecycle;
@@ -148,4 +149,6 @@ if ( not defined $session{$cache_key} ) {
     }
     $session{$cache_key}{lastupdated} = time();
 }
+$OnChange = "jQuery(this).closest('form').find('input[name=QueueChanged]').val(1);";
+$OnChange .= "jQuery(this).closest('form').submit();" if $AutoSubmit;
 </%init>
