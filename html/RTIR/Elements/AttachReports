@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc("Attach Reports") &>
+<&| /Widgets/TitleBox, title => loc("Attach Reports"), class => 'ticket-info-attachments' &>
 <& /Elements/CollectionList,
     Collection     => $siblings,
     DisplayFormat  => "__CheckBox.{$Name}__, $Format",
