@@ -47,11 +47,6 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 
-if ( $m->request_comp->path !~ m{^/RTIR/} ) {
-    Menu()->child( rtir => title => loc('RTIR'), path => RT::IR->HREFTo('', IncludeWebPath => 0) );
-    return;
-}
-
 my $query_string = sub {
     my %args = @_;
     my $u    = URI->new();
@@ -75,22 +70,9 @@ my $search_arguments = sub {
     return %res;
 };
 
+my $root = Menu->child( rtir => title => loc('RTIR'), path => '/RTIR/' );
 
-my $orig_menu = Menu();
-
-$HTML::Mason::Commands::m->notes('menu', RT::Interface::Web::Menu->new());
-
-my $rtmenu = Menu->child(rtkids => menu => $orig_menu);
-$rtmenu->title(loc('RT'));
-$rtmenu->path('/');
-$rtmenu->key('rt-menu');
-
-Menu->child(preferences => menu => $orig_menu->child('preferences'));
-$orig_menu->delete('preferences');
-
-my $root = Menu();
-
-my $search = $root->child( search => title => loc('RTIR'), path => RT::IR->HREFTo('', IncludeWebPath => 0) );
+my $search = $root->child( search => title => loc('Search'), path => RT::IR->HREFTo('', IncludeWebPath => 0) );
 $search->child( new => title => loc('New Search'), path => RT::IR->HREFTo('Search/?NewQuery=1', IncludeWebPath => 0) );
 
 {
