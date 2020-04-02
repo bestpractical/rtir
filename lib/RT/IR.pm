@@ -494,15 +494,26 @@ sub OurQuery {
     $ticket_sql_parser->walk(
         RT::SQL::ParseToArray( $query ),
         { operand => sub {
-            # XXX TODO  also pull out lifecycle keys
-            return undef unless $_[0]->{'key'} =~ /^Queue(?:\z|\.)/;
-            my $queue = RT::Queue->new( RT->SystemUser );
-            $queue->Load( $_[0]->{'value'} );
-            my $our = $self->OurQueue( $queue );
+            return undef unless $_[0]->{'key'} =~ /^(Queue(?:\z|\.)|Lifecycle)/;
+            my $key = $1;
+
             my ($negative) = ( $_[0]->{'op'} eq '!=' || $_[0]->{'op'} =~ /\bNOT\b/i );
+            my ( $our, $lifecycle );
+
+            if ( $key eq 'Lifecycle' ) {
+                $our = $self->OurLifecycle( $_[0]->{'value'} );
+                $lifecycle = $_[0]->{'value'};
+            }
+            else {
+                my $queue = RT::Queue->new( RT->SystemUser );
+                $queue->Load( $_[0]->{'value'} );
+                $our = $self->OurQueue( $queue );
+                $lifecycle = $queue->Lifecycle;
+            }
+
             if ( $our && !$negative ) {
                 $has_our = 1;
-                push @lifecycles, $queue->Lifecycle;
+                push @lifecycles, $lifecycle;
             } else {
                 $has_other = 1;
             }
