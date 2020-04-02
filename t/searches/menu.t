@@ -38,7 +38,7 @@ for my $type ( 'incident', 'ir', 'investigation', 'countermeasure' ) {
 
     }
 
-    $m->follow_link_ok( { text => "Edit Search", $type eq 'incident' ? () : ( n => 2 ) } );
+    $m->follow_link_ok( { text => "Edit Search" } );
     $m->form_name('BuildQuery');
     $m->submit_form_ok(
         {
@@ -76,7 +76,7 @@ for my $type ( 'incident', 'ir', 'investigation', 'countermeasure' ) {
         ok( $m->find_link( url_regex => qr{/RTIR/Incident/Display.html\?id=$incident_id$} ),
             "found link to incident $incident_id" );
     }
-    $m->follow_link_ok( { text => "Edit Search", n => 2 } );
+    $m->follow_link_ok( { text => "Edit Search" } );
     $m->form_name('BuildQuery');
     my ($input_query) = $m->find_all_inputs( name => 'Query' );
     is( $input_query->value, q{( Lifecycle = 'incidents' ) AND Status = 'open' AND HasMember != 2}, 'Query input is correct' );
@@ -111,7 +111,7 @@ for my $type ( 'incident', 'ir', 'investigation', 'countermeasure' ) {
         ok( $m->find_link( url_regex => qr{/RTIR/Display.html\?id=$ir$} ), "found link to incident report $ir" );
     }
 
-    $m->follow_link_ok( { text => "Edit Search", n => 2 } );
+    $m->follow_link_ok( { text => "Edit Search" } );
     $m->form_name('BuildQuery');
     my ($input_query) = $m->find_all_inputs( name => 'Query' );
     is(
@@ -157,7 +157,7 @@ for my $type ( 'incident', 'ir', 'investigation', 'countermeasure' ) {
     my ($checkbox) = $m->find_all_inputs( name => 'SelectedReports' );
     is( $checkbox->value, $ticket{ir}[0], '$ticket{ir}[0] is checked' );
 
-    $m->follow_link_ok( { text => "Edit Search", n => 2 } );
+    $m->follow_link_ok( { text => "Edit Search" } );
     $m->form_name('BuildQuery');
     $m->submit_form_ok(
         {
@@ -202,7 +202,7 @@ for my $type ( 'incident', 'ir', 'investigation', 'countermeasure' ) {
     ($checkbox) = $m->find_all_inputs( name => 'SelectedCountermeasures' );
     is( $checkbox->value, $ticket{countermeasure}[0], '$ticket{countermeasure}[0] is checked' );
 
-    $m->follow_link_ok( { text => "Edit Search", n => 2 } );
+    $m->follow_link_ok( { text => "Edit Search" } );
     $m->form_name('BuildQuery');
     $m->submit_form_ok(
         {

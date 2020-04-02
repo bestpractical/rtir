@@ -9,7 +9,7 @@ my $m = default_agent();
 $m->create_incident( { Subject => "Spam Incident", }, { ('Classification' => 'Spam') } );
 $m->create_incident( { Subject => "Ham Incident", },  { ('Classification' => 'Query') } );
 
-$m->get_ok('/RTIR/Search/');
+$m->get_ok('/Search/Build.html');
 $m->form_name( 'BuildQuery' );
 
 $m->submit_form(
