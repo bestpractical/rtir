@@ -95,13 +95,6 @@ if ( $m->request_comp->path =~ m{^/Search/} ) {
         my $lifecycle = '';
         $lifecycle = $lifecycles[ 0 ] if @lifecycles == 1;
 
-        if ( $args{Query} ) {
-            PageMenu()->child(
-                new_search => title => loc( 'New Search' ),
-                path       => '/Search/Build.html?NewQuery=1&ExtraQueryParams=RTIR&RTIR=1',
-            );
-        }
-
         if ( $lifecycle eq RT::IR->lifecycle_incident ) {
             PageMenu()->child(
                 report     => title => loc( 'Report' ),
