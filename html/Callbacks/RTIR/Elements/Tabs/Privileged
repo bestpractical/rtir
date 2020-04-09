@@ -95,7 +95,7 @@ $root->child(
     path => RT::IR->HREFTo('CreateInQueue.html?Lifecycle='.RT::IR->lifecycle_incident, IncludeWebPath => 0),
 );
 $root->child(
-    reports => title => loc('Reports'),
+    reports => title => loc('Incident Reports'),
     path => RT::IR->HREFTo('Search/Results.html?Lifecycle='. RT::IR->lifecycle_report, IncludeWebPath => 0)
 )->child(
     create => title => loc('Create'),
