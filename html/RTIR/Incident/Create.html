@@ -71,8 +71,8 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
 % }
 
 <input type="hidden" name="id"           value="new" />
-<input type="hidden" class="hidden" name="Queue" value="<% $QueueObj->Id %>" />
 <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
+<input type="hidden" name="QueueChanged" value="0" />
 % if ( $ChildObj ) {
 <input type="hidden" name="Child"        value="<% $Child %>" />
 % }
@@ -130,7 +130,7 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
       <&|/l&>Queue</&>:
     </div>
     <div class="value col-md-9">
-      <span class="current-value form-control"><& /Ticket/Elements/ShowQueue, QueueObj => $QueueObj &></span>
+      <& /RTIR/Elements/SelectRTIRQueue, Name => "Queue", Default => $ARGS{Queue}, AutoSubmit => 1, ShowNullOption => 0 &>
     </div>
   </div>
   <div class="form-row">
@@ -371,8 +371,9 @@ if (!$QueueObj->Name) {
 Abort( loc("Queue '[_1]' could not be loaded.", $ARGS{Queue}) );
  }
 
-
-
+if( !RT::IR->IsIncidentQueue($QueueObj) ) {
+    RT::Interface::Web::Redirect(RT::IR->HREFTo( '/Create.html?' . $m->comp('/Elements/QueryString', %ARGS )));
+}
 
 my $ticket = RT::Ticket->new($session{'CurrentUser'}); # empty ticket object
 
