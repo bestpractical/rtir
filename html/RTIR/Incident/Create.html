@@ -247,8 +247,8 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
             name => 'Priority',
             comp => '/Elements/SelectPriority',
             args => {
-                Name    => 'InitialPriority',
-                Default =>
+                Name     => 'InitialPriority',
+                QueueObj => $QueueObj,
                     defined $ARGS{'InitialPriority'} && length $ARGS{'InitialPriority'}
                     ? $ARGS{'InitialPriority'}
                     : $QueueObj->DefaultValue('InitialPriority')
@@ -259,7 +259,8 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
             name => 'Final Priority',
             comp => '/Elements/SelectPriority',
             args => {
-                Name    => 'FinalPriority',
+                Name     => 'FinalPriority',
+                QueueObj => $QueueObj,
                 Default =>
                     defined $ARGS{'FinalPriority'} && length $ARGS{'FinalPriority'}
                     ? $ARGS{'FinalPriority'}

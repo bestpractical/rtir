@@ -154,7 +154,11 @@
         <&|/l&>Priority</&>:
       </div>
       <div class="value col-md-9">
-        <&/Elements/SelectPriority, Name => 'Priority', Default => $ARGS{'Priority'} || $Ticket->Priority &>
+        <&/Elements/SelectPriority,
+            Name     => 'Priority',
+            Default  => $ARGS{'Priority'} || $Ticket->Priority,
+            QueueObj => $Ticket->QueueObj
+        &>
       </div>
     </div>
 % }
