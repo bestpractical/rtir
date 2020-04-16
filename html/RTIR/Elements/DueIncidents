@@ -93,6 +93,6 @@ $Query           => RT::IR->ActiveQuery( Lifecycle => 'incidents',  ($m->{'RTIR_
 $Format          => RT->Config->Get('RTIRSearchResultFormats')->{'DueIncidents'}
 $Rows            => undef
 $Page            => 1
-$OrderBy         => 'Due'
-$Order           => 'ASC'
+$OrderBy         => ['Due', 'Priority']
+$Order           => ['ASC', 'DESC']
 </%ARGS>
