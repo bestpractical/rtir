@@ -8,7 +8,7 @@ no warnings 'once';
 
 use Module::Install::Base;
 use base 'Module::Install::Base';
-our $VERSION = '0.40';
+our $VERSION = '0.41';
 
 use FindBin;
 use File::Glob     ();
@@ -53,7 +53,7 @@ sub RTx {
         my @look = @INC;
         unshift @look, grep {defined and -d $_} @try;
         push @look, grep {defined and -d $_}
-            map { ( "$_/rt4/lib", "$_/lib/rt4", "$_/lib" ) } @prefixes;
+            map { ( "$_/rt5/lib", "$_/lib/rt5", "$_/rt4/lib", "$_/lib/rt4", "$_/lib" ) } @prefixes;
         last if eval {local @INC = @look; require RT; $RT::LocalLibPath};
 
         warn
