@@ -1,0 +1,20 @@
+language: bash
+services: docker
+
+notifications:
+  slack:
+    secure: ebb/6lbr1ob7wMh04C5PzM5/NNz6IstEUaUROA7BATuKKgPetl6qwmQNwvlwE5zYvJQBWQwKJ70JaCzJkXK6JVMVRRAWsXINJTzMfSqsoXEcJ59c5isf0bsnspVO7jxHTfXF/NZngR4EuPwH5v5lWp9m++j90t9nBKFFVi34WUE=
+
+env:
+    - RT_DBA_USER=root RT_DBA_PASSWORD=password DB_VERSION_TAG=10.3
+
+# $TRAVIS_BUILD_DIR will have a clone of the current branch
+before_install:
+    - docker run --name mariadb -e MYSQL_ROOT_PASSWORD=password -d mariadb:$DB_VERSION_TAG
+    - docker build -t rt-base .
+    - docker run -d -v $TRAVIS_BUILD_DIR:/rtir --name rtir --link mariadb:db rt-base
+    - docker ps -a
+    - docker exec -it rtir bash -c "cd /rtir && perl Makefile.PL"
+
+script:
+    - docker exec -it rtir bash -c "cd /rtir && prove -l t/*"
