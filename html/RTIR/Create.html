@@ -410,7 +410,7 @@ $m->callback(
 
 # Use default queue from config site or user prefs if none provided
 unless ($Queue) {
-    $Queue = GetDefaultQueue();
+    $Queue = RT::IR::GetRTIRDefaultQueue();
 }
 
 # pick first in list in normal order unless queue provided from form/url/defaults

@@ -55,15 +55,42 @@ use warnings;
 
 sub Init {
     use RT::Config;
-    my %meta = (
-        DisplayAfterEdit => {
-            Section         => 'Tickets view',
-            Overridable     => 1,
-            Widget          => '/Widgets/Form/Boolean',
-            WidgetArguments => {
-                Description => 'Display ticket after edit (don\'t stay on the edit page)',
+
+    RT->Config->AddOption(
+        Name            => 'DisplayAfterEdit',
+        Section         => 'Ticket display',
+        Overridable     => 1,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Display RTIR ticket after edit (don\'t stay on the edit page)',
+        }
+    );
+
+    RT->Config->AddOption(
+        Name            => 'RTIR_DefaultQueue',
+        Section         => 'General',
+        Overridable     => 1,
+        SortOrder       => 1.5,
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => 'Default RTIR queue',    #loc
+            Default     => 1,
+            Callback    => sub {
+                my $ret = { Values => [], ValuesLabel => {}};
+                my @queues = RT::IR->Queues;
+                foreach my $queue_name ( @queues ) {
+                    my $queue = RT::Queue->new($HTML::Mason::Commands::session{'CurrentUser'});
+                    $queue->Load($queue_name);
+                    next unless $queue->CurrentUserHasRight("CreateTicket");
+                    push @{$ret->{Values}}, $queue->Id;
+                    $ret->{ValuesLabel}{$queue->Id} = $queue->Name;
+                }
+                return $ret;
             },
-        },
+        }
+    );
+
+    my %meta = (
         'RTIR_HomepageComponents' => {
             Type => 'ARRAY',
         },
