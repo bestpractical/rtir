@@ -265,6 +265,24 @@ sub FlushQueuesCache {
     return 1;
 } }
 
+=head2 GetRTIRDefaultQueue
+
+Processes global and user-level configuration options to find the default
+queue for the current user.
+
+Accepts no arguments, returns the ID of the default RTIR queue, if found, or undef.
+
+Mirrors GetDefaultQueue from RT.
+
+=cut
+
+sub GetRTIRDefaultQueue {
+    my $queue;
+
+    $queue = RT->Config->Get( "RTIR_DefaultQueue", $HTML::Mason::Commands::session{'CurrentUser'} );
+
+    return $queue;
+}
 
 =head2 Lifecycles
 

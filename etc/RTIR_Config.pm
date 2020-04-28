@@ -366,6 +366,17 @@ unless (defined $default_queue) {
     RT->Config->Set('DefaultQueue','Incident Reports');
 }
 
+=item C<$RTIR_DefaultQueue>
+
+Starting in RT/RTIR 5.0, the queue selection dropdown is on the ticket
+create page. RTIR has separate create pages from RT, so this allows you
+to set a default queue for RT and a different one for RTIR.
+
+This option defaults to C<Incident Reports>.
+
+=cut
+
+Set($RTIR_DefaultQueue, 'Incident Reports');
 
 =back
 
