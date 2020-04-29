@@ -130,7 +130,7 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
       <&|/l&>Queue</&>:
     </div>
     <div class="value col-md-9">
-      <& /RTIR/Elements/SelectRTIRQueue, Name => "Queue", Default => $ARGS{Queue}, AutoSubmit => 1, ShowNullOption => 0 &>
+      <& /RTIR/Elements/SelectRTIRQueue, Name => "Queue", Default => $queue, AutoSubmit => 1, ShowNullOption => 0 &>
     </div>
   </div>
   <div class="form-row">
@@ -363,12 +363,27 @@ for my $related_ticket ($ChildObj, $SplitObj) {
         last;
 }
 
+# Load the first Incident queue if none is provided
+my $queue = $ARGS{'Queue'};
+unless ( $queue ) {
+    my $queues = RT::Queues->new( RT->SystemUser );
+
+    $queues->Limit(
+        FIELD => 'Lifecycle',
+        OPERATOR => '=',
+        VALUE => RT::IR->lifecycle_incident,
+    );
+
+    if ( my $first_queue = $queues->First ) {
+        $queue = $first_queue->Id;
+    }
+}
 
 my $QueueObj = RT::Queue->new($session{'CurrentUser'});
-$QueueObj->Load( $ARGS{Queue} );
+$QueueObj->Load( $queue );
 
 if (!$QueueObj->Name) {
-Abort( loc("Queue '[_1]' could not be loaded.", $ARGS{Queue}) );
+Abort( loc("Queue '[_1]' could not be loaded.", $queue) );
  }
 
 if( !RT::IR->IsIncidentQueue($QueueObj) ) {
