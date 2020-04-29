@@ -350,22 +350,6 @@ page. The default is true.
 
 Set($RTIR_RedirectOnSearch, 1);
 
-=item DefaultQueue
-
-By default, RT does not specify a Default Queue.
-If you set one in your RT_SiteConfig.pm, RTIR will honor that setting.
-Otherwise, RTIR will set Incident Reports to be the default Queue
-for the New Ticket In dropdown.
-
-If you prefer another Queue, you should specify it in RT_SiteConfig.pm
-
-=cut
-
-my $default_queue = RT->Config->Get('DefaultQueue');
-unless (defined $default_queue) {
-    RT->Config->Set('DefaultQueue','Incident Reports');
-}
-
 =item C<$RTIR_DefaultQueue>
 
 Starting in RT/RTIR 5.0, the queue selection dropdown is on the ticket
