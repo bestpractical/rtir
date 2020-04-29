@@ -29,6 +29,17 @@ CreateInQueue.html will be removed in a future version of RTIR.
 Please update any links directly accessing CreateInQueue.html to
 instead link to RTIR/Create.html or RTIR/Incident/Create.html.
 
+=item *
+
+Previous versions of RTIR, set RT's DefaultQueue option to Incident Reports.
+The new versions of RT and RTIR move the queue selection to the create page
+from the top action, so a new RTIR_DefaultQueue option is now available to
+set the default queue for RTIR create ticket pages.
+
+With this new RTIR-specific option, RTIR no longer automatically sets RT's
+DefaultQueue. You can still set it manually for your system via the RT
+configuration.
+
 =back
 
 =cut
