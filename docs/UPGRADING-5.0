@@ -1,0 +1,27 @@
+=head1 Upgrading to RTIR 5.0
+
+The following describes some of the key components of the upgrade
+to RTIR 5.0 from RTIR 4.0.  The other UPGRADING documents contain
+details for previous versions.
+
+As with other versions of RTIR, you first need to upgrade RT itself
+to a supported version. For RTIR 5.0, this is RT 5.0.
+
+=head2 Notable Changes
+
+=over
+
+=item *
+
+Previous versions of RTIR, set RT's DefaultQueue option to Incident Reports.
+The new versions of RT and RTIR move the queue selection to the create page
+from the top menu, so a new RTIR_DefaultQueue option is now available to set
+the default queue for RTIR create ticket pages.
+
+With this new RTIR-specific option, RTIR no longer automatically sets RT's
+DefaultQueue. You can still set it manually for your system via the RT
+configuration.
+
+=back
+
+=cut
