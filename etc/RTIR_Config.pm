@@ -253,6 +253,35 @@ Set( %LinkedQueuePortlets, (
     ],
 ));
 
+=item C<%LinkedQueuePortletFormats>
+
+C<%LinkedQueuePortletFormats> defines the format for displaying
+linked tickets in each linked queue portlet defined by C<%LinkedQueuePortlets>.
+
+The 'Default' format will be used by default.
+
+To change the format for all 3 RTIR default linked queues, for
+example:
+
+    Set( %LinkedQueuePortletFormats,
+        'Incident Reports' =>
+            q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
+            q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
+            q{Status,OwnerName,LastUpdatedRelative},
+
+        Investigations =>
+            q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
+            q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
+            q{Status,OwnerName,LastUpdatedRelative},
+
+        Countermeasures =>
+            q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
+            q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
+            q{Status,OwnerName,LastUpdatedRelative},
+    );
+
+=cut
+
 =item C<%RTIR_IncidentChildren>
 
 Option controls relations between an incident and
