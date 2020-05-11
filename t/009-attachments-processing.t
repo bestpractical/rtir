@@ -33,7 +33,7 @@ $agent->goto_create_rtir_ticket('Incident Reports');
     my $attachment_link = $agent->find_link(
         tag       => 'a',
         url_regex => qr/\Q$filename/,
-        text      => '',
+        text_regex => qr/\Q$filename/,
     );
     ok($attachment_link, "has link to attachment");
 
@@ -74,7 +74,7 @@ $agent->goto_create_rtir_ticket('Incident Reports');
     my @links = $agent->find_all_links(
         tag        => 'a',
         url_regex  => qr/(?:\Q$fn1\E|\Q$fn2\E)/,
-        text       => '',
+        text_regex => qr/(?:\Q$fn1\E|\Q$fn2\E)/,
     );
     is( scalar @links, 2, "has link to two attachments");
     unlink $fn1 or die "couldn't delete file '$fn1': $!";
@@ -109,7 +109,7 @@ SKIP: {
     my $attachment_link = $agent->find_link(
         tag       => 'a',
         url_regex => qr/\Q$filename/,
-        text      => '',
+        text_regex => qr/\Q$filename/,
     );
     ok(!$attachment_link, "no link to attachment");
 
@@ -187,7 +187,7 @@ $agent->goto_create_rtir_ticket('Countermeasures');
     my $attachment_link = $agent->find_link(
         tag       => 'a',
         url_regex => qr/\Q$filename/,
-        text      => '',
+        text_regex => qr/\Q$filename/,
     );
     ok($attachment_link, "has link to attachment");
 
@@ -229,7 +229,7 @@ $agent->goto_create_rtir_ticket('Countermeasures');
         my $attachment_link = $agent->find_link(
             tag       => 'a',
             url_regex => qr/\Q$filename/,
-            text      => '',
+            text_regex => qr/\Q$filename/,
         );
         ok($attachment_link, "has link to attachment");
     }
