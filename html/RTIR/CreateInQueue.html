@@ -53,6 +53,7 @@
 <& /RTIR/Elements/CreateInRTIRQueue, %ARGS &>
 
 <%INIT>
+RT->Logger->warning( "CreateInQueue.html has been deprecated. See RTIR's docs/UPGRADING-5.0 for more information." );
 $ARGS{ticket_type} = RT::IR::TicketType( Lifecycle => $Lifecycle );
 my $title = "Select Queue for New $ARGS{ticket_type}";
 </%INIT>
