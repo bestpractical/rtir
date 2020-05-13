@@ -17,6 +17,18 @@ to add for each queue. This change made it harder to access the
 default RT menus, so we have reverted to the previous configuration
 with a single RTIR menu item containing relevant links.
 
+=item *
+
+To align with RT's create pages we removed the modal to select queue
+before the create page and now give users the option to select
+queue directly on create. CreateInQueue.html still remains available
+incase users are linking directly to it but now logs a deprecated
+warning when accessed.
+
+CreateInQueue.html will be removed in a future version of RTIR.
+Please update any links directly accessing CreateInQueue.html to
+instead link to RTIR/Create.html or RTIR/Incident/Create.html.
+
 =back
 
 =cut

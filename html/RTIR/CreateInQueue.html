@@ -53,6 +53,7 @@
 <& /RTIR/Elements/CreateInRTIRQueue, %ARGS &>
 
 <%INIT>
+RT->Deprecated( Instead => 'Create.html' );
 $ARGS{ticket_type} = RT::IR::TicketType( Lifecycle => $Lifecycle );
 my $title = "Select Queue for New $ARGS{ticket_type}";
 </%INIT>
