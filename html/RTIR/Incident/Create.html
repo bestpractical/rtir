@@ -130,7 +130,7 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
       <&|/l&>Queue</&>:
     </div>
     <div class="value col-md-9">
-      <& /RTIR/Elements/SelectRTIRQueue, Name => "Queue", Default => $queue, AutoSubmit => 1, ShowNullOption => 0 &>
+      <& /RTIR/Elements/SelectRTIRQueue, Name => "Queue", Default => $queue, Lifecycle => $QueueObj->Lifecycle, AutoSubmit => 1, ShowNullOption => 0 &>
     </div>
   </div>
   <div class="form-row">
@@ -366,7 +366,7 @@ for my $related_ticket ($ChildObj, $SplitObj) {
 # Load the first Incident queue if none is provided
 my $queue = $ARGS{'Queue'};
 unless ( $queue ) {
-    my $queues = RT::Queues->new( RT->SystemUser );
+    my $queues = RT::Queues->new($session{'CurrentUser'});
 
     $queues->Limit(
         FIELD => 'Lifecycle',
@@ -374,8 +374,12 @@ unless ( $queue ) {
         VALUE => RT::IR->lifecycle_incident,
     );
 
-    if ( my $first_queue = $queues->First ) {
-        $queue = $first_queue->Id;
+    while (my $object = $queues->Next) {
+        # Ensure the user can CreateTicket in the queue.
+        next unless $session{CurrentUser}->HasRight( Object => $object, Right => 'CreateTicket' );
+
+        $queue = $object->Id;
+        last;
     }
 }
 

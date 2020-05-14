@@ -108,6 +108,7 @@
             args => {
                 Name           => 'Queue',
                 Default        => $Queue,
+                Lifecycle      => $Lifecycle,
                 ShowNullOption => 0,
                 AutoSubmit     => 1,
             },
@@ -381,15 +382,7 @@
 # Make sure even a single checkbox value becomes an arrayref
 $ARGS{'SkipNotification'} = \@SkipNotification;
 
-# XXX TODO remove this code that maps lifecycles to queues
-if ($Lifecycle && ! $Queue) {
-    $Queue=ucfirst($Lifecycle);
-    $Queue=~ s/_r/ R/;
-    $ARGS{'Queue'} = $Queue;
-}
-
 my $constituency = $m->{'RTIR_ConstituencyFilter'};
-
 
 my %CFDefaults;
 $m->callback(
@@ -397,9 +390,32 @@ $m->callback(
     ARGSRef => \%ARGS,
 );
 
-# Use default queue from config site or user prefs if none provided
+# If the Queue is not passed in as an ARG, go get and set queue from the queues the user can CreateTicket.
+# For constituency users without access to the default RTIR queues we need to specifically check and limit
+# else we Abort below when we attempt to load the default queue as the user.
 unless ($Queue) {
-    $Queue = GetDefaultQueue();
+    my $collection = RT::Queues->new($session{'CurrentUser'});
+
+    # RT::Queues::AddRecord verifies the user has 'SeeQueue', so we don't
+    # need to specifically test for that in the while loop below.
+    if ($Lifecycle) {
+        $collection->Limit(FIELD => 'Lifecycle', OPERATOR => '=', VALUE => $Lifecycle);
+    }
+    else {
+        $collection->Limit(
+            FIELD => 'Lifecycle',
+            OPERATOR => 'IN',
+            VALUE => [RT::IR->Lifecycles],
+        );
+    }
+
+    while (my $object = $collection->Next) {
+        # Ensure the user can CreateTicket in the queue.
+        next unless $session{CurrentUser}->HasRight( Object => $object, Right => 'CreateTicket' );
+
+        $Queue = $object->Id;
+        last;
+    }
 }
 
 # pick first in list in normal order unless queue provided from form/url/defaults
@@ -413,8 +429,6 @@ unless ($Queue) {
     $Queue = $session{$cache_key}{objects}[0]->{Id};
 }
 
-$session{DefaultQueue} = $Queue;
-
 my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
 $QueueObj->Load( $Queue );
 
@@ -422,9 +436,7 @@ if (!$QueueObj->Name) {
  Abort( loc("Queue '[_1]' could not be loaded.",$Queue) );
  }
 
-if ($Queue && !$Lifecycle) {
-    $Lifecycle = $QueueObj->Lifecycle;
-}
+$Lifecycle ||= $QueueObj->Lifecycle;
 
 my $ticket = RT::Ticket->new($session{'CurrentUser'}); # empty ticket object
 
@@ -565,14 +577,14 @@ unshift @results, loc("Creation failed:")
 
 my ($Title, $SubmitCaption);
 if ( $Split ) {
-$Title = loc("Split [_1] #[_2]: [_3]", RT::IR::TicketType(Lifecycle => $QueueObj->Lifecycle), $SplitObj->id, $SplitObj->Subject);
+$Title = loc("Split [_1] #[_2]: [_3]", RT::IR::TicketType(Lifecycle => $Lifecycle), $SplitObj->id, $SplitObj->Subject);
     $SubmitCaption = loc("Split");
 } else {
 if ( RT::IR->IsInvestigationQueue($QueueObj) ) {
     $Title = loc("Launch a new investigation");
         $SubmitCaption = loc("Launch");
     } else {
-    $Title = loc("Create a new [_1]", RT::IR::TicketType(Lifecycle => $QueueObj->Lifecycle));
+    $Title = loc("Create a new [_1]", RT::IR::TicketType(Lifecycle => $Lifecycle));
         $SubmitCaption = loc("Create");
     }
 }
