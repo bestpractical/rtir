@@ -26,7 +26,6 @@ my $rtir_user = rtir_user();
     ok ($new_id, "Ticket created successfully: #$new_id.");
 
     $agent->follow_link_ok({text => "Launch", n => 2 }, "Followed link");
-    $agent->click_through_createinqueue;
     $agent->form_number(3);
     $agent->field('Requestors', $rtir_user->EmailAddress);
     $agent->click('Create');
