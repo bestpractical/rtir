@@ -72,7 +72,6 @@ my $incident_bar = $agent->create_incident(
 $agent->display_ticket($incident_foo);
 
 $agent->follow_link_ok({text => 'Launch', n => 2}, "Followed 'Launch' link");
-$agent->click_through_createinqueue;
 $agent->form_name('TicketCreate');
 is($agent->value('Incident'), $incident_foo, 'Incident foo is checked');
 $agent->field('Incident', $incident_bar);
