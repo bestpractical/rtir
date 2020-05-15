@@ -122,6 +122,7 @@
                 Name         => "Status",
                 Default      => $ARGS{Status} || $QueueObj->LifecycleObj->DefaultOnCreate,
                 DefaultValue => 0,
+                Statuses     => \@statuses,
                 SkipDeleted  => 1,
                 Object       => $QueueObj,
             },
@@ -611,6 +612,7 @@ if ( RT::IR->IsInvestigationQueue($QueueObj) ) {
     }
 }
 
+my @statuses = RT::IR->Statuses( Lifecycle => $Lifecycle );
 
 </%INIT>
 

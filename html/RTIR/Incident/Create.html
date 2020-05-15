@@ -144,6 +144,7 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
           Object => $QueueObj,
           DefaultValue => 0,
           Default => $ARGS{Status} || $QueueObj->LifecycleObj->DefaultOnCreate,
+          Statuses => \@statuses,
       &>
     </div>
   </div>
@@ -502,6 +503,9 @@ unless ( exists $ARGS{'Content'} ) {
         $ARGS{'Content'} =~ s/\&gt;/>/g;
     }
 }
+
+my @statuses = RT::IR->Statuses( Lifecycle => $Lifecycle );
+
 </%INIT>
 
 <%ARGS>
