@@ -120,6 +120,7 @@
                 Name         => "Status",
                 Default      => $ARGS{Status} || $QueueObj->LifecycleObj->DefaultOnCreate,
                 DefaultValue => 0,
+                Statuses     => [ RT::IR->Statuses( Lifecycle => $Lifecycle ) ],
                 SkipDeleted  => 1,
                 Object       => $QueueObj,
             },

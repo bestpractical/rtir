@@ -143,6 +143,7 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
           Object => $QueueObj,
           DefaultValue => 0,
           Default => $ARGS{Status} || $QueueObj->LifecycleObj->DefaultOnCreate,
+          Statuses => [ RT::IR->Statuses( Lifecycle => RT::IR->lifecycle_incident ) ],
       &>
     </div>
   </div>
