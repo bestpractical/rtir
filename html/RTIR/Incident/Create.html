@@ -318,6 +318,19 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
 
 </div>  <!-- end ticket-create-incident -->
 
+<div id="ticket-create-investigation">
+<a name="investigation"></a>
+<& /RTIR/Investigation/Elements/Create,
+    %ARGS,
+    NamePrefix => 'Investigation',
+    QueueObj => $InvestigationsQueueObj,
+    Lifecycle => RT::IR->lifecycle_investigation,
+    Constituency => $constituency,
+    SkipField => { Owner => 1, Attachments => 1, DateFields => 1 },
+    IncludeSignature => (exists $ARGS{'InvestigationContent'} ? 0 : 1),
+&>
+</div>
+
 % $m->callback( CallbackName => 'FormEnd', QueueObj => $QueueObj, Constituency => $constituency,
 %    ChildObj => $ChildObj, SplitObj => $SplitObj, ARGSRef => \%ARGS );
 
@@ -405,6 +418,12 @@ if (!$QueueObj->Name) {
 Abort( loc("Queue '[_1]' could not be loaded.", $queue) );
  }
 
+# Load appropriate Investigations queue
+my $InvestigationsQueue = 'Investigations' . ( $constituency ? ' - ' . $constituency : '' );
+my $InvestigationsQueueObj = RT::Queue->new( $session{'CurrentUser'} );
+my ($ret, $msg) = $InvestigationsQueueObj->Load( $InvestigationsQueue );
+RT->Logger->error("Unable to load $InvestigationsQueue : $msg") unless $ret;
+
 if( !RT::IR->IsIncidentQueue($QueueObj) ) {
     RT::Interface::Web::Redirect(RT::IR->HREFTo( '/Create.html?' . $m->comp('/Elements/QueryString', %ARGS )));
 }
@@ -455,6 +474,23 @@ if ( $CreateIncident ) {
     );
 }
 
+if ( $CreateWithInvestigation ) {
+        $checks_failure += RT::IR->FilterRTAddresses(
+            ARGSRef => \%ARGS,
+            Fields => {
+                InvestigationRequestors => 'Requestor',
+                InvestigationCc => 'Cc',
+                InvestigationAdminCc => 'AdminCc',
+            },
+            results => \@results,
+        );
+}
+
+if ( $CreateWithInvestigation && !$InvestigationRequestors ) {
+    push @results, loc( "You must enter a correspondent for the investigation" );
+    $checks_failure = 1;
+}
+
 $m->callback( CallbackName => 'BeforeCreateRedirect', ARGSRef => \%ARGS,
     Child => $ChildObj, results => \@results, checks_failure => \$checks_failure );
 
@@ -470,6 +506,26 @@ if ( !$checks_failure && $CreateIncident ) {
     push @results, @tmp;
 
     if( $inc_obj ) {
+        my $inv_obj;
+        if ( $CreateWithInvestigation ) {
+            my (@tmp);
+            ($inv_obj, @tmp) = $m->comp(
+                '/RTIR/Investigation/Elements/Create:Process',
+                %ARGS,
+                NamePrefix => 'Investigation',
+                DefaultsNamePrefix => '',
+            );
+            push @results, @tmp;
+            if ( $inv_obj ) {
+                my($id, $msg) = $inv_obj->AddLink(
+                    Type => 'MemberOf',
+                    Target => $inc_obj->id
+                );
+                #XXX: correct message on success
+                push @results, $msg if !$id || $msg;
+            }
+        }
+
         $m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Child => $ChildObj, TicketObj => $inc_obj,
             results => \@results );
 
@@ -511,7 +567,9 @@ unless ( exists $ARGS{'Content'} ) {
 $Title                   => loc("Create a new Incident")
 $QuoteTransaction        => undef
 
-$CreateIncident          => 0
+$CreateWithInvestigation => 0
+$CreateIncident          => $CreateWithInvestigation
+$InvestigationRequestors => 0
 
 $Split                   => undef
 
