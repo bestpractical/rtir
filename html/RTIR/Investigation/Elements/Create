@@ -212,6 +212,13 @@ email addresses. These people <b>will</b> receive future updates.)</&></font></i
 % }
 
 </table></&>
+
+<& /Elements/Submit,
+    Name => 'CreateWithInvestigation',
+    Label => loc("Create Incident and run Investigation"),
+    SubmitId => 'create-ticket-with-investigation'
+&>
+
 % $m->callback( CallbackName => 'AfterTable', ARGSRef => \%ARGS, TicketObj  => $ticket,
 %    QueueObj   => $QueueObj, DefaultsFrom => $TicketObj );
 </div>
