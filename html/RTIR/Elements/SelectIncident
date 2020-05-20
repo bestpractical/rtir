@@ -48,6 +48,8 @@
   <div class="form-row">
     <div class="label col-md-3">
       <&|/l&>Incident</&>:
+      <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Id of an Incident to link a new ticket to</&>.
+      <% $config->{'Required'} ? loc('Required') : loc('Optional') %>."></span>
     </div>
     <div class="value col-md-9">
       <div class="form-row">
@@ -85,13 +87,6 @@ jQuery(function(){ jQuery('input[type="radio"][name="<% $Name %>"]').uncheckable
     </div>
   </div>
 
-  <div class="form-row">
-    <div class="label col-md-3"></div>
-    <div class="value col-md-9">
-      (<&|/l&>Id of an Incident to link a new ticket to</&>.
-      <% $config->{'Required'}? '<strong>'.loc('Required').'</strong>': loc('Optional') |n %>.)
-    </div>
-  </div>
 <%ARGS>
 $Type
 $Name     => 'Incident'
