@@ -193,6 +193,7 @@
 <div class="form-row">
   <div class="label col-2">
     <&|/l&>Cc</&>:
+    <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people will receive future updates.</&>"></span>
   </div>
   <div class="value col-9">
     <& /Elements/EmailInput,
@@ -202,19 +203,13 @@
     &>
   </div>
 </div>
-
-<div class="form-row">
-  <div class="label col-2"></div>
-  <div class="value col-9">
-    <i><&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)</&></i>
-  </div>
-</div>
 % }
 
 % unless ( $SkipField{'AdminCc'} && $HideField{'AdminCc'} ) {
 <div class="form-row">
   <div class="label col-2">
     <&|/l&>Admin Cc</&>:
+     <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people will receive future updates.</&>"></span>
   </div>
   <div class="value col-9">
     <& /Elements/EmailInput,
@@ -222,13 +217,6 @@
         Default => $value_cb->('AdminCc'),
         Size    => undef,
     &>
-  </div>
-</div>
-
-<div class="form-row">
-  <div class="label col-2"></div>
-  <div class="value col-9">
-    <i><&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)</&></i>
   </div>
 </div>
 % }
