@@ -599,21 +599,13 @@ Set(@Active_MakeClicky, qw(httpurl_overwrite ip email domain));
 
 =item C<%RTIR_CustomFieldsDefaults>
 
-Set the defaults for RTIR custom fields. Values are case-sensitive.
+Set the default value for Resolution if there is no value when an RTIR ticket
+is set to resolved or rejected.
 
 =cut
 
 Set(
     %RTIR_CustomFieldsDefaults,
-    'How Reported'  => "",
-    'Reporter Type' => "",
-    IP              => "",
-    Netmask         => "",
-    Port            => "",
-    'Where Blocked' => "",
-    Function        => "",
-    Classification  => "",
-    Description     => "",
     Resolution      => {
         resolved => "successfully resolved",
         rejected => "no resolution reached",
