@@ -46,7 +46,6 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <input type="hidden" name="<% $NamePrefix %>Status" value="<% $ARGS{ $NamePrefix .'Status' } || $QueueObj->LifecycleObj->DefaultOnCreate %>" />
-<input type="hidden" class="hidden" name="<% $NamePrefix %>Queue" value="<% $QueueObj->Id %>" />
 
 <div class="ticket-create-basics">
 <&| /Widgets/TitleBox, title => loc("Basics"), class => 'ticket-info-basics' &>
@@ -67,7 +66,14 @@
       <&|/l&>Queue</&>:
     </div>
     <div class="value col-9">
-      <& /Ticket/Elements/ShowQueue, QueueObj => $QueueObj &>
+      <& /RTIR/Elements/SelectRTIRQueue,
+          Name => $NamePrefix . 'Queue',
+          Default => $QueueObj->Name,
+          Lifecycle => $QueueObj->Lifecycle,
+          AutoSubmit => 1,
+          ShowNullOption => 0,
+          Constituency => $Constituency
+      &>
     </div>
   </div>
 
