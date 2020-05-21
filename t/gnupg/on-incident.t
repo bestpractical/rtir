@@ -45,7 +45,7 @@ diag "check that things don't work if there is no key";
         or diag "Emails' have been sent: \n". join "\n\n", @mail;
 
     $agent->next_warning_like(qr/public key not found/) for 1 .. 2;
-    $agent->next_warning_like(qr/keyring.+created/);
+    $agent->next_warning_like(qr/secret key not available/);
     $agent->next_warning_like(qr/public key not found/) for 1 .. 2;
     $agent->no_leftover_warnings_ok;
 }
