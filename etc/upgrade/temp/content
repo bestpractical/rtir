@@ -1,0 +1,27 @@
+our @Final = sub {
+    my $custom_field = RT::CustomField->new( RT->SystemUser );
+
+    my $custom_field_defaults = RT->Config->Get('RTIR_CustomFieldsDefaults') || ();
+    unless ( scalar keys %{$custom_field} ) {
+        RT->Logger->error( "To set custom field defaults the %RTIR_CustomFieldsDefaults must be present, if there is a configuration for this value that was removed re-enable it and re-run this script." );
+        return;
+    }
+
+    foreach my $cf_name ( keys %{$custom_field_defaults} ) {
+        next if $cf_name eq 'Resolution';
+
+        my ($ret, $msg) = $custom_field->LoadByName( Name => $cf_name );
+        unless ( $ret ) {
+            RT->Logger->error( "Could not load custom field '$cf_name' : $msg" );
+            next;
+        }
+       ($ret, $msg) = $custom_field->SetDefaultValues( Values => $custom_field_defaults->{$cf_name} );
+        if ( $ret ) {
+            RT->Logger->debug( "Set default value for $cf_name to $custom_field_defaults->{$cf_name}" );
+        }
+        else {
+            RT->Logger->error( "Could not set default value for $cf_name custom field $msg" );
+        }
+    }
+    RT->Logger->info( "Custom field defaults are now handled in the web UI on the custom field admin page, only Resolution needs to be set in \%RTIR_CustomFieldsDefaults." );
+};

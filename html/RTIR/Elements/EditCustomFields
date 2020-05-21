@@ -59,7 +59,6 @@
 unless ( $TicketObj && $TicketObj->Id ) {
     # no ticket, we need to find defaults of cfs
     my $CustomFields = $QueueObj->TicketCustomFields();
-    my %ConfigDefaults = RT->Config->Get('RTIR_CustomFieldsDefaults');
     while ( my $CustomField = $CustomFields->Next ) {
         my $name = $CustomField->Name;
 
@@ -76,16 +75,6 @@ unless ( $TicketObj && $TicketObj->Id ) {
 
         if ( $ARGS{"$name-Value"} ) {
             $CFDefaults->{"CustomField-".$CustomField->Id} = $ARGS{"$name-Value"};
-        }
-        elsif ( defined $ConfigDefaults{ $name } ) {
-# if $ConfigDefaults{$name} is ref, it should be treated carefully
-            unless ( ref $ConfigDefaults{ $name } ) {
-                $CFDefaults->{"CustomField-".$CustomField->Id} = $ConfigDefaults{ $name };
-            }
-            elsif ( ref $ConfigDefaults{ $name } eq 'ARRAY' ) {
-                $CFDefaults->{"CustomField-".$CustomField->id} =
-                    join "\n", @{$ConfigDefaults{ $name }};
-            }
         }
     }
 }
