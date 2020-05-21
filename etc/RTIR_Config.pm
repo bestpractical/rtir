@@ -786,4 +786,18 @@ Read F<docs/AdministrationTutorial.pod>.
 
 =cut
 
+=head1 RTIR_PriorityToSLA
+
+Set mapping between priority values and SLA's so that when priority is
+updated the corresponding SLA will be set. This feature will only be enabled
+when a priority value matches to an SLA value.
+
+    Set(%RTIR_PriorityToSLA,
+        Low        => 'normal',
+        Medium     => 'high',
+        High       => 'urgent'
+    );
+
+=cut
+
 1;
