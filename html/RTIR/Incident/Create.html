@@ -419,10 +419,31 @@ Abort( loc("Queue '[_1]' could not be loaded.", $queue) );
  }
 
 # Load appropriate Investigations queue
-my $InvestigationsQueue = 'Investigations' . ( $constituency ? ' - ' . $constituency : '' );
+my $InvestigationsQueue = $ARGS{InvestigationQueue} || 'Investigations' . ( $constituency ? ' - ' . $constituency : '' );
 my $InvestigationsQueueObj = RT::Queue->new( $session{'CurrentUser'} );
-my ($ret, $msg) = $InvestigationsQueueObj->Load( $InvestigationsQueue );
-RT->Logger->error("Unable to load $InvestigationsQueue : $msg") unless $ret;
+$InvestigationsQueueObj->Load( $InvestigationsQueue );
+
+# Users limited by constituency may not be able to use the default or specified investigations queue
+# Look up what queue the user has SeeQueue and CreateTicket for and use that instead.
+unless ( $InvestigationsQueueObj->Name ) {
+    RT->Logger->debug( "Investigation Queue '$InvestigationsQueue' could not be loaded for user " . $session{'CurrentUser'}->Id . "." );
+
+    my $investigation_queues = RT::Queues->new($session{'CurrentUser'});
+
+    $investigation_queues->Limit(
+        FIELD => 'Lifecycle',
+        OPERATOR => '=',
+        VALUE => RT::IR->lifecycle_investigation,
+    );
+
+    while (my $object = $investigation_queues->Next) {
+        # Ensure the user can CreateTicket in the queue
+        next unless $session{CurrentUser}->HasRight( Object => $object, Right => 'CreateTicket' );
+
+        $InvestigationsQueueObj = $object;
+        last;
+    }
+}
 
 if( !RT::IR->IsIncidentQueue($QueueObj) ) {
     RT::Interface::Web::Redirect(RT::IR->HREFTo( '/Create.html?' . $m->comp('/Elements/QueryString', %ARGS )));
