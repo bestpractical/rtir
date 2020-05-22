@@ -56,11 +56,10 @@ use File::Temp qw(tempdir);
 sub import {
     my $class = shift;
     my %args  = @_;
-    my $t     = $class->builder;
 
-    $t->plan( skip_all => 'GnuPG required.' )
+    RT::Test::plan( skip_all => 'GnuPG required.' )
       unless eval { require GnuPG::Interface; 1 };
-    $t->plan( skip_all => 'gpg executable is required.' )
+    RT::Test::plan( skip_all => 'gpg executable is required.' )
       unless RT::Test->find_executable('gpg');
 
     $class->SUPER::import(%args);
