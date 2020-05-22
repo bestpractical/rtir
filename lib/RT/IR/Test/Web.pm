@@ -86,8 +86,7 @@ sub goto_create_rtir_ticket {
         warn "Failed to load queue: $queue";
     }
 
-    $self->get_ok("/RTIR/CreateInQueue.html?Lifecycle=$lifecycle");
-    $self->click_through_createinqueue( $queue );
+    $self->get_ok("/RTIR/" . ($lifecycle eq 'incidents' ? 'Incident/' : '') . "Create.html?Lifecycle=$lifecycle&Queue=" . $queue_obj->id);
 
     # set the form
     return $self->form_number(3);
@@ -149,7 +148,6 @@ sub create_incident_for_ir {
     # Select the "New" link from the Display page
     $self->follow_link_ok({id => 'create-incident'}, "Followed 'New (Incident)' link")
         or Test::More::diag $self->content;
-    $self->click_through_createinqueue;
 
     $self->form_number(3);
 
@@ -393,21 +391,6 @@ sub bulk_abandon {
         Test::More::ok( $self->value('BulkAbandon'), "Still on Bulk Abandon page" );
     }
     return;
-}
-
-
-sub click_through_createinqueue
-{
-    my $self = shift;
-    my $queue = shift || undef;
-
-    my %args;
-    $args{fields} = { Queue => $queue } if $queue;
-
-    $self->submit_form(
-        form_id => 'CreateInQueue',
-        %args,
-    );
 }
 
 1;

@@ -1,0 +1,34 @@
+=head1 Upgrading to 5.0
+
+The following describes some of the key components of the upgrade
+to RTIR 5.0 from earlier versions. The other UPGRADING documents contain
+details for previous versions.
+
+=head2 Notable Changes
+
+=over
+
+=item *
+
+In RTIR 4.0, we modified the menu display to move each queue to a
+top level menu item when working inside RTIR. Each menu ended up
+having just a "Create" entry and we haven't found new menu items
+to add for each queue. This change made it harder to access the
+default RT menus, so we have reverted to the previous configuration
+with a single RTIR menu item containing relevant links.
+
+=item *
+
+To align with RT's create pages we removed the modal to select queue
+before the create page and now give users the option to select
+queue directly on create. CreateInQueue.html still remains available
+incase users are linking directly to it but now logs a deprecated
+warning when accessed.
+
+CreateInQueue.html will be removed in a future version of RTIR.
+Please update any links directly accessing CreateInQueue.html to
+instead link to RTIR/Create.html or RTIR/Incident/Create.html.
+
+=back
+
+=cut

@@ -152,7 +152,7 @@ $COLUMN_MAP->{'LookupToolIncidentActions'} = {
             ;
         }
         push @res, \'<a href="',
-            RT::IR->HREFTo('CreateInQueue.html?Lifecycle='.RT::IR->lifecycle_investigation
+            RT::IR->HREFTo('Create.html?Lifecycle='.RT::IR->lifecycle_investigation
             .'&Incident='. $t->id),
             \('" class="create_child_' . RT::IR->lifecycle_investigation . '">'),
             '[' . $t->loc("Investigate") .']',

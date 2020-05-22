@@ -47,11 +47,6 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 
-if ( $m->request_comp->path !~ m{^/RTIR/} ) {
-    Menu()->child( rtir => title => loc('RTIR'), path => RT::IR->HREFTo('', IncludeWebPath => 0) );
-    return;
-}
-
 my $query_string = sub {
     my %args = @_;
     my $u    = URI->new();
@@ -75,22 +70,9 @@ my $search_arguments = sub {
     return %res;
 };
 
+my $root = Menu->child( rtir => title => loc('RTIR'), path => '/RTIR/' );
 
-my $orig_menu = Menu();
-
-$HTML::Mason::Commands::m->notes('menu', RT::Interface::Web::Menu->new());
-
-my $rtmenu = Menu->child(rtkids => menu => $orig_menu);
-$rtmenu->title(loc('RT'));
-$rtmenu->path('/');
-$rtmenu->key('rt-menu');
-
-Menu->child(preferences => menu => $orig_menu->child('preferences'));
-$orig_menu->delete('preferences');
-
-my $root = Menu();
-
-my $search = $root->child( search => title => loc('RTIR'), path => RT::IR->HREFTo('', IncludeWebPath => 0) );
+my $search = $root->child( search => title => loc('Search'), path => RT::IR->HREFTo('', IncludeWebPath => 0) );
 $search->child( new => title => loc('New Search'), path => RT::IR->HREFTo('Search/?NewQuery=1', IncludeWebPath => 0) );
 
 {
@@ -110,21 +92,21 @@ $root->child(
     path => RT::IR->HREFTo('Search/Results.html?Lifecycle='.RT::IR->lifecycle_incident, IncludeWebPath => 0)
 )->child(
     create => title => loc('Create'),
-    path => RT::IR->HREFTo('CreateInQueue.html?Lifecycle='.RT::IR->lifecycle_incident, IncludeWebPath => 0),
+    path => RT::IR->HREFTo('Incident/Create.html?Lifecycle='.RT::IR->lifecycle_incident, IncludeWebPath => 0),
 );
 $root->child(
-    reports => title => loc('Reports'),
+    reports => title => loc('Incident Reports'),
     path => RT::IR->HREFTo('Search/Results.html?Lifecycle='. RT::IR->lifecycle_report, IncludeWebPath => 0)
 )->child(
     create => title => loc('Create'),
-    path => RT::IR->HREFTo('CreateInQueue.html?Lifecycle='. RT::IR->lifecycle_report, IncludeWebPath => 0),
+    path => RT::IR->HREFTo('Create.html?Lifecycle='.RT::IR->lifecycle_report, IncludeWebPath => 0),
 );
 $root->child(
     investigations => title => loc('Investigations'),
     path => RT::IR->HREFTo('Search/Results.html?Lifecycle='.RT::IR->lifecycle_investigation, IncludeWebPath => 0)
 )->child(
     launch => title => loc('Launch'),
-    path => RT::IR->HREFTo('CreateInQueue.html?Lifecycle='.RT::IR->lifecycle_investigation, IncludeWebPath => 0),
+    path => RT::IR->HREFTo('Create.html?Lifecycle='.RT::IR->lifecycle_investigation, IncludeWebPath => 0),
 );
 unless ( RT->Config->Get('RTIR_DisableCountermeasures') ) {
     $root->child(
@@ -132,7 +114,7 @@ unless ( RT->Config->Get('RTIR_DisableCountermeasures') ) {
         path => RT::IR->HREFTo('Search/Results.html?Lifecycle='.RT::IR->lifecycle_countermeasure, IncludeWebPath => 0)
     )->child(
         create => title => loc('Create'),
-        path => RT::IR->HREFTo('CreateInQueue.html?Lifecycle='.RT::IR->lifecycle_countermeasure, IncludeWebPath => 0),
+        path => RT::IR->HREFTo('Create.html?Lifecycle='.RT::IR->lifecycle_countermeasure, IncludeWebPath => 0),
     );
 }
 
@@ -348,8 +330,8 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
     PageMenu()->child(
         new => title => loc("New [_1]", RT::IR::TicketType( Lifecycle => $lifecycle || RT::IR->lifecycle_incident ) ),
         path => !$lifecycle
-            ? RT::IR->HREFTo("CreateInQueue.html?Child=$id&Lifecycle=".RT::IR->lifecycle_incident, IncludeWebPath => 0)
-            : RT::IR->HREFTo("CreateInQueue.html?". $query_string->( Incident => $id, Lifecycle => $lifecycle ), IncludeWebPath => 0)
+            ? RT::IR->HREFTo("Incident/Create.html?Child=$id&Lifecycle=".RT::IR->lifecycle_incident, IncludeWebPath => 0)
+            : RT::IR->HREFTo('Create.html' . $query_string->( Incident => $id, Lifecycle => $lifecycle ), IncludeWebPath => 0)
         ,
     );
     PageMenu()->child(
@@ -370,7 +352,7 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
 
     PageMenu()->child(
         new => title => loc("New [_1]",RT::IR::TicketType( Lifecycle => $lifecycle ) ),
-        path => RT::IR->HREFTo("CreateInQueue.html?". $query_string->( Incident => $id, Lifecycle => $lifecycle ), IncludeWebPath => 0),
+        path => RT::IR->HREFTo("Create.html?". $query_string->( Incident => $id, Lifecycle => $lifecycle ), IncludeWebPath => 0),
     );
     PageMenu()->child(
         back => title => loc('Back to [_1] #[_2]', lc RT::IR::TicketType( Lifecycle => $ticket->QueueObj->Lifecycle), $id),
@@ -560,5 +542,5 @@ PageWidgets()->child('simple_search')->raw_html( $m->scomp(
     SendTo => RT::IR->HREFTo('index.html', IncludeWebPath => 0),
     Placeholder => 'Search Incidents'
 ) );
-PageWidgets()->child( create_ticket => raw_html => $m->scomp('/RTIR/Elements/CreateTicketInQueue') );
+PageWidgets()->child( create_ticket => raw_html => $HTML::Mason::Commands::m->scomp('/Elements/CreateTicket', SendTo => '/RTIR/Incident/Create.html?Lifecycle='.RT::IR->lifecycle_incident) );
 </%INIT>

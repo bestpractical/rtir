@@ -109,7 +109,7 @@ if ( $TicketObj && RT::IR->IsIncidentQueue($TicketObj->QueueObj)
         push @box_actions, {
             title => loc('Launch'),
             class => 'create_child' . ($Lifecycle ? '_'.$Lifecycle : ''),
-            path => RT::IR->HREFTo("CreateInQueue.html?". $m->comp('/Elements/QueryString',
+            path => RT::IR->HREFTo("Create.html?". $m->comp('/Elements/QueryString',
                 Incident => $TicketObj->id,
                 Lifecycle => $Lifecycle,
                 Requestors => $q,
@@ -119,7 +119,7 @@ if ( $TicketObj && RT::IR->IsIncidentQueue($TicketObj->QueueObj)
         push @box_actions, {
             title => loc('Create'),
             class => 'create_child' . ($Lifecycle ? '_'.$Lifecycle : ''),
-            path => RT::IR->HREFTo("CreateInQueue.html?". $m->comp('/Elements/QueryString',
+            path => RT::IR->HREFTo("Create.html?". $m->comp('/Elements/QueryString',
                 Incident => $TicketObj->id,
                 Lifecycle => $Lifecycle,
                 'IP-Value' => $q,
@@ -133,7 +133,7 @@ elsif ( $TicketObj && !RT::IR->IsIncidentQueue($TicketObj->QueueObj)
     push @box_actions, {
         title => loc('Create'),
         class => 'create_child' . ($Lifecycle ? '_'.$Lifecycle : ''),
-        path => RT::IR->HREFTo("CreateInQueue.html?". $m->comp('/Elements/QueryString',
+        path => RT::IR->HREFTo("Create.html?". $m->comp('/Elements/QueryString',
             Child => $TicketObj->id,
             Lifecycle => $Lifecycle
         )),

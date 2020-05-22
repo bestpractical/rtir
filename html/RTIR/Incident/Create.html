@@ -130,7 +130,8 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
       <&|/l&>Queue</&>:
     </div>
     <div class="value col-md-9">
-      <& /RTIR/Elements/SelectRTIRQueue, Name => "Queue", Default => $ARGS{Queue}, AutoSubmit => 1, ShowNullOption => 0 &>
+      <& /RTIR/Elements/SelectRTIRQueue, Name => "Queue", Default => $queue, Lifecycle => $QueueObj->Lifecycle, AutoSubmit => 1, ShowNullOption => 0,
+                                         LimitToConstituency => $limit_to_constituency, Constituency => $constituency &>
     </div>
   </div>
   <div class="form-row">
@@ -143,6 +144,7 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
           Object => $QueueObj,
           DefaultValue => 0,
           Default => $ARGS{Status} || $QueueObj->LifecycleObj->DefaultOnCreate,
+          Statuses => [ RT::IR->Statuses( Lifecycle => RT::IR->lifecycle_incident ) ],
       &>
     </div>
   </div>
@@ -363,12 +365,39 @@ for my $related_ticket ($ChildObj, $SplitObj) {
         last;
 }
 
+my $limit_to_constituency =
+    # Limit no matter what if we have a filter
+    $m->{'RTIR_ConstituencyFilter'} ||
+    # Also limit if we have a linked constituency and StrictConstituencyLinking is set
+    (RT::IR->StrictConstituencyLinking && $constituency)
+    ? 1 : 0;
+
+
+# Load the first Incident queue if none is provided
+my $queue = $ARGS{'Queue'};
+unless ( $queue ) {
+    my $queues = RT::Queues->new($session{'CurrentUser'});
+
+    $queues->Limit(
+        FIELD => 'Lifecycle',
+        OPERATOR => '=',
+        VALUE => RT::IR->lifecycle_incident,
+    );
+
+    while (my $object = $queues->Next) {
+        # Ensure the user can CreateTicket in the queue.
+        next unless $session{CurrentUser}->HasRight( Object => $object, Right => 'CreateTicket' );
+
+        $queue = $object->Id;
+        last;
+    }
+}
 
 my $QueueObj = RT::Queue->new($session{'CurrentUser'});
-$QueueObj->Load( $ARGS{Queue} );
+$QueueObj->Load( $queue );
 
 if (!$QueueObj->Name) {
-Abort( loc("Queue '[_1]' could not be loaded.", $ARGS{Queue}) );
+Abort( loc("Queue '[_1]' could not be loaded.", $queue) );
  }
 
 if( !RT::IR->IsIncidentQueue($QueueObj) ) {
