@@ -230,6 +230,57 @@ Set(
     },
 );
 
+=item C<%LinkedQueuePortlets>
+
+C<%LinkedQueuePortlets> allows you to display links to tickets in
+another queue in a stand-alone portlet on the ticket display page.
+This makes it easier to highlight specific ticket links separate from
+the standard Links portlet.
+
+You can include multiple linked queues in each ticket and they are
+displayed in the order you define them in the configuration. The values
+are RT link types: 'DependsOn', 'DependedOnBy', 'HasMember'
+(children), 'MemberOf' (parents), 'RefersTo', and 'ReferredToBy'.
+'All' lists all linked tickets. You can include multiple link types.
+
+=cut
+
+Set( %LinkedQueuePortlets, (
+    Incidents   => [
+        { 'Incident Reports'  => [ 'All' ] },
+        { Investigations      => [ 'All' ] },
+        { Countermeasures     => [ 'All' ] },
+    ],
+));
+
+=item C<%LinkedQueuePortletFormats>
+
+C<%LinkedQueuePortletFormats> defines the format for displaying
+linked tickets in each linked queue portlet defined by C<%LinkedQueuePortlets>.
+
+The 'Default' format will be used by default.
+
+To change the format for all 3 RTIR default linked queues, for
+example:
+
+    Set( %LinkedQueuePortletFormats,
+        'Incident Reports' =>
+            q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
+            q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
+            q{Status,OwnerName,LastUpdatedRelative},
+
+        Investigations =>
+            q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
+            q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
+            q{Status,OwnerName,LastUpdatedRelative},
+
+        Countermeasures =>
+            q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
+            q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
+            q{Status,OwnerName,LastUpdatedRelative},
+    );
+
+=cut
 
 =item C<%RTIR_IncidentChildren>
 

@@ -114,7 +114,6 @@ html/RTIR/Incident/Create.html
 html/RTIR/Incident/Display.html
 html/RTIR/Incident/Elements/Create
 html/RTIR/Incident/Elements/ReplyForm
-html/RTIR/Incident/Elements/ShowChildren
 html/RTIR/Incident/Reply/index.html
 html/RTIR/Incident/Reply/Refine.html
 html/RTIR/Incident/Split.html

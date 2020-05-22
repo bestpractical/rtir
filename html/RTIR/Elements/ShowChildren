@@ -67,6 +67,7 @@
    ShowNavigation => 0,
    AllowSorting   => $AllowSorting,
    PassArguments  => $PassArguments,
+   InlineEdit     => $InlineEdit,
 &>
 % unless( $children->Count ) {
 %   if ( $NoTicketsCaption ) {
@@ -120,4 +121,5 @@ $ShowStatusesSelector => 0
 
 $AllowSorting => undef
 $PassArguments => undef
+$InlineEdit => RT->Config->Get('InlineEdit', $session{CurrentUser})
 </%ARGS>

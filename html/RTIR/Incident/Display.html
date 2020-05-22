@@ -160,12 +160,9 @@
   <div class="boxcontainer col-md-6">
 % $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'RightColumnStart' );
 
-% foreach my $lifecycle ( RT::IR->lifecycle_report, RT::IR->lifecycle_investigation, RT::IR->lifecycle_countermeasure ) {
-<& /RTIR/Incident/Elements/ShowChildren,
-    IncidentObj => $TicketObj,
-    Lifecycle   => $lifecycle
+<& /Ticket/Elements/ShowLinkedQueues,
+    TicketObj => $TicketObj,
 &>
-% }
 
 <& /RTIR/Elements/ShowArticles, Ticket => $TicketObj &>
 % $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'RightColumnEnd' );

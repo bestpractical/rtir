@@ -1,0 +1,23 @@
+<%INIT>
+# this callback provides a means to manipulate the queries and empty message strings for each linked queue
+# for ShowLinkedQueues before the queries are run or message strings displayed on the page.
+my $queue = RT::Queue->new($session{CurrentUser});
+$queue->Load($Queue);
+my $lifecycle = $queue->Lifecycle;
+return unless $lifecycle;
+
+return if $lifecycle eq RT::IR->lifecycle_countermeasure && RT->Config->Get('RTIR_DisableCountermeasures');
+
+my $friendly_lifecycle = RT::IR::FriendlyLifecycle($lifecycle);
+
+@$EmptyMessages
+    = ( loc( '(No active [_1])', loc($friendly_lifecycle) ), loc( '(No inactive [_1])', loc($friendly_lifecycle) ) );
+
+</%INIT>
+
+<%ARGS>
+$ARGSRef
+$Queue
+$Queries
+$EmptyMessages
+</%ARGS>
