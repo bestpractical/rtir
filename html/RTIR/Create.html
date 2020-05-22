@@ -111,6 +111,8 @@
                 Lifecycle      => $Lifecycle,
                 ShowNullOption => 0,
                 AutoSubmit     => 1,
+                LimitToConstituency => $limit_to_constituency,
+                Constituency => $constituency,
             },
         },
         {
@@ -497,6 +499,13 @@ foreach my $id ( grep $_, @Incident ) {
     $checks_failure += $error;
 }
 @Incident = map $_->id, @IncidentObj;
+
+my $limit_to_constituency =
+    # Limit no matter what if we have a filter
+    $m->{'RTIR_ConstituencyFilter'} ||
+    # Also limit if we have a linked constituency and StrictConstituencyLinking is set
+    (RT::IR->StrictConstituencyLinking && $constituency)
+    ? 1 : 0;
 
 my $children_config = RT->Config->Get('RTIR_IncidentChildren')->{ $Type };
 

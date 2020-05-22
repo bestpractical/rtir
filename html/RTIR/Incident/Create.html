@@ -130,7 +130,8 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
       <&|/l&>Queue</&>:
     </div>
     <div class="value col-md-9">
-      <& /RTIR/Elements/SelectRTIRQueue, Name => "Queue", Default => $queue, Lifecycle => $QueueObj->Lifecycle, AutoSubmit => 1, ShowNullOption => 0 &>
+      <& /RTIR/Elements/SelectRTIRQueue, Name => "Queue", Default => $queue, Lifecycle => $QueueObj->Lifecycle, AutoSubmit => 1, ShowNullOption => 0,
+                                         LimitToConstituency => $limit_to_constituency, Constituency => $constituency &>
     </div>
   </div>
   <div class="form-row">
@@ -363,6 +364,14 @@ for my $related_ticket ($ChildObj, $SplitObj) {
         }
         last;
 }
+
+my $limit_to_constituency =
+    # Limit no matter what if we have a filter
+    $m->{'RTIR_ConstituencyFilter'} ||
+    # Also limit if we have a linked constituency and StrictConstituencyLinking is set
+    (RT::IR->StrictConstituencyLinking && $constituency)
+    ? 1 : 0;
+
 
 # Load the first Incident queue if none is provided
 my $queue = $ARGS{'Queue'};
