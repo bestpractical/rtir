@@ -50,12 +50,12 @@
 
 <form action="index.html" method="post">
 <div class="row">
-  <div class="col-md-3">
+  <div class="col-3">
     <div class="form-row">
-      <div class="label col-md-3">
+      <div class="label col-3">
         <&|/l&>Constituency</&>:
       </div>
-      <div class="value col-md-9">
+      <div class="value col-9">
         <& /Elements/EditCustomField,
             QueueObj => RT::Queue->new($session{CurrentUser}),
             CustomField => $constituency_cf,
@@ -64,18 +64,18 @@
       </div>
     </div>
     <div class="form-row">
-      <div class="label col-md-3">
+      <div class="label col-3">
         <&|/l&>Start Date:</&>
       </div>
-      <div class="value col-md-9">
+      <div class="value col-9">
         <& /Elements/SelectDate, Name => 'StartDate', Default => $start->AsString &>
       </div>
     </div>
     <div class="form-row">
-      <div class="label col-md-3">
+      <div class="label col-3">
         <&|/l&>End Date:</&>
       </div>
-      <div class="value col-md-9">
+      <div class="value col-9">
         <& /Elements/SelectDate, Name => 'EndDate', Default => $end->AsString &>
       </div>
     </div>
@@ -83,7 +83,7 @@
 </div>
 
 <div class="row">
-  <div class="col-md-12">
+  <div class="col-12">
     <& /Elements/Submit,
         Caption => loc("Generate a delimited text report"),
         Name    => "TextReport",

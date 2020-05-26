@@ -48,18 +48,18 @@
 <&| /Widgets/TitleBox, title => $Title &>
 
 <div class="form-row">
-  <div class="label col-md-2">
+  <div class="label col-2">
     <&|/l&>Subject</&>:
   </div>
-  <div class="value col-md-9">
+  <div class="value col-9">
     <span class="current-value form-control"><i>(<&|/l&>uses subjects from tickets</&>)</i></span>
   </div>
 </div>
 <div class="form-row">
-  <div class="label col-md-2">
+  <div class="label col-2">
     <&|/l&>Update Type</&>:
   </div>
-  <div class="value col-md-9">
+  <div class="value col-9">
     <select class="selectpicker form-control" name="UpdateType">
 % if( $AllowComment ) {
       <option value="private" <% $CommentDefault %>><&|/l&>Comments (Not sent to requestors)</&></option>
@@ -73,10 +73,10 @@
 
 % if ( $TicketObj ) {
 <div class="form-row">
-  <div class="label col-md-2">
+  <div class="label col-2">
     <&|/l&>Resolution</&>:
   </div>
-  <div class="value col-md-9">
+  <div class="value col-9">
     <& /RTIR/Elements/EditRTIRField,
         TicketObj => $TicketObj,
         QueueObj  => $TicketObj->QueueObj,
@@ -91,10 +91,10 @@
 </div>
 % }
 <div class="form-row">
-  <div class="label col-md-2">
+  <div class="label col-2">
     <&|/l&>Owner</&>:
   </div>
-  <div class="value col-md-9">
+  <div class="value col-9">
     <& /Elements/SelectOwner,
         Name    => "Owner",
         Default => $Owner || $session{'CurrentUser'}->Id || undef,
@@ -102,10 +102,10 @@
   </div>
 </div>
 <div class="form-row">
-  <div class="label col-md-2">
+  <div class="label col-2">
     <&|/l&>Worked</&>:
   </div>
-  <div class="value col-md-9">
+  <div class="value col-9">
     <& /Elements/EditTimeValue,
         Name => 'UpdateTimeWorked',
         Default => $ARGS{'UpdateTimeWorked'} || '',

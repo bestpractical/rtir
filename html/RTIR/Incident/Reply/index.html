@@ -69,7 +69,7 @@
 <& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
 <div class="form-row">
-  <div class="col-md-12">
+  <div class="col-12">
     <h2><&|/l&>Reporters</&></h2>
     <& /RTIR/Search/Elements/ShowResults,
         BaseURL       => $BaseURL,
@@ -87,7 +87,7 @@
 </div>
 % if ( $All ) {
 <div class="form-row">
-  <div class="col-md-12">
+  <div class="col-12">
     <h2><&|/l&>Investigation Correspondents</&></h2>
     <& /RTIR/Search/Elements/ShowResults,
         BaseURL       => $BaseURL,
@@ -105,7 +105,7 @@
 </div>
 % unless( RT->Config->Get('RTIR_DisableCountermeasures') ) {
 <div class="form-row">
-  <div class="col-md-12">
+  <div class="col-12">
     <h2><&|/l&>Countermeasure Correspondents</&></h2>
     <& /RTIR/Search/Elements/ShowResults,
         BaseURL       => $BaseURL,
@@ -135,7 +135,7 @@
 &>
 
 <div class="form-row">
-  <div class="col-md-12">
+  <div class="col-12">
     <& /Elements/Submit, Name => "SubmitTicket", Label => loc("Update Incident") &>
   </div>
 </div>

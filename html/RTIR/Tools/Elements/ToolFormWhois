@@ -47,22 +47,22 @@
 %# END BPS TAGGED BLOCK }}}
 <form name="ToolFormWhois" action="Lookup.html" method="get">
   <div class="form-row">
-    <div class="col-md-2">
+    <div class="col-2">
       <span class="current-value form-control"><%loc('WHOIS')%>:</span>
     </div>
 % foreach my $arg ( grep exists $ARGS{$_}, @PassArguments ) {
     <input type="hidden" name="<% $arg %>" value="<% $ARGS{ $arg } %>" />
 % }
-    <div class="col-md-4">
+    <div class="col-4">
       <input class="form-control" type="text" name="q" value="<% $q %>" />
     </div>
-    <div class="col-md-auto">
+    <div class="col-auto">
       <span class="current-value form-control">at</span>
     </div>
-    <div class="col-md-3">
+    <div class="col-3">
       <& SelectWhoisServer, Name => 'WhoisServer', Default => $WhoisServer &>
     </div>
-    <div class="col-md-auto">
+    <div class="col-auto">
       <input class="form-control btn btn-primary button" type="submit" value="<%loc('Go')%>" />
     </div>
   </div>
