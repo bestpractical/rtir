@@ -46,36 +46,36 @@
 %#
 %# END BPS TAGGED BLOCK }}}
   <div class="form-row">
-    <div class="label col-md-3">
+    <div class="label col-3">
       <&|/l&>Created</&>:
     </div>
-    <div class="value col-md-9">
+    <div class="value col-9">
       <span class="current-value"><% $Ticket->CreatedObj->AsString %></span>
     </div>
   </div>
   <div class="form-row">
-    <div class="label col-md-3">
+    <div class="label col-3">
       <&|/l&>Starts</&>:
     </div>
-    <div class="value col-md-9">
+    <div class="value col-9">
       <span class="current-value"><% $Ticket->StartsObj->AsString %></span>
     </div>
   </div>
 % if ( RT::IR->IsReportQueue($Ticket->QueueObj) || RT::IR->IsInvestigationQueue($Ticket->QueueObj) || RT::IR->IsCountermeasureQueue($Ticket->QueueObj) ) {
   <div class="form-row">
-    <div class="label col-md-3">
+    <div class="label col-3">
       <&|/l&>Started</&>:
     </div>
-    <div class="value col-md-9">
+    <div class="value col-9">
       <span class="current-value"><% $Ticket->StartedObj->AsString %></span>
     </div>
   </div>
 % }
   <div class="form-row">
-    <div class="label col-md-3">
+    <div class="label col-3">
       <&|/l&>Due</&>:
     </div>
-    <div class="value col-md-9">
+    <div class="value col-9">
       <span class="current-value">
 % my $due = $Ticket->DueObj;
 % if ( ($due->Diff || 0) < 0 ) {
@@ -94,10 +94,10 @@
     </div>
   </div>
   <div class="form-row">
-    <div class="label col-md-3">
+    <div class="label col-3">
       <&|/l&>Updated</&>:
     </div>
-    <div class="value col-md-9">
+    <div class="value col-9">
       <span class="current-value"><a href="#lasttrans"><% $Ticket->LastUpdated ? (loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)) : loc("Never") | h %></a></span>
     </div>
   </div>

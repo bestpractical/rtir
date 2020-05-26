@@ -55,26 +55,26 @@
 
 <&| /Widgets/TitleBox, title => loc('Edit basics'), class => 'ticket-info-basics' &>
 <div class="form-row">
-  <div class="label col-md-3">
+  <div class="label col-3">
     <&|/l&>Subject</&>:
   </div>
-  <div class="value col-md-9">
+  <div class="value col-9">
     <input class="form-control" type="text" name="Subject" value="<% $Ticket->Subject %>" />
   </div>
 </div>
 <div class="form-row">
-  <div class="label col-md-3">
+  <div class="label col-3">
     <&|/l&>Queue</&>:
   </div>
-  <div class="value col-md-9">
+  <div class="value col-9">
     <& /Elements/SelectQueue, Name => 'Queue', Default => $Ticket->Queue &>
   </div>
 </div>
 <div class="form-row">
-  <div class="label col-md-3">
+  <div class="label col-3">
     <&|/l&>Time Estimated</&>:
   </div>
-  <div class="value col-md-9">
+  <div class="value col-9">
     <& /Elements/EditTimeValue,
         Name => 'TimeEstimated',
         Default => $ARGS{'TimeEstimated'} || $Ticket->TimeEstimated || '',
@@ -82,10 +82,10 @@
   </div>
 </div>
 <div class="form-row">
-  <div class="label col-md-3">
+  <div class="label col-3">
     <&|/l&>Time Worked</&>:
   </div>
-  <div class="value col-md-9">
+  <div class="value col-9">
     <& /Elements/EditTimeValue,
         Name => 'TimeWorked',
         Default => $ARGS{'TimeWorked'} || $Ticket->TimeWorked || '',
@@ -93,10 +93,10 @@
   </div>
 </div>
 <div class="form-row">
-  <div class="label col-md-3">
+  <div class="label col-3">
     <&|/l&>Time Left</&>:
   </div>
-  <div class="value col-md-9">
+  <div class="value col-9">
     <& /Elements/EditTimeValue,
         Name => 'TimeLeft',
         Default => $ARGS{'TimeLeft'} || $Ticket->TimeLeft || '',
@@ -104,18 +104,18 @@
   </div>
 </div>
 <div class="form-row">
-  <div class="label col-md-3">
+  <div class="label col-3">
     <&|/l&>Priority</&>:
   </div>
-  <div class="value col-md-9">
+  <div class="value col-9">
     <&/Elements/SelectPriority, Name=>"Priority", Default=>$Ticket->Priority &>
   </div>
 </div>
 <div class="form-row">
-  <div class="label col-md-3">
+  <div class="label col-3">
     <&|/l&>Final Priority</&>:
   </div>
-  <div class="value col-md-9">
+  <div class="value col-9">
     <&/Elements/SelectPriority, Name=>"FinalPriority", Default=>$Ticket->FinalPriority &>
   </div>
 </div>
@@ -130,7 +130,7 @@
 </&>
 
 <div class="form-row">
-  <div class="col-md-12">
+  <div class="col-12">
     <& /Elements/Submit,
         Name => 'SaveChanges',
         Label => loc('Save Changes'),

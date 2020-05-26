@@ -50,7 +50,7 @@ my $tools = RT->Config->Get('RTIRResearchTools') || ();
 </%INIT>
 
 <div class="row">
-  <div class="col-md-6">
+  <div class="col-6">
 % for my $tool (@$tools) {
 %     if ($m->comp_exists('ToolForm' . $tool)) {
 %         $m->comp('ToolForm' . $tool, %ARGS);
@@ -62,7 +62,7 @@ my $tools = RT->Config->Get('RTIRResearchTools') || ();
 % unless ( $ARGS{ HideResults } ) {
 <br>
 <div class="row">
-  <div class="col-md-12">
+  <div class="col-12">
 <%perl>
 for my $tool (@$tools) {
     if ($m->comp_exists('ToolResults' . $tool)) {

@@ -84,10 +84,10 @@
 
 % if ( $SplitObj ) {
   <div class="form-row">
-    <div class="label col-md-3">
+    <div class="label col-3">
       <&|/l&>Split from</&>:
     </div>
-    <div class="value col-md-9">
+    <div class="value col-9">
       <span class="current-value form-control"><% $SplitObj->id %></span>
     </div>
   </div>
@@ -236,10 +236,10 @@
 <&| /Widgets/TitleBox, title => $Title, class => 'messagedetails' &>
 
   <div class="form-row">
-    <div class="label col-md-2">
+    <div class="label col-2">
       <&|/l&>Correspondents</&>:
     </div>
-    <div class="value col-md-9">
+    <div class="value col-9">
       <& /Elements/EmailInput,
         Name => 'Requestors', Default => $ARGS{'Requestors'}, Size => undef,
       &>
@@ -247,8 +247,8 @@
   </div>
 
   <div class="form-row">
-    <div class="label col-md-2"></div>
-    <div class="value col-md-9">
+    <div class="label col-2"></div>
+    <div class="value col-9">
       <div class="custom-control custom-checkbox">
         <input class="custom-control-input checkbox" type="checkbox" name="SkipNotification" id="SkipNotification" value="Requestors" <% (grep $_ eq 'Requestors', @SkipNotification)? 'checked': '' %> />
         <label class="custom-control-label" for="SkipNotification"><&|/l&>Don't send any emails to correspondents.</&></label>
@@ -259,11 +259,11 @@
 % $m->callback( CallbackName => 'AfterRequestors', ARGSRef => \%ARGS );
 
   <div class="form-row">
-    <div class="label col-md-2">
+    <div class="label col-2">
       <&|/l&>Cc</&>:
       <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people will receive future updates.</&>"></span>
     </div>
-    <div class="value col-md-9">
+    <div class="value col-9">
       <& /Elements/EmailInput,
         Name => 'Cc', Default => $ARGS{'Cc'}, Size => undef,
       &>
@@ -271,11 +271,11 @@
   </div>
 
   <div class="form-row">
-    <div class="label col-md-2">
+    <div class="label col-2">
       <&|/l&>Admin Cc</&>:
       <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people will receive future updates.</&>"></span>
     </div>
-    <div class="value col-md-9">
+    <div class="value col-9">
       <& /Elements/EmailInput,
         Name => 'AdminCc', Default => $ARGS{'AdminCc'}, Size => undef,
       &>
@@ -286,10 +286,10 @@
 % $roles->LimitToMultipleValue;
 % while (my $role = $roles->Next) {
   <div class="form-row">
-    <div class="label col-md-2">
+    <div class="label col-2">
       <% $role->Name %>:
     </div>
-    <div class="value col-md-9">
+    <div class="value col-9">
       <& /Elements/EmailInput,
         Name => $role->GroupType, Default => $ARGS{$role->GroupType}, Size => undef,
       &>
@@ -297,8 +297,8 @@
   </div>
 % if ($role->EntryHint) {
   <div class="form-row">
-    <div class="label col-md-2"></div>
-    <div class="value col-md-9">
+    <div class="label col-2"></div>
+    <div class="value col-9">
       <i><% $role->EntryHint %></i>
     </div>
   </div>
@@ -306,18 +306,18 @@
 % }
 
   <div class="form-row">
-    <div class="form-group label col-md-2">
+    <div class="form-group label col-2">
       <&|/l&>Subject</&>:
     </div>
-    <div class="form-group value col-md-9">
+    <div class="form-group value col-9">
       <input class="form-control" type="text" name="Subject" value="<% $Subject || '' %>" />
     </div>
   </div>
 
 % if ( $gnupg_widget ) {
   <div class="form-row">
-    <div class="label col-md-2"></div>
-    <div class="value col-md-9">
+    <div class="label col-2"></div>
+    <div class="value col-9">
       <& /Elements/Crypt/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &>
     </div>
   </div>
@@ -369,7 +369,7 @@
 </&>
 
 <div class="form-row">
-  <div class="col-md-12">
+  <div class="col-12">
     <& /Elements/Submit, Name => "Create", Label => $SubmitCaption, SubmitId => 'create-ticket' &>
   </div>
 </div>

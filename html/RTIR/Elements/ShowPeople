@@ -49,11 +49,11 @@
 %# the only difference is s/Requestor/Correspondent/, keep in sync
 
   <div class="form-row">
-    <div class="label col-md-3">
+    <div class="label col-3">
       <&|/l&>Owner</&>:
     </div>
 % my $owner = $Ticket->OwnerObj;
-    <div class="value col-md-9">
+    <div class="value col-9">
       <span class="current-value"><& /Elements/ShowUser, User => $owner, Ticket => $Ticket &></span>
       <& /Elements/ShowUserEmailFrequency, User => $owner, Ticket => $Ticket &>
 % $m->callback( User => $owner, Ticket => $Ticket, %ARGS, CallbackName => 'AboutThisUser' );
@@ -71,10 +71,10 @@
 
 %     my $user = $users->First || RT->Nobody;
   <div class="form-row">
-    <div class="label col-md-3">
+    <div class="label col-3">
       <% $role->Name %>:
     </div>
-    <div class="value col-md-9">
+    <div class="value col-9">
       <span class="current-value"><& /Elements/ShowUser, User => $user, Ticket => $Ticket &></span>
       <& /Elements/ShowUserEmailFrequency, User => $user, Ticket => $Ticket &>
 % $m->callback( User => $user, Ticket => $Ticket, %ARGS, CallbackName => 'AboutThisUser' );
@@ -83,26 +83,26 @@
 % }
 
   <div class="form-row">
-    <div class="label col-md-3">
+    <div class="label col-3">
       <&|/l&>Correspondents</&>:
     </div>
-    <div class="value col-md-9">
+    <div class="value col-9">
       <span class="current-value"><& /Ticket/Elements/ShowGroupMembers, Group => $Ticket->Requestors, Ticket => $Ticket &></span>
     </div>
   </div>
   <div class="form-row">
-    <div class="label col-md-3">
+    <div class="label col-3">
       <&|/l&>Cc</&>:
     </div>
-    <div class="value col-md-9">
+    <div class="value col-9">
       <span class="current-value"><& /Ticket/Elements/ShowGroupMembers, Group => $Ticket->Cc, Ticket => $Ticket &></span>
     </div>
   </div>
   <div class="form-row">
-    <div class="label col-md-3">
+    <div class="label col-3">
       <&|/l&>AdminCc</&>:
     </div>
-    <div class="value col-md-9">
+    <div class="value col-9">
       <span class="current-value"><& /Ticket/Elements/ShowGroupMembers, Group => $Ticket->AdminCc, Ticket => $Ticket &></span>
     </div>
   </div>
@@ -111,10 +111,10 @@
 % $multi_roles->LimitToMultipleValue;
 % while (my $role = $multi_roles->Next) {
   <div class="form-row">
-    <div class="label col-md-3">
+    <div class="label col-3">
       <% $role->Name %>:
     </div>
-    <div class="value col-md-9">
+    <div class="value col-9">
       <span class="current-value"><& /Ticket/Elements/ShowGroupMembers, Group => $Ticket->RoleGroup($role->GroupType), Ticket => $Ticket &></span>
     </div>
   </div>

@@ -62,22 +62,22 @@
 <input type="hidden" name="id" value="<% $id %>" />
 
 <div class="row">
-  <div class="col-md-6">
+  <div class="col-6">
     <&| /Widgets/TitleBox, title => loc("The Basics"), class => 'ticket-info-basics' &>
 
     <div class="form-row">
-      <div class="label col-md-3">
+      <div class="label col-3">
         <&|/l&>Subject</&>:
       </div>
-      <div class="value col-md-9">
+      <div class="value col-9">
         <input class="form-control" type="text" name="Subject" value="<% $ARGS{'Subject'} || $Ticket->Subject %>" />
       </div>
     </div>
     <div class="form-row">
-      <div class="label col-md-3">
+      <div class="label col-3">
         <&|/l&>Status</&>:
       </div>
-      <div class="value col-md-9">
+      <div class="value col-9">
 % unless ( RT::IR->IsCountermeasureQueue($Ticket->QueueObj) ) {
         <span class="current-value form-control"><% loc($Ticket->Status) %></span>
 % } else {
@@ -91,10 +91,10 @@
       </div>
     </div>
     <div class="form-row">
-      <div class="label col-md-3">
+      <div class="label col-3">
         <&|/l&>Owner</&>:
       </div>
-      <div class="value col-md-9">
+      <div class="value col-9">
         <& /Elements/SelectOwner,
             Name => 'Owner', Default => $ARGS{'Owner'} || $Ticket->Owner,
             TicketObj => $Ticket, QueueObj => $Ticket->QueueObj,
@@ -102,10 +102,10 @@
       </div>
     </div>
     <div class="form-row">
-      <div class="label col-md-3">
+      <div class="label col-3">
         <&|/l&>Queue</&>:
       </div>
-      <div class="value col-md-9">
+      <div class="value col-9">
         <& /RTIR/Elements/SelectRTIRQueue,
             Name => 'Queue', Default => $ARGS{'Queue'} || $Ticket->Queue,
             TicketObj => $Ticket, Lifecycle => $Ticket->QueueObj->Lifecycle,
@@ -116,10 +116,10 @@
     </div>
 % if ( !$Ticket->QueueObj->SLADisabled ) {
     <div class="form-row">
-      <div class="label col-md-3">
+      <div class="label col-3">
         <&|/l&>SLA</&>:
       </div>
-      <div class="value col-md-9">
+      <div class="value col-9">
         <& /Elements/SelectSLA,
             Name => 'SLA',
             Default => loc($Ticket->SLA)
@@ -129,19 +129,19 @@
 % }
 % if (!RT::IR->IsIncidentQueue($Ticket->QueueObj) ) {
     <div class="form-row">
-      <div class="label col-md-3">
+      <div class="label col-3">
         <%loc("Incident")%>:
       </div>
-      <div class="value col-md-9">
+      <div class="value col-9">
         <& /RTIR/Elements/ShowIncidents, Ticket => $Ticket, InlineEdit => 0 &>
       </div>
     </div>
 % }
     <div class="form-row">
-      <div class="label col-md-3">
+      <div class="label col-3">
         <&|/l&>Time Worked</&>:
       </div>
-      <div class="value col-md-9">
+      <div class="value col-9">
         <& /Elements/EditTimeValue,
             Name => 'TimeWorked',
             Default => $ARGS{'TimeWorked'} || $Ticket->TimeWorked || '',
@@ -150,10 +150,10 @@
     </div>
 % if ( RT::IR->IsIncidentQueue($Ticket->QueueObj)) {
     <div class="form-row">
-      <div class="label col-md-3">
+      <div class="label col-3">
         <&|/l&>Priority</&>:
       </div>
-      <div class="value col-md-9">
+      <div class="value col-9">
         <&/Elements/SelectPriority, Name => 'Priority', Default => $ARGS{'Priority'} || $Ticket->Priority &>
       </div>
     </div>
@@ -170,7 +170,7 @@
     &>
 
   </div>
-  <div class="col-md-6">
+  <div class="col-6">
     <&| /Widgets/TitleBox, title => loc('Dates'), class => 'ticket-info-dates'  &>
     <& /Ticket/Elements/EditDates, %ARGS, TicketObj => $Ticket &>
     </&>
@@ -184,7 +184,7 @@
 % }
 
 <div class="form-row">
-  <div class="col-md-12">
+  <div class="col-12">
     <& /Elements/Submit, Name => 'SaveChanges', Label => loc('Save Changes'),
         Caption => loc("If you've updated anything above, be sure to"), color => "#333399",
     &>
