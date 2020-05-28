@@ -3,3 +3,7 @@
 .rtir.darkmode .filter-option-inner .filter-option-inner-inner {
     background: #323D42 !important;
 }
+
+.rtir.darkmode .current-value.form-control {
+    background: #2C3539 !important;
+}
