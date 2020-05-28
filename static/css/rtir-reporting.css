@@ -1,0 +1,69 @@
+/* styles for RTIR/Reporting/Report.html */
+
+body {
+    font-family: "Inter", sans-serif;
+    font-weight: 400;
+}
+
+body, div#footer p#bpscredits a {
+    color: #31363e;
+}
+
+a {
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+h1, h2 {
+    font-weight: 600;
+    margin: 0.25em auto;
+}
+
+h1 {
+    font-size: 1.4em;
+}
+
+h2 {
+    font-size: 1.1em;
+}
+
+table {
+    margin-bottom: 1em;
+}
+
+th {
+    text-align: left;
+}
+
+tr th {
+    font-size: 1em;
+}
+
+tr td {
+    font-size: 0.9em;
+}
+
+hr {
+    margin-top: 1.5em;
+    height: 0;
+    border: 0;
+    border-top: 1px solid #b3b8bd;
+}
+
+div#footer {
+    font-size: 0.7em;
+}
+
+div#footer p {
+    margin: 0 auto;
+}
+
+div#footer p#bpscredits {
+    margin-top: 0.1em;
+}
+
+div#footer p#time {
+    display: none;
+}
