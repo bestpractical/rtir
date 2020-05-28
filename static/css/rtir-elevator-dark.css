@@ -1,1 +1,5 @@
 /* elevator-dark styles for rtir */
+
+.rtir.darkmode .filter-option-inner .filter-option-inner-inner {
+    background: #323D42 !important;
+}
