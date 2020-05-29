@@ -542,5 +542,5 @@ PageWidgets()->child('simple_search')->raw_html( $m->scomp(
     SendTo => RT::IR->HREFTo('index.html', IncludeWebPath => 0),
     Placeholder => 'Search Incidents'
 ) );
-PageWidgets()->child( create_ticket => raw_html => $HTML::Mason::Commands::m->scomp('/Elements/CreateTicket', SendTo => '/RTIR/Incident/Create.html?Lifecycle='.RT::IR->lifecycle_incident) );
+PageWidgets()->child( create_ticket => raw_html => $HTML::Mason::Commands::m->scomp('/Elements/CreateTicket', SendTo => '/RTIR/Create.html?Queue=' . RT::IR::GetRTIRDefaultQueue()) );
 </%INIT>
