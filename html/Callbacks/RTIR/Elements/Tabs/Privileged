@@ -220,11 +220,11 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
         if ( RT::IR->IsIncidentQueue($ticket->QueueObj)) {
             $actions_tab->child(
                 reply_reporters => title => loc('Reply to Reporters'),
-                path  => RT::IR->HREFTo("Incident/Reply/?id=$id&SelectedReportsAll=1", IncludeWebPath => 0),
+                path  => RT::IR->HREFTo("Incident/Reply/?id=$id&SelectedReportsAll=1&Action=Respond", IncludeWebPath => 0),
             );
             $actions_tab->child(
                 reply_all => title => loc('Reply to All'),
-                path  => RT::IR->HREFTo("Incident/Reply/?id=$id&All=1&SelectedReportsAll=1&SelectedInvestigationsAll=1&SelectedCountermeasuresAll=1", IncludeWebPath => 0),
+                path  => RT::IR->HREFTo("Incident/Reply/?id=$id&All=1&SelectedReportsAll=1&SelectedInvestigationsAll=1&SelectedCountermeasuresAll=1&Action=Respond", IncludeWebPath => 0),
             );
         } else {
             $actions_tab->child(
