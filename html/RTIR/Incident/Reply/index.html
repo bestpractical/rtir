@@ -125,7 +125,7 @@
 % }
 
 % unless ( $candidates ) {
-<h2 class="no-recipients">Warning: no recipients!</h2>
+<& /Elements/ListActions, actions => (loc('Warning: no recipients!')), titlebox => { class => 'error-titlebox' } &>
 % }
 
 <& ../Elements/ReplyForm, %ARGS,

@@ -53,15 +53,6 @@ body.rtir ul.userlist li:last-child::after{
  }
 
 
-body.rtir .no-recipients {
-    background: #ffcccc; 
-    width: 80%;
-    align: center;
-    border: 2px solid red;
-    padding: 1em;
-    margin: 1em;
-}
-
 body.rtir #topactions #simple-search input.button {
 }
 
