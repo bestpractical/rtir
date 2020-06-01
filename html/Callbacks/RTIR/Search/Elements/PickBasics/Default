@@ -46,8 +46,8 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-my $path = $r->path_info;
-return unless $path =~ m{^/RTIR};
+return unless $DECODED_ARGS->{RTIR};
+
 foreach( @$Conditions ) {
     if (($_->{'Name'}||'') eq 'Queue' ) {
     $_->{'Value'}{'Path'} = '/RTIR/Elements/SelectRTIRQueue';
@@ -66,21 +66,11 @@ foreach( @$Conditions ) {
                 [RT::Lifecycle->Load($m->request_args->{'Lifecycle'})]
         } 
     }
+    elsif ( ( $_->{'Name'} || '' ) eq 'Lifecycle' ) {
+        $_->{'Value'}{'Arguments'}{'Lifecycles'} = [ RT::IR->Lifecycles ];
+    }
 }
 
-unshift @$Conditions, {
-        Name => 'Lifecycle',
-        Field => loc('Lifecycle'),
-        Op => {
-            Type => 'component',
-            Path => '/Elements/SelectBoolean',
-            Arguments => { TrueVal=> '=', FalseVal => '!=' },
-        },    
-        Value =>  {Type => 'component',
-                     Path => '/RTIR/Elements/SelectRTIRLifecycle',
-                    Arguments => { ShowNullOption => 1 }}
-
-};
 </%INIT>
 <%ARGS>
 $Conditions => [],

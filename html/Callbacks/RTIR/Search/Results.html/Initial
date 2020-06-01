@@ -49,20 +49,11 @@
 $ARGSRef => {}
 </%ARGS>
 <%INIT>
-return unless RT->Config->Get('RTIR_RedirectOnSearch');
-
-# this callback redirects search results from a standard 
-# RT search results page to the RTIR search results page
-# if it's actually a search for RTIR tickets.
-# XXX TODO: this may be obsolete
-my ($our, @lifecycles) = RT::IR->OurQuery( $ARGSRef->{'Query'} );
-return unless $our;
-
-RT::Interface::Web::Redirect( RT::IR->HREFTo('Search/Results.html?'
-    . $m->comp(
-        '/Elements/QueryString',
-        %$ARGSRef,
-        @lifecycles == 1? (Lifecycle => $lifecycles[0]) : (Lifecycle => undef)
-    ))
-);
+if ( $ARGSRef->{RTIR} ) {
+    if ( my %params = RTIRDefaultSearchParams(ARGSRef => $ARGSRef) ) {
+        RT::Interface::Web::Redirect( RT->Config->Get('WebURL')
+                . 'Search/Results.html?'
+                . $m->comp( '/Elements/QueryString', %$ARGSRef, %params, ) );
+    }
+}
 </%INIT>

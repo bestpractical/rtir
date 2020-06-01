@@ -1,0 +1,27 @@
+<%INIT>
+
+if ( !$ARGSRef->{RTIR} && RT->Config->Get( 'RTIR_RedirectOnSearch' ) && $Query->{Query} ) {
+    my ( $rtir ) = RT::IR->OurQuery( $Query->{'Query'} );
+    if ( $rtir ) {
+        RT::Interface::Web::Redirect( RT->Config->Get( 'WebURL' )
+              . 'Search/Build.html?'
+              . $m->comp( '/Elements/QueryString', %$ARGSRef, ExtraQueryParams => 'RTIR', RTIR => 1 ) );
+    }
+}
+
+if ( $ARGSRef->{RTIR} ) {
+    if ( my %params = RTIRDefaultSearchParams(ARGSRef => $ARGSRef) ) {
+        $Query->{$_} ||= $params{$_} for keys %params;
+    }
+}
+
+# $DECODED_ARGS->{RTIR} is the flag we use to filter lifecycle/queue
+# options. When we access current search(i.e. /Search/Builder.html without
+# parameters), $DECODED_ARGS->{RTIR} is false even if it's an RTIR search.
+$DECODED_ARGS->{RTIR} ||= 1 if $Query->{RTIR};
+</%INIT>
+
+<%ARGS>
+$ARGSRef
+$Query
+</%ARGS>

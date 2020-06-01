@@ -59,6 +59,40 @@ package HTML::Mason::Commands;
 #
 $RT::Interface::Web::Scrubber::ALLOWED_ATTRIBUTES{'href'} = '^(?:'.$RT::Interface::Web::Scrubber::ALLOWED_ATTRIBUTES{'href'} . ')|(?:__RTIRTicketURI__)';
 
+sub RTIRDefaultSearchParams {
+    my %args = (
+        ARGSRef => undef,
+        @_,
+    );
+
+    my ( $our, @lifecycles );
+    my $ARGSRef = $args{ARGSRef};
+
+    if ( $ARGSRef->{Query} ) {
+        ( $our, @lifecycles ) = RT::IR->OurQuery( $ARGSRef->{'Query'} );
+    }
+    elsif ( $ARGSRef->{Lifecycle} ) {
+        $our = RT::IR->OurLifecycle( $ARGSRef->{Lifecycle} );
+        push @lifecycles, $ARGSRef->{Lifecycle};
+    }
+
+    return unless $our;
+
+    my $lifecycle;
+    $lifecycle = $lifecycles[0] if @lifecycles == 1;
+
+    my %params;
+    if ( !$ARGSRef->{Format} ) {
+        my $type = RT::IR::TicketType( Lifecycle => $lifecycle ) || '';
+        $params{Format} = RT->Config->Get('RTIRSearchResultFormats')->{ $type . 'Default' };
+    }
+
+    if ( !$ARGSRef->{Query} ) {
+        $params{Query} = RT::IR->ActiveQuery( Lifecycle => $lifecycle );
+    }
+    return %params;
+}
+
 package RT::IR::Web;
 RT::Base->_ImportOverlays();
 1;
