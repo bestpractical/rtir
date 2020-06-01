@@ -31,7 +31,7 @@ instead link to RTIR/Create.html or RTIR/Incident/Create.html.
 
 =item *
 
-Previous versions of RTIR, set RT's DefaultQueue option to Incident Reports.
+Previous versions of RTIR set RT's DefaultQueue option to Incident Reports.
 The new versions of RT and RTIR move the queue selection to the create page
 from the top action, so a new RTIR_DefaultQueue option is now available to
 set the default queue for RTIR create ticket pages.
@@ -39,6 +39,21 @@ set the default queue for RTIR create ticket pages.
 With this new RTIR-specific option, RTIR no longer automatically sets RT's
 DefaultQueue. You can still set it manually for your system via the RT
 configuration.
+
+=item *
+
+The RTIR search page has been re-worked to use RT's base search features
+more directly. This gives RTIR full access to current and future search
+and reporting features added to RT.
+
+We have retained the features associated with the custom RTIR search
+interface including limiting queue selection to RTIR queues and providing
+some additional RTIR menu options.
+
+On the previous RTIR search, the Advanced and Bulk Update menu options were
+hidden. Visibility of these two menus is now managed with a new right in
+RT. The RT 5.0 upgrade process grants these rights to all Privileged users,
+but you can revoke these rights to restore the previous RTIR menu.
 
 =back
 
