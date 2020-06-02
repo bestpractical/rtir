@@ -132,6 +132,7 @@
     TicketObj   => $IncidentObj,
     Status      => $Status,
     GnuPGWidget => $gnupg_widget,
+    Action      => $Action,
 &>
 
 <div class="form-row">
@@ -286,7 +287,7 @@ $IncidentObj->CurrentUser->AddRecentlyViewedTicket($IncidentObj)
 $id              => undef
 $All             => 0
 $Status          => ''
-$Action          => 'Correspond'
+$Action          => 'Respond'
 
 $Query           => ''
 $Format          => RT->Config->Get('RTIRSearchResultFormats')->{'BulkReply'}

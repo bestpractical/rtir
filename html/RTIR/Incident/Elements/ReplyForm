@@ -60,7 +60,7 @@
     <&|/l&>Update Type</&>:
   </div>
   <div class="value col-md-9">
-    <select class="selectpicker form-control" name="UpdateType">
+    <select class="selectpicker form-control" name="UpdateType" id="UpdateType">
 % if( $AllowComment ) {
       <option value="private" <% $CommentDefault %>><&|/l&>Comments (Not sent to requestors)</&></option>
 % }
@@ -113,7 +113,7 @@
   </div>
 </div>
 
-<& /RTIR/Elements/UpdateData, %ARGS, Ticket => $TicketObj, QueueObj => $QueueObj &>
+<& /RTIR/Elements/UpdateData, %ARGS, Ticket => $TicketObj, QueueObj => $QueueObj, Action => $Action &>
 
 </&>
 <%INIT>
