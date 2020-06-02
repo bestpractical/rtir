@@ -104,15 +104,12 @@
     QueueObj => $QueueObj,
     fields  => [
         {   name => 'Queue',
-            comp => '/RTIR/Elements/SelectRTIRQueue',
+            comp => '/Elements/SelectQueue',
             args => {
-                Name           => 'Queue',
-                Default        => $Queue,
-                Lifecycle      => $Lifecycle,
-                ShowNullOption => 0,
-                AutoSubmit     => 1,
-                LimitToConstituency => $limit_to_constituency,
-                Constituency => $constituency,
+                    Name           => 'Queue',
+                    Default        => $Queue,
+                    ShowNullOption => 0,
+                    AutoSubmit     => 1,
             },
         },
         {
