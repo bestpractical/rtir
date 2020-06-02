@@ -62,15 +62,7 @@ body.rtir .no-recipients {
     margin: 1em;
 }
 
-body.rtir #topactions #simple-search input.button {
-}
-
-body.rtir #topactions #simple-search input.field {
-    width: 150px;
-}
-
 body.rtir #topactions #simple-search input[type="search"]:focus {
-    width: 16em;
     -webkit-transition: width 0.25s ease-in-out;
     -moz-transition: width 0.25s ease-in-out;
     -ms-transition: width 0.25s ease-in-out;
