@@ -53,7 +53,7 @@
         <input type="hidden" name="Child" value="<%$Child%>"/>
 % }
         <div class="form-row">
-          <div class="col-md-12 text-center">
+          <div class="col-12 text-center">
             <&|/l, $ticket_type &>Create a new [_1] in the queue</&>:
               <div class="d-inline-block">
                 <& /RTIR/Elements/SelectRTIRQueue,
@@ -67,7 +67,7 @@
             </div>
           </div>
         <div class="form-row">
-          <div class="col-md-12">
+          <div class="col-12">
             <& /Elements/Submit, Label => loc("Go"), Caption => loc("This will take you to a partially prefilled [_1] creation form.", $ticket_type) &>
           </div>
         </div>
