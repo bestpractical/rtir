@@ -108,7 +108,7 @@
     <&|/l&>Priority</&>:
   </div>
   <div class="value col-9">
-    <&/Elements/SelectPriority, Name=>"Priority", Default=>$Ticket->Priority &>
+    <&/Elements/SelectPriority, Name=>"Priority", Default=>$Ticket->Priority, QueueObj => $Ticket->QueueObj &>
   </div>
 </div>
 <div class="form-row">
@@ -116,7 +116,7 @@
     <&|/l&>Final Priority</&>:
   </div>
   <div class="value col-9">
-    <&/Elements/SelectPriority, Name=>"FinalPriority", Default=>$Ticket->FinalPriority &>
+    <&/Elements/SelectPriority, Name=>"FinalPriority", Default=>$Ticket->FinalPriority, QueueObj => $Ticket->QueueObj &>
   </div>
 </div>
 </&>
