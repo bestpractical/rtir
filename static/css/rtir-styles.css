@@ -158,6 +158,18 @@ body.rtir .incidents .actions .button {
     border: none;
 }
 
+
+body.rtir .ticket-info-basics .incidents .table {
+    margin-top:0.5em;
+    margin-bottom:0.5em;
+}
+
+body.rtir .ticket-info-basics .incidents .table-responsive {
+    min-height:0;
+}
+
+
+
 body.rtir .incidents .actions #create-incident {
     background: #4040a0;
 }
