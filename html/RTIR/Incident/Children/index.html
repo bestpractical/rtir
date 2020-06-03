@@ -51,9 +51,9 @@
 <& /Elements/ListActions, actions => \@results &>
 
 % if( $children->CountAll == $all_children->CountAll ) {
-<h2><% loc('Total [_1]: [_2]', RT::IR::TicketType(Lifecycle => $Lifecycle), $children->CountAll) %></h2>
+<h4><% loc('Total [_1]: [_2]', RT::IR::TicketType(Lifecycle => $Lifecycle), $children->CountAll) %></h4>
 % } else {
-<h2><% loc('Total [_1]: [_2]([_3])', RT::IR::TicketType(Lifecycle => $Lifecycle), $children->CountAll, $all_children->CountAll) %></h2>
+<h4><% loc('Total [_1]: [_2]([_3])', RT::IR::TicketType(Lifecycle => $Lifecycle), $children->CountAll, $all_children->CountAll) %></h4>
 % }
 
 <form action="index.html" method="post">
