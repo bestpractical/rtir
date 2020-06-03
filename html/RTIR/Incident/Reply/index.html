@@ -70,7 +70,7 @@
 
 <div class="form-row">
   <div class="col-12">
-    <h2><&|/l&>Reporters</&></h2>
+    <h4><&|/l&>Reporters</&></h4>
     <& /RTIR/Search/Elements/ShowResults,
         BaseURL       => $BaseURL,
         BaseQuery     => RT::IR->Query(Lifecycle => RT::IR->lifecycle_report, MemberOf => $id),
@@ -88,7 +88,7 @@
 % if ( $All ) {
 <div class="form-row">
   <div class="col-12">
-    <h2><&|/l&>Investigation Correspondents</&></h2>
+    <h4><&|/l&>Investigation Correspondents</&></h4>
     <& /RTIR/Search/Elements/ShowResults,
         BaseURL       => $BaseURL,
         BaseQuery     => RT::IR->Query(Lifecycle => RT::IR->lifecycle_investigation, MemberOf => $id),
@@ -106,7 +106,7 @@
 % unless( RT->Config->Get('RTIR_DisableCountermeasures') ) {
 <div class="form-row">
   <div class="col-12">
-    <h2><&|/l&>Countermeasure Correspondents</&></h2>
+    <h4><&|/l&>Countermeasure Correspondents</&></h4>
     <& /RTIR/Search/Elements/ShowResults,
         BaseURL       => $BaseURL,
         BaseQuery     => RT::IR->Query(Lifecycle => RT::IR->lifecycle_countermeasure, MemberOf => $id),
@@ -125,7 +125,7 @@
 % }
 
 % unless ( $candidates ) {
-<h2 class="no-recipients">Warning: no recipients!</h2>
+<h4 class="no-recipients">Warning: no recipients!</h4>
 % }
 
 <& ../Elements/ReplyForm, %ARGS,
