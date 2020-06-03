@@ -67,7 +67,7 @@ for my $type ( 'incident', 'ir', 'investigation', 'countermeasure' ) {
 {
 
     $m->display_ticket( $ticket{ir}[0] );
-    $m->follow_link_ok( { text => 'Link' } );
+    $m->follow_link_ok( { id => 'link-incident' } );
     $m->title_is("Link Report #$ticket{ir}[0] to selected Incident");
 
     ok( !$m->find_link( url_regex => qr{/RTIR/Incident/Display.html\?id=$ticket{incident}[0]$} ),
@@ -97,7 +97,7 @@ for my $type ( 'incident', 'ir', 'investigation', 'countermeasure' ) {
 # Link FromIncident
 {
     $m->display_ticket( $ticket{incident}[0] );
-    $m->follow_link_ok( { text => 'Link', url_regex => qr{Link/FromIncident} } );
+    $m->follow_link_ok( { url_regex => qr{Link/FromIncident} } );
     $m->title_is("Link selected Report to Incident #$ticket{incident}[0]");
 
     ok(

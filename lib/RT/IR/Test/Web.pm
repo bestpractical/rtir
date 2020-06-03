@@ -229,7 +229,7 @@ sub LinkChildToIncident {
     $self->display_ticket( $id);
 
     # Select the "Link" link from the Display page
-    $self->follow_link_ok({text => "Link", n => "1"}, "Followed 'Link(to Incident)' link");
+    $self->follow_link_ok({id => "link-incident", n => "1"}, "Followed 'Link(to Incident)' link");
 
     
     # Check that the desired incident occurs in the list of available incidents; if not, keep
