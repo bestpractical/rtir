@@ -7,3 +7,11 @@
 .rtir.darkmode .current-value.form-control {
     background: #2C3539 !important;
 }
+
+.rtir.darkmode .clickylink a {
+    border: 1px solid #717171;
+}
+
+.rtir.darkmode .clickylink a:hover {
+    background: #3A474D !important;
+}
