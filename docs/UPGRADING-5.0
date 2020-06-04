@@ -55,6 +55,13 @@ hidden. Visibility of these two menus is now managed with a new right in
 RT. The RT 5.0 upgrade process grants these rights to all Privileged users,
 but you can revoke these rights to restore the previous RTIR menu.
 
+=item *
+
+As RT already supports to set default values for custom fields, the
+config C<%RTIR_CustomFieldsDefaults> has been simplified. To set default
+values, now you need to go to custom field admin page instead. The
+conditional default values like "Resolution" is still retained.
+
 =back
 
 =cut
