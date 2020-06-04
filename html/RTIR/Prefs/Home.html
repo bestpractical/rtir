@@ -49,79 +49,186 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-% foreach my $pane ( @panes ) {
-<&|/Widgets/TitleBox,
-    title => loc('RTIR at a glance') .': '. loc( $pane->{Name} ),
-    bodyclass => ""
-&>
-<& /Widgets/SelectionBox:show, self => $pane &>
-</&>
-% }
+<form method="post" name="UpdateSearches" class="mx-auto max-width-lg">
+  <& /Widgets/SearchSelection,
+    pane_name => \%pane_name,
+    sections  => \@sections,
+    selected  => \%selected,
+    filters   => \@filters,
+  &>
+  <input type="hidden" name="dashboard_id" value="MyRT">
+  <& /Elements/Submit, Name => "UpdateSearches", Label => loc('Save') &>
+</form>
 
 <%INIT>
-# XXX: copy&past of the similar RT's page
-
 my @results;
+my $title = loc("Customize").' '.loc("RT at a glance");
 my $user = $session{'CurrentUser'}->UserObj;
 
-unless (exists $session{'my_rtir_portlets'}) {
-    my ($d_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('RTIR_HomepageSettings');
-    $session{'my_rtir_portlets'} = $user->Preferences('RTIR_HomepageSettings', $d_portlets->Content);
+my $portlets = $user->Preferences('RTIR_HomepageSettings');
+unless ($portlets) {
+    my ($defaults) = RT::System->new($session{'CurrentUser'})->Attributes->Named('RTIR_HomepageSettings');
+    $portlets = $defaults ? $defaults->Content : {};
 }
-my $portlets = $session{'my_rtir_portlets'};
 
-my %seen;
+my @sections;
+my %item_for;
 
-my @items;
-foreach my $comp ( grep !$seen{$_}++, (RT->Config->Get('RTIR_HomepageComponents')) ) {
-    my $desc;
-    my $obj = $m->fetch_comp($comp);
-    $desc = $obj->attr_if_exists('Description') if $obj;
-    unless( $desc ) {
-        $desc = $comp;
-        $desc =~ s/^.*\///;
-    }
-    push @items, ["component-$comp", $desc];
-}
+my @components = map { type => "component", name => $_, label => loc($_) }, @{RT->Config->Get('RTIR_HomepageComponents')};
+
+$item_for{ $_->{type} }{ $_->{name} } = $_ for @components;
+
+push @sections, {
+    id    => 'components',
+    label => loc("Components"),
+    items => \@components,
+};
 
 my $sys = RT::System->new($session{'CurrentUser'});
 my @objs = ($sys);
 
-push @objs, RT::SavedSearch->new( $session{'CurrentUser'} )->_PrivacyObjects
+push @objs, RT::SavedSearch->new( $session{CurrentUser} )->ObjectsForLoading
     if $session{'CurrentUser'}->HasRight( Right  => 'LoadSavedSearch',
-                                          Object => $RT::System );
+                                            Object => $RT::System );
 
 for my $object (@objs) {
+    my @items;
+    my $object_id = ref($object) . '-' . $object->Id;
+    $object_id = 'system' if $object eq $sys;
+
     for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
         my ($desc, $loc_desc, $search) = @$_;
-        my $SearchType = $search->Content->{'SearchType'} || 'Ticket';
-        if ($object eq $sys && $SearchType eq 'Ticket') {
-            push @items, ["system-$desc", $loc_desc];
+
+        my $SearchType = 'Ticket';
+        if ((ref($search->Content)||'') eq 'HASH') {
+            $SearchType = $search->Content->{'SearchType'}
+                if $search->Content->{'SearchType'};
         }
         else {
-            my $oid = ref($object).'-'.$object->Id.'-SavedSearch-'.$search->Id;
-            my $type = ($SearchType eq 'Ticket')
-                ? 'Saved Search' : $SearchType; # loc
-            push @items, ["saved-$oid", loc($type).": $loc_desc"];
+            $RT::Logger->debug("Search ".$search->id." ($desc) appears to have no Content");
         }
+
+        my $item;
+        if ($object eq $sys && $SearchType eq 'Ticket') {
+            $item = { type => 'system', name => $desc, label => $loc_desc };
+        }
+        else {
+            my $oid = $object_id.'-SavedSearch-'.$search->Id;
+            $item = { type => 'saved', name => $oid, search_type => $SearchType, label => $loc_desc };
+        }
+
+        $item_for{ $item->{type} }{ $item->{name} } = $item;
+        push @items, $item;
     }
+
+    my $label = $object eq $sys           ? loc('System')
+                : $object->isa('RT::Group') ? $object->Label
+                                            : $object->Name;
+
+    push @sections, {
+        id    => $object_id,
+        label => $label,
+        items => [ sort { lc($a->{label}) cmp lc($b->{label}) } @items ],
+    };
 }
 
-my @panes = $m->comp(
-    '/Admin/Elements/ConfigureMyRT',
-    panes  => ['body', 'sidebar'],
-    Action => 'Home.html',
-    items => \@items,
-    current_portlets => $portlets,
-    OnSave => sub {
-        my ( $conf, $pane ) = @_;
-        my ($ok, $msg) = $user->SetPreferences( 'RTIR_HomepageSettings', $conf );
-        push @results, $ok ? loc('Preferences saved for [_1].', $pane) : $msg;
-        delete $session{'my_rtir_portlets'};
+my %selected;
+for my $pane (keys %$portlets) {
+    my @items;
+
+    for my $saved (@{ $portlets->{$pane} }) {
+        my $item = $item_for{ $saved->{type} }{ $saved->{name} };
+        if ($item) {
+            push @items, $item;
+        }
+        else {
+            push @results, loc('Unable to find [_1] [_2]', $saved->{type}, $saved->{name});
+        }
     }
+
+    $selected{$pane} = \@items;
+}
+
+my %pane_name = (
+    'body'    => loc('Body'),
+    'sidebar' => loc('Sidebar'),
 );
 
-$m->comp ('/Widgets/SelectionBox:process', %ARGS, self => $_ ) for @panes;
+my @filters = (
+    [ 'component' => loc('Components') ],
+    [ 'ticket'    => loc('Tickets') ],
+    [ 'chart'     => loc('Charts') ],
+);
 
-MaybeRedirectForResults( Actions => \@results );
+$m->callback(
+    CallbackName => 'Default',
+    pane_name    => \%pane_name,
+    sections     => \@sections,
+    selected     => \%selected,
+    filters      => \@filters,
+);
+
+if ($ARGS{UpdateSearches}) {
+    my $data = {
+        "panes"        => {
+            "body"    => [],
+            "sidebar" => []
+        }
+    };
+
+    foreach my $arg (qw{ body sidebar }) {
+        my $pane   = $arg;
+        my $values = $ARGS{$pane};
+
+        next unless $values;
+
+        # force value to an arrayref so we can handle both single and multiple members of each pane.
+        $values = [$values] unless ref $values;
+
+        foreach my $value ( @{$values} ) {
+            $value =~ m/^(\w+)-(.+)$/i;
+            my $type = $1;
+            my $name = $2;
+            push @{ $data->{panes}->{$pane} }, { type => $type, name => $name };
+        }
+    }
+
+    my ( $ok, $msg );
+    my $user = $session{CurrentUser};
+
+    if ( my $user_id = $ARGS{user_id} ) {
+        my $UserObj = RT::User->new( $session{'CurrentUser'} );
+        ( $ok, $msg ) = $UserObj->Load($user_id);
+        ( $ok, $msg ) = $UserObj->SetPreferences( 'RTIR_HomepageSettings', $data->{panes} );
+        if ( $ok ) {
+            push @results, loc("Preferences saved.");
+        }
+        else {
+            push @results, loc("Could not save preferences.");
+        }
+    } elsif ( $ARGS{is_global} ) {
+        my $sys = RT::System->new( $session{'CurrentUser'} );
+        my ($default_portlets) = $sys->Attributes->Named('RTIR_HomepageSettings');
+        ( $ok, $msg ) = $default_portlets->SetContent( $data->{panes} );
+        if ( $ok ) {
+            push @results, loc("Preferences saved.");
+        }
+        else {
+            push @results, loc("Could not save preferences.");
+        }
+    } else {
+        ( $ok, $msg ) = $user->SetPreferences( 'RTIR_HomepageSettings', $data->{panes} );
+        if ( $ok ) {
+            push @results, loc("Preferences saved.");
+        }
+        else {
+            push @results, loc("Could not save preferences.");
+        }
+    }
+
+    MaybeRedirectForResults(
+        Actions   => \@results,
+        Path      => "/RTIR/Prefs/Home.html",
+    );
+}
 </%INIT>
