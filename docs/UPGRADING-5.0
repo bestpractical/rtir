@@ -82,6 +82,21 @@ As with Priority above, this setting can be customized with the "DueIncidents"
 entry in C<%RTIRSearchResultFormats>. The previous option was called UpdateStatus
 and the new version is UnreadMessages.
 
+=item *
+
+Default values for RTIR custom fields previously set using the configuration
+option C<%RTIR_CustomFieldsDefaults> are now set using RT's core custom
+field default value feature. If you had defaults previously set, they will
+be migrated automatically during upgrade.
+
+RT supports setting these defaults both in the custom field configuration,
+which will set a default for all queues, and in the queue configuration
+for each individual queue.
+
+C<%RTIR_CustomFieldsDefaults> now sets default values only for "Resolution"
+because the Resolution values are set based on the status of the
+Incident when closed.
+
 =back
 
 =cut
