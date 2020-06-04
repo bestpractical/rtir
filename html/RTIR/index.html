@@ -51,14 +51,11 @@
 <& /Elements/MyRT, Portlets => $portlets &>
 <%INIT>
 
-# XXX: this should be automated!!!
-unless ( exists $session{'my_rtir_portlets'} ) {
-    my ($d_portlets) = RT::System->new( $session{'CurrentUser'} )->Attributes->Named('RTIR_HomepageSettings');
-    $session{'my_rtir_portlets'} = $session{'CurrentUser'}->UserObj->Preferences(
-        'RTIR_HomepageSettings', $d_portlets->Content
-    );
+my $portlets = $session{'CurrentUser'}->Preferences('RTIR_HomepageSettings');
+unless ($portlets) {
+    my ($defaults) = RT::System->new($session{'CurrentUser'})->Attributes->Named('RTIR_HomepageSettings');
+    $portlets = $defaults ? $defaults->Content : {};
 }
-my $portlets = $session{'my_rtir_portlets'};
 
 if ( defined $q && length $q ) {
 

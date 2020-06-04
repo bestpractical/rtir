@@ -64,11 +64,11 @@
 my @results;
 my $user = $session{'CurrentUser'}->UserObj;
 
-unless (exists $session{'my_rtir_portlets'}) {
-    my ($d_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('RTIR_HomepageSettings');
-    $session{'my_rtir_portlets'} = $user->Preferences('RTIR_HomepageSettings', $d_portlets->Content);
+my $portlets = $user->Preferences('RTIR_HomepageSettings');
+unless ($portlets) {
+    my ($defaults) = RT::System->new($session{'CurrentUser'})->Attributes->Named('RTIR_HomepageSettings');
+    $portlets = $defaults ? $defaults->Content : {};
 }
-my $portlets = $session{'my_rtir_portlets'};
 
 my %seen;
 
