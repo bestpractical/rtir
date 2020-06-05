@@ -48,9 +48,9 @@
 <& /RTIR/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
 
-<form action="index.html" method="post">
-<div class="row">
-  <div class="col-3">
+<form action="index.html" method="post" class="mx-auto max-width-sm">
+<div class="form-row">
+  <div class="col-12">
     <div class="form-row">
       <div class="label col-3">
         <&|/l&>Constituency</&>:
@@ -68,7 +68,7 @@
         <&|/l&>Start Date:</&>
       </div>
       <div class="value col-9">
-        <& /Elements/SelectDate, Name => 'StartDate', Default => $start->AsString &>
+        <& /Elements/SelectDate, Name => 'StartDate', Default => $start->AsString( Format => 'ISO' ) &>
       </div>
     </div>
     <div class="form-row">
@@ -76,13 +76,13 @@
         <&|/l&>End Date:</&>
       </div>
       <div class="value col-9">
-        <& /Elements/SelectDate, Name => 'EndDate', Default => $end->AsString &>
+        <& /Elements/SelectDate, Name => 'EndDate', Default => $end->AsString( Format => 'ISO' ) &>
       </div>
     </div>
   </div>
 </div>
 
-<div class="row">
+<div class="form-row">
   <div class="col-12">
     <& /Elements/Submit,
         Caption => loc("Generate a delimited text report"),

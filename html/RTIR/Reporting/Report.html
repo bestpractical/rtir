@@ -45,6 +45,12 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% # set styling if ReportAs is HTML.
+% if ( $ReportAs eq 'HTML' ) {
+<head>
+  <link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/static/css/rtir-reporting.css" type="text/css" media="all">
+</head>
+% }
 <%PERL>
 if ( $Constituency ){
     $m->comp("SELF:Heading$ReportAs", Text => loc('RTIR Periodic Report for [_1]', $Constituency) );
