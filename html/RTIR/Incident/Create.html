@@ -156,7 +156,9 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
     </div>
 % if ( $ChildObj ) {
     <div class="value col-9">
-      <& /Elements/ShowUser, User => $ChildObj->OwnerObj &>
+      <span class="form-control current-value">
+        <& /Elements/ShowUser, User => $ChildObj->OwnerObj &>
+      </span>
       <input type="hidden" name="Owner" value="<% $ChildObj->Owner %>" />
     </div>
 % } else {
