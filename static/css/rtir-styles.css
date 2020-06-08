@@ -190,3 +190,13 @@ body.rtir .titlebox.external-feeds tr.oddline+.oddline .collection-as-table,
 body.rtir .titlebox.external-feeds tr.evenline+.evenline .collection-as-table {
     padding-bottom: 0.7rem;
 }
+
+/* elevator-dark styles for rtir */
+
+.rtir.darkmode .clickylink a.button {
+    border: 1px solid #717171;
+}
+
+.rtir.darkmode .clickylink a.button:hover {
+    background: #3A474D !important;
+}
