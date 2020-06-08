@@ -778,6 +778,53 @@ to true value return back old behaviour.
 
 Set($RunWhoisRequestByDefault, 0);
 
+=item C<%ExternalFeeds>
+
+Sources for the External Feeds tool, currently RSS is supported. Provide
+a Name and URI for each source and you can also provide an optional
+Description.
+
+    Set(%ExternalFeeds,
+        'RSS' => [
+            {   Name        => 'US Cert Alerts',
+                URI         => 'https://www.us-cert.gov/ncas/alerts.xml',
+                Description => 'US Cert Alerts',
+            },
+            ...
+        ],
+    );
+
+The initial list is "US Cert Alerts", "UK NCSC Security News", "Security
+Focus Vulnerability Alerts", "Threatpost Vulnerability Alerts" and
+"Bugtraq".
+
+=cut
+
+Set(%ExternalFeeds,
+    'RSS' => [
+        {   Name        => 'US Cert Alerts',
+            URI         => 'https://www.us-cert.gov/ncas/alerts.xml',
+            Description => 'US Cert Alerts',
+        },
+        {   Name        => 'UK NCSC Security News',
+            URI         => 'https://www.ncsc.gov.uk/api/1/services/v1/all-rss-feed.xml',
+            Description => 'UK NCSC Security News',
+        },
+        {   Name        => 'Security Focus Vulnerability Alerts',
+            URI         => 'https://www.securityfocus.com/rss/vulnerabilities.xml',
+            Description => 'Security Focus Vulnerability Alerts',
+        },
+        {   Name        => 'Threatpost Vulnerability Alerts',
+            URI         => 'https://threatpost.com/category/vulnerabilities/feed/',
+            Description => 'Threatpost Vulnerability Alerts',
+        },
+        {   Name => 'Bugtraq',
+            URI => 'https://seclists.org/rss/bugtraq.rss',
+            Description => 'Bugtraq feed',
+        },
+    ],
+);
+
 =back
 
 =head1 Service Level Agreements (SLA)
