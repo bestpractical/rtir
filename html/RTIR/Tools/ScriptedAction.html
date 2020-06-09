@@ -49,7 +49,7 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@finalresults &>
 
-<form method="get" action="ScriptedAction.html" name="ScriptedAction" enctype="multipart/form-data">
+<form method="get" action="ScriptedAction.html" name="ScriptedAction" enctype="multipart/form-data" class="mx-auto max-width-lg">
 <input type="hidden" name="incidentid" value="<%$incidentid%>" />
 <input type="hidden" name="loop" value="<%$ARGS{'loop'}%>" />
 <input type="hidden" name="UpdateType" value="response" />
@@ -58,114 +58,130 @@
 <input type="hidden" name="id" value="new" />
 <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
 <input type="hidden" name="Status" value="<% $ARGS{Status} || '' %>" />
-<a name="top"></a>
-        
+
 % if ( $ARGS{'TestAddresses'} && keys %$addrhash ) {
 <&| /Widgets/TitleBox, contentbg => "#cccccc", 
     title => 'Address test results' &>
-<ul>
+  <ul class="list-group">
 %   foreach my $key (keys %$addrhash) {
-  <li><%$addrhash->{$key}->{'IP'}%>: <%$addrhash->{$key}->{'Address'}%>
+    <li><%$addrhash->{$key}->{'IP'}%>: <%$addrhash->{$key}->{'Address'}%></li>
 %   }
-</ul>
+  </ul>
 </&>
-<br />
 % }
 
 <&| /Widgets/TitleBox, contentbg => "#cccccc", title => loc("Identify Recipients") &>
 
-<table border="0" cellpadding="0" cellspacing="2">
-% my $height = RT->Config->Get('MessageBoxHeight', $session{'CurrentUser'} ) || 15;
-% my $wrap   = RT->Config->Get('MessageBoxWrap', $session{'CurrentUser'} ) || 'SOFT';
 % if ($loop eq 'IP') {
-  <tr>
-    <td class="label">WHOIS:</td>
-    <td class="value">
-        <& Elements/SelectWhoisServer, Name => 'server', Default => $server &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Contact Field</&>:</td>
-    <td class="value"><input type="text" name="field" value="<% $ARGS{'field'} || '' %>" /></td>
-  </tr>
-  <tr>
-    <td class="label">
+  <div class="form-row">
+    <div class="label col-3">
+      <&|/l&>WHOIS</&>:
+    </div>
+    <div class="value col-9">
+      <& Elements/SelectWhoisServer, Name => 'server', Default => $server &>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="label col-3">
+      <&|/l&>Contact Field</&>:
+    </div>
+    <div class="value col-9">
+      <input class="form-control" type="text" name="field" value="<% $ARGS{'field'} || '' %>" />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="label col-3">
       <&|/l&>IP Addresses</&>:<br /><small>arg: <i>_IP_</i></small>
-    </td>
-    <td class="value">
-        <textarea autocomplete="off" cols="30" rows="<% $height %>" wrap="<% $wrap %>" name="IPs" id="IPs"><% $ARGS{IPs} || '' %></textarea>
-    </td>
-  </tr>
+    </div>
+    <div class="value col-9">
+      <textarea class="form-control" name="IPs" id="IPs"><% $ARGS{IPs} || '' %></textarea>
+    </div>
+  </div>
+
 % } else {
-  <tr>
-    <td class="label"><&|/l&>Addresses</&>:<br /><small>arg: <i>_ADDR_</i></small></td>
-    <td class="value">
-        <textarea autocomplete="off" cols="30" rows="<% $height %>" wrap="<% $wrap %>" name="Addresses" id="Addresses"><% $ARGS{Addresses} || '' %></textarea>
-    </td>
-  </tr>
+  <div class="form-row">
+    <div class="label col-3">
+      <&|/l&>Addresses</&>:<br /><small>arg: <i>_ADDR_</i></small>
+    </div>
+    <div class="value col-9">
+      <textarea class="form-control" name="Addresses" id="Addresses"><% $ARGS{Addresses} || '' %></textarea>
+    </div>
+  </div>
+
 % }
-<tr>
-  <td class="label"><&|/l&>Template</&>:</td>
-  <td class="value">
-    <& /Admin/Scrips/Elements/SelectTemplate, Default => $ARGS{'Template'} || 0, Queue => $investigationq &>
-  </td>
-</tr>
-<tr>
-  <td class="label"><&|/l&>Argument</&>:</td>
-  <td class="value">
-    <input type="text" name="TemplateArg" size="60" value="<% $ARGS{'TemplateArg'} || '' %>" />
-  </td>
-</tr>
-</table>
+  <div class="form-row">
+    <div class="label col-3">
+      <&|/l&>Template</&>:
+    </div>
+    <div class="value col-9">
+      <& /Admin/Scrips/Elements/SelectTemplate, Default => $ARGS{'Template'} || 0, Queue => $investigationq &>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="label col-3">
+      <&|/l&>Argument</&>:
+    </div>
+    <div class="value col-9">
+      <input class="form-control" type="text" name="TemplateArg" size="60" value="<% $ARGS{'TemplateArg'} || '' %>" />
+    </div>
+  </div>
 
 % if ($loop eq "IP") {
-<& /Elements/Submit, Name => "TestAddresses", Caption => loc("Test email addresses"), Label => loc("Test")&>
-% }
-</&>
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit, Name => "TestAddresses", Caption => loc("Test email addresses"), Label => loc("Test")&>
+    </div>
+  </div>
 
-<br />
+% }
+
+</&>
 
 <&| /Widgets/TitleBox, contentbg => "#cccccc", title => loc("Message information") &>
 
-<table border="0" cellpadding="0" cellspacing="2">
-  <tr>
-    <td class="label">
+  <div class="form-row">
+    <div class="label col-3">
       <&|/l&>Owner</&>:
-    </td>
-    <td>
-      <%$session{'CurrentUser'}->Name%>
-    </td>
-  </tr>
+    </div>
+    <div class="value col-9">
+      <span class="current-value form-control"><% $session{'CurrentUser'}->Name %></span>
+    </div>
+  </div>
 
 % if (!$incidentid) {
+<div class="form-group">
 <& /RTIR/Incident/Elements/Create, Title => $Title, QueueObj => $incidentq, %ARGS &>
-% } else {
-  <tr>
-    <td class="label">
-      <&|/l&>Subject</&>:
-    </td>
-    <td>
-      <input type="text" size="60" name="Subject" value="<%$ARGS{'Subject'} || $Incident->Subject%>" />
-    </td>
-  </tr>
-% }
+</div>
 
-<tr>
-  <td class="labeltop">
-    <&|/l&>Message</&>:
-  </td>
-  <td colspan="5">
+% } else {
+  <div class="form-row">
+    <div class="label col-3">
+      <&|/l&>Subject</&>:
+    </div>
+    <div class="value col-9">
+      <input class="form-control" type="text" size="60" name="Subject" value="<%$ARGS{'Subject'} || $Incident->Subject%>" />
+    </div>
+  </div>
+
+% }
+  <div class="form-group">
 % if (exists $ARGS{Content}) {
 <& /Elements/MessageBox, Name=>"Content", Default=>$ARGS{Content}, %ARGS&>
 % } else {
 <& /Elements/MessageBox, Name=>"Content", %ARGS &>
 % }
-  </td>
-</tr>
-</table>
+  </div>
 
 </&>
-<& /Elements/Submit, Name => "SubmitAction", Caption => loc("Create the Incidents and Investigations"), Label => loc("Create")&>
+
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit, Name => "SubmitAction", Caption => loc("Create the Incidents and Investigations"), Label => loc("Create") &>
+    </div>
+  </div>
 </form>
 
 <%INIT>
