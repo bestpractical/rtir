@@ -71,6 +71,14 @@ If you don't use Priority on Incidents, you can customize the search result
 columns with the "DueIncidents" entry in the C<%RTIRSearchResultFormats>
 configuration.
 
+=item *
+
+The Updates column in Incident ticket listings on RTIR at a glance now shows
+the number of unread messages on the Incident ticket rather than just Yes/No.
+As with Priority above, this setting can be customized with the "DueIncidents"
+entry in C<%RTIRSearchResultFormats>. The previous option was called UpdateStatus
+and the new version is UnreadMessages.
+
 =back
 
 =cut
