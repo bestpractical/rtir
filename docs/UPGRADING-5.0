@@ -55,6 +55,30 @@ hidden. Visibility of these two menus is now managed with a new right in
 RT. The RT 5.0 upgrade process grants these rights to all Privileged users,
 but you can revoke these rights to restore the previous RTIR menu.
 
+=item *
+
+On RTIR at a glance, the default configuration for Incident sections now
+includes Priority. Priority is also now a second-level sort, so Incidents
+will be ordered first by Due date (most Due first), then by Priority (highest
+priority first).
+
+RT 5.0 now defaults to managing priority with set values like "High" and "Low"
+rather than numbers, so you will see that in RTIR also. See the RT upgrade
+notes for details on how to set your Priority levels and for how to revert
+to number-based priority if you prefer.
+
+If you don't use Priority on Incidents, you can customize the search result
+columns with the "DueIncidents" entry in the C<%RTIRSearchResultFormats>
+configuration.
+
+=item *
+
+The Updates column in Incident ticket listings on RTIR at a glance now shows
+the number of unread messages on the Incident ticket rather than just Yes/No.
+As with Priority above, this setting can be customized with the "DueIncidents"
+entry in C<%RTIRSearchResultFormats>. The previous option was called UpdateStatus
+and the new version is UnreadMessages.
+
 =back
 
 =cut
