@@ -20,6 +20,7 @@ RUN cd /usr/local/src \
   && make initdb \
   && rm -rf /usr/local/src/*
 
+RUN cpanm Net::Whois::RIPE
 RUN cpanm Parse::BooleanLogic
 
 CMD tail -f /dev/null
