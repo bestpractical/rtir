@@ -15,9 +15,9 @@ RUN cd /usr/local/src \
   && cd rt \
   && git checkout $RT_VERSION \
   && ./configure.ac \
-    --enable-developer --enable-gd --enable-graphviz --with-db-type=SQLite \
+    --enable-developer --enable-gd --enable-graphviz --with-db-host=172.17.0.2 --with-db-rt-host=172.17.0.3\
   && make install \
-  && make initdb \
+  && /usr/bin/perl -I/opt/rt5/local/lib -I/opt/rt5/lib sbin/rt-setup-database --action init --dba-password=password \
   && rm -rf /usr/local/src/*
 
 RUN cpanm Net::Whois::RIPE
