@@ -15,7 +15,7 @@ RUN cd /usr/local/src \
   && cd rt \
   && git checkout $RT_VERSION \
   && ./configure.ac \
-    --disable-gpg --disable-smime --enable-developer --enable-gd --enable-graphviz --with-db-type=SQLite \
+    --enable-developer --enable-gd --enable-graphviz --with-db-type=SQLite \
   && make install \
   && make initdb \
   && rm -rf /usr/local/src/*
