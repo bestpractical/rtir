@@ -47,6 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <& /RTIR/Elements/Header,
     Title => $Title,
+    onload => "function () { hide('ticket-create-investigation') }",
 &>
 <& /Elements/Tabs &>
 
@@ -560,6 +561,21 @@ if ( $Split ) {
 else {
     $SubmitLabel = loc('Create');
 }
+
+PageMenu->child(
+    incident => raw_html =>
+        q{<a href="#incident"}
+        . q{onclick="return switchVisibility('ticket-create-incident','ticket-create-investigation');"}
+        . q{>} . loc('Incident') . q{</a>}
+ );
+
+PageMenu->child(
+    investigation => raw_html =>
+        q[<a href="#investigation"]
+        . q[ onclick="return switchVisibility('ticket-create-investigation','ticket-create-incident');"]
+        . q[>] . loc('Launch Investigation') . q[</a>]
+    );
+
 
 unless ( exists $ARGS{'Content'} ) {
     my $Transactions;
