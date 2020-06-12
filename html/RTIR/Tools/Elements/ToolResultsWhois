@@ -57,53 +57,27 @@
 <b><% $WhoisError %></b>
 % }
 <%PERL>
+
+# Prior to upgrading to Net::Whois::RIPE 2.x we could iterate through attributes for the result
+# of this query. The updated API replacing the attributes method call with Net::Whois::Object throws
+# fatal errors on verisign & other responses for lookups, so we parse response here.
+# (https://github.com/arhuman/Net-Whois-RIPE/issues/27)
+
 my $DoInvestigate = 0;
 if ($WhoisIterator) {
     while ( $WhoisIterator->isnt_exhausted) {
         my $block = $WhoisIterator->value;
         $SavedContent .= $block . "\n";
-        my @lines_starting_with_space = grep /^(\s+)(\w+)/, $block;
-        if ($handparse || $#lines_starting_with_space >= 4) {    #we couldn't parse that. suck
-            my $content = join "", $block;
-            $m->comp('/Elements/MakeClicky',
-                     object        => $TicketObj,
-                     lookup_params => "ticket=" . ($TicketObj ? $TicketObj->id : 0) . "&server=$WhoisServer",
-                     content       => \$content,);
-            $DoInvestigate = 1 if $content =~ /Requestorbox/ig;
+        my $content = join "", $block;
+        $m->comp('/Elements/MakeClicky',
+                 object        => $TicketObj,
+                 lookup_params => "ticket=" . ($TicketObj ? $TicketObj->id : 0) . "&server=$WhoisServer",
+                 content       => \$content,);
+        $DoInvestigate = 1 if $content =~ /Requestorbox/ig;
 </%PERL>
 <pre><% $content |n %></pre><br />
-%       } else {
-Structured RIPE whois data returned.
-Click <a href="Lookup.html?q=<% $q |u %>&server=<% $WhoisServer |u %>&handparse=1">here</a> to manually parse this data.
-<%perl>
-my @objects = Net::Whois::Object->new($WhoisIterator);
-foreach my $object ( @objects ) {
-   my %seen;
-   foreach my $attribute ($object->attributes()) {
-       next if ($seen{$attribute});
-       $seen{$attribute} = 1;
-       my @values;
-       foreach my $value ( $object->$attribute() ) {
-         next unless ($value);
-         push (@values, (ref($value) eq 'ARRAY' ) ? @$value : $value);
-       }
-       next unless (scalar @values);
-       my $value = join("\n", ' ', @values);
-</%perl>
-     <b><%$attribute%></b>: 
-<& /Elements/MakeClicky, 
-    ticket => $TicketObj, 
-    lookup_params => "ticket=".$TicketObj->id, 
-    content => \$value &>
-<% $value |n %><br />
-<%perl>
-     }
-   }
-
-  }
- }
- }
-</%perl>
+%  }
+%}
 %# Don't offer the option of Investigating to unless there are addresses
 % if ( $DoInvestigate ) {
 <& /Elements/Submit,
@@ -136,7 +110,6 @@ foreach my $object ( @objects ) {
 
 <%args>
 $q =>  undef
-$handparse => 1
 $TicketObj => undef
 $WhoisServer => undef
 $server => undef

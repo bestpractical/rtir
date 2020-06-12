@@ -20,7 +20,6 @@ unless ($agent->status == 200){
 diag "Test Lookup page directly";
 {
     $agent->get_ok("/RTIR/Tools/Lookup.html", "Loaded Lookup page");
-
 SKIP:{
     skip "No network", 3 if $no_network;
     $agent->form_name('ToolFormWhois');

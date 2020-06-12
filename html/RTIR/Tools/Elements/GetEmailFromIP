@@ -62,13 +62,26 @@ unless ( $iterator ) {
 
 $field ||= 'notify';
 
-my @objects = Net::Whois::Object->new($iterator);
-my @res;
-foreach my $obj (@objects) {
-    foreach my $attr ( grep lc $_ eq lc $field, $obj->attributes ) {
-        push @res, $obj->$attr();
+# Prior to upgrading to Net::Whois::RIPE 2.x we could iterate through attributes for the result
+# of this query. The updated API replacing the attributes method call with Net::Whois::Object throws
+# fatal errors on verisign responses for ip lookups, so we parse response here.
+# (https://github.com/arhuman/Net-Whois-RIPE/issues/27)
+
+my @res = ( );
+while ( ! $iterator->is_exhausted() ) {
+    foreach my $line ( split /\n/, $iterator->value() ) {
+        # Parse simple "Field: Value" lines in response, ignoring spaces at start
+        # as Net::Whois::Object can't parse and fails with a fatal error
+        if ( $line =~ /^\s*(\S+\s?\S*):\s*(.*)/ ) {
+            my ($attribute, $value) = ($1,$2);
+            next unless (defined($attribute) && $attribute);
+            if (lc $attribute eq lc $field) {
+                push(@res, $value);
+            }
+        }
     }
 }
+
 unless ( @res ) {
     $$error = loc("Whois server response did not include field '[_1]'", $field);
     return;
