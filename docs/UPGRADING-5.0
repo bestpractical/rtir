@@ -57,10 +57,18 @@ but you can revoke these rights to restore the previous RTIR menu.
 
 =item *
 
-As RT already supports to set default values for custom fields, the
-config C<%RTIR_CustomFieldsDefaults> has been simplified. To set default
-values, now you need to go to custom field admin page instead. The
-conditional default values like "Resolution" is still retained.
+Default values for RTIR custom fields previously set using the configuration
+option C<%RTIR_CustomFieldsDefaults> are now set using RT's core custom
+field default value feature. If you had defaults previously set, they will
+be migrated automatically during upgrade.
+
+RT supports setting these defaults both in the custom field configuration,
+which will set a default for all queues, and in the queue configuration
+for each individual queue.
+
+C<%RTIR_CustomFieldsDefaults> now sets default values only for "Resolution"
+because the Resolution values are set based on the status of the
+Incident when closed.
 
 =back
 
