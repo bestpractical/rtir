@@ -119,7 +119,7 @@ if ( $m->request_comp->path =~ m{^/Search/} ) {
     }
 }
 
-my $root = Menu->child( rtir => title => loc('RTIR'), path => '/RTIR/' );
+my $root = Menu->child( rtir => title => loc('RTIR'), path => '/RTIR/', sort_order => '1.5' );
 
 my $search = $root->child( search => title => loc('Search'), path => RT::IR->HREFTo('', IncludeWebPath => 0) );
 $search->child( new => title => loc('New Search'), path => '/Search/Build.html?NewQuery=1&ExtraQueryParams=RTIR&RTIR=1' );
