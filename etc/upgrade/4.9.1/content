@@ -1,0 +1,31 @@
+use strict;
+use warnings;
+
+our @Final = sub {
+    my $custom_field_defaults = RT->Config->Get('RTIR_CustomFieldsDefaults') or return;
+
+    my $custom_field = RT::CustomField->new( RT->SystemUser );
+    foreach my $cf_name ( keys %{$custom_field_defaults} ) {
+        my $value = $custom_field_defaults->{$cf_name};
+        next unless defined $value && length $value && ( !ref($value) || ref($value) eq 'ARRAY' );
+
+        my ($ret, $msg) = $custom_field->LoadByName( Name => $cf_name );
+        unless ( $ret ) {
+            RT->Logger->error( "Could not load custom field '$cf_name' : $msg" );
+            next;
+        }
+
+        if ( $custom_field->DefaultValues ) {
+            RT->Logger->debug("$cf_name already has default values, skipping");
+            next;
+        }
+
+        ($ret, $msg) = $custom_field->SetDefaultValues( Values => $value );
+        if ( $ret ) {
+            RT->Logger->debug( "Set default value for $cf_name to $value" );
+        }
+        else {
+            RT->Logger->error( "Could not set default value for $cf_name custom field: $msg" );
+        }
+    }
+};

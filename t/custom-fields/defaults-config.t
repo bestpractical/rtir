@@ -5,11 +5,21 @@ use warnings;
 
 use RT::IR::Test tests => undef;
 
-my $defaults = RT->Config->Get('RTIR_CustomFieldsDefaults');
+my $defaults = {};
 $defaults->{'How Reported'}  = 'Telephone';   # IRs
 $defaults->{'Description'}   = 'Bloody mess'; # Incs
 $defaults->{'IP'}            = '127.0.0.1';   # Invs and all
 $defaults->{'Where Blocked'} = 'On the Moon'; # Countermeasures
+
+my $custom_field = RT::CustomField->new( RT->SystemUser );
+foreach my $cf_name ( keys %{$defaults} ) {
+
+    my ($ret, $msg) = $custom_field->LoadByName( Name => $cf_name );
+    ok $ret, "Load custom field '$cf_name'";
+
+    ($ret, $msg) = $custom_field->SetDefaultValues( Values => $defaults->{$cf_name} );
+    ok $ret, "Set custom field $cf_name default value to $defaults->{$cf_name}"
+}
 
 my %test_on = (
     'Incident Reports' => 'How Reported',

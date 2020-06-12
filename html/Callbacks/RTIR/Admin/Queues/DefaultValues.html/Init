@@ -45,44 +45,11 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/EditCustomFields,
-  Object => $TicketObj,
-  QueueObj => $QueueObj,
-  ($TicketObj->Id ? () : (CustomFields => $QueueObj->TicketCustomFields)), # on ticket creation, use Queue CFs
-  %ARGS,
-  %$CFDefaults,
-  ($AllGroupings ? () : (Grouping => 'Basics')), # Groupings comes in as an ARGS on Edit.html
-  InTable => 1,
-&>
 
-<%INIT>
-unless ( $TicketObj && $TicketObj->Id ) {
-    # no ticket, we need to find defaults of cfs
-    my $CustomFields = $QueueObj->TicketCustomFields();
-    while ( my $CustomField = $CustomFields->Next ) {
-        my $name = $CustomField->Name;
-
-        if ( $DefaultsFrom ) {
-            my ($link_cf) = RT::IR->CustomFields( Field => $name, Ticket => $DefaultsFrom );
-            if ( $link_cf ) {
-# XXX: if CF can have only one value then we should use only first value
-                $CFDefaults->{"CustomField-".$CustomField->Id} = join "\n",
-                    grep defined && length, map $_->Content,
-                    @{ $DefaultsFrom->CustomFieldValues( $link_cf->id )->ItemsArrayRef };
-                next;
-            }
-        }
-
-        if ( $ARGS{"$name-Value"} ) {
-            $CFDefaults->{"CustomField-".$CustomField->Id} = $ARGS{"$name-Value"};
-        }
-    }
-}
-</%INIT>
-<%ARGS>
-$TicketObj => undef
-$QueueObj => undef
-$DefaultsFrom => undef
-$AllGroupings => 0
-$CFDefaults => {}
-</%ARGS>
+<%init>
+# To display RTIR CF groupings on queue config Default Values tab
+unshift @{$Groupings}, RT::CustomField->CustomGroupings('RTIR::Ticket');
+</%init>
+<%args>
+$Groupings
+</%args>
