@@ -12,10 +12,13 @@ details for previous versions.
 
 In RTIR 4.0, we modified the menu display to move each queue to a
 top level menu item when working inside RTIR. Each menu ended up
-having just a "Create" entry and we haven't found new menu items
+having only a single "Create" entry and we haven't found new menu items
 to add for each queue. This change made it harder to access the
 default RT menus, so we have reverted to the previous configuration
 with a single RTIR menu item containing relevant links.
+
+To make it easier to access the RTIR menu, we have also moved it
+to the left, directly after the default RT Home menu.
 
 =item *
 
