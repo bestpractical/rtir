@@ -605,4 +605,28 @@ PageWidgets()->child('simple_search')->raw_html( $m->scomp(
     Placeholder => 'Search Incidents'
 ) );
 PageWidgets()->child( create_ticket => raw_html => $HTML::Mason::Commands::m->scomp('/Elements/CreateTicket', SendTo => '/RTIR/Create.html?Queue=' . RT::IR::GetRTIRDefaultQueue()) );
+
+if ( $request_path =~ m{$re_rtir_path(?:Incident/)?Create\.html} ) {
+    my $default_queue = GetDefaultQueue();
+    my $queue;
+    if ( $default_queue && !RT::IR->OurQueue($default_queue) ) {
+        $queue = $default_queue;
+    }
+    else {
+        # Find the first non-RTIR queue current user can create
+        my $cache_key = SetObjectSessionCache(
+            ObjectType       => 'Queue',
+            CheckRight       => 'CreateTicket',
+            CacheNeedsUpdate => RT->System->QueueCacheNeedsUpdate,
+        );
+        ($queue) = map { $_->{Id} } grep { !RT::IR->OurQueue( $_->{Id} ) } @{ $session{$cache_key}{objects} };
+    }
+
+    if ($queue) {
+        PageMenu()->child(
+            rt_create_ticket => title => loc('RT Create Ticket'),
+            path             => "/Ticket/Create.html?Queue=$queue",
+        );
+    }
+}
 </%INIT>

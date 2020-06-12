@@ -131,7 +131,7 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
       <&|/l&>Queue</&>:
     </div>
     <div class="value col-9">
-      <& /RTIR/Elements/SelectRTIRQueue, Name => "Queue", Default => $queue, Lifecycle => $QueueObj->Lifecycle, AutoSubmit => 1, ShowNullOption => 0,
+      <& /RTIR/Elements/SelectRTIRQueue, Name => "Queue", Default => $queue, AutoSubmit => 1, ShowNullOption => 0,
                                          LimitToConstituency => $limit_to_constituency, Constituency => $constituency &>
     </div>
   </div>
