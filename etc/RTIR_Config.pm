@@ -641,13 +641,23 @@ available in all screens in RTIR so may not be the best place for Custom Fields.
 
 Set(%CustomFieldGroupings,
     'RTIR::Ticket' => [
-        'Networking'     => ['IP'],
+        'Networking'     => ['IP', 'Domain'],
         'Details' => ['How Reported','Reporter Type','Customer',
                       'Description', 'Resolution', 'Function', 'Classification',
                       'Customer',
                       'Netmask','Port','Where Blocked'],
     ],
 );
+
+=item C<$RTIR_StrictDomainTLD>
+
+If true then RTIR will check if TLD is officially valid on domain
+extraction. Set it to 0 if you need to support local TLDs or recent ones
+that are not included in L<Net::Domain::TLD> yet. It's true by default.
+
+=cut
+
+Set($RTIR_StrictDomainTLD, 1);
 
 =back
 
