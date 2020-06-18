@@ -72,7 +72,7 @@
     </div>
 % if ( $config->{'Multiple'} || @potential ) {
     <div class="col-auto">
-      <input type="submit" name="<% "More$Name" %>" value="<% $config->{'Multiple'}? loc('More') : loc('Other') %>" class="form-control btn btn-primary button" />
+      <input type="submit" name="<% "More$Name" %>" value="<% $config->{'Multiple'}? loc('Add') : loc('Other') %>" class="form-control btn btn-primary button" />
     </div>
 % }
 
