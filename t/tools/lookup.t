@@ -56,5 +56,23 @@ SKIP:{
 }
 }
 
+diag "Test IP Lookup";
+{
+    $agent->get_ok("/RTIR/Tools/ScriptedAction.html?loop=IP", "Loaded Lookup page");
+
+  SKIP:{
+        skip "No network", 2 if $no_network;
+        $agent->form_name('ScriptedAction');
+        $agent->field('IPs', '45.33.11.14');
+        $agent->field('field', 'organisation');
+        $agent->select('server', 'whois.iana.org');
+        $agent->click;
+        $agent->content_contains('Address test results');
+        $agent->content_contains('45.33.11.14: Administered by ARIN');
+    }
+
+}
+
+
 undef $agent;
 done_testing;
