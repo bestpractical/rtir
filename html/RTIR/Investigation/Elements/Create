@@ -72,6 +72,7 @@
           Lifecycle => $QueueObj->Lifecycle,
           AutoSubmit => 1,
           ShowNullOption => 0,
+          ShowAll => 0,
           Constituency => $Constituency
       &>
     </div>

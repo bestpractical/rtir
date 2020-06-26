@@ -633,6 +633,7 @@ if ( $request_path =~ m{$re_rtir_path(?:Incident/)?Create\.html} ) {
             ObjectType       => 'Queue',
             CheckRight       => 'CreateTicket',
             CacheNeedsUpdate => RT->System->QueueCacheNeedsUpdate,
+            ShowAll          => 0,
         );
         ($queue) = map { $_->{Id} } grep { !RT::IR->OurQueue( $_->{Id} ) } @{ $session{$cache_key}{objects} };
     }
