@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -62,17 +62,49 @@ unless ( $iterator ) {
 
 $field ||= 'notify';
 
-my @objects = Net::Whois::Object->new($iterator);
-my @res;
-foreach my $obj (@objects) {
-    foreach my $attr ( grep lc $_ eq lc $field, $obj->attributes ) {
-        push @res, $obj->$attr();
+my @res = ( );
+if ($server eq 'whois.ripe.net') {
+    # Trap possible failures when parsing results
+    # Net::Whois currently dies in some cases, so we need to eval
+    my @objects;
+    eval {
+        @objects = Net::Whois::Object->new($iterator);
+    };
+    if ( $@ ) {
+        RT->Logger->warn('Unable to parse WHOIS results for query ' . $q);
+        RT->Logger->debug($@);
+        $$error = loc('Unable to parse results from WHOIS lookup');
+    }
+    else {
+        foreach my $obj (@objects) {
+            foreach my $attr ( grep lc $_ eq lc $field, $obj->attributes ) {
+                push @res, $obj->$attr();
+            }
+        }
+
     }
 }
+else {
+    while ( ! $iterator->is_exhausted() ) {
+        foreach my $line ( split /\n/, $iterator->value() ) {
+            # Parse simple "Field: Value" lines in response, ignoring spaces at start
+            # as Net::Whois::Object can't parse and fails with a fatal error
+            if ( $line =~ /^\s*(\S+\s?\S*):\s*(.*)/ ) {
+                my ($attribute, $value) = ($1,$2);
+                next unless (defined($attribute) && $attribute);
+                if (lc $attribute eq lc $field) {
+                    push(@res, $value);
+                }
+            }
+        }
+    }
+}
+
 unless ( @res ) {
     $$error = loc("Whois server response did not include field '[_1]'", $field);
     return;
 }
+
 
 ($$address) = grep defined && length, @res;
 </%INIT>
