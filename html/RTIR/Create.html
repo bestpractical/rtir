@@ -111,6 +111,7 @@
                 ShowNullOption => 0,
                 AutoSubmit     => 1,
                 LimitToConstituency => $limit_to_constituency,
+                ShowAll        => 0,
                 Constituency => $constituency,
             },
         },
@@ -425,6 +426,7 @@ unless ($Queue) {
     my $cache_key = SetObjectSessionCache(
         ObjectType       => 'Queue',
         CheckRight       => 'CreateTicket',
+        ShowAll          => 0,
         CacheNeedsUpdate => RT->System->QueueCacheNeedsUpdate,
     );
 
