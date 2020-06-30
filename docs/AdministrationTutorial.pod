@@ -11,7 +11,7 @@ these files to change configuration values. The F<RT_SiteConfig.pm> file
 is specifically provided to store your core site-specific configurations
 and you may create F<RTIR_SiteConfig.pm> for customizations to configuration
 declared in F<RTIR_Config.pm>.  F<RTIR_SiteConfig.pm> is normally
-created in /opt/rt4/etc/.
+created in /opt/rt5/etc/.
 
 To change a configuration value, copy the Set code from F<RT_Config.pm>
 or F<RTIR_Config.pm> and add it to the relevant Site Config. Then set

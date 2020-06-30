@@ -29,7 +29,7 @@ its upgrade instructions. Make sure you follow all of the
 steps and upgrade both the code and the database.
 
 As noted in the RT documentation, it is recommended that you
-use a fresh directory when upgrading to RT 4, like /opt/rt4,
+use a fresh directory when upgrading to RT 4, like /opt/rt5,
 rather than upgrading on top of your RT 3 installation.
 A lot of files have been deleted and moved around in RTIR
 so don't copy an old RTIR's files.
@@ -37,6 +37,8 @@ so don't copy an old RTIR's files.
     RTIR 3.2 is only compatible with RT 4.2 releases.
 
     RTIR 4.0 is only compatible with RT 4.4 releases.
+
+    RTIR 5.0 is only compatible with RT 5.0 releases.
 
 =item 3
 
