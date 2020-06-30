@@ -29,7 +29,7 @@ information.
 Installation instructions:
 --------------------------
 
-1) Install the current release of the RT 4.4 series following RT's
+1) Install the current release of the RT 5.0 series following RT's
    regular installation instructions
 
 2) Run "perl Makefile.PL" to generate a makefile for RTIR.
@@ -83,7 +83,7 @@ Configuring RTIR
    RT -> Configuration -> Groups -> DutyTeam -> Members.
 
 5) You can override values defined in RTIR_Config.pm by creating
-   RTIR_SiteConfig.pm in /opt/rt4/etc/ and adding your customizations.
+   RTIR_SiteConfig.pm in /opt/rt5/etc/ and adding your customizations.
 
 
 SETTING UP THE MAIL GATEWAY
@@ -92,14 +92,14 @@ SETTING UP THE MAIL GATEWAY
 An alias for the Incident Reports queue will need to be configured.
 Add the following lines to /etc/aliases (or your local equivalent):
 
-rtir:         "|/opt/rt4/bin/rt-mailgate --queue 'Incident Reports' --action correspond --url http://rt.example.com/"
+rtir:         "|/opt/rt5/bin/rt-mailgate --queue 'Incident Reports' --action correspond --url http://rt.example.com/"
 
 You should substitute the URL for RT's web interface for http://rt.example.com/.
 
 o  If your webserver uses SSL, rt-mailgate will require several new
    Perl libraries. See the RT README for more details on this option.
 
-o  See "perldoc /opt/rt4/bin/rt-mailgate" for more info about the rt-mailgate
+o  See "perldoc /opt/rt5/bin/rt-mailgate" for more info about the rt-mailgate
    script.
 
 o  If you're configuring RTIR with support for multiple constituencies, please
@@ -110,7 +110,7 @@ Documentation for RTIR
 ----------------------
 
    * Documents included with RTIR are also available for browsing at
-        http://www.bestpractical.com/docs/rtir/4.0/
+        http://www.bestpractical.com/docs/rtir/5.0/
 
    * This README file
 
@@ -121,21 +121,21 @@ Documentation for RTIR
         would read the UPGRADING-3.0, UPGRADING-3.2, and UPGRADING-4.0 files.
 
    * docs/Tutorial.pod
-        ( also at http://bestpractical.com/docs/rtir/4.0/Tutorial )
+        ( also at http://bestpractical.com/docs/rtir/5.0/Tutorial )
         Extended information about ticket merging
 
    * docs/Constituencies.pod
-        ( also at http://bestpractical.com/docs/rtir/4.0/Constituencies )
+        ( also at http://bestpractical.com/docs/rtir/5.0/Constituencies )
         Information about setting up RTIR with multiple user constituencies
 
    * docs/AdministrationTutorial.pod
-        ( also at http://bestpractical.com/docs/rtir/4.0/AdministrationTutorial )
+        ( also at http://bestpractical.com/docs/rtir/5.0/AdministrationTutorial )
         Information about setting up RTIR for Administrators
 
    * etc/RTIR_Config.pm
         (Contains a number of RTIR-specific configuration options and
         instructions for their use)
-        http://www.bestpractical.com/docs/rtir/4.0/RTIR_Config.html
+        http://www.bestpractical.com/docs/rtir/5.0/RTIR_Config.html
 
    * RTIR mailing list
         Subscribe by sending mail to rtir-request@lists.bestpractical.com
