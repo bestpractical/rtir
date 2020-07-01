@@ -206,11 +206,6 @@ $agent->goto_create_rtir_ticket('Countermeasures');
     $agent->content_contains( "<input type=\"checkbox\" name=\"SelectedReportsAll\" value=\"1\" checked=\"checked\"",
                               'Checkboxes checked for reply all');
 
-    $agent->follow_link_ok({text => 'Reply'}, "Confirm 'Reply' link returns here in same state");
-
-    $agent->content_contains( "<input type=\"checkbox\" name=\"SelectedReportsAll\" value=\"1\" checked=\"checked\"",
-                              'Checkboxes checked for reply all');
-
     my $content = "this is test";
     my $filename = tempfile($content);
     $agent->form_number(3);
