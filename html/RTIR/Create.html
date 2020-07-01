@@ -421,18 +421,6 @@ unless ($Queue) {
     }
 }
 
-# pick first in list in normal order unless queue provided from form/url/defaults
-unless ($Queue) {
-    my $cache_key = SetObjectSessionCache(
-        ObjectType       => 'Queue',
-        CheckRight       => 'CreateTicket',
-        ShowAll          => 0,
-        CacheNeedsUpdate => RT->System->QueueCacheNeedsUpdate,
-    );
-
-    $Queue = $session{$cache_key}{objects}[0]->{Id};
-}
-
 my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
 $QueueObj->Load( $Queue );
 
