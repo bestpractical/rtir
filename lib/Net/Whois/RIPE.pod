@@ -1,0 +1,254 @@
+=head1 NAME
+
+Net::Whois::RIPE - implementation of RIPE Whois.
+
+=head1 SYNOPSIS
+
+ use Net::Whois::RIPE;
+
+ $whois = Net::Whois::RIPE->new($host);
+ $whois = Net::Whois::RIPE->new($host,Timeout=>10);
+ $whois = Net::Whois::RIPE->new($host,Timeout=>10,Port=>43);
+
+
+ $whois->no_recursive;
+ $whois->source('APNIC');
+ $whois->type('inetnum');
+
+ foreach $inet ($whois->query('203.203.203.203')) {
+     print $inet->inetnum, "\n";
+ }
+
+ $whois->query('202.12.28.0');
+ $whois->update($text);
+
+ # to minimise memory requirements on large lookups...
+ $iterator = $whois->query_iterator('DNS3-AP');
+ while ($obj = $iterator->next) {
+     ...
+ }
+
+ $whois->template('inetnum');
+ $whois->verbose_template('inetnum');
+
+ $whois->debug(1);
+ $whois->max_read_size(1024);
+
+ $whois->search_all;     # -a
+ $whois->fast_raw;       # -F
+ $whois->find_less;      # -L
+ $whois->find_more;      # -m
+ $whois->find_all_more;  # -M
+ $whois->no_recursive;   # -r
+ $whois->no_referral;    # -R
+ $whois->no_sugar;       # -S
+ $whois->no_filtering;   # -B
+ $whois->no_grouping;    # -G
+
+ $whois->inverse_lookup($attribute); # -i $attribute
+ $whois->source('APNIC');            # -s APNIC
+ $whois->type('person');             # -T person
+
+ # query only
+
+ $whois->port();
+ $whois->server();
+
+
+=head1 DESCRIPTION
+
+Net::Whois::RIPE class implementing a RIPE whois client.
+
+=head1 CONSTRUCTOR
+
+=over 4
+
+=item B<new (HOST [,OPTIONS])>
+
+This is the constructor for a new Net::Whois::RIPE object. C<HOST> is the
+name of the remote host to which a whois connection is required.
+
+C<OPTIONS> are passed in a hash like fashion, using key and value pairs.
+Possible options are:
+
+ Port - The port number to connect to on the remote machine
+ Timeout - Set a timeout value in seconds (defaults to 30)
+ Debug - See debug methog.
+
+The constructor returns undef on failure. If B<debug> is on then a message
+is carped about the failure.
+
+=back
+
+=head1 METHODS
+
+=over 4
+
+=item B<template(WHOIS_OBJECT_NAME)>
+
+Sends a template request to whois host for a template of WHOIS_OBJECT_NAME.
+Results are returned in a I<Net::Whois::RIPE::Object> object. The template is
+retrieved via the I<content> method on the I<Net::Whois::RIPE::Object> object.
+
+ $t = $whois->template('all');
+ $t = $whois->template('inetnum');
+ $t = $whois->template('person');
+ $text = $t->content;
+
+If WHOIS_OBJECT_NAME is undefined then the method will carp (under debug)
+and return undef.
+
+=item B<verbose_template(WHOIS_OBJECT_NAME)>
+
+Like B<template>, but sends a verbose template request to the whois host for
+WHOIS_OBJECT_NAME. Results are returned in a I<Net::Whois::RIPE::Object> object.
+The verbose template is retrieved via the I<content> method on the
+I<Net::Whois::RIPE::Object> object.
+
+ $vt = $whois->verbose_template('person');
+ $text = $vt->content;
+
+If WHOIS_OBJECT_NAME is undefined then the method will carp and return undef.
+
+=item B<query(QUERY_TEXT)>
+
+Formats query flag options (see below) and sends them and QUERY_TEXT to the
+server. If called in a scalar context then the first object returned from
+the server is passed back as a single I<Net::Whois::RIPE::Object> object.
+In an array context, all returned objects returned from the server are
+parsed into in a list and returned (potentially quite large).
+
+ $q = $whois->query('key')  # a single Query
+ @q = $whois->query('key')  # an array of Queries
+
+If QUERY_KEY is undefined, undef is returned. Any failure will carp and
+return undef.
+
+If B<max_read_size> is greater than zero then the server response will be
+abandoned when greater than max_read_size bytes have been read. The last
+object read will have warning messages set to indicate that
+the response was cut.
+
+=item B<query_iterator(QUERY_TEXT)>
+
+Similar to I<query> except that a Net::Whois::RIPE::Iterator object is
+returned. This object is used to iterate over the results of the query.
+
+This was created in response to huge results returned by whois queries where
+over 1000 objects may be returned. Query iterator returns an object at a time
+via the I<next> method as opposed to I<query> which returns an array of
+objects.
+
+ $iterator = $whois->query_iterator
+   or die "unable to create iterator";
+ while ($obj = $iterator->next) {
+     ...
+ }
+
+=item B<update(UPDATE_TEXT)>
+
+Sends UPDATE_TEXT directly to server. Query flag options (below) are not used
+by update. Server response is returned via I<Net::Whois::RIPE::Object>. Use the
+B<content> method on the Query object to via server response.
+
+ my $q = $whois->update($message)
+ print $q->content
+
+If UPDATE_TEXT is undefined, undef is returned.
+Any failure will carp and return undef.
+
+If no I<changed> field can be found to determine a login and domain the method
+will carp and return undef.
+
+If B<max_read_size> is greater than zero then the server response will be
+abandoned when greater than max_read_size bytes have been read.
+
+=item B<debug(LEVEL)>
+
+Sets/gets debugging level on the class or an object.
+
+ 0 - no debugging
+ 1 - debugging on
+ 2 - carp on IO::Socket::INET
+
+=item B<max_read_size([INTEGER])>
+
+Sets/reads the maximum number of bytes that I<Net::Whois::RIPE> will
+read before returning. This is to limit huge responses from the server
+overloading scripts.
+
+a I<max_read_size> of zero indicates B<no> limit.
+
+=item B<flag options>
+
+The following flags may be set by calling the method. Their meaning is
+identical to the ripe whois client. These flags require no arguments, they
+simply set the flag on.
+
+       Method                       Equivalent whois flag
+
+       search_all                   -a
+       fast_raw                     -F
+       find_less                    -L
+       find_more                    -m
+       find_all_more                -M
+       no_recursive                 -r
+       no_referral                  -R
+       no_sugar                     -S
+       no_filtering                 -B
+       no_grouping                  -G
+
+=item B<flag options taking values>
+
+The following flags may be set by calling the method with a value.
+There meaning is identical to the ripe whois client.
+
+       Method                       Equivalent whois flag
+
+       inverse_lookup(ATTRIBUTE)    -i ATTRIBUTE
+       port(PORT)                   -p PORT
+       source(SOURCE)               -s SOURCE
+       type(TYPE)                   -T TYPE
+
+=back
+
+=head1 AUTHOR
+
+ Paul Gampe, <pgampe@users.sourceforge.net>
+ Kevin Baker, <shagol@users.sourceforge.net>
+ Bruce Campbell, <bxc@users.sourceforge.net>
+ Luis Motta Campos E<lt>lmc@cpan.orgE<gt>
+
+=head1 TODO
+
+Update could be made clever enough to determine if it was been passed
+a string to update or a Net::Whois::RIPE::Object and adapt its behaviour.
+
+=head1 SEE ALSO
+
+ Net::Whois::RIPE::Iterator
+ Net::Whois::RIPE::Object
+ Net::Whois::RIPE::Object::Template
+ http://www.ripe.net/db/about.html
+
+=head1 COPYRIGHT
+
+ Copyright (C) 1998 Paul Gampe and APNIC Pty. Ltd.
+ Copyright (C) 2000 Kevin Baker and APNIC Pty. Ltd.
+ Copyright (C) 2004-2005 Paul Gampe
+ Copyright (C) 2009 Luis Motta Campos
+
+ This program is free software; you can redistribute it
+ and/or modify it under the terms of the GNU General Public
+ License as published by the Free Software Foundation;
+ either version 1, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public
+ License along with this program; if not, write to the
+ Free Software Foundation, Inc.,
+ 675 Mass Ave, Cambridge, MA 02139, USA.
