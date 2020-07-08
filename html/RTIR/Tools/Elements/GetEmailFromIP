@@ -62,29 +62,16 @@ unless ( $iterator ) {
 
 $field ||= 'notify';
 
-# Trap possible failures when parsing results
-# Net::Whois currently dies in some cases, so we need to eval
-my @objects;
-eval {
-    @objects = Net::Whois::Object->new($iterator);
-};
-
+my @objects = Net::Whois::Object->new($iterator);
 my @res;
-if ( $@ ) {
-    RT->Logger->warn('Unable to parse WHOIS results for query ' . $q);
-    RT->Logger->debug($@);
-    $$error = loc('Unable to parse results from WHOIS lookup');
+foreach my $obj (@objects) {
+    foreach my $attr ( grep lc $_ eq lc $field, $obj->attributes ) {
+        push @res, $obj->$attr();
+    }
 }
-else {
-    foreach my $obj (@objects) {
-        foreach my $attr ( grep lc $_ eq lc $field, $obj->attributes ) {
-            push @res, $obj->$attr();
-        }
-    }
-    unless ( @res ) {
-        $$error = loc("Whois server response did not include field '[_1]'", $field);
-        return;
-    }
+unless ( @res ) {
+    $$error = loc("Whois server response did not include field '[_1]'", $field);
+    return;
 }
 
 ($$address) = grep defined && length, @res;
