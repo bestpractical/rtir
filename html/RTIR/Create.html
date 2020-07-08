@@ -382,6 +382,8 @@
 </form>
 
 <%INIT>
+Abort( loc( "Permission Denied" ) ) unless $Queue;
+
 # Make sure even a single checkbox value becomes an arrayref
 $ARGS{'SkipNotification'} = \@SkipNotification;
 
