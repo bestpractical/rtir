@@ -462,10 +462,6 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
     );
 
     PageMenu()->child(
-        link => title => loc('Reply'),
-        path => RT::IR->HREFTo("Incident/Reply/?". $query_string->( %args ), IncludeWebPath => 0),
-    );
-    PageMenu()->child(
         edit_search => title => loc('Edit Search'),
         path => '/Search/Build.html?' . $query_string->( %args, ResultPage => RT::IR->HREFTo('Incident/Reply/') ),
     );
