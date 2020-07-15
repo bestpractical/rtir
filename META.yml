@@ -28,7 +28,6 @@ no_index:
 requires:
   DBIx::SearchBuilder: 1.61
   Net::Domain::TLD: 0
-  Net::Whois::RIPE: 2.006001
   Parse::BooleanLogic: 0
   Regexp::Common: 0
   perl: 5.10.1
