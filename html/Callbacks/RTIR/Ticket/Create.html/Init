@@ -54,6 +54,7 @@ my $cache_key = SetObjectSessionCache(
     ObjectType       => 'Queue',
     CheckRight       => 'CreateTicket',
     CacheNeedsUpdate => RT->System->QueueCacheNeedsUpdate,
+    ShowAll          => 0,
 );
 my ($queue) = map { $_->{Id} } grep { !RT::IR->OurQueue( $_->{Id} ) } @{ $session{$cache_key}{objects} };
 $ARGSRef->{Queue} = $queue if $queue;

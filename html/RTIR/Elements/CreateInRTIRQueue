@@ -60,6 +60,7 @@
                     Name => 'Queue',
                     Lifecycle => $Lifecycle,
                     ShowNullOption => 0,
+                    ShowAll => 0,
                     LimitToConstituency => $limit_to_constituency,
                     Constituency => $m->{'RTIR_ConstituencyFilter'} || $linked_constituency
                 &>

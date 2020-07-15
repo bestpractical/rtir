@@ -7,7 +7,7 @@ RT::IR::Config - RTIR specific options and defaults for RT
 
 NEVER EDIT RTIR_Config.pm.
 
-Instead, create RTIR_SiteConfig.pm in /opt/rt4/etc and edit anything
+Instead, create RTIR_SiteConfig.pm in /opt/rt5/etc and edit anything
 you wish to change there.
 
 =head1 Base Configuration

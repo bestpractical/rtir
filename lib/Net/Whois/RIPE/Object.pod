@@ -1,0 +1,172 @@
+=head1 NAME
+
+Net::Whois::RIPE::Object - RIPE Query Results
+
+=head1 SYNOPSIS
+
+ use Net::Whois::RIPE::Object;
+
+
+ $object = new Net::Whois::RIPE::Object;
+ $object->debug(1);
+
+
+ while ($line = $whois_socket->get()) {
+     ($attribute,$value) = ($line =~ /^(.+?):\s+(.+)$/);
+     next unless $attribute;
+     $object->add($attribute,$value);
+ }
+
+ $object->success || die;
+
+ foreach $attribute ($object->attributes()) {
+     foreach $value ($object->$attribute()) {
+         printf "%s:    %-s\n", $attribute, $value;
+     }
+ }
+
+ print $object->content; # raw content from whois server
+
+ for $error ($object->error) {...}
+ for $warn ($object->warning) {...}
+
+=head1 DESCRIPTION
+
+Encapsulates the results of a whois query. The attribute/value pairs
+of the response may then by accessed using the attribute as a method
+name.
+
+These objects are created by I<Net::Whois::RIPE> to be
+returned as I<query> results.
+
+Short background...a B<whois> server would return the following for a person
+query.
+
+   person:      Paul Gampe
+   address:     Level 1 - 33 Park Road
+   address:     Milton, QLD, 4064
+   country:     AU
+   phone:       +61-7-3367-0490
+   fax-no:      +61-7-3367-0482
+   e-mail:      paulg@apnic.net
+   nic-hdl:     PG6-AP
+   remarks:     APNIC Technical Operations Team
+   mnt-by:      MAINT-AP-APNIC-TECH
+   changed:     paulg@apnic.net 19990909
+   source:      APNIC
+
+I<Net::Whois::RIPE::Object> parses the attribute's and values and B<add>'s
+them to itself. The RIPE object can then be used to access the attribute
+values using the attribute names as methods. A call to B<attributes> returns
+an ordered list of all attributes parsed.
+
+All values are stored as lists since some attributes are multiline
+(e.g. address). If there has been a problem with the query then the B<content>
+method may provide output from the server that can be used to diagnose why.
+
+ $whois = Net::Whois::RIPE->new($host);
+ $query = $whois->query('Paul Gampe');
+
+ unless ($query->success) {
+     print "There's been a problem...server response is...\n";
+     print $query->content;
+     exit
+ }
+
+ print "Paul's nic-hdl is ", $query->nic_hdl, "\n";
+
+Attributes that had a dash '-' are converted to underscore '_' for method names.
+
+=head1 CONSTRUCTOR
+
+=over 4
+
+=item B<new(HANDLE)>
+
+Creates a new RIPE object. Attempts to parse lines from I<HANDLE>. Any
+parsing failure causes the constructor to return undef. Error messages are
+available via B<errstr>. I<HANDLE> may be a file handle or a socket.
+
+=back
+
+=head1 METHODS
+
+=over 4
+
+=item B<content()>
+
+Returns the raw output from the whois server. In a list context it
+returns the lines from whois as a list. In a scalar context it returns
+the entire list in a scalar.
+
+In the case where no ATTRIBUTE's are available via the B<attributes> method,
+then the content may hold information from I<whois> as to why.
+
+=item B<attributes()>
+
+Returns the list of ATTRIBUTE's that were added by B<add>.
+The order of the list is the order the ATTRIBUTE's were added in.
+
+If no ATTRIBUTE's were added then an empty list is returned. Try calling
+B<content> to obtain output from the I<whois> server as to why.
+
+Call I<attributes> to find out if the object was successfully parsed.
+I<success> reports errors from the whois server. It is possible that
+I<success> can report true but the object has no attributes.
+
+=item B<warning()>
+
+In a list context it returns an array of warning lines. In a scalar
+context it returns a \n separated string of warning lines.
+
+These are the warnings from the whois server about the object.
+
+=item B<error()>
+
+In a list context it returns an array of error lines. In a scalar
+context it returns a \n separated string of error lines.
+
+These are the errors from the whois server about the object.
+
+=item B<success>
+
+Returns 1 if no errors defined, 0 otherwise
+
+=item B<debug(LEVEL)>
+
+Sets/gets the debug level.
+
+=back
+
+=head1 CAVEATS
+
+=head1 AUTHOR
+
+ Kevin Baker, <shagol@users.sourceforge.net>
+ Paul Gampe, <pgampe@users.sourceforge.net>
+ Bruce Campbell, <bxc@users.sourceforge.net>
+ Luis Motta Campos, E<lt>lmc@cpan.orgE<gt>
+
+=head1 SEE ALSO
+
+ Net::Whois::RIPE
+
+=head1 COPYRIGHT
+
+ Copyright (C) 1999 Paul Gampe and APNIC Pty. Ltd.
+ Copyright (C) 2000 Kevin Baker and APNIC Pty. Ltd.
+ Copyright (C) 2009 Luis Motta Campos
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 1, or (at your option)
+ any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.

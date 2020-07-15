@@ -51,7 +51,7 @@ use 5.008003;
 use strict;
 use warnings;
 
-our $VERSION = '5.0.0beta1';
+our $VERSION = '5.0.0';
 
 use Scalar::Util qw(blessed);
 
@@ -686,10 +686,9 @@ sub WhoisLookup {
             last;
         }
     }
-
-    my $whois = Net::Whois::RIPE->new( hostname => $host, port => $port, recursive => 1 );
+    my $whois = Net::Whois::RIPE->new( $host, Port => $port, Debug => $debug || 0 );
     my $iterator;
-    $iterator = $whois->query( $args{'Query'} )
+    $iterator = $whois->query_iterator( $args{'Query'} )
         if $whois;
     return (undef, $args{'CurrentUser'}->loc("Unable to connect to WHOIS server '[_1]'", $server) )
         unless $iterator;

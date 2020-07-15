@@ -170,6 +170,13 @@ inc/Module/Install/Substitute.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 inc/YAML/Tiny.pm
+lib/Net/Whois/RIPE.pm
+lib/Net/Whois/RIPE.pod
+lib/Net/Whois/RIPE/Iterator.pm
+lib/Net/Whois/RIPE/Iterator.pod
+lib/Net/Whois/RIPE/Object.pm
+lib/Net/Whois/RIPE/Object.pod
+lib/Net/Whois/RIPE/Object/Template.pm
 lib/RT/Action/RTIR.pm
 lib/RT/Action/RTIR_Activate.pm
 lib/RT/Action/RTIR_ChangeChildConstituencies.pm

@@ -1,10 +1,8 @@
-#!/usr/bin/env perl
-### before: #!@PERL@
 # BEGIN BPS TAGGED BLOCK {{{
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -47,54 +45,39 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
+
+package Net::Whois::RIPE::Object::Template;
 use strict;
-use warnings;
+use Carp;
 
-### after: use lib qw(@RT_LIB_PATH@);
-use lib qw(/opt/rt5/local/lib /opt/rt5/lib);
+our $VERSION = '1.30';
 
-use RT;
-RT->LoadConfig;
-RT->Init;
+our @ISA = qw(Net::Whois::RIPE::Object);
 
-my %special_rename = (
-    howreported => 'How Reported',
-    reportertype => 'Reporter Type',
-    whereblocked => 'Where Blocked',
-);
+sub parse {
+    my $self   = shift;
+    my $handle = shift;
 
-my $saved_searches = RT::Attributes->new(RT->SystemUser);
-$saved_searches->Limit( FIELD => 'Name', VALUE => 'SavedSearch' );
-while ( my $s = $saved_searches->Next ) {
-    my $content    = $s->Content;
-    my $old_query  = $content->{Query};
-    my $old_format = $content->{Format};
-    my $special = join '|', keys %special_rename;
-    my $cf_values = join '|', values %special_rename;
-    foreach ( $content->{Query}, $content->{Format} ) {
-        s/(?<=CF\.{)_RTIR_//ig;
-        s/(?<=CustomField\.{)_RTIR_//ig;
-        s/\b($special)\b/$special_rename{lc($1)}/ige;
+    local $/ = "\n";    # record separator
 
-        # Add quotes to handle new CFs with spaces
-        s/\s((CF|CustomField)\.{($cf_values)})\s/ '$1' /g;
+    my $not_a_template = 0;
+    while ( $_ = <$handle> ) {    # walk through the response
+        push @{ $self->{_content} }, $_;    # save the entire response
+        next if $not_a_template;
+
+        if (/^% (No (?:verbose )?template available for object .+$)/) {
+            $not_a_template = 1;
+            $self->__error($1);
+            next;
+        }
+
+        chomp;
+        my ( $attr, $value );
+        next unless ( ( $attr, $value ) = /^([\w\-]+|\*\w\w):\s+(.*)$/ );
+        $self->add( $attr, $value ) if $attr;
     }
 
-    if ( $old_query ne $content->{Query} || $old_format ne $content->{Format} )
-    {
-        my $description = $s->Description;
-        $description = 'Unnamed (id: ' . $s->Id . ')' unless $description;
-
-        my ( $status, $msg ) = $s->SetContent($content);
-        if ($status) {
-            print 'Updated content of saved search ' . $description;
-        }
-        else {
-            print 'Failed to update content of saved search: '
-              . $description . $msg;
-        }
-        print "\n";
-    }
+    return ( scalar $self->content ) !~ /^\s*$/;
 }
-
-print "Done.\n";
+1;
+__END__
