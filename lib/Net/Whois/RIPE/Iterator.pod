@@ -1,0 +1,83 @@
+
+=head1 NAME
+
+Net::Whois::RIPE::Iterator - iterator for RIPE object's.
+
+=head1 SYNOPSIS
+
+ use Net::Whois::RIPE;
+ use Net::Whois::RIPE::Iterator;
+
+ $whois = Net::Whois::RIPE->new($host);
+
+ $iterator = Net::Whois::RIPE::Iterator->new($whois,$query);
+ while ($obj = $iterator->next) {
+     ...
+ }
+
+=head1 DESCRIPTION
+
+Implements an iterator for Net::Whois::RIPE::Objects.
+
+=head1 CONSTRUCTOR
+
+=over 4
+
+=item B<new (WHOIS, QUERY)>
+
+The constructor returns undef on failure. If B<debug> is on then a message
+is carped about the failure.
+
+I<WHOIS> is an object of class I<Net::Whois::RIPE>
+
+I<QUERY> is a query string to be sent to the I<WHOIS> object to
+retrieve the whois objects.
+
+=back
+
+=head1 METHODS
+
+=over 4
+
+=item B<next()>
+
+Returns the next I<Net::Whois::RIPE::Object> from the query.
+
+Returns undef if no more objects.
+
+=item B<debug(LEVEL)>
+
+Sets/gets debugging level on the class or an object.
+
+ 0 - no debugging
+ 1 - debugging on
+
+=back
+
+=head1 AUTHOR
+
+ Kevin Baker, <shagol@users.sourceforge.net>
+
+=head1 SEE ALSO
+
+ Net::Whois::RIPE
+ Net::Whois::RIPE::Object
+
+=head1 COPYRIGHT
+
+ Copyright (C) 2000 Kevin Baker and APNIC Pty. Ltd.
+
+ This program is free software; you can redistribute it
+ and/or modify it under the terms of the GNU General Public
+ License as published by the Free Software Foundation;
+ either version 1, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public
+ License along with this program; if not, write to the
+ Free Software Foundation, Inc.,
+ 675 Mass Ave, Cambridge, MA 02139, USA.

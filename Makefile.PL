@@ -7,7 +7,7 @@ author('Best Practical Solutions <sales@bestpractical.com>');
 all_from('lib/RT/IR.pm');
 
 # update README and docs/UPGRADING
-requires_rt('4.6.0');  # NOTE: we’ll update this to 5.0.0 once an official 5.0.0 is available. fails for alpha tags otherwise.
+requires_rt('5.0.0');
 rt_too_new('5.2.0',"\nThis version of RTIR is only compatible with RT 5.0.x and you are using RT %s\n");
 
 # XXX: This should be reported by M::I::RTx
@@ -25,7 +25,6 @@ if ($^O ne 'VMS') {
 
 # RTIR needs this version of SB because of cud-from-select
 requires('DBIx::SearchBuilder', 1.61);
-requires('Net::Whois::RIPE', 2.006001);
 
 # IP searching
 requires('Regexp::Common');

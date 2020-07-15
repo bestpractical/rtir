@@ -28,13 +28,12 @@ no_index:
 requires:
   DBIx::SearchBuilder: 1.61
   Net::Domain::TLD: 0
-  Net::Whois::RIPE: 2.006001
   Parse::BooleanLogic: 0
   Regexp::Common: 0
   perl: 5.10.1
 resources:
   license: http://opensource.org/licenses/gpl-license.php
-version: 5.0.0beta1
-x_module_install_rtx_version: '0.41'
-x_requires_rt: 4.6.0
+version: 5.0.0
+x_module_install_rtx_version: '0.42'
+x_requires_rt: 5.0.0
 x_rt_too_new: 5.2.0
