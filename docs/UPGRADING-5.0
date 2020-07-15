@@ -1,8 +1,11 @@
 =head1 Upgrading to 5.0
 
-The following describes some of the key components of the upgrade
+The following describes some of the more significant changes
 to RTIR 5.0 from earlier versions. The other UPGRADING documents contain
 details for previous versions.
+
+Also read the general L<UPGRADING> document for the steps to upgrade from
+a previous version of RTIR.
 
 =head2 Notable Changes
 
@@ -17,15 +20,16 @@ to add for each queue. This change made it harder to access the
 default RT menus, so we have reverted to the previous configuration
 with a single RTIR menu item containing relevant links.
 
-To make it easier to access the RTIR menu, we have also moved it
-to the left, directly after the default RT Home menu.
+To make it easier to access the RTIR menu, and to keep it in a
+consistent location, we moved it to the left, directly after
+the default RT Home menu.
 
 =item *
 
 To align with RT's create pages we removed the modal to select queue
 before the create page and now give users the option to select
 queue directly on create. CreateInQueue.html still remains available
-incase users are linking directly to it but now logs a deprecated
+in case users are linking directly to it but now logs a deprecated
 warning when accessed.
 
 CreateInQueue.html will be removed in a future version of RTIR.
@@ -96,6 +100,23 @@ for each individual queue.
 C<%RTIR_CustomFieldsDefaults> now sets default values only for "Resolution"
 because the Resolution values are set based on the status of the
 Incident when closed.
+
+=item *
+
+On Incidents, the linked tickets for Incident Reports, Investigations, and
+Countermeasures are now controlled via the new
+L<LinkedQueuePortlets|https://docs.bestpractical.com/rt/5.0.0/RT_Config.html#LinkedQueuePortlets>
+feature in RT. If you previously modified the format of the link display
+on the Incidents page using C<%RTIRSearchResultFormats> for C<ChildReport>,
+C<ChildInvestigation>, or C<ChildCountermeasure>, you can move that configuration
+to the new C<%LinkedQueuePortletFormats> option.
+
+=item *
+
+Before RTIR 4.0 you could launch an incident and investigation on a single page.
+This feature was removed in RTIR 4.0, but has been restored in RTIR 5.0.0. It
+has also been updated to allow the queue for each section to be selected on
+the create page.
 
 =back
 
