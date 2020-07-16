@@ -66,5 +66,6 @@ $ARGS{ticket_type} = RT::IR::TicketType( Lifecycle => $Lifecycle );
 $Lifecycle
 $Incident => undef
 $Child => undef
+$Requestors => undef
 </%ARGS>
 
