@@ -158,6 +158,8 @@ my %actions;
             RT::IR->HREFTo(qq{Tools/Lookup.html?$args{'lookup_params'}type=email&q=$escaped_email}). qq{">}
             .loc('lookup email') .q{</a>};
         if ( $args{'incident'} ) {
+	    my $uri_escaped_email = $escaped_email;
+	    RT::Interface::Web::EscapeURI(\$uri_escaped_email);
             if ( $r->uri =~ /Lookup.html$/ ) {
                 $result .= qq{<input type="checkbox" name="Requestorbox-$escaped_email" unchecked />};
             }
@@ -165,7 +167,7 @@ my %actions;
                 RT::IR->HREFTo( "Create.html"
                 . qq{?Incident=$args{'incident'}}
                 . qq{&Lifecycle=}.RT::IR->lifecycle_investigation
-                . "&Requestors=$escaped_email")
+                . "&Requestors=$uri_escaped_email")
                 . qq{">}
                 . loc('Investigate to') .qq{</a>};
         }
