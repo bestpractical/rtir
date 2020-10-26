@@ -180,7 +180,7 @@ $tools->child( reporting => title => loc('Reporting'), path => RT::IR->HREFTo('R
 my $scripted_actions = $tools->child( scripted_actions => title => loc('Scripted Action') );
 $scripted_actions->child( email => title => loc('By Email address'), path => RT::IR->HREFTo('Tools/ScriptedAction.html', IncludeWebPath => 0) );
 $scripted_actions->child( ip => title => loc('By IP address'), path => RT::IR->HREFTo('Tools/ScriptedAction.html?loop=IP', IncludeWebPath => 0) );
-my $external_feeds = $tools->child( 'external_feeds', title => loc('External Feeds'), path => RT::IR->HREFTo('Tools/ExternalFeeds.html') );
+my $external_feeds = $tools->child( 'external_feeds', title => loc('External Feeds'), path => RT::IR->HREFTo('Tools/ExternalFeeds.html', IncludeWebPath => 0) );
 
 my $request_path = $HTML::Mason::Commands::r->path_info;
 $request_path =~ s!/{2,}!/!g;
