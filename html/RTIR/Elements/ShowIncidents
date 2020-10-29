@@ -65,7 +65,7 @@
 <span class="fas fa-plus" data-toggle="tooltip" data-placement="top" data-original-title="<% loc( 'New Incident' ) %>"></span></a>
 % } elsif ( $action ne 'No' ) {
 <a class="button btn-sm btn btn-primary" href="<% RT::IR->HREFTo('Display.html?Action='. $action.'&id='. $id) %>">
-    <span class="fas fa-plus" data-toggle="tooltip" data-placement="top" data-original-title="<% loc( $action ) %>"></span>
+  <&|/l&>take</&>
 </a>
 % }
 </div>
