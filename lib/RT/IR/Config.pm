@@ -113,6 +113,33 @@ sub Init {
             }
         };
 
+    my %LinkedQueuePortlets = %{RT->Config->Get('LinkedQueuePortlets')};
+    my $RTIR_DisableCountermeasures = RT->Config->Get('RTIR_DisableCountermeasures');
+
+    if ( $RTIR_DisableCountermeasures && %LinkedQueuePortlets ) {
+        my %linked_queue_portlets;
+
+        foreach my $top_level_queue ( keys %LinkedQueuePortlets ) {
+            foreach my $queue_config ( $LinkedQueuePortlets{$top_level_queue} ) {
+                my $i = 0;
+                my @linked_queues;
+                foreach my $linked_queue ( @{$queue_config} ) {
+                    my $key = (keys %{$linked_queue})[0];
+                    my $out = (@{$LinkedQueuePortlets{$top_level_queue}})[$i];
+
+                    if ( $key eq 'Countermeasures' ) {
+                        last;
+                    }
+                    else {
+                        push @linked_queues, $out;
+                    }
+                    $i++;
+                }
+                $LinkedQueuePortlets{$top_level_queue} = \@linked_queues;
+            }
+        }
+    }
+
     my @homepage_components = @{RT->Config->Get('HomepageComponents')};
 
     foreach my $component (RT->Config->Get('RTIR_HomepageComponents')){
