@@ -45,9 +45,11 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% if ($ShowLabel) {
 <br />
 
 <&|/l&>Add new Correspondents</&>:<br />
+% }
 
 % if ( $Users ) {
   <div class="form-row">
@@ -148,6 +150,7 @@ $Groups->LimitToUserDefinedGroups;
 </%INIT>
 
 <%ARGS>
+$ShowLabel => 1
 $UserField => 'Name'
 $UserOp => '='
 $UserString => undef
