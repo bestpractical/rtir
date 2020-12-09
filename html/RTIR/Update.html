@@ -52,6 +52,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="Update.html" name="TicketUpdate" method="post" enctype="multipart/form-data">
+<input type="hidden" name="NeedTxnRecipientsHiddenInput" value="1">
 <input type="hidden" name="id" value="<% $id %>" />
 <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
 <input type="hidden" name="QuoteTransaction" value="<% $ARGS{'QuoteTransaction'} || '' %>" />
@@ -235,9 +236,8 @@ if ( $SubmitTicket ) {
 }
 
 if ( !$checks_failure && $SubmitTicket ) {
-    my %checked = map {$_ => 1} grep {defined} @TxnSendMailTo;
-    my @squelchlist = grep {not $checked{$_}} split /,/, $TxnRecipients;
-    $ARGS{'SquelchMailTo'} = \@squelchlist if @squelchlist;
+    my %squelched = ProcessTransactionSquelching( \%ARGS );
+    $ARGS{'SquelchMailTo'} = [ keys %squelched ] if keys %squelched;
 }
 
 if ( !$checks_failure && $SubmitTicket ) {
