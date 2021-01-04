@@ -56,6 +56,7 @@ return unless $lifecycle;
 return if $lifecycle eq RT::IR->lifecycle_countermeasure && RT->Config->Get('RTIR_DisableCountermeasures');
 
 my $friendly_lifecycle = RT::IR::FriendlyLifecycle($lifecycle);
+return unless $friendly_lifecycle;
 
 @$EmptyMessages
     = ( loc( '(No active [_1])', loc($friendly_lifecycle) ), loc( '(No inactive [_1])', loc($friendly_lifecycle) ) );
