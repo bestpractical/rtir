@@ -48,8 +48,6 @@
   <div class="form-row">
     <div class="label col-3">
       <&|/l&>Incident</&>:
-      <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Id of an Incident to link a new ticket to</&>.
-      <% $config->{'Required'} ? loc('Required') : loc('Optional') %>."></span>
     </div>
     <div class="value col-9">
       <div class="form-row">
@@ -67,7 +65,12 @@
 % if ( $hide ) {
     <input type="hidden" name="<% $Name %>" value="<% $potential[0] %>" />
 % }
-    <div class="col-auto">
+    <div class="col-auto label">
+      <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Id of an Incident to link a new ticket to</&>.
+        <% $config->{'Required'} ? loc('Required') : loc('Optional') %>.">
+      </span>
+    </div>
+    <div class="col-auto value">
       <input class="form-control" type="text" name="<% $Name %>" value="" data-autocomplete="Tickets" data-autocomplete-limit="Lifecycle = 'incidents'" />
     </div>
 % if ( $config->{'Multiple'} || @potential ) {
