@@ -641,6 +641,27 @@ Set(%CustomFieldGroupings,
     ],
 );
 
+=item C<%InlineEditPanelBehavior>
+
+This configuration option is a core RT feature which accepts a
+custom key for RTIR. The options are the same as those documented
+in RT, but the key is C<RTIR::Ticket> as in this example:
+
+    Set(%InlineEditPanelBehavior,
+        'RTIR::Ticket' => {
+            '_default'          => 'click',
+
+            'Networking'        => 'link',
+            'Details'           => 'click',
+            'Dates'             => 'always',
+            'People'            => 'link',
+        },
+    );
+
+If no RTIR settings are defined, the settings for C<RT::Ticket>
+are used. See C<etc/RT_Config.pm> for more information about
+this configuration option.
+
 =item C<$RTIR_StrictDomainTLD>
 
 If true then RTIR will check if TLD is officially valid on domain
