@@ -118,6 +118,12 @@ This feature was removed in RTIR 4.0, but has been restored in RTIR 5.0.0. It
 has also been updated to allow the queue for each section to be selected on
 the create page.
 
+=item *
+
+RTIR display pages now support inline edit, of which the behavior is
+defined in the "RTIR::Ticket" item in C<%InlineEditPanelBehavior> and
+falls back to the "RT::Ticket" item.
+
 =back
 
 =cut
