@@ -49,8 +49,6 @@
 <& /Ticket/Elements/UpdateCc, %ARGS, TicketObj => $Ticket &>
 % }
 
-<& /Ticket/Elements/AddAttachments, %ARGS &>
-
 % if ( $Ticket ) {
 <div class="form-row">
   <div class="col-12">
@@ -82,6 +80,8 @@
 % }
   </div>
 </div>
+
+<& /Ticket/Elements/AddAttachments, %ARGS &>
 
 <%INIT>
 my $type = $ARGS{'UpdateType'}             ? $ARGS{'UpdateType'} :
