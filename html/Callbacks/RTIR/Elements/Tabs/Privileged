@@ -425,10 +425,6 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
     my %args = (
         $search_arguments->(),
         id    => $id,
-        Query => RT::IR->Query(
-            Lifecycle => $ARGS{'Lifecycle'},
-            Exclude   => $ARGS{'id'},
-        ),
         ExtraQueryParams => [ 'RTIR', 'id' ],
         RTIR             => 1,
     );
