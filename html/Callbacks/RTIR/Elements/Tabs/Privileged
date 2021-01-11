@@ -116,6 +116,18 @@ if ( $m->request_comp->path =~ m{^/Search/} ) {
         if ( $args{Query} ) {
             PageMenu()->child( 'more' )->{sort_order} = 99;
         }
+
+        if ( my $results = PageMenu()->child('results') ) {
+            if ( $results->path =~ m{^/RTIR/Incident/Reply/} ) {
+                $results->title( loc('Back to Incident Reply') );
+            }
+            elsif ( $results->path =~ m{^/RTIR/Link/} ) {
+                $results->title( loc('Back to Link') );
+            }
+            elsif ( $results->path =~ m{^/RTIR/Merge/} ) {
+                $results->title( loc('Back to Merge') );
+            }
+        }
     }
 }
 
