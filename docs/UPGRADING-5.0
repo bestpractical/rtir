@@ -120,4 +120,18 @@ the create page.
 
 =back
 
+=head1 UPGRADING FROM RTIR 5.0.0 AND EARLIER
+
+=over 4
+
+=item *
+
+RTIR display pages now support inline edit, similar to the core RT feature.
+The configuration option C<%InlineEditPanelBehavior>, as documented in
+RT, allows you to set the edit behavior. To set different behavior for
+RTIR, you can use the key C<RTIR::Ticket> with the same format as that
+documented for C<RT::Ticket>.
+
+=back
+
 =cut

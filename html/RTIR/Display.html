@@ -59,66 +59,171 @@
   <div class="boxcontainer col-md-6">
 % $m->callback( %ARGS, Ticket => $Ticket, CallbackName => 'LeftColumnStart' );
 
+<%PERL>
+    my $modify_url = RT::IR->HREFTo("Edit.html?id=".$Ticket->Id);
+    my $modify_inline
+        = '<a class="inline-edit-toggle edit" href="%s">'
+        . qq{<span class="fas fa-pencil-alt icon-bordered fa-2x" alt="$edit_label" data-toggle="tooltip" data-placement="top" data-original-title="$edit_label"></span>}
+        . '</a>'
+        . '<a class="inline-edit-toggle cancel hidden" href="#">'
+        . qq{<span class="fas fa-times icon-bordered fa-2x" alt="$cancel_label" data-toggle="tooltip" data-placement="top" data-original-title="$cancel_label"></span>}
+        . '</a>';
+    my $modify_basics = sprintf( $modify_inline, $m->interp->apply_escapes( $modify_url, 'h' ) );
+    my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{Basics} || $inline_edit_behavior{_default} || 'link') : 'hide';
+</%PERL>
+
 <&| /Widgets/TitleBox,
-    title => loc("The Basics"),
+    title       => loc("The Basics"),
     title_href  => RT::IR->HREFTo("Edit.html?id=".$Ticket->Id),
-    class => 'ticket-info-basics',
+    class       => (join " ", 'ticket-info-basics', ($modify_behavior eq 'always' ? 'editing' : ())),
+    data        => { 'inline-edit-behavior' => $modify_behavior },
+    (($can_modify || $can_modify_cf) && $modify_behavior =~ /^(link|click)$/ ? (titleright_raw => $modify_basics) : ()),
 &>
-    <div>
+% unless ($modify_behavior eq 'always') {
+  <div class="inline-edit-display">
 % if (my $constituency = RT::IR->ConstituencyFor($Ticket)) {
-      <div class="form-row">
-        <div class="label col-3">
-          <% loc("Constituency") %>:
-        </div>
-        <div class="value col-9">
-          <span class="current-value"><% $constituency %></span>
-        </div>
+    <div class="form-row">
+      <div class="label col-3">
+        <% loc("Constituency") %>:
       </div>
+      <div class="value col-9">
+        <span class="current-value"><% $constituency %></span>
+      </div>
+    </div>
 % }
-      <div class="form-row">
-        <div class="label col-3">
-          <% loc("Status") %>:
-        </div>
-        <div class="value col-9">
-          <span class="current-value"><% $Ticket->Status %></span>
-        </div>
+    <div class="form-row">
+      <div class="label col-3">
+        <% loc("Status") %>:
       </div>
+      <div class="value col-9">
+        <span class="current-value"><% $Ticket->Status %></span>
+      </div>
+    </div>
 % if ( !$Ticket->QueueObj->SLADisabled ) {
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>SLA</&>:
-        </div>
-        <div class="value col-9">
-          <span class="current-value"><% loc($Ticket->SLA) %></span>
-        </div>
+    <div class="form-row">
+      <div class="label col-3">
+        <&|/l&>SLA</&>:
       </div>
+      <div class="value col-9">
+        <span class="current-value"><% loc($Ticket->SLA) %></span>
+      </div>
+    </div>
 % }
-      <div class="form-row">
-        <div class="label col-3">
-          <% loc("Incident") %>:
-        </div>
-        <div class="value col-9">
-          <& /RTIR/Elements/ShowIncidents, Ticket => $Ticket &>
-        </div>
+    <div class="form-row">
+      <div class="label col-3">
+        <% loc("Incident") %>:
       </div>
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Time Worked</&>:
-        </div>
-        <div class="value col-9">
-          <span class="current-value"><%loc('[_1] min', $TimeWorked)%></span>
-        </div>
+      <div class="value col-9">
+        <& /RTIR/Elements/ShowIncidents, Ticket => $Ticket, InlineEdit => 0 &>
       </div>
-
-  <& /Elements/ShowCustomFields, Grouping => 'Basics', Object => $Ticket, Table => 0 &>
-
+    </div>
+    <div class="form-row">
+      <div class="label col-3">
+        <&|/l&>Time Worked</&>:
+      </div>
+      <div class="value col-9">
+        <span class="current-value"><%loc('[_1] min', $TimeWorked)%></span>
+      </div>
     </div>
 
+    <& /Elements/ShowCustomFields, Grouping => 'Basics', Object => $Ticket, Table => 0 &>
+  </div>
+% }
+% if ($modify_behavior ne 'hide') {
+  <form class="inline-edit" action="<% RT::IR->HREFTo("Display.html") %>" method="post" enctype="multipart/form-data">
+    <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
+
+    <div class="form-row">
+      <div class="label col-3">
+        <&|/l&>Subject</&>:
+      </div>
+      <div class="value col-9">
+        <input class="form-control" type="text" name="Subject" value="<% $ARGS{'Subject'} || $Ticket->Subject %>" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="label col-3">
+        <% loc("Status") %>:
+      </div>
+      <div class="value col-9">
+% unless ( RT::IR->IsCountermeasureQueue($Ticket->QueueObj) ) {
+        <span class="current-value form-control"><% loc($Ticket->Status) %></span>
+% }
+% else {
+        <& /Ticket/Elements/SelectStatus,
+            Name         => 'Status',
+            Object       => $Ticket->QueueObj,
+            DefaultValue => 0,
+            Default      => $ARGS{'Status'} || $Ticket->Status,
+        &>
+% }
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="label col-3">
+        <&|/l&>Queue</&>:
+      </div>
+      <div class="value col-9">
+        <& /RTIR/Elements/SelectRTIRQueue,
+            Name                => 'Queue',
+            Default             => $ARGS{'Queue'} || $Ticket->Queue,
+            TicketObj           => $Ticket, Lifecycle => $Ticket->QueueObj->Lifecycle,
+            LimitToConstituency => ($m->{'RTIR_ConstituencyFilter'} || RT::IR->StrictConstituencyLinking) ? 1 : 0,
+            Constituency        => RT::IR->ConstituencyFor($Ticket)
+        &>
+      </div>
+    </div>
+
+% if ( !$Ticket->QueueObj->SLADisabled ) {
+    <div class="form-row">
+      <div class="label col-3">
+        <&|/l&>SLA</&>:
+      </div>
+      <div class="value col-9">
+        <& /Elements/SelectSLA, Default => $Ticket->SLA, TicketObj => $Ticket &>
+      </div>
+    </div>
+% }
+    <div class="form-row">
+      <div class="label col-3">
+        <% loc("Incident") %>:
+      </div>
+      <div class="value col-9">
+        <& /RTIR/Elements/ShowIncidents, Ticket => $Ticket, InlineEdit => 0, InForm => 1 &>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="label col-3">
+        <&|/l&>Time Worked</&>:
+      </div>
+      <div class="value col-9">
+        <& /Elements/EditTimeValue,
+            Name    => 'TimeWorked',
+            Default => $ARGS{'TimeWorked'} || $Ticket->TimeWorked || '',
+            Ticket  => $Ticket
+        &>
+      </div>
+    </div>
+
+    <& /Elements/EditCustomFields, Grouping => 'Basics', Object => $Ticket, Table => 0 &>
+
+    <div class="form-row">
+      <div class="col-12 text-right">
+        <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
+      </div>
+    </div>
+
+  </form>
+% }
 </&>
 
 <& /Elements/ShowCustomFieldCustomGroupings,
     Object       => $Ticket,
-    title_href => RT::IR->HREFTo("Edit.html"),
+    title_href   => RT::IR->HREFTo("Edit.html"),
+    InlineEdit   => ($can_modify || $can_modify_cf) ? $InlineEdit : 0,
+    ActionURL    => RT::IR->HREFTo("Display.html"),
 &>
 
 <& /RTIR/Elements/ShowArticles, Ticket => $Ticket &>
@@ -130,18 +235,68 @@
   <div class="boxcontainer col-md-6">
 % $m->callback( %ARGS, Ticket => $Ticket, CallbackName => 'RightColumnStart' );
 
+<%PERL>
+  my $people_url      = RT::IR->HREFTo("Edit.html?id=".$Ticket->Id);
+  my $people_inline   = sprintf( $modify_inline, $m->interp->apply_escapes( $people_url, 'h' ) );
+  my $people_behavior = $InlineEdit ? ($inline_edit_behavior{People} || $inline_edit_behavior{_default} || 'link') : 'hide';
+</%PERL>
+
     <&| /Widgets/TitleBox,
-        title => loc('People'), 
-        title_href  => RT::IR->HREFTo("Edit.html?id=". $Ticket->Id),
-        class => 'ticket-info-people',
+        title      => loc('People'),
+        title_href => RT::IR->HREFTo("Edit.html?id=".$Ticket->Id),
+        class      => (join " ", 'ticket-info-people', ($people_behavior eq 'always' ? 'editing' : ())),
+        data       => { 'inline-edit-behavior' => $people_behavior },
+        (($can_modify || $can_modify_people) && $people_behavior =~ /^(link|click)$/ ? (titleright_raw => $people_inline) : ()),
     &>
+
+% unless ($people_behavior eq 'always') {
+  <div class="inline-edit-display">
     <& /RTIR/Elements/ShowPeople, Ticket => $Ticket &>
+  </div>
+% }
+% if ($people_behavior ne 'hide') {
+  <form class="inline-edit" action="<% RT::IR->HREFTo("Display.html") %>" method="post" enctype="multipart/form-data">
+    <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
+    <& /RTIR/Elements/EditPeopleInline, Ticket => $Ticket &>
+    <div class="form-row">
+      <div class="col-12 text-right">
+        <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
+      </div>
+    </div>
+  </form>
+% }
     </&>
-    <&| /Widgets/TitleBox, title => loc("Dates"),
-    title_href  => RT::IR->HREFTo("Edit.html?id=". $Ticket->Id),
-        class => 'ticket-info-dates',
+
+<%PERL>
+    my $dates_url      = RT::IR->HREFTo("Edit.html?id=".$Ticket->Id);
+    my $dates_inline   = sprintf( $modify_inline, $m->interp->apply_escapes( $dates_url, 'h' ) );
+    my $dates_behavior = $InlineEdit ? ($inline_edit_behavior{Dates} || $inline_edit_behavior{_default} || 'link') : 'hide';
+</%PERL>
+
+    <&| /Widgets/TitleBox,
+        title => loc("Dates"),
+        title_href => RT::IR->HREFTo("Edit.html?id=". $Ticket->Id),
+        class => (join " ", 'ticket-info-dates', ($dates_behavior eq 'always' ? 'editing' : ())),
+        data  => { 'inline-edit-behavior' => $dates_behavior },
+        ($can_modify ? (title_href => $dates_url) : ()),
+        ($can_modify && $dates_behavior =~ /^(link|click)$/ ? (titleright_raw => $dates_inline) : ()),
     &>
-    <& /RTIR/Elements/ShowDates, Ticket => $Ticket &>
+% unless ($dates_behavior eq 'always') {
+    <div class="inline-edit-display">
+      <& /RTIR/Elements/ShowDates, Ticket => $Ticket &>
+    </div>
+% }
+% if ($dates_behavior ne 'hide') {
+    <form class="inline-edit" action="<% RT::IR->HREFTo("Display.html") %>" method="post" enctype="multipart/form-data">
+      <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
+      <& /Ticket/Elements/EditDates, TicketObj => $Ticket &>
+      <div class="form-row">
+        <div class="col-12 text-right">
+          <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
+        </div>
+      </div>
+    </form>
+% }
     </&>
 % $m->callback( %ARGS, Ticket => $Ticket, CallbackName => 'BeforeRequestor' );
     <br />  
@@ -194,6 +349,18 @@ unless ( $id eq 'new' ) {
     $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
     $QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
 }
+
+my $edit_label   = $m->interp->apply_escapes( loc("Edit"), 'h' );
+my $cancel_label = $m->interp->apply_escapes( loc("Cancel"), 'h' );
+
+my %inline_edit_behavior;
+if ( my $config = RT->Config->Get('InlineEditPanelBehavior') ) {
+    %inline_edit_behavior = %{ $config->{'RTIR::Ticket'} || $config->{'RT::Ticket'} || {} };
+}
+
+my $can_modify         = $Ticket->CurrentUserHasRight( 'ModifyTicket' );
+my $can_modify_cf      = $Ticket->CurrentUserHasRight( 'ModifyCustomField' );
+my $can_modify_people  = $Ticket->CurrentUserHasRight( 'Watch' ) || $Ticket->CurrentUserHasRight( 'WatchAsAdminCc' );
 
 my $Type = RT::IR::TicketType( Lifecycle => $QueueObj->Lifecycle );
 # If it's not an RTIR ticket type, just show the regular 
@@ -250,6 +417,8 @@ if ( $id eq 'new' ) {
     push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS, Actions => \@results );
 
     push @results, ProcessTicketBasics(  TicketObj => $Ticket, ARGSRef => \%ARGS );
+    push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $Ticket );
+    push @results, ProcessTicketWatchers( ARGSRef => \%ARGS, TicketObj => $Ticket );
 
     my $strict_acl = RT->Config->Set( StrictLinkACL => 0 );
     push @results, ProcessTicketLinks(   TicketObj => $Ticket, ARGSRef => \%ARGS );
@@ -320,4 +489,5 @@ $id => 0
 $Queue => undef
 @SelectedTickets => ()
 $ForceShowHistory => 0
+$InlineEdit       => RT->Config->Get( 'InlineEdit', $session{CurrentUser} )
 </%ARGS>
