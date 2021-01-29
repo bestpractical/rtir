@@ -93,6 +93,7 @@ html/RTIR/Elements/CreateTicketInQueue
 html/RTIR/Elements/DueIncidents
 html/RTIR/Elements/EditCustomFields
 html/RTIR/Elements/EditPeople
+html/RTIR/Elements/EditPeopleInline
 html/RTIR/Elements/EditRTIRField
 html/RTIR/Elements/Header
 html/RTIR/Elements/MergeWith

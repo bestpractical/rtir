@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -116,6 +116,18 @@ if ( $m->request_comp->path =~ m{^/Search/} ) {
         if ( $args{Query} ) {
             PageMenu()->child( 'more' )->{sort_order} = 99;
         }
+
+        if ( my $results = PageMenu()->child('results') ) {
+            if ( $results->path =~ m{^/RTIR/Incident/Reply/} ) {
+                $results->title( loc('Back to Incident Reply') );
+            }
+            elsif ( $results->path =~ m{^/RTIR/Link/} ) {
+                $results->title( loc('Back to Link') );
+            }
+            elsif ( $results->path =~ m{^/RTIR/Merge/} ) {
+                $results->title( loc('Back to Merge') );
+            }
+        }
     }
 }
 
@@ -180,7 +192,7 @@ $tools->child( reporting => title => loc('Reporting'), path => RT::IR->HREFTo('R
 my $scripted_actions = $tools->child( scripted_actions => title => loc('Scripted Action') );
 $scripted_actions->child( email => title => loc('By Email address'), path => RT::IR->HREFTo('Tools/ScriptedAction.html', IncludeWebPath => 0) );
 $scripted_actions->child( ip => title => loc('By IP address'), path => RT::IR->HREFTo('Tools/ScriptedAction.html?loop=IP', IncludeWebPath => 0) );
-my $external_feeds = $tools->child( 'external_feeds', title => loc('External Feeds'), path => RT::IR->HREFTo('Tools/ExternalFeeds.html') );
+my $external_feeds = $tools->child( 'external_feeds', title => loc('External Feeds'), path => RT::IR->HREFTo('Tools/ExternalFeeds.html', IncludeWebPath => 0) );
 
 my $request_path = $HTML::Mason::Commands::r->path_info;
 $request_path =~ s!/{2,}!/!g;
@@ -425,10 +437,6 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
     my %args = (
         $search_arguments->(),
         id    => $id,
-        Query => RT::IR->Query(
-            Lifecycle => $ARGS{'Lifecycle'},
-            Exclude   => $ARGS{'id'},
-        ),
         ExtraQueryParams => [ 'RTIR', 'id' ],
         RTIR             => 1,
     );
@@ -587,7 +595,7 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
 
 if ( $session{'CurrentUser'}->HasRight(Right => 'ModifySelf', Object => $RT::System) ) {
     if ( $request_path =~ m{(?:$re_rtir_path)(?:index\.html|)$} ) {
-        PageMenu()->child( edit => raw_html => q[<a id="page-edit" class="menu-item" href="] . RT::IR->HREFTo("Prefs/Home.html", IncludeWebPath => 0) . qq["><span class="fas fa-cog" alt="].loc('Edit').q[" data-toggle="tooltip" data-placement="top" data-original-title="].loc('Edit').q["></span></a>]);
+        PageMenu()->child( edit => raw_html => q[<a id="page-edit" class="menu-item" href="] . RT::IR->HREFTo("Prefs/Home.html") . qq["><span class="fas fa-cog" alt="].loc('Edit').q[" data-toggle="tooltip" data-placement="top" data-original-title="].loc('Edit').q["></span></a>]);
     }
     Menu->child('preferences')->child('settings')->child(
         rtir_home_page => title => loc('RTIR at a glance'),

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<span class="incidents">
+<span class="incidents <% $InForm ? 'current-value form-control' : '' %>">
 <& /RTIR/Search/Elements/ShowResults,
     Query         => $query,
     Rows          => 0,
@@ -65,7 +65,7 @@
 <span class="fas fa-plus" data-toggle="tooltip" data-placement="top" data-original-title="<% loc( 'New Incident' ) %>"></span></a>
 % } elsif ( $action ne 'No' ) {
 <a class="button btn-sm btn btn-primary" href="<% RT::IR->HREFTo('Display.html?Action='. $action.'&id='. $id) %>">
-    <span class="fas fa-plus" data-toggle="tooltip" data-placement="top" data-original-title="<% loc( $action ) %>"></span>
+  <% loc($action) %>
 </a>
 % }
 </div>
@@ -111,4 +111,5 @@ if ( $show_unlink ) {
 <%ARGS>
 $Ticket => undef
 $InlineEdit => RT->Config->Get('InlineEdit', $session{CurrentUser})
+$InForm     => undef
 </%ARGS>

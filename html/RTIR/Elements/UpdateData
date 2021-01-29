@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -49,8 +49,6 @@
 <& /Ticket/Elements/UpdateCc, %ARGS, TicketObj => $Ticket &>
 % }
 
-<& /Ticket/Elements/AddAttachments, %ARGS &>
-
 % if ( $Ticket ) {
 <div class="form-row">
   <div class="col-12">
@@ -82,6 +80,8 @@
 % }
   </div>
 </div>
+
+<& /Ticket/Elements/AddAttachments, %ARGS &>
 
 <%INIT>
 my $type = $ARGS{'UpdateType'}             ? $ARGS{'UpdateType'} :

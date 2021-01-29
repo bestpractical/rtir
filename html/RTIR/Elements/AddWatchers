@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,9 +45,11 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% if ($ShowLabel) {
 <br />
 
 <&|/l&>Add new Correspondents</&>:<br />
+% }
 
 % if ( $Users ) {
   <div class="form-row">
@@ -148,6 +150,7 @@ $Groups->LimitToUserDefinedGroups;
 </%INIT>
 
 <%ARGS>
+$ShowLabel => 1
 $UserField => 'Name'
 $UserOp => '='
 $UserString => undef

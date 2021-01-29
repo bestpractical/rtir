@@ -45,44 +45,80 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/EditCustomFields,
-  Object => $TicketObj,
-  QueueObj => $QueueObj,
-  ($TicketObj->Id ? () : (CustomFields => $QueueObj->TicketCustomFields)), # on ticket creation, use Queue CFs
-  %ARGS,
-  %$CFDefaults,
-  ($AllGroupings ? () : (Grouping => 'Basics')), # Groupings comes in as an ARGS on Edit.html
-  InTable => 1,
-&>
+<div class="form-row">
+  <div class="col-12">
+    <i><&|/l&>Current Correspondents</&>:</i>
+  </div>
+</div>
+<div class="form-row">
+  <div class="label col-3">
+    <&|/l&>Owner</&>:
+  </div>
+  <div class="value col-9">
+    <& /Elements/SelectOwner,
+        Name      => 'Owner',
+        Default   => $ARGS{'Owner'} || $Ticket->Owner,
+        TicketObj => $Ticket,
+        QueueObj  => $Ticket->QueueObj,
+    &>
+  </div>
+</div>
+% if ($Ticket->Requestors->MembersObj->Count) {
+<div class="form-row">
+  <div class="label col-3">
+    <&|/l&>Correspondents</&>:
+  </div>
+  <div class="value col-9">
+    <& /Ticket/Elements/EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Requestors &>
+  </div>
+</div>
+% }
+% if ($Ticket->Cc->MembersObj->Count) {
+<div class="form-row">
+  <div class="label col-3">
+    <&|/l&>Cc</&>:
+  </div>
+  <div class="value col-9">
+     <& /Ticket/Elements/EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Cc &>
+  </div>
+</div>
+% }
+% if ($Ticket->AdminCc->MembersObj->Count) {
+<div class="form-row">
+  <div class="label col-3">
+    <&|/l&>Admin Cc</&>:
+  </div>
+  <div class="value col-9">
+    <& /Ticket/Elements/EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->AdminCc &>
+  </div>
+</div>
+% }
+% my $multi_roles = $Ticket->QueueObj->CustomRoles;
+% $multi_roles->LimitToMultipleValue;
+% while (my $role = $multi_roles->Next) {
+% my $group = $Ticket->RoleGroup($role->GroupType);
+% if ($group->Id && $group->MembersObj->Count) {
+    <div class="form-row">
+      <div class="label col-3">
+        <% $role->Name %>:
+      </div>
+      <div class="value col-9">
+        <& /Ticket/Elements/EditWatchers, Watchers => $Ticket->RoleGroup($role->GroupType), TicketObj => $Ticket &>
+      </div>
+    </div>
+% }
+% }
 
-<%INIT>
-unless ( $TicketObj && $TicketObj->Id ) {
-    # no ticket, we need to find defaults of cfs
-    my $CustomFields = $QueueObj->TicketCustomFields();
-    while ( my $CustomField = $CustomFields->Next ) {
-        my $name = $CustomField->Name;
+<div class="form-row">
+  <div class="col-12">
+    <i><&|/l&>Add new Correspondents</&>:</i>
+  </div>
+</div>
 
-        if ( $DefaultsFrom ) {
-            my ($link_cf) = RT::IR->CustomFields( Field => $name, Ticket => $DefaultsFrom );
-            if ( $link_cf ) {
-# XXX: if CF can have only one value then we should use only first value
-                $CFDefaults->{"CustomField-".$CustomField->Id} = join "\n",
-                    grep defined && length, map $_->Content,
-                    @{ $DefaultsFrom->CustomFieldValues( $link_cf->id )->ItemsArrayRef };
-                next;
-            }
-        }
+<& AddWatchers, Ticket => $Ticket, ShowLabel => 0 &>
 
-        if ( $ARGS{"$name-Value"} ) {
-            $CFDefaults->{"CustomField-".$CustomField->Id} = $ARGS{"$name-Value"};
-        }
-    }
-}
-</%INIT>
+<& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'People', InTable => 1 &>
+
 <%ARGS>
-$TicketObj => undef
-$QueueObj => undef
-$DefaultsFrom => undef
-$AllGroupings => 0
-$CFDefaults => {}
+$Ticket => undef
 </%ARGS>

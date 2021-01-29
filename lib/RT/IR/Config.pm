@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -123,6 +123,35 @@ sub Init {
     }
 
     RT->Config->Set(HomepageComponents => \@homepage_components);
+
+    if ( RT::Config->Get('RTIR_DisableCountermeasures') ) {
+        my $orig_check = $RT::Config::META{'LinkedQueuePortlets'}{'PostLoadCheck'};
+
+        $RT::Config::META{'LinkedQueuePortlets'}{'PostLoadCheck'} = sub {
+            $orig_check->(@_) if $orig_check;
+            my $LinkedQueuePortlets = RT->Config->Get('LinkedQueuePortlets') || {};
+
+            my $queue_obj = RT::Queue->new( RT->SystemUser );
+            foreach my $queue ( keys %{$LinkedQueuePortlets} ) {
+                my $linked_queues = $LinkedQueuePortlets->{$queue};
+
+                my @queues;
+                foreach my $linked_queue ( @{$linked_queues} ) {
+                    my ($queue_name) = keys %{$linked_queue};
+
+                    my ( $ret, $msg ) = $queue_obj->Load($queue_name);
+                    unless ($ret) {
+                        RT::Logger->error("Could not load queue $queue_name from \%LinkedQueuePortlets hash: $msg");
+                        next;
+                    }
+
+                    next if $queue_obj->Lifecycle eq RT::IR->lifecycle_countermeasure;
+                    push @queues, $linked_queue;
+                }
+                $LinkedQueuePortlets->{$queue} = \@queues;
+            }
+        };
+    }
 
     return;
 }

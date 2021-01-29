@@ -33,7 +33,7 @@ requires:
   perl: 5.10.1
 resources:
   license: http://opensource.org/licenses/gpl-license.php
-version: 5.0.0
+version: 5.0.1
 x_module_install_rtx_version: '0.42'
 x_requires_rt: 5.0.0
 x_rt_too_new: 5.2.0
