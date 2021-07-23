@@ -150,4 +150,6 @@ sub _scrub_html {
     return $scrubbed_html;
 }
 
+RT::IR->ImportOverlays;
+
 1;
