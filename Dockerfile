@@ -20,8 +20,6 @@ RUN cd /usr/local/src \
   && /usr/bin/perl -I/opt/rt5/local/lib -I/opt/rt5/lib sbin/rt-setup-database --action init --dba-password=password \
   && rm -rf /usr/local/src/*
 
-RUN cpanm Net::Whois::RIPE
-RUN cpanm Parse::BooleanLogic
-RUN cpanm Net::Domain::TLD
+RUN cpanm Net::Domain::TLD Net::Whois::RIPE Parse::BooleanLogic
 
 CMD tail -f /dev/null
