@@ -4,6 +4,8 @@ LABEL maintainer="Best Practical Solutions <contact@bestpractical.com>"
 
 # Valid values are RT branches like 5.0-trunk or version tags like rt-4.4.4
 ARG RT_VERSION=5.0-trunk
+ARG RT_DB_NAME=rt5
+ARG RT_DB_TYPE=mysql
 ARG RT_DBA_USER=root
 ARG RT_DBA_PASSWORD=password
 ARG RT_TEST_DB_HOST=172.17.0.2
@@ -17,6 +19,8 @@ RUN cd /usr/local/src \
      --enable-developer \
      --enable-gd \
      --enable-graphviz \
+     --with-db-type="$RT_DB_TYPE" \
+     --with-db-database="$RT_DB_NAME" \
      --with-db-host="$RT_TEST_DB_HOST" \
      --with-db-rt-host="$RT_TEST_RT_HOST" \
   && make install \
