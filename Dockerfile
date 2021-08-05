@@ -14,7 +14,11 @@ RUN cd /usr/local/src \
   && cd rt \
   && git checkout $RT_VERSION \
   && ./configure.ac \
-    --enable-developer --enable-gd --enable-graphviz --with-db-host="$RT_TEST_DB_HOST" --with-db-rt-host="$RT_TEST_RT_HOST" \
+     --enable-developer \
+     --enable-gd \
+     --enable-graphviz \
+     --with-db-host="$RT_TEST_DB_HOST" \
+     --with-db-rt-host="$RT_TEST_RT_HOST" \
   && make install \
   && /usr/bin/perl -I/opt/rt5/local/lib -I/opt/rt5/lib sbin/rt-setup-database --action init --dba="$RT_DBA_USER" --dba-password="$RT_DBA_PASSWORD" \
   && rm -rf /usr/local/src/*
