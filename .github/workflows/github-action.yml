@@ -1,0 +1,145 @@
+on:
+  push:
+    branches-ignore:
+      - maint
+      - stable
+
+# All of the jobs below have identical steps EXCEPT FOR the "Build test
+# environment" step and the "Post results to Slack" step.
+#
+# The "Build test environment" step builds our supporting Docker image
+# (tagged `rtir`) with the specific RT configuration being tested by that
+# job. It also starts any other Docker containers required to support that
+# configuration (usually a database, in a container named `rtdb`). All these
+# containers are created and talk to each other over the `rt` Docker network
+# created in the first setup step.
+#
+# The "Post results to Slack" step has a different "Configuration" field
+# value briefly describing the configuration that was used in the "Build
+# test environment" step.
+jobs:
+  rtir_test_sqlite:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up for tests
+        run: |
+          echo "RT_BRANCH_NAME=${GITHUB_REF#refs/heads/}" >>"$GITHUB_ENV"
+          echo "RT_GA_START_TIME=$(date +%s)" >>"$GITHUB_ENV"
+          docker network create rt
+      - name: Check out RTIR
+        uses: actions/checkout@v2
+      - name: Build test environment
+        run: |
+          docker build --build-arg RT_DB_TYPE=SQLite --tag rtir .
+      - name: Run RTIR tests
+        run: |
+          docker run --network rt --volume "$GITHUB_WORKSPACE:/rtir" rtir bash -c 'cd /rtir && perl Makefile.PL && make test-parallel'
+      - name: Get run time
+        if: always()
+        run: |
+          RT_GA_END_TIME=$(date +%s)
+          RT_GA_TEST_SECS=$(( $RT_GA_END_TIME - ${{ env.RT_GA_START_TIME }} ))
+          # Convert seconds to HH::MM::SS
+          RT_GA_TEST_TIME=$(date -u -d "@$RT_GA_TEST_SECS" +%T)
+          echo RT_GA_START_TIME ${{ env.RT_GA_START_TIME }}
+          echo RT_GA_END_TIME "$RT_GA_END_TIME"
+          echo "RT_GA_END_TIME=$RT_GA_END_TIME" >>"$GITHUB_ENV"
+          echo "RT_GA_TEST_TIME=$RT_GA_TEST_TIME" >>"$GITHUB_ENV"
+      - name: Post results to Slack
+        if: always()
+        uses: edge/simple-slack-notify@v1.1.1
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NOTIFICATIONS }}
+        with:
+          channel: '#github'
+          status: ${{ job.status }}
+          success_text: '${env.RT_BRANCH_NAME} (${env.GITHUB_RUN_NUMBER}) tests completed successfully in ${env.RT_GA_TEST_TIME}'
+          failure_text: '${env.RT_BRANCH_NAME} (${env.GITHUB_RUN_NUMBER}) tests failed in ${env.RT_GA_TEST_TIME}'
+          cancelled_text: '${env.RT_BRANCH_NAME} (${env.GITHUB_RUN_NUMBER}) tests cancelled in ${env.RT_GA_TEST_TIME}'
+          fields: |
+            [{ "title": "Configuration", "value": "RTIR, SQLite", "short": true },
+            { "title": "URL", "value": "${env.GITHUB_SERVER_URL}/${env.GITHUB_REPOSITORY}/actions/runs/${env.GITHUB_RUN_ID}?check_suite_focus=true", "short": true }]
+  rtir_test_mariadb:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up for tests
+        run: |
+          echo "RT_BRANCH_NAME=${GITHUB_REF#refs/heads/}" >>"$GITHUB_ENV"
+          echo "RT_GA_START_TIME=$(date +%s)" >>"$GITHUB_ENV"
+          docker network create rt
+      - name: Check out RTIR
+        uses: actions/checkout@v2
+      - name: Build test environment
+        run: |
+          docker run --detach --name rtdb --network rt --env MYSQL_ROOT_PASSWORD=password mariadb:10.3
+          docker build --build-arg RT_DB_TYPE=mysql --build-arg RT_TEST_DB_HOST=rtdb --network rt --tag rtir .
+      - name: Run RTIR tests
+        run: |
+          docker run --network rt --volume "$GITHUB_WORKSPACE:/rtir" rtir bash -c 'cd /rtir && perl Makefile.PL && make test-parallel'
+      - name: Get run time
+        if: always()
+        run: |
+          RT_GA_END_TIME=$(date +%s)
+          RT_GA_TEST_SECS=$(( $RT_GA_END_TIME - ${{ env.RT_GA_START_TIME }} ))
+          # Convert seconds to HH::MM::SS
+          RT_GA_TEST_TIME=$(date -u -d "@$RT_GA_TEST_SECS" +%T)
+          echo RT_GA_START_TIME ${{ env.RT_GA_START_TIME }}
+          echo RT_GA_END_TIME "$RT_GA_END_TIME"
+          echo "RT_GA_END_TIME=$RT_GA_END_TIME" >>"$GITHUB_ENV"
+          echo "RT_GA_TEST_TIME=$RT_GA_TEST_TIME" >>"$GITHUB_ENV"
+      - name: Post results to Slack
+        if: always()
+        uses: edge/simple-slack-notify@v1.1.1
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NOTIFICATIONS }}
+        with:
+          channel: '#github'
+          status: ${{ job.status }}
+          success_text: '${env.RT_BRANCH_NAME} (${env.GITHUB_RUN_NUMBER}) tests completed successfully in ${env.RT_GA_TEST_TIME}'
+          failure_text: '${env.RT_BRANCH_NAME} (${env.GITHUB_RUN_NUMBER}) tests failed in ${env.RT_GA_TEST_TIME}'
+          cancelled_text: '${env.RT_BRANCH_NAME} (${env.GITHUB_RUN_NUMBER}) tests cancelled in ${env.RT_GA_TEST_TIME}'
+          fields: |
+            [{ "title": "Configuration", "value": "RTIR, MariaDB", "short": true },
+            { "title": "URL", "value": "${env.GITHUB_SERVER_URL}/${env.GITHUB_REPOSITORY}/actions/runs/${env.GITHUB_RUN_ID}?check_suite_focus=true", "short": true }]
+  rtir_test_postgresql:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up for tests
+        run: |
+          echo "RT_BRANCH_NAME=${GITHUB_REF#refs/heads/}" >>"$GITHUB_ENV"
+          echo "RT_GA_START_TIME=$(date +%s)" >>"$GITHUB_ENV"
+          docker network create rt
+      - name: Check out RTIR
+        uses: actions/checkout@v2
+      - name: Build test environment
+        run: |
+          docker run --detach --name rtdb --network rt --mount type=tmpfs,destination=/var/lib/postgresql/data --env POSTGRES_PASSWORD=password postgres:9.6
+          docker build --build-arg RT_DB_TYPE=Pg --build-arg RT_DBA_USER=postgres --build-arg RT_TEST_DB_HOST=rtdb --network rt --tag rtir .
+      - name: Run RTIR tests
+        run: |
+          docker run --network rt --volume "$GITHUB_WORKSPACE:/rtir" rtir bash -c 'cd /rtir && perl Makefile.PL && make test-parallel'
+      - name: Get run time
+        if: always()
+        run: |
+          RT_GA_END_TIME=$(date +%s)
+          RT_GA_TEST_SECS=$(( $RT_GA_END_TIME - ${{ env.RT_GA_START_TIME }} ))
+          # Convert seconds to HH::MM::SS
+          RT_GA_TEST_TIME=$(date -u -d "@$RT_GA_TEST_SECS" +%T)
+          echo RT_GA_START_TIME ${{ env.RT_GA_START_TIME }}
+          echo RT_GA_END_TIME "$RT_GA_END_TIME"
+          echo "RT_GA_END_TIME=$RT_GA_END_TIME" >>"$GITHUB_ENV"
+          echo "RT_GA_TEST_TIME=$RT_GA_TEST_TIME" >>"$GITHUB_ENV"
+      - name: Post results to Slack
+        if: always()
+        uses: edge/simple-slack-notify@v1.1.1
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NOTIFICATIONS }}
+        with:
+          channel: '#github'
+          status: ${{ job.status }}
+          success_text: '${env.RT_BRANCH_NAME} (${env.GITHUB_RUN_NUMBER}) tests completed successfully in ${env.RT_GA_TEST_TIME}'
+          failure_text: '${env.RT_BRANCH_NAME} (${env.GITHUB_RUN_NUMBER}) tests failed in ${env.RT_GA_TEST_TIME}'
+          cancelled_text: '${env.RT_BRANCH_NAME} (${env.GITHUB_RUN_NUMBER}) tests cancelled in ${env.RT_GA_TEST_TIME}'
+          fields: |
+            [{ "title": "Configuration", "value": "RTIR, PostgreSQL", "short": true },
+            { "title": "URL", "value": "${env.GITHUB_SERVER_URL}/${env.GITHUB_REPOSITORY}/actions/runs/${env.GITHUB_RUN_ID}?check_suite_focus=true", "short": true }]
