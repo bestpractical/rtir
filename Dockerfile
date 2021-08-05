@@ -9,7 +9,7 @@ ARG RT_DB_TYPE=mysql
 ARG RT_DBA_USER=root
 ARG RT_DBA_PASSWORD=password
 ARG RT_TEST_DB_HOST=172.17.0.2
-ARG RT_TEST_RT_HOST=172.17.0.3
+ARG RT_TEST_RT_HOST
 
 RUN cd /usr/local/src \
   && git clone https://github.com/bestpractical/rt.git \
@@ -22,7 +22,7 @@ RUN cd /usr/local/src \
      --with-db-type="$RT_DB_TYPE" \
      --with-db-database="$RT_DB_NAME" \
      --with-db-host="$RT_TEST_DB_HOST" \
-     --with-db-rt-host="$RT_TEST_RT_HOST" \
+     --with-db-rt-host="${RT_TEST_RT_HOST:-$(ip --oneline address show to 172.16/12 | gawk '{split($4, a, "/"); print a[1] "/255.255.255.0"; exit 0;}')}" \
   && make install \
   && /usr/bin/perl -I/opt/rt5/local/lib -I/opt/rt5/lib sbin/rt-setup-database --action init --dba="$RT_DBA_USER" --dba-password="$RT_DBA_PASSWORD" \
   && rm -rf /usr/local/src/*
