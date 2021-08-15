@@ -310,7 +310,7 @@ sub has_watchers {
     $self->display_ticket($id);
 
     return $self->content_like(
-qr{<td class="labeltop">Correspondents:</td>\s*<td class="value">\s*<span class="user" data-user-id="\d+">\s*<a href="/User/Summary\.html\?id=\d+">\s*([@\w\.&;]+)\s*</a></span>}ms,
+qr{<td class="labeltop">Correspondents:</td>\s*<td class="value">\s*<span class="user" data-user-id="\d+">\s*<a\s+href="/User/Summary\.html\?id=\d+">\s*([@\w\.&;]+)\s*</a></span>}ms,
         "Found $type",
     );
 }
