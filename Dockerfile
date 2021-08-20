@@ -3,25 +3,34 @@ FROM bpssysadmin/rt-base-debian-stretch
 LABEL maintainer="Best Practical Solutions <contact@bestpractical.com>"
 
 # Valid values are RT branches like 5.0-trunk or version tags like rt-4.4.4
-ENV RT_VERSION 5.0-trunk
-ENV RT_TEST_DEVEL 1
-ENV RT_DBA_USER root
-ENV RT_DBA_PASSWORD password
-ENV RT_TEST_DB_HOST=172.17.0.2
-ENV RT_TEST_RT_HOST=172.17.0.3
+ARG RT_VERSION=5.0-trunk
+ARG RT_DB_NAME=rt5
+ARG RT_DB_TYPE=mysql
+ARG RT_DBA_USER=root
+ARG RT_DBA_PASSWORD=password
+ARG RT_TEST_DB_HOST=172.17.0.2
+ARG RT_TEST_RT_HOST
 
 RUN cd /usr/local/src \
   && git clone https://github.com/bestpractical/rt.git \
   && cd rt \
   && git checkout $RT_VERSION \
   && ./configure.ac \
-    --enable-developer --enable-gd --enable-graphviz --with-db-host=172.17.0.2 --with-db-rt-host=172.17.0.3\
+     --enable-developer \
+     --enable-gd \
+     --enable-graphviz \
+     --with-db-type="$RT_DB_TYPE" \
+     --with-db-database="$RT_DB_NAME" \
+     --with-db-host="$RT_TEST_DB_HOST" \
+     --with-db-rt-host="${RT_TEST_RT_HOST:-$(ip --oneline address show to 172.16/12 | gawk '{split($4, a, "/"); print a[1] "/255.255.255.0"; exit 0;}')}" \
   && make install \
-  && /usr/bin/perl -I/opt/rt5/local/lib -I/opt/rt5/lib sbin/rt-setup-database --action init --dba-password=password \
+  && /usr/bin/perl -I/opt/rt5/local/lib -I/opt/rt5/lib sbin/rt-setup-database --action init --dba="$RT_DBA_USER" --dba-password="$RT_DBA_PASSWORD" \
   && rm -rf /usr/local/src/*
 
-RUN cpanm Net::Whois::RIPE
-RUN cpanm Parse::BooleanLogic
-RUN cpanm Net::Domain::TLD
+RUN cpanm Net::Domain::TLD Net::Whois::RIPE Parse::BooleanLogic
+
+ENV RT_DBA_USER="$RT_DBA_USER"
+ENV RT_DBA_PASSWORD="$RT_DBA_PASSWORD"
+ENV RT_TEST_DEVEL=1
 
 CMD tail -f /dev/null
