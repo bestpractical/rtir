@@ -16,6 +16,10 @@ $user_obj->PrincipalObj->GrantRight(Right => 'LoadSavedSearch');
 $user_obj->PrincipalObj->GrantRight(Right => 'EditSavedSearches');
 $user_obj->PrincipalObj->GrantRight(Right => 'CreateSavedSearch');
 $user_obj->PrincipalObj->GrantRight(Right => 'ModifySelf');
+$user_obj->PrincipalObj->GrantRight(Right => 'SeeDashboard');
+$user_obj->PrincipalObj->GrantRight(Right => 'SeeOwnDashboard');
+$user_obj->PrincipalObj->GrantRight(Right => 'CreateOwnDashboard');
+$user_obj->PrincipalObj->GrantRight(Right => 'ModifyOwnDashboard');
 
 ok $m->login( customer => 'customer' ), "logged in";
 
@@ -28,32 +32,52 @@ $m->field ( "ValueOfAttachment" => 'stupid');
 $m->field ( "SavedSearchDescription" => 'stupid tickets');
 $m->click_button (name => 'SavedSearchSave');
 
-$m->get ( $url.'RTIR/Prefs/Home.html' );
+$m->get_ok( $url . "Dashboards/Modify.html?Create=1" );
+$m->form_name('ModifyDashboard');
+$m->field( Name => 'My RTIR homepage' );
+$m->click_button( value => 'Create' );
+
+$m->follow_link_ok( { text => 'Content' } );
 $m->content_contains('stupid tickets', 'saved search listed in rt at a glance items');
 
 ok $m->login('root', 'password', logout => 1), 'we did log in as root';
 
+$m->get_ok( $url . "Dashboards/Modify.html?Create=1" );
+$m->form_name('ModifyDashboard');
+$m->field( Name => 'My RTIR homepage' );
+$m->click_button( value => 'Create' );
+
+my ($id) = ( $m->uri =~ /id=(\d+)/ );
+ok( $id, "got a dashboard ID, $id" );
+
 my $args = {
     UpdateSearches => "Save",
-    dashboard_id   => "RTIR_HomepageSettings",
     body           => [],
     sidebar        => [],
 };
 
+$m->follow_link_ok( { text => 'Content' } );
 # remove all portlets from the body pane except 'newest unowned tickets'
 push(
     @{$args->{body}},
-    ( "system-Unowned Tickets", )
+    "saved-" . $m->dom->find('[data-description="Unowned Tickets"]')->first->attr('data-name'),
 );
 
 my $res = $m->post(
-    $url . 'RTIR/Prefs/Home.html',
+    $url . "Dashboards/Queries.html?id=$id",
     $args,
 );
 
 is( $res->code, 200, "remove all portlets from body except 'newest unowned tickets'" );
 like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
-$m->content_contains( 'Preferences saved' );
+$m->content_contains( 'Dashboard updated' );
+
+$m->get_ok( $url . '/RTIR/Prefs/Home.html' );
+$m->submit_form_ok(
+    {   form_name => 'UpdateRTIRDefaultDashboard',
+        button    => "RTIRDefaultDashboard-$id",
+    },
+);
 
 $m->get( $url."RTIR/" );
 $m->content_contains( 'newest unowned tickets', "'newest unowned tickets' is present" );
@@ -61,10 +85,14 @@ $m->content_lacks( 'highest priority tickets', "'highest priority tickets' is no
 $m->content_lacks( 'Bookmarked Tickets<span class="results-count">', "'Bookmarked Tickets' is not present" );  # 'Bookmarked Tickets' also shows up in the nav, so we need to be more specific
 $m->content_lacks( 'Quick ticket creation', "'Quick ticket creation' is not present" );
 
+$m->get_ok( $url . "Dashboards/Queries.html?id=$id" );
+
 # add back the previously removed portlets
 push(
     @{$args->{body}},
-    ( "system-My Tickets", "system-Bookmarked Tickets", "component-QuickCreate" )
+    "saved-" . $m->dom->find('[data-description="My Tickets"]')->first->attr('data-name'),
+    "saved-" . $m->dom->find('[data-description="Bookmarked Tickets"]')->first->attr('data-name'),
+    "component-QuickCreate",
 );
 
 push(
@@ -73,13 +101,13 @@ push(
 );
 
 $res = $m->post(
-    $url . 'RTIR/Prefs/Home.html',
+    $url . "Dashboards/Queries.html?id=$id",
     $args,
 );
 
 is( $res->code, 200, 'add back previously removed portlets' );
 like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
-$m->content_contains( 'Preferences saved' );
+$m->content_contains( 'Dashboard updated' );
 
 $m->get( $url."RTIR/" );
 $m->content_contains( 'newest unowned tickets', "'newest unowned tickets' is present" );
@@ -95,7 +123,7 @@ $m->field( "SavedSearchDescription" => 'special chars [test] [_1] ~[_1~]' );
 $m->click_button( name => 'SavedSearchSave' );
 my ($name) = $m->content =~ /value="(RT::User-\d+-SavedSearch-\d+)"/;
 ok( $name, 'saved search name' );
-$m->get( $url . 'RTIR/Prefs/Home.html' );
+$m->get_ok( $url . "Dashboards/Queries.html?id=$id" );
 $m->content_contains( 'special chars [test] [_1] ~[_1~]',
     'saved search listed in rt at a glance items' );
 
@@ -106,13 +134,13 @@ push(
 );
 
 $res = $m->post(
-    $url . 'RTIR/Prefs/Home.html',
+    $url . "Dashboards/Queries.html?id=$id",
     $args,
 );
 
 is( $res->code, 200, 'add saved search to body' );
 like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
-$m->content_contains( 'Preferences saved' );
+$m->content_contains( 'Dashboard updated' );
 
 $m->get( $url."RTIR/" );
 $m->content_like( qr/special chars \[test\] \d+ \[_1\]/,
