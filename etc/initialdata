@@ -707,6 +707,10 @@ for my $cf (@CustomFields) {
         my $group = RT::Group->new($CurrentUser);
         $group->LoadUserDefinedGroup("DutyTeam");
         die "Can't load group" unless $group->Id;
+
+        (my $ret, $msg) = $group->PrincipalObj->GrantRight( Right => 'SeeCustomField', Object => $class );
+        die "Could not grant DutyTeam 'SeeCustomField' on class 'Templates': $msg" unless $ret;
+
         $group->PrincipalObj->GrantRight( Right => $_, Object => $response )
             for qw/SeeCustomField ModifyCustomField/;
         $group->PrincipalObj->GrantRight( Right => $_, Object => $class )
