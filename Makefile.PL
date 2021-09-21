@@ -63,7 +63,7 @@ sign-dist:
 	gpg -a --detach-sign \$(DISTVNAME).tar.gz
 
 dist-shasums:
-	sha1sum \$(DISTVNAME).tar.gz*
+	shasum -a 256 \$(DISTVNAME).tar.gz*
 
 parallel-test: test-parallel
 
