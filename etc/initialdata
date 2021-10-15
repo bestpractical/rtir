@@ -87,6 +87,15 @@ die "Please add RT::IR to your Plugins configuration before initializing the dat
             { Name => "Piracy",            SortOrder => 6 },
         ],
     },
+    {
+        Name        => 'CVE ID',
+        Type        => 'FreeformMultiple',
+        Queue       => [ 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ],
+        Disabled    => 0,
+        Description => 'CVE ID for RTIR queues',
+        LinkValueTo => 'https://nvd.nist.gov/vuln/detail/__CustomField__#vulnCurrentDescriptionTitle',
+    },
+
     {   Name       => 'How Reported',
         Type       => 'SelectSingle',
         RenderType => 'Dropdown',

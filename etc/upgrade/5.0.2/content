@@ -3,6 +3,16 @@ use warnings;
 
 our @ScripConditions;
 
+our @CustomFields = (
+    {   Name        => 'CVE ID',
+        Type        => 'FreeformMultiple',
+        Queue       => [ 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ],
+        Disabled    => 0,
+        Description => 'CVE ID for RTIR queues',
+        LinkValueTo => 'https://nvd.nist.gov/vuln/detail/__CustomField__#vulnCurrentDescriptionTitle',
+    },
+);
+
 our @Final = (
     sub {
         RT->Logger->debug("Converting homepages to dashboards");
@@ -157,3 +167,5 @@ our @Final = (
         }
     },
 );
+
+1;

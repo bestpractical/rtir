@@ -684,7 +684,7 @@ Set(%CustomFieldGroupings,
     'RTIR::Ticket' => [
         'Networking'     => ['IP', 'Domain'],
         'Details' => ['How Reported','Reporter Type','Customer',
-                      'Description', 'Resolution', 'Function', 'Classification',
+                      'Description', 'Resolution', 'Function', 'Classification', 'CVE ID',
                       'Customer',
                       'Netmask','Port','Where Blocked'],
     ],
