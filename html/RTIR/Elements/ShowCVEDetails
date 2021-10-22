@@ -1,0 +1,133 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<&| /Widgets/TitleBox,
+    title          => loc("CVE Details"),
+    title_class    => 'inverse',
+    class          => 'ticket-info-cve',
+&>
+
+<div id="cve-accordion" class="rt-accordion accordion">
+
+% while ( my $cve = $cves->Next ) {
+  <div class="accordion-item">
+    <span class="accordion-title collapsed toggle" data-toggle="collapse"
+      data-target="#accordion-cve-<% $cve->Content %>"
+      aria-expanded="false" aria-controls="accordion-cve-<% $cve->Content %>"
+      id="accordion-cve-<% $cve->Content %>-title">
+      <% $cve->Content %>
+    </span>
+    <div id="accordion-cve-<% $cve->Content %>" class="accordion-content collapse"
+      data-cve-id="<% $cve->Content %>" aria-labelledby="accordion-cve-<% $cve->Content %>-title">
+%     for my $item ( qw/description cvss-3x-severity published-date last-modified-date more-info/ ) {
+      <div class="form-row cve-<% $item %>">
+        <div class="col-3 label"><% loc($label{$item}) %>:</div>
+        <div class="col-9 value">
+          <span class="current-value">
+%         if ( $item eq 'more-info' ) {
+            <a href="https://nvd.nist.gov/vuln/detail/<% $cve->Content %>#vulnCurrentDescriptionTitle" target="_blank"><% loc('NIST CVE Detail') %></a>
+% }
+          </span>
+        </div>
+      </div>
+%     }
+    </div>
+  </div>
+% }
+
+</div>
+
+</&>
+
+<script type="text/javascript">
+jQuery( function() {
+    jQuery('.ticket-info-cve div[data-cve-id]').each(function() {
+      var div = jQuery(this);
+      var cve_id = div.data('cve-id');
+      div.find('.current-value:empty').text(RT.I18N.Catalog.loading);
+      jQuery.get("https://services.nvd.nist.gov/rest/json/cve/1.0/" + cve_id, function(data) {
+          if ( data.result && data.result.CVE_Items && data.result.CVE_Items[0] ) {
+              var info = data.result.CVE_Items[0];
+              div.find('.cve-published-date .current-value').text(info.publishedDate);
+              div.find('.cve-last-modified-date .current-value').text(info.lastModifiedDate);
+
+              jQuery.each(info.cve.description.description_data, function(index, value) {
+                  if ( value.lang == 'en' ) {
+                      div.find('.cve-description .current-value').text(value.value);
+                      return false;
+                  }
+              });
+
+              if ( info.impact && info.impact.baseMetricV3 && info.impact.baseMetricV3.cvssV3 ) {
+                  var v3 = info.impact.baseMetricV3.cvssV3;
+                  div.find('.cve-cvss-3x-severity .current-value').text(v3.baseScore + ' ' + v3.baseSeverity);
+              }
+          }
+      }, 'json').fail( function(xhr) {
+          jQuery('<p class="mt-3 mb-1 ml-3 text-danger">').text(xhr.responseJSON.message).insertBefore(div.find('.form-row:first'));
+          div.find('.form-row').hide();
+      });
+    });
+
+});
+</script>
+<%ARGS>
+$Ticket
+</%ARGS>
+<%INIT>
+my $cves = $Ticket->CustomFieldValues('CVE ID');
+
+return unless $cves->Count;
+
+my %label = (
+    'published-date'     => loc('NVD Published Date'),
+    'last-modified-date' => loc('NVD Last Modified'),
+    'cvss-3x-severity'   => loc('CVSS 3.x Severity'),
+    'description'        => loc('Description'),
+    'more-info'          => loc('More Info'),
+);
+</%INIT>
