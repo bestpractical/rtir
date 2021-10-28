@@ -113,6 +113,8 @@
   </div>
 </div>
 
+% $m->callback( %ARGS, CallbackName => 'AfterWorked', Ticket => $TicketObj );
+
 <& /RTIR/Elements/UpdateData, %ARGS, Ticket => $TicketObj, QueueObj => $QueueObj, Action => $Action &>
 
 </&>

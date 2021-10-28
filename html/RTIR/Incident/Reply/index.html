@@ -164,6 +164,18 @@ $m->callback(
     Ticket         => $IncidentObj
 );
 
+# RTIR passes Status instead of DefaultStatus, so it's probably better to
+# not simply reuse the callback in /Ticket/Update.html.
+my $skip_update = 0;
+$m->callback(
+    CallbackName   => 'BeforeUpdate',
+    ARGSRef        => \%ARGS,
+    skip_update    => \$skip_update,
+    checks_failure => $checks_failure,
+    results        => \@results,
+    TicketObj      => $IncidentObj,
+);
+
 my $gnupg_widget = $m->comp('/Elements/Crypt/SignEncryptWidget:new', Arguments => \%ARGS );
 $m->comp( '/Elements/Crypt/SignEncryptWidget:Process',
     self => $gnupg_widget,
@@ -191,7 +203,7 @@ if ( $SubmitTicket && $gnupg_widget ) {
     }
 }
 
-if ( $SubmitTicket && !$checks_failure ) {
+if ( $SubmitTicket && !$skip_update && !$checks_failure ) {
 
     my $incident_cycle = $IncidentObj->QueueObj->LifecycleObj;
     foreach my $Ticket ( @selected_children ) {

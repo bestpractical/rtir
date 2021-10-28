@@ -379,55 +379,66 @@ RT::Interface::Web::Redirect(RT::IR->HREFTo("$Type/Display.html?".$m->comp('/Ele
 }
 
 my @results;
+my $SkipProcessing;
+
 if ( $id eq 'new' ) {
     unless ($QueueObj->CurrentUserHasRight('CreateTicket')) {
         Abort('You have no permission to create tickets in that queue.');
     }
     ($Ticket, @results) = CreateTicket( %ARGS );
 } elsif( $id ) {
-    
     $m->callback(
-        CallbackName => 'ProcessArguments', 
-        Ticket => $Ticket,
-        ARGSRef => \%ARGS,  
-        Actions => \@results,
+        CallbackName   => 'BeforeProcessArguments',
+        CallbackPage   => '/Ticket/Display.html',
+        TicketObj      => $Ticket,
+        ActionsRef     => \@results,
+        ARGSRef        => \%ARGS,
+        SkipProcessing => \$SkipProcessing,
     );
+    if ( !$SkipProcessing) {
+        $m->callback(
+            CallbackName => 'ProcessArguments',
+            Ticket => $Ticket,
+            ARGSRef => \%ARGS,
+            Actions => \@results,
+        );
 
-    if ( $ARGS{'Action'} && $ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/ ) {
-        my $action = $1;
-        my ($status, $msg) = $Ticket->$action();
-        push @results, $msg;
-        # If they succeeded in taking the ticket, they should also get a lock
-        if ($status && $action =~  /^(?:Take|Steal)$/) {
-            $m->callback(CallbackName => 'TicketTakeOrSteal', %ARGS, Ticket => $Ticket, Type => $Type, Results => \@results);
+        if ( $ARGS{'Action'} && $ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/ ) {
+            my $action = $1;
+            my ($status, $msg) = $Ticket->$action();
+            push @results, $msg;
+            # If they succeeded in taking the ticket, they should also get a lock
+            if ($status && $action =~  /^(?:Take|Steal)$/) {
+                $m->callback(CallbackName => 'TicketTakeOrSteal', %ARGS, Ticket => $Ticket, Type => $Type, Results => \@results);
+            }
         }
-    }
 
-    if ( $ARGS{'TakeOrStealFirst'} and $Ticket->Owner != $Ticket->CurrentUser->Id) {
-        my ($status, $msg) = $Ticket->SetOwner($Ticket->CurrentUser->Id, 'Force');
-        push @results, $msg if $msg;
-        
-        # If they succeeded in taking the ticket, they should also get a lock
-        ## Should they? This should only happen when a ticket is rejected, do we want to lock it?
-        if ($status) { 
-            $m->callback(CallbackName => 'TicketTakeOrSteal', %ARGS, Ticket => $Ticket, Type => $Type, Results => \@results); 
+        if ( $ARGS{'TakeOrStealFirst'} and $Ticket->Owner != $Ticket->CurrentUser->Id) {
+            my ($status, $msg) = $Ticket->SetOwner($Ticket->CurrentUser->Id, 'Force');
+            push @results, $msg if $msg;
+
+            # If they succeeded in taking the ticket, they should also get a lock
+            ## Should they? This should only happen when a ticket is rejected, do we want to lock it?
+            if ($status) {
+                $m->callback(CallbackName => 'TicketTakeOrSteal', %ARGS, Ticket => $Ticket, Type => $Type, Results => \@results); 
+            }
         }
+
+        push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS, Actions => \@results );
+
+        push @results, ProcessTicketBasics(  TicketObj => $Ticket, ARGSRef => \%ARGS );
+        push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $Ticket );
+        push @results, ProcessTicketWatchers( ARGSRef => \%ARGS, TicketObj => $Ticket );
+
+        my $strict_acl = RT->Config->Set( StrictLinkACL => 0 );
+        push @results, ProcessTicketLinks(   TicketObj => $Ticket, ARGSRef => \%ARGS );
+        RT->Config->Set( StrictLinkACL => $strict_acl );
+
+        push @results, ProcessTicketDates(   TicketObj => $Ticket, ARGSRef => \%ARGS );
     }
-
-    push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS, Actions => \@results );
-
-    push @results, ProcessTicketBasics(  TicketObj => $Ticket, ARGSRef => \%ARGS );
-    push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $Ticket );
-    push @results, ProcessTicketWatchers( ARGSRef => \%ARGS, TicketObj => $Ticket );
-
-    my $strict_acl = RT->Config->Set( StrictLinkACL => 0 );
-    push @results, ProcessTicketLinks(   TicketObj => $Ticket, ARGSRef => \%ARGS );
-    RT->Config->Set( StrictLinkACL => $strict_acl );
-
-    push @results, ProcessTicketDates(   TicketObj => $Ticket, ARGSRef => \%ARGS );
 }
 
-if ( $ARGS{'BulkArticles'} && @SelectedTickets ) {
+if ( !$SkipProcessing && !$ARGS{'BulkArticles'} && @SelectedTickets ) {
     my $ref = join " ", map "a:$_", @SelectedTickets;
     push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => {$Ticket->Id."-RefersTo" => $ref} );
 }
