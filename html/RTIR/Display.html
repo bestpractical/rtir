@@ -127,6 +127,7 @@
     </div>
 
     <& /Elements/ShowCustomFields, Grouping => 'Basics', Object => $Ticket, Table => 0 &>
+%   $m->callback( %ARGS, TicketObj => $Ticket, CallbackName => 'EndOfBasics' );
   </div>
 % }
 % if ($modify_behavior ne 'hide') {
