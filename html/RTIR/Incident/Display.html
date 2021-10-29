@@ -452,6 +452,7 @@ if ( $ARGS{'Action'} && $ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/ )
 
 
 unless( $new_ticket ) {
+    push @results, ProcessUpdateMessage( ARGSRef => \%ARGS, TicketObj => $TicketObj );
     push @results, ProcessTicketBasics( ARGSRef => \%ARGS, TicketObj => $TicketObj );
     push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $TicketObj );
     push @results, ProcessTicketDates( ARGSRef => \%ARGS, TicketObj => $TicketObj );
@@ -483,10 +484,6 @@ if ( $ARGS{'BulkArticles'} && @SelectedTickets ) {
         TicketObj => $TicketObj,
         ARGSRef => {$TicketObj->Id."-RefersTo" => $ref}
     );
-}
-
-unless( $new_ticket ) {
-    push @results, ProcessUpdateMessage( ARGSRef => \%ARGS, TicketObj => $TicketObj, Actions => \@results );
 }
 
 if ( $ARGS{'MarkAsSeen'} ) {
