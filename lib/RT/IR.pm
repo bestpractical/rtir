@@ -281,7 +281,10 @@ sub GetRTIRDefaultQueue {
 
     $queue = RT->Config->Get( "RTIR_DefaultQueue", $HTML::Mason::Commands::session{'CurrentUser'} );
 
-    return $queue;
+    # Confirm the user can see and load the default queue
+    my $queue_obj = RT::Queue->new( $HTML::Mason::Commands::session{'CurrentUser'} );
+    $queue_obj->Load($queue);
+    return defined $queue_obj->Name ? $queue_obj->Id : undef;
 }
 
 =head2 Lifecycles
