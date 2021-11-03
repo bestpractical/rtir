@@ -49,159 +49,42 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" name="UpdateSearches" class="mx-auto max-width-lg">
-  <& /Widgets/SearchSelection,
-    pane_name => \%pane_name,
-    sections  => \@sections,
-    selected  => \%selected,
-    filters   => \@filters,
-  &>
-  <& /Elements/Submit, Name => "UpdateSearches", Label => loc('Save') &>
+<&|/Widgets/TitleBox, title => loc('Set RTIR Homepage'), bodyclass => "", class => "mx-auto max-width-xl" &>
+<form method="post" name="UpdateRTIRDefaultDashboard" class="mx-auto max-width-xl">
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/SelectDashboard, Dashboards => GetDashboards( DefaultAttribute => 'RTIRDefaultDashboard' ), Name => 'RTIRDefaultDashboard', Default => $default_dashboard_id &>
+    </div>
+  </div>
 </form>
+</&>
 
 <%INIT>
 my @results;
-my $user = $session{'CurrentUser'}->UserObj;
 
-my $portlets = $user->Preferences('RTIR_HomepageSettings');
-unless ($portlets) {
-    my ($defaults) = RT::System->new($session{'CurrentUser'})->Attributes->Named('RTIR_HomepageSettings');
-    $portlets = $defaults ? $defaults->Content : {};
-}
+my $default_dashboard_id = $session{'CurrentUser'}->Preferences( RTIRDefaultDashboard => 0 );
 
-my @sections;
-my %item_for;
-
-my @components = map { type => "component", name => $_, label => loc($_) }, @{RT->Config->Get('RTIR_HomepageComponents')};
-
-$item_for{ $_->{type} }{ $_->{name} } = $_ for @components;
-
-push @sections, {
-    id    => 'components',
-    label => loc("Components"),
-    items => \@components,
-};
-
-my $sys = RT::System->new($session{'CurrentUser'});
-my @objs = ($sys);
-
-push @objs, RT::SavedSearch->new( $session{CurrentUser} )->ObjectsForLoading
-    if $session{'CurrentUser'}->HasRight( Right  => 'LoadSavedSearch',
-                                          Object => $RT::System );
-
-for my $object (@objs) {
-    my @items;
-    my $object_id = ref($object) . '-' . $object->Id;
-    $object_id = 'system' if $object eq $sys;
-
-    for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
-        my ($desc, $loc_desc, $search) = @$_;
-
-        my $SearchType = 'Ticket';
-        if ((ref($search->Content)||'') eq 'HASH') {
-            $SearchType = $search->Content->{'SearchType'}
-                if $search->Content->{'SearchType'};
-        }
-        else {
-            $RT::Logger->debug("Search ".$search->id." ($desc) appears to have no Content");
-        }
-
-        my $item;
-        if ($object eq $sys && $SearchType eq 'Ticket') {
-            $item = { type => 'system', name => $desc, label => $loc_desc };
-        }
-        else {
-            my $oid = $object_id.'-SavedSearch-'.$search->Id;
-            $item = { type => 'saved', name => $oid, search_type => $SearchType, label => $loc_desc };
-        }
-
-        $item_for{ $item->{type} }{ $item->{name} } = $item;
-        push @items, $item;
-    }
-
-    my $label = $object eq $sys           ? loc('System')
-                : $object->isa('RT::Group') ? $object->Label
-                                            : $object->Name;
-
-    push @sections, {
-        id    => $object_id,
-        label => $label,
-        items => [ sort { lc($a->{label}) cmp lc($b->{label}) } @items ],
-    };
-}
-
-my %selected;
-for my $pane (keys %$portlets) {
-    my @items;
-
-    for my $saved (@{ $portlets->{$pane} }) {
-        my $item = $item_for{ $saved->{type} }{ $saved->{name} };
-        if ($item) {
-            push @items, $item;
-        }
-        else {
-            push @results, loc('Unable to find [_1] [_2]', $saved->{type}, $saved->{name});
-        }
-    }
-
-    $selected{$pane} = \@items;
-}
-
-my %pane_name = (
-    'body'    => loc('Body'),
-    'sidebar' => loc('Sidebar'),
-);
-
-my @filters = (
-    [ 'component' => loc('Components') ],
-    [ 'ticket'    => loc('Tickets') ],
-    [ 'chart'     => loc('Charts') ],
-);
-
-$m->callback(
-    CallbackName => 'Default',
-    pane_name    => \%pane_name,
-    sections     => \@sections,
-    selected     => \%selected,
-    filters      => \@filters,
-);
-
-if ($ARGS{UpdateSearches}) {
-    my $data = {
-        "panes"        => {
-            "body"    => [],
-            "sidebar" => []
-        }
-    };
-
-    foreach my $arg (qw{ body sidebar }) {
-        my $pane   = $arg;
-        my $values = $ARGS{$pane};
-
-        next unless $values;
-
-        # force value to an arrayref so we can handle both single and multiple members of each pane.
-        $values = [$values] unless ref $values;
-
-        foreach my $value ( @{$values} ) {
-            $value =~ m/^(\w+)-(.+)$/i;
-            my $type = $1;
-            my $name = $2;
-            push @{ $data->{panes}->{$pane} }, { type => $type, name => $name };
-        }
-    }
-
-    my ( $ok, $msg ) = $user->SetPreferences( 'RTIR_HomepageSettings', $data->{panes} );
-    if ( $ok ) {
-        push @results, loc("Preferences saved.");
+my ($default) = map { /^RTIRDefaultDashboard-(\d+)/ ? $1 : () } keys %ARGS;
+if ( defined $default ) {
+    my ( $ret, $msg );
+    if ( $default ) {
+        ( $ret, $msg ) = $session{CurrentUser}->SetPreferences( 'RTIRDefaultDashboard', $default );
     }
     else {
-        push @results, loc("Could not save preferences.");
+        if ( $default_dashboard_id ) {
+            ( $ret, $msg ) = $session{CurrentUser}->DeletePreferences( 'RTIRDefaultDashboard' );
+        }
+        else {
+            $ret = 1;
+        }
     }
 
+    push @results, $ret ? loc('Preferences saved.') : $msg;
+
     MaybeRedirectForResults(
-        Actions   => \@results,
-        Path      => "/RTIR/Prefs/Home.html",
+        Actions => \@results,
+        Path    => "/RTIR/Prefs/Home.html",
     );
 }
+
 </%INIT>
