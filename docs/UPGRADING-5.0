@@ -134,4 +134,44 @@ documented for C<RT::Ticket>.
 
 =back
 
+=head1 UPGRADING FROM 5.0.1 AND EARLIER
+
+=over 4
+
+=item * "RTIR at a glance" is now a dashboard
+
+"RTIR at a glance" previously could be customized and was stored as
+a special configuration used just for the RTIR homepage.
+It is now a dashboard just like other dashboards in RT.
+With this update, you can now easily change your entire RTIR homepage
+by selecting a different dashboard to be your default homepage.
+This update aligns with RT where a similar change was made in RT 5.0.2.
+
+After upgrading, RTIR at a glance should look the same as it did
+previously, but there are various changes in how it is managed.
+
+The previous global RTIR at a glance page is converted to a new System
+dashboard called "RTIR Homepage". Individual users with a custom homepage
+will see a new dashboard in "My Dashboards" called "RTIR Homepage". These are
+regular dashboards now, so the names can be changed if desired.
+
+The gears icon on the RTIR homepage now links to a page that displays all
+available dashboards and users can select their default homepage from
+the list. To customize, users can create a new dashboard. The privacy
+of dashboards can be set to an individual user, a group, or system-wide,
+depending on the user's rights. This makes it easy to set up and share
+useful RTIR homepage configurations.
+
+Users who want to customize their homepage need the rights "ModifySelf",
+"CreateOwnDashboard", "DeleteOwnDashboard", "ModifyOwnDashboard" and
+"SeeOwnDashboard". All users who have "ModifySelf" are automatically granted
+these dashboard rights as part of the RT 5.0.2 upgrade. You can modify
+these rights as desired if you don't want users to be able to create dashboards.
+
+All users can see the default System dashboard set for RTIR. If you
+want to allow users to see other System dashboards, grant the
+"SeeDashboard" right. This is not done automatically with the upgrade.
+
+=back
+
 =cut
