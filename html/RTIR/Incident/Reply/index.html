@@ -125,7 +125,7 @@
 % }
 
 % unless ( $candidates ) {
-<& /Elements/ListActions, actions => loc('Warning: no recipients!'), titlebox => { class => 'error-titlebox' } &>
+<& /Elements/ListActions, actions => loc('Warning: no recipients!'), titlebox => { class => 'error-titlebox', bodyclass => 'py-0' } &>
 % }
 
 <& ../Elements/ReplyForm, %ARGS,
