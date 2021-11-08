@@ -67,6 +67,12 @@
 % if ( $hide ) {
     <input type="hidden" name="<% $Name %>" value="<% $potential[0] %>" />
 % }
+
+% if ( @potential ) {
+    <div class="col-auto label">
+      <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Id of an Incident to link a new ticket to</&>."</span>
+    </div>
+% }
     <div class="col-auto">
       <input class="form-control" type="text" name="<% $Name %>" value="" data-autocomplete="Tickets" data-autocomplete-limit="Lifecycle = 'incidents'" />
     </div>
