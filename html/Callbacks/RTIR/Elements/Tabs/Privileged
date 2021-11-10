@@ -119,13 +119,13 @@ if ( $m->request_comp->path =~ m{^/Search/} ) {
 
         if ( my $results = PageMenu()->child('results') ) {
             if ( $results->path =~ m{^/RTIR/Incident/Reply/} ) {
-                $results->title( loc('Back to Incident Reply') );
+                $results->title( loc('Back to Incident Reply #[_1]', $args{id}) );
             }
             elsif ( $results->path =~ m{^/RTIR/Link/} ) {
-                $results->title( loc('Back to Link') );
+                $results->title( loc('Back to Link #[_1]', $args{id}) );
             }
             elsif ( $results->path =~ m{^/RTIR/Merge/} ) {
-                $results->title( loc('Back to Merge') );
+                $results->title( loc('Back to Merge #[_1]', $args{id}) );
             }
         }
     }
