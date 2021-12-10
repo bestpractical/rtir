@@ -143,4 +143,17 @@ our @Final = (
             }
         }
     },
+    sub {
+        my $class = RT::Class->new( RT->SystemUser );
+        $class->Load('Templates');
+        if ( $class->Id ) {
+            my $content = RT::CustomField->new( RT->SystemUser );
+            $content->LoadByName( Name => 'Content', LookupType => RT::Article->CustomFieldLookupType );
+            if ( $content->Id && ( $content->IsGlobal || $content->IsAdded( $class->Id ) ) ) {
+                for ( 'CF-Title-' . $content->Id, 'CF-Value-' . $content->Id ) {
+                    $class->SetAttribute( Name => "Skip-$_", Content => 1 );
+                }
+            }
+        }
+    },
 );

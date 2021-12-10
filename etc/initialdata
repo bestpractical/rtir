@@ -672,8 +672,16 @@ for my $cf (@CustomFields) {
         }
 
         $response->AddToObject($class);
-        $class->SetAttribute( Name => "Skip-$_", Content => 1 )
-            for ( "Name", "Summary", "CF-Title-" . $response->Id );
+
+        my @skips = ( "Name", "Summary", "CF-Title-" . $response->Id );
+
+        my $content = RT::CustomField->new($CurrentUser);
+        $content->LoadByName( Name => 'Content', LookupType => RT::Article->CustomFieldLookupType );
+        if ( $content->Id && ( $content->IsGlobal || $content->IsAdded( $class->Id ) ) ) {
+            push @skips, "CF-Title-" . $content->Id, "CF-Value-" . $content->Id;
+        }
+
+        $class->SetAttribute( Name => "Skip-$_", Content => 1 ) for @skips;
 
         my $group = RT::Group->new($CurrentUser);
         $group->LoadUserDefinedGroup("DutyTeam");

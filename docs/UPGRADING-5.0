@@ -172,6 +172,20 @@ All users can see the default System dashboard set for RTIR. If you
 want to allow users to see other System dashboards, grant the
 "SeeDashboard" right. This is not done automatically with the upgrade.
 
+=item * RT's Default Article Content Custom Field is Deselected
+
+When initially installing RT, a global custom field Content is created
+and applied to Articles. RTIR also creates an Article custom field on
+installation, called Response. The default DutyTeam group has rights to
+use the Response CF, but not the Content CF and typically for boilerplate
+email responses you need only one custom field. The extra CF can also cause
+issues with automatically inserting content on the ticket reply page.
+
+As part of this update, we deselect the Content CF from the Templates
+class, which is the default for RTIR. This should make the Response CF
+work as intended. If you are using the Content CF in some way, you
+can edit the Templates class configuration and enable it again.
+
 =back
 
 =cut
