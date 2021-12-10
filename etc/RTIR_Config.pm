@@ -865,9 +865,8 @@ Description.
         ],
     );
 
-The initial list is "US Cert Alerts", "UK NCSC Security News", "Security
-Focus Vulnerability Alerts", "Threatpost Vulnerability Alerts" and
-"Bugtraq".
+The initial list is "US Cert Alerts", "UK NCSC Security News", "Full Disclosure",
+"Threatpost Vulnerability Alerts" and "Bugtraq".
 
 =cut
 
@@ -881,9 +880,9 @@ Set(%ExternalFeeds,
             URI         => 'https://www.ncsc.gov.uk/api/1/services/v1/all-rss-feed.xml',
             Description => 'UK NCSC Security News',
         },
-        {   Name        => 'Security Focus Vulnerability Alerts',
-            URI         => 'https://www.securityfocus.com/rss/vulnerabilities.xml',
-            Description => 'Security Focus Vulnerability Alerts',
+        {   Name        => 'Full Disclosure',
+            URI         => 'https://seclists.org/rss/fulldisclosure.rss',
+            Description => 'Full Disclosure',
         },
         {   Name        => 'Threatpost Vulnerability Alerts',
             URI         => 'https://threatpost.com/category/vulnerabilities/feed/',
