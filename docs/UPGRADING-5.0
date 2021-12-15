@@ -172,6 +172,12 @@ All users can see the default System dashboard set for RTIR. If you
 want to allow users to see other System dashboards, grant the
 "SeeDashboard" right. This is not done automatically with the upgrade.
 
+=item * Global "RTIR at a glance" configuration page
+
+For RT admins, Admin > Global > RTIR at a glance is now available, and
+instead of loading the page configuration editor, it shows a list of
+System dashboards that can be set as the default homepage.
+
 =item * RT's Default Article Content Custom Field is Deselected
 
 When initially installing RT, a global custom field Content is created

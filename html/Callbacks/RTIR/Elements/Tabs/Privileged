@@ -54,6 +54,22 @@ my $query_string = sub {
     return $u->query || '';
 };
 
+if ( my $admin = Menu->child('admin') ) {
+    if ( my $global = $admin->child('global') ) {
+        $global->child(
+            'my-rtir' => title => 'RTIR at a glance',
+            path      => '/Admin/Global/MyRT.html?'
+                . $query_string->(
+                    Title                => loc('Customize Global RTIR at a glance'),
+                    WidgetTitle          => loc('Set RTIR Homepage'),
+                    AttributeName        => 'RTIRDefaultDashboard',
+                    AttributeDescription => 'RTIR Default Dashboard',
+                ),
+            sort_order => 8.1,
+        );
+    }
+}
+
 my $args = $DECODED_ARGS;
 
 my @query_fields = qw(Query Format RowsPerPage Page OrderBy Order ExtraQueryParams);
