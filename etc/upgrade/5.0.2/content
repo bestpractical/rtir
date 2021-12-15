@@ -13,6 +13,47 @@ our @CustomFields = (
     },
 );
 
+our @ScripActions = (
+    {   Name        => 'RTIR parse message for CVEs',                 # loc
+        Description => 'Set CVE custom field from message content',   # loc
+        ExecModule  => 'RTIR_FindCVE',
+    },
+    {   Name        => 'RTIR merge CVEs',                                 # loc
+        Description => 'Merge multiple CVEs on ticket merge',             # loc
+        ExecModule  => 'RTIR_MergeCVEs',
+    },
+);
+
+our @Scrips = (
+    {
+        Description    => "SetCVEFromContent",
+        Queue          => [ 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ],
+        ScripCondition => 'On Correspond',
+        ScripAction    => 'RTIR parse message for CVEs',
+        Template       => 'Blank'
+    },
+    {
+        Description    => "SetCVEFromContent",
+        Queue          => [ 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ],
+        ScripCondition => 'On Create',
+        ScripAction    => 'RTIR parse message for CVEs',
+        Template       => 'Blank'
+    },
+    {   Description => "MergeCVEs",
+        Queue =>
+            [ 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ],
+        ScripCondition => 'RTIR Merge',
+        ScripAction    => 'RTIR merge CVEs',
+        Template       => 'Blank'
+    },
+    {   Description    => "On Linking To Incident Copy CVEs",
+        Queue          => 'Incident Reports',
+        ScripCondition => 'RTIR Linking To Incident',
+        ScripAction    => 'RTIR merge CVEs',
+        Template       => 'Blank'
+    },
+);
+
 our @Final = (
     sub {
         RT->Logger->debug("Converting homepages to dashboards");
