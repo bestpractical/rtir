@@ -340,6 +340,93 @@ diag "check IPs separated by commas and semicolons" if $ENV{'TEST_VERBOSE'};
     ok($has{'16.16.16.16'}, "IP is there");
 }
 
+diag "check IPs in main content and attachment" if $ENV{'TEST_VERBOSE'};
+{
+    $agent->goto_create_ticket('Incident Reports');
+    my $form  = $agent->form_name('TicketCreate');
+    my $input = $form->find_input('Attach');
+    $input->filename('attach1');
+    $input->content('1.2.3.4, 4.4.4.4');
+
+    $agent->submit_form_ok(
+        {   fields => {
+                Subject => "test ip",
+                Content => '2.2.2.2',
+            },
+            button => 'Create',
+        }
+    );
+
+    my $ticket = RT::Test->last_ticket;
+    my $values = $ticket->CustomFieldValues('IP');
+    my %has;
+    $has{ $_->Content }++ foreach @{ $values->ItemsArrayRef };
+    is( scalar values %has, 1, "one IP was added" );
+    ok( !grep( $_ != 1, values %has ), "no duplicated values" );
+    ok( $has{'2.2.2.2'},               "IP is there" );
+}
+
+diag "check IPs not in main content but in attachment" if $ENV{'TEST_VERBOSE'};
+{
+
+    $agent->goto_create_ticket('Incident Reports');
+    my $form  = $agent->form_name('TicketCreate');
+    my $input = $form->find_input('Attach');
+    $input->filename('attach1');
+    $input->content('1.2.3.4, 4.4.4.4');
+
+    $agent->submit_form_ok(
+        {   fields => {
+                Subject => "test ip",
+                Content => 'test attachment',
+            },
+            button => 'Create',
+        }
+    );
+
+    my $ticket = RT::Test->last_ticket;
+    my $values = $ticket->CustomFieldValues('IP');
+    my %has;
+    $has{ $_->Content }++ foreach @{ $values->ItemsArrayRef };
+    is( scalar values %has, 2, "two IPs were added" );
+    ok( !grep( $_ != 1, values %has ), "no duplicated values" );
+    ok( $has{'1.2.3.4'},               "IP is there" );
+    ok( $has{'4.4.4.4'},               "IP is there" );
+}
+
+diag "check IPs not in main content but in multiple attachments" if $ENV{'TEST_VERBOSE'};
+{
+    $agent->goto_create_ticket('Incident Reports');
+    my $form  = $agent->form_name('TicketCreate');
+    my $input = $form->find_input('Attach');
+    $input->filename('attach1');
+    $input->content('1.2.3.4, 4.4.4.4');
+    $agent->click('AddMoreAttach');
+
+    $form  = $agent->form_name('TicketCreate');
+    $input = $form->find_input('Attach');
+    $input->filename('attach2');
+    $input->content('8.8.8.8');
+
+    $agent->submit_form_ok(
+        {   fields => {
+                Subject => "test ip",
+                Content => 'test attachment',
+            },
+            button => 'Create',
+        }
+    );
+
+    my $ticket = RT::Test->last_ticket;
+    my $values = $ticket->CustomFieldValues('IP');
+    my %has;
+    $has{ $_->Content }++ foreach @{ $values->ItemsArrayRef };
+    is( scalar values %has, 2, "two IPs were added" );
+    ok( !grep( $_ != 1, values %has ), "no duplicated values" );
+    ok( $has{'1.2.3.4'},               "IP is there" );
+    ok( $has{'4.4.4.4'},               "IP is there" );
+}
+
 diag "search tickets by IP" if $ENV{'TEST_VERBOSE'};
 {
     my $id = $agent->create_ir( {
