@@ -101,6 +101,9 @@
     &>
   </div>
 </div>
+
+% # UpdateTimeWorked is shown in "Incident Time Taken" widget on individual incident pages
+% if ( !$TicketObj ) {
 <div class="form-row">
   <div class="label col-2">
     <&|/l&>Worked</&>:
@@ -112,6 +115,7 @@
     &>
   </div>
 </div>
+% }
 
 <& /RTIR/Elements/UpdateData, %ARGS, Ticket => $TicketObj, QueueObj => $QueueObj, Action => $Action &>
 
