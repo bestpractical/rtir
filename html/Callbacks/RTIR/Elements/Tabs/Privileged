@@ -418,7 +418,7 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
         new => title => loc("New [_1]", RT::IR::TicketType( Lifecycle => $lifecycle || RT::IR->lifecycle_incident ) ),
         path => !$lifecycle
             ? RT::IR->HREFTo("Incident/Create.html?Child=$id&Lifecycle=".RT::IR->lifecycle_incident, IncludeWebPath => 0)
-            : RT::IR->HREFTo('Create.html' . $query_string->( Incident => $id, Lifecycle => $lifecycle ), IncludeWebPath => 0)
+            : RT::IR->HREFTo('Create.html?' . $query_string->( Incident => $id, Lifecycle => $lifecycle ), IncludeWebPath => 0)
         ,
     );
     PageMenu()->child(
