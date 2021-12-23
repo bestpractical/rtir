@@ -118,6 +118,7 @@
 &>
 
 % $m->callback( %ARGS, CallbackName => 'AfterWorked', Ticket => $Ticket );
+% $m->callback( %ARGS, CallbackName => 'AfterWorked', Ticket => $Ticket, CallbackPage => '/Ticket/Update.html' );
 
 <& /Ticket/Elements/EditTransactionCustomFields,
     %ARGS, TicketObj => $Ticket, InTable => 1,
@@ -255,7 +256,19 @@ if ( !$checks_failure && $SubmitTicket ) {
     $ARGS{'SquelchMailTo'} = \@squelchlist if @squelchlist;
 }
 
-if ( !$checks_failure && $SubmitTicket ) {
+# RTIR passes Status instead of DefaultStatus, so it's probably better to
+# not simply reuse the callback in /Ticket/Update.html.
+my $skip_update = 0;
+$m->callback(
+    CallbackName   => 'BeforeUpdate',
+    ARGSRef        => \%ARGS,
+    skip_update    => \$skip_update,
+    checks_failure => $checks_failure,
+    results        => \@results,
+    TicketObj      => $Ticket,
+);
+
+if ( !$skip_update && !$checks_failure && $SubmitTicket ) {
     $m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Ticket => $Ticket);
 
     # Use the custom display page for this type if it exists

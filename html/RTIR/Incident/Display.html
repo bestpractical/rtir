@@ -403,6 +403,7 @@ my $DoLinks = sub {
 };
 
 my @results;
+my $SkipProcessing;
 
 my $TicketObj;
 my $new_ticket = 0;
@@ -416,6 +417,14 @@ if ( $id eq 'new' ) {
     $new_ticket = 1;
 } else {
     $TicketObj = LoadTicket( $id );
+    $m->callback(
+        CallbackName   => 'BeforeProcessArguments',
+        CallbackPage   => '/Ticket/Display.html',
+        TicketObj      => $TicketObj,
+        ActionsRef     => \@results,
+        ARGSRef        => \%ARGS,
+        SkipProcessing => \$SkipProcessing,
+    );
 }
 
 my $edit_label   = $m->interp->apply_escapes( loc("Edit"), 'h' );
@@ -438,7 +447,7 @@ unless( RT::IR->IsIncidentQueue($TicketObj->QueueObj) ) {
 }
 $ARGS{'id'} = $id = $TicketObj->Id;
 
-if ( $ARGS{'Action'} && $ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/ )
+if ( !$SkipProcessing && $ARGS{'Action'} && $ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/ )
 {   
     my $action = $1;
     my ($res, $msg) = $TicketObj->$action();
@@ -450,13 +459,13 @@ if ( $ARGS{'Action'} && $ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/ )
 
 
 
-unless( $new_ticket ) {
+unless( $new_ticket || $SkipProcessing ) {
     push @results, ProcessTicketBasics( ARGSRef => \%ARGS, TicketObj => $TicketObj );
     push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $TicketObj );
     push @results, ProcessTicketDates( ARGSRef => \%ARGS, TicketObj => $TicketObj );
 }
 
-if ( $ARGS{'BulkLink'} || $Child ) {
+if ( !$SkipProcessing && ( $ARGS{'BulkLink'} || $Child ) ) {
     my @link;
     push @link, @SelectedTickets if $ARGS{'BulkLink'};
     push @link, $Child if $Child;
@@ -476,7 +485,7 @@ if ( $deleted_links && !RT::IR->IncidentChildren( $TicketObj )->Count ) {
     push @results, loc("WARNING: Incident [_1] has no children.", $id);
 }
 
-if ( $ARGS{'BulkArticles'} && @SelectedTickets ) {
+if ( !$SkipProcessing && $ARGS{'BulkArticles'} && @SelectedTickets ) {
     my $ref = join " ", map "a:$_", @SelectedTickets;
     push @results, ProcessTicketLinks(
         TicketObj => $TicketObj,
@@ -484,7 +493,7 @@ if ( $ARGS{'BulkArticles'} && @SelectedTickets ) {
     );
 }
 
-unless( $new_ticket ) {
+unless( $new_ticket || $SkipProcessing ) {
     push @results, ProcessUpdateMessage( ARGSRef => \%ARGS, TicketObj => $TicketObj, Actions => \@results );
 }
 

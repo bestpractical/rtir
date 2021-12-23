@@ -517,7 +517,17 @@ if ( $CreateWithInvestigation && !$InvestigationRequestors ) {
 $m->callback( CallbackName => 'BeforeCreateRedirect', ARGSRef => \%ARGS,
     Child => $ChildObj, results => \@results, checks_failure => \$checks_failure );
 
-if ( !$checks_failure && $CreateIncident ) {
+my $skip_create;
+$m->callback(
+    CallbackName   => 'BeforeCreate',
+    CallbackPage   => '/Ticket/Create.html',
+    ARGSRef        => \%ARGS,
+    results        => \@results,
+    skip_create    => \$skip_create,
+    checks_failure => $checks_failure,
+);
+
+if ( !$skip_create && !$checks_failure && $CreateIncident ) {
     my ($inc_obj, @tmp) = $m->comp(
         '/RTIR/Investigation/Elements/Create:Process',
         %ARGS,

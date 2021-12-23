@@ -223,6 +223,17 @@ RT::Interface::Web::Redirect(RT::IR->HREFTo("$Type/Edit.html?"
 my @results;
 my $checks_failure = 0;
 
+my $skip_update = 0;
+my $CustomFields = $Ticket->CustomFields;
+$m->callback(
+    CallbackPage => '/Ticket/Modify.html',
+    TicketObj    => $Ticket,
+    CustomFields => $CustomFields,
+    ARGSRef      => \%ARGS,
+    skip_update  => \$skip_update,
+    results      => \@results,
+);
+
 if ( $SaveChanges ) {
     my $status = $m->comp('/Elements/ValidateCustomFields',
         CustomFields => $Ticket->QueueObj->TicketCustomFields,
@@ -244,7 +255,7 @@ if ( $SaveChanges ) {
 }
 
 # XXX: process even if checks failed as EditPeople doesn't preserve state
-if ( $SaveChanges && !$OnlySearchForPeople ) {
+if ( $SaveChanges && !$skip_update && !$OnlySearchForPeople ) {
 
     # XXX: ProcessTicketWatchers doesn't like WatcherTypeEmailX with
     # empty WatcherAddressEmailX
@@ -256,7 +267,7 @@ if ( $SaveChanges && !$OnlySearchForPeople ) {
     push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS );
 }
 
-if ( $SaveChanges && !$checks_failure && !$OnlySearchForPeople ) {
+if ( $SaveChanges && !$skip_update && !$checks_failure && !$OnlySearchForPeople ) {
     my $strict_acl = RT->Config->Set( StrictLinkACL => 0 );
     push @results, ProcessTicketLinks(    TicketObj => $Ticket, ARGSRef => \%ARGS );
     RT->Config->Set( StrictLinkACL => $strict_acl );
