@@ -192,6 +192,19 @@ class, which is the default for RTIR. This should make the Response CF
 work as intended. If you are using the Content CF in some way, you
 can edit the Templates class configuration and enable it again.
 
+=item * CVE ID Custom Field Added
+
+A new default custom field called C<CVE ID> is added with this upgrade.
+On Incidents with a CVE defined, some information about the CVE from
+the NIST vulnerability system is displayed on the page with a link
+to the full description on the NIST website.
+
+CVE IDs can also now be parsed and automatically added to this
+custom field from incoming email, similar to IP addresses.
+
+If you don't track CVEs with your RTIR instance, you can disable
+the custom field and the new scrips.
+
 =back
 
 =cut
