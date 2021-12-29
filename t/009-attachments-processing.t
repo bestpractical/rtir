@@ -203,7 +203,7 @@ $agent->goto_create_rtir_ticket('Countermeasures');
 
     $agent->display_ticket( $inc_id);
     $agent->follow_link_ok({text => 'Reply to Reporters'}, "go to 'Reply to Reporters'");
-    $agent->content_contains( "<input type=\"checkbox\" name=\"SelectedReportsAll\" value=\"1\" checked=\"checked\"",
+    $agent->content_like( qr/<input[^>]+?type="checkbox"[^>]+?name="SelectedReportsAll"[^>]+?value="1"[^>]+?checked="checked"/,
                               'Checkboxes checked for reply all');
 
     my $content = "this is test";
