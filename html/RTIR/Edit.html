@@ -254,44 +254,48 @@ if ( $SaveChanges ) {
     );
 }
 
-# XXX: process even if checks failed as EditPeople doesn't preserve state
 if ( $SaveChanges && !$skip_update && !$OnlySearchForPeople ) {
+    $Ticket->Atomic(
+        sub {
+            # XXX: process even if checks failed as EditPeople doesn't preserve state
+            # XXX: ProcessTicketWatchers doesn't like WatcherTypeEmailX with
+            # empty WatcherAddressEmailX
+            delete $ARGS{"WatcherTypeEmail$_"} foreach
+                grep !$ARGS{"WatcherAddressEmail$_"} && $ARGS{"WatcherTypeEmail$_"},
+                1 .. 3;
 
-    # XXX: ProcessTicketWatchers doesn't like WatcherTypeEmailX with
-    # empty WatcherAddressEmailX
-    delete $ARGS{"WatcherTypeEmail$_"} foreach
-        grep !$ARGS{"WatcherAddressEmail$_"} && $ARGS{"WatcherTypeEmail$_"},
-        1..3
-    ;
+            push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
-    push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS );
-}
+            if ( !$checks_failure ) {
+                my $strict_acl = RT->Config->Set( StrictLinkACL => 0 );
+                push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS );
+                RT->Config->Set( StrictLinkACL => $strict_acl );
 
-if ( $SaveChanges && !$skip_update && !$checks_failure && !$OnlySearchForPeople ) {
-    my $strict_acl = RT->Config->Set( StrictLinkACL => 0 );
-    push @results, ProcessTicketLinks(    TicketObj => $Ticket, ARGSRef => \%ARGS );
-    RT->Config->Set( StrictLinkACL => $strict_acl );
+                push @results, ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
-    push @results, ProcessTicketDates(    TicketObj => $Ticket, ARGSRef => \%ARGS );
+                push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS );
+                push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
-    push @results, ProcessUpdateMessage(  TicketObj => $Ticket, ARGSRef=>\%ARGS );
-    push @results, ProcessTicketBasics(   TicketObj => $Ticket, ARGSRef => \%ARGS );
+                push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS );
 
-    push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS );
-
-    $m->callback(
-        CallbackName => 'AfterProcessing',
-        ARGSRef => \%ARGS, Ticket => $Ticket, results => \@results,
+                $m->callback(
+                    CallbackName => 'AfterProcessing',
+                    ARGSRef      => \%ARGS,
+                    Ticket       => $Ticket,
+                    results      => \@results,
+                );
+            }
+        }
     );
-
-    MaybeRedirectForResults(
-        Actions   => \@results,
-        Path      => RT->Config->Get('DisplayAfterEdit', $session{'CurrentUser'})
-        ? RT::IR->HREFTo("Display.html", IncludeWebPath => 0)
-        : RT::IR->HREFTo("Edit.html", IncludeWebPath => 0)
-        ,
-        Arguments => { id => $id },
-    );
+    if ( !$checks_failure ) {
+        MaybeRedirectForResults(
+            Actions => \@results,
+            Path    => RT->Config->Get( 'DisplayAfterEdit', $session{'CurrentUser'} )
+            ? RT::IR->HREFTo( "Display.html", IncludeWebPath => 0 )
+            : RT::IR->HREFTo( "Edit.html",    IncludeWebPath => 0 ),
+            Arguments => { id => $id },
+        );
+    }
 }
 
 my $name = RT::IR::TicketType( Ticket => $Ticket );
