@@ -9,7 +9,7 @@ no warnings 'once';
 use Term::ANSIColor qw(:constants);
 use Module::Install::Base;
 use base 'Module::Install::Base';
-our $VERSION = '0.42';
+our $VERSION = '0.43';
 
 use FindBin;
 use File::Glob     ();
@@ -134,7 +134,7 @@ lexicons ::
     if( $extra_args->{'remove_files'} ){
         $self->include('Module::Install::RTx::Remove');
         our @remove_files;
-        eval { require "etc/upgrade/remove_files" }
+        eval { require "./etc/upgrade/remove_files" }
           or print "No remove file located, no files to remove\n";
         $remove_files = join ",", map {"q(\$(DESTDIR)$plugin_path/$name/$_)"} @remove_files;
     }
