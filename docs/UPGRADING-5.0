@@ -205,6 +205,19 @@ custom field from incoming email, similar to IP addresses.
 If you don't track CVEs with your RTIR instance, you can disable
 the custom field and the new scrips.
 
+=item * Run Transaction Batch last, even in nested updates
+
+When RTIR processes scrips, Batch mode scrips should always run last.
+Previously, with nested updates, inner updates would run batch before
+all outer updates were complete. One example of this is processing ticket
+updates, the Basics update calls an inner "atomic" transaction to update
+Owner, which would cause the unexpected batch run. This has been fixed
+so batch runs only once for the outermost updates. All transactions
+performed for that batch are available from the C<TransactionBatch> method
+as expected.
+
+This mirrors a change also made in RT 5.0.2.
+
 =back
 
 =cut
