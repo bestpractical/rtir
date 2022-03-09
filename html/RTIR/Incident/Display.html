@@ -142,6 +142,7 @@
       </div>
 
   <& /Elements/ShowCustomFields, Grouping => 'Basics', Object => $TicketObj, Table => 0 &>
+%     $m->callback( %ARGS, TicketObj => $TicketObj, CallbackName => 'EndOfBasics' );
 
     </div>
 % }
@@ -463,6 +464,7 @@ if ( !$SkipProcessing && $ARGS{'Action'} && $ARGS{'Action'} =~ /^(Steal|Kill|Tak
 
 
 unless( $new_ticket || $SkipProcessing ) {
+    push @results, ProcessUpdateMessage( ARGSRef => \%ARGS, TicketObj => $TicketObj );
     push @results, ProcessTicketBasics( ARGSRef => \%ARGS, TicketObj => $TicketObj );
     push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $TicketObj );
     push @results, ProcessTicketDates( ARGSRef => \%ARGS, TicketObj => $TicketObj );
@@ -494,10 +496,6 @@ if ( !$SkipProcessing && $ARGS{'BulkArticles'} && @SelectedTickets ) {
         TicketObj => $TicketObj,
         ARGSRef => {$TicketObj->Id."-RefersTo" => $ref}
     );
-}
-
-unless( $new_ticket || $SkipProcessing ) {
-    push @results, ProcessUpdateMessage( ARGSRef => \%ARGS, TicketObj => $TicketObj, Actions => \@results );
 }
 
 if ( $ARGS{'MarkAsSeen'} ) {

@@ -136,6 +136,21 @@
 <& /Elements/ListActions, actions => loc('Warning: no recipients!'), titlebox => { class => 'error-titlebox', bodyclass => 'py-0' } &>
 % }
 
+<&| /Widgets/TitleBox, title => loc('Incident Time Taken') &>
+  <div class="form-row">
+    <div class="label col-2">
+      <&|/l&>Worked</&>:
+    </div>
+    <div class="value col-9">
+      <& /Elements/EditTimeValue,
+          Name => 'UpdateTimeWorked',
+          Default => $ARGS{'UpdateTimeWorked'} || '',
+      &>
+    </div>
+  </div>
+% $m->callback( %ARGS, CallbackName => 'AfterTimeWorked', TicketObj => $IncidentObj );
+</&>
+
 <& ../Elements/ReplyForm, %ARGS,
     TicketObj   => $IncidentObj,
     Status      => $Status,
@@ -217,18 +232,20 @@ if ( $SubmitTicket && !$skip_update && !$checks_failure ) {
     foreach my $Ticket ( @selected_children ) {
         my $id = $Ticket->id;
 
-        push @results, map { loc("Ticket [_1]: [_2]", $id, $_) }
-            ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS, KeepAttachments => 1 );
+        # UpdateTimeWorked is only for current incident
+        my %children_args = map { $_ => $ARGS{$_} } grep { $_ ne 'UpdateTimeWorked' } keys %ARGS;
 
-        my %additional;
         if ( $Status ) {
-            $additional{Status} = RT::IR->MapStatus( $Status, $incident_cycle => $Ticket );
+            $children_args{Status} = RT::IR->MapStatus( $Status, $incident_cycle => $Ticket );
         }
+
+        push @results, map { loc("Ticket [_1]: [_2]", $id, $_) }
+            ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%children_args, KeepAttachments => 1 );
 
         unless ( RT::IR->IsLinkedToActiveIncidents( $Ticket, $IncidentObj ) ) {
             push @results, ProcessTicketBasics(
                 TicketObj => $Ticket,
-                ARGSRef => { %ARGS, %additional },
+                ARGSRef => \%children_args,
             );
         }
     }
@@ -255,7 +272,12 @@ if ( $SubmitTicket && !$skip_update && !$checks_failure ) {
             Object => $IncidentObj, ARGSRef => \%ARGS
         );
         push @results, ProcessTicketBasics(
-            TicketObj => $IncidentObj, ARGSRef => { %ARGS, Status => $Status },
+            TicketObj => $IncidentObj,
+            ARGSRef   => {
+                %ARGS,
+                Status => $Status,
+                $ARGS{UpdateTimeWorked} ? ( TimeWorked => $IncidentObj->TimeWorked + $ARGS{UpdateTimeWorked} ) : (),
+            },
         );
     } else {
         push @results, loc("Status of the Incident left unchanged; not all children were updated");

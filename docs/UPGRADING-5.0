@@ -218,6 +218,25 @@ as expected.
 
 This mirrors a change also made in RT 5.0.2.
 
+=item * Incident Reply Updates
+
+On the Incident Reply to Reporters and Reply to All pages, "Worked" is now
+in a new "Incident Time Taken" section to make it clear that you are recording time
+worked on the incident, and to make it easy to do so. Previously there was a Worked
+field in the Reply section, which would then apply time to all linked tickets.
+
+The goal of the Reply to All pages is to send out a notification or update to
+multiple people in one step, so the time you are reporting is usually on
+the Incident ticket, not once per linked ticket. However, this is a change from the
+previous behavior. This update allows for cleaner integration with
+RT::Extension::TimeTracking, which provides additional time tracking features.
+
+Processing of the update message was also moved before processing of other ticket
+updates like Basics (status, etc.), custom fields, and dates. This makes RTIR more
+consistent with RT, but it's possible this could impact scrips if the relied on
+Basics or other updates running before message updates. If you have this issue,
+moving the scrip to Batch mode may restore the previous behavior.
+
 =back
 
 =cut
