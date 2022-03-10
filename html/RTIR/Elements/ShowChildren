@@ -46,10 +46,18 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if( $ShowStatusesSelector ) {
-%   foreach my $s ( $LifecycleObj->Valid ) {
-%       my $checked = (grep { $_ eq $s } @Statuses)? 'checked': '';
-<input type="checkbox" name="Statuses" value="<% $s %>" <% $checked %> />&nbsp;<% $s %>
-%   }
+<div class="form-row">
+% foreach my $s ( $LifecycleObj->Valid ) {
+  <div class="col-auto">
+%   my $checked = (grep { $_ eq $s } @Statuses)? 'checked': '';
+%   my $id = CSSClass("Status-$s");
+    <div class="custom-control custom-checkbox">
+      <input type="checkbox" class="custom-control-input" id="<% $id %>" name="Statuses" value="<% $s %>" <% $checked %> />
+      <label class="custom-control-label" for="<% $id %>"><% $s %></label>
+    </div>
+  </div>
+% }
+</div>
 <& /Elements/Submit, Name => 'RefineStatus', Label => loc('Filter status') &>
 % }
 

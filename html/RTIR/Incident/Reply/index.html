@@ -127,8 +127,10 @@
 <div class="form-row">
   <div class="col-12">
     <h4><&|/l&>Incident</&></h4>
-    <input type="checkbox" id="SelectedIncident" name="SelectedIncident" <% $ARGS{SelectedIncident} ? 'checked="checked"' : '' |n %> value="<% $IncidentObj->Id %>">
-    <label for="SelectedIncident"><b><% loc('Add the correspondence/comment to current incident ticket also') %></b></label>
+    <div class="custom-control custom-checkbox">
+      <input type="checkbox" class="custom-control-input" id="SelectedIncident" name="SelectedIncident" value="<% $IncidentObj->Id %>" <% $ARGS{SelectedIncident} ? 'checked="checked"' : '' |n %> />
+      <label class="custom-control-label" for="SelectedIncident"><b><% loc('Add the correspondence/comment to current incident ticket also') %></b></label>
+    </div>
   </div>
 </div>
 
