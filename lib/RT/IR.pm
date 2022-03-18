@@ -131,6 +131,14 @@ sub EveryoneInvestigationRights {
     return (qw(ReplyToTicket));
 }
 
+require RT::Interface::Web;
+
+# Add RTIR specific ResultPages to whitelist
+for my $result_page ( 'Link/FromIncident/', 'Link/ToIncident/', 'Merge/', 'Incident/Reply/' ) {
+    push @RT::Interface::Web::WHITELISTED_RESULT_PAGES, qr{^/RTIR/(?:c/[^/]+/)?$result_page$};
+}
+
+
 use Parse::BooleanLogic;
 my $ticket_sql_parser = Parse::BooleanLogic->new;
 
