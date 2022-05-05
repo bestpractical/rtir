@@ -170,7 +170,8 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
     %CFDefaults,
     Object => $ticket,
     CustomFieldGenerator => sub { $QueueObj->TicketCustomFields },
-    Groupings => [ RT::CustomField->CustomGroupings('RTIR::Ticket'), '' ],
+    Groupings => [ RT::CustomField->CustomGroupings( 'RTIR::Ticket', $QueueObj->Name ), '' ],
+    CategoryObj => $QueueObj,
 &>
 
 </div>
