@@ -129,11 +129,15 @@
 <div id="ticket-update-message">
 
 <&|/Widgets/TitleBox, title => loc('Recipients'), id => 'recipients' &>
+% for my $address ( grep {defined} @TxnSendMailTo ) {
+    <input type="hidden" name="TxnSendMailTo" value="<% $address %>" />
+% }
+  <input type="hidden" name="TxnRecipients" value="<% $TxnRecipients %>" />
 </&>
 <script type="text/javascript">
 jQuery( function() {
    var updateScrips = function() {
-       jQuery('#recipients div.titlebox-content div.card-body').load( '<% RT->Config->Get('WebPath')%>/Helpers/ShowSimplifiedRecipients',
+       jQuery('#recipients div.titlebox-content div.card-body').load( '<% RT->Config->Get('WebPath')%>/Helpers/ShowSimplifiedRecipients?RenderTxnRecipientsInput=1',
            jQuery('form[name=TicketUpdate]').serialize(),
            function() {
                var txn_send_field = jQuery("#recipients input[name=TxnSendMailTo]");
