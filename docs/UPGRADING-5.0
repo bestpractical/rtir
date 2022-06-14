@@ -7,6 +7,9 @@ details for previous versions.
 Also read the general L<UPGRADING> document for the steps to upgrade from
 a previous version of RTIR.
 
+To match up RT 5 versions, we escalated RTIR from 5.0.1 to 5.0.3 directly,
+so there is no RTIR 5.0.2.
+
 =head2 Notable Changes
 
 =over
