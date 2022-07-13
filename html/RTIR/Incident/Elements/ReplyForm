@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -101,6 +101,9 @@
     &>
   </div>
 </div>
+
+% # UpdateTimeWorked is shown in "Incident Time Taken" widget on individual incident pages
+% if ( !$TicketObj ) {
 <div class="form-row">
   <div class="label col-2">
     <&|/l&>Worked</&>:
@@ -112,6 +115,9 @@
     &>
   </div>
 </div>
+% }
+
+% $m->callback( %ARGS, CallbackName => 'AfterWorked', Ticket => $TicketObj );
 
 <& /RTIR/Elements/UpdateData, %ARGS, Ticket => $TicketObj, QueueObj => $QueueObj, Action => $Action &>
 

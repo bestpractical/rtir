@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -161,7 +161,7 @@ my %actions;
 	    my $uri_escaped_email = $escaped_email;
 	    RT::Interface::Web::EscapeURI(\$uri_escaped_email);
             if ( $r->uri =~ /Lookup.html$/ ) {
-                $result .= qq{<input type="checkbox" name="Requestorbox-$escaped_email" unchecked />};
+                $result .= qq{<div class="custom-control custom-checkbox d-inline-block"><input type="checkbox" class="custom-control-input" id="Requestorbox-$escaped_email" name="Requestorbox-$escaped_email" /> <label class="custom-control-label" for="Requestorbox-$escaped_email"></label></div>};
             }
             $result .= qq{ <a class="button btn btn-sm btn-primary" href="}.
                 RT::IR->HREFTo( "Create.html"

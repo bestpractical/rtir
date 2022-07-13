@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -118,6 +118,7 @@
 &>
 
 % $m->callback( %ARGS, CallbackName => 'AfterWorked', Ticket => $Ticket );
+% $m->callback( %ARGS, CallbackName => 'AfterWorked', Ticket => $Ticket, CallbackPage => '/Ticket/Update.html' );
 
 <& /Ticket/Elements/EditTransactionCustomFields,
     %ARGS, TicketObj => $Ticket, InTable => 1,
@@ -128,11 +129,15 @@
 <div id="ticket-update-message">
 
 <&|/Widgets/TitleBox, title => loc('Recipients'), id => 'recipients' &>
+% for my $address ( grep {defined} @TxnSendMailTo ) {
+    <input type="hidden" name="TxnSendMailTo" value="<% $address %>" />
+% }
+  <input type="hidden" name="TxnRecipients" value="<% $TxnRecipients %>" />
 </&>
 <script type="text/javascript">
 jQuery( function() {
    var updateScrips = function() {
-       jQuery('#recipients div.titlebox-content div.card-body').load( '<% RT->Config->Get('WebPath')%>/Helpers/ShowSimplifiedRecipients',
+       jQuery('#recipients div.titlebox-content div.card-body').load( '<% RT->Config->Get('WebPath')%>/Helpers/ShowSimplifiedRecipients?RenderTxnRecipientsInput=1',
            jQuery('form[name=TicketUpdate]').serialize(),
            function() {
                var txn_send_field = jQuery("#recipients input[name=TxnSendMailTo]");
@@ -255,7 +260,19 @@ if ( !$checks_failure && $SubmitTicket ) {
     $ARGS{'SquelchMailTo'} = \@squelchlist if @squelchlist;
 }
 
-if ( !$checks_failure && $SubmitTicket ) {
+# RTIR passes Status instead of DefaultStatus, so it's probably better to
+# not simply reuse the callback in /Ticket/Update.html.
+my $skip_update = 0;
+$m->callback(
+    CallbackName   => 'BeforeUpdate',
+    ARGSRef        => \%ARGS,
+    skip_update    => \$skip_update,
+    checks_failure => $checks_failure,
+    results        => \@results,
+    TicketObj      => $Ticket,
+);
+
+if ( !$skip_update && !$checks_failure && $SubmitTicket ) {
     $m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Ticket => $Ticket);
 
     # Use the custom display page for this type if it exists

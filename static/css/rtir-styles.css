@@ -76,6 +76,7 @@ body.rtir .titlebox.tickets-list-investigation, body.rtir .titlebox.tickets-list
 body.rtir .titlebox.ticket-info-time { border-top: 3px solid #7B1FA2; }
 body.rtir .titlebox.ticket-info-message { border-top: 3px solid #1976D2; }
 body.rtir .titlebox.ticket-info-details { border-top: 3px solid #D32F2F; }
+body.rtir .titlebox.ticket-info-cve { border-top: 3px solid #1574b3; } /* The color is from header of https://nvd.nist.gov/ */
 
 body.rtir #comp-RTIR-Search #body {
     position: relative;

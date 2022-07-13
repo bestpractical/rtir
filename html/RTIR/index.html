@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -51,12 +51,6 @@
 <& /Elements/MyRT, Portlets => $portlets &>
 <%INIT>
 
-my $portlets = $session{'CurrentUser'}->Preferences('RTIR_HomepageSettings');
-unless ($portlets) {
-    my ($defaults) = RT::System->new($session{'CurrentUser'})->Attributes->Named('RTIR_HomepageSettings');
-    $portlets = $defaults ? $defaults->Content : {};
-}
-
 if ( defined $q && length $q ) {
 
     if ($q =~ /^#?(\d+)$/) {
@@ -72,6 +66,45 @@ if ( defined $q && length $q ) {
         RT->Config->Get('WebURL') .  'Search/Results.html?ExtraQueryParams=RTIR&RTIR=1&Query='
         . $m->interp->apply_escapes( $query, 'u' )
     );
+}
+
+my ($system_default) = RT::System->new($session{'CurrentUser'})->Attributes->Named('RTIRDefaultDashboard');
+my $system_default_id = $system_default ? $system_default->Content : 0;
+my $user = $session{'CurrentUser'}->UserObj;
+my $portlets;
+if ( my $dashboard_id = $user->Preferences( RTIRDefaultDashboard => $system_default_id ) ) {
+
+    # Allow any user to read system default dashboard
+    my $dashboard
+        = RT::Dashboard->new( $system_default_id == $dashboard_id ? RT->SystemUser : $session{'CurrentUser'} );
+    my ( $ok, $msg ) = $dashboard->LoadById($dashboard_id);
+    if ( !$ok ) {
+        my $user_msg = loc('Unable to load selected dashboard, it may have been deleted');
+        if ( $dashboard_id == $system_default_id ) {
+            RT->Logger->warn("Unable to load dashboard: $msg");
+            $m->out( $m->scomp( '/Elements/ListActions', actions => $user_msg ) );
+            return;
+        }
+        else {
+            my ( $ok, $sys_msg ) = $dashboard->LoadById($system_default_id);
+            if ($ok) {
+                $m->out(
+                    $m->scomp(
+                        '/Elements/ListActions',
+                        actions => [ $user_msg, loc('Setting homepage to system default RTIR homepage') ]
+                    )
+                );
+                my ( $ok, $msg ) = $user->DeletePreferences('RTIRDefaultDashboard');
+                RT->Logger->error( "Couldn't delete RTIRDefaultDashboard of user " . $user->Name . ": $msg" ) unless $ok;
+            }
+            else {
+                RT->Logger->warn("Unable to load dashboard: $msg $sys_msg");
+                $m->out( $m->scomp( '/Elements/ListActions', actions => $user_msg ) );
+                return;
+            }
+        }
+    }
+    $portlets = $dashboard->Panes;
 }
 
 my @results;

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -51,7 +51,7 @@ use 5.008003;
 use strict;
 use warnings;
 
-our $VERSION = '5.0.1';
+our $VERSION = '5.0.3';
 
 use Scalar::Util qw(blessed);
 
@@ -130,6 +130,14 @@ sub EveryoneCountermeasureRights {
 sub EveryoneInvestigationRights {
     return (qw(ReplyToTicket));
 }
+
+require RT::Interface::Web;
+
+# Add RTIR specific ResultPages to whitelist
+for my $result_page ( 'Link/FromIncident/', 'Link/ToIncident/', 'Merge/', 'Incident/Reply/' ) {
+    push @RT::Interface::Web::WHITELISTED_RESULT_PAGES, qr{^/RTIR/(?:c/[^/]+/)?$result_page$};
+}
+
 
 use Parse::BooleanLogic;
 my $ticket_sql_parser = Parse::BooleanLogic->new;
@@ -281,7 +289,10 @@ sub GetRTIRDefaultQueue {
 
     $queue = RT->Config->Get( "RTIR_DefaultQueue", $HTML::Mason::Commands::session{'CurrentUser'} );
 
-    return $queue;
+    # Confirm the user can see and load the default queue
+    my $queue_obj = RT::Queue->new( $HTML::Mason::Commands::session{'CurrentUser'} );
+    $queue_obj->Load($queue);
+    return defined $queue_obj->Name ? $queue_obj->Id : undef;
 }
 
 =head2 Lifecycles
@@ -663,6 +674,14 @@ sub FirstWhoisServer {
     return $res;
 }
 
+sub IsValidWhoisServer {
+    my $self = shift;
+    my $server = lc (shift or return 0);
+    my $servers = RT->Config->Get('whois');
+
+    return ((grep { lc $_ eq $server } map { ref $_ ? $_->{'Host'} : $_ } values %$servers) ? 1 : 0);
+}
+
 sub WhoisLookup {
     my $self = shift;
     my %args = (
@@ -674,6 +693,9 @@ sub WhoisLookup {
     my $server = $args{'Server'} || $self->FirstWhoisServer;
     return (undef, $args{'CurrentUser'}->loc("No whois servers configured"))
         unless $server;
+
+    return (undef, $args{'CurrentUser'}->loc("Invalid whois server specified"))
+        unless $self->IsValidWhoisServer( $server );
 
     my ($host, $port) = split /\s*:\s*/, $server, 2;
     $port = 43 unless ($port || '') =~ /^\d+$/;

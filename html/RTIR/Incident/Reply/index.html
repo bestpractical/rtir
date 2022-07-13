@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -124,9 +124,34 @@
 % }
 % }
 
+<div class="form-row">
+  <div class="col-12">
+    <h4><&|/l&>Incident</&></h4>
+    <div class="custom-control custom-checkbox">
+      <input type="checkbox" class="custom-control-input" id="SelectedIncident" name="SelectedIncident" value="<% $IncidentObj->Id %>" <% $ARGS{SelectedIncident} ? 'checked="checked"' : '' |n %> />
+      <label class="custom-control-label" for="SelectedIncident"><b><% loc('Add the correspondence/comment to current incident ticket also') %></b></label>
+    </div>
+  </div>
+</div>
+
 % unless ( $candidates ) {
-<& /Elements/ListActions, actions => loc('Warning: no recipients!'), titlebox => { class => 'error-titlebox' } &>
+<& /Elements/ListActions, actions => loc('Warning: no recipients!'), titlebox => { class => 'error-titlebox', bodyclass => 'py-0' } &>
 % }
+
+<&| /Widgets/TitleBox, title => loc('Incident Time Taken') &>
+  <div class="form-row">
+    <div class="label col-2">
+      <&|/l&>Worked</&>:
+    </div>
+    <div class="value col-9">
+      <& /Elements/EditTimeValue,
+          Name => 'UpdateTimeWorked',
+          Default => $ARGS{'UpdateTimeWorked'} || '',
+      &>
+    </div>
+  </div>
+% $m->callback( %ARGS, CallbackName => 'AfterTimeWorked', TicketObj => $IncidentObj );
+</&>
 
 <& ../Elements/ReplyForm, %ARGS,
     TicketObj   => $IncidentObj,
@@ -164,6 +189,18 @@ $m->callback(
     Ticket         => $IncidentObj
 );
 
+# RTIR passes Status instead of DefaultStatus, so it's probably better to
+# not simply reuse the callback in /Ticket/Update.html.
+my $skip_update = 0;
+$m->callback(
+    CallbackName   => 'BeforeUpdate',
+    ARGSRef        => \%ARGS,
+    skip_update    => \$skip_update,
+    checks_failure => $checks_failure,
+    results        => \@results,
+    TicketObj      => $IncidentObj,
+);
+
 my $gnupg_widget = $m->comp('/Elements/Crypt/SignEncryptWidget:new', Arguments => \%ARGS );
 $m->comp( '/Elements/Crypt/SignEncryptWidget:Process',
     self => $gnupg_widget,
@@ -191,27 +228,35 @@ if ( $SubmitTicket && $gnupg_widget ) {
     }
 }
 
-if ( $SubmitTicket && !$checks_failure ) {
+if ( $SubmitTicket && !$skip_update && !$checks_failure ) {
 
     my $incident_cycle = $IncidentObj->QueueObj->LifecycleObj;
     foreach my $Ticket ( @selected_children ) {
         my $id = $Ticket->id;
 
-        push @results, map { loc("Ticket [_1]: [_2]", $id, $_) }
-            ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%ARGS, KeepAttachments => 1 );
+        # UpdateTimeWorked is only for current incident
+        my %children_args = map { $_ => $ARGS{$_} } grep { $_ ne 'UpdateTimeWorked' } keys %ARGS;
 
-        my %additional;
         if ( $Status ) {
-            $additional{Status} = RT::IR->MapStatus( $Status, $incident_cycle => $Ticket );
+            $children_args{Status} = RT::IR->MapStatus( $Status, $incident_cycle => $Ticket );
         }
+
+        push @results, map { loc("Ticket [_1]: [_2]", $id, $_) }
+            ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef => \%children_args, KeepAttachments => 1 );
 
         unless ( RT::IR->IsLinkedToActiveIncidents( $Ticket, $IncidentObj ) ) {
             push @results, ProcessTicketBasics(
                 TicketObj => $Ticket,
-                ARGSRef => { %ARGS, %additional },
+                ARGSRef => \%children_args,
             );
         }
     }
+
+    if ( $SelectedIncident ) {
+        push @results, map { loc("Ticket [_1]: [_2]", $id, $_) }
+            ProcessUpdateMessage( TicketObj => $IncidentObj, ARGSRef => \%ARGS, KeepAttachments => 1 );
+    }
+
     # manually clear this out since we told ProcessUpdateMessage to KeepAttachments
     delete $session{'Attachments'}{ $ARGS{'Token'} };
 
@@ -229,7 +274,12 @@ if ( $SubmitTicket && !$checks_failure ) {
             Object => $IncidentObj, ARGSRef => \%ARGS
         );
         push @results, ProcessTicketBasics(
-            TicketObj => $IncidentObj, ARGSRef => { %ARGS, Status => $Status },
+            TicketObj => $IncidentObj,
+            ARGSRef   => {
+                %ARGS,
+                Status => $Status,
+                $ARGS{UpdateTimeWorked} ? ( TimeWorked => $IncidentObj->TimeWorked + $ARGS{UpdateTimeWorked} ) : (),
+            },
         );
     } else {
         push @results, loc("Status of the Incident left unchanged; not all children were updated");
@@ -299,5 +349,6 @@ $Order           => RT->Config->Get('DefaultSearchResultOrder')
 @SelectedReports         => ()
 @SelectedInvestigations  => ()
 @SelectedCountermeasures => ()
+$SelectedIncident        => undef
 $SubmitTicket            => 0
 </%ARGS>

@@ -7,6 +7,9 @@ details for previous versions.
 Also read the general L<UPGRADING> document for the steps to upgrade from
 a previous version of RTIR.
 
+To match up RT 5 versions, we escalated RTIR from 5.0.1 to 5.0.3 directly,
+so there is no RTIR 5.0.2.
+
 =head2 Notable Changes
 
 =over
@@ -131,6 +134,111 @@ The configuration option C<%InlineEditPanelBehavior>, as documented in
 RT, allows you to set the edit behavior. To set different behavior for
 RTIR, you can use the key C<RTIR::Ticket> with the same format as that
 documented for C<RT::Ticket>.
+
+=back
+
+=head1 UPGRADING FROM 5.0.1 AND EARLIER
+
+=over 4
+
+=item * "RTIR at a glance" is now a dashboard
+
+"RTIR at a glance" previously could be customized and was stored as
+a special configuration used just for the RTIR homepage.
+It is now a dashboard just like other dashboards in RT.
+With this update, you can now easily change your entire RTIR homepage
+by selecting a different dashboard to be your default homepage.
+This update aligns with RT where a similar change was made in RT 5.0.2.
+
+After upgrading, RTIR at a glance should look the same as it did
+previously, but there are various changes in how it is managed.
+
+The previous global RTIR at a glance page is converted to a new System
+dashboard called "RTIR Homepage". Individual users with a custom homepage
+will see a new dashboard in "My Dashboards" called "RTIR Homepage". These are
+regular dashboards now, so the names can be changed if desired.
+
+The gears icon on the RTIR homepage now links to a page that displays all
+available dashboards and users can select their default homepage from
+the list. To customize, users can create a new dashboard. The privacy
+of dashboards can be set to an individual user, a group, or system-wide,
+depending on the user's rights. This makes it easy to set up and share
+useful RTIR homepage configurations.
+
+Users who want to customize their homepage need the rights "ModifySelf",
+"CreateOwnDashboard", "DeleteOwnDashboard", "ModifyOwnDashboard" and
+"SeeOwnDashboard". All users who have "ModifySelf" are automatically granted
+these dashboard rights as part of the RT 5.0.2 upgrade. You can modify
+these rights as desired if you don't want users to be able to create dashboards.
+
+All users can see the default System dashboard set for RTIR. If you
+want to allow users to see other System dashboards, grant the
+"SeeDashboard" right. This is not done automatically with the upgrade.
+
+=item * Global "RTIR at a glance" configuration page
+
+For RT admins, Admin > Global > RTIR at a glance is now available, and
+instead of loading the page configuration editor, it shows a list of
+System dashboards that can be set as the default homepage.
+
+=item * RT's Default Article Content Custom Field is Deselected
+
+When initially installing RT, a global custom field Content is created
+and applied to Articles. RTIR also creates an Article custom field on
+installation, called Response. The default DutyTeam group has rights to
+use the Response CF, but not the Content CF and typically for boilerplate
+email responses you need only one custom field. The extra CF can also cause
+issues with automatically inserting content on the ticket reply page.
+
+As part of this update, we deselect the Content CF from the Templates
+class, which is the default for RTIR. This should make the Response CF
+work as intended. If you are using the Content CF in some way, you
+can edit the Templates class configuration and enable it again.
+
+=item * CVE ID Custom Field Added
+
+A new default custom field called C<CVE ID> is added with this upgrade.
+On Incidents with a CVE defined, some information about the CVE from
+the NIST vulnerability system is displayed on the page with a link
+to the full description on the NIST website.
+
+CVE IDs can also now be parsed and automatically added to this
+custom field from incoming email, similar to IP addresses.
+
+If you don't track CVEs with your RTIR instance, you can disable
+the custom field and the new scrips.
+
+=item * Run Transaction Batch last, even in nested updates
+
+When RTIR processes scrips, Batch mode scrips should always run last.
+Previously, with nested updates, inner updates would run batch before
+all outer updates were complete. One example of this is processing ticket
+updates, the Basics update calls an inner "atomic" transaction to update
+Owner, which would cause the unexpected batch run. This has been fixed
+so batch runs only once for the outermost updates. All transactions
+performed for that batch are available from the C<TransactionBatch> method
+as expected.
+
+This mirrors a change also made in RT 5.0.2.
+
+=item * Incident Reply Updates
+
+On the Incident Reply to Reporters and Reply to All pages, "Worked" is now
+in a new "Incident Time Taken" section to make it clear that you are recording time
+worked on the incident, and to make it easy to do so. Previously there was a Worked
+field in the Reply section, which would then apply time to all linked tickets.
+
+The goal of the Reply to All pages is to send out a notification or update to
+multiple people in one step, so the time you are reporting is usually on
+the Incident ticket, not once per linked ticket. However, this is a change from the
+previous behavior. This update allows for cleaner integration with
+RT::Extension::TimeTracking, which provides additional time tracking features.
+
+Processing of the update message was also moved before processing of other ticket
+updates like Basics (status, etc.), custom fields, and dates. This makes RTIR more
+consistent with RT, but it's possible this could impact scrips if the relied on
+Basics or other updates running before message updates. If you have this issue,
+moving the scrip to Batch mode may restore the previous behavior.
 
 =back
 

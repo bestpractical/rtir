@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -149,5 +149,7 @@ sub _scrub_html {
     $scrubbed_html =~ s|<\/?p>|<br>|gi;
     return $scrubbed_html;
 }
+
+RT::IR->ImportOverlays;
 
 1;

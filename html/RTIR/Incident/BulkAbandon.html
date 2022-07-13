@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -79,8 +79,11 @@ BaseURL       => RT::IR->HREFTo('Incident/BulkAbandon.html'),
 <&| /Widgets/TitleBox, title => loc("Select recipients") &>
 % foreach my $box( @CheckBox ) {
 % my $checked = (scalar grep $_ && $box->{'Value'}, @ReplyToAll )? ' checked' : '';
-<input type="checkbox" name="ReplyToAll" value="<% $box->{'Value'} %>" <% $checked %>" />
-<% $box->{'Title'} %><br />
+% my $id = CSSClass("ReplyToAll-$box->{'Value'}");
+<div class="custom-control custom-checkbox">
+  <input type="checkbox" class="custom-control-input" id="<% $id %>" name="ReplyToAll" value="<% $box->{'Value'} %>" <% $checked %>" />
+  <label class="custom-control-label" for="<% $id %>"><% $box->{'Title'} %></label>
+</div>
 % }
 </&>
 <br />

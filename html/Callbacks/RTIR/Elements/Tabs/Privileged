@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,6 +53,22 @@ my $query_string = sub {
     $u->query_form(map { $_ => $args{$_} } sort keys %args);
     return $u->query || '';
 };
+
+if ( my $admin = Menu->child('admin') ) {
+    if ( my $global = $admin->child('global') ) {
+        $global->child(
+            'my-rtir' => title => 'RTIR at a glance',
+            path      => '/Admin/Global/MyRT.html?'
+                . $query_string->(
+                    Title                => loc('Customize Global RTIR at a glance'),
+                    WidgetTitle          => loc('Set RTIR Homepage'),
+                    AttributeName        => 'RTIRDefaultDashboard',
+                    AttributeDescription => 'RTIR Default Dashboard',
+                ),
+            sort_order => 8.1,
+        );
+    }
+}
 
 my $args = $DECODED_ARGS;
 
@@ -119,13 +135,13 @@ if ( $m->request_comp->path =~ m{^/Search/} ) {
 
         if ( my $results = PageMenu()->child('results') ) {
             if ( $results->path =~ m{^/RTIR/Incident/Reply/} ) {
-                $results->title( loc('Back to Incident Reply') );
+                $results->title( loc('Back to Incident Reply #[_1]', $args{id}) );
             }
             elsif ( $results->path =~ m{^/RTIR/Link/} ) {
-                $results->title( loc('Back to Link') );
+                $results->title( loc('Back to Link #[_1]', $args{id}) );
             }
             elsif ( $results->path =~ m{^/RTIR/Merge/} ) {
-                $results->title( loc('Back to Merge') );
+                $results->title( loc('Back to Merge #[_1]', $args{id}) );
             }
         }
     }
@@ -402,7 +418,7 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
         new => title => loc("New [_1]", RT::IR::TicketType( Lifecycle => $lifecycle || RT::IR->lifecycle_incident ) ),
         path => !$lifecycle
             ? RT::IR->HREFTo("Incident/Create.html?Child=$id&Lifecycle=".RT::IR->lifecycle_incident, IncludeWebPath => 0)
-            : RT::IR->HREFTo('Create.html' . $query_string->( Incident => $id, Lifecycle => $lifecycle ), IncludeWebPath => 0)
+            : RT::IR->HREFTo('Create.html?' . $query_string->( Incident => $id, Lifecycle => $lifecycle ), IncludeWebPath => 0)
         ,
     );
     PageMenu()->child(
@@ -608,7 +624,7 @@ PageWidgets()->child('simple_search')->raw_html( $m->scomp(
     SendTo => RT::IR->HREFTo('index.html', IncludeWebPath => 0),
     Placeholder => 'Search Incidents'
 ) );
-PageWidgets()->child( create_ticket => raw_html => $HTML::Mason::Commands::m->scomp('/Elements/CreateTicket', SendTo => '/RTIR/Create.html?Queue=' . RT::IR::GetRTIRDefaultQueue()) );
+PageWidgets()->child( create_ticket => raw_html => $HTML::Mason::Commands::m->scomp('/Elements/CreateTicket', SendTo => '/RTIR/Create.html?Queue=' . (RT::IR::GetRTIRDefaultQueue() // '')) );
 
 if ( $request_path =~ m{$re_rtir_path(?:Incident/)?Create\.html} ) {
     if ( $request_path =~ m{${re_rtir_path}Incident/Create\.html} ) {

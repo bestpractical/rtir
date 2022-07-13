@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,7 +53,7 @@
       <span class="current-value"><% $Ticket->CreatedObj->AsString %></span>
     </div>
   </div>
-  <div class="form-row">
+  <div class="form-row <% $Ticket->StartsObj->Unix ? '' : 'unset-field' %>">
     <div class="label col-3">
       <&|/l&>Starts</&>:
     </div>
@@ -62,7 +62,7 @@
     </div>
   </div>
 % if ( RT::IR->IsReportQueue($Ticket->QueueObj) || RT::IR->IsInvestigationQueue($Ticket->QueueObj) || RT::IR->IsCountermeasureQueue($Ticket->QueueObj) ) {
-  <div class="form-row">
+  <div class="form-row <% $Ticket->StartedObj->Unix ? '' : 'unset-field' %>">
     <div class="label col-3">
       <&|/l&>Started</&>:
     </div>
@@ -71,7 +71,7 @@
     </div>
   </div>
 % }
-  <div class="form-row">
+  <div class="form-row <% $Ticket->DueObj->Unix ? '' : 'unset-field' %>">
     <div class="label col-3">
       <&|/l&>Due</&>:
     </div>

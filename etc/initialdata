@@ -87,6 +87,15 @@ die "Please add RT::IR to your Plugins configuration before initializing the dat
             { Name => "Piracy",            SortOrder => 6 },
         ],
     },
+    {
+        Name        => 'CVE ID',
+        Type        => 'FreeformMultiple',
+        Queue       => [ 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ],
+        Disabled    => 0,
+        Description => 'CVE ID for RTIR queues',
+        LinkValueTo => 'https://nvd.nist.gov/vuln/detail/__CustomField__#vulnCurrentDescriptionTitle',
+    },
+
     {   Name       => 'How Reported',
         Type       => 'SelectSingle',
         RenderType => 'Dropdown',
@@ -225,6 +234,14 @@ die "Please add RT::IR to your Plugins configuration before initializing the dat
     {   Name        => 'RTIR merge Domains',                                 # loc
         Description => 'Merge multiple Domains on ticket merge',             # loc
         ExecModule  => 'RTIR_MergeDomains',
+    },
+    {   Name        => 'RTIR parse message for CVEs',                 # loc
+        Description => 'Set CVE custom field from message content',   # loc
+        ExecModule  => 'RTIR_FindCVE',
+    },
+    {   Name        => 'RTIR merge CVEs',                                 # loc
+        Description => 'Merge multiple CVEs on ticket merge',             # loc
+        ExecModule  => 'RTIR_MergeCVEs',
     },
 );
 
@@ -416,6 +433,33 @@ die "Please add RT::IR to your Plugins configuration before initializing the dat
         Template       => 'Blank'
     },
 
+    {
+        Description    => "SetCVEFromContent",
+        Queue          => [ 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ],
+        ScripCondition => 'On Correspond',
+        ScripAction    => 'RTIR parse message for CVEs',
+        Template       => 'Blank'
+    },
+    {
+        Description    => "SetCVEFromContent",
+        Queue          => [ 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ],
+        ScripCondition => 'On Create',
+        ScripAction    => 'RTIR parse message for CVEs',
+        Template       => 'Blank'
+    },
+    {   Description => "MergeCVEs",
+        Queue =>
+            [ 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ],
+        ScripCondition => 'RTIR Merge',
+        ScripAction    => 'RTIR merge CVEs',
+        Template       => 'Blank'
+    },
+    {   Description    => "On Linking To Incident Copy CVEs",
+        Queue          => 'Incident Reports',
+        ScripCondition => 'RTIR Linking To Incident',
+        ScripAction    => 'RTIR merge CVEs',
+        Template       => 'Blank'
+    },
 );
 
 # WARNING: If you change content of the templates, don't forget to
@@ -625,35 +669,6 @@ for my $cf (@CustomFields) {
         );
 }
 
-@Attributes = (
-    {   Name        => 'RTIR_HomepageSettings',
-        Description => 'RTIR homepage settings',
-        Content     => {
-            body => [
-                { type => 'component', name => '/RTIR/Elements/NewReports' },
-                {   type => 'component',
-                    name => '/RTIR/Elements/UserDueIncidents'
-                },
-                {   type => 'component',
-                    name => '/RTIR/Elements/NobodyDueIncidents'
-                },
-                {   type => 'component',
-                    name => '/RTIR/Elements/DueIncidents'
-                },
-            ],
-            sidebar => [
-                {   type => 'component',
-                    name => '/RTIR/Elements/WorkWithConstituency'
-                },
-                {   type => 'component',
-                    name => '/RTIR/Elements/QueueSummary'
-                },
-                { type => 'component', name => 'RefreshHomepage' },
-            ]
-        },
-    }
-);
-
 @Final = (
     sub {
         $| = 1;
@@ -701,8 +716,16 @@ for my $cf (@CustomFields) {
         }
 
         $response->AddToObject($class);
-        $class->SetAttribute( Name => "Skip-$_", Content => 1 )
-            for ( "Name", "Summary", "CF-Title-" . $response->Id );
+
+        my @skips = ( "Name", "Summary", "CF-Title-" . $response->Id );
+
+        my $content = RT::CustomField->new($CurrentUser);
+        $content->LoadByName( Name => 'Content', LookupType => RT::Article->CustomFieldLookupType );
+        if ( $content->Id && ( $content->IsGlobal || $content->IsAdded( $class->Id ) ) ) {
+            push @skips, "CF-Title-" . $content->Id, "CF-Value-" . $content->Id;
+        }
+
+        $class->SetAttribute( Name => "Skip-$_", Content => 1 ) for @skips;
 
         my $group = RT::Group->new($CurrentUser);
         $group->LoadUserDefinedGroup("DutyTeam");
@@ -717,6 +740,82 @@ for my $cf (@CustomFields) {
             Object => RT->System
         );
 
-    }
+    },
+    sub {
+        my $dashboard = RT::Dashboard->new( RT->SystemUser );
+        my ( $ret, $msg ) = $dashboard->Save(
+            Name    => 'RTIR Homepage',
+            Privacy => join( '-', ref( RT->System ), RT->System->Id ),
+        );
+
+        if ($ret) {
+            my $panes = {
+                body => [
+                    {   pane         => 'body',
+                        portlet_type => 'component',
+                        component    => '/RTIR/Elements/NewReports',
+                        description  => '/RTIR/Elements/NewReports',
+                        path         => '/RTIR/Elements/NewReports',
+                    },
+                    {   pane         => 'body',
+                        portlet_type => 'component',
+                        component    => '/RTIR/Elements/UserDueIncidents',
+                        description  => '/RTIR/Elements/UserDueIncidents',
+                        path         => '/RTIR/Elements/UserDueIncidents',
+                    },
+                    {   pane         => 'body',
+                        portlet_type => 'component',
+                        component    => '/RTIR/Elements/NobodyDueIncidents',
+                        description  => '/RTIR/Elements/NobodyDueIncidents',
+                        path         => '/RTIR/Elements/NobodyDueIncidents',
+                    },
+                    {   pane         => 'body',
+                        portlet_type => 'component',
+                        component    => '/RTIR/Elements/DueIncidents',
+                        description  => '/RTIR/Elements/DueIncidents',
+                        path         => '/RTIR/Elements/DueIncidents',
+                    },
+                ],
+                sidebar => [
+                    {   pane         => 'sidebar',
+                        portlet_type => 'component',
+                        component    => '/RTIR/Elements/WorkWithConstituency',
+                        description  => '/RTIR/Elements/WorkWithConstituency',
+                        path         => '/RTIR/Elements/WorkWithConstituency',
+                    },
+                    {   pane         => 'sidebar',
+                        portlet_type => 'component',
+                        component    => '/RTIR/Elements/QueueSummary',
+                        description  => '/RTIR/Elements/QueueSummary',
+                        path         => '/RTIR/Elements/QueueSummary',
+                    },
+                    {   pane         => 'sidebar',
+                        portlet_type => 'component',
+                        component    => 'RefreshHomepage',
+                        description  => 'RefreshHomepage',
+                        path         => '/Elements/RefreshHomepage',
+                    },
+                ]
+            };
+
+            # fill content
+            my ( $ret, $msg ) = $dashboard->Update( Panes => $panes );
+            if ( !$ret ) {
+                RT->Logger->error("Couldn't update content for dashboard Homepage: $msg");
+            }
+
+            ( $ret, $msg ) = RT->System->SetAttribute(
+                'Name'        => 'RTIRDefaultDashboard',
+                'Description' => 'RTIR Default Dashboard',
+                'Content'     => $dashboard->Id,
+            );
+            if ( !$ret ) {
+                RT->Logger->error("Couldn't set RTIRDefaultDashboard: $msg");
+            }
+        }
+        else {
+            RT->Logger->error("Couldn't create dashboard RTIR Homepage: $msg");
+        }
+    },
 );
 

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -52,7 +52,7 @@
 <& /Elements/ListActions, actions => \@results &>
 <& /Ticket/Elements/ShowUpdateStatus, Ticket => $TicketObj, DisplayPath => 'RTIR'  &>
 
-<div class="summary"><&| /Widgets/TitleBox, title => loc('Ticket metadata') &>
+<div class="summary unset-fields-container <% $HideUnsetFields ? 'unset-fields-hidden' : '' %>"><&| /Widgets/TitleBox, title => loc('Ticket metadata'), titleright_raw => $m->scomp('/Elements/DropdownMenu', ShowSearchResults => 0, HideUnsetFields => $HideUnsetFields, %ARGS ) &>
 
 <div class="row ticket-summary">
   <div class="boxcontainer col-md-6">
@@ -99,7 +99,7 @@
         </div>
       </div>
 % if ( !$TicketObj->QueueObj->SLADisabled ) {
-      <div class="form-row">
+      <div class="form-row <% $TicketObj->SLA ? '' : 'unset-field' %>">
         <div class="label col-3">
           <&|/l&>SLA</&>:
         </div>
@@ -132,7 +132,7 @@
           <span class="current-value"><& /Ticket/Elements/ShowPriority, Ticket => $TicketObj &></span>
         </div>
       </div>
-      <div class="form-row">
+      <div class="form-row <% $TicketObj->TimeWorked ? '' : 'unset-field' %>">
         <div class="label col-3">
           <&|/l&>Time Worked</&>:
         </div>
@@ -142,6 +142,7 @@
       </div>
 
   <& /Elements/ShowCustomFields, Grouping => 'Basics', Object => $TicketObj, Table => 0 &>
+%     $m->callback( %ARGS, TicketObj => $TicketObj, CallbackName => 'EndOfBasics' );
 
     </div>
 % }
@@ -302,6 +303,9 @@
 &>
 
 <& /RTIR/Elements/ShowArticles, Ticket => $TicketObj &>
+
+<& /RTIR/Elements/ShowCVEDetails, Ticket => $TicketObj &>
+
 % $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'RightColumnEnd' );
   </div>
 </div>
@@ -403,6 +407,7 @@ my $DoLinks = sub {
 };
 
 my @results;
+my $SkipProcessing;
 
 my $TicketObj;
 my $new_ticket = 0;
@@ -416,6 +421,14 @@ if ( $id eq 'new' ) {
     $new_ticket = 1;
 } else {
     $TicketObj = LoadTicket( $id );
+    $m->callback(
+        CallbackName   => 'BeforeProcessArguments',
+        CallbackPage   => '/Ticket/Display.html',
+        TicketObj      => $TicketObj,
+        ActionsRef     => \@results,
+        ARGSRef        => \%ARGS,
+        SkipProcessing => \$SkipProcessing,
+    );
 }
 
 my $edit_label   = $m->interp->apply_escapes( loc("Edit"), 'h' );
@@ -438,7 +451,7 @@ unless( RT::IR->IsIncidentQueue($TicketObj->QueueObj) ) {
 }
 $ARGS{'id'} = $id = $TicketObj->Id;
 
-if ( $ARGS{'Action'} && $ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/ )
+if ( !$SkipProcessing && $ARGS{'Action'} && $ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/ )
 {   
     my $action = $1;
     my ($res, $msg) = $TicketObj->$action();
@@ -450,13 +463,14 @@ if ( $ARGS{'Action'} && $ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/ )
 
 
 
-unless( $new_ticket ) {
+unless( $new_ticket || $SkipProcessing ) {
+    push @results, ProcessUpdateMessage( ARGSRef => \%ARGS, TicketObj => $TicketObj );
     push @results, ProcessTicketBasics( ARGSRef => \%ARGS, TicketObj => $TicketObj );
     push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $TicketObj );
     push @results, ProcessTicketDates( ARGSRef => \%ARGS, TicketObj => $TicketObj );
 }
 
-if ( $ARGS{'BulkLink'} || $Child ) {
+if ( !$SkipProcessing && ( $ARGS{'BulkLink'} || $Child ) ) {
     my @link;
     push @link, @SelectedTickets if $ARGS{'BulkLink'};
     push @link, $Child if $Child;
@@ -476,16 +490,12 @@ if ( $deleted_links && !RT::IR->IncidentChildren( $TicketObj )->Count ) {
     push @results, loc("WARNING: Incident [_1] has no children.", $id);
 }
 
-if ( $ARGS{'BulkArticles'} && @SelectedTickets ) {
+if ( !$SkipProcessing && $ARGS{'BulkArticles'} && @SelectedTickets ) {
     my $ref = join " ", map "a:$_", @SelectedTickets;
     push @results, ProcessTicketLinks(
         TicketObj => $TicketObj,
         ARGSRef => {$TicketObj->Id."-RefersTo" => $ref}
     );
-}
-
-unless( $new_ticket ) {
-    push @results, ProcessUpdateMessage( ARGSRef => \%ARGS, TicketObj => $TicketObj, Actions => \@results );
 }
 
 if ( $ARGS{'MarkAsSeen'} ) {
@@ -528,4 +538,5 @@ $SelectedTicket => undef
 @SelectedTickets => ()
 $ForceShowHistory => 0
 $InlineEdit       => RT->Config->Get( 'InlineEdit', $session{CurrentUser} )
+$HideUnsetFields  => RT->Config->Get('HideUnsetFieldsOnDisplay', $session{CurrentUser})
 </%ARGS>

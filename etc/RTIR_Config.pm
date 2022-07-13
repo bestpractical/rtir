@@ -179,6 +179,11 @@ Set(
             'resolved'  => 'removed',
             'abandoned' => 'removed',
         },
+        'incidents -> default' => {
+            'open'      => 'open',
+            'resolved'  => 'resolved',
+            'abandoned' => 'rejected',
+        },
         'incident_reports -> incidents' => {
             'new'      => 'open',
             'open'     => 'open',
@@ -197,6 +202,12 @@ Set(
             'resolved' => 'removed',
             'rejected' => 'removed',
         },
+        'incident_reports -> default' => {
+            'new'      => 'new',
+            'open'     => 'open',
+            'resolved' => 'resolved',
+            'rejected' => 'rejected',
+        },
         'investigations -> incidents' => {
             'open'     => 'open',
             'resolved' => 'resolved',
@@ -208,6 +219,10 @@ Set(
         'investigations -> countermeasures' => {
             'open'     => 'active',
             'resolved' => 'removed',
+        },
+        'investigations -> default' => {
+            'open'     => 'open',
+            'resolved' => 'resolved',
         },
         'countermeasures -> incidents' => {
             'pending activation' => 'open',
@@ -226,6 +241,40 @@ Set(
             'active'             => 'open',
             'pending removal'    => 'open',
             'removed'            => 'resolved',
+        },
+        'countermeasures -> default' => {
+            'pending activation' => 'new',
+            'active'             => 'open',
+            'pending removal'    => 'open',
+            'removed'            => 'resolved',
+        },
+        'default -> incident_reports' => {
+            'new'       => 'new',
+            'open'      => 'open',
+            'resolved'  => 'resolved',
+            'rejected'  => 'rejected',
+            'stalled'   => 'open',
+        },
+        'default -> incidents' => {
+            'new'       => 'open',
+            'open'      => 'open',
+            'resolved'  => 'resolved',
+            'rejected'  => 'abandoned',
+            'stalled'   => 'open',
+        },
+        'default -> investigations' => {
+            'new'       => 'open',
+            'open'      => 'open',
+            'resolved'  => 'resolved',
+            'rejected'  => 'resolved',
+            'stalled'   => 'open',
+        },
+        'default -> countermeasures' => {
+            'new'       => 'active',
+            'open'      => 'active',
+            'resolved'  => 'removed',
+            'rejected'  => 'removed',
+            'stalled'   => 'pending activation',
         },
     },
 );
@@ -635,7 +684,7 @@ Set(%CustomFieldGroupings,
     'RTIR::Ticket' => [
         'Networking'     => ['IP', 'Domain'],
         'Details' => ['How Reported','Reporter Type','Customer',
-                      'Description', 'Resolution', 'Function', 'Classification',
+                      'Description', 'Resolution', 'Function', 'Classification', 'CVE ID',
                       'Customer',
                       'Netmask','Port','Where Blocked'],
     ],
@@ -737,8 +786,7 @@ search term.
 Set($RTIRIframeResearchToolConfig, {
     1 => { FriendlyName => 'Google', URL => 'https://encrypted.google.com/search?q=__SearchTerm__' },
     2 => { FriendlyName => 'CVE', URL => 'http://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=__SearchTerm__'},
-    3 => { FriendlyName => 'TrustedSource.org', URL => 'http://www.trustedsource.org/query/__SearchTerm__'},
-    4 => { FriendlyName => 'McAfee SiteAdvisor', URL => 'http://www.siteadvisor.com/sites/__SearchTerm__'}
+    3 => { FriendlyName => 'McAfee SiteAdvisor', URL => 'http://www.siteadvisor.com/sites/__SearchTerm__'}
 } );
 
 =item C<$TracerouteCommand>
@@ -816,9 +864,8 @@ Description.
         ],
     );
 
-The initial list is "US Cert Alerts", "UK NCSC Security News", "Security
-Focus Vulnerability Alerts", "Threatpost Vulnerability Alerts" and
-"Bugtraq".
+The initial list is "US Cert Alerts", "UK NCSC Security News", "Full Disclosure",
+"Threatpost Vulnerability Alerts" and "Bugtraq".
 
 =cut
 
@@ -832,9 +879,9 @@ Set(%ExternalFeeds,
             URI         => 'https://www.ncsc.gov.uk/api/1/services/v1/all-rss-feed.xml',
             Description => 'UK NCSC Security News',
         },
-        {   Name        => 'Security Focus Vulnerability Alerts',
-            URI         => 'https://www.securityfocus.com/rss/vulnerabilities.xml',
-            Description => 'Security Focus Vulnerability Alerts',
+        {   Name        => 'Full Disclosure',
+            URI         => 'https://seclists.org/rss/fulldisclosure.rss',
+            Description => 'Full Disclosure',
         },
         {   Name        => 'Threatpost Vulnerability Alerts',
             URI         => 'https://threatpost.com/category/vulnerabilities/feed/',
