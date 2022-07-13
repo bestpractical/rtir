@@ -51,7 +51,7 @@ use 5.008003;
 use strict;
 use warnings;
 
-our $VERSION = '5.0.2';
+our $VERSION = '5.0.3';
 
 use Scalar::Util qw(blessed);
 
@@ -130,6 +130,14 @@ sub EveryoneCountermeasureRights {
 sub EveryoneInvestigationRights {
     return (qw(ReplyToTicket));
 }
+
+require RT::Interface::Web;
+
+# Add RTIR specific ResultPages to whitelist
+for my $result_page ( 'Link/FromIncident/', 'Link/ToIncident/', 'Merge/', 'Incident/Reply/' ) {
+    push @RT::Interface::Web::WHITELISTED_RESULT_PAGES, qr{^/RTIR/(?:c/[^/]+/)?$result_page$};
+}
+
 
 use Parse::BooleanLogic;
 my $ticket_sql_parser = Parse::BooleanLogic->new;
@@ -666,6 +674,14 @@ sub FirstWhoisServer {
     return $res;
 }
 
+sub IsValidWhoisServer {
+    my $self = shift;
+    my $server = lc (shift or return 0);
+    my $servers = RT->Config->Get('whois');
+
+    return ((grep { lc $_ eq $server } map { ref $_ ? $_->{'Host'} : $_ } values %$servers) ? 1 : 0);
+}
+
 sub WhoisLookup {
     my $self = shift;
     my %args = (
@@ -677,6 +693,9 @@ sub WhoisLookup {
     my $server = $args{'Server'} || $self->FirstWhoisServer;
     return (undef, $args{'CurrentUser'}->loc("No whois servers configured"))
         unless $server;
+
+    return (undef, $args{'CurrentUser'}->loc("Invalid whois server specified"))
+        unless $self->IsValidWhoisServer( $server );
 
     my ($host, $port) = split /\s*:\s*/, $server, 2;
     $port = 43 unless ($port || '') =~ /^\d+$/;
