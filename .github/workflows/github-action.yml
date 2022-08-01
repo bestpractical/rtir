@@ -31,9 +31,10 @@ jobs:
       - name: Build test environment
         run: |
           docker build --build-arg RT_DB_TYPE=SQLite --tag rtir .
+          docker run --network rt --volume "$GITHUB_WORKSPACE:/rtir" rtir bash -c 'cd /rtir && perl Makefile.PL && make'
       - name: Run RTIR tests
         run: |
-          docker run --network rt --volume "$GITHUB_WORKSPACE:/rtir" rtir bash -c 'cd /rtir && perl Makefile.PL && make test-parallel'
+          docker run --network rt --volume "$GITHUB_WORKSPACE:/rtir" rtir bash -c 'cd /rtir && make test-parallel'
       - name: Get run time
         if: always()
         run: |
@@ -73,9 +74,10 @@ jobs:
         run: |
           docker run --detach --name rtdb --network rt --env MYSQL_ROOT_PASSWORD=password mariadb:10.3
           docker build --build-arg RT_DB_TYPE=mysql --build-arg RT_TEST_DB_HOST=rtdb --network rt --tag rtir .
+          docker run --network rt --volume "$GITHUB_WORKSPACE:/rtir" rtir bash -c 'cd /rtir && perl Makefile.PL && make'
       - name: Run RTIR tests
         run: |
-          docker run --network rt --volume "$GITHUB_WORKSPACE:/rtir" rtir bash -c 'cd /rtir && perl Makefile.PL && make test-parallel'
+          docker run --network rt --volume "$GITHUB_WORKSPACE:/rtir" rtir bash -c 'cd /rtir && make test-parallel'
       - name: Get run time
         if: always()
         run: |
@@ -115,9 +117,10 @@ jobs:
         run: |
           docker run --detach --name rtdb --network rt --mount type=tmpfs,destination=/var/lib/postgresql/data --env POSTGRES_PASSWORD=password postgres:9.6
           docker build --build-arg RT_DB_TYPE=Pg --build-arg RT_DBA_USER=postgres --build-arg RT_TEST_DB_HOST=rtdb --network rt --tag rtir .
+          docker run --network rt --volume "$GITHUB_WORKSPACE:/rtir" rtir bash -c 'cd /rtir && perl Makefile.PL && make'
       - name: Run RTIR tests
         run: |
-          docker run --network rt --volume "$GITHUB_WORKSPACE:/rtir" rtir bash -c 'cd /rtir && perl Makefile.PL && make test-parallel'
+          docker run --network rt --volume "$GITHUB_WORKSPACE:/rtir" rtir bash -c 'cd /rtir && make test-parallel'
       - name: Get run time
         if: always()
         run: |
