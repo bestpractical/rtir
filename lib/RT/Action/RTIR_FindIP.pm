@@ -61,7 +61,9 @@ my $IPv4_prefix_check_re = qr{(?<![0-9.])};
 my $IPv4_suffix_check_re = qr{(?!\.?[0-9])};
 my $IPv4_CIDR_re = qr{
     $IPv4_prefix_check_re
+    (?!0\.0\.0\.0)
     $RE{net}{CIDR}{IPv4}{-keep}
+    (?<!/0)
     $IPv4_suffix_check_re
 }x;
 my $IPv4_re = qr[
