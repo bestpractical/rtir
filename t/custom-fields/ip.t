@@ -296,6 +296,30 @@ diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
     $ticket->Load( $id );
     is($ticket->id, $id, 'loaded ticket');
     is($ticket->CustomFieldValues('IP')->Count, 0, "IP wasn't added");
+
+    $id = $agent->create_ir( { Subject => "test ip", Content => '0.0.0.0' } );
+    ok($id, "created a ticket");
+
+    $ticket = RT::Ticket->new( $RT::SystemUser );
+    $ticket->Load( $id );
+    is($ticket->id, $id, 'loaded ticket');
+    is($ticket->CustomFieldValues('IP')->Count, 0, "IP wasn't added");
+
+    $id = $agent->create_ir( { Subject => "test ip", Content => '0.0.0.0/0' } );
+    ok($id, "created a ticket");
+
+    $ticket = RT::Ticket->new( $RT::SystemUser );
+    $ticket->Load( $id );
+    is($ticket->id, $id, 'loaded ticket');
+    is($ticket->CustomFieldValues('IP')->Count, 0, "IP wasn't added");
+
+    $id = $agent->create_ir( { Subject => "test ip", Content => '1.0.0.0/0' } );
+    ok($id, "created a ticket");
+
+    $ticket = RT::Ticket->new( $RT::SystemUser );
+    $ticket->Load( $id );
+    is($ticket->id, $id, 'loaded ticket');
+    is($ticket->CustomFieldValues('IP')->Count, 0, "IP wasn't added");
 }
 
 diag "check that IPs in messages don't add duplicates" if $ENV{'TEST_VERBOSE'};
