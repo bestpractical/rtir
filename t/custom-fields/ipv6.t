@@ -592,6 +592,12 @@ my @invalid = (
 
     # A trailing dot is allowed but not if there are words right after it
     'abcd::34.3', 'abcd::192.168.1.2.3', '::add.z',
+
+    # ensure all zero addresses do not get added as IPs
+    '::',    '0000:0000:0000:0000:0000:0000:0000:0000',
+    '::/0',  '0000:0000:0000:0000:0000:0000:0000:0000/0',
+    '::/64', '0000:0000:0000:0000:0000:0000:0000:0000/64',
+    'abcd:0000:0000:0000:0000:0000:0000:0000/0',
 );
 
 
