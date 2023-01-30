@@ -28,6 +28,12 @@ jobs:
           docker network create rt
       - name: Check out RTIR
         uses: actions/checkout@v2
+      - name: Cache .prove state
+        id: cache-prove-state
+        uses: actions/cache@v3
+        with:
+          path: .prove
+          key: ${{ runner.os }}-sqlite
       - name: Build test environment
         run: |
           docker build --build-arg RT_DB_TYPE=SQLite --tag rtir .
@@ -70,6 +76,12 @@ jobs:
           docker network create rt
       - name: Check out RTIR
         uses: actions/checkout@v2
+      - name: Cache .prove state
+        id: cache-prove-state
+        uses: actions/cache@v3
+        with:
+          path: .prove
+          key: ${{ runner.os }}-mariadb
       - name: Build test environment
         run: |
           docker run --detach --name rtdb --network rt --env MYSQL_ROOT_PASSWORD=password mariadb:10.6
@@ -113,6 +125,12 @@ jobs:
           docker network create rt
       - name: Check out RTIR
         uses: actions/checkout@v2
+      - name: Cache .prove state
+        id: cache-prove-state
+        uses: actions/cache@v3
+        with:
+          path: .prove
+          key: ${{ runner.os }}-pg
       - name: Build test environment
         run: |
           docker run --detach --name rtdb --network rt --mount type=tmpfs,destination=/var/lib/postgresql/data --env POSTGRES_PASSWORD=password postgres:12.8
