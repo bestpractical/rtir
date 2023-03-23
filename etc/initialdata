@@ -104,9 +104,14 @@ die "Please add RT::IR to your Plugins configuration before initializing the dat
         Description =>
             'How the incident was reported for Incident Reports RTIR queue',
         Values => [
-            { Name => "Email",     SortOrder => 1 },
-            { Name => "Telephone", SortOrder => 2 },
-            { Name => "Other",     SortOrder => 3 },
+            { Name => "API",       SortOrder => 1 },
+            { Name => "CLI",       SortOrder => 2 },
+            { Name => "Email",     SortOrder => 3 },
+            { Name => "REST",      SortOrder => 4 },
+            { Name => "REST2",     SortOrder => 5 },
+            { Name => "Web",       SortOrder => 6 },
+            { Name => "Telephone", SortOrder => 7 },
+            { Name => "Other",     SortOrder => 8 },
         ]
     },
     {   Name        => 'Reporter Type',
