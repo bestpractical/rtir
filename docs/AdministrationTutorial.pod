@@ -131,6 +131,38 @@ Customer for an IR or Investigation.
 
 =back
 
+=head2 Documenting Process for Incidents
+
+Starting in version 5.0.4, RT supports a feature called Process Articles
+that allows you to document the process for working on a ticket, and
+display it right on the page. The process is managed in an article,
+and which article to show is determined by a field on the ticket.
+
+Starting in RTIR 5.0.4 this feature is available for Incidents. The
+default Classification field contains values to indicate the type of
+the incident. You can set up an article for each of the Classification
+values to document how that type of incident should be handled. Once
+configured, this documentation will be shown right on the incident page.
+
+The configuration options L<ProcessArticleFields|https://docs.bestpractical.com/rt/latest/RT_Config.html#ProcessArticleFields>
+and L<ProcessArticleMapping|https://docs.bestpractical.com/rt/latest/RT_Config.html#ProcessArticleMapping>
+set the article class to use and also determine the mapping between
+the Classification values and corresponding articles. If you have
+added or removed Classification values, you can update this configuration
+with your new settings.
+
+Articles are created in a class called Incidents Processes by default,
+and members of the DutyTeam group can see and modify these articles. You can
+change the rights on the class if you want to restrict who can
+update the documentation.
+
+Edit the articles to add your actual process docuemtnation. Note that if
+you change the article Name field, you need to update the C<%ProcessArticleMapping>
+setting mentioned above because it uses the article name.
+
+This feature is optional and can be disabled by clearing the
+configuration options linked above.
+
 =head2 Managing "RT at a glance" and "RTIR at a glance" pages
 
 In the config you can set the C<@RTIR_HomepageComponents> option to control
