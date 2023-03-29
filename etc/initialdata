@@ -669,6 +669,82 @@ for my $cf (@CustomFields) {
         );
 }
 
+@Classes = (
+    {
+        Name => 'Incidents Processes',
+        Description => 'Processes to be followed in the event of an incident',
+    }
+);
+
+@Articles = (
+    {
+        Name => 'Spam Process',
+        Summary => 'This is the summary of the process for handling spam',
+        CustomFields => [
+            {
+                CustomField  => 'Content',
+                Content => 'This is the content of the process for handling spam',
+            },
+        ],
+        Class => 'Incidents Processes',
+    },
+    {
+        Name => 'System Compromise Process',
+        Summary => 'This is the summary of the process for handling system compromise',
+        CustomFields => [
+            {
+                CustomField  => 'Content',
+                Content => 'This is the content of the process for handling system compromise',
+            },
+        ],
+        Class => 'Incidents Processes',
+    },
+    {
+        Name => 'Query Process',
+        Summary => 'This is the summary of the process for handling queries',
+        CustomFields => [
+            {
+                CustomField  => 'Content',
+                Content => 'This is the content of the process for handling queries',
+            },
+        ],
+        Class => 'Incidents Processes',
+    },
+    {
+        Name => 'Scan Process',
+        Summary => 'This is the summary of the process for handling scans',
+        CustomFields => [
+            {
+                CustomField  => 'Content',
+                Content => 'This is the content of the process for handling scans',
+            },
+        ],
+        Class => 'Incidents Processes',
+    },
+    {
+        Name => 'Denial of Service Process',
+        Summary => 'This is the summary of the process for handling denial of service',
+        CustomFields => [
+            {
+                CustomField  => 'Content',
+                Content => 'This is the content of the process for handling denial of service',
+            },
+        ],
+        Class => 'Incidents Processes',
+    },
+    {
+        Name => 'Piracy Process',
+        Summary => 'This is the summary of the process for handling piracy',
+        CustomFields => [
+            {
+                CustomField  => 'Content',
+                Content => 'This is the content of the process for handling piracy',
+            },
+        ],
+        Class => 'Incidents Processes',
+    }
+);
+
 @Final = (
     sub {
         $| = 1;
@@ -817,5 +893,21 @@ for my $cf (@CustomFields) {
             RT->Logger->error("Couldn't create dashboard RTIR Homepage: $msg");
         }
     },
-);
+    sub {
+        my $class = RT::Class->new( RT->SystemUser );
+        my ($ok, $msg) = $class->Load('Incidents Processes');
+        RT->Logger->error("Unable to load class Incidents Processes: $msg") unless $ok;
 
+        my $content = RT::CustomField->new( RT->SystemUser );
+        $content->LoadByName( Name => 'Content', LookupType => RT::Article->CustomFieldLookupType );
+
+        my @skips = ( "Name", "Summary", "LinkToTicket", $content->Id ? "CF-Title-" . $content->Id : () );
+        $class->SetAttribute(Name => "Skip-$_", Content => 1) for @skips;
+
+        my $group = RT::Group->new( RT->SystemUser );
+        $group->LoadUserDefinedGroup("DutyTeam");
+        die "Can't load group" unless $group->Id;
+        $group->PrincipalObj->GrantRight( Right => $_, Object => $class )
+            for qw/ShowArticle SeeCustomField AdminClass AdminTopics CreateArticle ModifyArticle ModifyArticleTopics SeeClass ShowArticleHistory DeleteArticle/;
+        }
+);

@@ -298,6 +298,8 @@
   <div class="boxcontainer col-md-6">
 % $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'RightColumnStart' );
 
+<& /Elements/ShowArticle, Ticket => $TicketObj &>
+
 <& /Ticket/Elements/ShowLinkedQueues,
     TicketObj => $TicketObj,
 &>

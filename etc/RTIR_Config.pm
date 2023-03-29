@@ -640,6 +640,34 @@ By default RTIR enables 'httpurl_overwrite', 'ip', 'email' and 'domain'.
 
 Set(@Active_MakeClicky, qw(httpurl_overwrite ip email domain));
 
+=item Process Articles for Incidents
+
+RTIR provides configuration to show process documentation on Incident
+pages based on the selected Classification. You can change this behavior
+via configuration using the options L<ProcessArticleFields|https://docs.bestpractical.com/rt/latest/RT_Config.html#ProcessArticleFields>
+and L<ProcessArticleMapping|https://docs.bestpractical.com/rt/latest/RT_Config.html#ProcessArticleMapping>.
+
+You can see additional information about how to manage Process Articles in
+the RT L<Articles|https://docs.bestpractical.com/rt/latest/customizing/articles_introduction.html>
+documentation.
+
+=cut
+
+Set( %ProcessArticleFields, (
+    Incidents => { Field => 'CF.Classification', Class => 'Incidents Processes' },
+));
+
+Set(%ProcessArticleMapping, (
+   'CF.Classification' => {
+        'Spam'              => 'Spam Process',
+        'System Compromise' => 'System Compromise Process',
+        'Query'             => 'Query Process',
+        'Scan'              => 'Scan Process',
+        'Denial of Service' => 'Denial of Service Process',
+        'Piracy'            => 'Piracy Process',
+    },
+));
+
 =back
 
 =head1 Custom Fields
