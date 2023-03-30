@@ -81,9 +81,9 @@
         RT->Logger->error("Unable to load class Incidents Processes: $msg") unless $ok;
 
         my $content = RT::CustomField->new( RT->SystemUser );
-        $content->Load('Content');
+        $content->LoadByName(Name => 'Content', LookupType => RT::Article->CustomFieldLookupType);
 
-        my @skips = ( "Name", "Summary", "LinkToTicket", "CF-Title-" . $content->Id );
+        my @skips = ( "Name", "Summary", "LinkToTicket", $content->Id ? "CF-Title-" . $content->Id : () );
         $class->SetAttribute(Name => "Skip-$_", Content => 1) for @skips;
 
         my $group = RT::Group->new( RT->SystemUser );
