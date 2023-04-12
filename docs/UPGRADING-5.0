@@ -242,4 +242,23 @@ moving the scrip to Batch mode may restore the previous behavior.
 
 =back
 
+=head1 UPGRADING FROM 5.0.3 AND EARLIER
+
+=over 4
+
+=item * Processes Articles for Incidents
+
+Starting with RTIR 5.0.4, we include a new portlet on the Incident page
+which can show the process to be followed for an Incident based on the
+selected Classification.
+
+Default articles for the process documentation are installed in new RTIRs
+by default. For an existing RTIR system, you can also add the starter
+articles by running the following after your upgrade:
+
+    cd /opt/rt5
+    sbin/rt-setup-database --action insert --datafile local/plugins/RT-IR/etc/upgrade/process_articles_initialdata
+
+=back
+
 =cut

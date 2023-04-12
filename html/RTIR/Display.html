@@ -270,6 +270,8 @@
 % }
     </&>
 
+    <& /Elements/ShowArticle, Ticket => $Ticket &>
+
 <%PERL>
     my $dates_url      = RT::IR->HREFTo("Edit.html?id=".$Ticket->Id);
     my $dates_inline   = sprintf( $modify_inline, $m->interp->apply_escapes( $dates_url, 'h' ) );
