@@ -259,6 +259,17 @@ articles by running the following after your upgrade:
     cd /opt/rt5
     sbin/rt-setup-database --action insert --datafile local/plugins/RT-IR/etc/upgrade/process_articles_initialdata
 
+=item * Allow DutyTeam to See Templates Articles
+
+This upgrade runs a step to grant the default DutyTeam group rights to
+see custom fields in the Templates class. This allows DutyTeam members
+to use articles when corresponding on tickets. This right was previously
+omitted in error.
+
+If you explicitly do not want DutyTeam to see the articles in the Templates
+class, you can edit the class and remove the SeeCustomField right after you
+run the upgrade.
+
 =back
 
 =cut
