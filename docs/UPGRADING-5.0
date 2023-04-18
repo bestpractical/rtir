@@ -246,7 +246,7 @@ moving the scrip to Batch mode may restore the previous behavior.
 
 =over 4
 
-=item * Processes Articles for Incidents
+=item * Process Articles for Incidents
 
 Starting with RTIR 5.0.4, we include a new portlet on the Incident page
 which can show the process to be followed for an Incident based on the
