@@ -1,0 +1,16 @@
+our @Final = sub {
+    my $CurrentUser = RT::CurrentUser->new();
+    $CurrentUser->LoadByName('RT_System');
+
+    require RT::Class;
+    my $class = RT::Class->new($CurrentUser);
+    $class->Load('Templates');
+    die "Could not load 'Templates' class: $msg" unless $class->Id;
+
+    my $group = RT::Group->new($CurrentUser);
+    $group->LoadUserDefinedGroup("DutyTeam");
+    die "Can't load group" unless $group->Id;
+
+    (my $ret, $msg) = $group->PrincipalObj->GrantRight( Right => 'SeeCustomField', Object => $class );
+    die "Could not grant DutyTeam 'SeeCustomField' on 'Response': $msg" unless $ret;
+};
