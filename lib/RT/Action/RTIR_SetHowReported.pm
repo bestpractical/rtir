@@ -51,9 +51,21 @@ use strict;
 use warnings;
 use base 'RT::Action::RTIR';
 
-=head2 Commit
+=head1 NAME
 
-If the HowReported field isn't set, assume it's email.
+RT::Action::RTIR_SetHowReported
+
+=head1 DESCRIPTION
+
+Sets the "How Reported" custom field based on the interface RT reports
+was used to create the ticket. See L<RT/CurrentInterface> for the list of
+interfaces RT can detect.
+
+This action does nothing if the interface is not in the list of values
+for "How Reported", so you can safely remove values in the custom field
+configuration if some don't make sense for your reporting.
+
+This action also does nothing if a value is already set.
 
 =cut
 
@@ -64,10 +76,29 @@ sub Commit {
     $cf->LoadByNameAndQueue(Queue => $self->TicketObj->QueueObj->Id, Name => 'How Reported');
     return unless $cf->Id;
 
+    # Get the current values of this CF
     my $Values = $self->TicketObj->CustomFieldValues( $cf->id );
-    unless ( $Values->Count ) {
-        $self->TicketObj->AddCustomFieldValue( Field => $cf->id, Value => "Email" );
+
+    # Don't overwrite if it's already set
+    return 1 if $Values->Count;
+
+    # Get acceptable values for this CF
+    my $ValuesObj = $cf->ValuesObj();
+
+    # Verify that the current interface is a valid value
+    while ( my $Value = $ValuesObj->Next ) {
+        if ( $Value->Name eq RT->CurrentInterface() ) {
+            my ($ok, $msg) = $self->TicketObj->AddCustomFieldValue( Field => $cf->id, Value => RT->CurrentInterface() );
+
+            if ( not $ok ) {
+                RT->Logger->error("Unable to set custom field " . $cf->Name . ": $msg");
+                return 0;
+            }
+
+            return 1;
+        }
     }
+
     return 1;
 }
 
