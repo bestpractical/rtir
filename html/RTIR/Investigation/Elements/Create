@@ -230,10 +230,10 @@
 
 % unless ( $SkipField{'Subject'} || $HideField{'Subject'} ) {
 <div class="form-row">
-  <div class="form-group label col-2">
+  <div class="label col-2">
     <&|/l&>Subject</&>:
   </div>
-  <div class="form-group value col-9">
+  <div class="value col-9">
     <input class="form-control" type="text" name="<% $NamePrefix %>Subject" value="<% $value_cb->('Subject') %>" />
   </div>
 </div>
@@ -266,7 +266,6 @@
 % }
 
 % unless ( $SkipField{'Content'} || $HideField{'Content'} ) {
-<div class="form-group">
 % if ( RT->Config->Get('ArticleOnTicketCreate')) {
   <& /Articles/Elements/BeforeMessageBox,
      %ARGS,
@@ -282,8 +281,8 @@
       Default          => $content,
       IncludeSignature => exists $ARGS{'IncludeSignature'} ? $ARGS{'IncludeSignature'} : !$content,
       QuoteTransaction => $value_cb->('QuoteTransaction'),
+      FullWidth        => 1,
   &>
-</div>
 % }
 
 % unless ( $SkipField{'Attachments'} ) {

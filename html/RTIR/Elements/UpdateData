@@ -70,19 +70,20 @@
 % }
 
 <& /Articles/Elements/BeforeMessageBox, %ARGS &>
-<div class="form-group">
   <div class="messagebox-container action-<% $type %>">
 % $m->callback( %ARGS, CallbackPage => '/Ticket/Update.html', CallbackName => 'BeforeMessageBox' );
 % if ( exists $ARGS{'UpdateContent'} ) {
 % delete $ARGS{'QuoteTransaction'};
-<& /Elements/MessageBox, Name => "UpdateContent", Default => $ARGS{'UpdateContent'}, IncludeSignature => 0, %ARGS &>
+<& /Elements/MessageBox, Name => "UpdateContent", Default => $ARGS{'UpdateContent'}, IncludeSignature => 0,
+                        FullWidth => 1, %ARGS &>
 % } else {
-<& /Elements/MessageBox, Name => "UpdateContent", %ARGS &>
+<& /Elements/MessageBox, Name => "UpdateContent",
+                        FullWidth => 1, %ARGS &>
 % }
   </div>
-</div>
 
-<& /Ticket/Elements/AddAttachments, %ARGS &>
+<& /Ticket/Elements/AddAttachments,
+      FullWidth => 1, %ARGS &>
 
 <%INIT>
 my $type = $ARGS{'UpdateType'}             ? $ARGS{'UpdateType'} :
