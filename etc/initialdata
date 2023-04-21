@@ -676,6 +676,11 @@ for my $cf (@CustomFields) {
 
 @Classes = (
     {
+        Name        => 'Templates',
+        Description => 'Response templates',
+        ApplyTo     => [ map { $_->{Name} } @Queues ],
+    },
+    {
         Name => 'Incidents Processes',
         Description => 'Processes to be followed in the event of an incident',
     }
@@ -759,25 +764,6 @@ for my $cf (@CustomFields) {
         require RT::Class;
         my $class = RT::Class->new($CurrentUser);
         $class->Load('Templates');
-        unless ( $class->Id ) {
-            $RT::Logger->info("Creating 'Templates' Article class.");
-            my ( $id, $msg ) = $class->Create(
-                Name        => 'Templates',
-                Description => 'Response templates',
-                HotList     => 1
-            );
-            die $msg unless $id;
-
-            foreach my $qname ( map $_->{'Name'}, @Queues ) {
-                my $queue = RT::Queue->new($CurrentUser);
-                $queue->Load($qname);
-                next unless $queue->id;
-
-                my ( $status, $msg ) = $class->AddToObject($queue);
-                $RT::Logger->error("Couldn't apply class to queue '$qname'")
-                    unless $status;
-            }
-        }
 
         require RT::Article;
         my $response = RT::CustomField->new($CurrentUser);
