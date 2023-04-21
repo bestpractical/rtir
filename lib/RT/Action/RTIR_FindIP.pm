@@ -61,7 +61,9 @@ my $IPv4_prefix_check_re = qr{(?<![0-9.])};
 my $IPv4_suffix_check_re = qr{(?!\.?[0-9])};
 my $IPv4_CIDR_re = qr{
     $IPv4_prefix_check_re
+    (?!0\.0\.0\.0)
     $RE{net}{CIDR}{IPv4}{-keep}
+    (?<!/0)
     $IPv4_suffix_check_re
 }x;
 my $IPv4_re = qr[
@@ -77,7 +79,10 @@ my $IPv6_prefix_check_re = qr{(?<![0-9a-zA-Z:.])};
 my $IPv6_suffix_check_re = qr{(?!\.?[0-9a-zA-Z:])};
 my $IPv6_re = qr[
     $IPv6_prefix_check_re
+    (?!0000:0000:0000:0000:0000:0000:0000:0000)
+    (?!::$IPv6_suffix_check_re)
     ($Regexp::IPv6::IPv6_re)
+    (?!/0)
     (?:/($IPv6_mask_re))?
     $IPv6_suffix_check_re
 ]x;
