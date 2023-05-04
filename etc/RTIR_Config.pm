@@ -795,13 +795,13 @@ using the following mason components:
 
 =cut
 
-Set( @RTIRResearchTools, (qw(Traceroute Whois Iframe)));
+Set( @RTIRResearchTools, (qw(Traceroute Whois External)));
 
-=item C<$RTIRIframeResearchToolConfig>
+=item C<$RTIRExternalResearchToolConfig>
 
 One of the research tools available in RTIR allows you to
 configure a set of search URLs that incident handlers
-can use to open searches in IFRAMES.
+can use to open searches in new tab.
 
 Entries are keyed by integer in the order you'd like to see
 them in the dropdown on the research page. Each entry consists
@@ -811,7 +811,7 @@ search term.
 
 =cut
 
-Set($RTIRIframeResearchToolConfig, {
+Set($RTIRExternalResearchToolConfig, {
     1 => { FriendlyName => 'Google', URL => 'https://encrypted.google.com/search?q=__SearchTerm__' },
     2 => { FriendlyName => 'CVE', URL => 'http://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=__SearchTerm__'},
     3 => { FriendlyName => 'McAfee SiteAdvisor', URL => 'http://www.siteadvisor.com/sites/__SearchTerm__'}
