@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -269,6 +269,8 @@
   </form>
 % }
     </&>
+
+    <& /Elements/ShowArticle, Ticket => $Ticket &>
 
 <%PERL>
     my $dates_url      = RT::IR->HREFTo("Edit.html?id=".$Ticket->Id);

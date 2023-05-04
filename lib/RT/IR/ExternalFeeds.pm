@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -109,8 +109,11 @@ sub _parse_rss_feed {
     my ($self, $response) = @_;
     return { __error => "Can't reach feed : " . $response->status_line } unless ($response->is_success);
     eval { $self->{_rss_parser}->parse($response->content); };
-    unless ( $self->{_rss_parser}{channel}{title} && $self->{_rss_parser}{items}[0] ) {
+    if ( !$self->{_rss_parser}{channel}{title} ) {
         return { __error => "Couldn't parse RSS response "};
+    }
+    elsif ( !$self->{_rss_parser}{items}[0] ) {
+        return { __error => "There is no recent content for this feed" };
     }
 
     my $parsed_feed = { map { ucfirst($_) => $self->{_rss_parser}{channel}{$_} }

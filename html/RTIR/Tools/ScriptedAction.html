@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -154,7 +154,7 @@
   </div>
 
 % if (!$incidentid) {
-<div class="form-group">
+<div>
 <& /RTIR/Incident/Elements/Create, Title => $Title, QueueObj => $incidentq, %ARGS &>
 </div>
 
@@ -169,13 +169,11 @@
   </div>
 
 % }
-  <div class="form-group">
 % if (exists $ARGS{Content}) {
-<& /Elements/MessageBox, Name=>"Content", Default=>$ARGS{Content}, %ARGS&>
+<& /Elements/MessageBox, Name=>"Content", Default=>$ARGS{Content}, FullWidth => 1, %ARGS&>
 % } else {
-<& /Elements/MessageBox, Name=>"Content", %ARGS &>
+<& /Elements/MessageBox, Name=>"Content", FullWidth => 1, %ARGS &>
 % }
-  </div>
 
 </&>
 

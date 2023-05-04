@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -59,7 +59,8 @@
 
 % if ( $GnuPGWidget ) {
 <div class="form-row">
-  <div class="col-12">
+  <div class="label col-2 empty"></div>
+  <div class="col-9">
     <& /Elements/Crypt/SignEncryptWidget,
         self => $GnuPGWidget,
         TicketObj => $Ticket,
@@ -69,19 +70,20 @@
 % }
 
 <& /Articles/Elements/BeforeMessageBox, %ARGS &>
-<div class="form-group">
   <div class="messagebox-container action-<% $type %>">
 % $m->callback( %ARGS, CallbackPage => '/Ticket/Update.html', CallbackName => 'BeforeMessageBox' );
 % if ( exists $ARGS{'UpdateContent'} ) {
 % delete $ARGS{'QuoteTransaction'};
-<& /Elements/MessageBox, Name => "UpdateContent", Default => $ARGS{'UpdateContent'}, IncludeSignature => 0, %ARGS &>
+<& /Elements/MessageBox, Name => "UpdateContent", Default => $ARGS{'UpdateContent'}, IncludeSignature => 0,
+                        FullWidth => 1, %ARGS &>
 % } else {
-<& /Elements/MessageBox, Name => "UpdateContent", %ARGS &>
+<& /Elements/MessageBox, Name => "UpdateContent",
+                        FullWidth => 1, %ARGS &>
 % }
   </div>
-</div>
 
-<& /Ticket/Elements/AddAttachments, %ARGS &>
+<& /Ticket/Elements/AddAttachments,
+      FullWidth => 1, %ARGS &>
 
 <%INIT>
 my $type = $ARGS{'UpdateType'}             ? $ARGS{'UpdateType'} :

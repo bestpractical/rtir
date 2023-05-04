@@ -1,4 +1,4 @@
-FROM bpssysadmin/rt-base-debian-stretch
+FROM bpssysadmin/rt-base-debian:RT-5.0.3-buster-20230421
 
 LABEL maintainer="Best Practical Solutions <contact@bestpractical.com>"
 
@@ -10,6 +10,8 @@ ARG RT_DBA_USER=root
 ARG RT_DBA_PASSWORD=password
 ARG RT_TEST_DB_HOST=172.17.0.2
 ARG RT_TEST_RT_HOST
+
+ENV PATH="/opt/perl/bin:$PATH"
 
 RUN cd /usr/local/src \
   && git clone https://github.com/bestpractical/rt.git \
@@ -24,10 +26,10 @@ RUN cd /usr/local/src \
      --with-db-host="$RT_TEST_DB_HOST" \
      --with-db-rt-host="${RT_TEST_RT_HOST:-$(ip --oneline address show to 172.16/12 | gawk '{split($4, a, "/"); print a[1] "/255.255.255.0"; exit 0;}')}" \
   && make install \
-  && /usr/bin/perl -I/opt/rt5/local/lib -I/opt/rt5/lib sbin/rt-setup-database --action init --dba="$RT_DBA_USER" --dba-password="$RT_DBA_PASSWORD" \
+  && perl -I/opt/rt5/local/lib -I/opt/rt5/lib sbin/rt-setup-database --action init --dba="$RT_DBA_USER" --dba-password="$RT_DBA_PASSWORD" \
   && rm -rf /usr/local/src/*
 
-RUN cpanm Net::Domain::TLD Net::Whois::RIPE Parse::BooleanLogic
+RUN cpm install --global --no-prebuilt --test --with-all --show-build-log-on-failure Net::Domain::TLD Net::Whois::RIPE Parse::BooleanLogic
 
 ENV RT_DBA_USER="$RT_DBA_USER"
 ENV RT_DBA_PASSWORD="$RT_DBA_PASSWORD"

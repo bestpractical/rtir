@@ -104,9 +104,14 @@ die "Please add RT::IR to your Plugins configuration before initializing the dat
         Description =>
             'How the incident was reported for Incident Reports RTIR queue',
         Values => [
-            { Name => "Email",     SortOrder => 1 },
-            { Name => "Telephone", SortOrder => 2 },
-            { Name => "Other",     SortOrder => 3 },
+            { Name => "API",       SortOrder => 1 },
+            { Name => "CLI",       SortOrder => 2 },
+            { Name => "Email",     SortOrder => 3 },
+            { Name => "REST",      SortOrder => 4 },
+            { Name => "REST2",     SortOrder => 5 },
+            { Name => "Web",       SortOrder => 6 },
+            { Name => "Telephone", SortOrder => 7 },
+            { Name => "Other",     SortOrder => 8 },
         ]
     },
     {   Name        => 'Reporter Type',
@@ -669,6 +674,87 @@ for my $cf (@CustomFields) {
         );
 }
 
+@Classes = (
+    {
+        Name        => 'Templates',
+        Description => 'Response templates',
+        ApplyTo     => [ map { $_->{Name} } @Queues ],
+    },
+    {
+        Name => 'Incidents Processes',
+        Description => 'Processes to be followed in the event of an incident',
+    }
+);
+
+@Articles = (
+    {
+        Name => 'Spam Process',
+        Summary => 'This is the summary of the process for handling spam',
+        CustomFields => [
+            {
+                CustomField  => 'Content',
+                Content => 'This is the content of the process for handling spam',
+            },
+        ],
+        Class => 'Incidents Processes',
+    },
+    {
+        Name => 'System Compromise Process',
+        Summary => 'This is the summary of the process for handling system compromise',
+        CustomFields => [
+            {
+                CustomField  => 'Content',
+                Content => 'This is the content of the process for handling system compromise',
+            },
+        ],
+        Class => 'Incidents Processes',
+    },
+    {
+        Name => 'Query Process',
+        Summary => 'This is the summary of the process for handling queries',
+        CustomFields => [
+            {
+                CustomField  => 'Content',
+                Content => 'This is the content of the process for handling queries',
+            },
+        ],
+        Class => 'Incidents Processes',
+    },
+    {
+        Name => 'Scan Process',
+        Summary => 'This is the summary of the process for handling scans',
+        CustomFields => [
+            {
+                CustomField  => 'Content',
+                Content => 'This is the content of the process for handling scans',
+            },
+        ],
+        Class => 'Incidents Processes',
+    },
+    {
+        Name => 'Denial of Service Process',
+        Summary => 'This is the summary of the process for handling denial of service',
+        CustomFields => [
+            {
+                CustomField  => 'Content',
+                Content => 'This is the content of the process for handling denial of service',
+            },
+        ],
+        Class => 'Incidents Processes',
+    },
+    {
+        Name => 'Piracy Process',
+        Summary => 'This is the summary of the process for handling piracy',
+        CustomFields => [
+            {
+                CustomField  => 'Content',
+                Content => 'This is the content of the process for handling piracy',
+            },
+        ],
+        Class => 'Incidents Processes',
+    }
+);
+
 @Final = (
     sub {
         $| = 1;
@@ -678,25 +764,6 @@ for my $cf (@CustomFields) {
         require RT::Class;
         my $class = RT::Class->new($CurrentUser);
         $class->Load('Templates');
-        unless ( $class->Id ) {
-            $RT::Logger->info("Creating 'Templates' Article class.");
-            my ( $id, $msg ) = $class->Create(
-                Name        => 'Templates',
-                Description => 'Response templates',
-                HotList     => 1
-            );
-            die $msg unless $id;
-
-            foreach my $qname ( map $_->{'Name'}, @Queues ) {
-                my $queue = RT::Queue->new($CurrentUser);
-                $queue->Load($qname);
-                next unless $queue->id;
-
-                my ( $status, $msg ) = $class->AddToObject($queue);
-                $RT::Logger->error("Couldn't apply class to queue '$qname'")
-                    unless $status;
-            }
-        }
 
         require RT::Article;
         my $response = RT::CustomField->new($CurrentUser);
@@ -730,6 +797,10 @@ for my $cf (@CustomFields) {
         my $group = RT::Group->new($CurrentUser);
         $group->LoadUserDefinedGroup("DutyTeam");
         die "Can't load group" unless $group->Id;
+
+        (my $ret, $msg) = $group->PrincipalObj->GrantRight( Right => 'SeeCustomField', Object => $class );
+        die "Could not grant DutyTeam 'SeeCustomField' on class 'Templates': $msg" unless $ret;
+
         $group->PrincipalObj->GrantRight( Right => $_, Object => $response )
             for qw/SeeCustomField ModifyCustomField/;
         $group->PrincipalObj->GrantRight( Right => $_, Object => $class )
@@ -817,5 +888,21 @@ for my $cf (@CustomFields) {
             RT->Logger->error("Couldn't create dashboard RTIR Homepage: $msg");
         }
     },
-);
+    sub {
+        my $class = RT::Class->new( RT->SystemUser );
+        my ($ok, $msg) = $class->Load('Incidents Processes');
+        RT->Logger->error("Unable to load class Incidents Processes: $msg") unless $ok;
 
+        my $content = RT::CustomField->new( RT->SystemUser );
+        $content->LoadByName( Name => 'Content', LookupType => RT::Article->CustomFieldLookupType );
+
+        my @skips = ( "Name", "Summary", "LinkToTicket", $content->Id ? "CF-Title-" . $content->Id : () );
+        $class->SetAttribute(Name => "Skip-$_", Content => 1) for @skips;
+
+        my $group = RT::Group->new( RT->SystemUser );
+        $group->LoadUserDefinedGroup("DutyTeam");
+        die "Can't load group" unless $group->Id;
+        $group->PrincipalObj->GrantRight( Right => $_, Object => $class )
+            for qw/ShowArticle SeeCustomField AdminClass AdminTopics CreateArticle ModifyArticle ModifyArticleTopics SeeClass ShowArticleHistory DeleteArticle/;
+        }
+);

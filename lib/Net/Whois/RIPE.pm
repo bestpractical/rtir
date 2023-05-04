@@ -116,7 +116,7 @@ sub query_iterator {
         return undef;
     }
 
-    return Net::Whois::RIPE::Iterator->new( $self, $string . "\n\n" );
+    return Net::Whois::RIPE::Iterator->new( $self, $string . "\r\n" );
 }
 
 sub template {
@@ -134,7 +134,7 @@ sub template {
         return undef;
     }
 
-    return $self->_query( $string . "\n\n",
+    return $self->_query( $string . "\r\n",
         "Net::Whois::RIPE::Object::Template" );
 }
 
@@ -153,7 +153,7 @@ sub verbose_template {
         return undef;
     }
 
-    return $self->_query( $string . "\n\n",
+    return $self->_query( $string . "\r\n",
         "Net::Whois::RIPE::Object::Template" );
 }
 
@@ -186,7 +186,7 @@ sub query {
         return undef;
     }
 
-    my @object = $self->_query( $string . "\n", "Net::Whois::RIPE::Object" );
+    my @object = $self->_query( $string . "\r\n", "Net::Whois::RIPE::Object" );
 
     $self->{cache}->set( $string, \@object ) if $self->{cache} and @object;
 

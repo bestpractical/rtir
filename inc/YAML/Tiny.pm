@@ -2,12 +2,12 @@
 use 5.008001; # sane UTF-8 support
 use strict;
 use warnings;
-package YAML::Tiny; # git description: v1.72-7-g8682f63
+package YAML::Tiny; # git description: v1.73-12-ge02f827
 # XXX-INGY is 5.8.1 too old/broken for utf8?
 # XXX-XDG Lancaster consensus was that it was sufficient until
 # proven otherwise
 
-our $VERSION = '1.73';
+our $VERSION = '1.74';
 
 #####################################################################
 # The YAML::Tiny API.

@@ -242,4 +242,51 @@ moving the scrip to Batch mode may restore the previous behavior.
 
 =back
 
+=head1 UPGRADING FROM 5.0.3 AND EARLIER
+
+=over 4
+
+=item * Process Articles for Incidents
+
+Starting with RTIR 5.0.4, we include a new portlet on the Incident page
+which can show the process to be followed for an Incident based on the
+selected Classification.
+
+Default articles for the process documentation are installed in new RTIRs
+by default. For an existing RTIR system, you can also add the starter
+articles by running the following after your upgrade:
+
+    cd /opt/rt5
+    sbin/rt-setup-database --action insert --datafile local/plugins/RT-IR/etc/upgrade/process_articles_initialdata
+
+=item * Allow DutyTeam to See Templates Articles
+
+This upgrade runs a step to grant the default DutyTeam group rights to
+see custom fields in the Templates class. This allows DutyTeam members
+to use articles when corresponding on tickets. This right was previously
+omitted in error.
+
+If you explicitly do not want DutyTeam to see the articles in the Templates
+class, you can edit the class and remove the SeeCustomField right after you
+run the upgrade.
+
+=item * "How Reported" no longer defaults to Email
+
+In previous versions of RTIR, L<RT::Action::RTIR_SetHowReported> automatically
+set the "How Reported" custom field on Incident Reports to "Email" if no
+value was provided. In RTIR 5.0.4 we updated this action to get the value
+from RT's L<RT/CurrentInterface> method, so it will automatically be set
+to values like "Web" or "REST2" if a ticket is created that way rather than
+always "Email".
+
+If you prefer defaulting to "Email", you can disable this scrip and set "Email"
+as a default value in the Incident Reports queue configuration.
+
+If you want to see new values set automatically, you can update you values
+list for "How Reported" to include these new values:
+
+    "API", "CLI", "REST", "REST2", and "Web"
+
+=back
+
 =cut
