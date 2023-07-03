@@ -49,6 +49,23 @@ diag("Incident comment loaded rich text editor");
     $agent->content_contains("id=\"UpdateContentType\" value=\"text/html\"", "Update content type is html");
 }
 
+# Create incident with investigation and check if it's created correctly
+diag 'Test the creation of an incident with investigation';
+$agent->goto_create_rtir_ticket('Incidents');
+$agent->form_name('TicketCreate');
+$agent->field('Subject', 'Incident with an Investigation');
+$agent->field('Content', 'Content of Incident with an Investigation');
+$agent->field('Requestors', 'root@localhost');
+$agent->field('InvestigationRequestors', 'root@localhost');
+$agent->field('InvestigationSubject', 'Investigation created for test incident');
+$agent->field('InvestigationContent', 'Content of the Investigation');
+$agent->click('CreateWithInvestigation');
+$agent->content_like(qr/Incident #\d+: Incident with an Investigation/, 'Incident number generated');
+$agent->content_like(qr/Ticket \d+ created in queue &#39;Incidents&#39;/, 'Incident created message');
+$agent->content_like(qr/Ticket \d+ created in queue &#39;Investigations&#39;/, 'Investigation created message');
+$agent->content_like(qr/Ticket \d+ member of Ticket \d+/, 'Investigation linked to Incident');
+$agent->follow_link_ok({text => 'Investigation created for test incident'}, 'Followed link to investigation');
+$agent->content_contains('Content of the Investigation', 'Investigation content is correct');
 
 undef $agent;
 done_testing;
