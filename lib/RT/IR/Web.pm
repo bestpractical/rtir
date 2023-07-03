@@ -94,5 +94,22 @@ sub RTIRDefaultSearchParams {
 }
 
 package RT::IR::Web;
+
+sub ScrubHtmlExternalTools {
+    my ($html, $ScrubberRules) = @_;
+    my $scrubber = HTML::Scrubber->new( script => 0 );
+    my %rules;
+    if ( $ScrubberRules ) {
+        %rules = %$ScrubberRules;
+    } else {
+        %rules = ( '*' => 1 );
+    }
+    $scrubber->rules(
+        %rules,
+    );
+    my $scrubbed_html = $scrubber->scrub($html);
+    return $scrubbed_html;
+}
+
 RT::Base->_ImportOverlays();
 1;

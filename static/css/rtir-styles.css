@@ -193,6 +193,22 @@ body.rtir .titlebox.external-feeds tr.evenline+.evenline .collection-as-table {
     padding-bottom: 0.7rem;
 }
 
+body.rtir #externalresultstitle {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+body.rtir #externalresults {
+    font-size: 1em;
+}
+
+body.rtir #externalresults h1,
+body.rtir #externalresults h2,
+body.rtir #externalresults h3 {
+    font-size: 1em;
+}
+
+
 /* elevator-dark styles for rtir */
 
 .rtir.darkmode .clickylink a.button {

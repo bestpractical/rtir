@@ -795,27 +795,91 @@ using the following mason components:
 
 =cut
 
-Set( @RTIRResearchTools, (qw(Traceroute Whois Iframe)));
+Set( @RTIRResearchTools, (qw(Traceroute Whois External)));
 
-=item C<$RTIRIframeResearchToolConfig>
+=item C<$RTIRExternalResearchToolConfig>
 
 One of the research tools available in RTIR allows you to
 configure a set of search URLs that incident handlers
-can use to open searches in IFRAMES.
-
-Entries are keyed by integer in the order you'd like to see
-them in the dropdown on the research page. Each entry consists
-of a hashref containing "FriendlyName" and "URL". The URLs will
-be evaluated to replace __SearchTerm__ with the user's current
-search term.
+can use to open searches in external tools.
 
 =cut
 
-Set($RTIRIframeResearchToolConfig, {
-    1 => { FriendlyName => 'Google', URL => 'https://encrypted.google.com/search?q=__SearchTerm__' },
-    2 => { FriendlyName => 'CVE', URL => 'http://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=__SearchTerm__'},
-    3 => { FriendlyName => 'McAfee SiteAdvisor', URL => 'http://www.siteadvisor.com/sites/__SearchTerm__'}
-} );
+Set($RTIRExternalResearchToolConfig, {
+    1 => {
+        FriendlyName => 'Google',
+        URL => 'https://encrypted.google.com/search?q=__SearchTerm__',
+        UserAgent => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0',
+        ContentXPaths => [
+            qw{//div[@role='main']//div[@data-async-context]//div[@jscontroller]//a[@jsname]},
+            qw{//div[@role='main']//div[@data-async-context]//div[@jscontroller]//div[@data-sncf]/div},
+        ],
+        ScrubberRules => {
+            a => {
+                'href' => sub {
+                    my ($obj, $tag, $attr, $value) = @_;
+                    if ($value =~ m{translate.google.com}) {
+                        return;
+                    } elsif ($value !~ m{^http}) {
+                        return;
+                    }
+                    return $value;
+                },
+                'target' => 1,
+            },
+            '*' => 1,
+            'h1' => 0,
+            'h2' => 0,
+            'span' => 0,
+            'img' => 0,
+            'cite' => 0,
+            'div' => {
+                'style' => sub {
+                    my ($obj, $tag, $attr, $value) = @_;
+                    if ($value =~ m{webkit}) {
+                        return;
+                    }
+                    return 'margin-bottom: 2.5em;';
+                },
+            },
+
+        },
+    },
+    2 => {
+        FriendlyName => 'CVE',
+        URL => 'http://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=__SearchTerm__',
+        ContentXPaths => [
+            qw{//div[@id='CenterPane']/div[@class='smaller']},
+            qw{//div[@id='CenterPane']/h2},
+            qw{//div[@id='CenterPane']/div[@id='TableWithRules']/table},
+        ],
+        ScrubberRules => {
+            a => {
+                'href' => sub {
+                    my ($obj, $tag, $attr, $value) = @_;
+                    if ($value =~ m{^/cgi-bin/cvename.cgi\?name\=}) {
+                        return 'https://cve.mitre.org'.$value;
+                    }
+                    return;
+                },
+                'target' => 1,
+            },
+            '*' =>  {
+                style => 1,
+                width => 1,
+                cellpadding => 1,
+                cellspacing => 1,
+            }
+        },
+    },
+    3 => {
+        FriendlyName => 'McAfee SiteAdvisor',
+        URL => 'http://www.siteadvisor.com/sites/__SearchTerm__',
+        ContentXPaths => [
+            qw{//div[@class='content']},
+        ],
+    }
+});
 
 =item C<$TracerouteCommand>
 

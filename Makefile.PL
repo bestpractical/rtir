@@ -30,6 +30,8 @@ requires('DBIx::SearchBuilder', 1.61);
 requires('Regexp::Common');
 # queries parsing
 requires('Parse::BooleanLogic');
+# Parse websites with External Tools
+requires('HTML::TreeBuilder::XPath');
 
 # Domain searching
 requires('Net::Domain::TLD');
