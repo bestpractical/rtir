@@ -803,6 +803,48 @@ One of the research tools available in RTIR allows you to
 configure a set of search URLs that incident handlers
 can use to open searches in external tools.
 
+    Set($RTIRExternalResearchToolConfig, {
+        1 => {
+            FriendlyName => 'Google',
+            URL => 'https://encrypted.google.com/search?q=__SearchTerm__',
+            UserAgent => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0',
+            ContentXPaths => [
+                qw{//div[@role='main']//div[@data-async-context]//div[@jscontroller]//a[@jsname]},
+                ...
+            ],
+            ScrubberRules => {
+                a => {
+                    'href' => sub {
+                    ...
+                    },
+                },
+                '*' => 1,
+                'h1' => 0,
+                ...
+            },
+        },
+    });
+
+The C<URL> key is required and should contain the URL to the search
+tool you want to use.  The C<__SearchTerm__> placeholder will be
+replaced with the search term entered by the user.
+
+The C<FriendlyName> key will be used to label the search tool in the UI.
+
+The C<UserAgent> key is optional and will be used to set the User-Agent
+header when making requests to the search tool.
+
+The C<ContentXPaths> key is optional and should contain an array of
+XPath expressions that will be used to extract the search results from
+the response.  If this key is not provided, the entire response body will
+be displayed.
+
+The C<ScrubberRules> key is optional and should contain a hash of
+scrubber rules that will be used to clean up the search results.  The
+scrubber rules are defined using the L<HTML::Scrubber> syntax.  If this
+key is not provided, all HTML elements will be allowed, but with no
+attributes.
+
 =cut
 
 Set($RTIRExternalResearchToolConfig, {
