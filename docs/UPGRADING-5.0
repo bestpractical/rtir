@@ -289,4 +289,25 @@ list for "How Reported" to include these new values:
 
 =back
 
+=head1 UPGRADING FROM 5.0.4 AND EARLIER
+
+=over 4
+
+=item * "Iframe Research Tools" replaced with "External Research Tools"
+
+Recent versions of browsers have started blocking iframes from loading
+content from other domains. To address this, we have replaced the
+"Iframe Research Tools" with the new "External Research Tools", which get
+the content from the external site directly and render it in inline RT.
+
+The new External Research Tools are configured in a similar way as the
+Iframe Research Tools, but need some additional information to work.
+
+If you have configured different Iframe Research Tools, you will need to
+adapt the configuration to the new External Research Tools.
+
+Please check the RTIR configuration documentation for more information.
+
+=back
+
 =cut
