@@ -25,6 +25,7 @@ jobs:
         run: |
           echo "RT_BRANCH_NAME=${GITHUB_REF#refs/heads/}" >>"$GITHUB_ENV"
           echo "RT_GA_START_TIME=$(date +%s)" >>"$GITHUB_ENV"
+          echo "DOCKER_BUILDKIT=0" >> $GITHUB_ENV
           docker network create rt
       - name: Check out RTIR
         uses: actions/checkout@v2
@@ -73,6 +74,7 @@ jobs:
         run: |
           echo "RT_BRANCH_NAME=${GITHUB_REF#refs/heads/}" >>"$GITHUB_ENV"
           echo "RT_GA_START_TIME=$(date +%s)" >>"$GITHUB_ENV"
+          echo "DOCKER_BUILDKIT=0" >> $GITHUB_ENV
           docker network create rt
       - name: Check out RTIR
         uses: actions/checkout@v2
@@ -122,6 +124,7 @@ jobs:
         run: |
           echo "RT_BRANCH_NAME=${GITHUB_REF#refs/heads/}" >>"$GITHUB_ENV"
           echo "RT_GA_START_TIME=$(date +%s)" >>"$GITHUB_ENV"
+          echo "DOCKER_BUILDKIT=0" >> $GITHUB_ENV
           docker network create rt
       - name: Check out RTIR
         uses: actions/checkout@v2
