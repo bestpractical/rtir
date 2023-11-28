@@ -198,6 +198,8 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
 
 </&>
 
+<& /Ticket/Elements/ShowAssetsOnCreate, QueueObj => $QueueObj, ARGSRef => \%ARGS &>
+
 <& /Elements/EditCustomFieldCustomGroupings,
     %ARGS,
     %CFDefaults,
