@@ -6,17 +6,42 @@
 
 <h1 align="center">Request Tracker for Incident Response (RTIR)</h1>
 
-RT for Incident Response is an open source, industrial-grade
+<p align="center">
+  RT for Incident Response is an open source, industrial-grade
 incident-handling tool designed to provide a simple, effective
-workflow for members of CERT and CSIRT teams. It allows team members
+workflow for members of CERT and CSIRT teams.
+  <br>
+  <a href="https://docs.bestpractical.com/rtir/latest/index.html"><strong>Explore RTIR docs »</strong></a>
+  <br>
+  <br>
+  <a href="https://docs.bestpractical.com/release-notes/rtir/index.html">Release Notes</a>
+  ·
+  <a href="https://forum.bestpractical.com/">Community Forum</a>
+  ·
+  <a href="https://rt-wiki.bestpractical.com">Public Wiki</a>
+  ·
+  <a href="https://bestpractical.com/blog/">Blog</a>
+  ·
+  <a href="https://bestpractical.com/pricing">Hosting & Support</a>
+  <br /><br />
+  <a href="https://github.com/bestpractical/rtir/releases">
+      <img src="https://img.shields.io/github/v/release/bestpractical/rtir" alt="Latest release" />
+  </a>
+  <a href="https://github.com/bestpractical/rtir/actions">
+      <img src="https://img.shields.io/github/actions/workflow/status/bestpractical/rtir/github-action.yml?branch=5.0-trunk&label=Test%20All" alt="Build status" />
+  </a>
+</p>
+<p align="center">It allows team members
 to track, respond to and deal with reported incidents and features a
 number of tools to make common operations quick and easy.  RTIR is
 built on top of RT, which is also available for free from Best
-Practical Solutions at [http://www.bestpractical.com/rt/](http://www.bestpractical.com/rt/).
+Practical Solutions at <a href="http://www.bestpractical.com/rt/">http://www.bestpractical.com/rt/</a>.</p>
 
+<p align="center">
 RT and RTIR are commercially-supported software. To purchase support,
 training, custom development, or professional services, please get in
-touch with us at [sales@bestpractical.com](mailto:sales@bestpractical.com).
+touch with us at <a href="mailto:mailto:sales@bestpractical.com">sales@bestpractical.com</a>.
+</p>
 
 ## REQUIRED PACKAGES
 
