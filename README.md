@@ -1,3 +1,11 @@
+<p align="center">
+  <a href="https://bestpractical.com/rtir">
+    <img src="https://static.bestpractical.com/rt-ir-logo.png" alt="Best Practical logo" width="500">
+  </a>
+</p>
+
+<h1 align="center">Request Tracker for Incident Response (RTIR)</h1>
+
 RT for Incident Response is an open source, industrial-grade
 incident-handling tool designed to provide a simple, effective
 workflow for members of CERT and CSIRT teams. It allows team members
