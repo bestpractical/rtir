@@ -37,6 +37,8 @@ number of tools to make common operations quick and easy.  RTIR is
 built on top of RT, which is also available for free from Best
 Practical Solutions at <a href="http://www.bestpractical.com/rt/">http://www.bestpractical.com/rt/</a>.</p>
 
+![Screenshot of RTIR](docs/images/rtir-incident-dashboard.png)
+
 <p align="center">
 RT and RTIR are commercially-supported software. To purchase support,
 training, custom development, or professional services, please get in
