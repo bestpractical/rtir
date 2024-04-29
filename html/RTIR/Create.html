@@ -241,7 +241,7 @@
     </div>
     <div class="value col-9">
       <& /Elements/EmailInput,
-        Name => 'Requestors', Default => $ARGS{'Requestors'}, Size => undef,
+        Name => 'Requestors', Default => $ARGS{'Requestors'}, Size => undef, AutocompleteMultiple => 1,
       &>
     </div>
   </div>
@@ -265,7 +265,7 @@
     </div>
     <div class="value col-9">
       <& /Elements/EmailInput,
-        Name => 'Cc', Default => $ARGS{'Cc'}, Size => undef,
+        Name => 'Cc', Default => $ARGS{'Cc'}, Size => undef, AutocompleteMultiple => 1,
       &>
     </div>
   </div>
@@ -277,7 +277,7 @@
     </div>
     <div class="value col-9">
       <& /Elements/EmailInput,
-        Name => 'AdminCc', Default => $ARGS{'AdminCc'}, Size => undef,
+        Name => 'AdminCc', Default => $ARGS{'AdminCc'}, Size => undef, AutocompleteMultiple => 1,
       &>
     </div>
   </div>
