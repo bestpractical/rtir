@@ -34,8 +34,8 @@ workflow for members of CERT and CSIRT teams.
 <p align="center">It allows team members
 to track, respond to and deal with reported incidents and features a
 number of tools to make common operations quick and easy.  RTIR is
-built on top of RT, which is also available for free from Best
-Practical Solutions at <a href="http://www.bestpractical.com/rt/">http://www.bestpractical.com/rt/</a>.</p>
+built on top of <a href="https://www.bestpractical.com/rt/">Request Tracker</a>, which is also available for free from Best
+Practical Solutions.</p>
 
 ![Screenshot of RTIR](docs/images/rtir-incident-dashboard.png)
 
@@ -47,14 +47,14 @@ touch with us at <a href="mailto:mailto:sales@bestpractical.com">sales@bestpract
 
 ## REQUIRED PACKAGES
 
-- RT version 4.4.1 or later.
+- A compatible version of RT (usually the same version number as RTIR or newer)
 - Net::Whois::RIPE 1.31 is bundled with RTIR for compatibility with the
   API RTIR uses and for a fix to run without warnings under perl 5.18.
 
 ## UPGRADE INSTRUCTIONS
 
 If you've installed a prior version of RTIR, you will need to follow
-special steps to upgrade.  See the docs/UPGRADING file for detailed
+special steps to upgrade.  See the [UPGRADING](https://docs.bestpractical.com/rtir/latest/UPGRADING.html) file for detailed
 information.
 
 ## INSTALLATION INSTRUCTIONS
@@ -148,32 +148,28 @@ You should substitute the URL for RT's web interface for http://rt.example.com/.
 
 - This README file
 
-- docs/UPGRADING
+- [UPGRADING documentation](https://docs.bestpractical.com/rtir/5.0/UPGRADING.html)
 
-- docs/UPGRADING-*
-   - Version specific upgrading files. If upgrading from 3.0, you
-     would read the UPGRADING-3.0, UPGRADING-3.2, UPGRADING-4.0
-     and UPGRADING-5.0 files.
+- There are also version specific upgrading documents available at the
+   [RTIR documentation page](https://docs.bestpractical.com/rtir/5.0/index.html).
+   If upgrading from 3.0, you
+   would read the UPGRADING-3.0, UPGRADING-3.2, UPGRADING-4.0
+   and UPGRADING-5.0 files.
 
-- docs/Tutorial.pod
-   - ( also at [http://bestpractical.com/docs/rtir/5.0/Tutorial](http://bestpractical.com/docs/rtir/5.0/Tutorial) )
-   - Extended information about ticket merging
+- [RTIR Tutorial](https://docs.bestpractical.com/rtir/5.0/Tutorial.html)
+   - [Extended information about ticket merging](https://docs.bestpractical.com/rtir/5.0/Tutorial.html#Merging-Tickets)
 
-- docs/Constituencies.pod
-   - ( also at [http://bestpractical.com/docs/rtir/5.0/Constituencies](http://bestpractical.com/docs/rtir/5.0/Constituencies) )
+- [Constituencies](https://docs.bestpractical.com/rtir/5.0/Constituencies.html)
    - Information about setting up RTIR with multiple user constituencies
 
-- docs/AdministrationTutorial.pod
-   - ( also at [http://bestpractical.com/docs/rtir/5.0/AdministrationTutorial](http://bestpractical.com/docs/rtir/5.0/AdministrationTutorial) )
+- [RTIR Administration Tutorial](https://docs.bestpractical.com/rtir/5.0/AdministrationTutorial.html)
    - Information about setting up RTIR for Administrators
 
-- etc/RTIR_Config.pm
+- [RTIR Config](https://docs.bestpractical.com/rtir/5.0/RTIR_Config.html)
    - Contains a number of RTIR-specific configuration options and
      instructions for their use
-   - [http://www.bestpractical.com/docs/rtir/5.0/RTIR_Config.html](http://www.bestpractical.com/docs/rtir/5.0/RTIR_Config.html)
 
-- RTIR mailing list
-   - Subscribe by sending mail to [rtir-request@lists.bestpractical.com](rtir-request@lists.bestpractical.com).
+- [RTIR section on our forum](https://forum.bestpractical.com).
 
 ## DEVELOPMENT
 
