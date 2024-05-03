@@ -18,19 +18,19 @@ RT and RTIR are commercially-supported software. To purchase support,
 training, custom development, or professional services, please get in
 touch with us at [sales@bestpractical.com](mailto:sales@bestpractical.com).
 
-## REQUIRED PACKAGES:
+## REQUIRED PACKAGES
 
 - RT version 4.4.1 or later.
 - Net::Whois::RIPE 1.31 is bundled with RTIR for compatibility with the
   API RTIR uses and for a fix to run without warnings under perl 5.18.
 
-## Upgrade instructions:
+## UPGRADE INSTRUCTIONS
 
 If you've installed a prior version of RTIR, you will need to follow
 special steps to upgrade.  See the docs/UPGRADING file for detailed
 information.
 
-## Installation instructions:
+## INSTALLATION INSTRUCTIONS
 
 1. Install the current release of the RT 5.0 series following RT's
 regular installation instructions
@@ -64,7 +64,7 @@ database.
 1. Stop and start your web server.
 
 
-## Configuring RTIR
+## CONFIGURING RTIR
 
 1. Using RT's configuration interface, add the email address
 of the Network Operations Team (the people who will handle
@@ -114,7 +114,7 @@ You should substitute the URL for RT's web interface for http://rt.example.com/.
    refer to the instructions in the file docs/Constituencies.pod which is also
    viewable here [http://www.bestpractical.com/docs/rtir/4.0/Constituencies.html](http://www.bestpractical.com/docs/rtir/4.0/Constituencies.html)
 
-## Documentation for RTIR
+## DOCUMENTATION FOR RTIR
 
 - Documents included with RTIR are also available for browsing at
   [http://www.bestpractical.com/docs/rtir/5.0/](http://www.bestpractical.com/docs/rtir/5.0/)
