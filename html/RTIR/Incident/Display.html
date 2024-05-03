@@ -304,6 +304,8 @@
     TicketObj => $TicketObj,
 &>
 
+<& /Ticket/Elements/ShowAssets, Ticket => $TicketObj &>
+
 <& /RTIR/Elements/ShowArticles, Ticket => $TicketObj &>
 
 <& /RTIR/Elements/ShowCVEDetails, Ticket => $TicketObj &>
@@ -470,6 +472,9 @@ unless( $new_ticket || $SkipProcessing ) {
     push @results, ProcessTicketBasics( ARGSRef => \%ARGS, TicketObj => $TicketObj );
     push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $TicketObj );
     push @results, ProcessTicketDates( ARGSRef => \%ARGS, TicketObj => $TicketObj );
+    my $strict_acl = RT->Config->Set( StrictLinkACL => 0 );
+    push @results, ProcessTicketLinks( ARGSRef => \%ARGS, TicketObj => $TicketObj );
+    RT->Config->Set( StrictLinkACL => $strict_acl );
 }
 
 if ( !$SkipProcessing && ( $ARGS{'BulkLink'} || $Child ) ) {

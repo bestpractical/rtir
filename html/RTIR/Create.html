@@ -64,6 +64,7 @@
 <form action="<%RT::IR->HREFTo("Split.html") %>" method="post" enctype="multipart/form-data" name="TicketCreate">
 % }
 <input type="hidden" name="id" value="new" />
+<input type="hidden" class="hidden" name="new-RefersTo" value="<% $ARGS{'new-RefersTo'} %>" />
 <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
 <input type="hidden" name="QueueChanged" value="0" />
 % if ( $Split ) {
@@ -164,6 +165,8 @@
     %ARGS, QueueObj => $QueueObj, InTable => 1,
   &>
 </&>
+
+<& /Ticket/Elements/ShowAssetsOnCreate, QueueObj => $QueueObj, ARGSRef => \%ARGS &>
 
 <& /Elements/EditCustomFieldCustomGroupings,
     %ARGS,
