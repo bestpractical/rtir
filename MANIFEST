@@ -2,10 +2,12 @@
 .travis.yml
 bin/add_constituency.in
 CHANGES
+COPYING
 Dockerfile
 docs/AdministrationTutorial.pod
 docs/Constituencies.pod
 docs/DocIndex.pod
+docs/images/rtir-incident-dashboard.png
 docs/Tutorial.pod
 docs/UPGRADING
 docs/UPGRADING-2.4
@@ -220,7 +222,8 @@ MANIFEST.SKIP
 META.yml
 po/README
 po/rtir.pot
-README
+README.md
+SECURITY.md
 static/css/rtir-reporting.css
 static/css/rtir-styles.css
 static/images/RTIR/logo.png

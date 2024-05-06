@@ -116,7 +116,7 @@ for my $type ( 'incident', 'ir', 'investigation', 'countermeasure' ) {
     my ($input_query) = $m->find_all_inputs( name => 'Query' );
     is(
         $input_query->value,
-        q{( Lifecycle = 'incident_reports' ) AND (  Status = 'new' OR Status = 'open' ) AND MemberOf != 1},
+        q{( Lifecycle = 'incident_reports' ) AND ( Status = 'new' OR Status = 'open' ) AND MemberOf != 1},
         'Query input is correct'
     );
 

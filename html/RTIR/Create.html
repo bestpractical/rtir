@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -64,6 +64,7 @@
 <form action="<%RT::IR->HREFTo("Split.html") %>" method="post" enctype="multipart/form-data" name="TicketCreate">
 % }
 <input type="hidden" name="id" value="new" />
+<input type="hidden" class="hidden" name="new-RefersTo" value="<% $ARGS{'new-RefersTo'} %>" />
 <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
 <input type="hidden" name="QueueChanged" value="0" />
 % if ( $Split ) {
@@ -165,6 +166,8 @@
   &>
 </&>
 
+<& /Ticket/Elements/ShowAssetsOnCreate, QueueObj => $QueueObj, ARGSRef => \%ARGS &>
+
 <& /Elements/EditCustomFieldCustomGroupings,
     %ARGS,
     %CFDefaults,
@@ -241,7 +244,7 @@
     </div>
     <div class="value col-9">
       <& /Elements/EmailInput,
-        Name => 'Requestors', Default => $ARGS{'Requestors'}, Size => undef,
+        Name => 'Requestors', Default => $ARGS{'Requestors'}, Size => undef, AutocompleteMultiple => 1,
       &>
     </div>
   </div>
@@ -265,7 +268,7 @@
     </div>
     <div class="value col-9">
       <& /Elements/EmailInput,
-        Name => 'Cc', Default => $ARGS{'Cc'}, Size => undef,
+        Name => 'Cc', Default => $ARGS{'Cc'}, Size => undef, AutocompleteMultiple => 1,
       &>
     </div>
   </div>
@@ -277,7 +280,7 @@
     </div>
     <div class="value col-9">
       <& /Elements/EmailInput,
-        Name => 'AdminCc', Default => $ARGS{'AdminCc'}, Size => undef,
+        Name => 'AdminCc', Default => $ARGS{'AdminCc'}, Size => undef, AutocompleteMultiple => 1,
       &>
     </div>
   </div>

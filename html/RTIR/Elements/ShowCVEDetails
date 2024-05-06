@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2023 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -89,22 +89,26 @@ jQuery( function() {
       var div = jQuery(this);
       var cve_id = div.data('cve-id');
       div.find('.current-value:empty').text(RT.I18N.Catalog.loading);
-      jQuery.get("https://services.nvd.nist.gov/rest/json/cve/1.0/" + cve_id, function(data) {
-          if ( data.result && data.result.CVE_Items && data.result.CVE_Items[0] ) {
-              var info = data.result.CVE_Items[0];
-              div.find('.cve-published-date .current-value').text(info.publishedDate);
-              div.find('.cve-last-modified-date .current-value').text(info.lastModifiedDate);
+      jQuery.get("https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=" + cve_id, function(data) {
+          if ( data.totalResults && data.vulnerabilities && data.vulnerabilities[0] ) {
+              var info = data.vulnerabilities[0].cve;
+              div.find('.cve-published-date .current-value').text(info.published);
+              div.find('.cve-last-modified-date .current-value').text(info.lastModified);
 
-              jQuery.each(info.cve.description.description_data, function(index, value) {
+              jQuery.each(info.descriptions, function(index, value) {
                   if ( value.lang == 'en' ) {
                       div.find('.cve-description .current-value').text(value.value);
                       return false;
                   }
               });
 
-              if ( info.impact && info.impact.baseMetricV3 && info.impact.baseMetricV3.cvssV3 ) {
-                  var v3 = info.impact.baseMetricV3.cvssV3;
-                  div.find('.cve-cvss-3x-severity .current-value').text(v3.baseScore + ' ' + v3.baseSeverity);
+              if ( info.metrics ) {
+                for ( const metric in info.metrics ) {
+                    if ( metric.match(/cvssMetricV3/) ) {
+                        const v3 = info.metrics[metric][0].cvssData;
+                        div.find('.cve-cvss-3x-severity .current-value').text(v3.baseScore + ' ' + v3.baseSeverity);
+                    }
+                }
               }
           }
       }, 'json').fail( function(xhr) {
