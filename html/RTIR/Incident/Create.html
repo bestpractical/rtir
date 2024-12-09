@@ -404,6 +404,15 @@ unless ( $queue ) {
         VALUE => RT::IR->lifecycle_incident,
     );
 
+    if ($constituency) {
+        $queues->Limit(
+            FIELD         => 'Name',
+            OPERATOR      => 'ENDSWITH',
+            VALUE         => "- $constituency",
+            CASESENSITIVE => 0,
+        );
+    }
+
     while (my $object = $queues->Next) {
         # Ensure the user can CreateTicket in the queue.
         next unless $session{CurrentUser}->HasRight( Object => $object, Right => 'CreateTicket' );
