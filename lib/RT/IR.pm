@@ -837,11 +837,11 @@ require RT::CustomField;
         my $self        = shift;
         my $record      = shift;
 
-        my $record_class = $orig_GroupingClass->($self,$record);
+        my ( $record_class, $category ) = $orig_GroupingClass->( $self, $record, @_ );
 
         # we're only doing shenanigans on Tickets, which might be RTIR::Ticket
         unless ($record_class eq 'RT::Ticket') {
-            return $record_class;
+            return wantarray ? ( $record_class, $category ) : $record_class;
         }
 
         my $queue = undef;
@@ -859,10 +859,9 @@ require RT::CustomField;
         }
 
         if (RT::IR->OurQueue($queue)) {
-            return 'RTIR::Ticket';
-        } else {
-            return $record_class;
+            $record_class = 'RTIR::Ticket';
         }
+        return wantarray ? ( $record_class, $category ) : $record_class;
     };
 }
 
