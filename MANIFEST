@@ -270,8 +270,10 @@ t/mail/skip_notification.t
 t/report/split.t
 t/report/status.t
 t/searches/cf.t
+t/searches/custom_formats.t
 t/searches/menu.t
 t/searches/simple.t
 t/tools/lookup.t
+t/tools/lookup_alt_config.t
 t/upgrade/2.6.0-to-current.t
 t/walk-web.t
