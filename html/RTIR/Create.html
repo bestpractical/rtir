@@ -173,7 +173,8 @@
     %CFDefaults,
     Object => $ticket,
     CustomFieldGenerator => sub { $QueueObj->TicketCustomFields },
-    Groupings => [ RT::CustomField->CustomGroupings('RTIR::Ticket'), '' ],
+    Groupings => [ RT::CustomField->CustomGroupings( 'RTIR::Ticket', $QueueObj->Name ), '' ],
+    CategoryObj => $QueueObj,
 &>
 <&| /Widgets/TitleBox, title => loc("Dates"), class=>'ticket-info-dates' &>
 
