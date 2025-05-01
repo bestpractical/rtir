@@ -62,6 +62,7 @@ etc/upgrade/4.9.0/content
 etc/upgrade/4.9.1/content
 etc/upgrade/5.0.2/content
 etc/upgrade/5.0.4/content
+etc/upgrade/5.0.8/content
 etc/upgrade/process_articles_initialdata
 etc/upgrade/remove_files
 etc/upgrade/rtir-2.4-upgrade.pl.in
