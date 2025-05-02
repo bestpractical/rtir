@@ -94,8 +94,7 @@
                 DefaultLabel => loc("[_1] (Unchanged)", $m->scomp(
                     '/Elements/ShowUser', User => $Ticket->OwnerObj
                 ) ),
-                Default      => $ARGS{'Owner'} || $Ticket->Owner
-                    || $session{'CurrentUser'}->id,
+                Default      => $ARGS{'Owner'},
             }
         },
         {   name => 'Worked',
