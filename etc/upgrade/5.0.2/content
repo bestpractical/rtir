@@ -6,8 +6,8 @@ our @ScripConditions;
 our @CustomFields = (
     {   Name        => 'CVE ID',
         Type        => 'FreeformMultiple',
-        Queue       => [ 'Incidents', 'Incident Reports', 'Investigations', 'Countermeasures' ],
         Disabled    => 0,
+        LookupType  => 'RT::Queue-RT::Ticket',
         Description => 'CVE ID for RTIR queues',
         LinkValueTo => 'https://nvd.nist.gov/vuln/detail/__CustomField__#vulnCurrentDescriptionTitle',
     },
@@ -205,6 +205,28 @@ our @Final = (
                     $class->SetAttribute( Name => "Skip-$_", Content => 1 );
                 }
             }
+        }
+    },
+    sub {
+        # Apply new CVE ID CF to existing RTIR queues based on lifecycle
+        my $cve_id_obj = RT::CustomField->new(RT->SystemUser);
+        my ($ok, $msg) = $cve_id_obj->LoadByName( Name => 'CVE ID' );
+
+        if ( $cve_id_obj->IsGlobal ) {
+            my $empty_queue = RT::Queue->new( RT->SystemUser );
+            my ($ok, $msg) = $cve_id_obj->RemoveFromObject( $empty_queue );
+        }
+
+        if ( $ok && $cve_id_obj->Id ) {
+            my $queues = RT::Queues->new(RT->SystemUser);
+            $queues->Limit( FIELD => 'Lifecycle', VALUE => [ 'incident_reports', 'incidents', 'investigations', 'countermeasures' ], OPERATOR => 'IN' );
+            while ( my $queue = $queues->Next ) {
+                my ($ok, $msg) = $cve_id_obj->AddToObject( $queue );
+                RT->Logger->error("Unable to apply CVE ID to queue " . $queue->Name . " $msg") unless $ok;
+            }
+        }
+        else {
+            RT->Logger->error("Unable to load custom field CVE ID: $msg");
         }
     },
 );

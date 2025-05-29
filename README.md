@@ -201,7 +201,7 @@ To report a bug, send email to [rtir-bugs@bestpractical.com](mailto:rtir-bugs@be
 
 COPYRIGHT:
 
-This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
+This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
                                          <sales@bestpractical.com>
 
 (Except where explicitly superseded by other copyright notices)

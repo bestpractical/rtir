@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2024 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -173,7 +173,8 @@
     %CFDefaults,
     Object => $ticket,
     CustomFieldGenerator => sub { $QueueObj->TicketCustomFields },
-    Groupings => [ RT::CustomField->CustomGroupings('RTIR::Ticket'), '' ],
+    Groupings => [ RT::CustomField->CustomGroupings( 'RTIR::Ticket', $QueueObj->Name ), '' ],
+    CategoryObj => $QueueObj,
 &>
 <&| /Widgets/TitleBox, title => loc("Dates"), class=>'ticket-info-dates' &>
 

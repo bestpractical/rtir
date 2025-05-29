@@ -1,0 +1,10 @@
+our @Final = sub {
+    require RT::Class;
+    my $incident_processes = RT::Class->new(RT->SystemUser);
+    $incident_processes->Load('Incidents Processes');
+    if ( $incident_processes && $incident_processes->IsApplied( 0 ) ) {
+        my $empty_queue = RT::Queue->new( RT->SystemUser );
+        my ($ok, $msg) = $incident_processes->RemoveFromObject( $empty_queue );
+        warn "Could not remove 'Incidents Processes' from Global: $msg" unless $ok;
+    }
+};

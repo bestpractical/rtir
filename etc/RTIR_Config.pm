@@ -438,6 +438,16 @@ Set( $RTIR_StrictConstituencyLinking,  1  );
 
 =over 4
 
+=item C<$WebStrictBrowserCache>
+
+As part of normal operation, browsers typically store some browsing
+history, enabling the Back button to work. Browsers also often
+cache pages in the browsing history to improve performance.
+
+Enable this option if you are using RTIR with highly sensitive
+information and want to signal the browser to not store any history
+or cache any data. The default is disabled.
+
 =item C<$MaxInlineBody>
 
 By default, RT only displays text attachments inline up to
