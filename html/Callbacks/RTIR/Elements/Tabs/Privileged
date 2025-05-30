@@ -303,7 +303,7 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
     );
     if ($can->('ModifyTicket')) {
         PageMenu()->child(
-            timer => raw_html => $m->scomp( '/Ticket/Elements/PopupTimerLink', id => $id ),
+            timer => raw_html => $m->scomp( '/Ticket/Elements/PopupTimerLink', id => $id, TicketObj => $ticket ),
             sort_order => 99
         );
     }
