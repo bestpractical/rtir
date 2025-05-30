@@ -1,4 +1,4 @@
-FROM bpssysadmin/rt-base-debian:RT-5.0.8-bullseye-20241112
+FROM bpssysadmin/rt-base-debian:RT-5.0.8-buster-20250509
 
 LABEL maintainer="Best Practical Solutions <contact@bestpractical.com>"
 
