@@ -48,7 +48,7 @@
 <& /RTIR/Elements/Header, Title => "RTIR at a glance", Refresh => $session{'home_refresh_interval'} &>
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
-<& /Elements/MyRT, Portlets => $portlets &>
+<& /Elements/MyRT, Dashboard => $dashboard &>
 <%INIT>
 
 if ( defined $q && length $q ) {
@@ -71,11 +71,11 @@ if ( defined $q && length $q ) {
 my ($system_default) = RT::System->new($session{'CurrentUser'})->Attributes->Named('RTIRDefaultDashboard');
 my $system_default_id = $system_default ? $system_default->Content : 0;
 my $user = $session{'CurrentUser'}->UserObj;
-my $portlets;
+my $dashboard;
 if ( my $dashboard_id = $user->Preferences( RTIRDefaultDashboard => $system_default_id ) ) {
 
     # Allow any user to read system default dashboard
-    my $dashboard
+    $dashboard
         = RT::Dashboard->new( $system_default_id == $dashboard_id ? RT->SystemUser : $session{'CurrentUser'} );
     my ( $ok, $msg ) = $dashboard->LoadById($dashboard_id);
     if ( !$ok ) {
@@ -104,7 +104,6 @@ if ( my $dashboard_id = $user->Preferences( RTIRDefaultDashboard => $system_defa
             }
         }
     }
-    $portlets = $dashboard->Panes;
 }
 
 my @results;
