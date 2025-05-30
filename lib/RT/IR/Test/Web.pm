@@ -186,7 +186,7 @@ sub ticket_is_linked_to_inc {
     foreach my $inc( ref $incs? @$incs : ($incs) ) {
         my $desc = shift || "Ticket $id is linked to the Incident #$inc";
         $self->content_like(
-            qr{<td[^>]*?><b><a\s+href="/RTIR/Incident/Display.html\?id=\Q$inc\E">\Q$inc\E</a></b></td>}ism,
+            qr{<div[^>]*?><b><a\s+href="/RTIR/Incident/Display.html\?id=\Q$inc\E">\Q$inc\E</a></b></div>}ism,
             $desc
         ) or return 0;
     }
