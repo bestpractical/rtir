@@ -13,13 +13,11 @@ $user_obj->SetName('customer');
 $user_obj->SetPrivileged(1);
 ($ret, $msg) = $user_obj->SetPassword('customer');
 $user_obj->PrincipalObj->GrantRight(Right => 'LoadSavedSearch');
-$user_obj->PrincipalObj->GrantRight(Right => 'EditSavedSearches');
-$user_obj->PrincipalObj->GrantRight(Right => 'CreateSavedSearch');
+$user_obj->PrincipalObj->GrantRight(Right => 'AdminSavedSearch');
 $user_obj->PrincipalObj->GrantRight(Right => 'ModifySelf');
 $user_obj->PrincipalObj->GrantRight(Right => 'SeeDashboard');
 $user_obj->PrincipalObj->GrantRight(Right => 'SeeOwnDashboard');
-$user_obj->PrincipalObj->GrantRight(Right => 'CreateOwnDashboard');
-$user_obj->PrincipalObj->GrantRight(Right => 'ModifyOwnDashboard');
+$user_obj->PrincipalObj->GrantRight(Right => 'AdminOwnDashboard');
 
 ok $m->login( customer => 'customer' ), "logged in";
 
@@ -28,8 +26,9 @@ $m->get ( $url."Search/Build.html");
 #create a saved search
 $m->form_name ('BuildQuery');
 
-$m->field ( "ValueOfAttachment" => 'stupid');
-$m->field ( "SavedSearchDescription" => 'stupid tickets');
+$m->field ( "ValueOfAttachment" => 'awesome');
+$m->field ( "SavedSearchName" => 'awesome tickets');
+$m->field ( "SavedSearchDescription" => 'awesome tickets');
 $m->click_button (name => 'SavedSearchSave');
 
 $m->get_ok( $url . "Dashboards/Modify.html?Create=1" );
@@ -38,7 +37,7 @@ $m->field( Name => 'My RTIR homepage' );
 $m->click_button( value => 'Create' );
 
 $m->follow_link_ok( { text => 'Content' } );
-$m->content_contains('stupid tickets', 'saved search listed in rt at a glance items');
+$m->content_contains('awesome tickets', 'saved search listed in rt at a glance items');
 
 # Grant rights for RTIR Constituency to get around warnings on create page
 my $constituency_cf = RT::CustomField->new(RT->SystemUser);
@@ -70,18 +69,13 @@ $m->click_button( value => 'Create' );
 my ($id) = ( $m->uri =~ /id=(\d+)/ );
 ok( $id, "got a dashboard ID, $id" );
 
+# remove all portlets from the body pane except 'newest unowned tickets'
 my $args = {
-    UpdateSearches => "Save",
-    body           => [],
-    sidebar        => [],
+    Update => "Save Changes",
+    Content => "[{\"Layout\":\"col-md-6\",\"Elements\":[[{\"id\":2,\"portlet_type\":\"search\",\"description\":\"Ticket: Unowned Tickets\"}],[]]}]",
 };
 
 $m->follow_link_ok( { text => 'Content' } );
-# remove all portlets from the body pane except 'newest unowned tickets'
-push(
-    @{$args->{body}},
-    "saved-" . $m->dom->find('[data-description="Unowned Tickets"]')->first->attr('data-name'),
-);
 
 my $res = $m->post(
     $url . "Dashboards/Queries.html?id=$id",
@@ -108,17 +102,8 @@ $m->content_lacks( 'Quick ticket creation', "'Quick ticket creation' is not pres
 $m->get_ok( $url . "Dashboards/Queries.html?id=$id" );
 
 # add back the previously removed portlets
-push(
-    @{$args->{body}},
-    "saved-" . $m->dom->find('[data-description="My Tickets"]')->first->attr('data-name'),
-    "saved-" . $m->dom->find('[data-description="Bookmarked Tickets"]')->first->attr('data-name'),
-    "component-QuickCreate",
-);
-
-push(
-    @{$args->{sidebar}},
-    ( "component-MyReminders", "component-QueueList", "component-Dashboards", "component-RefreshHomepage", )
-);
+$args->{Content} =
+    "[{\"Layout\":\"col-md-6\",\"Elements\":[[{\"id\":1,\"description\":\"Ticket: My Tickets\",\"portlet_type\":\"search\"},{\"portlet_type\":\"search\",\"description\":\"Ticket: Unowned Tickets\",\"id\":2},{\"description\":\"Ticket: Bookmarked Tickets\",\"portlet_type\":\"search\",\"id\":3},{\"component\":\"QuickCreate\",\"description\":\"QuickCreate\",\"portlet_type\":\"component\",\"path\":\"/Elements/QuickCreate\"}],[{\"path\":\"/Elements/MyReminders\",\"portlet_type\":\"component\",\"description\":\"MyReminders\",\"component\":\"MyReminders\"},{\"description\":\"QueueList\",\"portlet_type\":\"component\",\"path\":\"/Elements/QueueList\",\"component\":\"QueueList\"},{\"portlet_type\":\"component\",\"path\":\"/Elements/Dashboards\",\"description\":\"Dashboards\",\"component\":\"Dashboards\"}]]}]";
 
 $res = $m->post(
     $url . "Dashboards/Queries.html?id=$id",
@@ -132,26 +117,25 @@ $m->content_contains( 'Dashboard updated' );
 $m->get( $url."RTIR/" );
 $m->content_contains( 'newest unowned tickets', "'newest unowned tickets' is present" );
 $m->content_contains( 'highest priority tickets', "'highest priority tickets' is present" );
-$m->content_contains( 'Bookmarked Tickets<span class="results-count">', "'Bookmarked Tickets' is present" );
+$m->content_contains( '>Bookmarked Tickets</a>', "'Bookmarked Tickets' is present" );
 $m->content_contains( 'Quick ticket creation', "'Quick ticket creation' is present" );
 
 #create a saved search with special chars
 $m->get( $url . "Search/Build.html" );
 $m->form_name('BuildQuery');
-$m->field( "ValueOfAttachment"      => 'stupid' );
+$m->field( "ValueOfAttachment"      => 'awesome' );
+$m->field( "SavedSearchName" => 'special chars [test] [_1] ~[_1~]' );
 $m->field( "SavedSearchDescription" => 'special chars [test] [_1] ~[_1~]' );
 $m->click_button( name => 'SavedSearchSave' );
-my ($name) = $m->content =~ /value="(RT::User-\d+-SavedSearch-\d+)"/;
-ok( $name, 'saved search name' );
+my ($saved_search_id) = $m->content =~ /\<option value\="(\d+)"\>special chars \[test\]/;
+ok( $saved_search_id, "got saved search id $saved_search_id");
 $m->get_ok( $url . "Dashboards/Queries.html?id=$id" );
 $m->content_contains( 'special chars [test] [_1] ~[_1~]',
     'saved search listed in rt at a glance items' );
 
 # add saved search to body
-push(
-    @{$args->{body}},
-    ( "saved-" . $name )
-);
+$args->{Content} =
+    "[{\"Layout\":\"col-md-6\",\"Elements\":[[{\"id\":1,\"description\":\"Ticket: My Tickets\",\"portlet_type\":\"search\"},{\"portlet_type\":\"search\",\"description\":\"Ticket: Unowned Tickets\",\"id\":2},{\"description\":\"Ticket: Bookmarked Tickets\",\"portlet_type\":\"search\",\"id\":3},{\"component\":\"QuickCreate\",\"description\":\"QuickCreate\",\"portlet_type\":\"component\",\"path\":\"/Elements/QuickCreate\"},{\"id\":5,\"description\":\"Ticket: special chars [test] [_1] ~[_1~]\",\"portlet_type\":\"search\"}],[{\"path\":\"/Elements/MyReminders\",\"portlet_type\":\"component\",\"description\":\"MyReminders\",\"component\":\"MyReminders\"},{\"description\":\"QueueList\",\"portlet_type\":\"component\",\"path\":\"/Elements/QueueList\",\"component\":\"QueueList\"},{\"portlet_type\":\"component\",\"path\":\"/Elements/Dashboards\",\"description\":\"Dashboards\",\"component\":\"Dashboards\"}]]}]";
 
 $res = $m->post(
     $url . "Dashboards/Queries.html?id=$id",
@@ -168,19 +152,19 @@ $m->content_like( qr/special chars \[test\] \d+ \[_1\]/,
 
 # Edit a system saved search to contain "[more]"
 {
-    my $search = RT::Attribute->new( RT->SystemUser );
-    $search->LoadByNameAndObject( Name => 'Search - My Tickets', Object => RT->System );
-    my ($id, $desc) = ($search->id, RT->SystemUser->loc($search->Description, '&#34;N&#34;'));
-    ok $id, 'loaded search attribute';
+    my $search = RT::SavedSearch->new( RT->SystemUser );
+    $search->LoadByCols( Name => 'My Tickets' );
+    my ($id, $name) = ($search->id, RT->SystemUser->loc($search->Name, '&#34;N&#34;'));
+    ok $id, "loaded search record $id";
 
     $m->get( $url."RTIR/" );
-    $m->follow_link_ok({ url_regex => qr"Prefs/Search\.html\?name=.+?Attribute-$id" }, 'Edit link');
-    $m->content_contains($desc, "found description: $desc");
+    $m->follow_link_ok({ url_regex => qr"Prefs/Search\.html\?id=$id" }, 'Edit link');
+    $m->content_contains($name, "found search name: $name");
 
-    ok +($search->SetDescription( $search->Description . " [more]" ));
+    ok +($search->SetName( $search->Name . " [more]" ));
 
     $m->get_ok($m->uri); # "reload_ok"
-    $m->content_contains($desc . " [more]", "found description: $desc");
+    $m->content_contains($name . " [more]", "found search name: $name");
 }
 
 done_testing;
