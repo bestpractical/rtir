@@ -269,7 +269,7 @@ sub CreateOrLoadQueue {
     $whois_cf->AddToObject($queue);
 
     my $templates = RT::Templates->new( RT->SystemUser );
-    $templates->LimitToQueue( $basequeue->id );
+    $templates->LimitToObjectId( $basequeue->id );
     while ( my $template = $templates->Next ) {
         my $new_template = RT::Template->new( RT->SystemUser );
         $new_template->Create(
@@ -279,7 +279,7 @@ sub CreateOrLoadQueue {
     }
 
     my $scrips = RT::Scrips->new( RT->SystemUser );
-    $scrips->LimitToQueue( $basequeue->id );
+    $scrips->LimitToObjectId( $basequeue->id );
     while ( my $scrip = $scrips->Next ) {
         unless ( $scrip->IsAdded( $queue->id ) ) {
             $scrip->AddToObject( $queue->id );

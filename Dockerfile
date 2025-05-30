@@ -1,10 +1,10 @@
-FROM bpssysadmin/rt-base-debian:RT-5.0.8-buster-20250509
+FROM bpssysadmin/rt-base-debian:RT-6.0.0-bullseye-20250509
 
 LABEL maintainer="Best Practical Solutions <contact@bestpractical.com>"
 
 # Valid values are RT branches like 5.0-trunk or version tags like rt-4.4.4
-ARG RT_VERSION=5.0-trunk
-ARG RT_DB_NAME=rt5
+ARG RT_VERSION=6.0-trunk
+ARG RT_DB_NAME=rt6
 ARG RT_DB_TYPE=mysql
 ARG RT_DBA_USER=root
 ARG RT_DBA_PASSWORD=password

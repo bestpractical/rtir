@@ -54,22 +54,6 @@ my $query_string = sub {
     return $u->query || '';
 };
 
-if ( my $admin = Menu->child('admin') ) {
-    if ( my $global = $admin->child('global') ) {
-        $global->child(
-            'my-rtir' => title => 'RTIR at a glance',
-            path      => '/Admin/Global/MyRT.html?'
-                . $query_string->(
-                    Title                => loc('Customize Global RTIR at a glance'),
-                    WidgetTitle          => loc('Set RTIR Homepage'),
-                    AttributeName        => 'RTIRDefaultDashboard',
-                    AttributeDescription => 'RTIR Default Dashboard',
-                ),
-            sort_order => 8.1,
-        );
-    }
-}
-
 my $args = $DECODED_ARGS;
 
 my @query_fields = qw(Query Format RowsPerPage Page OrderBy Order ExtraQueryParams);
@@ -147,76 +131,11 @@ if ( $m->request_comp->path =~ m{^/Search/} ) {
     }
 }
 
-my $root = Menu->child( rtir => title => loc('RTIR'), path => '/RTIR/', sort_order => '1.5' );
-
-my $search = $root->child( search => title => loc('Search'), path => RT::IR->HREFTo('', IncludeWebPath => 0) );
-$search->child( new => title => loc('New Search'), path => '/Search/Build.html?NewQuery=1&ExtraQueryParams=RTIR&RTIR=1' );
-
-{
-my $current_search = $session{'CurrentSearchHash'} ? { map { $_ => $session{'CurrentSearchHash'}{$_} } @query_fields } : {};
-
-if ( my $extra_params = $current_search->{ExtraQueryParams} ) {
-    for my $param ( ref $extra_params eq 'ARRAY' ? @$extra_params : $extra_params ) {
-        $current_search->{$param} = $session{'CurrentSearchHash'}{$param};
-    }
-}
-
-my $has_query = 1 if ( $args->{'Query'} or $current_search->{'Query'} );
-
-if ( $has_query ) {
-    $search->child( build => title => loc('Edit Search'), path => '/Search/Build.html', );
-    $search->child( results => title => loc('Show Results'),
-                    path =>'/Search/Results.html?'.
-                    $query_string->( $args->{'Query'} ? $search_arguments->() : %$current_search ) );
-}
-}
-
-$root->child(
-    incidents => title => loc('Incidents'),
-    path => '/Search/Results.html?ExtraQueryParams=RTIR&RTIR=1&Lifecycle='.RT::IR->lifecycle_incident,
-)->child(
-    create => title => loc('Create'),
-    path => RT::IR->HREFTo('Incident/Create.html?Lifecycle='.RT::IR->lifecycle_incident, IncludeWebPath => 0),
-);
-$root->child(
-    reports => title => loc('Incident Reports'),
-    path => '/Search/Results.html?ExtraQueryParams=RTIR&RTIR=1&Lifecycle='. RT::IR->lifecycle_report,
-)->child(
-    create => title => loc('Create'),
-    path => RT::IR->HREFTo('Create.html?Lifecycle='.RT::IR->lifecycle_report, IncludeWebPath => 0),
-);
-$root->child(
-    investigations => title => loc('Investigations'),
-    path => '/Search/Results.html?ExtraQueryParams=RTIR&RTIR=1&Lifecycle='.RT::IR->lifecycle_investigation,
-)->child(
-    launch => title => loc('Launch'),
-    path => RT::IR->HREFTo('Create.html?Lifecycle='.RT::IR->lifecycle_investigation, IncludeWebPath => 0),
-);
-unless ( RT->Config->Get('RTIR_DisableCountermeasures') ) {
-    $root->child(
-        countermeasures => title => loc('Countermeasures'),
-        path => '/Search/Results.html?ExtraQueryParams=RTIR&RTIR=1&Lifecycle='.RT::IR->lifecycle_countermeasure,
-    )->child(
-        create => title => loc('Create'),
-        path => RT::IR->HREFTo('Create.html?Lifecycle='.RT::IR->lifecycle_countermeasure, IncludeWebPath => 0),
-    );
-}
-
-my $tools = $root->child( tools => title => loc('Tools'), path => RT::IR->HREFTo('Tools/', IncludeWebPath => 0) );
-$tools->child( lookup => title => loc('Lookup'), path => RT::IR->HREFTo('Tools/Lookup.html', IncludeWebPath => 0));
-$tools->child( reporting => title => loc('Reporting'), path => RT::IR->HREFTo('Reporting/', IncludeWebPath => 0) );
-my $scripted_actions = $tools->child( scripted_actions => title => loc('Scripted Action') );
-$scripted_actions->child( email => title => loc('By Email address'), path => RT::IR->HREFTo('Tools/ScriptedAction.html', IncludeWebPath => 0) );
-$scripted_actions->child( ip => title => loc('By IP address'), path => RT::IR->HREFTo('Tools/ScriptedAction.html?loop=IP', IncludeWebPath => 0) );
-my $external_feeds = $tools->child( 'external_feeds', title => loc('External Feeds'), path => RT::IR->HREFTo('Tools/ExternalFeeds.html', IncludeWebPath => 0) );
-
 my $request_path = $HTML::Mason::Commands::r->path_info;
 $request_path =~ s!/{2,}!/!g;
 return unless $request_path =~ m{^/RTIR/};
 
-
 my $re_rtir_path = qr'^/RTIR/(?:c/[^/]*/?)?';
-
 my $re_rtir_types = '(?:'. join( '|', map "\Q$_\E", RT::IR->Types ) .')';
 
 if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Update|Forward|Advanced)\.html$} ) {
@@ -384,7 +303,7 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
     );
     if ($can->('ModifyTicket')) {
         PageMenu()->child(
-            timer => raw_html => $m->scomp( '/Ticket/Elements/PopupTimerLink', id => $id ),
+            timer => raw_html => $m->scomp( '/Ticket/Elements/PopupTimerLink', id => $id, TicketObj => $ticket ),
             sort_order => 99
         );
     }
@@ -523,13 +442,11 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
     # full RTIR Search UI, only from the Bulk screens.
     my $bulk_path = 1 if $request_path =~ m{(?:$re_rtir_path)(Incident/BulkAbandon\.html$|Report/BulkReject\.html$)};
 
-    $search->child( build => title => loc('Edit Search'), path => '/Search/Build.html?RTIR=1', );
     PageMenu()->child(
         edit_search => title => loc('Edit Search'),
         path => '/Search/Build.html?' . $query_string->( %args ),
     );
     if ( $args{'Query'} && !$bulk_path ) {
-        $search->child( new => title => loc('New Search'), path => '/Search/Build.html?NewQuery=1&ExtraQueryParams=RTIR&RTIR=1' );
         PageMenu()->child(
             new_search => title => loc('New Search'),
             path => '/Search/Build.html?NewQuery=1&ExtraQueryParams=RTIR&RTIR=1'
@@ -613,10 +530,6 @@ if ( $session{'CurrentUser'}->HasRight(Right => 'ModifySelf', Object => $RT::Sys
     if ( $request_path =~ m{(?:$re_rtir_path)(?:index\.html|)$} ) {
         PageMenu()->child( edit => raw_html => q[<a id="page-edit" class="menu-item" href="] . RT::IR->HREFTo("Prefs/Home.html") . qq["><span class="fas fa-cog" alt="].loc('Edit').q[" data-toggle="tooltip" data-placement="top" data-original-title="].loc('Edit').q["></span></a>]);
     }
-    Menu->child('preferences')->child('settings')->child(
-        rtir_home_page => title => loc('RTIR at a glance'),
-        path => RT::IR->HREFTo('Prefs/Home.html', IncludeWebPath => 0),
-    );
 }
 
 PageWidgets()->child('simple_search')->raw_html( $m->scomp(

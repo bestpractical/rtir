@@ -637,12 +637,42 @@ push @ACL, (
     {   GroupId     => 'DutyTeam',            # - principalId
         GroupDomain => 'UserDefined',
         Queue       => 0,
-        Right       => 'CreateSavedSearch',
+        Right       => 'SeeOwnSavedSearch',
     },
     {   GroupId     => 'DutyTeam',            # - principalId
         GroupDomain => 'UserDefined',
         Queue       => 0,
-        Right       => 'EditSavedSearches',
+        Right       => 'AdminOwnSavedSearch',
+    },
+    {   GroupId     => 'DutyTeam',            # - principalId
+        GroupDomain => 'UserDefined',
+        Queue       => 0,
+        Right       => 'SeeGroupSavedSearch',
+    },
+    {   GroupId     => 'DutyTeam',            # - principalId
+        GroupDomain => 'UserDefined',
+        Queue       => 0,
+        Right       => 'AdminGroupSavedSearch',
+    },
+    {   GroupId     => 'DutyTeam',            # - principalId
+        GroupDomain => 'UserDefined',
+        Queue       => 0,
+        Right       => 'SeeOwnDashboard',
+    },
+    {   GroupId     => 'DutyTeam',            # - principalId
+        GroupDomain => 'UserDefined',
+        Queue       => 0,
+        Right       => 'AdminOwnDashboard',
+    },
+    {   GroupId     => 'DutyTeam',            # - principalId
+        GroupDomain => 'UserDefined',
+        Queue       => 0,
+        Right       => 'SeeGroupDashboard',
+    },
+    {   GroupId     => 'DutyTeam',            # - principalId
+        GroupDomain => 'UserDefined',
+        Queue       => 0,
+        Right       => 'AdminGroupDashboard',
     },
     {   GroupId     => 'DutyTeam',            # - principalId
         GroupDomain => 'UserDefined',
@@ -652,7 +682,7 @@ push @ACL, (
     {   GroupId     => 'DutyTeam',            # - principalId
         GroupDomain => 'UserDefined',
         Queue       => 0,
-        Right       => 'ShowSavedSearches',
+        Right       => 'AdminSavedSearch',
     },
 );
 
@@ -756,6 +786,63 @@ for my $cf (@CustomFields) {
     }
 );
 
+@Dashboards = (
+    {
+        Name        => 'RTIR Homepage',
+        Description => 'RTIR Homepage',
+        Content     => {
+            Elements => [
+                {
+                    Layout   => 'col-md-8,col-md-4',
+                    Elements => [
+                        [
+                        {
+                            portlet_type => 'component',
+                            component    => '/RTIR/Elements/NewReports',
+                            description  => '/RTIR/Elements/NewReports',
+                            path         => '/RTIR/Elements/NewReports',
+                        },
+                        {
+                            portlet_type => 'component',
+                            component    => '/RTIR/Elements/UserDueIncidents',
+                            description  => '/RTIR/Elements/UserDueIncidents',
+                            path         => '/RTIR/Elements/UserDueIncidents',
+                        },
+                        {
+                            portlet_type => 'component',
+                            component    => '/RTIR/Elements/NobodyDueIncidents',
+                            description  => '/RTIR/Elements/NobodyDueIncidents',
+                            path         => '/RTIR/Elements/NobodyDueIncidents',
+                        },
+                        {
+                            portlet_type => 'component',
+                            component    => '/RTIR/Elements/DueIncidents',
+                            description  => '/RTIR/Elements/DueIncidents',
+                            path         => '/RTIR/Elements/DueIncidents',
+                        },
+                        ],
+                        [
+                        {
+                            portlet_type => 'component',
+                            component    => '/RTIR/Elements/WorkWithConstituency',
+                            description  => '/RTIR/Elements/WorkWithConstituency',
+                            path         => '/RTIR/Elements/WorkWithConstituency',
+                        },
+                        {
+                            portlet_type => 'component',
+                            component    => '/RTIR/Elements/QueueSummary',
+                            description  => '/RTIR/Elements/QueueSummary',
+                            path         => '/RTIR/Elements/QueueSummary',
+                        },
+                        ]
+                    ],
+                }
+            ],
+        },
+    }
+);
+
+
 @Final = (
     sub {
         $| = 1;
@@ -815,67 +902,9 @@ for my $cf (@CustomFields) {
     },
     sub {
         my $dashboard = RT::Dashboard->new( RT->SystemUser );
-        my ( $ret, $msg ) = $dashboard->Save(
-            Name    => 'RTIR Homepage',
-            Privacy => join( '-', ref( RT->System ), RT->System->Id ),
-        );
+        my ( $ret, $msg ) = $dashboard->LoadByCols( Name => 'RTIR Homepage' );
 
-        if ($ret) {
-            my $panes = {
-                body => [
-                    {   pane         => 'body',
-                        portlet_type => 'component',
-                        component    => '/RTIR/Elements/NewReports',
-                        description  => '/RTIR/Elements/NewReports',
-                        path         => '/RTIR/Elements/NewReports',
-                    },
-                    {   pane         => 'body',
-                        portlet_type => 'component',
-                        component    => '/RTIR/Elements/UserDueIncidents',
-                        description  => '/RTIR/Elements/UserDueIncidents',
-                        path         => '/RTIR/Elements/UserDueIncidents',
-                    },
-                    {   pane         => 'body',
-                        portlet_type => 'component',
-                        component    => '/RTIR/Elements/NobodyDueIncidents',
-                        description  => '/RTIR/Elements/NobodyDueIncidents',
-                        path         => '/RTIR/Elements/NobodyDueIncidents',
-                    },
-                    {   pane         => 'body',
-                        portlet_type => 'component',
-                        component    => '/RTIR/Elements/DueIncidents',
-                        description  => '/RTIR/Elements/DueIncidents',
-                        path         => '/RTIR/Elements/DueIncidents',
-                    },
-                ],
-                sidebar => [
-                    {   pane         => 'sidebar',
-                        portlet_type => 'component',
-                        component    => '/RTIR/Elements/WorkWithConstituency',
-                        description  => '/RTIR/Elements/WorkWithConstituency',
-                        path         => '/RTIR/Elements/WorkWithConstituency',
-                    },
-                    {   pane         => 'sidebar',
-                        portlet_type => 'component',
-                        component    => '/RTIR/Elements/QueueSummary',
-                        description  => '/RTIR/Elements/QueueSummary',
-                        path         => '/RTIR/Elements/QueueSummary',
-                    },
-                    {   pane         => 'sidebar',
-                        portlet_type => 'component',
-                        component    => 'RefreshHomepage',
-                        description  => 'RefreshHomepage',
-                        path         => '/Elements/RefreshHomepage',
-                    },
-                ]
-            };
-
-            # fill content
-            my ( $ret, $msg ) = $dashboard->Update( Panes => $panes );
-            if ( !$ret ) {
-                RT->Logger->error("Couldn't update content for dashboard Homepage: $msg");
-            }
-
+        if ( $ret ) {
             ( $ret, $msg ) = RT->System->SetAttribute(
                 'Name'        => 'RTIRDefaultDashboard',
                 'Description' => 'RTIR Default Dashboard',
@@ -886,7 +915,7 @@ for my $cf (@CustomFields) {
             }
         }
         else {
-            RT->Logger->error("Couldn't create dashboard RTIR Homepage: $msg");
+            RT->Logger->error("Couldn't load dashboard RTIR Homepage: $msg");
         }
     },
     sub {
