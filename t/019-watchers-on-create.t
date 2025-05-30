@@ -80,7 +80,7 @@ my $solo_inv = $agent->create_investigation(
 SKIP: {
 	skip "No investigation created", 7 if(!$solo_inv);
 
-	$agent->content_unlike(qr/permission denied/i, "No permissions problems");
+	$agent->content_like(qr/Ticket 2 created in queue &#39;Investigations&#39;/i, "Incident created, no permissions problems");
 
 	diag("Testing if solo investigation has all watchers") if($ENV{'TEST_VERBOSE'});
 	$agent->has_watchers( $solo_inv);
