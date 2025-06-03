@@ -198,3 +198,6 @@ while ( my $entry = $report->Next ) {
 <%ARGS>
 @statuses => ()
 </%ARGS>
+<%ATTR>
+directly_accessible => 1
+</%ATTR>
