@@ -1,0 +1,20 @@
+<&| /Elements/LabeledValue, Label => 'Is RTIR Search', LabelFor => "RTIRSearchEnabled", ReadOnly => 0 &>
+  <select name="RTIRSearchEnabled" class="form-select selectpicker refresh">
+    <option value="Yes"
+% if ( $Default ) {
+    selected="selected"
+% }
+><&|/l&>Yes</&></option>
+    <option value="No"
+% if ( !$Default ) {
+    selected="selected"
+% }
+><&|/l&>No</&></option>
+  </select>
+</&>
+<%init>
+my $Default = $SavedSearchObj->GetOption('RTIRSearchEnabled');
+</%init>
+<%args>
+$SavedSearchObj
+</%args>

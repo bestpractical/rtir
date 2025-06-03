@@ -46,7 +46,18 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%init>
-return unless $m->request_comp->path =~ m{^/RTIR/};
+my $search;
+if ( $ARGS{'SavedSearch'} ) {
+    $search = RT::SavedSearch->new($session{'CurrentUser'});
+    my ($ok, $msg) = $search->Load($ARGS{'SavedSearch'});
+    unless ( $ok ) {
+        RT->Logger->error('Unable to load SavedSearch ' . $ARGS{'SavedSearch'} . ' ' . $msg);
+    }
+}
+
+return
+    unless $m->request_comp->path =~ m{^/RTIR/} || ( $search && $search->GetOption('RTIRSearchEnabled') );
+
 if (my $c = $m->{'RTIR_ConstituencyFilter'}) {
     $Search->{Query} .= " AND 'QueueCF.{RTIR Constituency}' = '$c'" unless ( $Search->{Query} =~ /QueueCF.\{RTIR Constituency\}/);
     $OriginalSearch->{Query} .=  " AND 'QueueCF.{RTIR Constituency}' = '$c'" unless ( $OriginalSearch->{Query} =~ /QueueCF.\{RTIR Constituency\}/);
