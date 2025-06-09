@@ -40,6 +40,14 @@ features.
 
 =item *
 
+As RTIR has switched to RT 6's flexible page layout, a few RTIR-specific
+configurations are updated:
+
+In C<%CustomFieldGroupings> and C<%InlineEditPanelBehavior>, RTIR uses key
+"RT::Ticket" just like RT, instead of previous "RTIR::Ticket".
+
+=item *
+
 The Iframe option for adding research tools to the lookup pages in RTIR
 previously configured with C<$RTIRIframeResearchToolConfig> has been removed.
 Browsers are becoming much more restrictive when loading content in Iframes

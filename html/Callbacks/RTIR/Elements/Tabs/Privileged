@@ -545,14 +545,18 @@ if ( $request_path =~ m{$re_rtir_path(?:Incident/)?Create\.html} ) {
         PageMenu->child(
             create_incident => title => loc('Incident'),
             path            => '#incident',
-            attributes =>
-                { onclick => "return switchVisibility('ticket-create-incident','ticket-create-investigation');", },
+            attributes      => {
+                'hx-boost' => 'false',
+                onclick    => "return switchVisibility('ticket-create-incident','ticket-create-investigation');",
+            },
         );
         PageMenu->child(
             create_investigation => title => loc('Launch Investigation'),
             path                 => '#investigation',
-            attributes =>
-                { onclick => "return switchVisibility('ticket-create-investigation','ticket-create-incident');", },
+            attributes           => {
+                'hx-boost' => 'false',
+                onclick    => "return switchVisibility('ticket-create-investigation','ticket-create-incident');",
+            },
         );
     }
 

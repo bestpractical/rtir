@@ -46,20 +46,31 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-return unless RT::IR->OurQueue( $QueueObj );
+return unless RT::IR->OurQueue($QueueObj);
 
-if ( grep !/^(id|results|Queue)$/, keys %$ARGSRef ) {
-    # for something complex use subexec
-    $m->subexec( '/RTIR/Create.html', %$ARGSRef, Queue => $QueueObj->Name );
-    $m->abort;
+if ( $ARGSRef->{Split} ) {
+    my $ticket = RT::Ticket->new( $session{CurrentUser} );
+    $ticket->Load( $ARGSRef->{Split} );
+
+    if ( $ticket->Id ) {
+        $$title = loc(
+            "Split [_1] #[_2]: [_3]",
+            RT::IR::TicketType( Lifecycle => $ticket->Lifecycle ),
+            $ticket->Id, $ticket->Subject
+        );
+    }
 }
-
-RT::Interface::Web::Redirect( RT::IR->HREFTo('Create.html?' 
-    . $m->comp('/Elements/QueryString', 
-            %$ARGSRef, 
-            Queue => $QueueObj->Name )) );
+else {
+    if ( RT::IR->IsInvestigationQueue($QueueObj) ) {
+        $$title = loc("Launch a new investigation");
+    }
+    else {
+        $$title = loc( "Create a new [_1]", RT::IR::TicketType( Lifecycle => $QueueObj->Lifecycle ) );
+    }
+}
 </%INIT>
 <%ARGS>
 $QueueObj => undef
 $ARGSRef  => {}
+$title
 </%ARGS>

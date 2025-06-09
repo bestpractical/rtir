@@ -46,39 +46,19 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-return if $ARGSRef->{'NoRedirect'};
+return unless RT::IR->OurQueue( $Ticket->QueueObj );
+return unless ( RT::Interface::Web::RequestENV('HTTP_HX_CURRENT_URL') // '' ) =~ m{/Display.html};
 
-my $QueueObj;
-if ( $TicketObj ) {
-    my $tmp = RT::Ticket->new( RT->SystemUser );
-    $tmp->Load( $TicketObj->id );
-    $QueueObj = $tmp->QueueObj;
-} elsif ( $ARGSRef->{'id'} && $ARGSRef->{'id'} ne 'new' ) {
-    my $tmp = RT::Ticket->new( RT->SystemUser );
-    $tmp->Load( $ARGSRef->{'id'} );
-    $QueueObj = $tmp->QueueObj;
-} elsif ( $ARGSRef->{'Queue'} ) {
-    $QueueObj = RT::Queue->new( RT->SystemUser );
-    $QueueObj->Load( $ARGSRef->{'Queue'} );
+# We need to update CVE Details widget by requesting main container refresh
+my $cfs = RT::CustomFields->new($session{CurrentUser});
+$cfs->LimitToQueue( $Ticket->Queue );
+$cfs->Limit( FIELD => 'Name', VALUE => 'CVE ID', CASESENSITIVE => 0 );
+my $cf = $cfs->Next or return;
+if ( grep { $_ eq 'customField-' . $cf->Id . 'Changed' } @$Events ) {
+    push @$Events, 'ticketCVEDetailsChanged';
 }
-return unless $QueueObj && RT::IR->OurQueue( $QueueObj );
-
-# If there is something to change, do not redirect
-return if grep !/^(id|results)$/, keys %$ARGSRef;
-
-# we should use redirect so tabs displayed correctly according to request_comp
-my $url = RT::IR->HREFTo(
-    ( $QueueObj->Lifecycle eq 'incidents' ? 'Incident/' : '' ) . "Display.html?id=" . $ARGSRef->{'id'} );
-$url .= '&results='. 
-    $m->interp->apply_escapes( $ARGSRef->{'results'}, 'u' )
-    if $ARGSRef->{'results'};
-my ($path) = $url =~ m{^(.+/Display\.html)};
-my $current_path = RT->Config->Get('WebPath') . $m->request_path;
-RT::Interface::Web::Redirect( $url ) unless $path eq $current_path;
-
 </%INIT>
-
 <%ARGS>
-$TicketObj => undef
-$ARGSRef => {}
+$Ticket
+$Events
 </%ARGS>

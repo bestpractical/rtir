@@ -46,18 +46,18 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-# RTIR create pages also call this callback, which we need to skip too
-return if $ARGSRef->{Queue} || $m->request_path =~ m{^/RTIR/} || GetDefaultQueue();
-
-# Find the first non-RTIR queue current user can create
-my $cache_key = SetObjectSessionCache(
-    ObjectType       => 'Queue',
-    CheckRight       => 'CreateTicket',
-    CacheNeedsUpdate => RT->System->QueueCacheNeedsUpdate,
-    ShowAll          => 0,
-);
-my ($queue) = map { $_->{Id} } grep { !RT::IR->OurQueue( $_->{Id} ) } @{ $session{$cache_key}{objects} };
-$ARGSRef->{Queue} = $queue if $queue;
+if ( $m->request_path =~ m{^/RTIR/} ) {
+    # Save original config and revert it in BeforeDisplay callback.
+    $m->notes( OriginalStrictLinkACL => RT->Config->Set( StrictLinkACL => 0 ) );
+}
+elsif ( $ARGSRef->{Queue} ) {
+    my $queue = RT::Queue->new( $session{'CurrentUser'} );
+    $queue->Load( $ARGSRef->{Queue} );
+    if ( RT::IR->OurQueue($queue) ) {
+        RT::Interface::Web::Redirect(
+            RT::IR->HREFTo( 'Create.html?' . $m->comp( '/Elements/QueryString', %$ARGSRef ) ) );
+    }
+}
 
 </%INIT>
 

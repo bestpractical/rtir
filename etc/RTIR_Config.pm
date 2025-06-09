@@ -665,6 +665,164 @@ Set(%ProcessArticleMapping, (
     },
 ));
 
+=item C<%PageLayouts>
+
+RTIR specific page layouts.
+
+=cut
+
+Set(%PageLayouts,
+    'RT::Ticket' => {
+        'Display' => {
+            Incidents => [
+                {   Layout   => 'col-md-6',
+                    Title    => 'Ticket metadata',
+                    Elements => [
+                        [ 'Basics', 'Times', 'CustomFieldCustomGroupings', 'Dates', 'Attachments', 'Requestors' ],
+                        [ 'Articles', 'LinkedQueues', 'Assets', 'LinkedArticles', 'CVEDetails' ],
+                    ],
+                },
+                {   Layout   => 'col-12',
+                    Elements => ['History'],
+                }
+            ],
+            'Incident Reports' => [
+                {   Layout   => 'col-md-6',
+                    Title    => 'Ticket metadata',
+                    Elements => [
+                        [ 'Basics', 'Times', 'CustomFieldCustomGroupings', 'LinkedArticles', 'CVEDetails', 'Attachments' ],
+                        [ 'People', 'Articles', 'Dates',  'Assets', 'Requestors' ],
+                    ],
+                },
+                {   Layout   => 'col-12',
+                    Elements => ['History'],
+                }
+            ],
+            Investigations => [
+                {   Layout   => 'col-md-6',
+                    Title    => 'Ticket metadata',
+                    Elements => [
+                        [ 'Basics', 'Times', 'CustomFieldCustomGroupings', 'LinkedArticles', 'CVEDetails', 'Attachments' ],
+                        [ 'People', 'Articles', 'Dates',  'Assets', 'Requestors' ],
+                    ],
+                },
+                {   Layout   => 'col-12',
+                    Elements => ['History'],
+                }
+            ],
+            Countermeasures => [
+                {   Layout   => 'col-md-6',
+                    Title    => 'Ticket metadata',
+                    Elements => [
+                        [ 'Basics', 'Times', 'CustomFieldCustomGroupings', 'LinkedArticles', 'CVEDetails', 'Attachments' ],
+                        [ 'People', 'Articles', 'Dates',  'Assets', 'Requestors' ],
+                    ],
+                },
+                {   Layout   => 'col-12',
+                    Elements => ['History'],
+                }
+            ],
+        },
+        Create => {
+            Incidents => [
+                {   Layout   => 'col-md-7,col-md-5',
+                    Elements => [
+                        [ 'Message', 'Submit' ],
+                        [ 'Basics',  'Assets', 'CustomFieldCustomGroupings', 'Dates', 'Times' ],
+                    ],
+                },
+            ],
+            'Incident Reports' => [
+                {   Layout   => 'col-md-7,col-md-5',
+                    Elements => [
+                        [ 'Message', 'Submit' ],
+                        [ 'Basics',  'Assets', 'CustomFieldCustomGroupings', 'Dates', 'Times' ],
+                    ],
+                },
+            ],
+            Investigations => [
+                {   Layout   => 'col-md-7,col-md-5',
+                    Elements => [
+                        [ 'Message', 'Submit' ],
+                        [ 'Basics',  'Assets', 'CustomFieldCustomGroupings', 'Dates', 'Times', 'AttachReports' ],
+                    ],
+                },
+            ],
+            Countermeasures => [
+                {   Layout   => 'col-md-7,col-md-5',
+                    Elements => [
+                        [ 'Message', 'Submit' ],
+                        [ 'Basics',  'Assets', 'CustomFieldCustomGroupings', 'Dates', 'Times' ],
+                    ],
+                },
+            ],
+        },
+        Update => {
+            Incidents => [
+                {   Layout   => 'col-md-7,col-md-5',
+                    Elements => [ [ 'Recipients', 'Message', 'Submit', 'PreviewScrips' ], [ 'Basics', 'Times' ] ],
+                },
+            ],
+            'Incident Reports' => [
+                {   Layout   => 'col-md-7,col-md-5',
+                    Elements => [ [ 'Recipients', 'Message', 'Submit', 'PreviewScrips' ], [ 'Basics', 'Times' ] ],
+                },
+            ],
+            Investigations => [
+                {   Layout   => 'col-md-7,col-md-5',
+                    Elements => [ [ 'Recipients', 'Message', 'Submit', 'PreviewScrips' ], [ 'Basics', 'Times' ] ],
+                },
+            ],
+            Countermeasures => [
+                {   Layout   => 'col-md-7,col-md-5',
+                    Elements => [ [ 'Recipients', 'Message', 'Submit', 'PreviewScrips' ], [ 'Basics', 'Times' ] ],
+                },
+            ],
+        },
+    }
+);
+
+=item C<%PageLayoutMapping>
+
+RTIR specific page layout mapping.
+
+=cut
+
+Set(%PageLayoutMapping,
+    'RT::Ticket' => {
+        Display => [
+            {   Type   => 'Queue',
+                Layout => {
+                    'Incidents'        => 'Incidents',
+                    'Incident Reports' => 'Incident Reports',
+                    'Investigations'   => 'Investigations',
+                    'Countermeasures'  => 'Countermeasures',
+                },
+            },
+        ],
+        Create => [
+            {   Type   => 'Queue',
+                Layout => {
+                    'Incidents'        => 'Incidents',
+                    'Incident Reports' => 'Incident Reports',
+                    'Investigations'   => 'Investigations',
+                    'Countermeasures'  => 'Countermeasures',
+                },
+            },
+        ],
+        Update => [
+            {   Type   => 'Queue',
+                Layout => {
+                    'Incidents'        => 'Incidents',
+                    'Incident Reports' => 'Incident Reports',
+                    'Investigations'   => 'Investigations',
+                    'Countermeasures'  => 'Countermeasures',
+                },
+            },
+        ],
+    }
+);
+
 =back
 
 =head1 Custom Fields
@@ -691,50 +849,48 @@ Set(
 All of the configuration rules for RT CustomFieldGroupings apply and you
 should review the documentation in F<etc/RT_Config.pm>
 
-RTIR provides a separate 'object' that groupings are applied to,
-RTIR::Ticket. Groupings for this object type will only be applied to
-Custom Fields on Tickets in RTIR Queues. This allows you to
-logically separate your Custom Field configuration between RTIR Queues
-and standalone Queues in your RT instance.
-
-We do not provide the Links core grouping because no RTIR tickets display
-the Links box.  Basics, People and Dates will work as they do in core, but
-keep in mind that Incidents do not display a People box, so CFs in the People
-group will not render on Incidents.  Additionally, People and Dates are not always
-available in all screens in RTIR so may not be the best place for Custom Fields.
+By default Links widget is not rendered in all RTIR queues, additionally
+Incidents do not have a People widget, so if you add a custom field to Links
+or People, you also need to update the page layouts.
 
 =cut
 
 Set(%CustomFieldGroupings,
-    'RTIR::Ticket' => [
-        'Networking'     => ['IP', 'Domain'],
-        'Details' => ['How Reported','Reporter Type','Customer',
-                      'Description', 'Resolution', 'Function', 'Classification', 'CVE ID',
-                      'Customer',
-                      'Netmask','Port','Where Blocked'],
-    ],
+    'RT::Ticket' => {
+        'Incidents' => [
+            'Networking' => [ 'IP', 'Domain' ],
+            'Details'    => [
+                'How Reported', 'Reporter Type', 'Customer',       'Description',
+                'Resolution',   'Function',      'Classification', 'CVE ID',
+                'Customer',     'Netmask',       'Port',           'Where Blocked'
+            ],
+        ],
+        'Incident Reports' => [
+            'Networking' => [ 'IP', 'Domain' ],
+            'Details'    => [
+                'How Reported', 'Reporter Type', 'Customer',       'Description',
+                'Resolution',   'Function',      'Classification', 'CVE ID',
+                'Customer',     'Netmask',       'Port',           'Where Blocked'
+            ],
+        ],
+        'Investigations' => [
+            'Networking' => [ 'IP', 'Domain' ],
+            'Details'    => [
+                'How Reported', 'Reporter Type', 'Customer',       'Description',
+                'Resolution',   'Function',      'Classification', 'CVE ID',
+                'Customer',     'Netmask',       'Port',           'Where Blocked'
+            ],
+        ],
+        'Countermeasures' => [
+            'Networking' => [ 'IP', 'Domain' ],
+            'Details'    => [
+                'How Reported', 'Reporter Type', 'Customer',       'Description',
+                'Resolution',   'Function',      'Classification', 'CVE ID',
+                'Customer',     'Netmask',       'Port',           'Where Blocked'
+            ],
+        ],
+    },
 );
-
-=item C<%InlineEditPanelBehavior>
-
-This configuration option is a core RT feature which accepts a
-custom key for RTIR. The options are the same as those documented
-in RT, but the key is C<RTIR::Ticket> as in this example:
-
-    Set(%InlineEditPanelBehavior,
-        'RTIR::Ticket' => {
-            '_default'          => 'click',
-
-            'Networking'        => 'link',
-            'Details'           => 'click',
-            'Dates'             => 'always',
-            'People'            => 'link',
-        },
-    );
-
-If no RTIR settings are defined, the settings for C<RT::Ticket>
-are used. See C<etc/RT_Config.pm> for more information about
-this configuration option.
 
 =item C<$RTIR_StrictDomainTLD>
 

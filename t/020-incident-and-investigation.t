@@ -81,7 +81,7 @@ is($agent->value('Incident'), $incident_bar, 'Incident bar is checked');
 
 $agent->field('Subject', 'Investigation from Incident');
 $agent->field('Requestors', 'root@localhost');
-$agent->click('Create');
+$agent->click('SubmitTicket');
 ok(
     $agent->find_link(
         text => 'Incident bar for testing creation of a linked Investigation'
@@ -106,7 +106,7 @@ $agent->form_name('TicketCreate');
 $agent->field('Incident', $incident_bar, 2);
 $agent->field('Subject', 'Investigation with multiple Incidents');
 $agent->field('Requestors', 'root@localhost');
-$agent->click('Create');
+$agent->click('SubmitTicket');
 for my $incident( qw/foo bar/ ) {
     ok(
         $agent->find_link(
@@ -126,7 +126,7 @@ $agent->goto_create_rtir_ticket('Investigations');
 $agent->form_name('TicketCreate');
 $agent->field('Subject', 'Investigation without Incidents');
 $agent->field('Requestors', 'root@localhost');
-$agent->click('Create');
+$agent->click('SubmitTicket');
 like( $agent->uri, qr/RTIR\/Create.html/, 'still in the create page' );
 $agent->content_contains('Creation failed', 'failed to create');
 $agent->content_contains('You must enter an Incident ID');

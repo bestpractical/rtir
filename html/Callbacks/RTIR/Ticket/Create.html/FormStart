@@ -45,40 +45,16 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%INIT>
-return if $ARGSRef->{'NoRedirect'};
+% for my $field ( grep defined $ARGSRef->{$_}, qw/Split Child/ ) {
+<input type="hidden" name="<% $field %>" value="<% $ARGSRef->{$field} %>" />
+% }
 
-my $QueueObj;
-if ( $TicketObj ) {
-    my $tmp = RT::Ticket->new( RT->SystemUser );
-    $tmp->Load( $TicketObj->id );
-    $QueueObj = $tmp->QueueObj;
-} elsif ( $ARGSRef->{'id'} && $ARGSRef->{'id'} ne 'new' ) {
-    my $tmp = RT::Ticket->new( RT->SystemUser );
-    $tmp->Load( $ARGSRef->{'id'} );
-    $QueueObj = $tmp->QueueObj;
-} elsif ( $ARGSRef->{'Queue'} ) {
-    $QueueObj = RT::Queue->new( RT->SystemUser );
-    $QueueObj->Load( $ARGSRef->{'Queue'} );
-}
-return unless $QueueObj && RT::IR->OurQueue( $QueueObj );
-
-# If there is something to change, do not redirect
-return if grep !/^(id|results)$/, keys %$ARGSRef;
-
-# we should use redirect so tabs displayed correctly according to request_comp
-my $url = RT::IR->HREFTo(
-    ( $QueueObj->Lifecycle eq 'incidents' ? 'Incident/' : '' ) . "Display.html?id=" . $ARGSRef->{'id'} );
-$url .= '&results='. 
-    $m->interp->apply_escapes( $ARGSRef->{'results'}, 'u' )
-    if $ARGSRef->{'results'};
-my ($path) = $url =~ m{^(.+/Display\.html)};
-my $current_path = RT->Config->Get('WebPath') . $m->request_path;
-RT::Interface::Web::Redirect( $url ) unless $path eq $current_path;
-
-</%INIT>
-
+% # This is to filter queue select
+% if ( $ARGSRef->{Incident} ) {
+%   for my $incident ( ref $ARGSRef->{Incident} ? @{ $ARGSRef->{Incident} } : $ARGSRef->{Incident} ) {
+      <input type="hidden" name="DefaultIncident" value="<% $incident %>" />
+%   }
+% }
 <%ARGS>
-$TicketObj => undef
-$ARGSRef => {}
+$ARGSRef
 </%ARGS>

@@ -52,7 +52,7 @@ foreach my $qname ('Incident Reports', 'Investigations', 'Countermeasures') {
     $agent->field( Incident => $inc_id ); # for countermeasures
     $agent->field( Requestors => 'rt-test@example.com' ); # for invs
     $agent->field( $input_name => 'magic' );
-    $agent->click('Create');
+    $agent->click('SubmitTicket');
 
     $form = $agent->form_name('TicketCreate');
     ok($form, 'still on create page');
@@ -62,7 +62,7 @@ foreach my $qname ('Incident Reports', 'Investigations', 'Countermeasures') {
     is $agent->value( $input_name ), 'magic', 'old value is there';
     $agent->content_like( qr/not a magic/, 'error is there' );
     $agent->field( $input_name => 'not magic' );
-    $agent->click('Create');
+    $agent->click('SubmitTicket');
 
     my $id = $agent->get_ticket_id;
     ok $id, 'created a ticket';

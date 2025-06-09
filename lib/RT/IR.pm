@@ -861,51 +861,6 @@ require RT::Action::AutoOpenInactive;
     };
 }
 
-# Because you can't (easily/cleanly/prettily) merge two
-# RT::Ticket entries in %CustomFieldGroupings, add a new
-# RTIR::Ticket option.
-require RT::CustomField;
-{
-    RT::CustomField->RegisterBuiltInGroupings(
-            'RTIR::Ticket'    => [ qw(Basics Dates People) ],
-    );
-
-    no warnings 'redefine';
-    my $orig_GroupingClass = RT::CustomField->can('_GroupingClass');
-    *RT::CustomField::_GroupingClass = sub {
-        my $self        = shift;
-        my $record      = shift;
-        my $category    = shift;
-
-        ( my $record_class, $category ) = $orig_GroupingClass->( $self, $record, $category );
-
-        # we're only doing shenanigans on Tickets, which might be RTIR::Ticket
-        unless ($record_class eq 'RT::Ticket') {
-            return wantarray ? ( $record_class, $category ) : $record_class;
-        }
-
-        my $queue = undef;
-        # on Create we can get an empty RT::Ticket here
-        if ( ref $record && $record->Id ) {
-            $queue = $record->QueueObj->Name;
-        # if we have an empty ticket, but a real CustomField,
-        # we can pull the Queue out of the ACLEquivalenceObjects
-        } elsif ( ref $self ) {
-            for my $obj ($self->ACLEquivalenceObjects) {
-                next unless (ref $obj eq 'RT::Queue');
-                $queue = $obj->Name;
-                last;
-            }
-        }
-
-        if (RT::IR->OurQueue($queue)) {
-            return wantarray ? ( 'RTIR::Ticket', $category ) : 'RTIR::Ticket';
-        } else {
-            return wantarray ? ( $record_class, $category ) : $record_class;
-        }
-    };
-}
-
 
 =head2 HREFTo
 
@@ -959,6 +914,28 @@ sub ConstituencyFor {
 
     die "$object is not a ticket object" unless ref($object) && $object->isa('RT::Ticket');
     return $object->QueueObj->FirstCustomFieldValue('RTIR Constituency');
+}
+
+=head2 Constituencies
+
+Returns a list of constituencie names.
+
+=cut
+
+sub Constituencies {
+    my $self   = shift;
+    my $queues = RT::Queues->new( RT->SystemUser );
+    for my $lifecycle ( $self->Lifecycles ) {
+        $queues->Limit( FIELD => 'Lifecycle', VALUE => $lifecycle, ENTRYAGGREGATOR => 'OR' );
+    }
+
+    my %known_constituencies;
+    for my $queue ( @{ $queues->ItemsArrayRef } ) {
+        my $c = RT::IR->ConstituencyFor($queue);
+        next unless $c;
+        $known_constituencies{$c}++;
+    }
+    return sort keys %known_constituencies;
 }
 
 sub IsReportQueue {
@@ -1021,6 +998,41 @@ sub HandleRtirrequestor {
     $query ||= 'id = 0';
     return 'RTIR Requestor' => "Lifecycle = '".RT::IR->lifecycle_incident."' AND ($query)";
 }
+
+{
+    package RT::I18N;
+    my $custom_label = sub {
+        my $text = shift;
+        if (   $HTML::Mason::Commands::m
+            && ( $text // '' ) =~ /\bRequestors\b/
+            && (   RT::Interface::Web::RequestENV('HTTP_HX_CURRENT_URL')
+                || RT::Interface::Web::RequestENV('REQUEST_URI') ) =~ m{/RTIR/}
+           )
+        {
+            $text =~ s!\bRequestors\b!Correspondents!g;
+        }
+        return $text;
+    };
+
+    my $orig_maketext = __PACKAGE__->can('maketext');
+    no warnings 'redefine';
+    *RT::I18N::maketext = sub {
+        my $self = shift;
+        my $text = shift;
+        return $orig_maketext->( $self, $custom_label->($text), @_ );
+    };
+
+    # RT::CurrentUser::loc has some optimizations and may not call maketext
+    package RT::CurrentUser;
+    my $orig_loc = __PACKAGE__->can('loc');
+    no warnings 'redefine';
+    *RT::CurrentUser::loc = sub {
+        my $self = shift;
+        my $text = shift;
+        return $orig_loc->( $self, $custom_label->($text), @_ );
+    };
+}
+
 
 package RT::IR;
 

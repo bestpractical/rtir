@@ -45,40 +45,58 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+%# close ticket-create-incident
+</div>
+
+% if ( $InvestigationsQueueObj->Id ) {
+<div id="ticket-create-investigation" class="hidden" data-name-prefix="Investigation">
+  <& /Elements/ShowWidgets,
+    Object  => $InvestigationsQueueObj,
+    Page    => 'Create',
+    ARGSRef => {
+        Queue          => $InvestigationsQueueObj->Id,
+        SelectIncident => 0,
+        AddAttachments => 0,
+        map { /^Investigation(.+)/ ? ( $1 => $ARGSRef->{$_} ) : () } keys %$ARGSRef,
+    },
+  &>
+</div>
+% }
+
 <%INIT>
-return if $ARGSRef->{'NoRedirect'};
+return unless $QueueObj->Lifecycle eq 'incidents';
 
-my $QueueObj;
-if ( $TicketObj ) {
-    my $tmp = RT::Ticket->new( RT->SystemUser );
-    $tmp->Load( $TicketObj->id );
-    $QueueObj = $tmp->QueueObj;
-} elsif ( $ARGSRef->{'id'} && $ARGSRef->{'id'} ne 'new' ) {
-    my $tmp = RT::Ticket->new( RT->SystemUser );
-    $tmp->Load( $ARGSRef->{'id'} );
-    $QueueObj = $tmp->QueueObj;
-} elsif ( $ARGSRef->{'Queue'} ) {
-    $QueueObj = RT::Queue->new( RT->SystemUser );
-    $QueueObj->Load( $ARGSRef->{'Queue'} );
+my $constituency = $m->{'RTIR_ConstituencyFilter'};
+
+# Load appropriate Investigations queue
+my $InvestigationsQueue = $ARGSRef->{InvestigationQueue} || 'Investigations' . ( $constituency ? ' - ' . $constituency : '' );
+my $InvestigationsQueueObj = RT::Queue->new( $session{'CurrentUser'} );
+$InvestigationsQueueObj->Load( $InvestigationsQueue );
+
+# Users limited by constituency may not be able to use the default or specified investigations queue
+# Look up what queue the user has SeeQueue and CreateTicket for and use that instead.
+unless ( $InvestigationsQueueObj->Name ) {
+    RT->Logger->debug( "Investigation Queue '$InvestigationsQueue' could not be loaded for user " . $session{'CurrentUser'}->Id . "." );
+
+    my $investigation_queues = RT::Queues->new($session{'CurrentUser'});
+
+    $investigation_queues->Limit(
+        FIELD => 'Lifecycle',
+        OPERATOR => '=',
+        VALUE => RT::IR->lifecycle_investigation,
+    );
+
+    while (my $object = $investigation_queues->Next) {
+        # Ensure the user can CreateTicket in the queue
+        next unless $session{CurrentUser}->HasRight( Object => $object, Right => 'CreateTicket' );
+
+        $InvestigationsQueueObj = $object;
+        last;
+    }
 }
-return unless $QueueObj && RT::IR->OurQueue( $QueueObj );
-
-# If there is something to change, do not redirect
-return if grep !/^(id|results)$/, keys %$ARGSRef;
-
-# we should use redirect so tabs displayed correctly according to request_comp
-my $url = RT::IR->HREFTo(
-    ( $QueueObj->Lifecycle eq 'incidents' ? 'Incident/' : '' ) . "Display.html?id=" . $ARGSRef->{'id'} );
-$url .= '&results='. 
-    $m->interp->apply_escapes( $ARGSRef->{'results'}, 'u' )
-    if $ARGSRef->{'results'};
-my ($path) = $url =~ m{^(.+/Display\.html)};
-my $current_path = RT->Config->Get('WebPath') . $m->request_path;
-RT::Interface::Web::Redirect( $url ) unless $path eq $current_path;
-
 </%INIT>
 
 <%ARGS>
-$TicketObj => undef
-$ARGSRef => {}
+$QueueObj
+$ARGSRef
 </%ARGS>

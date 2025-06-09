@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%init>
 # To display RTIR CF groupings on queue config Default Values tab
-unshift @{$Groupings}, RT::CustomField->CustomGroupings('RTIR::Ticket');
+unshift @{$Groupings}, RT::CustomField->CustomGroupings('RT::Ticket');
 </%init>
 <%args>
 $Groupings

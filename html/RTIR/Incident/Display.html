@@ -45,318 +45,20 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /RTIR/Elements/Header, Title => loc("Incident #[_1]: [_2]", $id, $TicketObj->Subject) &>
-<& /Elements/Tabs &>
-    
-% $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Ticket => $TicketObj);
-<& /Elements/ListActions, actions => \@results &>
-<& /Ticket/Elements/ShowUpdateStatus, Ticket => $TicketObj, DisplayPath => 'RTIR'  &>
-
-<div class="summary unset-fields-container <% $HideUnsetFields ? 'unset-fields-hidden' : '' %>"><&| /Widgets/TitleBox, title => loc('Ticket metadata'), titleright_raw => $m->scomp('/Elements/DropdownMenu', ShowSearchResults => 0, HideUnsetFields => $HideUnsetFields, %ARGS ) &>
-
-<div class="row ticket-summary">
-  <div class="boxcontainer col-md-6">
-% $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'LeftColumnStart' );
-
-<%PERL>
-    my $modify_url = RT::IR->HREFTo("Edit.html?id=".$TicketObj->Id),
-    my $modify_inline
-        = '<a class="inline-edit-toggle edit" href="%s">'
-        . qq{<span class="fas fa-pencil-alt icon-bordered fa-2x" alt="$edit_label" data-toggle="tooltip" data-placement="top" data-original-title="$edit_label"></span>}
-        . '</a>'
-        . '<a class="inline-edit-toggle cancel hidden" href="#">'
-        . qq{<span class="fas fa-times icon-bordered fa-2x" alt="$cancel_label" data-toggle="tooltip" data-placement="top" data-original-title="$cancel_label"></span>}
-        . '</a>';
-    my $modify_basics   = sprintf( $modify_inline, $m->interp->apply_escapes( $modify_url, 'h' ) );
-    my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{Basics} || $inline_edit_behavior{_default} || 'link') : 'hide';
-</%PERL>
-
-<&| /Widgets/TitleBox,
-    title       => loc('Incident #[_1]', $id),
-    title_href  => RT::IR->HREFTo("Edit.html?id=".$TicketObj->Id),
-    class       => (join " ", 'ticket-info-basics', ($modify_behavior eq 'always' ? 'editing' : ())),
-    data        => { 'inline-edit-behavior' => $modify_behavior },
-    (($can_modify || $can_modify_cf) && $modify_behavior =~ /^(link|click)$/ ? (titleright_raw => $modify_basics) : ()),
-&>
-
-% unless ($modify_behavior eq 'always') {
-    <div class="inline-edit-display">
-
-      <div class="form-row">
-        <div class="label col-3">
-          <% loc("Queue") %>:
-        </div>
-        <div class="value col-9">
-          <span class="current-value"><% $TicketObj->QueueObj->Name %></span>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="label col-3">
-          <% loc("Status") %>:
-        </div>
-        <div class="value col-9">
-          <span class="current-value"><% $TicketObj->Status %></span>
-        </div>
-      </div>
-% if ( !$TicketObj->QueueObj->SLADisabled ) {
-      <div class="form-row <% $TicketObj->SLA ? '' : 'unset-field' %>">
-        <div class="label col-3">
-          <&|/l&>SLA</&>:
-        </div>
-        <div class="value col-9">
-          <span class="current-value"><% loc($TicketObj->SLA) %></span>
-        </div>
-      </div>
-% }
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Owner</&>:
-        </div>
-        <div class="value col-9">
-          <span class="current-value"><& /Elements/ShowUser, User => $TicketObj->OwnerObj &></span>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="label col-3">
-          <&|/l&>Subject</&>:
-        </div>
-        <div class="value col-9">
-          <span class="current-value"><% $TicketObj->Subject %></span>
-        </div>
-      </div>
-      <div class="priority form-row">
-        <div class="label col-3">
-          <&|/l&>Priority</&>:
-        </div>
-        <div class="value col-9">
-          <span class="current-value"><& /Ticket/Elements/ShowPriority, Ticket => $TicketObj &></span>
-        </div>
-      </div>
-      <div class="form-row <% $TicketObj->TimeWorked ? '' : 'unset-field' %>">
-        <div class="label col-3">
-          <&|/l&>Time Worked</&>:
-        </div>
-        <div class="value col-9">
-          <span class="current-value"><%loc('[_1] min', $TimeWorked)%></span>
-        </div>
-      </div>
-
-  <& /Elements/ShowCustomFields, Grouping => 'Basics', Object => $TicketObj, Table => 0 &>
-%     $m->callback( %ARGS, TicketObj => $TicketObj, CallbackName => 'EndOfBasics' );
-
-    </div>
-% }
-% if ($modify_behavior ne 'hide') {
-  <form class="inline-edit" action="<% RT::IR->HREFTo("Incident/Display.html") %>" method="post" enctype="multipart/form-data">
-    <input type="hidden" class="hidden" name="id" value="<% $TicketObj->id %>" />
-
-    <div class="form-row">
-      <div class="label col-3">
-        <&|/l&>Subject</&>:
-      </div>
-      <div class="value col-9">
-        <input class="form-control" type="text" name="Subject" value="<% $ARGS{'Subject'} || $TicketObj->Subject %>" />
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="label col-3">
-        <% loc("Status") %>:
-      </div>
-      <div class="value col-9">
-% unless ( RT::IR->IsCountermeasureQueue($TicketObj->QueueObj) ) {
-        <span class="current-value form-control"><% loc($TicketObj->Status) %></span>
-% }
-% else {
-        <& /Ticket/Elements/SelectStatus,
-            Name => 'Status',
-            Object => $TicketObj->QueueObj,
-            DefaultValue => 0,
-            Default => $ARGS{'Status'} || $TicketObj->Status,
-        &>
-% }
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="label col-3">
-        <&|/l&>Owner</&>:
-      </div>
-      <div class="value col-9">
-        <& /Elements/SelectOwner,
-            Name => 'Owner', Default => $ARGS{'Owner'} || $TicketObj->Owner,
-            TicketObj => $TicketObj, QueueObj => $TicketObj->QueueObj,
-        &>
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="label col-3">
-        <&|/l&>Queue</&>:
-      </div>
-      <div class="value col-9">
-        <& /RTIR/Elements/SelectRTIRQueue,
-            Name => 'Queue', Default => $ARGS{'Queue'} || $TicketObj->Queue,
-            TicketObj => $TicketObj, Lifecycle => $TicketObj->QueueObj->Lifecycle,
-            LimitToConstituency => ($m->{'RTIR_ConstituencyFilter'} || RT::IR->StrictConstituencyLinking) ? 1 : 0,
-              Constituency => RT::IR->ConstituencyFor($TicketObj)
-        &>
-      </div>
-    </div>
-
-% if ( !$TicketObj->QueueObj->SLADisabled ) {
-    <div class="form-row">
-      <div class="label col-3">
-        <&|/l&>SLA</&>:
-      </div>
-      <div class="value col-9">
-        <& /Elements/SelectSLA, Default => $TicketObj->SLA, TicketObj => $TicketObj &>
-      </div>
-    </div>
-% }
-    <div class="form-row">
-      <div class="label col-3">
-        <&|/l&>Time Worked</&>:
-      </div>
-      <div class="value col-9">
-        <& /Elements/EditTimeValue,
-            Name    => 'TimeWorked',
-            Default => $ARGS{'TimeWorked'} || $TicketObj->TimeWorked || '',
-            Ticket  => $TicketObj
-        &>
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="label col-3">
-        <&|/l&>Priority</&>:
-      </div>
-      <div class="value col-9">
-        <&/Elements/SelectPriority,
-            Name     => 'Priority',
-            Default  => $ARGS{'Priority'} || $TicketObj->Priority,
-            QueueObj => $TicketObj->QueueObj,
-        &>
-      </div>
-    </div>
-
-    <& /Elements/EditCustomFields, Grouping => 'Basics', Object => $TicketObj, Table => 0 &>
-
-    <div class="form-row">
-      <div class="col-12 text-right">
-        <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
-      </div>
-    </div>
-
-  </form>
-% }
-</&>
-
-<& /Elements/ShowCustomFieldCustomGroupings,
-    Object       => $TicketObj,
-    title_href   => ($can_modify || $can_modify_cf) ? RT::IR->HREFTo("Edit.html") : '',
-    InlineEdit   => ($can_modify || $can_modify_cf) ? $InlineEdit : 0,
-    ActionURL    => RT::IR->HREFTo("Incident/Display.html"),
-&>
-
-<%PERL>
-  my $dates_url      = RT::IR->HREFTo("Edit.html?id=". $TicketObj->Id);
-  my $dates_inline   = sprintf( $modify_inline, $m->interp->apply_escapes( $dates_url, 'h' ) );
-  my $dates_behavior = $InlineEdit ? ($inline_edit_behavior{Dates} || $inline_edit_behavior{_default} || 'link') : 'hide';
-</%PERL>
-
-<&| /Widgets/TitleBox,
-        title      => loc("Dates"),
-        title_href => RT::IR->HREFTo("Edit.html?id=".$id),
-        class      => (join " ", 'ticket-info-dates', ($dates_behavior eq 'always' ? 'editing' : ())),
-        data       => { 'inline-edit-behavior' => $dates_behavior },
-        ($can_modify && $dates_behavior =~ /^(link|click)$/ ? (titleright_raw => $dates_inline) : ()),
-    &>
-% unless ($dates_behavior eq 'always') {
-  <div class="inline-edit-display">
-    <& /RTIR/Elements/ShowDates, Ticket => $TicketObj &>
-  </div>
-% }
-% if ($dates_behavior ne 'hide') {
-  <form class="inline-edit" action="<% RT::IR->HREFTo("Incident/Display.html") %>" method="post" enctype="multipart/form-data">
-    <input type="hidden" class="hidden" name="id" value="<% $TicketObj->id %>" />
-    <& /Ticket/Elements/EditDates, TicketObj => $TicketObj &>
-    <div class="form-row">
-      <div class="col-12 text-right">
-        <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
-      </div>
-    </div>
-  </form>
-% }
-</&>
-
-
-<& /Ticket/Elements/ShowAttachments, Ticket => $TicketObj, Attachments => $attachments &>
-<& /Ticket/Elements/ShowRequestor, Ticket => $TicketObj, DisplayPath => RT::IR->HREFTo("Display.html") &>
-
-  </div>
-  <div class="boxcontainer col-md-6">
-% $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'RightColumnStart' );
-
-<& /Elements/ShowArticle, Ticket => $TicketObj &>
-
-<& /Ticket/Elements/ShowLinkedQueues,
-    TicketObj => $TicketObj,
-&>
-
-<& /Ticket/Elements/ShowAssets, Ticket => $TicketObj &>
-
-<& /RTIR/Elements/ShowArticles, Ticket => $TicketObj &>
-
-<& /RTIR/Elements/ShowCVEDetails, Ticket => $TicketObj &>
-
-% $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'RightColumnEnd' );
-  </div>
-</div>
-
-</&></div>
-
-% my $ShowHistory = RT->Config->Get("ShowHistory", $session{'CurrentUser'});
-% if ($ShowHistory eq "scroll") {
-    <& /Ticket/Elements/ScrollShowHistory,
-        Ticket => $TicketObj
-    &>
-% } elsif ($ShowHistory eq "delay") {
-    <& /Ticket/Elements/DelayShowHistory,
-        Ticket => $TicketObj,
-        ShowHeaders => $ARGS{'ShowHeaders'},
-    &>
-% } elsif (not $ForceShowHistory and $ShowHistory eq "click") {
-    <& /Ticket/Elements/ClickToShowHistory,
-        Ticket => $TicketObj,
-        ShowHeaders => $ARGS{'ShowHeaders'},
-    &>
-% } else {
-    <& /Elements/ShowHistory,
-        Object         => $TicketObj,
-        ShowHeaders    => $ARGS{'ShowHeaders'},
-        DisplayPath    => RT::IR->HREFTo("Display.html"),
-        UpdatePath     => RT::IR->HREFTo("Update.html"),
-        ForwardPath    => RT::IR->HREFTo("Forward.html"),
-        EncryptionPath => RT::IR->HREFTo("Crypt.html"),
-        PathPrefix     => RT->Config->Get('WebPath') ."/Ticket/",
-    &>
-% }
-
 <%INIT>
-
 if ($SelectedTicket) {
-    $id = $SelectedTicket;
+    $ARGS{id} = $SelectedTicket;
     $ARGS{'Status'} = "open";
 }
-Abort('No incident specified') unless $id;
+Abort('No incident specified') unless $ARGS{id} ;
 
-if( $Child ) {
+my $TicketObj = LoadTicket( $ARGS{id} );
+
+if ($Child) {
     my $ChildObj = RT::Ticket->new( $session{'CurrentUser'} );
     $ChildObj->Load($Child);
-    $m->callback(CallbackName => 'ThisLinkedToIR', ARGSRef => \%ARGS, Child => $ChildObj);
+    $m->callback( CallbackName => 'ThisLinkedToIR', ARGSRef => \%ARGS, Child => $ChildObj );
 }
-
 
 my $take_or_steal = sub {
     my $owner = $_[0]->Owner;
@@ -368,27 +70,25 @@ my $take_or_steal = sub {
 };
 
 my $deleted_links = 0;
-my $DoLinks = sub {
-    my ($child, $parent) = @_;
+my $DoLinks       = sub {
+    my ( $child, $parent ) = @_;
 
     my %args = ();
 
-    if (RT::IR->StrictConstituencyLinking) {
-        if ((RT::IR->ConstituencyFor($child) ||'')
-            ne (RT::IR->ConstituencyFor($parent) ||'')) {
-            return loc("Link failed: Ticket #[_1] is associated with a different constituency", 
-            $child->id );
+    if ( RT::IR->StrictConstituencyLinking ) {
+        if ( ( RT::IR->ConstituencyFor($child) || '' ) ne ( RT::IR->ConstituencyFor($parent) || '' ) ) {
+            return loc( "Link failed: Ticket #[_1] is associated with a different constituency", $child->id );
         }
     }
 
     # Countermeasure or Incident Reports can have multiple incidents
-    my $Type = RT::IR::TicketType( Ticket => $child );
+    my $Type   = RT::IR::TicketType( Ticket => $child );
     my $config = RT->Config->Get('RTIR_IncidentChildren')->{$Type};
-    unless( $config->{'Multiple'} ) {
+    unless ( $config->{'Multiple'} ) {
         my $incidents = RT::IR->Incidents( $child, Exclude => $parent );
         while ( my $incident = $incidents->Next ) {
             $deleted_links = 1;
-            $args{'DeleteLink--MemberOf-'. $incident->id } = '';
+            $args{ 'DeleteLink--MemberOf-' . $incident->id } = '';
         }
     }
 
@@ -396,88 +96,22 @@ my $DoLinks = sub {
 
     # if we don't own any of ends, take or steal parent
     unless ( $parent->Owner == $session{'CurrentUser'}->id
-             || $child->Owner == $session{'CurrentUser'}->id )
+        || $child->Owner == $session{'CurrentUser'}->id )
     {
-        push @results, $take_or_steal->( $parent );
+        push @results, $take_or_steal->($parent);
     }
 
     # turn off strict check locally
     my $strict_acl = RT->Config->Set( StrictLinkACL => 0 );
-    $args{ $child->Id .'-MemberOf' } = $parent->Id;
+    $args{ $child->Id . '-MemberOf' } = $parent->Id;
     push @results, ProcessTicketLinks( TicketObj => $child, ARGSRef => \%args );
     RT->Config->Set( StrictLinkACL => $strict_acl );
 
-    return map { loc("Ticket [_1]: [_2]", $child->Id, $_) } @results;
+    return map { loc( "Ticket [_1]: [_2]", $child->Id, $_ ) } @results;
 };
 
 my @results;
-my $SkipProcessing;
-
-my $TicketObj;
-my $new_ticket = 0;
-if ( $id eq 'new' ) {
-    my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
-    $QueueObj->Load( $Queue ) || Abort(loc("Couldn't load queue."));
-    unless( RT::IR->IsIncidentQueue($QueueObj) ) {
-        return $m->comp('/RTIR/Display.html', %ARGS );
-    }
-    ($TicketObj, @results) = CreateTicket( %ARGS );
-    $new_ticket = 1;
-} else {
-    $TicketObj = LoadTicket( $id );
-    $m->callback(
-        CallbackName   => 'BeforeProcessArguments',
-        CallbackPage   => '/Ticket/Display.html',
-        TicketObj      => $TicketObj,
-        ActionsRef     => \@results,
-        ARGSRef        => \%ARGS,
-        SkipProcessing => \$SkipProcessing,
-    );
-}
-
-my $edit_label   = $m->interp->apply_escapes( loc("Edit"), 'h' );
-my $cancel_label = $m->interp->apply_escapes( loc("Cancel"), 'h' );
-
-my %inline_edit_behavior;
-if ( my $config = RT->Config->Get('InlineEditPanelBehavior') ) {
-    %inline_edit_behavior = %{ $config->{'RTIR::Ticket'} || $config->{'RT::Ticket'} || {} };
-}
-my $can_modify    = $TicketObj->CurrentUserHasRight( 'ModifyTicket' );
-my $can_modify_cf = $TicketObj->CurrentUserHasRight( 'ModifyCustomField' );
-
-$m->callback(CallbackName => 'ProcessArguments', 
-            Ticket => $TicketObj,
-            ARGSRef => \%ARGS,  
-            Actions => \@results);
-
-unless( RT::IR->IsIncidentQueue($TicketObj->QueueObj) ) {
-    return $m->comp('/RTIR/Display.html', %ARGS );
-}
-$ARGS{'id'} = $id = $TicketObj->Id;
-
-if ( !$SkipProcessing && $ARGS{'Action'} && $ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/ )
-{   
-    my $action = $1;
-    my ($res, $msg) = $TicketObj->$action();
-    push @results, $msg;
-    # If they succeeded in taking the ticket, they should also get a lock
-    if ($res && $action =~  /^(?:Take|Steal)$/) { $ARGS{'Lock'} = 'add'; }
-
-}
-
-
-
-unless( $new_ticket || $SkipProcessing ) {
-    push @results, ProcessUpdateMessage( ARGSRef => \%ARGS, TicketObj => $TicketObj );
-    push @results, ProcessTicketBasics( ARGSRef => \%ARGS, TicketObj => $TicketObj );
-    push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $TicketObj );
-    push @results, ProcessTicketDates( ARGSRef => \%ARGS, TicketObj => $TicketObj );
-    my $strict_acl = RT->Config->Set( StrictLinkACL => 0 );
-    push @results, ProcessTicketLinks( ARGSRef => \%ARGS, TicketObj => $TicketObj );
-    RT->Config->Set( StrictLinkACL => $strict_acl );
-}
-
-if ( !$SkipProcessing && ( $ARGS{'BulkLink'} || $Child ) ) {
+if ( $ARGS{'BulkLink'} || $Child ) {
     my @link;
     push @link, @SelectedTickets if $ARGS{'BulkLink'};
     push @link, $Child if $Child;
@@ -493,57 +127,23 @@ if ( !$SkipProcessing && ( $ARGS{'BulkLink'} || $Child ) ) {
 }
 
 # If we deleted any links, check if what we deleted from still has children
-if ( $deleted_links && !RT::IR->IncidentChildren( $TicketObj )->Count ) {
-    push @results, loc("WARNING: Incident [_1] has no children.", $id);
+if ( $deleted_links && !RT::IR->IncidentChildren($TicketObj)->Count ) {
+    push @results, loc( "WARNING: Incident [_1] has no children.", $ARGS{id} );
 }
 
-if ( !$SkipProcessing && $ARGS{'BulkArticles'} && @SelectedTickets ) {
-    my $ref = join " ", map "a:$_", @SelectedTickets;
-    push @results, ProcessTicketLinks(
-        TicketObj => $TicketObj,
-        ARGSRef => {$TicketObj->Id."-RefersTo" => $ref}
-    );
-}
-
-if ( $ARGS{'MarkAsSeen'} ) {
-    $TicketObj->SetAttribute(
-        Name => 'User-'. $TicketObj->CurrentUser->id .'-SeenUpTo',
-        Content => $TicketObj->LastUpdated,
-    );
-    push @results, loc('Marked all messages as seen');
-}
 
 MaybeRedirectForResults(
     Actions   => \@results,
-    Path      => RT::IR->HREFTo("Display.html", IncludeWebPath => 0),
-    Arguments => { id => $TicketObj->id },
-    Anchor    => $ARGS{'Anchor'},
+    Arguments => { map { /^(?:SelectedTicket|BulkLink|Child|LinkChild)$/ ? () : ( $_ => $ARGS{$_} ) } keys %ARGS },
 );
 
-# XXX: need the way to show @results when aborting
-unless ( $TicketObj->CurrentUserHasRight('ShowTicket') ) {
-    Abort("No permission to view ticket #$id.");
-}
-
-my $TimeWorked = $TicketObj->TimeWorked;
-if ( defined $TicketObj->TimeLeft && $TicketObj->TimeLeft > 0 ) {
-    $TimeWorked .= '/'. $TicketObj->TimeLeft;
-}
-
-my $attachments = $TicketObj->Attachments;
-
-$TicketObj->CurrentUser->AddRecentlyViewedTicket($TicketObj)
-    if $TicketObj->CurrentUser->can('AddRecentlyViewedTicket');
+$m->comp( '/Ticket/Display.html', %ARGS );
 
 </%INIT>
 
 <%ARGS>
 $id => undef
-$Queue => RT::IR->lifecycle_incident
 $Child => undef
 $SelectedTicket => undef
 @SelectedTickets => ()
-$ForceShowHistory => 0
-$InlineEdit       => RT->Config->Get( 'InlineEdit', $session{CurrentUser} )
-$HideUnsetFields  => RT->Config->Get('HideUnsetFieldsOnDisplay', $session{CurrentUser})
 </%ARGS>

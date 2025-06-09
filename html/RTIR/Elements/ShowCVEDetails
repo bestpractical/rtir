@@ -49,14 +49,15 @@
     title          => loc("CVE Details"),
     title_class    => 'inverse',
     class          => 'ticket-info-cve',
+    defined $ARGS{htmx_load} ? ( htmx_load => $ARGS{htmx_load} ) : (),
 &>
 
 <div id="cve-accordion" class="rt-accordion accordion">
 
 % while ( my $cve = $cves->Next ) {
-  <div class="accordion-item">
-    <span class="accordion-title collapsed toggle" data-toggle="collapse"
-      data-target="#accordion-cve-<% $cve->Content %>"
+  <div class="accordion-item border-0">
+    <span class="accordion-title collapsed toggle" data-bs-toggle="collapse"
+      data-bs-target="#accordion-cve-<% $cve->Content %>"
       aria-expanded="false" aria-controls="accordion-cve-<% $cve->Content %>"
       id="accordion-cve-<% $cve->Content %>-title">
       <% $cve->Content %>
@@ -135,3 +136,7 @@ my %label = (
     'more-info'          => loc('More Info'),
 );
 </%INIT>
+
+<%attr>
+directly_accessible => 1
+</%attr>

@@ -59,7 +59,7 @@ $agent->field('Requestors', 'root@localhost');
 $agent->field('InvestigationRequestors', 'root@localhost');
 $agent->field('InvestigationSubject', 'Investigation created for test incident');
 $agent->field('InvestigationContent', 'Content of the Investigation');
-$agent->click('CreateWithInvestigation');
+$agent->click('InvestigationSubmitTicket');
 $agent->content_like(qr/Incident #\d+: Incident with an Investigation/, 'Incident number generated');
 $agent->content_like(qr/Ticket \d+ created in queue &#39;Incidents&#39;/, 'Incident created message');
 $agent->content_like(qr/Ticket \d+ created in queue &#39;Investigations&#39;/, 'Investigation created message');

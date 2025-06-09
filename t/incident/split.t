@@ -20,7 +20,7 @@ my $rtir_user = rtir_user();
 
     $agent->follow_link_ok({text => "Split"}, "Followed link");
     $agent->form_number(3);
-    $agent->click('CreateIncident');
+    $agent->click('SubmitTicket');
     is ($agent->status, 200, "Attempted to create the ticket");
     my $new_id = ($agent->content =~ /.*Ticket (\d+) created.*/i )[0];
     ok ($new_id, "Ticket created successfully: #$new_id.");
@@ -28,7 +28,7 @@ my $rtir_user = rtir_user();
     $agent->follow_link_ok({url_regex => qr(/RTIR/Create\.html\?Incident=\d+&Lifecycle=investigations)i }, "Followed link");
     $agent->form_number(3);
     $agent->field('Requestors', $rtir_user->EmailAddress);
-    $agent->click('Create');
+    $agent->click('SubmitTicket');
 
     is ($agent->status, 200, "Attempted to create the ticket");
     my $inv_id = ($agent->content =~ /.*Ticket (\d+) created.*/i )[0];

@@ -34,7 +34,8 @@ diag "merge an IR into a linked IR, the product should have open state" if $ENV{
 {
     my $inc_id = $agent->create_incident( {Subject => "base inc for merging"});
     my $ir1_id = $agent->create_ir( {Subject => "ir1 for merging", Incident => $inc_id});
-    $agent->ok_and_content_like( qr{Incident:.*$inc_id}ms, 'Created linked IR');
+    is($agent->status, 200, 'Created linked IR');
+    ok( $agent->dom->at(".incidents [data-record-id=$inc_id]"), 'IR is linked correctly' );
     $agent->ticket_status_is( $ir1_id, 'open' );
 
     my $ir2_id = $agent->create_ir( {Subject => "ir2 for merging"});
@@ -64,7 +65,8 @@ diag "merge a linked IR into an IR, the product should have open state"
 
     my $inc_id = $agent->create_incident( {Subject => "base inc for merging"});
     my $ir2_id = $agent->create_ir( {Subject => "ir2 for merging", Incident => $inc_id});
-    $agent->ok_and_content_like( qr{Incident:.*$inc_id}ms, 'Created linked IR');
+    is($agent->status, 200, 'Created linked IR');
+    ok( $agent->dom->at(".incidents [data-record-id=$inc_id]"), 'IR is linked correctly' );
     $agent->ticket_status_is( $ir2_id, 'open' );
 
     $agent->display_ticket( $ir2_id);
