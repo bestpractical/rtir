@@ -56,15 +56,16 @@
     EmptyLabel    => loc('(none)'),
     InlineEdit    => $InlineEdit,
 &>
-<div class="actions">
+<div class="actions float-end">
 % unless ( $action ) {
-<a class="button btn-sm btn btn-primary" id="link-incident" href="<% RT::IR->HREFTo('Link/ToIncident/?id='. $id ) %>">
-    <span class="fas fa-link" data-toggle="tooltip" data-placement="top" data-original-title="<% loc( 'Link Incident' ) %>"></span>
+<a class="btn-sm btn btn-primary" id="link-incident" href="<% RT::IR->HREFTo('Link/ToIncident/?id='. $id ) %>">
+  <% GetSVGImage( Name => 'link', Title => loc('Link Incident') ) | n %>
 </a>
-<a class="button btn-sm btn btn-primary" id="create-incident" href="<% RT::IR->HREFTo('Incident/Create.html?Lifecycle=' . RT::IR->lifecycle_incident . '&Child='. $id ) %>">
-<span class="fas fa-plus" data-toggle="tooltip" data-placement="top" data-original-title="<% loc( 'New Incident' ) %>"></span></a>
+<a class="btn-sm btn btn-primary" id="create-incident" href="<% RT::IR->HREFTo('Incident/Create.html?Lifecycle=' . RT::IR->lifecycle_incident . '&Child='. $id ) %>">
+  <% GetSVGImage( Name => 'plus', Title => loc('New Incident') ) | n %>
+</a>
 % } elsif ( $action ne 'No' ) {
-<a class="button btn-sm btn btn-primary" href="<% RT::IR->HREFTo('Display.html?Action='. $action.'&id='. $id) %>">
+<a class="btn-sm btn btn-primary" href="<% RT::IR->HREFTo('Display.html?Action='. $action.'&id='. $id) %>">
   <% loc($action) %>
 </a>
 % }

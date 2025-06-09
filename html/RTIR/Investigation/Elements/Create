@@ -168,7 +168,7 @@
     %CFDefaults,
     Object => $ticket,
     CustomFieldGenerator => sub { $QueueObj->TicketCustomFields },
-    Groupings => [ RT::CustomField->CustomGroupings( 'RTIR::Ticket', $QueueObj->Name ), '' ],
+    Groupings => [ RT::CustomField->CustomGroupings( 'RT::Ticket', $QueueObj->Name ), '' ],
 &>
 % }
 

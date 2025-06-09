@@ -27,7 +27,7 @@ $agent->goto_create_rtir_ticket('Incident Reports');
     $agent->form_number(3);
     $agent->field('Subject', 'ticket with attachment');
     $agent->field('Attach', $filename);
-    $agent->click('Create');
+    $agent->click('SubmitTicket');
     is($agent->status, 200, "request successful");
     $agent->content_like( qr/\Q$filename/, "has file name on the page");
     my $attachment_link = $agent->find_link(
@@ -64,7 +64,7 @@ $agent->goto_create_rtir_ticket('Incident Reports');
     $agent->form_number(3);
     is($agent->value('Subject'), 'ticket with attachments', "subject we put is there");
     $agent->field('Attach', $fn2);
-    $agent->click('Create');
+    $agent->click('SubmitTicket');
     is($agent->status, 200, "request successful");
 
     $agent->content_like( qr/\Q$fn1/, "has file name on the page");
@@ -103,7 +103,7 @@ SKIP: {
     is($agent->status, 200, "request successful");
 
     $agent->form_number(3);
-    $agent->click('Create');
+    $agent->click('SubmitTicket');
     is($agent->status, 200, "request successful");
 
     my $attachment_link = $agent->find_link(
@@ -129,7 +129,7 @@ $agent->goto_create_rtir_ticket('Incidents');
     is($agent->status, 200, "request successful");
     $agent->content_like( qr/\Q$filename/, "has file name on the page");
     $agent->form_number(3);
-    ok($agent->value('CreateIncident'), "we still on the create page");
+    ok($agent->value('SubmitTicket'), "we still on the create page");
     unlink $filename or die "couldn't delete file '$filename': $!";
 }
 
@@ -145,7 +145,7 @@ $agent->goto_create_rtir_ticket('Investigations');
     is($agent->status, 200, "request successful");
     $agent->content_like( qr/\Q$filename/, "has file name on the page");
     $agent->form_number(3);
-    ok($agent->value('Create'), "we still on the create page");
+    ok($agent->value('SubmitTicket'), "we still on the create page");
     unlink $filename or die "couldn't delete file '$filename': $!";
 }
 
@@ -160,7 +160,7 @@ $agent->goto_create_rtir_ticket('Countermeasures');
     is($agent->status, 200, "request successful");
     $agent->content_like( qr/\Q$filename/, "has file name on the page");
     $agent->form_number(3);
-    ok($agent->value('Create'), "we still on the create page");
+    ok($agent->value('SubmitTicket'), "we still on the create page");
     unlink $filename or die "couldn't delete file '$filename': $!";
 }
 

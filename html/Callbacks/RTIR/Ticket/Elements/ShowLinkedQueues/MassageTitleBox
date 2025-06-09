@@ -72,24 +72,21 @@ foreach my $queue ( @queues ) {
             if ( $QueueObj->Id and $QueueObj->CurrentUserHasRight('CreateTicket') ) {
                 push @titleright_raw, {
                     title => $lifecycle ne RT::IR->lifecycle_investigation? loc('Create') : loc('Launch'),
-                    class => 'fas fa-plus',
+                    icon => 'plus',
                     path => RT::IR->HREFTo("Create.html?Incident=$id&Lifecycle=".$lifecycle),
                 };
             }
             push @titleright_raw, {
                 title => loc('Link'),
                 path  => RT::IR->HREFTo("Link/FromIncident/?id=$id&Lifecycle=".$lifecycle),
-                class => 'fas fa-link',
+                icon => 'link',
             };
         }
 
         $$titleright_raw = join '&nbsp;'x3,
-            map q{<a href="}.$_->{'path'}
-                    .q{"><span }.( $_->{'class'} ? q{" class="} . $_->{'class'} : '' )
-                    .q{" data-toggle="tooltip" data-placement="top" data-original-title="}
-                    .$m->interp->apply_escapes( $_->{title}, 'h' )
-                    .q{"></span>
-                </a>}, @titleright_raw;
+            map qq{<a href="$_->{'path'}">}
+                . HTML::Mason::Commands::GetSVGImage( Name => $_->{icon}, Title => $_->{title} )
+                . q{</a>}, @titleright_raw;
     }
 }
 </%INIT>

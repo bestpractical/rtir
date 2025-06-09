@@ -54,9 +54,9 @@
 <div id="cve-accordion" class="rt-accordion accordion">
 
 % while ( my $cve = $cves->Next ) {
-  <div class="accordion-item">
-    <span class="accordion-title collapsed toggle" data-toggle="collapse"
-      data-target="#accordion-cve-<% $cve->Content %>"
+  <div class="accordion-item border-0">
+    <span class="accordion-title collapsed toggle" data-bs-toggle="collapse"
+      data-bs-target="#accordion-cve-<% $cve->Content %>"
       aria-expanded="false" aria-controls="accordion-cve-<% $cve->Content %>"
       id="accordion-cve-<% $cve->Content %>-title">
       <% $cve->Content %>

@@ -377,7 +377,7 @@ diag "check IPs in main content and attachment" if $ENV{'TEST_VERBOSE'};
                 Subject => "test ip",
                 Content => '2.2.2.2',
             },
-            button => 'Create',
+            button => 'SubmitTicket',
         }
     );
 
@@ -404,7 +404,7 @@ diag "check IPs not in main content but in attachment" if $ENV{'TEST_VERBOSE'};
                 Subject => "test ip",
                 Content => 'test attachment',
             },
-            button => 'Create',
+            button => 'SubmitTicket',
         }
     );
 
@@ -437,7 +437,7 @@ diag "check IPs not in main content but in multiple attachments" if $ENV{'TEST_V
                 Subject => "test ip",
                 Content => 'test attachment',
             },
-            button => 'Create',
+            button => 'SubmitTicket',
         }
     );
 

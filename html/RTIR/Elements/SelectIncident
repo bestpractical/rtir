@@ -45,41 +45,29 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Incident</&>:
-      <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Id of an Incident to link a new ticket to</&>.
-      <% $config->{'Required'} ? loc('Required') : loc('Optional') %>."></span>
-    </div>
-    <div class="value col-9">
-      <div class="form-row">
+<div class="row">
 % if ( @potential ) {
-        <& /RTIR/Search/Elements/ShowResults,
-           Query         => $query,
-           Rows          => 0,
-           Format        => $format,
-           DisplayFormat => $dformat,
-           AllowSorting  => 0,
-           ShowHeader    => 0,
-           InlineEdit    => 0,
-        &>
+  <& /RTIR/Search/Elements/ShowResults,
+      Query         => $query,
+      Rows          => 0,
+      Format        => $format,
+      DisplayFormat => $dformat,
+      AllowSorting  => 0,
+      ShowHeader    => 0,
+      InlineEdit    => 0,
+  &>
 % }
 % if ( $hide ) {
-    <input type="hidden" name="<% $Name %>" value="<% $potential[0] %>" />
+  <input type="hidden" name="<% $Name %>" value="<% $potential[0] %>" />
 % }
 
-% if ( @potential ) {
-    <div class="col-auto label">
-      <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Id of an Incident to link a new ticket to</&>."</span>
-    </div>
-% }
-    <div class="col-auto">
-      <input class="form-control" type="text" name="<% $Name %>" value="" data-autocomplete="Tickets" data-autocomplete-limit="Lifecycle = 'incidents'" />
-    </div>
+  <div class="col-auto">
+    <input class="form-control" type="text" name="<% $Name %>" value="" data-autocomplete="Tickets" data-autocomplete-limit="Lifecycle = 'incidents'" />
+  </div>
 % if ( $config->{'Multiple'} || @potential ) {
-    <div class="col-auto">
-      <input type="submit" name="<% "More$Name" %>" value="<% $config->{'Multiple'}? loc('Add') : loc('Other') %>" class="form-control btn btn-primary button" />
-    </div>
+  <div class="col-auto">
+    <input type="submit" name="<% "More$Name" %>" value="<% $config->{'Multiple'}? loc('Add') : loc('Other') %>" class="form-control btn btn-primary button" />
+  </div>
 % }
 
 % if ( !$config->{'Required'} && $dformat =~ /RadioButton/ ) {
@@ -89,10 +77,7 @@ jQuery(function(){ jQuery('input[type="radio"][name="<% $Name %>"]').uncheckable
 //]]>
 </script>
 % }
-      </div>
-    </div>
-  </div>
-
+</div>
 <%ARGS>
 $Type
 $Name     => 'Incident'

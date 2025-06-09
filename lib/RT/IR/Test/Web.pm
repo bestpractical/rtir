@@ -111,7 +111,7 @@ sub create_rtir_ticket
     my $cfs = shift || {};
 
     $self->goto_create_rtir_ticket($queue);
-    
+
     #Enable test scripts to pass in the name of the owner rather than the ID
     if ($$fields{Owner} && $$fields{Owner} !~ /^\d+$/)
     {
@@ -130,8 +130,7 @@ sub create_rtir_ticket
         $self->set_custom_field($queue, $f, $v);
     }
     # Create it!
-    my @submits = $self->find_all_inputs(id => 'create-ticket');
-    $self->click_button(input=>$submits[0]); 
+    $self->click('SubmitTicket');
     Test::More::is ($self->status, 200, "Attempted to create the ticket");
 
     return $self->get_ticket_id;
@@ -159,8 +158,7 @@ sub create_incident_for_ir {
         $self->set_custom_field( 'Incidents', $f, $v);
     }
 
-    my @submits = $self->find_all_inputs(id => 'create-ticket');
-    $self->click_button(input=>$submits[0]); 
+    $self->click('SubmitTicket');
     
     Test::More::is ($self->status, 200, "Attempting to create new incident linked to child $ir_id");
 
@@ -308,7 +306,7 @@ sub has_watchers {
     $self->display_ticket($id);
 
     return $self->content_like(
-qr{$type:\s*</div>\s*<div class="value col-9">\s*<span[^>]*?\s*class="\w+[^>]*?>\s*<span class="user" data-user-id="\d+">\s*<a\s+href="/User/Summary\.html\?id=\d+"\s+class="rt-user-avatar">}ms,
+qr{$type\s*</span>\s*</div>\s*<div class="rt-value">\s*<span[^>]*>\s*<span class="user" data-user-id="\d+">\s*<a\s+href="/User/Summary\.html\?id=\d+"\s+class="rt-user-avatar">}ms,
         "Found $type",
     );
 }

@@ -34,7 +34,7 @@ diag "check that things don't work if there is no key";
     $agent->tick( Encrypt => 1 );
     $agent->field( Requestors => 'rt-test@example.com' );
     $agent->field( Content => 'Some content' );
-    $agent->click('Create');
+    $agent->click('SubmitTicket');
     $agent->content_like(
         qr/You are going to encrypt outgoing email messages/i,
         'problems with keys'
@@ -72,7 +72,7 @@ diag "check that things still doesn't work if key is not trusted";
     $agent->tick( Encrypt => 1 );
     $agent->field( Requestors => 'rt-test@example.com' );
     $agent->field( Content => 'Some content' );
-    $agent->click('Create');
+    $agent->click('SubmitTicket');
     $agent->content_like(
         qr/You are going to encrypt outgoing email messages/i,
         'problems with keys'
@@ -87,7 +87,7 @@ diag "check that things still doesn't work if key is not trusted";
     is scalar $input->possible_values, 1, 'one option';
 
     $agent->select( 'UseKey-rt-test@example.com' => $fpr1 );
-    $agent->click('Create');
+    $agent->click('SubmitTicket');
     $agent->content_like(
         qr/You are going to encrypt outgoing email messages/i,
         'problems with keys'
@@ -119,7 +119,7 @@ diag "check that things still doesn't work if two keys are not trusted";
     $agent->tick( Encrypt => 1 );
     $agent->field( Requestors => 'rt-test@example.com' );
     $agent->field( Content => 'Some content' );
-    $agent->click('Create');
+    $agent->click('SubmitTicket');
     $agent->content_like(
         qr/You are going to encrypt outgoing email messages/i,
         'problems with keys'
@@ -134,7 +134,7 @@ diag "check that things still doesn't work if two keys are not trusted";
     is scalar $input->possible_values, 2, 'two options';
 
     $agent->select( 'UseKey-rt-test@example.com' => $fpr1 );
-    $agent->click('Create');
+    $agent->click('SubmitTicket');
     $agent->content_like(
         qr/You are going to encrypt outgoing email messages/i,
         'problems with keys'
@@ -164,7 +164,7 @@ diag "check that we see key selector even if only one key is trusted but there a
     $agent->tick( Encrypt => 1 );
     $agent->field( Requestors => 'rt-test@example.com' );
     $agent->field( Content => 'Some content' );
-    $agent->click('Create');
+    $agent->click('SubmitTicket');
     $agent->content_like(
         qr/You are going to encrypt outgoing email messages/i,
         'problems with keys'
@@ -191,7 +191,7 @@ diag "check that key selector works and we can select trusted key";
     $agent->tick( Encrypt => 1 );
     $agent->field( Requestors => 'rt-test@example.com' );
     $agent->field( Content => 'Some content' );
-    $agent->click('Create');
+    $agent->click('SubmitTicket');
     $agent->content_like(
         qr/You are going to encrypt outgoing email messages/i,
         'problems with keys'
@@ -206,7 +206,7 @@ diag "check that key selector works and we can select trusted key";
     is scalar $input->possible_values, 2, 'two options';
 
     $agent->select( 'UseKey-rt-test@example.com' => $fpr1 );
-    $agent->click('Create');
+    $agent->click('SubmitTicket');
     $agent->content_like( qr/Ticket \d+ created in queue/i, 'ticket created' );
 
     my @mail = RT::Test->fetch_caught_mails;
@@ -224,7 +224,7 @@ diag "check encrypting of attachments";
     $agent->field( Requestors => 'rt-test@example.com' );
     $agent->field( Content => 'Some content' );
     $agent->field( Attachment => $0 );
-    $agent->click('Create');
+    $agent->click('SubmitTicket');
     $agent->content_like(
         qr/You are going to encrypt outgoing email messages/i,
         'problems with keys'
@@ -239,7 +239,7 @@ diag "check encrypting of attachments";
     is scalar $input->possible_values, 2, 'two options';
 
     $agent->select( 'UseKey-rt-test@example.com' => $fpr1 );
-    $agent->click('Create');
+    $agent->click('SubmitTicket');
     $agent->content_like( qr/Ticket \d+ created in queue/i, 'ticket created' );
 
     my @mail = RT::Test->fetch_caught_mails;

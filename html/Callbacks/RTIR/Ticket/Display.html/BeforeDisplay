@@ -46,39 +46,29 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-return if $ARGSRef->{'NoRedirect'};
-
-my $QueueObj;
-if ( $TicketObj ) {
-    my $tmp = RT::Ticket->new( RT->SystemUser );
-    $tmp->Load( $TicketObj->id );
-    $QueueObj = $tmp->QueueObj;
-} elsif ( $ARGSRef->{'id'} && $ARGSRef->{'id'} ne 'new' ) {
-    my $tmp = RT::Ticket->new( RT->SystemUser );
-    $tmp->Load( $ARGSRef->{'id'} );
-    $QueueObj = $tmp->QueueObj;
-} elsif ( $ARGSRef->{'Queue'} ) {
-    $QueueObj = RT::Queue->new( RT->SystemUser );
-    $QueueObj->Load( $ARGSRef->{'Queue'} );
+if ( $$TicketObj->Lifecycle eq 'incidents' && $ARGSRef->{InvestigationSubmitTicket} ) {
+    my ( $investigation, @results )
+        = CreateTicket( map { /^Investigation(.+)/ ? ( $1 => $ARGSRef->{$_} ) : () } keys %$ARGSRef );
+    push @$Actions, @results;
+    my ( $ret, $msg ) = $investigation->AddLink(
+        Type   => 'MemberOf',
+        Target => $$TicketObj->id,
+    );
+    push @$Actions, $msg;
 }
-return unless $QueueObj && RT::IR->OurQueue( $QueueObj );
 
-# If there is something to change, do not redirect
-return if grep !/^(id|results)$/, keys %$ARGSRef;
+RT->Config->Set( StrictLinkACL => $m->notes('OriginalStrictLinkACL') ) if defined $m->notes('OriginalStrictLinkACL');
 
-# we should use redirect so tabs displayed correctly according to request_comp
-my $url = RT::IR->HREFTo(
-    ( $QueueObj->Lifecycle eq 'incidents' ? 'Incident/' : '' ) . "Display.html?id=" . $ARGSRef->{'id'} );
-$url .= '&results='. 
-    $m->interp->apply_escapes( $ARGSRef->{'results'}, 'u' )
-    if $ARGSRef->{'results'};
-my ($path) = $url =~ m{^(.+/Display\.html)};
-my $current_path = RT->Config->Get('WebPath') . $m->request_path;
-RT::Interface::Web::Redirect( $url ) unless $path eq $current_path;
-
+if ( RT::IR->OurQueue( $$TicketObj->QueueObj ) ) {
+    my $type = RT::IR::TicketType( Ticket => $$TicketObj );
+    $type = 'Incident Report' if $type eq 'Report';
+    $$title = "$type $$title";
+}
 </%INIT>
 
 <%ARGS>
-$TicketObj => undef
-$ARGSRef => {}
+$TicketObj
+$ARGSRef
+$Actions
+$title
 </%ARGS>
