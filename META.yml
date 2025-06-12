@@ -35,5 +35,5 @@ resources:
   license: http://opensource.org/licenses/gpl-license.php
 version: 5.0.8
 x_module_install_rtx_version: '0.44'
-x_requires_rt: 5.0.0
-x_rt_too_new: 5.2.0
+x_requires_rt: 6.0.0
+x_rt_too_new: 6.2.0
