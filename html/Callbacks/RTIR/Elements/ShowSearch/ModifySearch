@@ -58,9 +58,19 @@ if ( $ARGS{'SavedSearch'} ) {
 return
     unless $m->request_comp->path =~ m{^/RTIR/} || ( $search && $search->GetOption('RTIRSearchEnabled') );
 
+# HTMX search requests will have the constituency added as a query param
+if ( my $c = $ARGS{'ConstituencyFilter'} ) {
+    $Search->{Query} .= " AND 'QueueCF.{RTIR Constituency}' = '$c'" unless ( $Search->{Query} =~ /QueueCF.\{RTIR Constituency\}/);
+    $OriginalSearch->{Query} .=  " AND 'QueueCF.{RTIR Constituency}' = '$c'" unless ( $OriginalSearch->{Query} =~ /QueueCF.\{RTIR Constituency\}/);
+}
+
+# Links in the Work with constituencies portlet will have the constituency added to the path,
+# which will then be copied to notes. Add them to the HTMX args here so the search request
+# retains the constituency.
 if (my $c = $m->{'RTIR_ConstituencyFilter'}) {
     $Search->{Query} .= " AND 'QueueCF.{RTIR Constituency}' = '$c'" unless ( $Search->{Query} =~ /QueueCF.\{RTIR Constituency\}/);
     $OriginalSearch->{Query} .=  " AND 'QueueCF.{RTIR Constituency}' = '$c'" unless ( $OriginalSearch->{Query} =~ /QueueCF.\{RTIR Constituency\}/);
+    $$HTMXQueryArgsRef .= '&ConstituencyFilter=' . $m->{'RTIR_ConstituencyFilter'};
 }
 # If we're inside RTIR, try to make all the ticket search links point to RTIR
 # A better implementation would check that the ticket is an RTIR ticket, but that
@@ -71,4 +81,5 @@ $Search->{Format} =~ s/__WebPath__\/Ticket\/Display.html\?id=__id__/__RTIRTicket
 <%args>
 $OriginalSearch => undef
 $Search => undef
+$HTMXQueryArgsRef => undef
 </%args>
