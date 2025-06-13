@@ -1,0 +1,43 @@
+=head1 Upgrading to RTIR 6.0
+
+The following describes some of the more significant changes
+to RTIR 6.0 from earlier versions. The general L<UPGRADING> document
+describes the steps to upgrade from a previous version of RTIR.
+
+To align version numbers more clearly, the initial released version
+of RTIR 6 is 6.0.1, which should be run with RT 6.0.1.
+
+=head2 Notable Changes
+
+=over
+
+=item *
+
+The following default RTIR homepage elements have been converted
+to RT saved searches and the previous mason templates have been
+removed.
+
+    html/RTIR/Elements/NewReports
+    html/RTIR/Elements/UserDueIncidents
+    html/RTIR/Elements/NobodyDueIncidents
+    html/RTIR/Elements/DueIncidents
+
+The new saved searches work the same as the previous components.
+
+Previously you could customized the content of these components using the
+C<%RTIRSearchResultFormats> option by setting custom formats for C<NewReports>
+or C<DueIncidents> entries. You can now modify this format directly in
+the web UI by editing the saved search.
+
+=item *
+
+As with core RT, saved searches, including the ones noted above, can now be
+configured to refresh automatically. This new feature replaces the Refresh
+component on the home page that refreshed the entire page.
+
+See the RT 6 upgrading documentation for details on the update to refresh
+features.
+
+=back
+
+=cut
