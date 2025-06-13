@@ -686,6 +686,74 @@ push @ACL, (
     },
 );
 
+# Predefined searches
+
+@SavedSearches = (
+    { Name => 'New unlinked Incident Reports',
+      Description => 'New unlinked Incident Reports', # loc
+      Content => {
+          ExtraQueryParams => 'RTIR',
+          Format           => q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}
+              . q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}
+              . q{Requestors,OwnerName,DueRelative,QueueName,Take},
+          Order             => 'ASC|ASC|ASC|ASC',
+          OrderBy           => 'Due',
+          Query             => 'Lifecycle = \'incident_reports\' AND Status = \'new\'',
+          RTIR              => 1,
+          RTIRSearchEnabled => 1,
+          RowsPerPage       => 10,
+      },
+    },
+    { Name => 'My most due incidents',
+      Description => 'Most due incidents I own', # loc
+      Content => {
+          ExtraQueryParams => 'RTIR',
+          Format           => q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}
+              . q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}
+              . q{DueRelative, OwnerName, __Priority__,}
+              . q{'UnreadMessages/TITLE:Updates'},
+          Order             => 'ASC|DESC|ASC|ASC',
+          OrderBy           => 'Due|Priority',
+          Query             => 'Lifecycle = \'incidents\' AND Status = \'__Active__\' AND Owner = \'__CurrentUser__\'',
+          RTIR              => 1,
+          RTIRSearchEnabled => 1,
+          RowsPerPage       => 10,
+      },
+    },
+    { Name => 'Most due unowned incidents',
+      Description => 'Most due unowned incidents', # loc
+      Content => {
+          ExtraQueryParams => 'RTIR',
+          Format           => q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}
+              . q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}
+              . q{DueRelative, OwnerName, __Priority__,}
+              . q{'UnreadMessages/TITLE:Updates'},
+          Order             => 'ASC|DESC|ASC|ASC',
+          OrderBy           => 'Due|Priority',
+          Query             => 'Lifecycle = \'incidents\' AND Status = \'__Active__\' AND Owner = \'Nobody\'',
+          RTIR              => 1,
+          RTIRSearchEnabled => 1,
+          RowsPerPage       => 10,
+      },
+    },
+    { Name => 'Most due incidents',
+      Description => 'Most due incidents', # loc
+      Content => {
+          ExtraQueryParams => 'RTIR',
+          Format           => q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}
+              . q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}
+              . q{DueRelative, OwnerName, __Priority__,}
+              . q{'UnreadMessages/TITLE:Updates'},
+          Order             => 'ASC|DESC|ASC|ASC',
+          OrderBy           => 'Due|Priority',
+          Query             => 'Lifecycle = \'incidents\' AND Status = \'__Active__\'',
+          RTIR              => 1,
+          RTIRSearchEnabled => 1,
+          RowsPerPage       => 10,
+      },
+    },
+);
+
 for my $cf (@CustomFields) {
     push @ACL,
         (
@@ -786,63 +854,6 @@ for my $cf (@CustomFields) {
     }
 );
 
-@Dashboards = (
-    {
-        Name        => 'RTIR Homepage',
-        Description => 'RTIR Homepage',
-        Content     => {
-            Elements => [
-                {
-                    Layout   => 'col-md-8,col-md-4',
-                    Elements => [
-                        [
-                        {
-                            portlet_type => 'component',
-                            component    => '/RTIR/Elements/NewReports',
-                            description  => '/RTIR/Elements/NewReports',
-                            path         => '/RTIR/Elements/NewReports',
-                        },
-                        {
-                            portlet_type => 'component',
-                            component    => '/RTIR/Elements/UserDueIncidents',
-                            description  => '/RTIR/Elements/UserDueIncidents',
-                            path         => '/RTIR/Elements/UserDueIncidents',
-                        },
-                        {
-                            portlet_type => 'component',
-                            component    => '/RTIR/Elements/NobodyDueIncidents',
-                            description  => '/RTIR/Elements/NobodyDueIncidents',
-                            path         => '/RTIR/Elements/NobodyDueIncidents',
-                        },
-                        {
-                            portlet_type => 'component',
-                            component    => '/RTIR/Elements/DueIncidents',
-                            description  => '/RTIR/Elements/DueIncidents',
-                            path         => '/RTIR/Elements/DueIncidents',
-                        },
-                        ],
-                        [
-                        {
-                            portlet_type => 'component',
-                            component    => '/RTIR/Elements/WorkWithConstituency',
-                            description  => '/RTIR/Elements/WorkWithConstituency',
-                            path         => '/RTIR/Elements/WorkWithConstituency',
-                        },
-                        {
-                            portlet_type => 'component',
-                            component    => '/RTIR/Elements/QueueSummary',
-                            description  => '/RTIR/Elements/QueueSummary',
-                            path         => '/RTIR/Elements/QueueSummary',
-                        },
-                        ]
-                    ],
-                }
-            ],
-        },
-    }
-);
-
-
 @Final = (
     sub {
         $| = 1;
@@ -901,8 +912,80 @@ for my $cf (@CustomFields) {
 
     },
     sub {
+        # The last 4 saved searches should be the ones added above.
+        # Don't load by name since there could be other existing searches with
+        # these names.
+        my ($new_reports, $user_incidents, $nobody_incidents, $due_incidents);
+        my $saved_searches = RT::SavedSearches->new(RT->SystemUser);
+        $saved_searches->UnLimit;
+        $due_incidents = $saved_searches->Last;
+
+        $new_reports = RT::SavedSearch->new(RT->SystemUser);
+        $new_reports->Load( $due_incidents->Id - 3 );
+
+        $user_incidents = RT::SavedSearch->new(RT->SystemUser);
+        $user_incidents->Load( $due_incidents->Id - 2 );
+
+        $nobody_incidents = RT::SavedSearch->new(RT->SystemUser);
+        $nobody_incidents->Load( $due_incidents->Id - 1 );
+
+        my $rtir_dashboard = {
+            Elements => [
+                {
+                    Layout   => 'col-md-8,col-md-4',
+                    Elements => [
+                        [
+                        {
+                            portlet_type => 'search',
+                            id           => $new_reports->Id,
+                            description  => 'Ticket: ' . $new_reports->Description,
+                        },
+                        {
+                            portlet_type => 'search',
+                            id           => $user_incidents->Id,
+                            description  => 'Ticket: ' . $user_incidents->Description,
+                        },
+                        {
+                            portlet_type => 'search',
+                            id           => $nobody_incidents->Id,
+                            description  => 'Ticket: ' . $nobody_incidents->Description,
+                        },
+                        {
+                            portlet_type => 'search',
+                            id           => $due_incidents->Id,
+                            description  => 'Ticket: ' . $due_incidents->Description,
+                        },
+                        ],
+                        [
+                        {
+                            portlet_type => 'component',
+                            component    => '/RTIR/Elements/WorkWithConstituency',
+                            description  => '/RTIR/Elements/WorkWithConstituency',
+                            path         => '/RTIR/Elements/WorkWithConstituency',
+                        },
+                        {
+                            portlet_type => 'component',
+                            component    => '/RTIR/Elements/QueueSummary',
+                            description  => '/RTIR/Elements/QueueSummary',
+                            path         => '/RTIR/Elements/QueueSummary',
+                        },
+                        ]
+                    ],
+                }
+            ],
+        };
+
         my $dashboard = RT::Dashboard->new( RT->SystemUser );
-        my ( $ret, $msg ) = $dashboard->LoadByCols( Name => 'RTIR Homepage' );
+        my ( $ret, $msg ) = $dashboard->Create(
+            Name        => 'RTIRDefaultDashboard',
+            Description => 'RTIR Default Dashboard',
+            PrincipalId => RT->SystemUser->PrincipalId,
+            Content => $rtir_dashboard,
+        );
+
+        if ( !$ret ) {
+            RT->Logger->error("Couldn't create RTIRDefaultDashboard: $msg");
+        }
 
         if ( $ret ) {
             ( $ret, $msg ) = RT->System->SetAttribute(
@@ -913,9 +996,6 @@ for my $cf (@CustomFields) {
             if ( !$ret ) {
                 RT->Logger->error("Couldn't set RTIRDefaultDashboard: $msg");
             }
-        }
-        else {
-            RT->Logger->error("Couldn't load dashboard RTIR Homepage: $msg");
         }
     },
     sub {

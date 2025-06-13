@@ -1,0 +1,160 @@
+use strict;
+use warnings;
+
+our @SavedSearches = (
+    { Name => 'New unlinked Incident Reports',
+      Description => 'New unlinked Incident Reports', # loc
+      Content => {
+          ExtraQueryParams => 'RTIR',
+          Format           => q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}
+              . q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}
+              . q{Requestors,OwnerName,DueRelative,QueueName,Take},
+          Order             => 'ASC|ASC|ASC|ASC',
+          OrderBy           => 'Due',
+          Query             => 'Lifecycle = \'incident_reports\' AND Status = \'new\'',
+          RTIR              => 1,
+          RTIRSearchEnabled => 1,
+          RowsPerPage       => 10,
+      },
+    },
+    { Name => 'My most due incidents',
+      Description => 'Most due incidents I own', # loc
+      Content => {
+          ExtraQueryParams => 'RTIR',
+          Format           => q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}
+              . q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}
+              . q{DueRelative, OwnerName, __Priority__,}
+              . q{'UnreadMessages/TITLE:Updates'},
+          Order             => 'ASC|DESC|ASC|ASC',
+          OrderBy           => 'Due|Priority',
+          Query             => 'Lifecycle = \'incidents\' AND Status = \'__Active__\' AND Owner = \'__CurrentUser__\'',
+          RTIR              => 1,
+          RTIRSearchEnabled => 1,
+          RowsPerPage       => 10,
+      },
+    },
+    { Name => 'Most due unowned incidents',
+      Description => 'Most due unowned incidents', # loc
+      Content => {
+          ExtraQueryParams => 'RTIR',
+          Format           => q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}
+              . q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}
+              . q{DueRelative, OwnerName, __Priority__,}
+              . q{'UnreadMessages/TITLE:Updates'},
+          Order             => 'ASC|DESC|ASC|ASC',
+          OrderBy           => 'Due|Priority',
+          Query             => 'Lifecycle = \'incidents\' AND Status = \'__Active__\' AND Owner = \'Nobody\'',
+          RTIR              => 1,
+          RTIRSearchEnabled => 1,
+          RowsPerPage       => 10,
+      },
+    },
+    { Name => 'Most due incidents',
+      Description => 'Most due incidents', # loc
+      Content => {
+          ExtraQueryParams => 'RTIR',
+          Format           => q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}
+              . q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}
+              . q{DueRelative, OwnerName, __Priority__,}
+              . q{'UnreadMessages/TITLE:Updates'},
+          Order             => 'ASC|DESC|ASC|ASC',
+          OrderBy           => 'Due|Priority',
+          Query             => 'Lifecycle = \'incidents\' AND Status = \'__Active__\'',
+          RTIR              => 1,
+          RTIRSearchEnabled => 1,
+          RowsPerPage       => 10,
+      },
+    },
+);
+
+our @Final = (
+    sub {
+        # Update the RTIR default homepage to use new saved searches.
+        # The last 4 saved searches should be the ones added above.
+        # Don't load by name since there could be other existing searches with
+        # these names.
+        my ($new_reports, $user_incidents, $nobody_incidents, $due_incidents);
+        my $saved_searches = RT::SavedSearches->new(RT->SystemUser);
+        $saved_searches->UnLimit;
+        $due_incidents = $saved_searches->Last;
+
+        $new_reports = RT::SavedSearch->new(RT->SystemUser);
+        $new_reports->Load( $due_incidents->Id - 3 );
+
+        $user_incidents = RT::SavedSearch->new(RT->SystemUser);
+        $user_incidents->Load( $due_incidents->Id - 2 );
+
+        $nobody_incidents = RT::SavedSearch->new(RT->SystemUser);
+        $nobody_incidents->Load( $due_incidents->Id - 1 );
+
+        my $dashboards = RT::Dashboards->new( RT->SystemUser );
+        $dashboards->UnLimit;
+        while ( my $dashboard = $dashboards->Next ) {
+
+            # The existing dashboard should have been updated during the RT 6 upgrade.
+            # Update the entries that contain the old elements.
+            my $dashboard = RT::Dashboard->new( RT->SystemUser );
+            my ( $ret, $msg ) = $dashboard->LoadByCols( Name => 'RTIR Homepage' );
+
+            if ( !$ret ) {
+                RT->Logger->error("Couldn't load RTIR Homepage: $msg");
+            }
+            else {
+                my $content = $dashboard->Content;
+
+                my $updated;
+                for my $item ( @{ $content->{'Elements'} } ) {
+                    if ( ref $item eq 'HASH' ) {
+                        if ( $item->{Elements} ) {
+                            for my $element ( @{ $item->{Elements} } ) {
+                                for my $item ( ref $element eq 'ARRAY' ? @$element : $element ) {
+                                    if ( $item->{portlet_type} && $item->{portlet_type} eq 'component' ) {
+                                        if ( $item->{path} eq '/RTIR/Elements/NewReports' ) {
+                                            $item = {
+                                                portlet_type => 'search',
+                                                id           => $new_reports->Id,
+                                                description  => 'Ticket: ' . $new_reports->Description,
+                                            };
+                                            $updated ||= 1;
+                                        }
+                                        elsif ( $item->{path} eq '/RTIR/Elements/UserDueIncidents' ) {
+                                            $item = {
+                                                portlet_type => 'search',
+                                                id           => $user_incidents->Id,
+                                                description  => 'Ticket: ' . $user_incidents->Description,
+                                            };
+                                            $updated ||= 1;
+                                        }
+                                        elsif ( $item->{path} eq '/RTIR/Elements/NobodyDueIncidents' ) {
+                                            $item = {
+                                                portlet_type => 'search',
+                                                id           => $nobody_incidents->Id,
+                                                description  => 'Ticket: ' . $nobody_incidents->Description,
+                                            };
+                                            $updated ||= 1;
+                                        }
+                                        elsif ( $item->{path} eq '/RTIR/Elements/DueIncidents' ) {
+                                            $item = {
+                                                portlet_type => 'search',
+                                                id           => $due_incidents->Id,
+                                                description  => 'Ticket: ' . $due_incidents->Description,
+                                            };
+                                            $updated ||= 1;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if ($updated) {
+                    ( $ret, $msg ) = $dashboard->SetContent($content);
+
+                    if ( !$ret ) {
+                        RT->Logger->error( "Unable to update dashboard #" . $dashboard->Id . ": $msg" );
+                    }
+                }
+            }
+        }
+    },
+);
