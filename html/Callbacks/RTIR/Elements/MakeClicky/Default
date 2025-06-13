@@ -82,7 +82,7 @@ my %actions;
         # don't execute on non-rtir tickets or in SelfService
         return $super unless defined $args{type} and !$SelfService;
 
-        my $result = qq{ <a class="button btn btn-sm btn-primary" href="}. RT::IR->HREFTo("Tools/Lookup.html?".$args{lookup_params}."type=host&q=".$escaped_host).qq{">}
+        my $result = qq{ <a class="btn btn-outline-primary rtir-lookup-button" href="}. RT::IR->HREFTo("Tools/Lookup.html?".$args{lookup_params}."type=host&q=".$escaped_host).qq{">}
             .loc('lookup "[_1]"', $host) .qq{</a>};
         return $super . qq{ <span class="clickylink">$result</span>};
     },
@@ -96,7 +96,7 @@ my %actions;
         # don't execute on non-rtir tickets or in SelfService
         return $super unless defined $args{type} and !$SelfService;
 
-        my $result = qq{ <a class="button btn btn-sm btn-primary" href="}. RT::IR->HREFTo("Tools/Lookup.html?".$args{lookup_params}."type=host&q=".$escaped_host).qq{">}
+        my $result = qq{ <a class="btn btn-outline-primary rtir-lookup-button" href="}. RT::IR->HREFTo("Tools/Lookup.html?".$args{lookup_params}."type=host&q=".$escaped_host).qq{">}
             .loc('lookup "[_1]"', $host) .qq{</a>};
         return $super . qq{ <span class="clickylink">$result</span>};
     },
@@ -108,17 +108,17 @@ my %actions;
 
         $args{host} ||= $args{value};
         my $escaped_host = $escaper->($args{host});
-        my $result .= qq{ <a class="button btn btn-sm btn-primary" href="}. RT::IR->HREFTo("Tools/Lookup.html?".$args{lookup_params}."type=ip&q=".$escaped_host).qq{">}
+        my $result .= qq{ <a class="btn btn-outline-primary rtir-lookup-button" href="}. RT::IR->HREFTo("Tools/Lookup.html?".$args{lookup_params}."type=ip&q=".$escaped_host).qq{">}
                       .loc('Lookup IP') .q{</a>};
         if ( $args{incident} && !RT->Config->Get('RTIR_DisableCountermeasures') ) {
-            $result .= qq{ <a class="button btn btn-sm btn-primary create_child_} . RT::IR->lifecycle_countermeasure . qq{" href="} .
+            $result .= qq{ <a class="btn btn-outline-primary rtir-lookup-button create_child_} . RT::IR->lifecycle_countermeasure . qq{" href="} .
             RT::IR->HREFTo("Create.html?Incident=".$args{incident}."&Lifecycle=".RT::IR->lifecycle_countermeasure.qq{&IP-Value=$escaped_host})
             .qq{">Block</a>};
         }
         if ( $args{'object'} && $args{'object'}->id ) {
             my $cf = RT::IR::GetCustomField('IP');
             my $tid = $args{'object'}->id;
-            $result .= qq{ <a class="button btn btn-sm btn-primary" href="}.
+            $result .= qq{ <a class="btn btn-outline-primary rtir-lookup-button" href="}.
             RT::IR->HREFTo("Edit.html?id=".$tid
                 .qq{&Object-RT::Ticket-$tid-CustomField-}. $cf->id .qq{-AddValue=$escaped_host}
                 .q{&SaveChanges=1})
@@ -154,7 +154,7 @@ my %actions;
         my $email = $args{'value'}; $email =~ s/^<|>$//g;
         my $escaped_email = $escaper->($email);
 
-        my $result = qq{<a class="button btn btn-sm btn-primary" href="}.
+        my $result = qq{<a class="btn btn-outline-primary rtir-lookup-button" href="}.
             RT::IR->HREFTo(qq{Tools/Lookup.html?$args{'lookup_params'}type=email&q=$escaped_email}). qq{">}
             .loc('lookup email') .q{</a>};
         if ( $args{'incident'} ) {
@@ -163,7 +163,7 @@ my %actions;
             if ( $r->uri =~ /Lookup.html$/ ) {
                 $result .= qq{<div class="custom-control custom-checkbox d-inline-block"><input type="checkbox" class="custom-control-input" id="Requestorbox-$escaped_email" name="Requestorbox-$escaped_email" /> <label class="custom-control-label" for="Requestorbox-$escaped_email"></label></div>};
             }
-            $result .= qq{ <a class="button btn btn-sm btn-primary" href="}.
+            $result .= qq{ <a class="btn btn-outline-primary rtir-lookup-button" href="}.
                 RT::IR->HREFTo( "Create.html"
                 . qq{?Incident=$args{'incident'}}
                 . qq{&Lifecycle=}.RT::IR->lifecycle_investigation
@@ -173,7 +173,7 @@ my %actions;
         }
         my $domain = (split /@/, $email, 2)[1];
         my $escaped_domain = $escaper->($domain);
-        $result .= ' <a class="button btn btn-sm btn-primary" href="'. RT::IR->HREFTo(qq{Tools/Lookup.html?$args{'lookup_params'}type=host&q=$escaped_domain}). '">'
+        $result .= ' <a class="btn btn-outline-primary rtir-lookup-button" href="'. RT::IR->HREFTo(qq{Tools/Lookup.html?$args{'lookup_params'}type=host&q=$escaped_domain}). '">'
                .loc('lookup "[_1]"', $domain) .'</a>';
         return $escaper->($args{'value'}) . qq{ <span class="clickylink">$result</span>};
     },
@@ -184,7 +184,7 @@ my %actions;
         return $escaper->($args{value}) unless defined $args{type} and !$SelfService;
 
         $args{value} = $escaper->($args{value});
-        my $result = qq{ <a class="button btn btn-sm btn-primary" href="}. RT::IR->HREFTo(qq{Tools/Lookup.html?$args{lookup_params}type=handle&q=$args{value}}).qq{">}
+        my $result = qq{ <a class="btn btn-outline-primary rtir-lookup-button" href="}. RT::IR->HREFTo(qq{Tools/Lookup.html?$args{lookup_params}type=handle&q=$args{value}}).qq{">}
                .loc('lookup') .qq{</a>};
         return $args{value} . qq{ <span class="clickylink">$result</span>};
     },
@@ -195,7 +195,7 @@ my %actions;
         return $escaper->($args{value}) unless defined $args{type} and !$SelfService;
 
         $args{value} = $escaper->($args{value});
-        my $result = qq{ <a class="button btn btn-sm btn-primary" href="}. RT::IR->HREFTo(qq{Tools/Lookup.html?$args{lookup_params}type=host&q=$args{value}}). qq{">}
+        my $result = qq{ <a class="btn btn-outline-primary rtir-lookup-button" href="}. RT::IR->HREFTo(qq{Tools/Lookup.html?$args{lookup_params}type=host&q=$args{value}}). qq{">}
                .loc('lookup host') .qq{</a>};
         return $args{value} . qq{ <span class="clickylink">$result</span>};
     },
