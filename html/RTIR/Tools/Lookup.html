@@ -69,22 +69,17 @@
 % if ($TicketObj || $q) {
 <hr>
 % }
-
-<div class="form-row">
-  <div class="col-12">
-    <h2><&|/l&>Look Up Information</&></h2>
+<div class="mx-auto max-width-lg">
+<&| /Widgets/TitleBox, title => loc('Look Up Information'), class => 'rtir-lookup-page', content_class => 'mx-auto width-sm' &>
     <& Elements/Tools,
        %ARGS,
        q => $q,
        TicketObj => $TicketObj,
        PassArguments => [qw(ticket type HideResults)],
     &>
-
 % $m->callback(CallbackName => 'AfterTools', %ARGS, ARGSRef => \%ARGS, Ticket => $TicketObj, LookupType => $type, q => $q);
-
-  </div>
+</&>
 </div>
-
 <%INIT>
 my @results;
 # Redirect when necessary

@@ -56,13 +56,9 @@
 &>
 <pre>
 <%PERL>
-while (my $content = <$tr>) {
-    $SavedContent .= $content . "\n";
-    $m->comp('/Elements/MakeClicky', content => \$content, ($TicketObj? (object => $TicketObj):()) );
-    $m->out( $content );
-    $m->out('<br />');
-    $m->flush_buffer;
-}
+$SavedContent .= $tr_results . "\n";
+$m->comp('/Elements/MakeClicky', content => \$tr_results, ($TicketObj? (object => $TicketObj):()) );
+$m->out( $tr_results );
 </%PERL>
 </pre>
 </&>
@@ -76,14 +72,22 @@ while (my $content = <$tr>) {
 %           q => $q,
 %       )
 %   );
-    <form method="post" action="<% $url %>">
-    <input type="hidden" name="LookupResults" value="<% $SavedContent %>" />
-    <input type="submit" value="<% loc('Save these results to the ticket') %>" id="save-results-to-ticket" />
-    </form>
+    <div class="container">
+      <div class="row mt-2 justify-content-center">
+        <div class="col-auto">
+          <form method="post" action="<% $url %>">
+            <input type="hidden" name="LookupResults" value="<% $SavedContent %>" />
+            <input class="btn btn-primary" type="submit" value="<% loc('Save these results to the ticket') %>" id="save-results-to-ticket" />
+          </form>
+        </div>
+      </div>
+    </div>
 % }
 
 </div>
 <%INIT>
+use IPC::Run3 'run3';
+
 unless ( $q =~ /^[A-Z0-9.:]+$/i ) {
     Abort(loc("Invalid search query"));
 }
@@ -105,7 +109,16 @@ if ($ticket) {
 
 my $SavedContent = '';
 
-open(my $tr, "-|", $cmd, $q) or Abort("Couldn't run '$cmd': $!");
+my ($tr_results, $stderr);
+RT::Util::safe_run_child { run3( [$cmd, $q],
+    \undef,
+    \$tr_results, \$stderr
+) };
+
+if ( $stderr ) {
+    RT->Logger->debug("Traceroute output from STDERR: $stderr");
+}
+
 </%INIT>
 <%ARGS>
 $ticket => undef

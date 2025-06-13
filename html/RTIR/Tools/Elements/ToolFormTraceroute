@@ -46,19 +46,21 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <form action="Traceroute.html" method="get" target="_blank">
-  <div class="form-row">
+  <div class="row mt-2 justify-content-center">
+    <div class="col-3 label">
+      <label for="q">
+        <&|/l&>Traceroute to</&>
+      </label>
+    </div>
+    <div class="col-7">
+      <input class="form-control" type="text" name="q" value="<% $q %>" />
+    </div>
     <div class="col-2">
-      <span class="current-value form-control"><%loc('Traceroute to')%>:</span>
+      <input class="btn btn-primary" type="submit" value="<%loc('Look up')%>" />
     </div>
 % foreach my $arg ( grep exists $ARGS{$_}, @PassArguments ) {
     <input type="hidden" name="<% $arg %>" value="<% $ARGS{ $arg } %>" />
 % }
-    <div class="col-4">
-      <input class="form-control" type="text" name="q" value="<% $q %>" />
-    </div>
-    <div class="col-auto">
-      <input class="form-control btn btn-primary button" type="submit" value="<%loc('Go')%>" />
-    </div>
   </div>
 </form>
 <%args>
