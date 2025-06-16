@@ -59,7 +59,7 @@ my %lifecycles = (
 my $id = $ARGSRef->{ TicketObj }->id;
 
 foreach my $queue ( @queues ) {
-    if ( $queue eq $$title ) {
+    if ( $$title =~ /^\Q$queue\E/ ) {
         my $lifecycle = $lifecycles{ $queue };
         $$class = 'tickets-list-'. lc(RT::IR::TicketType( Lifecycle => $lifecycle ));
         $$title_href = RT::IR->HREFTo("Incident/Children/?Lifecycle=$lifecycle&id=$id");
@@ -67,7 +67,7 @@ foreach my $queue ( @queues ) {
         my @titleright_raw;
         if ( $ARGSRef->{ TicketObj }->CurrentUserHasRight('ModifyTicket') ) {
             my $QueueObj = RT::Queue->new($session{CurrentUser});
-            $QueueObj->Load($queue);
+            $QueueObj->Load($$title);
 
             if ( $QueueObj->Id and $QueueObj->CurrentUserHasRight('CreateTicket') ) {
                 push @titleright_raw, {
