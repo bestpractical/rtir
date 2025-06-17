@@ -207,6 +207,7 @@ END
     if ($ok) {
         $RT::Handle->Commit;
         notify "Done. Enjoy your new constituency.\n";
+        notify_config_changes();
         return 0;
     }
     else {
@@ -254,6 +255,7 @@ END
     if ($ok) {
         $RT::Handle->Commit;
         notify "Renamed constituency '$old' to '$new'.\n";
+        notify_config_changes();
         return 0;
     }
     else {
@@ -270,3 +272,89 @@ sub prompt_yN {
     return 1;
 }
 
+sub notify_config_changes {
+    notify <<"EOF";
+Please add the following config to your RT_SiteConfig.pm:
+
+    Set(%CustomFieldGroupings,
+        'RT::Ticket' => {
+            'Incidents - $constituency' => [
+                'Networking' => [ 'IP', 'Domain' ],
+                'Details'    => [
+                    'How Reported', 'Reporter Type', 'Customer',       'Description',
+                    'Resolution',   'Function',      'Classification', 'CVE ID',
+                    'Customer',     'Netmask',       'Port',           'Where Blocked'
+                ],
+            ],
+            'Incident Reports - $constituency' => [
+                'Networking' => [ 'IP', 'Domain' ],
+                'Details'    => [
+                    'How Reported', 'Reporter Type', 'Customer',       'Description',
+                    'Resolution',   'Function',      'Classification', 'CVE ID',
+                    'Customer',     'Netmask',       'Port',           'Where Blocked'
+                ],
+            ],
+            'Investigations - $constituency' => [
+                'Networking' => [ 'IP', 'Domain' ],
+                'Details'    => [
+                    'How Reported', 'Reporter Type', 'Customer',       'Description',
+                    'Resolution',   'Function',      'Classification', 'CVE ID',
+                    'Customer',     'Netmask',       'Port',           'Where Blocked'
+                ],
+            ],
+            'Countermeasures - $constituency' => [
+                'Networking' => [ 'IP', 'Domain' ],
+                'Details'    => [
+                    'How Reported', 'Reporter Type', 'Customer',       'Description',
+                    'Resolution',   'Function',      'Classification', 'CVE ID',
+                    'Customer',     'Netmask',       'Port',           'Where Blocked'
+                ],
+            ],
+        },
+    );
+
+    Set(%LinkedQueuePortlets,
+        (   'Incidents - $constituency' => [
+                { 'Incident Reports - $constituency' => ['All'] },
+                { 'Investigations - $constituency'   => ['All'] },
+                { 'Countermeasures - $constituency'  => ['All'] },
+            ],
+        )
+    );
+
+    Set(%PageLayoutMapping,
+        'RT::Ticket' => {
+            Display => [
+                {   Type   => 'Queue',
+                    Layout => {
+                        'Incidents - $constituency'        => 'Incidents',
+                        'Incident Reports - $constituency' => 'Incident Reports',
+                        'Investigations - $constituency'   => 'Investigations',
+                        'Countermeasures - $constituency'  => 'Countermeasures',
+                    },
+                },
+            ],
+            Create => [
+                {   Type   => 'Queue',
+                    Layout => {
+                        'Incidents - $constituency'        => 'Incidents',
+                        'Incident Reports - $constituency' => 'Incident Reports',
+                        'Investigations - $constituency'   => 'Investigations',
+                        'Countermeasures - $constituency'  => 'Countermeasures',
+                    },
+                },
+            ],
+            Update => [
+                {   Type   => 'Queue',
+                    Layout => {
+                        'Incidents - $constituency'        => 'Incidents',
+                        'Incident Reports - $constituency' => 'Incident Reports',
+                        'Investigations - $constituency'   => 'Investigations',
+                        'Countermeasures - $constituency'  => 'Countermeasures',
+                    },
+                },
+            ],
+        }
+    );
+EOF
+}
