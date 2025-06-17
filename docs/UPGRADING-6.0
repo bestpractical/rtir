@@ -38,6 +38,16 @@ component on the home page that refreshed the entire page.
 See the RT 6 upgrading documentation for details on the update to refresh
 features.
 
+=item *
+
+The Iframe option for adding research tools to the lookup pages in RTIR
+previously configured with C<$RTIRIframeResearchToolConfig> has been removed.
+Browsers are becoming much more restrictive when loading content in Iframes
+and many websites are also adding code to block them from being loaded in
+Iframes. In our testing, the default example configurations provided with
+RTIR no longer worked and we didn't find other replacements that would
+work by loading them in an Iframe.
+
 =back
 
 =cut
