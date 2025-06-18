@@ -792,7 +792,7 @@ using the following mason components:
 
 =cut
 
-Set( @RTIRResearchTools, (qw(Traceroute Whois)));
+Set(@RTIRResearchTools, (qw(Traceroute Whois IPinfo)));
 
 =item C<$TracerouteCommand>
 
@@ -842,6 +842,13 @@ Set($whois, {
         FriendlyName => "RIPE",
     },
 } );
+
+=item C<$LookupIPinfoToken>
+
+The token to use when performing lookups using the IPinfo service.
+IPinfo has free plans for a limited number of searches.
+
+=cut
 
 =item C<$RunWhoisRequestByDefault>
 

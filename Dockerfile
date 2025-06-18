@@ -29,7 +29,7 @@ RUN cd /usr/local/src \
   && perl -I/opt/rt5/local/lib -I/opt/rt5/lib sbin/rt-setup-database --action init --dba="$RT_DBA_USER" --dba-password="$RT_DBA_PASSWORD" \
   && rm -rf /usr/local/src/*
 
-RUN cpm install --global --no-prebuilt --test --with-all --show-build-log-on-failure Net::Domain::TLD Net::Whois::RIPE Parse::BooleanLogic
+RUN cpm install --global --no-prebuilt --test --with-all --show-build-log-on-failure Net::Domain::TLD Net::Whois::RIPE Parse::BooleanLogic Geo::IPinfo
 
 ENV RT_DBA_USER="$RT_DBA_USER"
 ENV RT_DBA_PASSWORD="$RT_DBA_PASSWORD"

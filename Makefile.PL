@@ -34,6 +34,9 @@ requires('Parse::BooleanLogic');
 # Domain searching
 requires('Net::Domain::TLD');
 
+# Lookup tools
+requires('Geo::IPinfo');
+
 # for tests
 build_requires('Test::More');
 build_requires('File::Find');
