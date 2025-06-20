@@ -69,3 +69,6 @@ for my $queue (@{$queues->ItemsArrayRef}) {
 # XXX TODO Caching
 # XXX TODO pull the current default
 </%init>
+<%attr>
+directly_accessible => 1
+</%attr>

@@ -560,19 +560,10 @@ Set(%RTIRSearchResultFormats,
           '<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',
           KeyRequestors,KeyOwnerName,CreatedRelative,DueRelative,QueueName},
 
-    DueIncidents =>
-        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
-        q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',DueRelative,OwnerName,__Priority__,'UnreadMessages/TITLE:Updates'},
-
     AbandonIncidents =>
         q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
         q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
         q{OwnerName,Priority,DueRelative},
-
-    NewReports =>
-        q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
-        q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',}.
-        q{Requestors,OwnerName,DueRelative,QueueName,Take},
 
     ChildReport =>
         q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
@@ -624,10 +615,6 @@ Set(@RTIR_HomepageComponents, qw(
     RefreshHomepage
     Dashboards
     SavedSearches
-    /RTIR/Elements/NewReports
-    /RTIR/Elements/UserDueIncidents
-    /RTIR/Elements/NobodyDueIncidents
-    /RTIR/Elements/DueIncidents
     /RTIR/Elements/QueueSummary
     /RTIR/Elements/WorkWithConstituency
 ));

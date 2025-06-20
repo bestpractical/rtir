@@ -1,0 +1,7 @@
+<%init>
+push @$SearchOptionsRef, 'RTIRSearchEnabled';
+</%init>
+<%args>
+$SavedSearchObj
+$SearchOptionsRef
+</%args>

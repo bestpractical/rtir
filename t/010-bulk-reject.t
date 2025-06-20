@@ -21,6 +21,8 @@ for( my $i = 0; $i < 4; $i++ ) {
 
 $agent->get_ok('/RTIR/index.html', 'open rtir at glance');
 {
+    $agent->follow_link_ok( { url_regex => qr!/Search/Results.html!, text_regex => qr/New unlinked Incident Reports/ },
+        "Followed saved search link" );
     $agent->follow_link_ok({ text => 'Bulk Reject' }, "Followed 'bulk reject' link");
 
 	# Check that the desired incident report occurs in the list of available incident reports; if not, keep
