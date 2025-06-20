@@ -38,6 +38,39 @@ component on the home page that refreshed the entire page.
 See the RT 6 upgrading documentation for details on the update to refresh
 features.
 
+=item *
+
+The Iframe option for adding research tools to the lookup pages in RTIR
+previously configured with C<$RTIRIframeResearchToolConfig> has been removed.
+Browsers are becoming much more restrictive when loading content in Iframes
+and many websites are also adding code to block them from being loaded in
+Iframes. In our testing, the default example configurations provided with
+RTIR no longer worked and we didn't find other replacements that would
+work by loading them in an Iframe.
+
+=back
+
+=head2 New Lookup Tools
+
+RTIR 6 adds a few new default lookup tools for finding additional
+information about incident data, like domains and IP addresses.
+
+The active lookup tools can be managed with the C<@RTIRResearchTools>
+configuration options. If you don't want some tools presented in
+the interface, update this configuration in C<RT_SiteConfig.pm> and
+remove them from the list.
+
+=over
+
+=item *
+
+IPinfo.io provides a service that returns metadata for provided IP
+addresses. They offer a base free plan and various other plans
+that offer more information at higher levels.
+
+To enable this lookup tool, create an account and token at IPinfo.io
+and set C<$LookupIPinfoToken>.
+
 =back
 
 =cut

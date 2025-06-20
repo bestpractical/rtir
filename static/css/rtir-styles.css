@@ -202,3 +202,10 @@ body.rtir .titlebox.external-feeds tr.evenline+.evenline .collection-as-table {
 .rtir.darkmode .clickylink a.button:hover {
     background: #3A474D !important;
 }
+
+/* Make lookup buttons small since on some screens many can be shown */
+a.rtir-lookup-button {
+    --bs-btn-padding-y: .2rem;
+    --bs-btn-padding-x: .3rem;
+    --bs-btn-font-size: .6rem;
+}

@@ -45,25 +45,48 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<h2><%loc($research_tools->{$ResearchTool}->{FriendlyName})%></h2>
-<iframe 
-    src="<%$url%>" 
-    name="rtir_research_<%$m->notes('rtir_research_iframe_id')%>" 
-    style="width: 100%; height: 70%;"></iframe>
+<form name="ToolFormIPInfo" action="IPinfo.html" method="get">
+  <div class="row mt-2 justify-content-center">
+    <div class="col-3 label">
+      <label for="q">
+        <&|/l&>IPinfo Lookup</&>
+      </label>
+    </div>
+    <div class="col-7">
+      <input class="form-control" type="text" name="q" value="<% $q %>" placeholder="<% loc('Enter an IP address') %>" />
+    </div>
+    <div class="col-2">
+      <input class="btn btn-primary" type="submit" value="<%loc('Look up')%>" />
+    </div>
+% foreach my $arg ( grep exists $ARGS{$_}, @PassArguments ) {
+    <input type="hidden" name="<% $arg %>" value="<% $ARGS{ $arg } %>" />
+% }
+  </div>
+</form>
 <%args>
-$q =>  undef
-$TicketType => undef
+$q => ''
 $TicketObj => undef
-$ResearchTool => undef
+@PassArguments => ()
 </%args>
 <%init>
-return unless ($ResearchTool);
-my $research_tools = RT->Config->Get('RTIRIframeResearchToolConfig');
-if (!$research_tools->{$ResearchTool}->{URL}) {
-    $RT::Logger->error(
-        "Couldn't find a URL for RTIR research tool $ResearchTool. You should check your RTIRIframeResearchToolConfig");
+my $required_module = RT::StaticUtil::RequireModule('Geo::IPinfo');
+my $token = RT->Config->Get('LookupIPinfoToken');
+if ( $required_module && $token ) {
+    RT->Logger->debug('Running Geo::IPinfo lookup');
+}
+else {
+    RT->Logger->warn('Install the module Geo::IPinfo to use the IPinfo lookup tool') unless $required_module;
+    RT->Logger->warn('IPinfo lookups require a token from IPinfo.io to be set with the config option LookupIPinfoToken') unless $token;
     return;
 }
-my $url = $research_tools->{$ResearchTool}->{URL};
-$url =~ s/__SearchTerm__/$q/g;
+
+# IPinfo only works with IP addresses, so don't populate the lookup box in the form
+# because it will error if they try to run the lookup on a non-IP address.
+
+use Regexp::Common qw(net);
+
+unless ($q =~ /^($RE{net}{IPv4})$/ or $q =~ /^($RE{net}{IPv6})$/) {
+    $q = '';
+}
+
 </%init>

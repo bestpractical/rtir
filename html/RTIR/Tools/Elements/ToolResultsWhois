@@ -119,10 +119,16 @@ foreach my $attribute ( $obj->attributes ) {
 %           q => $q,
 %       )
 %   );
-    <form method="post" action="<% $url %>">
-    <input type="hidden" name="LookupResults" value="<% $SavedContent %>" />
-    <input type="submit" value="<% loc('Save these results to the ticket') %>" id="save-results-to-ticket" />
-    </form>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-auto">
+          <form method="post" action="<% $url %>">
+            <input type="hidden" name="LookupResults" value="<% $SavedContent %>" />
+            <input class="btn btn-primary" type="submit" value="<% loc('Save these results to the ticket') %>" id="save-results-to-ticket" />
+          </form>
+        </div>
+      </div>
+    </div>
 % }
 
 <%args>

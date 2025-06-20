@@ -792,27 +792,7 @@ using the following mason components:
 
 =cut
 
-Set( @RTIRResearchTools, (qw(Traceroute Whois Iframe)));
-
-=item C<$RTIRIframeResearchToolConfig>
-
-One of the research tools available in RTIR allows you to
-configure a set of search URLs that incident handlers
-can use to open searches in IFRAMES.
-
-Entries are keyed by integer in the order you'd like to see
-them in the dropdown on the research page. Each entry consists
-of a hashref containing "FriendlyName" and "URL". The URLs will
-be evaluated to replace __SearchTerm__ with the user's current
-search term.
-
-=cut
-
-Set($RTIRIframeResearchToolConfig, {
-    1 => { FriendlyName => 'Google', URL => 'https://encrypted.google.com/search?q=__SearchTerm__' },
-    2 => { FriendlyName => 'CVE', URL => 'http://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=__SearchTerm__'},
-    3 => { FriendlyName => 'McAfee SiteAdvisor', URL => 'http://www.siteadvisor.com/sites/__SearchTerm__'}
-} );
+Set(@RTIRResearchTools, (qw(Traceroute Whois IPinfo)));
 
 =item C<$TracerouteCommand>
 
@@ -862,6 +842,13 @@ Set($whois, {
         FriendlyName => "RIPE",
     },
 } );
+
+=item C<$LookupIPinfoToken>
+
+The token to use when performing lookups using the IPinfo service.
+IPinfo has free plans for a limited number of searches.
+
+=cut
 
 =item C<$RunWhoisRequestByDefault>
 

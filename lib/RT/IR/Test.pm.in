@@ -83,6 +83,10 @@ sub import {
     RT::IR::Test->export_to_level($level);
 
     RT->Config->Set( 'rtirname' => 'regression_tests' );
+
+    # Exclude lookup tools that require a token
+    RT->Config->Set( 'RTIRResearchTools' => ('Traceroute', 'Whois') );
+
     return;
 }
 
