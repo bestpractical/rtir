@@ -54,18 +54,27 @@ diag 'Test the creation of an incident with investigation';
 $agent->goto_create_rtir_ticket('Incidents');
 $agent->form_name('TicketCreate');
 $agent->field('Subject', 'Incident with an Investigation');
+$agent->field('Description', 'Description of Incident with an Investigation');
 $agent->field('Content', 'Content of Incident with an Investigation');
 $agent->field('Requestors', 'root@localhost');
 $agent->field('InvestigationRequestors', 'root@localhost');
 $agent->field('InvestigationSubject', 'Investigation created for test incident');
+$agent->field('InvestigationDescription', 'Description of the Investigation');
 $agent->field('InvestigationContent', 'Content of the Investigation');
 $agent->click('InvestigationSubmitTicket');
 $agent->content_like(qr/Incident #\d+: Incident with an Investigation/, 'Incident number generated');
 $agent->content_like(qr/Ticket \d+ created in queue &#39;Incidents&#39;/, 'Incident created message');
 $agent->content_like(qr/Ticket \d+ created in queue &#39;Investigations&#39;/, 'Investigation created message');
 $agent->content_like(qr/Ticket \d+ member of Ticket \d+/, 'Investigation linked to Incident');
+is( $agent->dom->at('.ticket-description span.rt-value')->text,
+    'Description of Incident with an Investigation',
+    'Incident description is correct'
+  );
 $agent->follow_link_ok({text => 'Investigation created for test incident'}, 'Followed link to investigation');
 $agent->content_contains('Content of the Investigation', 'Investigation content is correct');
+is( $agent->dom->at('.ticket-description span.rt-value')->text,
+    'Description of the Investigation',
+    'Investigation description is correct'
+  );
 
-undef $agent;
 done_testing;

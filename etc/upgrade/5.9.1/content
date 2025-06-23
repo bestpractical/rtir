@@ -1,0 +1,96 @@
+use strict;
+use warnings;
+
+our @Final = (
+    sub {
+        # Migrate Description custom fields to core Description field
+        my $incident = RT::Queue->new( RT->SystemUser );
+        $incident->Load('Incidents');
+        if ( !$incident->Id ) {
+            RT->Logger->error("Incidents queue not found");
+            return;
+        }
+
+        my $cfs = RT::CustomFields->new( RT->SystemUser );
+        $cfs->FindAllRows;
+        $cfs->LimitToQueue( $incident->Id );
+        $cfs->Limit( FIELD => 'Name', VALUE => 'Description', CASESENSITIVE => 0 );
+        if ( my $cf = $cfs->Next ) {
+            my $tickets = RT::Tickets->new( RT->SystemUser );
+            $tickets->UnLimit;
+            $tickets->FromSQL(q{Lifecycle='incidents'});
+            while ( my $ticket = $tickets->Next ) {
+                my $description = $ticket->FirstCustomFieldValue($cf);
+                if ( defined $description && length $description ) {
+                    RT::Interface::Web::EscapeHTML( \$description );
+                    my ( $ret, $msg ) = $ticket->__Set( Field => 'Description', Value => $description );
+                    if ( !$ret ) {
+                        RT->Logger->error( "Couldn't set description for ticket #" . $ticket->Id . ": $msg" );
+                    }
+                }
+            }
+            my $txns = RT::Transactions->new( RT->SystemUser );
+            $txns->Limit( FIELD => 'ObjectType', VALUE => 'RT::Ticket' );
+            $txns->Limit( FIELD => 'Type',       VALUE => 'CustomField' );
+            $txns->Limit( FIELD => 'Field',      VALUE => $cf->Id );
+            while ( my $txn = $txns->Next ) {
+                my $old_value = $txn->OldValue;
+                RT::Interface::Web::EscapeHTML( \$old_value ) if $old_value;
+                my $new_value = $txn->NewValue;
+                RT::Interface::Web::EscapeHTML( \$new_value ) if $new_value;
+                my %data = (
+                    Type          => 'Set',
+                    Field         => 'Description',
+                    OldValue      => $old_value,
+                    NewValue      => $new_value,
+                    ReferenceType => undef,
+                );
+
+                for my $field ( sort keys %data ) {
+                    next if ( $txn->__Value($field) // '' ) eq ( $data{$field} // '' );
+                    my ( $ret, $msg ) = $txn->__Set( Field => $field, Value => $data{$field} );
+                    if ( !$ret ) {
+                        RT->Logger->error(
+                            "Couldn't set $field to $data{$field} for transaction #" . $txn->Id . ": $msg" );
+                    }
+                }
+            }
+
+            # Migrate RTIR saved searches
+            my $search_contents = RT::ObjectContents->new( RT->SystemUser );
+            $search_contents->Limit( FIELD => 'ObjectType',      VALUE => 'RT::SavedSearch' );
+            $search_contents->Limit( FIELD => 'ContentEncoding', VALUE => 'json' );
+            $search_contents->Limit( FIELD => 'Content', VALUE => q{"ExtraQueryParams":"RTIR"}, OPERATOR => 'LIKE' );
+            while ( my $search_content = $search_contents->Next ) {
+                my $content = $search_content->DecodedContent;
+                if ( $content->{Query} =~ s!\bCF\.\{?Description\b\}?!Description!gi ) {
+                    my ( $encoding, $new_content ) = $search_content->_EncodeContent( $content );
+                    my %data = (
+                        ContentEncoding => $encoding,
+                        Content         => $new_content,
+                    );
+
+                    for my $field ( sort keys %data ) {
+                        next if ( $search_content->__Value($field) // '' ) eq ( $data{$field} // '' );
+                        my ( $ret, $msg ) = $search_content->__Set( Field => $field, Value => $data{$field} );
+                        if ( !$ret ) {
+                            RT->Logger->error( "Couldn't set $field to $data{$field} for ObjectContent #"
+                                    . $search_content->Id
+                                    . ": $msg" );
+                        }
+                    }
+                }
+            }
+
+            if ( !$cf->Disabled ) {
+                my ( $ret, $msg ) = $cf->SetDisabled(1);
+                if ( !$ret ) {
+                    RT->Logger->error("Couldn't disable Description custom field: $msg");
+                }
+            }
+        }
+        else {
+            RT->Logger->warning("Couldn't find Description custom field for Incidents");
+        }
+    },
+);

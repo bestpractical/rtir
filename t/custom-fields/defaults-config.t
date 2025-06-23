@@ -7,7 +7,7 @@ use RT::IR::Test tests => undef;
 
 my $defaults = {};
 $defaults->{'How Reported'}  = 'Telephone';   # IRs
-$defaults->{'Description'}   = 'Bloody mess'; # Incs
+$defaults->{'Resolution'}    = 'no resolution reached'; # Incs
 $defaults->{'IP'}            = '127.0.0.1';   # Invs and all
 $defaults->{'Where Blocked'} = 'On the Moon'; # Countermeasures
 
@@ -23,14 +23,14 @@ foreach my $cf_name ( keys %{$defaults} ) {
 
 my %test_on = (
     'Incident Reports' => 'How Reported',
-    'Incidents'        => 'Description',
+    'Incidents'        => 'Resolution',
     'Investigations'   => 'IP',
     'Countermeasures'  => 'Where Blocked',
 );
 
 my %replace_with = (
     'How Reported'  => 'Email',
-    'Description'   => 'Lucky Incident',
+    'Resolution'    => 'successfully resolved',
     'IP'            => '172.16.0.1',
     'Where Blocked' => 'On the Sun',
 );
