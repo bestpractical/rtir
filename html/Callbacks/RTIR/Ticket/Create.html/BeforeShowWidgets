@@ -46,6 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div id="ticket-create-incident">
+<& /Widgets/TitleBoxStart, title => RT::IR::TicketType( Lifecycle => 'incidents' ) &>
 <%INIT>
 return unless $QueueObj->Lifecycle eq 'incidents';
 </%INIT>

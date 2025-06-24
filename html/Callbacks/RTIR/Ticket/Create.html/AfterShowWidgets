@@ -45,21 +45,24 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<& /Widgets/TitleBoxEnd &>
 %# close ticket-create-incident
 </div>
 
 % if ( $InvestigationsQueueObj->Id ) {
-<div id="ticket-create-investigation" class="hidden" data-name-prefix="Investigation">
-  <& /Elements/ShowWidgets,
-    Object  => $InvestigationsQueueObj,
-    Page    => 'Create',
-    ARGSRef => {
-        Queue          => $InvestigationsQueueObj->Id,
-        SelectIncident => 0,
-        AddAttachments => 0,
-        map { /^Investigation(.+)/ ? ( $1 => $ARGSRef->{$_} ) : () } keys %$ARGSRef,
-    },
-  &>
+<div id="ticket-create-investigation" data-name-prefix="Investigation">
+  <&| /Widgets/TitleBox, title => RT::IR::TicketType( Lifecycle => 'investigations' ) &>
+    <& /Elements/ShowWidgets,
+      Object  => $InvestigationsQueueObj,
+      Page    => 'Create',
+      ARGSRef => {
+          Queue          => $InvestigationsQueueObj->Id,
+          SelectIncident => 0,
+          AddAttachments => 0,
+          map { /^Investigation(.+)/ ? ( $1 => $ARGSRef->{$_} ) : () } keys %$ARGSRef,
+      },
+    &>
+  </&>
 </div>
 % }
 
