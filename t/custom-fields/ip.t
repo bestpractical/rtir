@@ -171,12 +171,7 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
 
 diag "set IP" if $ENV{'TEST_VERBOSE'};
         my $val = '172.16.0.1';
-        $agent->follow_link_ok({text => 'Edit', n => "1"}, "Followed 'Edit' link");
-        $agent->form_number(3);
-        like( $agent->value($field_name), qr/^\s*$/, 'IP is empty' );
-        $agent->field( $field_name => $val );
-        $agent->click('SaveChanges');
-
+        $agent->submit_form_ok( { with_fields => { $field_name => $val } }, "Change IP to $val" );
         $agent->content_like( qr/\Q$val/, "IP on the page" );
 
         my $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -190,12 +185,7 @@ diag "set IP" if $ENV{'TEST_VERBOSE'};
 
 diag "set IP with spaces around" if $ENV{'TEST_VERBOSE'};
         $val = "  172.16.0.2  \n  ";
-        $agent->follow_link_ok({text => 'Edit', n => "1"}, "Followed 'Edit' link");
-        $agent->form_number(3);
-        like( $agent->value($field_name), qr/^\s*\Q172.16.0.1\E\s*$/, 'IP is in input box' );
-        $agent->field( $field_name => $val );
-        $agent->click('SaveChanges');
-
+        $agent->submit_form_ok( { with_fields => { $field_name => $val } }, "Change IP to $val" );
         $agent->content_like( qr/\Q172.16.0.2/, "IP on the page" );
 
         $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -209,12 +199,7 @@ diag "set IP with spaces around" if $ENV{'TEST_VERBOSE'};
 
 diag "replace IP with a range" if $ENV{'TEST_VERBOSE'};
         $val = '172.16.0.0-172.16.0.255';
-        $agent->follow_link_ok({text => 'Edit', n => "1"}, "Followed 'Edit' link");
-        $agent->form_number(3);
-        like( $agent->value($field_name), qr/^\s*\Q172.16.0.2\E\s*$/, 'IP is in input box' );
-        $agent->field( $field_name => $val );
-        $agent->click('SaveChanges');
-
+        $agent->submit_form_ok( { with_fields => { $field_name => $val } }, "Change IP to $val" );
         $agent->content_like( qr/\Q$val/, "IP on the page" );
 
         $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -228,12 +213,7 @@ diag "replace IP with a range" if $ENV{'TEST_VERBOSE'};
 
 diag "delete range, add another range using CIDR" if $ENV{'TEST_VERBOSE'};
         $val = '172.16/16';
-        $agent->follow_link_ok({text => 'Edit', n => "1"}, "Followed 'Edit' link");
-        $agent->form_number(3);
-        like( $agent->value($field_name), qr/^\s*\Q172.16.0.0-172.16.0.255\E\s*$/, 'IP is empty' );
-        $agent->field( $field_name => $val );
-        $agent->click('SaveChanges');
-
+        $agent->submit_form_ok( { with_fields => { $field_name => $val } }, "Change IP to $val" );
         $agent->content_like( qr/\Q$val/, "IP on the page" );
 
         $ticket = RT::Ticket->new( $RT::SystemUser );

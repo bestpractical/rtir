@@ -16,29 +16,15 @@ $agent->ticket_status_is( $countermeasure_id, 'pending activation');
 $agent->has_tag('a', 'Remove', 'we have Remove action');
 $agent->has_tag('a', 'Quick Remove', 'we have Quick Remove action');
 
-diag "change status using edit page";
+diag "change status using inline edit";
 foreach my $status( 'pending activation', 'active', 'pending removal', 'removed' ) {
-    $agent->follow_link_ok({ text => "Edit" }, "Goto edit page");
-    $agent->form_number(3);
-    $agent->field(Status => $status);
-    $agent->click('SaveChanges');
+    $agent->submit_form_ok( { with_fields => { Status => $status } }, "Change status to $status" );
     $agent->ticket_status_is( $countermeasure_id, $status);
 }
 
-diag "remove using edit";
-{
-    $agent->follow_link_ok({ text => "Edit" }, "Goto edit page");
-
-    # Tests to make sure the unwanted option 'Use system default()' does not appear as an
-    # option in the Status field (a reported M3 bug)
-    $agent->content_unlike(qr{<option (?:value=.*)?>Use system default\(\)</option>}, "The option 'Use system default()' does not exist.");
-
-    $agent->form_number(3);
-
-    $agent->field(Status => 'removed');
-    $agent->click('SaveChanges');
-    $agent->ticket_status_is( $countermeasure_id, 'removed');
-}
+# Tests to make sure the unwanted option 'Use system default()' does not appear as an
+# option in the Status field (a reported M3 bug)
+$agent->content_unlike(qr{<option (?:value=.*)?>Use system default\(\)</option>}, "The option 'Use system default()' does not exist.");
 
 diag "reactivate the countermeasure using the link";
 {
@@ -81,7 +67,7 @@ diag "test activation after reply using 'Activate' link";
     $agent->ticket_status_is( $countermeasure_id, 'active');
 }
 
-diag "test activation after reply using Edit page";
+diag "test activation after reply using inline edit";
 {
     my $countermeasure_id = $agent->create_countermeasure( {Subject => "countermeasure", Incident => $inc_id});
     $agent->ticket_status_is( $countermeasure_id, 'pending activation');
@@ -93,11 +79,7 @@ diag "test activation after reply using Edit page";
 
     $agent->ticket_status_is( $countermeasure_id, 'pending activation');
 
-    $agent->follow_link_ok({ text => "Edit" }, "Goto edit page");
-    $agent->form_number(3);
-    $agent->field(Status => 'active');
-    $agent->click('SaveChanges');
-
+    $agent->submit_form_ok({ with_fields => { Status => 'active' } }, "Change status to active");
     $agent->ticket_status_is( $countermeasure_id, 'active');
 }
 

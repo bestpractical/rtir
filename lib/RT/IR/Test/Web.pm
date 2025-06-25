@@ -311,16 +311,6 @@ qr{$type\s*</span>\s*</div>\s*<div class="rt-value">\s*<span[^>]*>\s*<span class
     );
 }
 
-sub goto_edit_countermeasure {
-    my $self = shift;
-    my $id   = shift;
-
-    $self->display_ticket($id);
-
-    return $self->follow_link_ok( { text => 'Edit', n => '1' },
-        "Followed 'Edit' (countermeasure) link" );
-}
-
 sub resolve_rtir_ticket {
     my $self = shift;
     my $id   = shift;

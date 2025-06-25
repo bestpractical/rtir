@@ -91,20 +91,10 @@ is($ticket_as_edu->Subject, 'test', "As the edu handler, I can see the ticket");
 diag "move the incident report from EDUNET to GOVNET" if $ENV{'TEST_VERBOSE'};
 {
     $agent->display_ticket( $ir_id);
-    $agent->follow_link_ok({text => 'Edit'}, "go to Edit page");
-    $agent->form_number(3);
-
     my $ir_govnet = RT::Queue->new( RT->SystemUser );
     $ir_govnet->Load( 'Incident Reports - GOVNET' );
 
-    $agent->set_fields(
-        Queue => $ir_govnet->id,
-    );
-
-    $agent->click('SaveChanges');
-    is( $agent->status, 200, "Attempting to edit ticket #$ir_id" );
-    $agent->content_like( qr/GOVNET/, "value on the page" );
-
+    $agent->submit_form_ok( { with_fields => { Queue => $ir_govnet->id } }, 'Move incident report to GOVNET' );
     DBIx::SearchBuilder::Record::Cachable::FlushCache();
 }
 
@@ -112,6 +102,7 @@ diag "govhandler can see the incident report"         if $ENV{'TEST_VERBOSE'};
 $ticket_as_gov = RT::Ticket->new($govhandler);
 $ticket_as_gov->Load($ir_id);
 is($ticket_as_gov->Subject, 'test',"As the gov handler, I can see the ticket");
+is($ticket_as_gov->QueueObj->Name, 'Incident Reports - GOVNET', 'Queue is changed to GOVNET');
 
 diag "eduhandler can't see the incident report"       if $ENV{'TEST_VERBOSE'};
 
