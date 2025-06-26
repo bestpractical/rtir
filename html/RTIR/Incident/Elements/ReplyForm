@@ -47,36 +47,25 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => $Title &>
 
-<div class="form-row">
-  <div class="label col-2">
-    <&|/l&>Subject</&>:
-  </div>
-  <div class="value col-9">
-    <span class="current-value form-control"><i>(<&|/l&>uses subjects from tickets</&>)</i></span>
-  </div>
-</div>
-<div class="form-row">
-  <div class="label col-2">
-    <&|/l&>Update Type</&>:
-  </div>
-  <div class="value col-9">
-    <select class="selectpicker form-control" name="UpdateType" id="UpdateType">
-% if( $AllowComment ) {
-      <option value="private" <% $CommentDefault %>><&|/l&>Comments (Not sent to requestors)</&></option>
-% }
-% if( $AllowResponse ) {
-      <option value="response" <% $ResponseDefault %>><&|/l&>Response to requestors</&></option>
-% }
-    </select>
-  </div>
-</div>
-
-% if ( $TicketObj ) {
-<div class="form-row">
-  <div class="label col-2">
-    <&|/l&>Resolution</&>:
-  </div>
-  <div class="value col-9">
+% if ( $update_all ) {
+<div class="row align-items-center">
+  <div class="col-6">
+    <&| /Elements/LabeledValue, Label => loc("Subject"), LabelFor => 'Subject' &>
+      <span class="current-value form-control"><em><&|/l&>Uses subjects from tickets</&></em></span>
+    </&>
+    <&| /Elements/LabeledValue, Label => loc('Update Type'), LabelFor => 'UpdateType' &>
+          <select class="form-select selectpicker" name="UpdateType" id="UpdateType">
+    % if ($AllowComment) {
+            <option value="private" <% ($ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq "private") ? qq[ selected="selected"] : !$ARGS{'UpdateType'}&&$CommentDefault |n %>><&|/l&>Comments (Not sent to requestors)</&></option>
+    % }
+    % if ($AllowResponse) {
+            <option value="response" <% ($ARGS{'UpdateType'} && $ARGS{'UpdateType'} eq "response") ? qq[ selected="selected"] : !$ARGS{'UpdateType'}&&$ResponseDefault |n %>><&|/l&>Reply to requestors</&></option>
+    % }
+          </select>
+    </&>
+    <&| /Elements/LabeledValue, Label => loc('Owner'), LabelFor => 'Owner' &>
+      <& /Elements/SelectOwner, Name    => "Owner", Default => $Owner || $session{'CurrentUser'}->Id || undef &>
+    </&>
     <& /RTIR/Elements/EditRTIRField,
         TicketObj => $TicketObj,
         QueueObj  => $TicketObj->QueueObj,
@@ -88,41 +77,47 @@
         Rows      => 1,
     &>
   </div>
-</div>
-% }
-<div class="form-row">
-  <div class="label col-2">
-    <&|/l&>Owner</&>:
-  </div>
-  <div class="value col-9">
-    <& /Elements/SelectOwner,
-        Name    => "Owner",
-        Default => $Owner || $session{'CurrentUser'}->Id || undef,
-    &>
-  </div>
-</div>
-
-% # UpdateTimeWorked is shown in "Incident Time Taken" widget on individual incident pages
-% if ( !$TicketObj ) {
-<div class="form-row">
-  <div class="label col-2">
-    <&|/l&>Worked</&>:
-  </div>
-  <div class="value col-9">
-    <& /Elements/EditTimeValue,
-        Name => 'UpdateTimeWorked',
-        Default => $ARGS{'UpdateTimeWorked'} || '',
-    &>
-  </div>
-</div>
-% }
-
+  <div class="col-6">
+    <&| /Widgets/TitleBox, title => loc('Incident Time Taken') &>
+      <div class="mt-3"></div>
+      <& /Ticket/Elements/AddToTimeWorked, %ARGS, ShowTimeWorkedHeading => 0 &>
+    </&>
 % $m->callback( %ARGS, CallbackName => 'AfterWorked', Ticket => $TicketObj );
+  </div>
+</div>
+% } else {
+  <div class="row">
+    <&| /Elements/LabeledValue, Label => loc("Subject"), LabelFor => 'Subject' &>
+      <span class="current-value form-control"><em><&|/l&>Uses subjects from tickets</&></em></span>
+    </&>
+    <div class="col-6">
+      <&| /Elements/LabeledValue, Label => loc('Update Type'), LabelFor => 'UpdateType' &>
+        <select class="form-select selectpicker" name="UpdateType" id="UpdateType">
+% if ($AllowComment) {
+          <option value="private" <% ($ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq "private") ? qq[ selected="selected"] : !$ARGS{'UpdateType'}&&$CommentDefault |n %>><&|/l&>Comments (Not sent to requestors)</&></option>
+% }
+% if ($AllowResponse) {
+          <option value="response" <% ($ARGS{'UpdateType'} && $ARGS{'UpdateType'} eq "response") ? qq[ selected="selected"] : !$ARGS{'UpdateType'}&&$ResponseDefault |n %>><&|/l&>Reply to requestors</&></option>
+% }
+        </select>
+      </&>
+    </div>
+    <div class="col-6">
+      <&| /Elements/LabeledValue, Label => loc('Owner'), LabelFor => 'Owner' &>
+        <& /Elements/SelectOwner, Name    => "Owner", Default => $Owner || $session{'CurrentUser'}->Id || undef &>
+      </&>
+    </div>
+  </div>
+% }
 
 <& /RTIR/Elements/UpdateData, %ARGS, Ticket => $TicketObj, QueueObj => $QueueObj, Action => $Action &>
 
 </&>
 <%INIT>
+# Called from Update All/Reporters, we get a Ticket Object. Track that mode here
+# for the display differences.
+my $update_all = 1;
+$update_all = 0 unless $TicketObj;
 
 $AllowResponse = 1 unless $AllowComment && $AllowResponse;
 

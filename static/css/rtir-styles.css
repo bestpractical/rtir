@@ -182,3 +182,8 @@ a.rtir-lookup-button {
     --bs-btn-padding-x: .3rem;
     --bs-btn-font-size: .6rem;
 }
+
+/* Adjust h3 sizing until RT updates heading styles */
+h3.rtir-reply-all {
+    font-size: 1.1rem;
+}
