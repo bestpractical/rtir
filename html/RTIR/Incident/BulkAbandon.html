@@ -50,7 +50,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%RT::IR->HREFTo("Incident/BulkAbandon.html") %>" method="post">
+<form action="<%RT::IR->HREFTo("Incident/BulkAbandon.html") %>" method="post" hx-boost="false">
 % foreach my $arg (qw(Query Format Rows Page OrderBy Order) ) {
 % next unless defined $ARGS{ $arg } && length $ARGS{ $arg };
 <input type="hidden" name="<% $arg %>" value="<% $ARGS{ $arg } %>" />
