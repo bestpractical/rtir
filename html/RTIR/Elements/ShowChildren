@@ -46,19 +46,19 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if( $ShowStatusesSelector ) {
-<div class="form-row">
+<div class="row mt-2">
 % foreach my $s ( $LifecycleObj->Valid ) {
   <div class="col-auto">
 %   my $checked = (grep { $_ eq $s } @Statuses)? 'checked': '';
 %   my $id = CSSClass("Status-$s");
-    <div class="custom-control custom-checkbox">
-      <input type="checkbox" class="custom-control-input" id="<% $id %>" name="Statuses" value="<% $s %>" <% $checked %> />
-      <label class="custom-control-label" for="<% $id %>"><% $s %></label>
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" id="<% $id %>" name="Statuses" value="<% $s %>" <% $checked %> />
+      <label class="form-check-label" for="<% $id %>"><% $s %></label>
     </div>
   </div>
 % }
 </div>
-<& /Elements/Submit, Name => 'RefineStatus', Label => loc('Filter status') &>
+<& /Elements/Submit, Name => 'RefineStatus', Label => loc('Filter status'), FullWidth => 1 &>
 % }
 
 % if ( $Delete && $children->Count ) {

@@ -48,59 +48,45 @@
 <& /RTIR/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
 
-<form action="index.html" method="post" class="mx-auto max-width-sm">
-<div class="form-row">
+<form hx-boost="false" action="index.html" method="post" class="mx-auto max-width-sm">
+<div class="row mt-2">
   <div class="col-12">
-    <div class="form-row">
-      <div class="label col-3">
-        <&|/l&>Constituency</&>:
-      </div>
-      <div class="value col-9">
-        <& /Elements/EditCustomField,
+    <&| /Elements/LabeledValue, Label => loc('Constituency') &>
+      <& /Elements/EditCustomField,
             QueueObj => RT::Queue->new($session{CurrentUser}),
             CustomField => $constituency_cf,
             Name => 'Constituency',
-        &>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="label col-3">
-        <&|/l&>Start Date:</&>
-      </div>
-      <div class="value col-9">
-        <& /Elements/SelectDate, Name => 'StartDate', Default => $start->AsString( Format => 'ISO' ) &>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="label col-3">
-        <&|/l&>End Date:</&>
-      </div>
-      <div class="value col-9">
+      &>
+    </&>
+
+    <&| /Elements/LabeledValue, Label => loc('Start Date') &>
+      <& /Elements/SelectDate, Name => 'StartDate', Default => $start->AsString( Format => 'ISO' ) &>
+    </&>
+
+    <&| /Elements/LabeledValue, Label => loc('End Date') &>
         <& /Elements/SelectDate, Name => 'EndDate', Default => $end->AsString( Format => 'ISO' ) &>
-      </div>
-    </div>
+    </&>
   </div>
 </div>
 
-<div class="form-row">
-  <div class="col-12">
-    <& /Elements/Submit,
-        Caption => loc("Generate a delimited text report"),
-        Name    => "TextReport",
-        Label   => loc("Text"),
-    &>
-    <& /Elements/Submit,
-        Name    => "HTMLReport",
-        Caption => loc("Generate a HTML report"),
-        Label   => loc("HTML"),
-    &>
-    <& /Elements/Submit,
-        Name    => "SpreadsheetReport",
-        Caption => loc("Generate a spreadsheet report"),
-        Label   => loc("Spreadsheet"),
-    &>
-  </div>
-</div>
+  <& /Elements/Submit,
+      Caption   => loc("Generate a delimited text report"),
+      Name      => "TextReport",
+      Label     => loc("Text"),
+      FullWidth => 1,
+  &>
+  <& /Elements/Submit,
+      Name      => "HTMLReport",
+      Caption   => loc("Generate a HTML report"),
+      Label     => loc("HTML"),
+      FullWidth => 1,
+  &>
+  <& /Elements/Submit,
+      Name      => "SpreadsheetReport",
+      Caption   => loc("Generate a spreadsheet report"),
+      Label     => loc("Spreadsheet"),
+      FullWidth => 1,
+  &>
 </form>
 
 <%INIT>

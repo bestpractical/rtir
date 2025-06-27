@@ -50,7 +50,7 @@
 % }
 
 % if ( $Ticket ) {
-<div class="form-row">
+<div class="row">
   <div class="col-12">
     <& /RTIR/Elements/AttachReports, Ticket => $Ticket &>
   </div>
@@ -58,15 +58,10 @@
 % }
 
 % if ( $GnuPGWidget ) {
-<div class="form-row">
-  <div class="label col-2 empty"></div>
-  <div class="col-9">
-    <& /Elements/Crypt/SignEncryptWidget,
-        self => $GnuPGWidget,
-        TicketObj => $Ticket,
-    &>
-  </div>
-</div>
+<& /Elements/Crypt/SignEncryptWidget,
+    self => $GnuPGWidget,
+    TicketObj => $Ticket,
+&>
 % }
 
 <& /Articles/Elements/BeforeMessageBox, %ARGS &>

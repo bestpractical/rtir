@@ -101,11 +101,13 @@ foreach my $attribute ( $obj->attributes ) {
     Name => "InvestigateTo",
     Caption => loc("Investigate to selected addresses"),
     Label => loc("Investigate"),
+    FullWidth => 1,
 &>
 <& /Elements/Submit,
     Name => "InvestigateWithScriptedActions",
     Caption => loc("Investigate to selected addresses"),
     Label => loc("Investigate using scripted action"),
+    FullWidth => 1,
 &>
 % }
 </form>

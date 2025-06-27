@@ -6,68 +6,8 @@ body.rtir .ticket-timer .ticket-link {
 }
 */
 
-body.rtir input[type="reset"],
-body.rtir input[type="submit"],
-body.rtir input[class="button"] {
-    background: #4040a0;
-    color: #fff;
- }
-
-body.rtir input[type="reset"]:hover,
-body.rtir input[type="submit"]:hover,
-body.rtir input[class="button"]:hover {
-    background: #4040f0;
-    color: #fff;
-}
-
 body.rtir .overdue {
     color: red;
-}
-
-body.rtir .collection-as-table > .yes {
-    background: yellow;
-}
-
-body.rtir .ticket-info-basics .incidents .collection-as-table {
-    margin-top: 0;
-    margin-bottom: 0.5em;
-}
-
-
-body.rtir ul.userlist {
-    margin:0;
-    padding: 0;
-    border: 0;
-
-}
-body.rtir ul.userlist li {
-    display: inline;
-}
-
-body.rtir ul.userlist li::after{
-  content:", ";
- white-space:pre;
- }
-
-body.rtir ul.userlist li:last-child::after{
-  content:"";
- }
-
-
-body.rtir #topactions #simple-search input[type="search"]:focus {
-    -webkit-transition: width 0.25s ease-in-out;
-    -moz-transition: width 0.25s ease-in-out;
-    -ms-transition: width 0.25s ease-in-out;
-    transition: width 0.25s ease-in-out;
-}
-
-body.rtir #topactions {
-    white-space: no-wrap;
-    right: 22.7em;
-}
-
-#comp-RTIR .myrt>table>tr>td:first-child {
-    width: 80%;
 }
 
 /* top border colors */
@@ -78,58 +18,7 @@ body.rtir .titlebox.ticket-info-message { border-top: 3px solid #1976D2; }
 body.rtir .titlebox.ticket-info-details { border-top: 3px solid #D32F2F; }
 body.rtir .titlebox.ticket-info-cve { border-top: 3px solid #1574b3; } /* The color is from header of https://nvd.nist.gov/ */
 
-body.rtir #comp-RTIR-Search #body {
-    position: relative;
-}
-body.rtir #comp-RTIR-Search .submit {
-    width: 58%;
-}
-
-body.rtir .titlebox-content>table {
-    width: 100%;
-}
-
-body.rtir table.edit-custom-fields {
-}
-
-body.rtir table.edit-custom-fields .entry {
-}
-
-body.rtir td.label, 
-body.rtir td.cflabel {
-    vertical-align:top;
-
-}
-
-
-body.rtir .entry textarea {
-    display:inline-block;
-   width: 100%;
-}
-
-body.rtir  .titlebox-content>table td.label,
-body.rtir  .titlebox-content>table td.cflabel {
-    width: 10em;
-}
-body.rtir  table.edit-custom-fields td.cflabel * {
-    width: 100%;
-    display:inline-block;
-    text-align:right;
-}
-body.rtir .cftype-Select td.cflabel .type {
-    display: none;
-}
-
-
-body.rtir .basics table.collection-as-table {
-    margin-bottom: 4px;
-}
-
-body.rtir .incidents .actions {
-    float: right;
-}
-
-body.rtir .incidents .actions .button {
+body.rtir .incidents .actions .btn {
     border: none;
 }
 
@@ -149,31 +38,9 @@ body.rtir .incidents .actions #link-incident:hover {
     background: #3f833f;
 }
 
-body.rtir #editquery, body.rtir #editsearches {
-    margin-top:8.1em;
-}
-
-body.rtir .sf-menu a.sf-with-ul {
-    padding-right: 1rem;
-}
-
-body.rtir table.lookup-tool-forms td {
-    vertical-align: middle;
-}
-
 body.rtir .titlebox.external-feeds tr.oddline+.oddline .collection-as-table,
 body.rtir .titlebox.external-feeds tr.evenline+.evenline .collection-as-table {
     padding-bottom: 0.7rem;
-}
-
-/* elevator-dark styles for rtir */
-
-.rtir.darkmode .clickylink a.button {
-    border: 1px solid #717171;
-}
-
-.rtir.darkmode .clickylink a.button:hover {
-    background: #3A474D !important;
 }
 
 /* Make lookup buttons small since on some screens many can be shown */
@@ -186,4 +53,31 @@ a.rtir-lookup-button {
 /* Adjust h3 sizing until RT updates heading styles */
 h3.rtir-reply-all {
     font-size: 1.1rem;
+}
+
+[data-bs-theme=light] {
+    body.rtir input[type="reset"],
+    body.rtir input[type="submit"],
+    body.rtir input[class="btn"] {
+        background: #4040a0;
+        color: #fff;
+    }
+
+    body.rtir input[type="reset"]:hover,
+    body.rtir input[type="submit"]:hover,
+    body.rtir input[class="btn"]:hover {
+        background: #4040f0;
+        color: #fff;
+    }
+}
+
+[data-bs-theme=dark] {
+    .rtir .clickylink a.btn {
+        border: 1px solid #717171;
+        color: #b2b6ba;
+    }
+
+    .rtir .clickylink a.btn:hover {
+        background: #3A474D;
+    }
 }
