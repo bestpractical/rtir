@@ -84,11 +84,13 @@ my $found = $m->comp( '/RTIR/Search/Elements/ShowResults',
     Label => loc("Reject"),
     CheckAll => 1, ClearAll => 1,
     CheckboxName => 'SelectedTickets',
+    FullWidth => 1,
 &>
 <& /Elements/Submit,
     Name => "BulkRejectAndReturn",
     Caption => loc("Reject selected incident reports and return to reports list"),
     Label => loc("Reject and return"),
+    FullWidth => 1,
 &>
 % }
 

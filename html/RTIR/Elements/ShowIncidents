@@ -56,7 +56,7 @@
     EmptyLabel    => loc('(none)'),
     InlineEdit    => $InlineEdit,
 &>
-<div class="actions float-end">
+<div class="actions text-end">
 % unless ( $action ) {
 <a class="btn-sm btn btn-primary" id="link-incident" href="<% RT::IR->HREFTo('Link/ToIncident/?id='. $id ) %>">
   <% GetSVGImage( Name => 'link', Title => loc('Link Incident') ) | n %>
@@ -105,7 +105,7 @@ my $query = RT::IR->RelevantIncidentsQuery( $Ticket );
 my $format = RT->Config->Get('RTIRSearchResultFormats')->{'ListIncidents'};
 my $dformat = $format;
 if ( $show_unlink ) {
-    $dformat .= ", '<a class=\"button btn-sm btn btn-primary\" href=\"". RT::IR->HREFTo("Display.html?id=$id&DeleteLink--MemberOf-__id__=1").\">". loc('Unlink') ."</a>/TITLE:'";
+    $dformat .= ", '<a class=\"btn-sm btn btn-primary\" href=\"". RT::IR->HREFTo("Display.html?id=$id&DeleteLink--MemberOf-__id__=1").\">". loc('Unlink') ."</a>/TITLE:'";
 }
 </%INIT>
 

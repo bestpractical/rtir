@@ -51,7 +51,7 @@
 
 <&|/Widgets/TitleBox, title => loc('Set RTIR Homepage'), bodyclass => "", class => "mx-auto max-width-xl" &>
 <form method="post" name="UpdateRTIRDefaultDashboard" class="mx-auto max-width-xl">
-  <div class="form-row">
+  <div class="row mt-2">
     <div class="col-12">
       <& /Elements/SelectDashboard, Dashboards => GetDashboards( DefaultAttribute => 'RTIRDefaultDashboard' ), Name => 'RTIRDefaultDashboard', Default => $default_dashboard_id &>
     </div>

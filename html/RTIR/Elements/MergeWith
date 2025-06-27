@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-12">
     <h3><% $Title %></h3>
     <& /RTIR/Search/Elements/ShowResults,

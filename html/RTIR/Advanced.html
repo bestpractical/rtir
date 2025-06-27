@@ -61,16 +61,13 @@
 <& /Ticket/Elements/EditMerge, Ticket => $Ticket, %ARGS &>
 </&>
 
-<div class="form-row">
-  <div class="col-12">
-    <& /Elements/Submit,
-        Name => 'SaveChanges',
-        Label => loc('Save Changes'),
-        Caption => loc("If you've updated anything above, be sure to"),
-    &>
-  </div>
-</div>
 
+  <& /Elements/Submit,
+      Name => 'SaveChanges',
+      Label => loc('Save Changes'),
+      Caption => loc("If you've updated anything above, be sure to"),
+      FullWidth => 1,
+  &>
 </form>
 
 <%INIT>
