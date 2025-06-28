@@ -142,7 +142,6 @@ for my $result_page ( 'Link/FromIncident/', 'Link/ToIncident/', 'Merge/', 'Incid
 use Parse::BooleanLogic;
 my $ticket_sql_parser = Parse::BooleanLogic->new;
 
-RT->AddJavaScript('jquery.uncheckable-radio-0.1.js');
 RT->AddStyleSheets( 'rtir-styles.css' );
 
 # Add the RTIR search result page to the whitelist to allow
