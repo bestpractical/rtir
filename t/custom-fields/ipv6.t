@@ -215,12 +215,7 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
 
 diag "set IP" if $ENV{'TEST_VERBOSE'};
         my $val = 'abcd::192.168.1.1';
-        $agent->follow_link_ok({text => 'Edit', n => "1"}, "Followed 'Edit' link");
-        $agent->form_number(3);
-        like( $agent->value($field_name), qr/^\s*$/, 'IP is empty' );
-        $agent->field( $field_name => $val );
-        $agent->click('SaveChanges');
-
+        $agent->submit_form_ok( { with_fields => { $field_name => $val } }, "Change IP to $val" );
         $agent->content_like( qr/\Q$abbrev_of{$val}/, "IP on the page" );
 
         my $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -234,12 +229,7 @@ diag "set IP" if $ENV{'TEST_VERBOSE'};
 
 diag "set IP with spaces around" if $ENV{'TEST_VERBOSE'};
         $val = "  ::192.168.1.1  \n  ";
-        $agent->follow_link_ok({text => 'Edit', n => "1"}, "Followed 'Edit' link");
-        $agent->form_number(3);
-        like( $agent->value($field_name), qr/^\s*\Q$abbrev_of{'abcd::192.168.1.1'}\E\s*$/, 'IP is in input box' );
-        $agent->field( $field_name => $val );
-        $agent->click('SaveChanges');
-
+        $agent->submit_form_ok( { with_fields => { $field_name => $val } }, "Change IP to $val" );
         $agent->content_like( qr/\Q$abbrev_of{'::192.168.1.1'}/, "IP on the page" );
 
         $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -253,12 +243,7 @@ diag "set IP with spaces around" if $ENV{'TEST_VERBOSE'};
 
 diag "replace IP with a range" if $ENV{'TEST_VERBOSE'};
         $val = '::192.168.1.1/120';
-        $agent->follow_link_ok({text => 'Edit', n => "1"}, "Followed 'Edit' link");
-        $agent->form_number(3);
-        like( $agent->value($field_name), qr/^\s*\Q$abbrev_of{'::192.168.1.1'}\E\s*$/, 'IP is in input box' );
-        $agent->field( $field_name => $val );
-        $agent->click('SaveChanges');
-
+        $agent->submit_form_ok( { with_fields => { $field_name => $val } }, "Change IP to $val" );
         $agent->content_like( qr/\Q$abbrev_of{ $val }/, "IP on the page" );
 
         $ticket = RT::Ticket->new( $RT::SystemUser );

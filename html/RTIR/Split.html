@@ -58,6 +58,7 @@
     InitialPriority  => $TicketObj->InitialPriority,
     FinalPriority    => $TicketObj->FinalPriority,
 
+    Title            => loc( "Split [_1] #[_2]: [_3]", RT::IR::TicketType( Lifecycle => $TicketObj->Lifecycle ), $TicketObj->id, $TicketObj->Subject ),
     %ARGS,
 
     Split            => $Split,

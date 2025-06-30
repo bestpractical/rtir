@@ -106,12 +106,7 @@ diag "create a ticket and edit CVE ID field using Edit page";
 
         diag "set CVE ID";
         my $val = 'CVE-2021-1234';
-        $agent->follow_link_ok( { text => 'Edit', n => "1" }, "Followed 'Edit' link" );
-        $agent->form_number( 3 );
-        like( $agent->value( $field_name ), qr/^\s*$/, 'CVE ID is empty' );
-        $agent->field( $field_name => $val );
-        $agent->click( 'SaveChanges' );
-
+        $agent->submit_form_ok( { with_fields => { $field_name => $val } }, 'Change CVE ID' );
         $agent->content_like( qr/$val/, "CVE ID on the page" );
 
         my $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -124,12 +119,7 @@ diag "create a ticket and edit CVE ID field using Edit page";
 
         diag "set CVE ID with spaces around";
         $val = "  CVE-2021-1234  \n  ";
-        $agent->follow_link_ok( { text => 'Edit', n => "1" }, "Followed 'Edit' link" );
-        $agent->form_number( 3 );
-        like( $agent->value( $field_name ), qr/^\s*CVE-2021-1234\s*$/, 'CVE ID is in input box' );
-        $agent->field( $field_name => $val );
-        $agent->click( 'SaveChanges' );
-
+        $agent->submit_form_ok( { with_fields => { $field_name => $val } }, 'Change CVE ID' );
         $agent->content_like( qr/CVE-2021-1234/, "CVE ID on the page" );
 
         $ticket = RT::Ticket->new( $RT::SystemUser );

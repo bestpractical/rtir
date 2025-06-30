@@ -31,7 +31,7 @@ my $extra_incident = $m->create_incident({ Subject => "further test Incident" })
     is($ir_params[0], $first_incident, "First incident is checked");
     is($ir_params[1], $second_incident, "Second incident is checked");
 
-    $m->click_ok('Create',"Split the Report");
+    $m->click_ok('SubmitTicket',"Split the Report");
 
     my $new_ir = $m->get_ticket_id;
     my $report = load_ticket($new_ir);
@@ -51,7 +51,7 @@ my $extra_incident = $m->create_incident({ Subject => "further test Incident" })
     is($ir_params[1], $second_incident, "Second incident is checked");
 
     $m->untick('Incident',1);
-    $m->click_ok('Create',"Split the Report");
+    $m->click_ok('SubmitTicket',"Split the Report");
 
     my $new_ir = $m->get_ticket_id;
     my $report = load_ticket($new_ir);
@@ -73,7 +73,7 @@ my $extra_incident = $m->create_incident({ Subject => "further test Incident" })
     $m->untick('Incident',1);
     $m->untick('Incident',2);
     $m->field('Incident',$extra_incident,3);
-    $m->click_ok('Create',"Split the Report");
+    $m->click_ok('SubmitTicket',"Split the Report");
 
     my $new_ir = $m->get_ticket_id;
     my $report = load_ticket($new_ir);
@@ -109,7 +109,7 @@ sub create_incident_report {
     while (my ($f, $v) = each %$args) {
         $m->field($f, $v);
     }
-    $m->click('Create');
+    $m->click('SubmitTicket');
 
     my $ir = $m->get_ticket_id;
     my $report = load_ticket($ir);

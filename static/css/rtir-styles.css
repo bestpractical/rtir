@@ -85,33 +85,6 @@ body.rtir #comp-RTIR-Search .submit {
     width: 58%;
 }
 
-body.sidebyside.rtir #ticket-create-incident .ticket-create-basics,
-body.sidebyside.rtir #ticket-create-investigation .ticket-create-basics
-{
-    float: right;
-    width: 40%;
-    clear: right;
-}
-
-body.sidebyside.rtir #ticket-create-incident .ticket-create-details,
-body.sidebyside.rtir #ticket-create-investigation .ticket-create-details
-{
-    float: left;
-    width: 58%;
-    clear: left;
-}
-@media (max-width: 950px) {
-    body.sidebyside.rtir #ticket-create-incident .ticket-create-basics,
-    body.sidebyside.rtir #ticket-create-investigation .ticket-create-basics,
-    body.sidebyside.rtir #ticket-create-incident .ticket-create-details,
-    body.sidebyside.rtir #ticket-create-investigation .ticket-create-details
-    {
-        float: none;
-        width: auto;
-        clear: both;
-    }
-}
-
 body.rtir .titlebox-content>table {
     width: 100%;
 }

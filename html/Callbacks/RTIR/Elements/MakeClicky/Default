@@ -119,9 +119,8 @@ my %actions;
             my $cf = RT::IR::GetCustomField('IP');
             my $tid = $args{'object'}->id;
             $result .= qq{ <a class="btn btn-outline-primary rtir-lookup-button" href="}.
-            RT::IR->HREFTo("Edit.html?id=".$tid
-                .qq{&Object-RT::Ticket-$tid-CustomField-}. $cf->id .qq{-AddValue=$escaped_host}
-                .q{&SaveChanges=1})
+            RT::IR->HREFTo("Display.html?id=".$tid
+                .qq{&Object-RT::Ticket-$tid-CustomField-}. $cf->id .qq{-AddValue=$escaped_host})
                 .qq{">}. loc('Add IP') .q{</a>};
         }
         return $escaper->($args{value}) . qq{ <span class="clickylink">$result</span>};

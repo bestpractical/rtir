@@ -195,7 +195,6 @@ if ( $request_path =~ m{(?:$re_rtir_path)(?:$re_rtir_types/)?(Display|Edit|Updat
     }
 
     if ( $can->('ModifyTicket') ) {
-        PageMenu()->child( edit => title => loc('Edit'), path => RT::IR->HREFTo("Edit.html?id=$id", IncludeWebPath => 0) );
         PageMenu()->child( split => title => loc('Split'), path => RT::IR->HREFTo("Split.html?Split=$id", IncludeWebPath => 0) );
         # XXX: we're missing query string here
         PageMenu()->child( merge => title => loc('Merge'), path => RT::IR->HREFTo("Merge/?id=$id", IncludeWebPath => 0) );
@@ -541,21 +540,6 @@ PageWidgets()->child('simple_search')->raw_html( $m->scomp(
 PageWidgets()->child( create_ticket => raw_html => $HTML::Mason::Commands::m->scomp('/Elements/CreateTicket', SendTo => '/RTIR/Create.html?Queue=' . (RT::IR::GetRTIRDefaultQueue() // '')) );
 
 if ( $request_path =~ m{$re_rtir_path(?:Incident/)?Create\.html} ) {
-    if ( $request_path =~ m{${re_rtir_path}Incident/Create\.html} ) {
-        PageMenu->child(
-            create_incident => title => loc('Incident'),
-            path            => '#incident',
-            attributes =>
-                { onclick => "return switchVisibility('ticket-create-incident','ticket-create-investigation');", },
-        );
-        PageMenu->child(
-            create_investigation => title => loc('Launch Investigation'),
-            path                 => '#investigation',
-            attributes =>
-                { onclick => "return switchVisibility('ticket-create-investigation','ticket-create-incident');", },
-        );
-    }
-
     my $default_queue = GetDefaultQueue();
     my $queue;
     if ( $default_queue && !RT::IR->OurQueue($default_queue) ) {

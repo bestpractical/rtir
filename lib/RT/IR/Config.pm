@@ -153,6 +153,62 @@ sub Init {
         };
     }
 
+    my @constituencies;
+
+    # Automatically configure LinkedQueuePortlets for constituency queues
+    if ( my $linked_queues = RT->Config->Get('LinkedQueuePortlets') ) {
+        my $orig_check = $RT::Config::META{LinkedQueuePortlets}{PostLoadCheck};
+        $RT::Config::META{LinkedQueuePortlets}{PostLoadCheck} = sub {
+            $orig_check->(@_) if $orig_check;
+            @constituencies = RT::IR->Constituencies unless @constituencies;
+            for my $c (@constituencies) {
+                $linked_queues->{"Incidents - $c"} ||= [
+                    { "Incident Reports - $c" => ['All'] },
+                    { "Investigations - $c"   => ['All'] },
+                    { "Countermeasures - $c"  => ['All'] },
+                ];
+            }
+        };
+    }
+
+    # Use RTIR's default CustomFieldGroupings for constituency queues
+    if ( my $groupings = RT->Config->Get('CustomFieldGroupings') ) {
+        my $orig_check = $RT::Config::META{CustomFieldGroupings}{PostLoadCheck};
+        $RT::Config::META{CustomFieldGroupings}{PostLoadCheck} = sub {
+            $orig_check->(@_) if $orig_check;
+            @constituencies = RT::IR->Constituencies unless @constituencies;
+            for my $c (@constituencies) {
+                for my $queue ( 'Incident Reports', 'Incidents', 'Investigations', 'Countermeasures' ) {
+                    $groupings->{'RT::Ticket'}{"$queue - $c"} ||= $groupings->{'RT::Ticket'}{$queue};
+                }
+            }
+        };
+    }
+
+    # Use RTIR's default PageLayoutMapping for constituency queues
+    if ( my $page_layout_mapping = RT->Config->Get('PageLayoutMapping') ) {
+        my $orig_check = $RT::Config::META{PageLayoutMapping}{PostLoadCheck};
+        $RT::Config::META{PageLayoutMapping}{PostLoadCheck} = sub {
+            $orig_check->(@_) if $orig_check;
+            @constituencies = RT::IR->Constituencies unless @constituencies;
+
+            return unless @constituencies;
+            for my $page ( keys %{ $page_layout_mapping->{'RT::Ticket'} } ) {
+                my $rules = $page_layout_mapping->{'RT::Ticket'}{$page} or next;
+                for my $rule (@$rules) {
+                    next
+                        unless $rule->{Type} eq 'Queue' && grep { $rule->{Layout}{$_} } 'Incident Reports',
+                        'Incidents', 'Investigations', 'Countermeasures';
+                    for my $c (@constituencies) {
+                        for my $queue ( 'Incident Reports', 'Incidents', 'Investigations', 'Countermeasures' ) {
+                            $rule->{Layout}{"$queue - $c"} ||= $rule->{Layout}{$queue};
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     return;
 }
 

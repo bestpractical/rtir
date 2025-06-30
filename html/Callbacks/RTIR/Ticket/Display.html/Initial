@@ -63,19 +63,18 @@ if ( $TicketObj ) {
 }
 return unless $QueueObj && RT::IR->OurQueue( $QueueObj );
 
-# for something more complex use subexec
-if ( grep !/^(id|results)$/, keys %$ARGSRef ) {
-    $m->subexec( '/RTIR/Display.html', %$ARGSRef );
-    return $m->abort;
-}
+# If there is something to change, do not redirect
+return if grep !/^(id|results)$/, keys %$ARGSRef;
 
 # we should use redirect so tabs displayed correctly according to request_comp
-my $url = RT::IR->HREFTo("Display.html?id=". $ARGSRef->{'id'});
+my $url = RT::IR->HREFTo(
+    ( $QueueObj->Lifecycle eq 'incidents' ? 'Incident/' : '' ) . "Display.html?id=" . $ARGSRef->{'id'} );
 $url .= '&results='. 
     $m->interp->apply_escapes( $ARGSRef->{'results'}, 'u' )
     if $ARGSRef->{'results'};
-
-RT::Interface::Web::Redirect( $url );
+my ($path) = $url =~ m{^(.+/Display\.html)};
+my $current_path = RT->Config->Get('WebPath') . $m->request_path;
+RT::Interface::Web::Redirect( $url ) unless $path eq $current_path;
 
 </%INIT>
 

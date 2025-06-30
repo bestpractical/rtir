@@ -45,80 +45,26 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="form-row">
-  <div class="col-12">
-    <i><&|/l&>Current Correspondents</&>:</i>
-  </div>
-</div>
-<div class="form-row">
-  <div class="label col-3">
-    <&|/l&>Owner</&>:
-  </div>
-  <div class="value col-9">
-    <& /Elements/SelectOwner,
-        Name      => 'Owner',
-        Default   => $ARGS{'Owner'} || $Ticket->Owner,
-        TicketObj => $Ticket,
-        QueueObj  => $Ticket->QueueObj,
-    &>
-  </div>
-</div>
-% if ($Ticket->Requestors->MembersObj->Count) {
-<div class="form-row">
-  <div class="label col-3">
-    <&|/l&>Correspondents</&>:
-  </div>
-  <div class="value col-9">
-    <& /Ticket/Elements/EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Requestors &>
-  </div>
-</div>
-% }
-% if ($Ticket->Cc->MembersObj->Count) {
-<div class="form-row">
-  <div class="label col-3">
-    <&|/l&>Cc</&>:
-  </div>
-  <div class="value col-9">
-     <& /Ticket/Elements/EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Cc &>
-  </div>
-</div>
-% }
-% if ($Ticket->AdminCc->MembersObj->Count) {
-<div class="form-row">
-  <div class="label col-3">
-    <&|/l&>Admin Cc</&>:
-  </div>
-  <div class="value col-9">
-    <& /Ticket/Elements/EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->AdminCc &>
-  </div>
-</div>
-% }
-% my $multi_roles = $Ticket->QueueObj->CustomRoles;
-% $multi_roles->LimitToMultipleValue;
-% while (my $role = $multi_roles->Next) {
-% my $group = $Ticket->RoleGroup($role->GroupType);
-% if ($group->Id && $group->MembersObj->Count) {
-    <div class="form-row">
-      <div class="label col-3">
-        <% $role->Name %>:
-      </div>
-      <div class="value col-9">
-        <& /Ticket/Elements/EditWatchers, Watchers => $Ticket->RoleGroup($role->GroupType), TicketObj => $Ticket &>
-      </div>
-    </div>
-% }
-% }
+<%INIT>
+return unless RT::IR->OurQueue($QueueObj);
 
-<div class="form-row">
-  <div class="col-12">
-    <i><&|/l&>Add new Correspondents</&>:</i>
-  </div>
-</div>
-
-<& AddWatchers, Ticket => $Ticket, ShowLabel => 0 &>
-
-<& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'People', InTable => 1 &>
-
+if ( RT::IR->IsInvestigationQueue($QueueObj) ) {
+    my $url = RT::Interface::Web::RequestENV('HTTP_HX_CURRENT_URL') || RT::Interface::Web::RequestENV('REQUEST_URI');
+    if ( $url =~ m{/Incident/} ) {
+        $$LabelRef = loc("Create Incident and run Investigation");
+    }
+    elsif ( $ARGS{Split} ) {
+        $$LabelRef = loc('Split');
+    }
+    else {
+        $$LabelRef = loc('Launch');
+    }
+}
+elsif ( $ARGS{Split} ) {
+    $$LabelRef = loc('Split');
+}
+</%INIT>
 <%ARGS>
-$Ticket => undef
+$QueueObj
+$LabelRef
 </%ARGS>

@@ -106,12 +106,7 @@ diag "create a ticket and edit Domain field using Edit page";
 
         diag "set Domain";
         my $val = 'example.com';
-        $agent->follow_link_ok( { text => 'Edit', n => "1" }, "Followed 'Edit' link" );
-        $agent->form_number( 3 );
-        like( $agent->value( $field_name ), qr/^\s*$/, 'Domain is empty' );
-        $agent->field( $field_name => $val );
-        $agent->click( 'SaveChanges' );
-
+        $agent->submit_form_ok( { with_fields => { $field_name => $val } }, "Change Domain to $val" );
         $agent->content_like( qr/\Q$val/, "Domain on the page" );
 
         my $ticket = RT::Ticket->new( $RT::SystemUser );
@@ -124,12 +119,7 @@ diag "create a ticket and edit Domain field using Edit page";
 
         diag "set Domain with spaces around";
         $val = "  example.net  \n  ";
-        $agent->follow_link_ok( { text => 'Edit', n => "1" }, "Followed 'Edit' link" );
-        $agent->form_number( 3 );
-        like( $agent->value( $field_name ), qr/^\s*\Qexample.com\E\s*$/, 'Domain is in input box' );
-        $agent->field( $field_name => $val );
-        $agent->click( 'SaveChanges' );
-
+        $agent->submit_form_ok( { with_fields => { $field_name => $val } }, "Change Domain to $val" );
         $agent->content_like( qr/\Qexample.com/, "Domain on the page" );
 
         $ticket = RT::Ticket->new( $RT::SystemUser );
