@@ -56,62 +56,189 @@ use warnings;
 sub Init {
     use RT::Config;
 
-    RT->Config->AddOption(
-        Name            => 'DisplayAfterEdit',
-        Section         => 'Ticket display',
-        Overridable     => 1,
-        Widget          => '/Widgets/Form/Boolean',
-        WidgetArguments => {
-            Description => 'Display RTIR ticket after edit (don\'t stay on the edit page)',
-        }
-    );
-
-    RT->Config->AddOption(
-        Name            => 'RTIR_DefaultQueue',
-        Section         => 'General',
-        Overridable     => 1,
-        SortOrder       => 1.5,
-        Widget          => '/Widgets/Form/Select',
-        WidgetArguments => {
-            Description => 'Default RTIR queue',    #loc
-            Default     => 1,
-            Callback    => sub {
-                my $ret = { Values => [], ValuesLabel => {}};
-                my @queues = RT::IR->Queues;
-                foreach my $queue_name ( @queues ) {
-                    my $queue = RT::Queue->new($HTML::Mason::Commands::session{'CurrentUser'});
-                    $queue->Load($queue_name);
-                    next unless $queue->CurrentUserHasRight("CreateTicket");
-                    push @{$ret->{Values}}, $queue->Id;
-                    $ret->{ValuesLabel}{$queue->Id} = $queue->Name;
-                }
-                return $ret;
+    RT->Config->RegisterPluginConfig(
+        Plugin  => 'RTIR',
+        Content => [
+            {   Name => 'rtirname',
+                Help => 'https://docs.bestpractical.com/rtir/latest/RTIR_Config.html#rtirname',
             },
+            {   Name => 'RTIR_IncidentChildren',
+                Help => 'https://docs.bestpractical.com/rtir/latest/RTIR_Config.html#RTIR_IncidentChildren',
+            },
+            {   Name => 'RTIR_RedirectOnLogin',
+                Help => 'https://docs.bestpractical.com/rtir/latest/RTIR_Config.html#RTIR_RedirectOnLogin',
+            },
+            {   Name => 'RTIR_RedirectOnSearch',
+                Help => 'https://docs.bestpractical.com/rtir/latest/RTIR_Config.html#RTIR_RedirectOnSearch',
+            },
+            {   Name => 'RTIR_DefaultQueue',
+                Help => 'https://docs.bestpractical.com/rtir/latest/RTIR_Config.html#RTIR_DefaultQueue',
+            },
+            {   Name => 'RTIR_StrictConstituencyLinking',
+                Help => 'https://docs.bestpractical.com/rtir/latest/RTIR_Config.html#RTIR_StrictConstituencyLinking',
+            },
+            {   Name => 'OverdueAfter',
+                Help => 'https://docs.bestpractical.com/rtir/latest/RTIR_Config.html#OverdueAfter',
+            },
+            {   Name => 'ReplyString',
+                Help => 'https://docs.bestpractical.com/rtir/latest/RTIR_Config.html#ReplyString',
+            },
+            {   Name => 'RTIR_OldestRelatedTickets',
+                Help => 'https://docs.bestpractical.com/rtir/latest/RTIR_Config.html#RTIR_OldestRelatedTickets',
+            },
+            {   Name => 'RTIRSearchResultFormats',
+                Help => 'https://docs.bestpractical.com/rtir/latest/RTIR_Config.html#RTIRSearchResultFormats',
+            },
+            {   Name => 'DisplayAfterEdit',
+                Help => 'https://docs.bestpractical.com/rtir/latest/RTIR_Config.html#DisplayAfterEdit',
+            },
+            {   Name => 'RTIR_HomepageComponents',
+                Help => 'https://docs.bestpractical.com/rtir/latest/RTIR_Config.html#RTIR_HomepageComponents',
+            },
+            {   Name => 'RTIR_CustomFieldsDefaults',
+                Help => 'https://docs.bestpractical.com/rtir/latest/RTIR_Config.html#RTIR_CustomFieldsDefaults',
+            },
+            {   Name => 'RTIR_StrictDomainTLD',
+                Help => 'https://docs.bestpractical.com/rtir/latest/RTIR_Config.html#RTIR_StrictDomainTLD',
+            },
+            {   Name => 'RTIR_DisableCountermeasures',
+                Help => 'https://docs.bestpractical.com/rtir/latest/RTIR_Config.html#RTIR_DisableCountermeasures',
+            },
+            {   Name => 'RTIR_CountermeasureApproveActionRegexp',
+                Help => 'https://docs.bestpractical.com/rtir/latest/RTIR_Config.html#RTIR_CountermeasureApproveActionRegexp',
+            },
+            {   Name => 'RTIRResearchTools',
+                Help => 'https://docs.bestpractical.com/rtir/latest/RTIR_Config.html#RTIRResearchTools',
+            },
+            {   Name => 'TracerouteCommand',
+                Help => 'https://docs.bestpractical.com/rtir/latest/RTIR_Config.html#TracerouteCommand',
+            },
+            {   Name => 'whois',
+                Help => 'https://docs.bestpractical.com/rtir/latest/RTIR_Config.html#whois',
+            },
+            {   Name => 'RunWhoisRequestByDefault',
+                Help => 'https://docs.bestpractical.com/rtir/latest/RTIR_Config.html#RunWhoisRequestByDefault',
+            },
+            {   Name => 'LookupIPinfoToken',
+                Help => 'https://docs.bestpractical.com/rtir/latest/RTIR_Config.html#LookupIPinfoToken',
+            },
+            {   Name => 'ExternalFeeds',
+                Help => 'https://docs.bestpractical.com/rtir/latest/RTIR_Config.html#ExternalFeeds',
+            },
+        ],
+        Meta => {
+            rtirname => {
+                Type   => 'SCALAR',
+                Widget => '/Widgets/Form/String',
+            },
+            RTIR_IncidentChildren => { Type => 'HASH', },
+            RTIR_RedirectOnLogin  => {
+                Type   => 'SCALAR',
+                Widget => '/Widgets/Form/Boolean',
+            },
+            RTIR_RedirectOnSearch => {
+                Type   => 'SCALAR',
+                Widget => '/Widgets/Form/Boolean',
+            },
+            RTIR_DefaultQueue => {
+                Type   => 'SCALAR',
+                Widget => '/Widgets/Form/Select',
+                Section         => 'General',
+                Overridable     => 1,
+                SortOrder       => 1.5,
+                WidgetArguments => {
+                    Description => 'Default RTIR queue',    #loc
+                    Default     => 1,
+                    Callback    => sub {
+                        my $ret = { Values => [], ValuesLabel => {}};
+                        my @queues = RT::IR->Queues;
+                        foreach my $queue_name ( @queues ) {
+                            my $queue = RT::Queue->new($HTML::Mason::Commands::session{'CurrentUser'});
+                            $queue->Load($queue_name);
+                            next unless $queue->CurrentUserHasRight("CreateTicket");
+                            push @{$ret->{Values}}, $queue->Id;
+                            $ret->{ValuesLabel}{$queue->Id} = $queue->Name;
+                        }
+                        return $ret;
+                    },
+                }
+            },
+            RTIR_StrictConstituencyLinking => {
+                Type   => 'SCALAR',
+                Widget => '/Widgets/Form/Boolean',
+            },
+            OverdueAfter => {
+                Type   => 'SCALAR',
+                Widget => '/Widgets/Form/Integer',
+            },
+            ReplyString => {
+                Type   => 'SCALAR',
+                Widget => '/Widgets/Form/String',
+            },
+            RTIR_OldestRelatedTickets => {
+                Type   => 'SCALAR',
+                Widget => '/Widgets/Form/Integer',
+            },
+            RTIRSearchResultFormats => {
+                Type          => 'HASH',
+                PostLoadCheck => sub {
+                    my ( $self, %value ) = @_;
+                    foreach my $format ( keys %value ) {
+                        if ( $format =~ /^HASH/ && !defined $value{$format} ) {
+                            RT->Logger->warning(
+                                'You appear to have $RTIRSearchResultFormats in your configuration, this has been renamed to %RTIRSearchResultFormats see docs/UPGRADING-3.2'
+                            );
+                        }
+                        CheckObsoleteCFSyntax( $value{$format},
+                            $RT::Config::META{RTIRSearchResultFormats}{Source}{File} );
+                    }
+                },
+            },
+            DisplayAfterEdit        => {
+                Type   => 'SCALAR',
+                Widget => '/Widgets/Form/Boolean',
+                Section         => 'Ticket display',
+                Overridable     => 1,
+                Widget          => '/Widgets/Form/Boolean',
+                WidgetArguments => {
+                    Description => 'Display RTIR ticket after edit (don\'t stay on the edit page)',
+                }
+            },
+            RTIR_HomepageComponents   => { Type => 'ARRAY', },
+            RTIR_CustomFieldsDefaults => { Type => 'HASH', },
+            RTIR_StrictDomainTLD      => {
+                Type   => 'SCALAR',
+                Widget => '/Widgets/Form/Boolean',
+            },
+            RTIR_DisableCountermeasures => {
+                Type   => 'SCALAR',
+                Widget => '/Widgets/Form/Boolean',
+            },
+            RTIR_CountermeasureApproveActionRegexp => {
+                Type      => 'SCALAR',
+                Immutable => 1,
+            },
+            RTIRResearchTools => { Type => 'ARRAY', },
+            TracerouteCommand => {
+                Type      => 'SCALAR',
+                Immutable => 1,
+            },
+            whois                    => { Type => 'HASH', },
+            RunWhoisRequestByDefault => {
+                Type   => 'SCALAR',
+                Widget => '/Widgets/Form/Boolean',
+            },
+            LookupIPinfoToken => {
+                Type   => 'SCALAR',
+                Obfuscate => sub {
+                    my ($config, $sources, $user) = @_;
+                    return $user->loc('Token not printed');
+                },
+            },
+            ExternalFeeds => { Type => 'HASH', },
         }
     );
 
-    my %meta = (
-        'RTIR_HomepageComponents' => {
-            Type => 'ARRAY',
-        },
-    );
-    %RT::Config::META = (%meta, %RT::Config::META);
-
-    # Tack on the PostLoadCheck here so it runs no matter where
-    # RTIRSearchResultFormats gets loaded from. It will still
-    # squash any other PostLoadChecks for this config entry, but those
-    # should go here.
-    $RT::Config::META{RTIRSearchResultFormats}{PostLoadCheck} =
-        sub {
-            my ($self, %value) = @_;
-            foreach my $format ( keys %value ){
-                if ($format =~ /^HASH/ && !defined $value{$format}) {
-                        RT->Logger->warning('You appear to have $RTIRSearchResultFormats in your configuration, this has been renamed to %RTIRSearchResultFormats see docs/UPGRADING-3.2');
-                }
-                CheckObsoleteCFSyntax($value{$format},
-                    $RT::Config::META{RTIRSearchResultFormats}{Source}{File});
-            }
-        };
 
     my @homepage_components = @{RT->Config->Get('HomepageComponents')};
 
