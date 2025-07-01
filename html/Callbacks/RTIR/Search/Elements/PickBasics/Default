@@ -49,17 +49,7 @@
 return unless $DECODED_ARGS->{RTIR};
 
 foreach( @$Conditions ) {
-    if (($_->{'Name'}||'') eq 'Queue' ) {
-    $_->{'Value'}{'Path'} = '/RTIR/Elements/SelectRTIRQueue';
-        $_->{'Value'}{'Arguments'}{'ShowNullOption'} = 1;
-    if (defined $m->{'RTIR_ConstituencyFilter'}) {
-        $_->{'Value'}{'Arguments'}{'Constituency'} = $m->{'RTIR_ConstituencyFilter'};
-        $_->{'Value'}{'Arguments'}{'LimitToConstituency'} = 1;
-        if (defined $m->request_args->{'Lifecycle'})  {
-             $_->{'Value'}{'Arguments'}{'Lifecycle'} = $m->request_args->{'Lifecycle'};
-        }
-    }}
-    elsif (($_->{'Name'}||'') eq 'Status' ) {
+    if (($_->{'Name'}||'') eq 'Status' ) {
         $_->{'Value'}{'Path'} = '/Ticket/Elements/SelectStatus';
         if (!defined $_{'Value'}{'Queues'} && defined $m->request_args->{'Lifecycle'}){
             $_->{'Value'}{'Arguments'}{'Lifecycles'} = 

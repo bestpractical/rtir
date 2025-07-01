@@ -48,7 +48,7 @@
 <%INIT>
 if ( $ARGSRef->{ObjectType} eq 'Queue' ) {
     my $url = RT::Interface::Web::RequestENV('HTTP_HX_CURRENT_URL') || RT::Interface::Web::RequestENV('REQUEST_URI');
-    if ( $url =~ m{/RTIR/} ) {
+    if ( $DECODED_ARGS->{RTIR} || $url =~ m{/RTIR/} ) {
         @$Objects = grep { RT::IR->OurLifecycle( $_->{Lifecycle} ) } @$Objects;
 
         my $constituency;
