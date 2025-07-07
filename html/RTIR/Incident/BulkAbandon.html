@@ -80,9 +80,9 @@ BaseURL       => RT::IR->HREFTo('Incident/BulkAbandon.html'),
 % foreach my $box( @CheckBox ) {
 % my $checked = (scalar grep $_ && $box->{'Value'}, @ReplyToAll )? ' checked' : '';
 % my $id = CSSClass("ReplyToAll-$box->{'Value'}");
-<div class="custom-control custom-checkbox">
-  <input type="checkbox" class="custom-control-input" id="<% $id %>" name="ReplyToAll" value="<% $box->{'Value'} %>" <% $checked %>" />
-  <label class="custom-control-label" for="<% $id %>"><% $box->{'Title'} %></label>
+<div class="form-check">
+  <input type="checkbox" class="form-check-input" id="<% $id %>" name="ReplyToAll" value="<% $box->{'Value'} %>" <% $checked %>" />
+  <label class="form-check-label" for="<% $id %>"><% $box->{'Title'} %></label>
 </div>
 % }
 </&>
@@ -96,6 +96,7 @@ BaseURL       => RT::IR->HREFTo('Incident/BulkAbandon.html'),
     Label => loc("Abandon"),
     CheckAll => 1, ClearAll => 1,
     CheckboxName => 'SelectedTickets',
+    FullWidth => 1,
 &>
 % }
 
@@ -103,8 +104,8 @@ BaseURL       => RT::IR->HREFTo('Incident/BulkAbandon.html'),
 
 <%INIT>
 my @CheckBox = (
-    { Value => 'Incident Reports', Title => loc("Reply to all reports") },
-    { Value => 'Investigations',   Title => loc("Reply to all investigations") },
+    { Value => 'incident_reports', Title => loc("Reply to all reports") },
+    { Value => 'investigations',   Title => loc("Reply to all investigations") },
 );
 my $Status = 'abandoned';
 

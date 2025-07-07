@@ -68,9 +68,13 @@
 
 <& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
-<div class="form-row">
+   <&| /Widgets/TitleBox, title => loc('Reply Recipients') &>
+% unless ( $candidates ) {
+      <div class="mt-2 mb-2 p-2 bg-danger-subtle rounded-3"><&|/l&>Warning: no recipients!</&></div>
+% }
+<div class="row">
   <div class="col-12">
-    <h4><&|/l&>Reporters</&></h4>
+    <h3 class="rtir-reply-all"><&|/l&>Reporters</&></h3>
     <& /RTIR/Search/Elements/ShowResults,
         BaseURL       => $BaseURL,
         BaseQuery     => RT::IR->Query(Lifecycle => RT::IR->lifecycle_report, MemberOf => $id),
@@ -86,9 +90,9 @@
   </div>
 </div>
 % if ( $All ) {
-<div class="form-row">
+<div class="row">
   <div class="col-12">
-    <h4><&|/l&>Investigation Correspondents</&></h4>
+    <h3 class="rtir-reply-all"><&|/l&>Investigation Correspondents</&></h3>
     <& /RTIR/Search/Elements/ShowResults,
         BaseURL       => $BaseURL,
         BaseQuery     => RT::IR->Query(Lifecycle => RT::IR->lifecycle_investigation, MemberOf => $id),
@@ -104,9 +108,9 @@
   </div>
 </div>
 % unless( RT->Config->Get('RTIR_DisableCountermeasures') ) {
-<div class="form-row">
+<div class="row">
   <div class="col-12">
-    <h4><&|/l&>Countermeasure Correspondents</&></h4>
+    <h3 class="rtir-reply-all"><&|/l&>Countermeasure Correspondents</&></h3>
     <& /RTIR/Search/Elements/ShowResults,
         BaseURL       => $BaseURL,
         BaseQuery     => RT::IR->Query(Lifecycle => RT::IR->lifecycle_countermeasure, MemberOf => $id),
@@ -124,33 +128,16 @@
 % }
 % }
 
-<div class="form-row">
+<div class="row">
   <div class="col-12">
-    <h4><&|/l&>Incident</&></h4>
-    <div class="custom-control custom-checkbox">
-      <input type="checkbox" class="custom-control-input" id="SelectedIncident" name="SelectedIncident" value="<% $IncidentObj->Id %>" <% $ARGS{SelectedIncident} ? 'checked="checked"' : '' |n %> />
-      <label class="custom-control-label" for="SelectedIncident"><b><% loc('Add the correspondence/comment to current incident ticket also') %></b></label>
+    <h3 class="rtir-reply-all"><&|/l&>Incident</&></h3>
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" id="SelectedIncident" name="SelectedIncident" value="<% $IncidentObj->Id %>" <% $ARGS{SelectedIncident} ? 'checked="checked"' : '' |n %> />
+      <label class="form-check-label" for="SelectedIncident"><b><% loc('Add the correspondence/comment to current incident ticket also') %></b></label>
     </div>
   </div>
 </div>
 
-% unless ( $candidates ) {
-<& /Elements/ListActions, actions => loc('Warning: no recipients!'), titlebox => { class => 'error-titlebox', bodyclass => 'py-0' } &>
-% }
-
-<&| /Widgets/TitleBox, title => loc('Incident Time Taken') &>
-  <div class="form-row">
-    <div class="label col-2">
-      <&|/l&>Worked</&>:
-    </div>
-    <div class="value col-9">
-      <& /Elements/EditTimeValue,
-          Name => 'UpdateTimeWorked',
-          Default => $ARGS{'UpdateTimeWorked'} || '',
-      &>
-    </div>
-  </div>
-% $m->callback( %ARGS, CallbackName => 'AfterTimeWorked', TicketObj => $IncidentObj );
 </&>
 
 <& ../Elements/ReplyForm, %ARGS,
@@ -160,11 +147,7 @@
     Action      => $Action,
 &>
 
-<div class="form-row">
-  <div class="col-12">
-    <& /Elements/Submit, Name => "SubmitTicket", Label => loc("Update Incident") &>
-  </div>
-</div>
+  <& /Elements/Submit, Name => "SubmitTicket", Label => loc("Update Incident"), FullWidth => 1 &>
 </form>
 
 <%INIT>

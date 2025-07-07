@@ -56,6 +56,15 @@ Iframes. In our testing, the default example configurations provided with
 RTIR no longer worked and we didn't find other replacements that would
 work by loading them in an Iframe.
 
+=item *
+
+Time inputs have been removed from the Bulk Abandon page for incidents because it
+is unclear which incident ticket the time should be recorded on. As part of this
+update the time input for Reply All/Reporters was moved from
+C<html/RTIR/Incident/Reply/index.html> to C<html/RTIR/Incident/Elements/ReplyForm>.
+The callback C<AfterTimeWorked> is moved to a similar location in C<ReplyForm>
+and is called C<AfterWorked>.
+
 =back
 
 =head2 New Lookup Tools
