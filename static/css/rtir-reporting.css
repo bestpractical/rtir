@@ -1,7 +1,7 @@
 /* styles for RTIR/Reporting/Report.html */
 
 body {
-    font-family: "Inter", sans-serif;
+    font-family: sans-serif;
     font-weight: 400;
 }
 
@@ -64,6 +64,6 @@ div#footer p#bpscredits {
     margin-top: 0.1em;
 }
 
-div#footer p#time {
+div#footer #time {
     display: none;
 }

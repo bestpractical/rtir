@@ -48,7 +48,7 @@
 <& /RTIR/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
 
-<div class="form-row">
+<div class="row mt-2">
   <div class="col-12">
 % my $i = 0;
 % if ( $FeedName and $ExternalFeeds->{rss_feeds}{$FeedName} ) {
@@ -64,7 +64,7 @@
 %   }
 %   else {
       <div class="table-responsive">
-        <p class="mt-3 mt-1 ml-3">
+        <p class="mt-3 mt-1 ms-3">
           <% $feed->{Description} %>
 %       if ( $feed->{PubDate} || $feed->{LastBuildDate}) {
           <i><&|/l, $feed->{PubDate} || $feed->{LastBuildDate} || '-'&>updated [_1]</&></i>
@@ -75,9 +75,8 @@
             <tr class="collection-as-table">
               <th class="collection-as-table"><&|/l&>Name</&></th>
               <th class="collection-as-table"><&|/l&>Created</&></th>
-              <th class="collection-as-table">
-                <% loc('Create a new [_1]', $ticket_type) %>
-                <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>This will take you to a partially prefilled creation form.</&>"></span>
+              <th class="collection-as-table text-nowrap">
+                <% loc('Create a new [_1]', $ticket_type) %><% GetSVGImage( Name => 'info', ExtraClasses => 'icon-helper', Title => loc('This will take you to a partially prefilled creation form.'), Size => 14 ) |n %>
               </th>
             </tr>
           </thead>
@@ -97,7 +96,7 @@
                   <input type="hidden" value="<% $GeneratedMessage %>" name="Content">
                   <input type="hidden" value="<% $item->{Link} %>" Name="new-RefersTo">
                   <input type="hidden" value="<% $Lifecycle %>" Name="Lifecycle">
-                  <input type="submit" class="button btn btn-primary form-control" value="<&|/l&>Create new ticket</&>" />
+                  <input type="submit" class="btn btn-primary" value="<&|/l&>Create new ticket</&>" />
                 </form>
               </td>
             </tr>
@@ -145,7 +144,7 @@
 % $m->callback( CallbackName => 'AfterFeedsList', %ARGS, FeedsObj => $ExternalFeeds, FoundFeedRef => \$found_feed );
 
 %   unless ( $found_feed ) {
-      <p class="mt-3 mt-1 ml-3">
+      <p class="mt-3 mt-1 ms-3">
         <&|/l&>No feeds currently configured. You can configure feeds in the %ExternalFeeds option. A default set of security feeds is included in the inital RTIR configuration.</&>
       </p>
 %   }

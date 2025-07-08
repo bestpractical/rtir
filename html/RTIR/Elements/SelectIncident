@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="row">
+<div class="row mt-2">
 % if ( @potential ) {
   <& /RTIR/Search/Elements/ShowResults,
       Query         => $query,
@@ -61,21 +61,19 @@
   <input type="hidden" name="<% $Name %>" value="<% $potential[0] %>" />
 % }
 
+% if ( $dformat =~ /RadioButton/ ) {
+  <div class="col-auto mt-1">
+    <input type="radio" name="Incident" value="" class="form-check-input mt-2" />
+  </div>
+% }
+
   <div class="col-auto">
     <input class="form-control" type="text" name="<% $Name %>" value="" data-autocomplete="Tickets" data-autocomplete-limit="Lifecycle = 'incidents'" />
   </div>
 % if ( $config->{'Multiple'} || @potential ) {
   <div class="col-auto">
-    <input type="submit" name="<% "More$Name" %>" value="<% $config->{'Multiple'}? loc('Add') : loc('Other') %>" class="form-control btn btn-primary button" />
+    <input type="submit" name="<% "More$Name" %>" value="<% $config->{'Multiple'}? loc('Add') : loc('Other') %>" class="btn btn-primary" />
   </div>
-% }
-
-% if ( !$config->{'Required'} && $dformat =~ /RadioButton/ ) {
-<script type="text/javascript">
-//<![CDATA[
-jQuery(function(){ jQuery('input[type="radio"][name="<% $Name %>"]').uncheckable() });
-//]]>
-</script>
 % }
 </div>
 <%ARGS>

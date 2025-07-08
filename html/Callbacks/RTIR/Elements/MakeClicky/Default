@@ -160,7 +160,7 @@ my %actions;
 	    my $uri_escaped_email = $escaped_email;
 	    RT::Interface::Web::EscapeURI(\$uri_escaped_email);
             if ( $r->uri =~ /Lookup.html$/ ) {
-                $result .= qq{<div class="custom-control custom-checkbox d-inline-block"><input type="checkbox" class="custom-control-input" id="Requestorbox-$escaped_email" name="Requestorbox-$escaped_email" /> <label class="custom-control-label" for="Requestorbox-$escaped_email"></label></div>};
+                $result .= qq{<div class="form-check d-inline-block"><input type="checkbox" class="form-check-input" id="Requestorbox-$escaped_email" name="Requestorbox-$escaped_email" /> <label class="form-check-label" for="Requestorbox-$escaped_email"></label></div>};
             }
             $result .= qq{ <a class="btn btn-outline-primary rtir-lookup-button" href="}.
                 RT::IR->HREFTo( "Create.html"

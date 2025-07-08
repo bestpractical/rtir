@@ -73,85 +73,41 @@
 <&| /Widgets/TitleBox, contentbg => "#cccccc", title => loc("Identify Recipients") &>
 
 % if ($loop eq 'IP') {
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>WHOIS</&>:
-    </div>
-    <div class="value col-9">
-      <& Elements/SelectWhoisServer, Name => 'server', Default => $server &>
-    </div>
-  </div>
+  <&| /Elements/LabeledValue, Label => loc('WHOIS') &>
+    <& Elements/SelectWhoisServer, Name => 'server', Default => $server &>
+  </&>
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Contact Field</&>:
-    </div>
-    <div class="value col-9">
-      <input class="form-control" type="text" name="field" value="<% $ARGS{'field'} || '' %>" />
-    </div>
-  </div>
+  <&| /Elements/LabeledValue, Label => loc('Contact Field') &>
+    <input class="form-control" type="text" name="field" value="<% $ARGS{'field'} || '' %>" />
+  </&>
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>IP Addresses</&>:
-      <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% loc('arg: [_1]', '_IP_') %>"></span>
-    </div>
-    <div class="value col-9">
-      <textarea class="form-control" name="IPs" id="IPs"><% $ARGS{IPs} || '' %></textarea>
-    </div>
-  </div>
+  <&| /Elements/LabeledValue, Label => loc('IP Addresses'), LabelTooltip => loc('arg: [_1]', '_IP_') &>
+    <textarea class="form-control" name="IPs" id="IPs"><% $ARGS{IPs} || '' %></textarea>
+  </&>
 
 % } else {
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Addresses</&>:
-      <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% loc('arg: [_1]', '_ADDR_') %>"></span>
-    </div>
-    <div class="value col-9">
-      <textarea class="form-control" name="Addresses" id="Addresses"><% $ARGS{Addresses} || '' %></textarea>
-    </div>
-  </div>
-
+  <&| /Elements/LabeledValue, Label => loc('IP Addresses'), LabelTooltip => loc('arg: [_1]', '_ADDR_') &>
+    <textarea class="form-control" name="Addresses" id="Addresses"><% $ARGS{Addresses} || '' %></textarea>
+  </&>
 % }
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Template</&>:
-    </div>
-    <div class="value col-9">
-      <& /Admin/Scrips/Elements/SelectTemplate, Default => $ARGS{'Template'} || 0, Queue => $investigationq &>
-    </div>
-  </div>
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Argument</&>:
-    </div>
-    <div class="value col-9">
-      <input class="form-control" type="text" name="TemplateArg" size="60" value="<% $ARGS{'TemplateArg'} || '' %>" />
-    </div>
-  </div>
+  <&| /Elements/LabeledValue, Label => loc('Template') &>
+    <& /Admin/Scrips/Elements/SelectTemplate, Default => $ARGS{'Template'} || 0, Queue => $investigationq &>
+  </&>
+
+  <&| /Elements/LabeledValue, Label => loc('Argument') &>
+    <input class="form-control" type="text" name="TemplateArg" size="60" value="<% $ARGS{'TemplateArg'} || '' %>" />
+  </&>
 
 % if ($loop eq "IP") {
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit, Name => "TestAddresses", Caption => loc("Test email addresses"), Label => loc("Test")&>
-    </div>
-  </div>
-
+  <& /Elements/Submit, Name => "TestAddresses", Caption => loc("Test email addresses"), Label => loc("Test"), FullWidth => 1 &>
 % }
 
 </&>
 
 <&| /Widgets/TitleBox, contentbg => "#cccccc", title => loc("Message information") &>
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Owner</&>:
-    </div>
-    <div class="value col-9">
-      <span class="current-value form-control"><% $session{'CurrentUser'}->Name %></span>
-    </div>
-  </div>
+  <& /Elements/LabeledValue, Label => loc('Owner'), ValueSpanClass => 'current-value', Value => $session{'CurrentUser'}->Name &>
 
 % if (!$incidentid) {
 <div>
@@ -159,15 +115,9 @@
 </div>
 
 % } else {
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Subject</&>:
-    </div>
-    <div class="value col-9">
-      <input class="form-control" type="text" size="60" name="Subject" value="<%$ARGS{'Subject'} || $Incident->Subject%>" />
-    </div>
-  </div>
-
+  <&| /Elements/LabeledValue, Label => loc('Subject') &>
+    <input class="form-control" type="text" size="60" name="Subject" value="<%$ARGS{'Subject'} || $Incident->Subject%>" />
+  </&>
 % }
 % if (exists $ARGS{Content}) {
 <& /Elements/MessageBox, Name=>"Content", Default=>$ARGS{Content}, FullWidth => 1, %ARGS&>
@@ -177,11 +127,7 @@
 
 </&>
 
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit, Name => "SubmitAction", Caption => loc("Create the Incidents and Investigations"), Label => loc("Create") &>
-    </div>
-  </div>
+  <& /Elements/Submit, Name => "SubmitAction", Caption => loc("Create the Incidents and Investigations"), Label => loc("Create"), FullWidth => 1 &>
 </form>
 
 <%INIT>

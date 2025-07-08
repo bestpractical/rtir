@@ -146,9 +146,6 @@ my $re_rtir_path = qr'^/RTIR/(?:c/[^/]*/?)?';
 my $re_rtir_types = '(?:'. join( '|', map "\Q$_\E", RT::IR->Types ) .')';
 
 if ( $session{'CurrentUser'}->HasRight(Right => 'ModifySelf', Object => $RT::System) ) {
-    if ( $request_path =~ m{(?:$re_rtir_path)(?:index\.html|)$} ) {
-        PageMenu()->child( edit => raw_html => q[<a id="page-edit" class="menu-item" href="] . RT::IR->HREFTo("Prefs/Home.html") . qq["><span class="fas fa-cog" alt="].loc('Edit').q[" data-toggle="tooltip" data-placement="top" data-original-title="].loc('Edit').q["></span></a>]);
-    }
     Menu->child('preferences')->child('settings')->child(
         rtir_home_page => title => loc('RTIR at a glance'),
         path => RT::IR->HREFTo('Prefs/Home.html', IncludeWebPath => 0),
