@@ -42,12 +42,6 @@ die "Please add RT::IR to your Plugins configuration before initializing the dat
             'If set, defines the default WHOIS server for an RTIR Queue',
         ApplyTo => [ map { $_->{Name} } @Queues ]
     },
-    {   Name        => 'Description',
-        Type        => 'FreeformSingle',
-        Queue       => 'Incidents',
-        Disabled    => 0,
-        Description => 'Description for Incidents RTIR queue',
-    },
     {   Name        => 'Resolution',
         Type        => 'SelectSingle',
         RenderType  => 'Dropdown',

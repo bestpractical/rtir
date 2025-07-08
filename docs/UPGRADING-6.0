@@ -65,6 +65,18 @@ C<html/RTIR/Incident/Reply/index.html> to C<html/RTIR/Incident/Elements/ReplyFor
 The callback C<AfterTimeWorked> is moved to a similar location in C<ReplyForm>
 and is called C<AfterWorked>.
 
+=item *
+
+The Description custom field has been migrated to RT's core Description
+field. As a new core ticket field in RT, "Description" now has its own widget on
+create and display pages. You can edit your RTIR page layouts to change the
+location or even remove the widget, if desired.
+
+The automatic upgrade steps will move existing content on Incident queues to
+the new Description field because on a default RTIR installation, the
+Description custom field was applied only to Incidents. If you applied
+Description to other queues, that content will not be migrated automatically.
+
 =back
 
 =head2 New Lookup Tools
