@@ -161,7 +161,9 @@ sub Init {
                         }
                         return $ret;
                     },
-                }
+                    ValueCallback => RT->Config->Meta('DefaultQueue')->{WidgetArguments}{ValueCallback},
+                },
+                DisplayCallback => RT->Config->Meta('DefaultQueue')->{DisplayCallback},
             },
             RTIR_StrictConstituencyLinking => {
                 Type   => 'SCALAR',
