@@ -232,5 +232,4 @@ $agent->goto_create_rtir_ticket('Countermeasures');
     unlink $filename or die "couldn't delete file '$filename': $!";
 }
 
-undef $agent;
 done_testing;

@@ -75,5 +75,4 @@ my $agent = default_agent();
 
 
 
-undef $agent;
 done_testing;

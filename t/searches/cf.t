@@ -29,5 +29,4 @@ like($m->dom->at('table.ticket-list')->all_text, qr/Spam Incident/, 'has spam in
 # we should only be finding Queue = 'Incidents' and CF.Classification = 'Spam'
 unlike($m->dom->at('table.ticket-list')->all_text, qr/Ham Incident/, 'has not found the ham incident' );
 
-undef $m;
 done_testing;

@@ -118,5 +118,4 @@ foreach my $id ( @tickets ) {
 }
 
 
-undef $agent;
 done_testing;

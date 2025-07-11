@@ -115,5 +115,4 @@ diag "started date of a countermeasure" if $ENV{'TEST_VERBOSE'};
 }
 
 
-undef $agent;
 done_testing;

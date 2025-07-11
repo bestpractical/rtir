@@ -117,5 +117,4 @@ sub create_incident_report {
     return $ir;
 }
 
-undef $m;
 done_testing;

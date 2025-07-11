@@ -106,7 +106,6 @@ for my $path (qw(Prefs/Other.html /Prefs/Other.html)) {
 
 
 
-undef $agent;
 done_testing;
 
 #TODO

@@ -40,5 +40,4 @@ $agent->display_ticket( $ir_id);
 $agent->follow_link_ok({text => $article_name}, "back to article");
 $agent->content_like( qr/this is a summary/, "found the summary of the article");
 
-undef $agent;
 done_testing();

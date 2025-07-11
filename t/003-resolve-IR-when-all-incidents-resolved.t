@@ -43,7 +43,6 @@ like(
 
 ir_status('resolved');
 
-undef $agent;
 done_testing;
 
 sub ir_status {
