@@ -116,7 +116,7 @@ unless ($$skip_create) {
         results => $results,
     );
 
-    if ( $ARGSRef->{CreateWithInvestigation} ) {
+    if ( $ARGSRef->{InvestigationSubmitTicket} ) {
         $$checks_failure_ref += RT::IR->FilterRTAddresses(
             ARGSRef => \%ARGS,
             Fields => {
