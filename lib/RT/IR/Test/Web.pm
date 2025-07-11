@@ -259,14 +259,14 @@ sub create_incident_and_investigation {
 
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
-    if($ir_id) {
-        $self->display_ticket( $ir_id );
+    if ($ir_id) {
+        $self->display_ticket($ir_id);
+
         # Select the "New" link from the Display page
-        $self->follow_link_ok({text => "New"}, "Followed 'New (Incident)' link");
+        $self->follow_link_ok( { id => "create-incident" }, "Followed 'New (Incident)' link" );
     }
-    else 
-    {
-        $self->goto_create_rtir_ticket('Incidents'.($constituency?' - '.$constituency : ''));
+    else {
+        $self->goto_create_rtir_ticket( 'Incidents' . ( $constituency ? ' - ' . $constituency : '' ) );
     }
 
     # Fill out forms
@@ -277,9 +277,17 @@ sub create_incident_and_investigation {
     }
 
     while (my ($f, $v) = each %$cfs) {
-        $self->set_custom_field( 'Incidents'.($constituency ? ' - '.$constituency:''), $f, $v);
+        if ( $f =~ s!Investigation!! ) {
+            my $field_name
+                = $self->custom_field_input( 'Investigations' . ( $constituency ? ' - ' . $constituency : '' ), $f )
+                or next;
+            $self->field( "Investigation$field_name", $v );
+        }
+        else {
+            $self->set_custom_field( 'Incidents'.($constituency ? ' - '.$constituency:''), $f, $v);
+        }
     }
-    $self->click("CreateWithInvestigation");
+    $self->click("InvestigationSubmitTicket");
     my $msg = $ir_id
         ? "Attempting to create new incident and investigation linked to child $ir_id"
         : "Attempting to create new incident and investigation";
