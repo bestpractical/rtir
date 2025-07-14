@@ -51,5 +51,4 @@ foreach my $q_name ( 'Incident Reports', 'Investigations', 'Countermeasures' ) {
 }
 
 
-undef $agent;
 done_testing;

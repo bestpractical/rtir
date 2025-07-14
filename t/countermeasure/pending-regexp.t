@@ -87,5 +87,4 @@ EOF
     $agent->ticket_status_is( $countermeasure_id, 'removed');
 }
 
-undef $agent;
 done_testing;

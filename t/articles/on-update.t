@@ -52,5 +52,4 @@ foreach my $queue ( 'Incidents', 'Incident Reports', 'Investigations', 'Counterm
     $agent->content_contains( $article_name, 'got article in dropdown' );
 }
 
-undef $agent;
 done_testing;

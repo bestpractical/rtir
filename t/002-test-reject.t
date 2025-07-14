@@ -169,5 +169,4 @@ diag "test that after bulk reject links to incidents are still there" if $ENV{'T
     $agent->has_tag('a', "$id", 'we have link to ticket');
 }
 
-undef $agent;
 done_testing;

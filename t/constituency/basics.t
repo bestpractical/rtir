@@ -134,7 +134,6 @@ diag "check queue names on page - govhandler";
     }
 }
 
-SKIP: { skip "Create incident and investigation functionality disabled for now", 6;
 diag "check queues when creating inc with inv - govhandler";
 {
     $agent->login('govhandler', 'govhandler', logout => 1);
@@ -148,9 +147,7 @@ diag "check queues when creating inc with inv - govhandler";
     $agent->content_contains('Incidents'.$govnet_suffix);
     $agent->content_contains('Investigations'.$govnet_suffix);
 }
-}
 
-SKIP: { skip "Create incident and investigation functionality disabled for now", 6;
 diag "check queues when creating inc with inv - eduhandler";
 {
     $agent->login('eduhandler', 'eduhandler', logout => 1);
@@ -164,7 +161,5 @@ diag "check queues when creating inc with inv - eduhandler";
     $agent->content_contains('Incidents'.$edunet_suffix);
     $agent->content_contains('Investigations'.$edunet_suffix);
 }
-}
 
-undef $agent;
 done_testing;

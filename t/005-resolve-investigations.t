@@ -32,5 +32,4 @@ like($agent->content, qr/Status changed from \S*open\S* to \S*resolved\S*/, "sit
 $agent->follow_link_ok({text => "Re-open"}, "Followed 'open' link");
 like($agent->content, qr/Status changed from \S*resolved\S* to \S*open\S*/, "site says ticket got re-opened");
 
-undef $agent;
 done_testing;

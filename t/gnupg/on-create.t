@@ -247,7 +247,6 @@ diag "check encrypting of attachments";
     check_text_emails( { Encrypt => 1, Attachment => 1 }, @mail );
 }
 
-undef $agent;
 done_testing;
 
 sub check_text_emails {

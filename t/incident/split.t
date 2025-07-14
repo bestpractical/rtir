@@ -38,5 +38,4 @@ my $rtir_user = rtir_user();
     $agent->ticket_is_not_linked_to_inc( $inv_id, [$id]);
 }
 
-undef $agent;
 done_testing;

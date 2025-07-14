@@ -19,44 +19,45 @@ $agent->display_ticket( $ir);
 # that function is not used here is that we want to check that the creation failed in the case
 # of an empty correspondents field, while the above function tests if the creation succeeded,
 # and thus will fail if we get the result we want, and succeed if we don't!
-SKIP: { skip 'Create incident and investigation functionality disabled for now', 3;
-    $agent->follow_link_ok({text => "New"}, "Followed 'New (Incident)' link");
-    $agent->form_number(3);
-    $agent->field('Subject', 'Incident for testing empty Investigation correspondent');
-    $agent->field('InvestigationSubject', 'Investigation for testing empty Investigation correspondent');
-    $agent->click("CreateWithInvestigation");
+$agent->follow_link_ok({id => "create-incident"}, "Followed 'New (Incident)' link");
+$agent->form_number(3);
+$agent->field('Subject', 'Incident for testing empty Investigation correspondent');
+$agent->field('InvestigationSubject', 'Investigation for testing empty Investigation correspondent');
+$agent->field('InvestigationRequestors', '');
+$agent->click("InvestigationSubmitTicket");
 
-    is ($agent->status, 200, "Attempting to create new incident and investigation linked to child $ir");
+is ($agent->status, 200, "Attempting to create new incident and investigation linked to child $ir");
 
-    $agent->content_like(qr{<ul class="action-results">\s*<li>You must enter a correspondent for the investigation</li>\s*</ul>}, "RT did not allow an empty correspondent field");
-}
+$agent->text_like(qr{You must enter a correspondent for the investigation},
+"RT did not allow an empty correspondent field");
 
 
-# Okay, enough funny business. Now for some straightforward tests, how it should work
-SKIP: { skip 'Create incident and investigation functionality disabled for now', 4;
-    my ($inc_id, $inv_id) = $agent->create_incident_and_investigation( '',
-        {Subject => 'Incident for testing Incident-and-investigation-from-IR creation',
-        InvestigationSubject => 'Investigation for testing Incident-and-Investigation-from-IR creation', 
-        InvestigationRequestors => 'foo@example.com'}, {Classification => 'Spam', IP => '172.16.0.1'},
-        $ir
-    );
-    # regression test
-    $agent->content_unlike(qr{<li>Custom field (\d+) does not apply to this object</li>}, "Custom field allowed");
+my ( $inc_id, $inv_id ) = $agent->create_incident_and_investigation(
+    '',
+    {   Subject                 => 'Incident for testing Incident-and-investigation-from-IR creation',
+        InvestigationSubject    => 'Investigation for testing Incident-and-Investigation-from-IR creation',
+        InvestigationRequestors => 'foo@example.com'
+    },
+    { Classification => 'Spam', IP => '172.16.0.1', InvestigationClassification => 'Spam', InvestigationIP => '172.16.0.1' },
+    $ir
+);
 
-    my $inc = RT::Ticket->new( $RT::SystemUser );
-    $inc->Load( $inc_id );
-    ok $inc->id, 'loaded incident';
-    is $inc->FirstCustomFieldValue('Classification'), 'Spam', 'CF value is in place';
-    is $inc->FirstCustomFieldValue('IP'), '172.16.0.1', 'CF value is in place';
+# regression test
+$agent->content_unlike(qr{<li>Custom field (\d+) does not apply to this object</li>}, "Custom field allowed");
 
-    my $inv = RT::Ticket->new( $RT::SystemUser );
-    $inv->Load( $inv_id );
-    ok $inv->id, 'loaded investigation';
-    warning_like {
-        is $inv->FirstCustomFieldValue('Classification'), undef, 'no classification CF for Invs';
-    } qr/Couldn't load custom field by 'Classification' identifier/, "Loading a non-applied CF warns";
-    is $inv->FirstCustomFieldValue('IP'), '172.16.0.1', 'IP is here';
-}
+my $inc = RT::Ticket->new( $RT::SystemUser );
+$inc->Load( $inc_id );
+ok $inc->id, 'loaded incident';
+is $inc->FirstCustomFieldValue('Classification'), 'Spam', 'CF value is in place';
+is $inc->FirstCustomFieldValue('IP'), '172.16.0.1', 'CF value is in place';
+
+my $inv = RT::Ticket->new( $RT::SystemUser );
+$inv->Load( $inv_id );
+ok $inv->id, 'loaded investigation';
+warning_like {
+    is $inv->FirstCustomFieldValue('Classification'), undef, 'no classification CF for Invs';
+} qr/Couldn't load custom field by 'Classification' identifier/, "Loading a non-applied CF warns";
+is $inv->FirstCustomFieldValue('IP'), '172.16.0.1', 'IP is here';
 
 diag('Tests the creation of investigation from an incident') if $ENV{TEST_VERBOSE};
 my $incident_foo = $agent->create_incident(

@@ -41,5 +41,4 @@ diag 'Confirm custom IR format is used';
     $agent->content_like( qr/How Reported/, "How Reported is on the page");
 }
 
-undef $agent;
 done_testing;

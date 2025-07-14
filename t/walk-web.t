@@ -51,5 +51,4 @@ sub test_page {
     }
 }
 
-undef $m;
 done_testing;

@@ -13,5 +13,4 @@ my $countermeasure = $agent->create_countermeasure( {Incident => $incident});
 
 $agent->content_unlike(qr{<option (?:value=.*)?>Use system default\(\)</option>}, "The option 'Use system default()' does not exist.");
 
-undef $agent;
 done_testing();

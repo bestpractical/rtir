@@ -73,5 +73,4 @@ foreach my $id (@invests) {
     $agent->ticket_status_is( $id, 'resolved', 'correct status' );
 }
 
-undef $agent;
 done_testing;

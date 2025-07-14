@@ -608,5 +608,4 @@ for my $content ( @invalid ) {
         is( $ticket->FirstCustomFieldValue('IP'), undef, 'correct value' );
     }
 }
-undef $agent;
 done_testing();

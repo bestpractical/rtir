@@ -84,5 +84,4 @@ diag "test activation after reply using inline edit";
 }
 
 
-undef $agent;
 done_testing;

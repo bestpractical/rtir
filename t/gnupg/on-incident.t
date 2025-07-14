@@ -93,5 +93,4 @@ diag "check that things don't work if there is no key";
     $agent->no_leftover_warnings_ok;
 }
 
-undef $agent;
 done_testing;

@@ -13,6 +13,5 @@ diag "Test Lookup page with RunWhoisRequestByDefault set to true";
     $agent->content_contains('Look Up Information');
 }
 
-undef $agent;
 done_testing;
 
