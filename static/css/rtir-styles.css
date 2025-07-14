@@ -1,45 +1,45 @@
 /* TODO: this section of stlying has been commented out to disable the colored header until we re-implement.
-body.rtir div#header,
-body.rtir .ticket-timer .ticket-link {
+.main-container.rtir div#header,
+.main-container.rtir .ticket-timer .ticket-link {
     background: #404080;
     color: #fff;
 }
 */
 
-body.rtir .overdue {
+.main-container.rtir .overdue {
     color: red;
 }
 
 /* top border colors */
-body.rtir .titlebox.ticket-info-articles, body.rtir .titlebox.tickets-list-report, body.rtir .titlebox.tickets-list-incident,
-body.rtir .titlebox.tickets-list-investigation, body.rtir .titlebox.tickets-list-countermeasure { border-top: 3px solid #388E3C; }
-body.rtir .titlebox.ticket-info-time { border-top: 3px solid #7B1FA2; }
-body.rtir .titlebox.ticket-info-message { border-top: 3px solid #1976D2; }
-body.rtir .titlebox.ticket-info-details { border-top: 3px solid #D32F2F; }
-body.rtir .titlebox.ticket-info-cve { border-top: 3px solid #1574b3; } /* The color is from header of https://nvd.nist.gov/ */
+.main-container.rtir .titlebox.ticket-info-articles, .main-container.rtir .titlebox.tickets-list-report, .main-container.rtir .titlebox.tickets-list-incident,
+.main-container.rtir .titlebox.tickets-list-investigation, .main-container.rtir .titlebox.tickets-list-countermeasure { border-top: 3px solid #388E3C; }
+.main-container.rtir .titlebox.ticket-info-time { border-top: 3px solid #7B1FA2; }
+.main-container.rtir .titlebox.ticket-info-message { border-top: 3px solid #1976D2; }
+.main-container.rtir .titlebox.ticket-info-details { border-top: 3px solid #D32F2F; }
+.main-container.rtir .titlebox.ticket-info-cve { border-top: 3px solid #1574b3; } /* The color is from header of https://nvd.nist.gov/ */
 
-body.rtir .incidents .actions .btn {
+.main-container.rtir .incidents .actions .btn {
     border: none;
 }
 
-body.rtir .incidents .actions #create-incident {
+.main-container.rtir .incidents .actions #create-incident {
     background: #4040a0;
 }
 
-body.rtir .incidents .actions #create-incident:hover {
+.main-container.rtir .incidents .actions #create-incident:hover {
     background: #4040f0;
 }
 
-body.rtir .incidents .actions #link-incident {
+.main-container.rtir .incidents .actions #link-incident {
     background: #316531;
 }
 
-body.rtir .incidents .actions #link-incident:hover {
+.main-container.rtir .incidents .actions #link-incident:hover {
     background: #3f833f;
 }
 
-body.rtir .titlebox.external-feeds tr.oddline+.oddline .collection-as-table,
-body.rtir .titlebox.external-feeds tr.evenline+.evenline .collection-as-table {
+.main-container.rtir .titlebox.external-feeds tr.oddline+.oddline .collection-as-table,
+.main-container.rtir .titlebox.external-feeds tr.evenline+.evenline .collection-as-table {
     padding-bottom: 0.7rem;
 }
 
@@ -56,16 +56,16 @@ h3.rtir-reply-all {
 }
 
 [data-bs-theme=light] {
-    body.rtir input[type="reset"],
-    body.rtir input[type="submit"],
-    body.rtir input[class="btn"] {
+    .main-container.rtir input[type="reset"],
+    .main-container.rtir input[type="submit"],
+    .main-container.rtir input[class="btn"] {
         background: #4040a0;
         color: #fff;
     }
 
-    body.rtir input[type="reset"]:hover,
-    body.rtir input[type="submit"]:hover,
-    body.rtir input[class="btn"]:hover {
+    .main-container.rtir input[type="reset"]:hover,
+    .main-container.rtir input[type="submit"]:hover,
+    .main-container.rtir input[class="btn"]:hover {
         background: #4040f0;
         color: #fff;
     }
