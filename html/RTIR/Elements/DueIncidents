@@ -77,7 +77,6 @@ $Rows = $session{'CurrentUser'}->UserObj->Preferences(
 my $QueryString = $m->comp('/Elements/QueryString',
     Query   => $Query,
     Format  => $Format,
-    Rows    => $Rows,
     Page    => $Page,
     OrderBy => $OrderBy,
     Order   => $Order,
