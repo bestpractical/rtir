@@ -174,14 +174,18 @@ unless ( exists $ARGS{Content} ) {
         if ( RT::IR->IsInvestigationQueue($QueueObj) ) {
             $quote = 1;
         }
-        $ARGS{Content} = $m->scomp(
+        my $starting_content = $m->scomp(
             "/RTIR/Elements/TransactionData",
             Transactions => $Transactions,
             Type         => 'messages',
             Include      => { 'Create', 'Correspond' },
             QuoteText    => $quote,
         );
-        $ARGS{Content} =~ s/\&gt;/>/g if $ARGS{Content};
+
+        if ( defined $starting_content && length $starting_content ) {
+           $starting_content =~ s/\&gt;/>/g;
+           $ARGS{Content} = $starting_content;
+       }
     }
 }
 
