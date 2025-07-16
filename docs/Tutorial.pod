@@ -307,11 +307,19 @@ You can write a message that will be added to the selected children as
 a comment or response based on the value of the 'Update Type' field.
 
 When you try to resolve an Incident, RTIR checks the state of that
-Incident's children to decide whether it's OK to resolve it or not. In the
+Incident's children to determine if they can also be resolved. In the
 simplest case, the Incident you're resolving has children that aren't linked to
 any other open Incident. RTIR marks the Incident as resolved if all children are
-inactive (resolved, rejected or removed) otherwise you see a notice "State of the
-Incident left unchanged; not all children were updated."
+inactive (resolved, rejected or removed). If linked children are still active,
+RTIR will attempt to resolve them automatically. When doing so, it may also
+change the Owner on linked tickets to the current user, so you will see "Stolen
+from" messages in the history.
+
+If RTIR encounters any issues it can't automatically update, you will see a
+message "State of the Incident left unchanged; not all children were updated."
+You can check the linked tickets for reasons they can't be resolved. Configuration
+issues, like incorrect lifecycle mapping between queues, will be reported in
+RT's logs. Your administrator can help check logs and fix these types of issues.
 
 =head4 Quick Resolve
 
