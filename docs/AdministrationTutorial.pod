@@ -17,6 +17,36 @@ To change a configuration value, copy the Set code from F<RT_Config.pm>
 or F<RTIR_Config.pm> and add it to the relevant Site Config. Then set
 your custom configuration values there.
 
+=head2 RTIR Queues and Rights
+
+=head3 DutyTeam Group
+
+During installation, RTIR creates a group called DutyTeam and assigns a set
+of rights to members of this group for working with RTIR queues. Add users to
+this group to allow them to see the RTIR queues, create tickets,
+take (Own) tickets, and see internal comments on tickets. You can check the
+group rights on each RTIR queue to see the full list of rights granted to team
+members.
+
+=head3 Owner Rights
+
+By default, RTIR limits the ability to modify tickets to the ticket Owner,
+preventing confusion from multiple people working on the same Incident Report,
+Incident, etc. DutyTeam members have the right to "Steal" tickets, which means
+they can change Owner on a ticket from a different user to their user. This
+allows team members to start working on a team member's ticket if needed.
+
+Some operations can automatically change ownership to allow an update to complete
+in one step. For example, on Incident Reports, the Reject and Quick Reject
+actions have an option to "Take or Steal" the ticket first if needed, then
+reject the ticket. You can see details of this configuration in the "actions"
+section of the L<Incident Reports|https://docs.bestpractical.com/rt/latest/customizing/lifecycles.html>
+lifecycle. The custom C<< TakeOrStealFirst => 1 >> option on the action enables
+the feature.
+
+Other operations, like resolving an Incident, have similar behavior, changing
+Owner and resolving child tickets if possible.
+
 =head2 Countermeasures Feature
 
 You may disable the Countermeasures feature by putting the following into your
@@ -355,10 +385,9 @@ See the documentation for L<RT::Extension::TicketAging>
 =head2 Maintaining DB size, deleting entries, restoring deleted data
 
 During normal operation RT/RTIR never deletes data from the database.
-Since RT 3.7 the RTx::Shredder extension has been integrated into
-RT.  This extension can remove data such as users or tickets
-from the RT/RTIR system. You can find documentation for this
-extension in L<RT::Shredder> by running `perldoc lib/RT/Shredder.pm`
+RT has a tool called Shredder that allows you to remove data such as users or
+tickets from the RT/RTIR system. You can find documentation for this
+tool in L<RT::Shredder> by running `perldoc lib/RT/Shredder.pm`
 or on the Best Practical website at
 L<http://bestpractical.com/rt/docs/latest/RT/Shredder.html>.
 RT::Shredder's documentation includes information on restoring deleted data
@@ -375,7 +404,7 @@ See also the documentation in L<RT::Crypt>.
 
 RTIR supports reverification of incoming email. If a user sends signed mail
 but RTIR doesn't have his public key (or if some other error occurs), then his
-message will be be processed, but there will be "This message is
+message will be processed, but there will be "This message is
 unverified" warnings in the UI. Afterwards, RTIR will automatically attempt to
 reverify that message whenever someone views it.
 
@@ -405,15 +434,8 @@ set the passphrase in the site config, you need not do both.
 
 =head2 Service Level Agreements (SLAs)
 
-RTIR used to have a simple Service Level Agreements (SLA) implementation.
-L<RT::Extension::SLA> was prototyped on it, but vastly improved. In RTIR 3.0
-we removed the SLA implementation in the core of RTIR that was in conflict
-with the extension.
-
-RT 4.4 has cored L<RT::Extension::SLA>, please disable SLA on Incidents.
-You will encounter a race condition between the core SLA and the RTIR
-scrips that synchronize due dates between an incident and its most due active
-child.  If you need to manage incident due dates using the core SLA, you can
-disable the RTIR scrips that manage due dates on Incidents.
+ RT supports many different configurations to automatically manage setting
+ Starts and Due on tickets based on SLAs. See the
+ L<SLA documentation in RT|https://docs.bestpractical.com/rt/latest/RT_Config.html#SLA> for details.
 
 =cut

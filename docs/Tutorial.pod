@@ -142,9 +142,9 @@ correspondents" checkbox from the split page to avoid notifications.
 
 =head3 Rejecting an IR
 
-Rejecting means "we're not going to work on this report." There are several
-reasons to do this: the ticket is spam, problem wouldn't be solved, it's
-out of scope, etc. Rejected tickets are still available for
+Rejecting means "there is nothing for us to do on this report." There are several
+reasons to do this: the ticket is spam, the reported issue isn't an actual
+problem, it's out of scope, etc. Rejected tickets are still available for
 searches and can be reopened, but RTIR's default interfaces are designed
 to hide such tickets, so people can concentrate on new and open tickets.
 
