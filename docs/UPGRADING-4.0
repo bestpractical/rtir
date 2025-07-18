@@ -118,3 +118,12 @@ message headers to set RTIR constituencies is no longer available.
 =head3 ForwardMessage
 
 DutyTeams now have the C<ForwardMessage> right by default.
+
+=head2 SLAs
+
+RT 4.4 cored L<RT::Extension::SLA>. If you have existing scrips that
+manage Due or SLA on Incidents from previous versions of RTIR, you should
+disable them in favor of the core RT SLA features. If the older scrips are
+enabled, you will encounter a race condition between the core SLA and the RTIR
+scrips that synchronize due dates between an incident and its most due active
+child.
