@@ -48,6 +48,7 @@
 <& /RTIR/Elements/Header, Title => $Title &>
 <& /Elements/Tabs &>
 
+% $m->callback( CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, results => \@results, Ticket => $Ticket );
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post" action="Advanced.html" enctype="multipart/form-data">
@@ -74,6 +75,7 @@
 my $Ticket = LoadTicket($id);
 $id = $ARGS{'id'} = $Ticket->id;
 
+$m->callback( CallbackName => 'Initial', ARGSRef => \%ARGS, Ticket => $Ticket );
 my @results;
 if ( $ARGS{'SaveChanges'} ) {
     push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
