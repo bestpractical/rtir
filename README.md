@@ -28,7 +28,7 @@ workflow for members of CERT and CSIRT teams.
       <img src="https://img.shields.io/github/v/release/bestpractical/rtir" alt="Latest release" />
   </a>
   <a href="https://github.com/bestpractical/rtir/actions">
-      <img src="https://img.shields.io/github/actions/workflow/status/bestpractical/rtir/github-action.yml?branch=5.0-trunk&label=Test%20All" alt="Build status" />
+      <img src="https://img.shields.io/github/actions/workflow/status/bestpractical/rtir/github-action.yml?branch=6.0-trunk&label=Test%20All" alt="Build status" />
   </a>
 </p>
 <p align="center">It allows team members
@@ -59,7 +59,7 @@ information.
 
 ## INSTALLATION INSTRUCTIONS
 
-1. Install the current release of the RT 5.0 series following RT's
+1. Install the current release of the RT 6.0 series following RT's
 regular installation instructions
 
 2. Run "perl Makefile.PL" to generate a makefile for RTIR.
@@ -119,14 +119,14 @@ Countermeasures queue.
    RT -> Configuration -> Groups -> DutyTeam -> Members.
 
 5. You can override values defined in RTIR_Config.pm by creating
-   RTIR_SiteConfig.pm in /opt/rt5/etc/ and adding your customizations.
+   RTIR_SiteConfig.pm in /opt/rt6/etc/ and adding your customizations.
 
 ## SETTING UP THE MAIL GATEWAY
 
 An alias for the Incident Reports queue will need to be configured.
 Add the following lines to /etc/aliases (or your local equivalent):
 ```
-rtir:         "|/opt/rt5/bin/rt-mailgate --queue 'Incident Reports' --action correspond --url http://rt.example.com/"
+rtir:         "|/opt/rt6/bin/rt-mailgate --queue 'Incident Reports' --action correspond --url http://rt.example.com/"
 ```
 
 You should substitute the URL for RT's web interface for http://rt.example.com/.
@@ -134,38 +134,38 @@ You should substitute the URL for RT's web interface for http://rt.example.com/.
 -  If your webserver uses SSL, rt-mailgate will require several new
    Perl libraries. See the RT README for more details on this option.
 
--  See "perldoc /opt/rt5/bin/rt-mailgate" for more info about the rt-mailgate
+-  See "perldoc /opt/rt6/bin/rt-mailgate" for more info about the rt-mailgate
    script.
 
 -  If you're configuring RTIR with support for multiple constituencies, please
    refer to the instructions in the file docs/Constituencies.pod which is also
-   viewable here [http://www.bestpractical.com/docs/rtir/4.0/Constituencies.html](http://www.bestpractical.com/docs/rtir/4.0/Constituencies.html)
+   viewable here [https://docs.bestpractical.com/rtir/6.0/Constituencies.html](https://docs.bestpractical.com/rtir/6.0/Constituencies.html)
 
 ## DOCUMENTATION FOR RTIR
 
 - Documents included with RTIR are also available for browsing at
-  [http://www.bestpractical.com/docs/rtir/5.0/](http://www.bestpractical.com/docs/rtir/5.0/)
+  [https://docs.bestpractical.com/rtir/6.0/](https://docs.bestpractical.com/rtir/6.0/)
 
 - This README file
 
-- [UPGRADING documentation](https://docs.bestpractical.com/rtir/5.0/UPGRADING.html)
+- [UPGRADING documentation](https://docs.bestpractical.com/rtir/6.0/UPGRADING.html)
 
 - There are also version specific upgrading documents available at the
-   [RTIR documentation page](https://docs.bestpractical.com/rtir/5.0/index.html).
+   [RTIR documentation page](https://docs.bestpractical.com/rtir/6.0/index.html).
    If upgrading from 3.0, you
-   would read the UPGRADING-3.0, UPGRADING-3.2, UPGRADING-4.0
-   and UPGRADING-5.0 files.
+   would read the UPGRADING-3.0, UPGRADING-3.2, UPGRADING-4.0, UPGRADING-5.0,
+   and UPGRADING-6.0 files.
 
-- [RTIR Tutorial](https://docs.bestpractical.com/rtir/5.0/Tutorial.html)
-   - [Extended information about ticket merging](https://docs.bestpractical.com/rtir/5.0/Tutorial.html#Merging-Tickets)
+- [RTIR Tutorial](https://docs.bestpractical.com/rtir/6.0/Tutorial.html)
+   - [Extended information about ticket merging](https://docs.bestpractical.com/rtir/6.0/Tutorial.html#Merging-Tickets)
 
-- [Constituencies](https://docs.bestpractical.com/rtir/5.0/Constituencies.html)
+- [Constituencies](https://docs.bestpractical.com/rtir/6.0/Constituencies.html)
    - Information about setting up RTIR with multiple user constituencies
 
-- [RTIR Administration Tutorial](https://docs.bestpractical.com/rtir/5.0/AdministrationTutorial.html)
+- [RTIR Administration Tutorial](https://docs.bestpractical.com/rtir/6.0/AdministrationTutorial.html)
    - Information about setting up RTIR for Administrators
 
-- [RTIR Config](https://docs.bestpractical.com/rtir/5.0/RTIR_Config.html)
+- [RTIR Config](https://docs.bestpractical.com/rtir/6.0/RTIR_Config.html)
    - Contains a number of RTIR-specific configuration options and
      instructions for their use
 
@@ -189,7 +189,7 @@ $ RT_DBA_USER=user RT_DBA_PASSWORD=password make test
 
 These are intended to be run before installing RTIR.
 
-Like RT, RTIR expects to be able to create a new database called rt5test
+Like RT, RTIR expects to be able to create a new database called rt6test
 on your system
 
 ## REPORTING BUGS

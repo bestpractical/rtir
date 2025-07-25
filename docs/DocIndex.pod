@@ -7,7 +7,7 @@ documentation.  Other topics will be documented in
 the perl modules that comprise RTIR.
 
 RTIR's documentation is also available online at
-L<http://bestpractical.com/docs/rtir/>.
+L<https://docs.bestpractical.com/rtir/6.0/>.
 
 =head2 Email
 

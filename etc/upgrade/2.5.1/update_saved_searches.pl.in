@@ -51,7 +51,7 @@ use strict;
 use warnings;
 
 ### after: use lib qw(@RT_LIB_PATH@);
-use lib qw(/opt/rt5/local/lib /opt/rt5/lib);
+use lib qw(/opt/rt6/local/lib /opt/rt6/lib);
 
 use RT;
 RT->LoadConfig;
