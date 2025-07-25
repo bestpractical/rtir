@@ -24,13 +24,13 @@ lose data.
 
 =item 2
 
-Upgrade your RT installation to RT 5.0.0 or newer following
+Upgrade your RT installation to RT 6.0.1 or newer following
 its upgrade instructions. Make sure you follow all of the
 steps and upgrade both the code and the database.
 
 As noted in the RT documentation, it is recommended that you
-use a fresh directory when upgrading to RT 5, like /opt/rt5,
-rather than upgrading on top of your RT 4 installation.
+use a fresh directory when upgrading to RT 6, like /opt/rt6,
+rather than upgrading on top of your RT 5 installation.
 A lot of files have been deleted and moved around in RTIR
 so don't copy an old RTIR's files.
 
@@ -39,6 +39,8 @@ so don't copy an old RTIR's files.
     RTIR 4.0 is only compatible with RT 4.4 releases.
 
     RTIR 5.0 is only compatible with RT 5.0 releases.
+
+    RTIR 6.0 is only compatible with RT 6.0 releases.
 
 =item 3
 
@@ -53,7 +55,7 @@ Install the new version of RTIR. B<DO NOT> run C<make initdb>.
 
 Review all of the upgrade notes in docs/UPGRADING-*. If you were
 coming from 2.6.1, you would read UPGRADING-2.6, UPGRADING-3.0, UPGRADING-3.2,
-UPGRADING-4.0 and UPGRADING-5.0.
+UPGRADING-4.0, UPGRADING-5.0, and UPGRADING-6.0.
 
 =item 6
 

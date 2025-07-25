@@ -26,7 +26,7 @@ RUN cd /usr/local/src \
      --with-db-host="$RT_TEST_DB_HOST" \
      --with-db-rt-host="${RT_TEST_RT_HOST:-$(ip --oneline address show to 172.16/12 | gawk '{split($4, a, "/"); print a[1] "/255.255.255.0"; exit 0;}')}" \
   && make install \
-  && perl -I/opt/rt5/local/lib -I/opt/rt5/lib sbin/rt-setup-database --action init --dba="$RT_DBA_USER" --dba-password="$RT_DBA_PASSWORD" \
+  && perl -I/opt/rt6/local/lib -I/opt/rt6/lib sbin/rt-setup-database --action init --dba="$RT_DBA_USER" --dba-password="$RT_DBA_PASSWORD" \
   && rm -rf /usr/local/src/*
 
 RUN cpm install --global --no-prebuilt --test --with-all --show-build-log-on-failure Net::Domain::TLD Net::Whois::RIPE Parse::BooleanLogic Geo::IPinfo

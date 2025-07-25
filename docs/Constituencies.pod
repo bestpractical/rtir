@@ -153,7 +153,7 @@ can read the docmentation for the tool online at L<add_constituency> or
 on your system. To run the tool, navigate to your base RT directory and
 run it as follows:
 
-    cd /opt/rt5    # Default location, yours may be different
+    cd /opt/rt6    # Default location, yours may be different
     local/plugins/RT-IR/bin/add_constituency --help  # View docs
     local/plugins/RT-IR/bin/add_constituency --name EDUNET --correspond 'edunet@example.com'
 
