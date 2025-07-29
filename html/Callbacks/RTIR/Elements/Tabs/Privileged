@@ -103,14 +103,22 @@ if ( $m->request_comp->path =~ m{^/Search/} ) {
             );
 
             PageMenu()->child(
-                abandon => title => loc( 'Bulk Abandon' ),
-                path => RT::IR->HREFTo( "Incident/BulkAbandon.html?" . $query_string->( %args ), IncludeWebPath => 0 ),
+                abandon => title => loc('Bulk Abandon'),
+                path    => RT::IR->HREFTo(
+                    "Incident/BulkAbandon.html?"
+                        . $query_string->( map { $_ eq 'Format' ? () : ( $_ => $args{$_} ) } keys %args ),
+                    IncludeWebPath => 0,
+                ),
             );
         }
         elsif ( $lifecycle eq RT::IR->lifecycle_report ) {
             PageMenu()->child(
-                reject => title => loc( 'Bulk Reject' ),
-                path   => RT::IR->HREFTo( "Report/BulkReject.html?" . $query_string->( %args ), IncludeWebPath => 0 ),
+                reject => title => loc('Bulk Reject'),
+                path   => RT::IR->HREFTo(
+                    "Report/BulkReject.html?"
+                        . $query_string->( map { $_ eq 'Format' ? () : ( $_ => $args{$_} ) } keys %args ),
+                    IncludeWebPath => 0,
+                ),
             );
         }
 

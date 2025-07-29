@@ -77,6 +77,19 @@ the new Description field because on a default RTIR installation, the
 Description custom field was applied only to Incidents. If you applied
 Description to other queues, that content will not be migrated automatically.
 
+=item *
+
+RTIR provides custom pages for Incident "Bulk Abandon" and Incident Report
+"Bulk Reject". The format for these ticket listings is defined in the
+C<%RTIRSearchResultFormats> configuration via the entries "AbandonIncidents"
+and "RejectReports". Previously these pages were using a default format rather
+than the format defined in these configurations. This is now fixed and the
+pages use the correct custom configurations.
+
+This is notable on Bulk Reject for Incident Reports because the custom format
+includes a useful custom column "Has Incident", which shows any linked Incidents.
+That column is now available again.
+
 =back
 
 =head2 New Lookup Tools
