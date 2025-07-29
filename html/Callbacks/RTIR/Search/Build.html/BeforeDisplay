@@ -50,9 +50,13 @@
 if ( !$ARGSRef->{RTIR} && RT->Config->Get( 'RTIR_RedirectOnSearch' ) && $Query->{Query} ) {
     my ( $rtir ) = RT::IR->OurQuery( $Query->{'Query'} );
     if ( $rtir ) {
-        RT::Interface::Web::Redirect( RT->Config->Get( 'WebURL' )
-              . 'Search/Build.html?'
-              . $m->comp( '/Elements/QueryString', %$ARGSRef, ExtraQueryParams => 'RTIR', RTIR => 1 ) );
+        RT::Interface::Web::Redirect(
+                  RT->Config->Get('WebURL')
+                . 'Search/Build.html?'
+                . $m->comp(
+                    '/Elements/QueryString', ShortenSearchQuery( %$ARGSRef, ExtraQueryParams => 'RTIR', RTIR => 1 )
+                )
+        );
     }
 }
 

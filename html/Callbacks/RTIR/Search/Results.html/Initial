@@ -53,7 +53,7 @@ if ( $ARGSRef->{RTIR} ) {
     if ( my %params = RTIRDefaultSearchParams(ARGSRef => $ARGSRef) ) {
         RT::Interface::Web::Redirect( RT->Config->Get('WebURL')
                 . 'Search/Results.html?'
-                . $m->comp( '/Elements/QueryString', %$ARGSRef, %params, ) );
+                . $m->comp( '/Elements/QueryString', ShortenSearchQuery( %$ARGSRef, %params ) ) );
     }
 }
 </%INIT>

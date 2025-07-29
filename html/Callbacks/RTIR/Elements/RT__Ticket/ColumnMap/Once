@@ -89,7 +89,7 @@ $COLUMN_MAP->{'HasIncident'} = {
         my $t = shift;
         my $yesno;
         if (my $count = RT::IR->RelevantIncidents( $t )->Count ) {
-            $yesno = '<span class="yes">'. '<a class="text-warning" href="'. RT->Config->Get('WebPath') . '/Search/Results.html?' . $m->comp('/Elements/QueryString', Query => RT::IR->RelevantIncidentsQuery($t)) . '">'
+            $yesno = '<span class="yes">'. '<a class="text-warning" href="'. RT->Config->Get('WebPath') . '/Search/Results.html?' . $m->comp('/Elements/QueryString', ShortenSearchQuery(Query => RT::IR->RelevantIncidentsQuery($t), RTIR => 1, ExtraQueryParams => 'RTIR')) . '">'
             .  $count
             .'</a></span>';
         }
