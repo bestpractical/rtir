@@ -24,6 +24,7 @@ $agent->get_ok('/RTIR/index.html', 'open rtir at glance');
     $agent->follow_link_ok( { url_regex => qr!/Search/Results.html!, text_regex => qr/New unlinked Incident Reports/ },
         "Followed saved search link" );
     $agent->follow_link_ok({ text => 'Bulk Reject' }, "Followed 'bulk reject' link");
+    $agent->text_contains('Has Incident?', 'The page has "Has Incident?" column');
 
 	# Check that the desired incident report occurs in the list of available incident reports; if not, keep
 	# going to the next page until you find it (or get to the last page and don't find it,
