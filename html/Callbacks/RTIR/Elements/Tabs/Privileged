@@ -105,8 +105,7 @@ if ( $m->request_comp->path =~ m{^/Search/} ) {
             PageMenu()->child(
                 abandon => title => loc('Bulk Abandon'),
                 path    => RT::IR->HREFTo(
-                    "Incident/BulkAbandon.html?"
-                        . $query_string->( map { $_ eq 'Format' ? () : ( $_ => $args{$_} ) } keys %args ),
+                    "Incident/BulkAbandon.html?" . $query_string->( %args, Format => undef ),
                     IncludeWebPath => 0,
                 ),
             );
@@ -115,8 +114,7 @@ if ( $m->request_comp->path =~ m{^/Search/} ) {
             PageMenu()->child(
                 reject => title => loc('Bulk Reject'),
                 path   => RT::IR->HREFTo(
-                    "Report/BulkReject.html?"
-                        . $query_string->( map { $_ eq 'Format' ? () : ( $_ => $args{$_} ) } keys %args ),
+                    "Report/BulkReject.html?" . $query_string->( %args, Format => undef ),
                     IncludeWebPath => 0,
                 ),
             );
