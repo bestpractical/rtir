@@ -56,6 +56,7 @@ my $query_string = sub {
 };
 
 my $args = $DECODED_ARGS;
+my $request_path = $Path;
 
 my @query_fields = qw(Query Format RowsPerPage Page OrderBy Order ExtraQueryParams);
 
@@ -80,7 +81,7 @@ my $search_arguments = sub {
     return %res;
 };
 
-if ( $m->request_comp->path =~ m{^/Search/} ) {
+if ( $request_path =~ m{^/Search/} ) {
     my %args;
     if ( $ARGS{ARGSRef}{QueryArgs} ) {
         %args = %{ $ARGS{ARGSRef}{QueryArgs} };
@@ -140,8 +141,6 @@ if ( $m->request_comp->path =~ m{^/Search/} ) {
     }
 }
 
-my $request_path = $HTML::Mason::Commands::r->path_info;
-$request_path =~ s!/{2,}!/!g;
 return unless $request_path =~ m{^/RTIR/};
 
 my $re_rtir_path = qr'^/RTIR/(?:c/[^/]*/?)?';
@@ -545,7 +544,7 @@ PageWidgets()->child('simple_search')->raw_html( $m->scomp(
     '/Elements/SimpleSearch',
     SendTo => RT::IR->HREFTo('index.html', IncludeWebPath => 0),
     Placeholder => 'Search Incidents'
-) );
+) ) if PageWidgets()->child('simple_search'); # /Views/Component/PageMenu doesn't fully set up PageWidgets
 PageWidgets()->child( create_ticket => raw_html => $HTML::Mason::Commands::m->scomp('/Elements/CreateTicket', SendTo => '/RTIR/Create.html?Queue=' . (RT::IR::GetRTIRDefaultQueue() // '')) );
 
 if ( $request_path =~ m{$re_rtir_path(?:Incident/)?Create\.html} ) {
@@ -573,3 +572,7 @@ if ( $request_path =~ m{$re_rtir_path(?:Incident/)?Create\.html} ) {
     }
 }
 </%INIT>
+
+<%ARGS>
+$Path
+</%ARGS>
