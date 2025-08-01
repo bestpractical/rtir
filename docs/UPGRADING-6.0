@@ -13,6 +13,40 @@ of RTIR 6 is 6.0.1, which should be run with RT 6.0.1.
 
 =item *
 
+RTIR now provides different page layouts for Incidents based on the value
+of the Classification custom field. This feature uses RT 6's page layout
+system to show different custom fields and widgets depending on the type
+of incident being handled.
+
+By default, RTIR creates page layouts for each Classification value
+(Spam, Query, System Compromise, etc.) with a basic set of custom fields
+including IP and Domain. These layouts provide a framework that you can
+customize by adding relevant custom fields for each incident type.
+
+When viewing or editing an Incident, the page layout will automatically
+adjust based on the Classification value. If no Classification is set,
+the default Incident layout is used.
+
+To customize these layouts, create custom fields and apply them to the
+Incidents queue, then update the CustomFieldGroupings configuration to
+include the fields in the appropriate classification groupings.
+
+If you prefer to use the same layout for all Incidents regardless of
+Classification, you can disable this feature by going to Admin > Custom
+Fields > Classification > Page Layouts tab. Under "Layouts for Display",
+set each Classification value to use "Default" instead of the specific
+layout names.
+
+=item *
+
+As RTIR has switched to RT 6's flexible page layout, a few RTIR-specific
+configurations are updated:
+
+In C<%CustomFieldGroupings> and C<%InlineEditPanelBehavior>, RTIR uses key
+"RT::Ticket" just like RT, instead of previous "RTIR::Ticket".
+
+=item *
+
 The following default RTIR homepage elements have been converted
 to RT saved searches and the previous mason templates have been
 removed.
@@ -37,14 +71,6 @@ component on the home page that refreshed the entire page.
 
 See the RT 6 upgrading documentation for details on the update to refresh
 features.
-
-=item *
-
-As RTIR has switched to RT 6's flexible page layout, a few RTIR-specific
-configurations are updated:
-
-In C<%CustomFieldGroupings> and C<%InlineEditPanelBehavior>, RTIR uses key
-"RT::Ticket" just like RT, instead of previous "RTIR::Ticket".
 
 =item *
 

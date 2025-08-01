@@ -678,7 +678,79 @@ Set(%PageLayouts,
                 {   Layout   => 'col-md-6',
                     Title    => 'Ticket metadata',
                     Elements => [
-                        [ 'Basics', 'Times', 'Description', 'CustomFieldCustomGroupings', 'Dates', 'Attachments', 'Requestors' ],
+                        [ 'Basics', 'Times', 'Description', 'CustomFieldCustomGroupings:Networking', 'CustomFieldCustomGroupings:Details', 'Dates', 'Attachments', 'Requestors' ],
+                        [ 'Articles', 'LinkedQueues', 'Assets', 'LinkedArticles', 'CVEDetails' ],
+                    ],
+                },
+                {   Layout   => 'col-12',
+                    Elements => ['History'],
+                }
+            ],
+            'Incident - Spam' => [
+                {   Layout   => 'col-md-6',
+                    Title    => 'Ticket metadata',
+                    Elements => [
+                        [ 'Basics', 'Times', 'Description', 'CustomFieldCustomGroupings:Incident Details', 'CustomFieldCustomGroupings:Spam', 'Dates', 'Attachments', 'Requestors' ],
+                        [ 'Articles', 'LinkedQueues', 'Assets', 'LinkedArticles', 'CVEDetails' ],
+                    ],
+                },
+                {   Layout   => 'col-12',
+                    Elements => ['History'],
+                }
+            ],
+            'Incident - System Compromise' => [
+                {   Layout   => 'col-md-6',
+                    Title    => 'Ticket metadata',
+                    Elements => [
+                        [ 'Basics', 'Times', 'Description', 'CustomFieldCustomGroupings:Incident Details', 'CustomFieldCustomGroupings:System Compromise', 'Dates', 'Attachments', 'Requestors' ],
+                        [ 'Articles', 'LinkedQueues', 'Assets', 'LinkedArticles', 'CVEDetails' ],
+                    ],
+                },
+                {   Layout   => 'col-12',
+                    Elements => ['History'],
+                }
+            ],
+            'Incident - Query' => [
+                {   Layout   => 'col-md-6',
+                    Title    => 'Ticket metadata',
+                    Elements => [
+                        [ 'Basics', 'Times', 'Description', 'CustomFieldCustomGroupings:Incident Details', 'CustomFieldCustomGroupings:Query', 'Dates', 'Attachments', 'Requestors' ],
+                        [ 'Articles', 'LinkedQueues', 'Assets', 'LinkedArticles', 'CVEDetails' ],
+                    ],
+                },
+                {   Layout   => 'col-12',
+                    Elements => ['History'],
+                }
+            ],
+            'Incident - Scan' => [
+                {   Layout   => 'col-md-6',
+                    Title    => 'Ticket metadata',
+                    Elements => [
+                        [ 'Basics', 'Times', 'Description', 'CustomFieldCustomGroupings:Incident Details', 'CustomFieldCustomGroupings:Scan', 'Dates', 'Attachments', 'Requestors' ],
+                        [ 'Articles', 'LinkedQueues', 'Assets', 'LinkedArticles', 'CVEDetails' ],
+                    ],
+                },
+                {   Layout   => 'col-12',
+                    Elements => ['History'],
+                }
+            ],
+            'Incident - Denial of Service' => [
+                {   Layout   => 'col-md-6',
+                    Title    => 'Ticket metadata',
+                    Elements => [
+                        [ 'Basics', 'Times', 'Description', 'CustomFieldCustomGroupings:Incident Details', 'CustomFieldCustomGroupings:Denial of Service', 'Dates', 'Attachments', 'Requestors' ],
+                        [ 'Articles', 'LinkedQueues', 'Assets', 'LinkedArticles', 'CVEDetails' ],
+                    ],
+                },
+                {   Layout   => 'col-12',
+                    Elements => ['History'],
+                }
+            ],
+            'Incident - Piracy' => [
+                {   Layout   => 'col-md-6',
+                    Title    => 'Ticket metadata',
+                    Elements => [
+                        [ 'Basics', 'Times', 'Description', 'CustomFieldCustomGroupings:Incident Details', 'CustomFieldCustomGroupings:Piracy', 'Dates', 'Attachments', 'Requestors' ],
                         [ 'Articles', 'LinkedQueues', 'Assets', 'LinkedArticles', 'CVEDetails' ],
                     ],
                 },
@@ -728,7 +800,7 @@ Set(%PageLayouts,
                 {   Layout   => 'col-md-7,col-md-5',
                     Elements => [
                         [ 'Message', 'Submit' ],
-                        [ 'Basics',  'Assets', 'Description', 'CustomFieldCustomGroupings', 'Dates', 'Times' ],
+                        [ 'Basics',  'Assets', 'Description', 'CustomFieldCustomGroupings:Networking', 'CustomFieldCustomGroupings:Details', 'Dates', 'Times' ],
                     ],
                 },
             ],
@@ -791,6 +863,16 @@ RTIR specific page layout mapping.
 Set(%PageLayoutMapping,
     'RT::Ticket' => {
         Display => [
+            {   Type   => 'CustomField.{Classification}',
+                Layout => {
+                    'Spam'              => 'Incident - Spam',
+                    'System Compromise' => 'Incident - System Compromise',
+                    'Query'             => 'Incident - Query',
+                    'Scan'              => 'Incident - Scan',
+                    'Denial of Service' => 'Incident - Denial of Service',
+                    'Piracy'            => 'Incident - Piracy',
+                },
+            },
             {   Type   => 'Queue',
                 Layout => {
                     'Incidents'        => 'Incidents',
@@ -864,6 +946,15 @@ Set(%CustomFieldGroupings,
                 'Resolution',   'Function',      'Classification', 'CVE ID',
                 'Customer',     'Netmask',       'Port',           'Where Blocked'
             ],
+            'Incident Details'    => [
+                'Classification', 'Function', 'Resolution'
+            ],
+            'Spam' => [ 'Domain', 'IP' ],
+            'System Compromise' => [ 'Domain', 'IP' ],
+            'Query' => [ 'Domain', 'IP' ],
+            'Scan' => [ 'Domain', 'IP' ],
+            'Denial of Service' => [ 'Domain', 'IP' ],
+            'Piracy' => [ 'Domain', 'IP' ],
         ],
         'Incident Reports' => [
             'Networking' => [ 'IP', 'Domain' ],

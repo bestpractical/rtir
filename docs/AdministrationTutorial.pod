@@ -161,6 +161,53 @@ Customer for an IR or Investigation.
 
 =back
 
+=head2 Customizing Incident Page Layouts
+
+RT 6 adds a new feature called L<page layouts|https://docs.bestpractical.com/rt/latest/customizing/page_layouts.html>
+that allows you to configure every element shown on ticket pages.
+Using this feature, you can remove or add different widgets on pages
+for all RTIR queues. For example, if you don't track time on your
+tickets, you can completely remove the Time widget and save space on
+the page. By default, Incidents don't show the People section, but now
+you can easily add it if you want to use it.
+
+=head2 Different Page Layouts Based on Classification
+
+The page layout feature described above has an option that allows you
+to use a different page layout based on the value of a custom field.
+RTIR now comes with a configuration that uses this feature to show
+a different page layout for each Classification value. If a ticket is
+classified as a Spam ticket, you may want to have staff fill out one
+set of custom fields. The fields for a System Compromise might be
+different.
+
+The base configuration creates a page layout for each default value
+of Classification, named "Incident - Spam", "Incident - Query", etc.
+Each of these page layouts is modeled on the default Incident page,
+but they show a different set of custom fields. To start, each one
+shows the default IP and Domain custom fields. On an Incident,
+the different page layouts will be shown based on the selected value
+of Classification. If no Classification is set, the default Incident
+layout is used.
+
+These settings are just a framework. As the admin, you can then add
+custom fields to each and configure them. To do so, first create the
+new custom field and apply it to the Incidents queue. Then go to the
+System Configuration edit page and find CustomFieldGroupings. Find the
+grouping for the classification you want to update, for example, "Spam".
+Add the new custom field to the list there. That custom field will now
+be included in the custom fields shown when a Spam classification is
+selected.
+
+If you want to disable these custom page layouts, go to the Classification
+custom field and select the Page Layouts tab. Under Layouts for Display,
+for each value, select Default. Incidents will then all use the Incidents
+page layout regardless of the Classification value.
+
+RTIR provides some defaults for the Incident display page. As you can see
+on the custom field page layout configuration, you can also add custom
+page layouts for the create page and update page as well.
+
 =head2 Documenting Process for Incidents
 
 Starting in version 5.0.4, RT supports a feature called Process Articles
