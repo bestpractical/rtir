@@ -5,6 +5,22 @@ use warnings;
 
 use RT::IR::Test tests => undef;
 
+# Load current CustomFieldGroupings and add "test" to Details for all RTIR queues
+my %current_groupings = RT->Config->Get('CustomFieldGroupings');
+for my $queue ('Incidents', 'Incident Reports', 'Investigations', 'Countermeasures') {
+    if (exists $current_groupings{'RT::Ticket'}{$queue}) {
+        # Find Details grouping and add "test" to it
+        my @groupings = @{$current_groupings{'RT::Ticket'}{$queue}};
+        for (my $i = 0; $i < @groupings; $i += 2) {
+            if ($groupings[$i] eq 'Details') {
+                push @{$groupings[$i + 1]}, 'test';
+                last;
+            }
+        }
+    }
+}
+RT->Config->Set('CustomFieldGroupings', %current_groupings);
+
 my $cf_name = 'test';
 {
     my $cf = RT::CustomField->new( $RT::SystemUser );
