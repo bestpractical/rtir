@@ -13,6 +13,21 @@ of RTIR 6 is 6.0.1, which should be run with RT 6.0.1.
 
 =item *
 
+RTIR queues now use the new page layout system released on RT 6. This
+means the create, display, and update pages for RTIR queues are completely
+configurable. You can add or remove all components to make each queue work
+for you. See the next section for details on additional special configuration
+for Incidents.
+
+As part of this update, two RTIR-specific configurations are updated.
+In C<%CustomFieldGroupings> and C<%InlineEditPanelBehavior>, RTIR now uses
+the key "RT::Ticket" just like RT, instead of previous "RTIR::Ticket".
+If you had custom configurations for these two options, update your
+"RTIR::Ticket" entries to "RT::Ticket". If you had an existing "RT::Ticket"
+section, merge the two together.
+
+=item *
+
 RTIR now provides different page layouts for Incidents based on the value
 of the Classification custom field. This feature uses RT 6's page layout
 system to show different custom fields and widgets depending on the type
@@ -36,14 +51,6 @@ Classification, you can disable this feature by going to Admin > Custom
 Fields > Classification > Page Layouts tab. Under "Layouts for Display",
 set each Classification value to use "Default" instead of the specific
 layout names.
-
-=item *
-
-As RTIR has switched to RT 6's flexible page layout, a few RTIR-specific
-configurations are updated:
-
-In C<%CustomFieldGroupings> and C<%InlineEditPanelBehavior>, RTIR uses key
-"RT::Ticket" just like RT, instead of previous "RTIR::Ticket".
 
 =item *
 
