@@ -1,12 +1,12 @@
 <&| /Elements/LabeledValue, Label => 'Is RTIR Search', LabelFor => "RTIRSearchEnabled", ReadOnly => 0 &>
   <select name="RTIRSearchEnabled" class="form-select selectpicker refresh">
     <option value="Yes"
-% if ( $Default ) {
+% if ( $Default && $Default eq 'Yes' ) {
     selected="selected"
 % }
 ><&|/l&>Yes</&></option>
     <option value="No"
-% if ( !$Default ) {
+% if ( !$Default || $Default eq 'No' ) {
     selected="selected"
 % }
 ><&|/l&>No</&></option>
