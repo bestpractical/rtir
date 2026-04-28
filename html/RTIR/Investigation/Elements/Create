@@ -285,10 +285,6 @@
   &>
 % }
 
-% unless ( $SkipField{'Attachments'} ) {
-<& /RTIR/Create.html:AttachmentsForm &>
-% }
-
 </&>
 
 <div class="form-row">

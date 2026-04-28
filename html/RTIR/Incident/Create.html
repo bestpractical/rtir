@@ -329,7 +329,7 @@ if ( $ChildObj && $ChildObj->id && !$ChildObj->CurrentUserHasRight('ModifyTicket
     QueueObj => $InvestigationsQueueObj,
     Lifecycle => RT::IR->lifecycle_investigation,
     Constituency => $constituency,
-    SkipField => { Owner => 1, Attachments => 1, DateFields => 1 },
+    SkipField => { Owner => 1, DateFields => 1 },
     IncludeSignature => (exists $ARGS{'InvestigationContent'} ? 0 : 1),
 &>
 </div>
