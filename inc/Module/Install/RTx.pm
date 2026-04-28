@@ -9,7 +9,7 @@ no warnings 'once';
 use Term::ANSIColor qw(:constants);
 use Module::Install::Base;
 use base 'Module::Install::Base';
-our $VERSION = '0.44';
+our $VERSION = '0.45';
 
 use FindBin;
 use File::Glob     ();
@@ -204,9 +204,17 @@ install ::
         $initdb .= <<"." if $has_etc{acl};
 \t\$(NOECHO) \$(PERL) -Ilib -I"$local_lib_path" -I"$lib_path" -Iinc -MModule::Install::RTx::Runtime -e"RTxDatabase(qw(acl \$(NAME) \$(VERSION)))"
 .
-        $initdb .= <<"." if $has_etc{initialdata};
+        if ($has_etc{initialdata}) {
+            if ($extra_args->{initialdata_requires_plugin}) {
+                (my $plugin_name = $name) =~ s/-/::/g;
+                $initdb .= <<"CHECK";
+\t\$(NOECHO) \$(PERL) -Ilib -I"$local_lib_path" -I"$lib_path" -Iinc -MModule::Install::RTx::Runtime -e"RTxInitialdataRequiresPlugin('$plugin_name')"
+CHECK
+            }
+            $initdb .= <<"INSERT";
 \t\$(NOECHO) \$(PERL) -Ilib -I"$local_lib_path" -I"$lib_path" -Iinc -MModule::Install::RTx::Runtime -e"RTxDatabase(qw(insert \$(NAME) \$(VERSION)))"
-.
+INSERT
+        }
         $self->postamble("initdb ::\n$initdb\n");
         $self->postamble("initialize-database ::\n$initdb\n");
         if ($has_etc{upgrade}) {
@@ -313,4 +321,4 @@ sub _load_rt_handle {
 
 __END__
 
-#line 484
+#line 500
