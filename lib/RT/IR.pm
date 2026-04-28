@@ -502,8 +502,15 @@ sub OurQuery {
     my $query = shift;
 
     my ($has_our, $has_other, @lifecycles) = (0, 0);
+    # ParseToArray dies on invalid SQL; treat unparseable queries as non-RTIR.
+    my $array;
+    eval { $array = RT::SQL::ParseToArray( $query ) };
+    if ( $@ ) {
+        RT->Logger->warning("OurQuery: failed to parse query '$query': $@");
+        return;
+    }
     $ticket_sql_parser->walk(
-        RT::SQL::ParseToArray( $query ),
+        $array,
         { operand => sub {
             return undef unless $_[0]->{'key'} =~ /^(Queue(?:\z|\.)|Lifecycle)/;
             my $key = $1;
