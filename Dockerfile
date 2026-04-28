@@ -1,4 +1,4 @@
-FROM bpssysadmin/rt-base-debian:RT-5.0.8-buster-20250509
+FROM bpssysadmin/rt-base-debian:RT-6.0.2-bullseye-20250903
 
 LABEL maintainer="Best Practical Solutions <contact@bestpractical.com>"
 
@@ -19,7 +19,6 @@ RUN cd /usr/local/src \
   && git checkout $RT_VERSION \
   && ./configure.ac \
      --enable-developer \
-     --enable-gd \
      --enable-graphviz \
      --with-db-type="$RT_DB_TYPE" \
      --with-db-database="$RT_DB_NAME" \
