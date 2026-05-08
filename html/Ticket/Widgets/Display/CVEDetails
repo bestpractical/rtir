@@ -55,3 +55,13 @@
 <%ARGS>
 $TicketObj
 </%ARGS>
+
+<%METHOD PreCheck>
+<%args>
+$Object
+</%args>
+<%init>
+return 0 unless $Object && $Object->isa('RT::Ticket');
+return $Object->CustomFieldValues('CVE ID')->Count ? 1 : 0;
+</%init>
+</%METHOD>
