@@ -2,7 +2,7 @@
 package Module::Install::RTx::Runtime;
 
 use base 'Exporter';
-our @EXPORT = qw/RTxDatabase RTxPlugin/;
+our @EXPORT = qw/RTxDatabase RTxPlugin RTxInitialdataRequiresPlugin/;
 
 use strict;
 use File::Basename ();
@@ -54,6 +54,17 @@ sub RTxDatabase {
 
     print "$^X @args\n";
     (system($^X, @args) == 0) or die "...returned with error: $?\n";
+}
+
+sub RTxInitialdataRequiresPlugin {
+    my ($name) = @_;
+
+    _rt_runtime_load();
+
+    my @plugins = RT->Config->Get('Plugins');
+    unless (grep { $_ eq $name } @plugins) {
+        die "\nERROR: You must add Plugin('$name') to your RT_SiteConfig.pm before running 'make initdb'.\n\n";
+    }
 }
 
 sub RTxPlugin {
