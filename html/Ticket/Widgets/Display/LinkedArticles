@@ -54,3 +54,15 @@
 <%ARGS>
 $TicketObj
 </%ARGS>
+
+<%METHOD PreCheck>
+<%args>
+$Object
+</%args>
+<%init>
+return 0 unless $Object && $Object->isa('RT::Ticket');
+my $articles = RT::Articles->new( $session{'CurrentUser'} );
+$articles->LimitReferredToBy( $Object->URI );
+return $articles->Count ? 1 : 0;
+</%init>
+</%METHOD>

@@ -31,6 +31,36 @@ is ($agent->status, 200, "Attempting to create new incident and investigation li
 $agent->text_like(qr{You must enter a correspondent for the investigation},
 "RT did not allow an empty correspondent field");
 
+# Same scenario, but submitted as an htmx-boosted request (matching what
+# the browser sends when the body's hx-boost intercepts the form).
+$agent->display_ticket($ir);
+$agent->follow_link_ok({id => "create-incident"}, "Followed 'New (Incident)' link (htmx-boosted scenario)");
+$agent->form_number(3);
+$agent->field('Subject', 'Incident for htmx-boosted validation test');
+$agent->field('InvestigationSubject', 'Investigation for htmx-boosted validation test');
+$agent->field('InvestigationRequestors', '');
+
+$agent->add_header( 'HX-Request' => 'true' );
+$agent->add_header( 'HX-Boosted' => 'true' );
+
+# autocheck would fail the test on a non-2xx response; 422 is what we want here.
+my $orig_autocheck = $agent->autocheck;
+$agent->autocheck(0);
+
+$agent->click("InvestigationSubmitTicket");
+
+is( $agent->status, 422, 'htmx-boosted InvestigationSubmitTicket validation failure returns 422' );
+
+$agent->next_warning_like( qr/Validation error/, 'htmx-boosted validation failure logs expected "Validation error"' );
+
+my $hx_trigger = $agent->response->header('HX-Trigger');
+ok( $hx_trigger, 'HX-Trigger header is set on htmx-boosted validation failure' );
+like( $hx_trigger // '', qr/actionsChanged/,                      'HX-Trigger contains actionsChanged event' );
+like( $hx_trigger // '', qr/correspondent for the investigation/, 'HX-Trigger payload mentions the validation error' );
+
+$agent->autocheck($orig_autocheck);
+$agent->delete_header('HX-Request');
+$agent->delete_header('HX-Boosted');
 
 my ( $inc_id, $inv_id ) = $agent->create_incident_and_investigation(
     '',
