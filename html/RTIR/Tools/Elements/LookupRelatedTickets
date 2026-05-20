@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -72,7 +72,27 @@ if ( $LookupType && RT::IR->CustomFields( Field => $LookupType ) ) {
     unless (RT->Config->Get('FullTextSearch')->{Enable}) {
         RT->Logger->error("Asked to run a full text search from Lookup.html without full text search enabled, see %FullTextSearch in RT_Config.pm");
     }
-    $query = "Content LIKE '$q'";
+    # Email addresses, hostnames, etc. contain characters that several
+    # FTS engines treat as reserved operators ('@' and '-' are
+    # proximity/NOT in MySQL/MariaDB BOOLEAN MODE; both are reserved in
+    # Oracle Text). Wrap the term using each engine's literal/phrase
+    # syntax so it is searched verbatim. Pg's plainto_tsquery()
+    # tokenizes and ignores punctuation, so no wrapping is required
+    # there.
+    my $db_type = RT->Config->Get('DatabaseType');
+    if ( $db_type eq 'mysql' ) {
+        my $phrase = $q;
+        $phrase =~ s/(["\\])/\\$1/g;
+        $query = qq{Content LIKE '"$phrase"'};
+    }
+    elsif ( $db_type eq 'Oracle' ) {
+        my $phrase = $q;
+        $phrase =~ s/([\\}])/\\$1/g;
+        $query = qq{Content LIKE '{$phrase}'};
+    }
+    else {
+        $query = "Content LIKE '$q'";
+    }
 }
 my $age = RT->Config->Get('RTIR_OldestRelatedTickets') || 60;
 $query = "$query AND LastUpdated > '$age days ago'";

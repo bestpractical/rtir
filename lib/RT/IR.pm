@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -51,7 +51,7 @@ use 5.008003;
 use strict;
 use warnings;
 
-our $VERSION = '6.0.1';
+our $VERSION = '6.0.3';
 
 use Scalar::Util qw(blessed);
 
@@ -501,8 +501,15 @@ sub OurQuery {
     my $query = shift;
 
     my ($has_our, $has_other, @lifecycles) = (0, 0);
+    # ParseToArray dies on invalid SQL; treat unparseable queries as non-RTIR.
+    my $array;
+    eval { $array = RT::SQL::ParseToArray( $query ) };
+    if ( $@ ) {
+        RT->Logger->warning("OurQuery: failed to parse query '$query': $@");
+        return;
+    }
     $ticket_sql_parser->walk(
-        RT::SQL::ParseToArray( $query ),
+        $array,
         { operand => sub {
             return undef unless $_[0]->{'key'} =~ /^(Queue(?:\z|\.)|Lifecycle)/;
             my $key = $1;

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -62,3 +62,36 @@ if ( $ARGS{Incident} ) {
 <%ARGS>
 $QueueObj
 </%ARGS>
+
+<%METHOD PreCheck>
+<%args>
+$ARGSRef
+</%args>
+<%init>
+return 0 unless $ARGSRef && $ARGSRef->{Incident};
+
+my $id = ref $ARGSRef->{Incident} ? $ARGSRef->{Incident}[0] : $ARGSRef->{Incident};
+my $incident = RT::Ticket->new( $session{CurrentUser} );
+$incident->Load($id);
+return 0 unless $incident->Id;
+
+my @parents;
+if ( RT::IR->IsIncidentQueue( $incident->QueueObj ) ) {
+    push @parents, $incident->id;
+}
+else {
+    push @parents, map $_->id, @{ RT::IR->Incidents($incident)->ItemsArrayRef || [] };
+}
+return 0 unless @parents;
+
+my $siblings = RT::Tickets->new( $incident->CurrentUser );
+$siblings->FromSQL(
+    RT::IR->Query(
+        Lifecycle => RT::IR->lifecycle_report,
+        MemberOf  => \@parents,
+        Exclude   => [$incident],
+    )
+);
+return $siblings->Count ? 1 : 0;
+</%init>
+</%METHOD>

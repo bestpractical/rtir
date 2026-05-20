@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -55,3 +55,13 @@
 <%ARGS>
 $TicketObj
 </%ARGS>
+
+<%METHOD PreCheck>
+<%args>
+$Object
+</%args>
+<%init>
+return 0 unless $Object && $Object->isa('RT::Ticket');
+return $Object->CustomFieldValues('CVE ID')->Count ? 1 : 0;
+</%init>
+</%METHOD>

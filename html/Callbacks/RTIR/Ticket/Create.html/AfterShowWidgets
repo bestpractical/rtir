@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,9 +53,10 @@
 <div id="ticket-create-investigation" data-name-prefix="Investigation">
   <&| /Widgets/TitleBox, title => RT::IR::TicketType( Lifecycle => 'investigations' ) &>
     <& /Elements/ShowWidgets,
-      Object  => $InvestigationsQueueObj,
-      Page    => 'Create',
-      ARGSRef => {
+      Object   => $InvestigationsQueueObj,
+      Page     => 'Create',
+      LazyLoad => 1,
+      ARGSRef  => {
           Queue          => $InvestigationsQueueObj->Id,
           SelectIncident => 0,
           AddAttachments => 0,

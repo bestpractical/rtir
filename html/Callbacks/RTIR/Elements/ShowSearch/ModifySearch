@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2025 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -56,7 +56,8 @@ if ( $ARGS{'SavedSearch'} ) {
 }
 
 return
-    unless $m->request_comp->path =~ m{^/RTIR/} || ( $search && $search->GetOption('RTIRSearchEnabled') );
+    unless $m->request_comp->path =~ m{^/RTIR/}
+    || ( $search && ( $search->GetOption('RTIRSearchEnabled') // '' ) =~ /^(?:Yes|1)$/i );
 
 # HTMX search requests will have the constituency added as a query param
 if ( my $c = $ARGS{'ConstituencyFilter'} ) {
