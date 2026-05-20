@@ -287,6 +287,7 @@ t/incident/bulk-abandon.t
 t/incident/linked_queue_portlets.t
 t/incident/split.t
 t/mail/skip_notification.t
+t/playwright/incident_create.t
 t/report/split.t
 t/report/status.t
 t/searches/cf.t
