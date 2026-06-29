@@ -60,7 +60,7 @@
   </select>
 </&>
 <%init>
-my $Default = $SavedSearchObj->GetOption('RTIRSearchEnabled');
+my $Default = ( $SavedSearchObj->GetOption('RTIRSearchEnabled') // '' ) =~ /^(?:Yes|1)$/i;
 </%init>
 <%args>
 $SavedSearchObj
