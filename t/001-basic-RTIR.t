@@ -67,5 +67,89 @@ $agent->content_like(qr/Ticket \d+ member of Ticket \d+/, 'Investigation linked 
 $agent->follow_link_ok({text => 'Investigation created for test incident'}, 'Followed link to investigation');
 $agent->content_contains('Content of the Investigation', 'Investigation content is correct');
 
+diag 'Reverse history order on RTIR display pages';
+{
+    my $user = rtir_user();
+
+    my %pages = (
+        '/RTIR/Display.html'          => $report,
+        '/RTIR/Incident/Display.html' => $first_incident_id,
+    );
+
+    # Order is only observable with more than one transaction to order.
+    for my $id ( sort { $a <=> $b } values %pages ) {
+        my $ticket = RT::Ticket->new( RT->SystemUser );
+        $ticket->Load($id);
+        my ($ok, $msg) = $ticket->Comment( Content => 'a second transaction' );
+        ok( $ok, "commented on ticket $id" ) or diag $msg;
+    }
+
+    my $set_show_history = sub {
+        my $mode = shift;
+        my ($ok, $msg) = $user->SetPreferences( $RT::System => { ShowHistory => $mode } );
+        ok( $ok, "set the ShowHistory preference to '$mode'" ) or diag $msg;
+    };
+
+    my $rendered_txn_ids = sub {
+        my ($path, $id, $reverse) = @_;
+        $agent->get_ok( "$path?ForceShowHistory=1;ReverseTxns=$reverse;id=$id",
+            "loaded $path for ticket $id with ReverseTxns=$reverse" );
+        return [
+            map { $_->attr('data-transaction-id') }
+                grep { !$_->matches('.end-of-history-list') }
+                $agent->dom->find('div.transaction')->each
+        ];
+    };
+
+    $set_show_history->('always');
+    for my $path ( sort keys %pages ) {
+        my $id   = $pages{$path};
+        my $asc  = $rendered_txn_ids->( $path, $id, 'ASC' );
+        my $desc = $rendered_txn_ids->( $path, $id, 'DESC' );
+        cmp_ok( scalar @$asc, '>=', 2,
+            "$path renders at least 2 transactions for ticket $id" );
+        is_deeply( $desc, [ reverse @$asc ],
+            "$path renders history in the reverse order for ticket $id" );
+    }
+
+    # These modes fetch the history over a second request, so the order has to
+    # survive into the URL that request is made with. That URL is embedded in
+    # JavaScript, where "/" arrives as either "\/" or "\x2F".
+    my $unescaped_content = sub {
+        my $content = $agent->content;
+        $content =~ s{\\x([0-9a-fA-F]{2})}{chr hex $1}ge;
+        $content =~ s{\\/}{/}g;
+        return $content;
+    };
+
+    for my $mode (qw/delay click/) {
+        $set_show_history->($mode);
+        for my $path ( sort keys %pages ) {
+            my $id = $pages{$path};
+            $agent->get_ok( "$path?ReverseTxns=DESC;id=$id",
+                "loaded $path for ticket $id in '$mode' mode" );
+            like( $unescaped_content->(),
+                qr{/Helpers/TicketHistory\?[^"']*\bReverseTxns=DESC\b},
+                "$path passes ReverseTxns to the history helper in '$mode' mode" );
+        }
+    }
+
+    $set_show_history->('scroll');
+    for my $path ( sort keys %pages ) {
+        my $id = $pages{$path};
+        for my $case ( [ DESC => 0 ], [ ASC => 1 ] ) {
+            my ($reverse, $oldest_first) = @$case;
+            $agent->get_ok( "$path?ReverseTxns=$reverse;id=$id",
+                "loaded $path for ticket $id in 'scroll' mode with ReverseTxns=$reverse" );
+            like( $agent->content,
+                qr{\bvar\s+oldestTransactionsFirst\s*=\s*\Q$oldest_first\E\s*;},
+                "$path scrolls with oldestTransactionsFirst=$oldest_first for ReverseTxns=$reverse" );
+        }
+    }
+
+    my ($ok, $msg) = $user->DeletePreferences($RT::System);
+    ok( $ok, 'deleted the ShowHistory preference' ) or diag $msg;
+}
+
 undef $agent;
 done_testing;
