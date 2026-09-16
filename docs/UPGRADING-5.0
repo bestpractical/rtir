@@ -289,4 +289,34 @@ list for "How Reported" to include these new values:
 
 =back
 
+=head1 UPGRADING FROM 5.0.10 AND EARLIER
+
+=over 4
+
+=item * Limit on the Number of CVEs Parsed From a Message
+
+L<RT::Action::RTIR_FindCVE> adds a "CVE ID" custom field value for every
+CVE it finds in an incoming message. Starting with RTIR 5.0.11, a message
+that mentions more than 100 distinct CVEs is skipped entirely, as content
+that large is usually a vulnerability feed or an advisory digest rather
+than a report about a specific incident.
+
+Repeated mentions of the same CVE are collapsed before the limit is applied,
+so a message that mentions a few CVEs many times is still processed.
+
+If you regularly receive messages listing more CVEs than this, you can change
+the limit with a local overlay in F<local/lib/RT/Action/RTIR_FindCVE_Local.pm>
+containing:
+
+    use strict;
+    use warnings;
+
+    package RT::Action::RTIR_FindCVE;
+
+    our $MAX_CVES = 500;
+
+    1;
+
+=back
+
 =cut
