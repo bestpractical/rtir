@@ -6,8 +6,19 @@ po/rtir.pot is a template.
 To start a new translation, copy the template to po/<lang>.po where <lang>
 is your language, for example ru, pt, pt_BR or other.
 
-There are currently no translations to any language, so you may encounter
-some problems.
+Translation files only need to contain strings that are specific to RTIR.
+Strings that also appear in RT core (for example "Owner" or "Status") are
+translated by RT itself, because RT merges its own catalog with every
+plugin catalog for the same language. Omit them from po/<lang>.po rather
+than leaving them blank.
+
+To regenerate po/rtir.pot and update the po files, run this from the top
+of the RTIR checkout, with RTHOME pointing at an RT source checkout:
+
+    devel/tools/rtir-message-catalog extract
+
+It runs RT's extractor and then removes strings that RT core already
+translates. See the documentation in the script for the other commands.
 
 Some strings may be missing from the rtir.pot file.  This may happen if a
 developer forgot to use loc function or /l mason component. Usually it's
