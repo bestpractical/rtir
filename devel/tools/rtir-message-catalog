@@ -1,0 +1,236 @@
+#!/usr/bin/env perl
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2026 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
+use strict;
+use warnings;
+
+use Locale::PO;
+use Getopt::Long;
+use File::Spec;
+
+use constant PO_DIR => 'po';
+use constant POT    => 'po/rtir.pot';
+
+=head1 NAME
+
+rtir-message-catalog - maintain RTIR translation files
+
+=head1 SYNOPSIS
+
+    devel/tools/rtir-message-catalog extract [--rt-dir /path/to/rt] [po-file ...]
+    devel/tools/rtir-message-catalog clean [po-file ...]
+    devel/tools/rtir-message-catalog stats
+
+=head1 DESCRIPTION
+
+RTIR translation files live in F<po/>. F<po/rtir.pot> is the template
+listing every localizable string found in the RTIR source. Each
+F<po/E<lt>langE<gt>.po> is a translation.
+
+RT merges its own message catalog with every plugin's catalog for the same
+language, so an RTIR po file only needs to contain strings that are
+specific to RTIR. Strings that RT core already translates are removed from
+RTIR po files by the C<extract> and C<clean> commands so translators are not
+shown entries they should not touch.
+
+Run all commands from the top of the RTIR checkout.
+
+=head2 extract
+
+Regenerates F<po/rtir.pot> from the RTIR source using RT's
+F<devel/tools/extract-message-catalog>, then updates every po file (or only
+the po files given on the command line), adding new strings and removing
+strings no longer in the source. Strings translated by RT core are then
+removed from each po file.
+
+This requires an RT source checkout. Give its location with C<--rt-dir> or
+the C<RTHOME> environment variable.
+
+=head2 clean
+
+Removes from each po file (or only the po files given on the command line)
+any entry whose msgid is present in RT core's catalog for the same
+language, and any translation that is identical to its msgid. Does not
+touch the source or the pot file.
+
+=head2 stats
+
+Prints the number of translated strings in each po file, relative to the
+number of RTIR-specific strings in F<po/rtir.pot>.
+
+=cut
+
+my $rt_dir = $ENV{RTHOME};
+GetOptions( 'rt-dir=s' => \$rt_dir, 'help|h' => \my $help ) or usage();
+usage() if $help;
+
+my $command = shift;
+usage() unless $command;
+usage("Unknown command '$command'")
+    unless grep { $_ eq $command } qw(extract clean stats);
+
+main->can($command)->(@ARGV);
+
+exit;
+
+sub usage {
+    warn @_, "\n\n" if @_;
+    warn <<'    USAGE';
+usage:
+
+    rtir-message-catalog extract [--rt-dir /path/to/rt] [po-file ...]
+    rtir-message-catalog clean [po-file ...]
+    rtir-message-catalog stats
+
+extract: Regenerate po/rtir.pot from the source and update po files,
+  then remove strings RT core already translates. Needs an RT source
+  checkout, given with --rt-dir or the RTHOME environment variable.
+
+clean: Remove strings RT core already translates, and identity
+  translations, from po files.
+
+stats: Print translation stats for each po file.
+
+    USAGE
+    exit 1;
+}
+
+sub rt_dir {
+    usage("Set RTHOME or pass --rt-dir pointing at an RT source checkout")
+        unless defined $rt_dir and length $rt_dir;
+    die "$rt_dir does not look like an RT checkout: no lib/RT/I18N/Extract.pm\n"
+        unless -f File::Spec->catfile( $rt_dir, 'lib', 'RT', 'I18N', 'Extract.pm' );
+    return $rt_dir;
+}
+
+sub po_files {
+    my @files = @_;
+    return @files if @files;
+    return grep { !/\.pot$/ } glob( PO_DIR . '/*.po' );
+}
+
+sub lang_of {
+    my $file = shift;
+    my ($lang) = $file =~ m{([^/]+)\.pot?$};
+    return $lang;
+}
+
+# msgids present in RT core's catalog for this language. RT owns these
+# strings even when its translation is blank (RT blanks translations that
+# are identical to the English), so RTIR po files should not carry them.
+sub rt_msgids {
+    my $lang = shift;
+    my $file = File::Spec->catfile( rt_dir(), 'share', 'po', "$lang.po" );
+    return {} unless -f $file;
+    my $hash = Locale::PO->load_file_ashash( $file, 'utf-8' );
+    return { map { $_ => 1 } keys %$hash };
+}
+
+sub extract {
+    my @files = po_files(@_);
+
+    my $rt = rt_dir();
+    my $extractor = File::Spec->catfile( $rt, 'devel', 'tools', 'extract-message-catalog' );
+    die "Can't find $extractor\n" unless -f $extractor;
+
+    # RT's extractor scans bin, lib, html and etc in the current directory
+    # and uses RT::I18N::Extract from the RT lib directory.
+    my $lib = File::Spec->catdir( $rt, 'lib' );
+    system( $^X, "-I$lib", $extractor, POT, @files ) == 0
+        or die "extract-message-catalog failed\n";
+
+    clean(@files);
+}
+
+sub clean {
+    my @files = po_files(@_);
+
+    for my $file (@files) {
+        my $lang     = lang_of($file);
+        my $rt_ids   = rt_msgids($lang);
+        my $array    = Locale::PO->load_file_asarray( $file, 'utf-8' );
+        my ($header, @entries) = @$array;
+
+        my ( $removed, $identity ) = ( 0, 0 );
+        my @keep;
+        for my $entry (@entries) {
+            if ( $rt_ids->{ $entry->msgid } ) {
+                $removed++;
+                next;
+            }
+            if ( $entry->msgstr eq $entry->msgid ) {
+                $entry->msgstr('');
+                $identity++;
+            }
+            push @keep, $entry;
+        }
+
+        Locale::PO->save_file_fromarray( $file, [ $header, @keep ], 'utf-8' )
+            or die "Couldn't write $file: $!";
+        print "$file: kept ", scalar @keep, ", removed $removed translated by RT",
+            ( $identity ? ", blanked $identity identity translations" : '' ), "\n";
+    }
+}
+
+sub stats {
+    my $pot = Locale::PO->load_file_asarray( POT, 'utf-8' );
+    my @pot_ids = map { $_->msgid } @$pot[ 1 .. $#$pot ];
+
+    for my $file ( po_files() ) {
+        my $lang   = lang_of($file);
+        my $rt_ids = ( defined $rt_dir && length $rt_dir ) ? rt_msgids($lang) : undef;
+        my $total  = $rt_ids ? grep { !$rt_ids->{$_} } @pot_ids : scalar @pot_ids;
+
+        my $array = Locale::PO->load_file_asarray( $file, 'utf-8' );
+        my $translated = grep { length $_->dequote( $_->msgstr ) } @$array[ 1 .. $#$array ];
+
+        my $note = $rt_ids ? '' : ' (of all pot strings; set RTHOME to exclude those RT translates)';
+        printf "%-16s %d/%d (%.1f%%)%s\n", "$file:", $translated, $total,
+            $total ? $translated * 100 / $total : 0, $note;
+    }
+}
