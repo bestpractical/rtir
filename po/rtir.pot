@@ -44,8 +44,9 @@ msgstr ""
 msgid "(No inactive %1)"
 msgstr ""
 
+#. (loc($display_lifecycle))
 #: html/RTIR/Tools/Elements/LookupSummary:62
-msgid "(no $display_lifecycle)"
+msgid "(no %1)"
 msgstr ""
 
 #: html/RTIR/Elements/ShowIncidents:56
@@ -113,9 +114,9 @@ msgstr ""
 msgid "Advanced"
 msgstr ""
 
-#. ($id)
+#. ($Type, $id)
 #: html/RTIR/Advanced.html:104
-msgid "Advanced edit $Type #%1"
+msgid "Advanced edit %1 #%2"
 msgstr ""
 
 #: html/RTIR/Tools/ScriptedAction.html:98
@@ -317,7 +318,7 @@ msgstr ""
 msgid "Display"
 msgstr ""
 
-#: etc/initialdata:560
+#: etc/initialdata:559
 msgid "Duty Team Members"
 msgstr ""
 
@@ -472,7 +473,7 @@ msgstr ""
 
 #. ($feed->{Title}, $item->{Title})
 #: html/RTIR/Tools/ExternalFeeds.html:87
-msgid "Incident created from RSS feed %1: %1"
+msgid "Incident created from RSS feed %1: %2"
 msgstr ""
 
 #: html/RTIR/Reporting/Report.html:101
@@ -628,15 +629,15 @@ msgstr ""
 msgid "More... (%1 total)"
 msgstr ""
 
-#: etc/initialdata:734 etc/upgrade/5.9.0/content:53
+#: etc/initialdata:733 etc/upgrade/5.9.0/content:53
 msgid "Most due incidents"
 msgstr ""
 
-#: etc/initialdata:702 etc/upgrade/5.9.0/content:21
+#: etc/initialdata:701 etc/upgrade/5.9.0/content:21
 msgid "Most due incidents I own"
 msgstr ""
 
-#: etc/initialdata:718 etc/upgrade/5.9.0/content:37
+#: etc/initialdata:717 etc/upgrade/5.9.0/content:37
 msgid "Most due unowned incidents"
 msgstr ""
 
@@ -674,7 +675,7 @@ msgstr ""
 msgid "New Search"
 msgstr ""
 
-#: etc/initialdata:687 etc/upgrade/5.9.0/content:6
+#: etc/initialdata:686 etc/upgrade/5.9.0/content:6
 msgid "New unlinked Incident Reports"
 msgstr ""
 
@@ -780,7 +781,7 @@ msgstr ""
 msgid "RTIR Linking To Incident"
 msgstr ""
 
-#: etc/initialdata:284 etc/upgrade/2.3.9/content:9
+#: etc/initialdata:283 etc/upgrade/2.3.9/content:9
 msgid "RTIR Merge"
 msgstr ""
 
@@ -813,7 +814,7 @@ msgstr ""
 msgid "RTIR Require Due Change"
 msgstr ""
 
-#: etc/initialdata:289 etc/upgrade/2.9.0/content:15
+#: etc/initialdata:288 etc/upgrade/2.9.0/content:15
 msgid "RTIR Require IRs Activation"
 msgstr ""
 
@@ -1161,7 +1162,7 @@ msgstr ""
 
 #. ($item->{Link} , $item->{PubDate} || $item->{LastBuildDate} || '-')
 #: html/RTIR/Tools/ExternalFeeds.html:88
-msgid "Source: %1 on %1"
+msgid "Source: %1 on %2"
 msgstr ""
 
 #: html/Callbacks/RTIR/Elements/Tabs/Privileged:204 html/Callbacks/RTIR/Ticket/Widgets/Create/Submit/BeforeWidget:57 html/Callbacks/RTIR/Ticket/Widgets/Create/Submit/BeforeWidget:64
@@ -1347,15 +1348,15 @@ msgstr ""
 msgid "Warning: no recipients!"
 msgstr ""
 
-#: etc/initialdata:290 etc/upgrade/2.9.0/content:16
+#: etc/initialdata:289 etc/upgrade/2.9.0/content:16
 msgid "Whenever it's time to activate report"
 msgstr ""
 
-#: etc/upgrade/2.1.1/content:15
+#: etc/initialdata:279 etc/upgrade/2.1.1/content:15
 msgid "Whenever ticket is linked to incident or created with link"
 msgstr ""
 
-#: etc/initialdata:285 etc/upgrade/2.3.9/content:10
+#: etc/initialdata:284 etc/upgrade/2.3.9/content:10
 msgid "Whenever ticket is merged into another one"
 msgstr ""
 
