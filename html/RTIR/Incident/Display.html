@@ -319,22 +319,27 @@
 % my $ShowHistory = RT->Config->Get("ShowHistory", $session{'CurrentUser'});
 % if ($ShowHistory eq "scroll") {
     <& /Ticket/Elements/ScrollShowHistory,
-        Ticket => $TicketObj
+        Ticket => $TicketObj,
+        ShowHeaders => $ARGS{'ShowHeaders'},
+        ReverseTxns => $ARGS{'ReverseTxns'},
     &>
 % } elsif ($ShowHistory eq "delay") {
     <& /Ticket/Elements/DelayShowHistory,
         Ticket => $TicketObj,
         ShowHeaders => $ARGS{'ShowHeaders'},
+        ReverseTxns => $ARGS{'ReverseTxns'},
     &>
 % } elsif (not $ForceShowHistory and $ShowHistory eq "click") {
     <& /Ticket/Elements/ClickToShowHistory,
         Ticket => $TicketObj,
         ShowHeaders => $ARGS{'ShowHeaders'},
+        ReverseTxns => $ARGS{'ReverseTxns'},
     &>
 % } else {
     <& /Elements/ShowHistory,
         Object         => $TicketObj,
         ShowHeaders    => $ARGS{'ShowHeaders'},
+        ReverseTxns    => $ARGS{'ReverseTxns'},
         DisplayPath    => RT::IR->HREFTo("Display.html"),
         UpdatePath     => RT::IR->HREFTo("Update.html"),
         ForwardPath    => RT::IR->HREFTo("Forward.html"),
