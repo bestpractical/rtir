@@ -247,6 +247,15 @@ allowed portlets people can add to thier workspace. RT has its own
 option C<$HomepageComponents> so you can list different sets for RT and
 RTIR. See L<Tutorial> for more information.
 
+=head3 Unread messages on incident listings
+
+The default incident searches on the RTIR home page include an "Updates"
+column that counts messages the current user has not yet seen on each
+Incident. Users can jump to the incident and clear the count by clicking
+on the number. The RT configuration option C<$ShowUnreadMessageNotifications>
+enables a banner offering more unread message options at the top of the
+incident. This option can be enabled globally or per user.
+
 =head2 Notifications
 
 Almost all email notifications in RT/RTIR are controlled via scrips.
