@@ -276,8 +276,7 @@ die "Please add RT::IR to your Plugins configuration before initializing the dat
     },
     {   Name => 'RTIR Linking To Incident',                              # loc
         Description =>
-            'Whenever ticket is linked to incident or created with link'
-        ,                                                                # loc
+            'Whenever ticket is linked to incident or created with link', # loc
         ApplicableTransTypes => 'Create,AddLink',
         ExecModule           => 'RTIR_LinkingToIncident',
     },

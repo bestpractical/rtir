@@ -4,400 +4,318 @@ msgstr ""
 "PO-Revision-Date: 2026-09-17 00:00+0000\n"
 "Last-Translator: Best Practical Solutions <modules@bestpractical.com>\n"
 "Language-Team: Best Practical Solutions <modules@bestpractical.com>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#. (RT::IR::TicketType( Ticket => $SplitObj ),                    $SplitObj->Id, $SplitObj->Subject)
-#. (RT::IR::TicketType( Ticket => $ticket ),                    $ticket->Id,        $ticket->Subject)
-#: html/Callbacks/RTIR/Ticket/Elements/EditBasics/MassageFields:74 html/Callbacks/RTIR/Ticket/Elements/EditBasics/MassageFields:97
-msgid "%1 #%2: %3"
-msgstr ""
-
 #. (RT::IR::TicketType( Ticket => $related_ticket ),                $related_constituency, $constituency)
 #: html/Callbacks/RTIR/Ticket/Create.html/BeforeCreate:95
 msgid "%1 constituency '%2' does not match current constituency '%3'"
-msgstr ""
+msgstr "La circunscripción '%2' de %1 no coincide con la circunscripción actual '%3'"
 
 #. (RT::IR::TicketType(Lifecycle => $Lifecycle),$id, $Incident->Subject)
 #: html/RTIR/Incident/Children/index.html:103
 msgid "%1 for Incident #%2: %3"
-msgstr ""
-
-#. ($email->format, $cu->loc($display))
-#: lib/RT/IR.pm:833
-msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
-msgstr ""
+msgstr "%1 para el Incidente #%2: %3"
 
 #. ($User->EmailAddress)
 #: html/RTIR/EditUsername:51
 msgid "%1's name"
-msgstr ""
+msgstr "Nombre de %1"
 
 #. (loc($friendly_lifecycle))
 #: html/Callbacks/RTIR/Ticket/Elements/ShowLinkedQueues/MassageQueries:62
 msgid "(No active %1)"
-msgstr ""
+msgstr "(No hay %1 activos)"
 
 #. (loc($friendly_lifecycle))
 #: html/Callbacks/RTIR/Ticket/Elements/ShowLinkedQueues/MassageQueries:62
 msgid "(No inactive %1)"
-msgstr ""
+msgstr "(No hay %1 inactivos)"
 
 #. (loc($display_lifecycle))
 #: html/RTIR/Tools/Elements/LookupSummary:62
 msgid "(no %1)"
-msgstr ""
+msgstr "(sin %1)"
 
 #: html/RTIR/Elements/ShowIncidents:56
 msgid "(none)"
-msgstr ""
+msgstr "(ninguno)"
 
 #: etc/upgrade/2.1.1/content:10
 msgid "A block was activated or created in active state"
-msgstr ""
+msgstr "Se activó un bloqueo o se creó en estado activo"
 
 #: etc/initialdata:266 etc/upgrade/1.1.1/content:80
 msgid "A closed ticket is reopened"
-msgstr ""
+msgstr "Se reabre un ticket cerrado"
 
 #: etc/upgrade/2.1.0/content:114
 msgid "A group responsible for constituency must be changed"
-msgstr ""
+msgstr "Debe cambiarse el grupo responsable de la circunscripción"
 
 #: etc/initialdata:260 etc/upgrade/1.1.1/content:75
 msgid "A ticket is rejected or resolved"
-msgstr ""
+msgstr "Se rechaza o se resuelve un ticket"
 
 #: etc/upgrade/1.1.1/content:85
 msgid "A ticket requires a state change"
-msgstr ""
+msgstr "Un ticket requiere un cambio de estado"
 
 #: html/RTIR/Tools/Elements/GetEmailFromIP:51 html/RTIR/Tools/ScriptedAction.html:249
 msgid "ADDRESS_UNKNOWN"
-msgstr ""
+msgstr "DIRECCIÓN_DESCONOCIDA"
 
 #: html/RTIR/Incident/BulkAbandon.html:96
 msgid "Abandon"
-msgstr ""
+msgstr "Abandonar"
 
 #. ($id)
 #: html/RTIR/Incident/Reply/index.html:289
 msgid "Abandon Incident #%1 (including children)"
-msgstr ""
+msgstr "Abandonar el Incidente #%1 (incluidos los hijos)"
 
 #: html/RTIR/Incident/BulkAbandon.html:48
 msgid "Abandon Incidents"
-msgstr ""
+msgstr "Abandonar incidentes"
 
 #: html/RTIR/Incident/BulkAbandon.html:95
 msgid "Abandon selected incidents"
-msgstr ""
-
-#: html/Callbacks/RTIR/Elements/Tabs/Privileged:161
-msgid "Actions"
-msgstr ""
-
-#: html/RTIR/Elements/SelectIncident:75
-msgid "Add"
-msgstr ""
+msgstr "Abandonar los incidentes seleccionados"
 
 #: html/Callbacks/RTIR/Elements/MakeClicky/Default:124
 msgid "Add IP"
-msgstr ""
+msgstr "Añadir IP"
 
 #: html/RTIR/Incident/Reply/index.html:136
 msgid "Add the correspondence/comment to current incident ticket also"
-msgstr ""
-
-#: html/Callbacks/RTIR/Elements/Tabs/Privileged:207
-msgid "Advanced"
-msgstr ""
+msgstr "Añadir también la correspondencia/comentario al ticket del incidente actual"
 
 #. ($Type, $id)
 #: html/RTIR/Advanced.html:104
 msgid "Advanced edit %1 #%2"
-msgstr ""
+msgstr "Edición avanzada de %1 #%2"
 
 #: html/RTIR/Tools/ScriptedAction.html:98
 msgid "Argument"
-msgstr ""
-
-#: html/RTIR/Elements/ShowArticles:49
-msgid "Articles"
-msgstr ""
+msgstr "Argumento"
 
 #: html/RTIR/Elements/AttachReports:48
 msgid "Attach Reports"
-msgstr ""
+msgstr "Adjuntar informes"
 
 #. (lc RT::IR::TicketType(Lifecycle => $ticket->QueueObj->Lifecycle), $id)
 #: html/Callbacks/RTIR/Elements/Tabs/Privileged:529
 msgid "Back to  %1 #%2"
-msgstr ""
+msgstr "Volver a %1 #%2"
 
 #. (lc RT::IR::TicketType( Lifecycle => $ticket->QueueObj->Lifecycle), $id)
 #. (lc RT::IR::TicketType(Lifecycle => $ticket->QueueObj->Lifecycle), $id)
 #: html/Callbacks/RTIR/Elements/Tabs/Privileged:349 html/Callbacks/RTIR/Elements/Tabs/Privileged:369 html/Callbacks/RTIR/Elements/Tabs/Privileged:393 html/Callbacks/RTIR/Elements/Tabs/Privileged:417
 msgid "Back to %1 #%2"
-msgstr ""
+msgstr "Volver a %1 #%2"
 
 #. ($args{id})
 #: html/Callbacks/RTIR/Elements/Tabs/Privileged:130
 msgid "Back to Incident Reply #%1"
-msgstr ""
+msgstr "Volver a la respuesta del Incidente #%1"
 
 #. ($args{id})
 #: html/Callbacks/RTIR/Elements/Tabs/Privileged:133
 msgid "Back to Link #%1"
-msgstr ""
+msgstr "Volver a enlazar #%1"
 
 #. ($args{id})
 #: html/Callbacks/RTIR/Elements/Tabs/Privileged:136
 msgid "Back to Merge #%1"
-msgstr ""
+msgstr "Volver a fusionar #%1"
 
 #: html/Callbacks/RTIR/Elements/Tabs/Privileged:107 html/Callbacks/RTIR/Elements/Tabs/Privileged:468
 msgid "Bulk Abandon"
-msgstr ""
+msgstr "Abandono en bloque"
 
 #: html/Callbacks/RTIR/Elements/Tabs/Privileged:116 html/Callbacks/RTIR/Elements/Tabs/Privileged:474
 msgid "Bulk Reject"
-msgstr ""
+msgstr "Rechazo en bloque"
 
 #: html/Callbacks/RTIR/Elements/Header/PrivilegedMainNav:138
 msgid "By Email address"
-msgstr ""
+msgstr "Por dirección de correo"
 
 #: html/Callbacks/RTIR/Elements/Header/PrivilegedMainNav:139
 msgid "By IP address"
-msgstr ""
+msgstr "Por dirección IP"
 
 #: html/RTIR/Elements/ShowCVEDetails:49
 msgid "CVE Details"
-msgstr ""
+msgstr "Detalles del CVE"
 
 #: html/RTIR/Elements/ShowCVEDetails:125
 msgid "CVSS 3.x Severity"
-msgstr ""
+msgstr "Severidad CVSS 3.x"
 
 #: etc/initialdata:193 etc/upgrade/1.1.1/content:38
 msgid "Change the ownership of Incident's children"
-msgstr ""
+msgstr "Cambiar el propietario de los hijos del Incidente"
 
 #: etc/initialdata:197 etc/upgrade/1.1.1/content:42
 msgid "Change the ownership of the parent Incident"
-msgstr ""
+msgstr "Cambiar el propietario del Incidente padre"
 
 #: html/RTIR/Elements/ShowChildren:65
 msgid "Check box to unlink"
-msgstr ""
-
-#: html/Callbacks/RTIR/Elements/Tabs/Privileged:293
-msgid "Comment"
-msgstr ""
-
-#: html/RTIR/Incident/Elements/ReplyForm:59 html/RTIR/Incident/Elements/ReplyForm:97
-msgid "Comments (Not sent to requestors)"
-msgstr ""
+msgstr "Marque la casilla para desenlazar"
 
 #: html/Callbacks/RTIR/Ticket/Elements/ShowBasics/AfterTable:55 html/RTIR/Reporting/index.html:54
 msgid "Constituency"
-msgstr ""
+msgstr "Circunscripción"
 
 #: html/RTIR/Tools/ScriptedAction.html:80
 msgid "Contact Field"
-msgstr ""
+msgstr "Campo de contacto"
 
 #. ($ip, $err)
 #: html/RTIR/Tools/ScriptedAction.html:220
 msgid "Couldn't get address for %1: %2"
-msgstr ""
+msgstr "No se pudo obtener la dirección de %1: %2"
 
 #. ($id)
 #: html/Callbacks/RTIR/Ticket/Create.html/BeforeCreate:66
 msgid "Couldn't load incident #%1"
-msgstr ""
+msgstr "No se pudo cargar el incidente #%1"
 
 #. ($id)
 #: html/RTIR/Incident/Display.html:122
 msgid "Couldn't load ticket #%1 for linking."
-msgstr ""
+msgstr "No se pudo cargar el ticket #%1 para enlazarlo."
 
 #: html/RTIR/Incident/BulkAbandon.html:123 html/RTIR/Report/BulkReject.html:111
 msgid "Couldn't load ticket."
-msgstr ""
+msgstr "No se pudo cargar el ticket."
 
 #. ($msg)
 #: html/RTIR/Report/BulkReject.html:139
 msgid "Couldn't take ticket: %1"
-msgstr ""
+msgstr "No se pudo tomar el ticket: %1"
 
 #: html/RTIR/Incident/Reply/index.html:113
 msgid "Countermeasure Correspondents"
-msgstr ""
+msgstr "Corresponsales de la contramedida"
 
 #: html/RTIR/Create.html:133
 msgid "Countermeasure queues are disabled via config file"
-msgstr ""
+msgstr "Las colas de contramedidas están desactivadas en el archivo de configuración"
 
 #: html/Callbacks/RTIR/Elements/Header/PrivilegedMainNav:126
 msgid "Countermeasures"
-msgstr ""
-
-#: html/Callbacks/RTIR/Elements/Header/PrivilegedMainNav:107 html/Callbacks/RTIR/Elements/Header/PrivilegedMainNav:114 html/Callbacks/RTIR/Elements/Header/PrivilegedMainNav:129 html/Callbacks/RTIR/Ticket/Elements/ShowLinkedQueues/MassageTitleBox:74 html/RTIR/Tools/Elements/LookupSummary:126 html/RTIR/Tools/Elements/LookupSummary:140 html/RTIR/Tools/ScriptedAction.html:130
-msgid "Create"
-msgstr ""
+msgstr "Contramedidas"
 
 #: html/Callbacks/RTIR/Ticket/Widgets/Create/Submit/BeforeWidget:54
 msgid "Create Incident and run Investigation"
-msgstr ""
+msgstr "Crear incidente e iniciar investigación"
 
 #. ($ticket_type)
 #. (RT::IR::TicketType( Lifecycle => $QueueObj->Lifecycle ))
 #: html/Callbacks/RTIR/Ticket/Create.html/Default:68 html/Callbacks/RTIR/Ticket/Widgets/Create/Message/BeforeWidget:67 html/RTIR/Tools/ExternalFeeds.html:79
 msgid "Create a new %1"
-msgstr ""
+msgstr "Crear un nuevo %1"
 
 #: html/RTIR/Incident/Create.html:62
 msgid "Create a new Incident"
-msgstr ""
+msgstr "Crear un nuevo Incidente"
 
 #: html/RTIR/Tools/ExternalFeeds.html:99
 msgid "Create new ticket"
-msgstr ""
+msgstr "Crear nuevo ticket"
 
 #: html/RTIR/Tools/ScriptedAction.html:130
 msgid "Create the Incidents and Investigations"
-msgstr ""
-
-#: html/RTIR/Tools/ExternalFeeds.html:77
-msgid "Created"
-msgstr ""
+msgstr "Crear los incidentes e investigaciones"
 
 #: html/Callbacks/RTIR/Ticket/Create.html/BeforeCreate:142
 msgid "Creation failed:"
-msgstr ""
+msgstr "La creación falló:"
 
 #. ($TicketType, $ticket)
 #: html/RTIR/Tools/Lookup.html:55
 msgid "Current %1: #%2"
-msgstr ""
+msgstr "%1 actual: #%2"
 
 #. (loc($LookupType))
 #: html/RTIR/Tools/Elements/LookupSummary:55
 msgid "Custom field '%1' doesn't apply to this queue"
-msgstr ""
+msgstr "El campo personalizado '%1' no se aplica a esta cola"
 
 #. (loc("RTIR home page"))
 #: html/RTIR/Prefs/Home.html:48
 msgid "Customize '%1'"
-msgstr ""
+msgstr "Personalizar '%1'"
 
 #: html/Callbacks/RTIR/Elements/Header/PrivilegedMainNav:63
 msgid "Customize Global RTIR at a glance"
-msgstr ""
+msgstr "Personalizar la página global de resumen de RTIR"
 
 #: lib/RT/IR/Config.pm:150
 msgid "Default RTIR queue"
-msgstr ""
-
-#: html/RTIR/Elements/ShowCVEDetails:126 html/RTIR/Tools/ExternalFeeds.html:131
-msgid "Description"
-msgstr ""
+msgstr "Cola predeterminada de RTIR"
 
 #: etc/initialdata:250 etc/upgrade/1.1.1/content:70
 msgid "Detect an external response"
-msgstr ""
+msgstr "Detectar una respuesta externa"
 
 #: etc/initialdata:255 etc/upgrade/1.1.3/content:22
 msgid "Detect an internal response"
-msgstr ""
-
-#: html/Callbacks/RTIR/Elements/Tabs/Privileged:163
-msgid "Display"
-msgstr ""
+msgstr "Detectar una respuesta interna"
 
 #: etc/initialdata:559
 msgid "Duty Team Members"
-msgstr ""
+msgstr "Miembros del equipo de guardia"
 
 #: etc/upgrade/2.1.0/content:82
 msgid "Duty Team responsible for EDUNET constituency"
-msgstr ""
+msgstr "Equipo de guardia responsable de la circunscripción EDUNET"
 
 #: etc/upgrade/2.1.0/content:88
 msgid "Duty Team responsible for GOVNET constituency"
-msgstr ""
-
-#: html/Callbacks/RTIR/Elements/Tabs/Privileged:536 html/RTIR/ShowUser:55
-msgid "Edit"
-msgstr ""
-
-#: html/RTIR/Advanced.html:57
-msgid "Edit Links"
-msgstr ""
-
-#: html/Callbacks/RTIR/Elements/Tabs/Privileged:338 html/Callbacks/RTIR/Elements/Tabs/Privileged:389 html/Callbacks/RTIR/Elements/Tabs/Privileged:413 html/Callbacks/RTIR/Elements/Tabs/Privileged:451
-msgid "Edit Search"
-msgstr ""
-
-#: html/RTIR/Reporting/index.html:66
-msgid "End Date"
-msgstr ""
+msgstr "Equipo de guardia responsable de la circunscripción GOVNET"
 
 #: html/RTIR/Reporting/Report.html:65
 msgid "End date"
-msgstr ""
+msgstr "Fecha de fin"
 
 #: html/RTIR/Tools/Elements/ToolFormIPinfo:56
 msgid "Enter an IP address"
-msgstr ""
+msgstr "Introduzca una dirección IP"
 
 #: html/RTIR/Tools/IPinfo.html:186
 msgid "Error calling IPinfo"
-msgstr ""
+msgstr "Error al llamar a IPinfo"
 
 #. ($value/60)
 #: html/RTIR/Elements/Refresh:59
 msgid "Every %1 minutes"
-msgstr ""
+msgstr "Cada %1 minutos"
 
 #: html/Callbacks/RTIR/Elements/Header/PrivilegedMainNav:140 html/RTIR/Tools/ExternalFeeds.html:162
 msgid "External Feeds"
-msgstr ""
-
-#: html/Callbacks/RTIR/Elements/Tabs/Privileged:300
-msgid "Extract Article"
-msgstr ""
-
-#: html/Callbacks/RTIR/Elements/Tabs/Privileged:480
-msgid "Feeds"
-msgstr ""
+msgstr "Canales externos"
 
 #: html/RTIR/Elements/ShowChildren:61
 msgid "Filter status"
-msgstr ""
-
-#: html/Callbacks/RTIR/Elements/Tabs/Privileged:184
-msgid "First"
-msgstr ""
-
-#: html/Callbacks/RTIR/Elements/Tabs/Privileged:247
-msgid "Forward"
-msgstr ""
+msgstr "Filtrar por estado"
 
 #: html/RTIR/Reporting/index.html:80
 msgid "Generate a HTML report"
-msgstr ""
+msgstr "Generar un informe HTML"
 
 #: html/RTIR/Reporting/index.html:73
 msgid "Generate a delimited text report"
-msgstr ""
+msgstr "Generar un informe de texto delimitado"
 
 #: html/RTIR/Reporting/index.html:86
 msgid "Generate a spreadsheet report"
-msgstr ""
+msgstr "Generar un informe de hoja de cálculo"
 
 #: html/RTIR/Reporting/index.html:81
 msgid "HTML"
@@ -405,349 +323,289 @@ msgstr ""
 
 #: html/RTIR/Tools/ScriptedAction.html:84 html/RTIR/Tools/ScriptedAction.html:89
 msgid "IP Addresses"
-msgstr ""
+msgstr "Direcciones IP"
 
 #: html/RTIR/Tools/ScriptedAction.html:203
 msgid "IP_UNKNOWN"
-msgstr ""
+msgstr "IP_DESCONOCIDA"
 
 #: html/RTIR/Tools/Elements/ToolFormIPinfo:52
 msgid "IPinfo Lookup"
-msgstr ""
+msgstr "Consulta IPinfo"
 
 #: html/RTIR/Tools/IPinfo.html:98
 msgid "IPinfo accepts only IPv4 or IPv6 IP addresses for lookups."
-msgstr ""
+msgstr "IPinfo solo acepta direcciones IPv4 o IPv6 para las consultas."
 
 #. ($q)
 #: html/RTIR/Tools/IPinfo.html:101
 msgid "IPinfo lookup for '%1'"
-msgstr ""
+msgstr "Consulta IPinfo de '%1'"
 
 #: html/Callbacks/RTIR/Ticket/Elements/EditBasics/MassageFields:119
 msgid "Id of an Incident to link a new ticket to"
-msgstr ""
+msgstr "Id del Incidente al que enlazar el nuevo ticket"
 
 #: html/RTIR/Tools/ScriptedAction.html:73
 msgid "Identify Recipients"
-msgstr ""
-
-#: html/RTIR/Advanced.html:69
-msgid "If you've updated anything above, be sure to"
-msgstr ""
+msgstr "Identificar destinatarios"
 
 #: html/Callbacks/RTIR/Ticket/Elements/ShowBasics/AfterTable:49 html/RTIR/Incident/Reply/index.html:133
 msgid "Incident"
-msgstr ""
+msgstr "Incidente"
 
 #. ($id)
 #: html/RTIR/Incident/Reply/index.html:292
 msgid "Incident #%1: Reply to All"
-msgstr ""
+msgstr "Incidente #%1: Responder a todos"
 
 #. ($id)
 #: html/RTIR/Incident/Reply/index.html:294
 msgid "Incident #%1: Reply to Reporters"
-msgstr ""
+msgstr "Incidente #%1: Responder a los informantes"
 
 #: html/RTIR/Reporting/Report.html:69
 msgid "Incident Report Summary"
-msgstr ""
+msgstr "Resumen de informes de incidente"
 
 #: html/Callbacks/RTIR/Elements/Header/PrivilegedMainNav:111
 msgid "Incident Reports"
-msgstr ""
+msgstr "Informes de incidente"
 
 #: html/RTIR/Reporting/Report.html:73
 msgid "Incident Reports resolved during this period"
-msgstr ""
+msgstr "Informes de incidente resueltos durante este periodo"
 
 #: html/RTIR/Incident/Elements/ReplyForm:81
 msgid "Incident Time Taken"
-msgstr ""
+msgstr "Tiempo dedicado al incidente"
 
 #. ($incident_constituency, $constituency)
 #: html/Callbacks/RTIR/Ticket/Create.html/BeforeCreate:74
 msgid "Incident constituency '%1' does not match current constituency '%2'"
-msgstr ""
+msgstr "La circunscripción del incidente '%1' no coincide con la circunscripción actual '%2'"
 
 #. ($feed->{Title}, $item->{Title})
 #: html/RTIR/Tools/ExternalFeeds.html:87
 msgid "Incident created from RSS feed %1: %2"
-msgstr ""
+msgstr "Incidente creado desde el canal RSS %1: %2"
 
 #: html/RTIR/Reporting/Report.html:101
 msgid "Incident reports received"
-msgstr ""
+msgstr "Informes de incidente recibidos"
 
 #: html/Callbacks/RTIR/Elements/Header/PrivilegedMainNav:104
 msgid "Incidents"
-msgstr ""
+msgstr "Incidentes"
 
 #: html/RTIR/Tools/Traceroute.html:92
 msgid "Invalid search query"
-msgstr ""
+msgstr "Consulta de búsqueda no válida"
 
 #: lib/RT/IR.pm:703
 msgid "Invalid whois server specified"
-msgstr ""
+msgstr "Servidor whois especificado no válido"
 
 #: html/Callbacks/RTIR/Elements/RT__Ticket/ColumnMap/Once:158 html/RTIR/Tools/Elements/ToolResultsWhois:103
 msgid "Investigate"
-msgstr ""
+msgstr "Investigar"
 
 #: html/Callbacks/RTIR/Elements/MakeClicky/Default:171
 msgid "Investigate to"
-msgstr ""
+msgstr "Investigar a"
 
 #: html/RTIR/Tools/Elements/ToolResultsWhois:102 html/RTIR/Tools/Elements/ToolResultsWhois:108
 msgid "Investigate to selected addresses"
-msgstr ""
+msgstr "Investigar a las direcciones seleccionadas"
 
 #: html/RTIR/Tools/Elements/ToolResultsWhois:109
 msgid "Investigate using scripted action"
-msgstr ""
+msgstr "Investigar mediante acción programada"
 
 #: html/RTIR/Incident/Reply/index.html:95
 msgid "Investigation Correspondents"
-msgstr ""
+msgstr "Corresponsales de la investigación"
 
 #: html/Callbacks/RTIR/Elements/Header/PrivilegedMainNav:118
 msgid "Investigations"
-msgstr ""
+msgstr "Investigaciones"
 
 #: html/RTIR/Incident/BulkAbandon.html:129
 msgid "Is not incident."
-msgstr ""
-
-#: html/Callbacks/RTIR/Elements/Tabs/Privileged:198
-msgid "Last"
-msgstr ""
+msgstr "No es un incidente."
 
 #: html/Callbacks/RTIR/Elements/Header/PrivilegedMainNav:121 html/Callbacks/RTIR/Ticket/Elements/ShowLinkedQueues/MassageTitleBox:74 html/Callbacks/RTIR/Ticket/Widgets/Create/Submit/BeforeWidget:60 html/RTIR/Tools/Elements/LookupSummary:116
 msgid "Launch"
-msgstr ""
+msgstr "Iniciar"
 
 #: html/Callbacks/RTIR/Ticket/Create.html/Default:65 html/Callbacks/RTIR/Ticket/Widgets/Create/Message/BeforeWidget:64
 msgid "Launch a new investigation"
-msgstr ""
-
-#: html/Callbacks/RTIR/Elements/RT__Ticket/ColumnMap/Once:115 html/Callbacks/RTIR/Elements/RT__Ticket/ColumnMap/Once:142 html/Callbacks/RTIR/Ticket/Elements/ShowLinkedQueues/MassageTitleBox:80 html/RTIR/Link/FromIncident/index.html:75 html/RTIR/Link/ToIncident/index.html:82 html/RTIR/Tools/Elements/LookupSummary:107
-msgid "Link"
-msgstr ""
+msgstr "Iniciar una nueva investigación"
 
 #. ($Type, $id)
 #: html/RTIR/Link/ToIncident/index.html:94
 msgid "Link %1 #%2 to selected Incident"
-msgstr ""
+msgstr "Enlazar %1 #%2 al Incidente seleccionado"
 
 #: html/RTIR/Elements/ShowIncidents:62
 msgid "Link Incident"
-msgstr ""
+msgstr "Enlazar incidente"
 
 #. ($child->id)
 #: html/RTIR/Incident/Display.html:80
 msgid "Link failed: Ticket #%1 is associated with a different constituency"
-msgstr ""
+msgstr "Error al enlazar: el ticket #%1 está asociado a una circunscripción distinta"
 
 #. ($Type, $id)
 #: html/RTIR/Link/FromIncident/index.html:94
 msgid "Link selected %1 to Incident #%2"
-msgstr ""
+msgstr "Enlazar los %1 seleccionados al Incidente #%2"
 
 #: html/RTIR/Tools/Lookup.html:73
 msgid "Look Up Information"
-msgstr ""
+msgstr "Buscar información"
 
 #: html/RTIR/Tools/Elements/ToolFormIPinfo:59 html/RTIR/Tools/Elements/ToolFormTraceroute:59 html/RTIR/Tools/Elements/ToolFormWhois:67
 msgid "Look up"
-msgstr ""
+msgstr "Buscar"
 
 #: html/Callbacks/RTIR/Elements/Header/PrivilegedMainNav:135 html/RTIR/Tools/Lookup.html:103
 msgid "Lookup"
-msgstr ""
+msgstr "Consulta"
 
 #. ($q)
 #: html/RTIR/Tools/Lookup.html:103
 msgid "Lookup '%1'"
-msgstr ""
+msgstr "Consultar '%1'"
 
 #: html/Callbacks/RTIR/Elements/MakeClicky/Default:112
 msgid "Lookup IP"
-msgstr ""
+msgstr "Consultar IP"
 
 #. ($TicketObj->id, $msg)
 #: html/RTIR/Tools/Lookup.html:116
 msgid "Lookup results for Ticket %1: %2"
-msgstr ""
-
-#: html/Callbacks/RTIR/Elements/RT__Ticket/ColumnMap/Once:123 html/Callbacks/RTIR/Elements/RT__Ticket/ColumnMap/Once:150 html/Callbacks/RTIR/Elements/Tabs/Privileged:206 html/Callbacks/RTIR/Elements/Tabs/Privileged:385 html/RTIR/Advanced.html:61 html/RTIR/Merge/index.html:78
-msgid "Merge"
-msgstr ""
+msgstr "Resultados de la consulta para el ticket %1: %2"
 
 #. (RT::IR::TicketType( Ticket => $Ticket), $id, $Ticket->Subject)
 #: html/RTIR/Merge/index.html:148
 msgid "Merge %1 #%2: %3"
-msgstr ""
+msgstr "Fusionar %1 #%2: %3"
 
 #. ($MergeTicket->Id)
 #: html/RTIR/Merge/index.html:107
 msgid "Merge failed: Ticket #%1 is associated with a different constituency"
-msgstr ""
+msgstr "Error al fusionar: el ticket #%1 está asociado a una circunscripción distinta"
 
 #. ($MergeTicket->Id)
 #: html/RTIR/Merge/index.html:98
 msgid "Merge failed: Ticket #%1 is not the right type"
-msgstr ""
+msgstr "Error al fusionar: el ticket #%1 no es del tipo correcto"
 
 #: html/RTIR/Merge/index.html:78
 msgid "Merge into selected Ticket"
-msgstr ""
+msgstr "Fusionar con el ticket seleccionado"
 
 #: etc/initialdata:242 etc/upgrade/5.0.2/content:22
 msgid "Merge multiple CVEs on ticket merge"
-msgstr ""
+msgstr "Combinar varios CVE al fusionar tickets"
 
 #: etc/initialdata:234 etc/upgrade/4.9.0/content:23
 msgid "Merge multiple Domains on ticket merge"
-msgstr ""
+msgstr "Combinar varios dominios al fusionar tickets"
 
 #: etc/initialdata:217 etc/upgrade/2.3.9/content:3
 msgid "Merge multiple IPs on ticket merge"
-msgstr ""
+msgstr "Combinar varias IP al fusionar tickets"
 
 #: html/RTIR/Tools/ScriptedAction.html:108
 msgid "Message information"
-msgstr ""
+msgstr "Información del mensaje"
 
 #: html/RTIR/Elements/ShowCVEDetails:127
 msgid "More Info"
-msgstr ""
+msgstr "Más información"
 
 #. ($children->CountAll)
 #: html/RTIR/Elements/ShowChildren:92
 msgid "More... (%1 total)"
-msgstr ""
+msgstr "Más... (%1 en total)"
 
 #: etc/initialdata:733 etc/upgrade/5.9.0/content:53
 msgid "Most due incidents"
-msgstr ""
+msgstr "Incidentes más próximos a vencer"
 
 #: etc/initialdata:701 etc/upgrade/5.9.0/content:21
 msgid "Most due incidents I own"
-msgstr ""
+msgstr "Mis incidentes más próximos a vencer"
 
 #: etc/initialdata:717 etc/upgrade/5.9.0/content:37
 msgid "Most due unowned incidents"
-msgstr ""
+msgstr "Incidentes sin propietario más próximos a vencer"
 
 #: html/RTIR/Elements/ShowCVEDetails:68
 msgid "NIST CVE Detail"
-msgstr ""
+msgstr "Detalle del CVE en NIST"
 
 #: html/RTIR/Elements/ShowCVEDetails:124
 msgid "NVD Last Modified"
-msgstr ""
+msgstr "Última modificación en NVD"
 
 #: html/RTIR/Elements/ShowCVEDetails:123
 msgid "NVD Published Date"
-msgstr ""
-
-#: html/RTIR/Tools/ExternalFeeds.html:130 html/RTIR/Tools/ExternalFeeds.html:76
-msgid "Name"
-msgstr ""
-
-#: html/RTIR/Elements/Refresh:53
-msgid "Never"
-msgstr ""
+msgstr "Fecha de publicación en NVD"
 
 #. (RT::IR::TicketType( Lifecycle => $lifecycle || RT::IR->lifecycle_incident ))
 #. (RT::IR::TicketType( Lifecycle => $lifecycle ))
 #: html/Callbacks/RTIR/Elements/Tabs/Privileged:342 html/Callbacks/RTIR/Elements/Tabs/Privileged:365
 msgid "New %1"
-msgstr ""
+msgstr "Nuevo %1"
 
 #: html/RTIR/Elements/ShowIncidents:65
 msgid "New Incident"
-msgstr ""
-
-#: html/Callbacks/RTIR/Elements/Header/PrivilegedMainNav:101 html/Callbacks/RTIR/Elements/Tabs/Privileged:456
-msgid "New Search"
-msgstr ""
+msgstr "Nuevo Incidente"
 
 #: etc/initialdata:686 etc/upgrade/5.9.0/content:6
 msgid "New unlinked Incident Reports"
-msgstr ""
-
-#: html/Callbacks/RTIR/Elements/Tabs/Privileged:192
-msgid "Next"
-msgstr ""
-
-#: html/Callbacks/RTIR/Helpers/SavedSearchOptions/InFormElement:59
-msgid "No"
-msgstr ""
+msgstr "Nuevos informes de incidente sin enlazar"
 
 #: html/RTIR/Tools/ExternalFeeds.html:148
 msgid "No feeds currently configured. You can configure feeds in the %ExternalFeeds option. A default set of security feeds is included in the inital RTIR configuration."
-msgstr ""
+msgstr "No hay canales configurados actualmente. Puede configurar canales en la opción %ExternalFeeds. La configuración inicial de RTIR incluye un conjunto predeterminado de canales de seguridad."
 
 #: lib/RT/IR.pm:700
 msgid "No whois servers configured"
-msgstr ""
+msgstr "No hay servidores whois configurados"
 
 #: etc/initialdata:201 etc/upgrade/1.1.1/content:46
 msgid "Open the parent Incident when a child reopens"
-msgstr ""
+msgstr "Abrir el Incidente padre cuando se reabre un hijo"
 
 #: html/Callbacks/RTIR/Ticket/Elements/EditBasics/MassageFields:120
 msgid "Optional"
-msgstr ""
+msgstr "Opcional"
 
 #: html/RTIR/Elements/SelectIncident:75
 msgid "Other"
-msgstr ""
+msgstr "Otro"
 
 #. ($id)
 #: html/RTIR/Merge/index.html:62
 msgid "Other children of the parent incident(s) of #%1"
-msgstr ""
+msgstr "Otros hijos del incidente o incidentes padre de #%1"
 
 #: html/RTIR/Reporting/Report.html:71
 msgid "Outstanding reports at the beginning of this period"
-msgstr ""
-
-#: html/RTIR/Incident/Elements/ReplyForm:106 html/RTIR/Incident/Elements/ReplyForm:66 html/RTIR/Tools/ScriptedAction.html:110
-msgid "Owner"
-msgstr ""
-
-#: html/RTIR/Create.html:116
-msgid "Permission Denied"
-msgstr ""
-
-#: html/RTIR/Prefs/Home.html:82
-msgid "Preferences saved."
-msgstr ""
-
-#: html/Callbacks/RTIR/Elements/Tabs/Privileged:178
-msgid "Prev"
-msgstr ""
+msgstr "Informes pendientes al inicio de este periodo"
 
 #. ($Queue)
 #: html/RTIR/Create.html:122
 msgid "Queue '%1' could not be loaded."
-msgstr ""
-
-#: html/RTIR/Elements/QueueSummary:50
-msgid "Queue list"
-msgstr ""
-
-#: html/Callbacks/RTIR/Elements/Tabs/Privileged:497 html/RTIR/Tools/ExternalFeeds.html:122
-msgid "RSS"
-msgstr ""
+msgstr "No se pudo cargar la cola '%1'."
 
 #: html/Callbacks/RTIR/Elements/Tabs/Privileged:567
 msgid "RT Create Ticket"
-msgstr ""
+msgstr "RT Crear ticket"
 
 #: html/Callbacks/RTIR/Elements/Header/PrivilegedMainNav:98
 msgid "RTIR"
@@ -755,586 +613,502 @@ msgstr ""
 
 #: etc/initialdata:220 etc/upgrade/2.9.0/content:27
 msgid "RTIR Activate Ticket"
-msgstr ""
+msgstr "RTIR Activar ticket"
 
 #: etc/upgrade/2.1.1/content:9
 msgid "RTIR Block Activation"
-msgstr ""
+msgstr "RTIR Activación de bloqueo"
 
 #: etc/initialdata:192 etc/upgrade/1.1.1/content:37
 msgid "RTIR Change Child Ownership"
-msgstr ""
+msgstr "RTIR Cambiar propietario de los hijos"
 
 #: etc/initialdata:196 etc/upgrade/1.1.1/content:41
 msgid "RTIR Change Parent Ownership"
-msgstr ""
+msgstr "RTIR Cambiar propietario del padre"
 
 #: etc/initialdata:259 etc/upgrade/1.1.1/content:74
 msgid "RTIR Close Ticket"
-msgstr ""
+msgstr "RTIR Cerrar ticket"
 
 #: etc/initialdata:249 etc/upgrade/1.1.1/content:69
 msgid "RTIR Customer Response"
-msgstr ""
+msgstr "RTIR Respuesta del cliente"
 
 #: etc/initialdata:277 etc/upgrade/2.1.1/content:14
 msgid "RTIR Linking To Incident"
-msgstr ""
+msgstr "RTIR Enlace a incidente"
 
 #: etc/initialdata:283 etc/upgrade/2.3.9/content:9
 msgid "RTIR Merge"
-msgstr ""
+msgstr "RTIR Fusionar"
 
 #: etc/initialdata:200 etc/upgrade/1.1.1/content:45
 msgid "RTIR Open Parent"
-msgstr ""
+msgstr "RTIR Abrir padre"
 
 #: html/RTIR/Reporting/Report.html:59
 msgid "RTIR Periodic Report"
-msgstr ""
+msgstr "Informe periódico de RTIR"
 
 #. ($Constituency)
 #: html/RTIR/Reporting/Report.html:56
 msgid "RTIR Periodic Report for %1"
-msgstr ""
+msgstr "Informe periódico de RTIR para %1"
 
 #: etc/initialdata:265 etc/upgrade/1.1.1/content:79
 msgid "RTIR Reopen Ticket"
-msgstr ""
+msgstr "RTIR Reabrir ticket"
 
 #: etc/upgrade/2.1.0/content:108
 msgid "RTIR Require Constituency Change"
-msgstr ""
+msgstr "RTIR Requiere cambio de circunscripción"
 
 #: etc/upgrade/2.1.0/content:113
 msgid "RTIR Require Constituency Group Change"
-msgstr ""
+msgstr "RTIR Requiere cambio de grupo de circunscripción"
 
 #: etc/initialdata:271 etc/upgrade/1.1.3/content:16
 msgid "RTIR Require Due Change"
-msgstr ""
+msgstr "RTIR Requiere cambio de fecha límite"
 
 #: etc/initialdata:288 etc/upgrade/2.9.0/content:15
 msgid "RTIR Require IRs Activation"
-msgstr ""
+msgstr "RTIR Requiere activación de informes de incidente"
 
 #: etc/upgrade/1.1.1/content:84
 msgid "RTIR Require State Change"
-msgstr ""
+msgstr "RTIR Requiere cambio de estado"
 
 #: etc/initialdata:188 etc/upgrade/1.1.1/content:33
 msgid "RTIR Resolve Children"
-msgstr ""
+msgstr "RTIR Resolver hijos"
 
 #: etc/upgrade/1.1.1/content:57
 msgid "RTIR Set Block State"
-msgstr ""
+msgstr "RTIR Establecer estado del bloqueo"
 
 #: etc/upgrade/2.9.0/content:23
 msgid "RTIR Set Block Status"
-msgstr ""
+msgstr "RTIR Establecer estado del bloqueo"
 
 #: etc/upgrade/2.1.0/content:97
 msgid "RTIR Set Constituency"
-msgstr ""
+msgstr "RTIR Establecer circunscripción"
 
 #: etc/upgrade/2.1.0/content:101
 msgid "RTIR Set Constituency Group"
-msgstr ""
+msgstr "RTIR Establecer grupo de circunscripción"
 
 #: etc/initialdata:204
 msgid "RTIR Set Countermeasure Status"
-msgstr ""
+msgstr "RTIR Establecer estado de la contramedida"
 
 #: etc/upgrade/1.1.1/content:17
 msgid "RTIR Set Due Correspond"
-msgstr ""
+msgstr "RTIR Establecer fecha límite al responder"
 
 #: etc/upgrade/1.1.3/content:7
 msgid "RTIR Set Due Reopen"
-msgstr ""
+msgstr "RTIR Establecer fecha límite al reabrir"
 
 #: etc/upgrade/1.1.1/content:13
 msgid "RTIR Set Due by SLA"
-msgstr ""
+msgstr "RTIR Establecer fecha límite según SLA"
 
 #: etc/upgrade/1.1.1/content:5
 msgid "RTIR Set Due to Now"
-msgstr ""
+msgstr "RTIR Establecer fecha límite a ahora"
 
 #: etc/initialdata:184 etc/upgrade/1.1.1/content:29
 msgid "RTIR Set How Reported"
-msgstr ""
+msgstr "RTIR Establecer cómo se informó"
 
 #: etc/initialdata:180 etc/upgrade/1.1.3/content:3
 msgid "RTIR Set Incident Due"
-msgstr ""
+msgstr "RTIR Establecer fecha límite del incidente"
 
 #: etc/upgrade/1.1.1/content:49
 msgid "RTIR Set Incident Report State"
-msgstr ""
+msgstr "RTIR Establecer estado del informe de incidente"
 
 #: etc/initialdata:208 etc/upgrade/1.9.0/content:410
 msgid "RTIR Set Incident Resolution"
-msgstr ""
+msgstr "RTIR Establecer resolución del incidente"
 
 #: etc/upgrade/1.1.1/content:61
 msgid "RTIR Set Incident State"
-msgstr ""
+msgstr "RTIR Establecer estado del incidente"
 
 #: etc/upgrade/1.1.1/content:53
 msgid "RTIR Set Investigation State"
-msgstr ""
+msgstr "RTIR Establecer estado de la investigación"
 
 #: etc/upgrade/2.1.1/content:2
 msgid "RTIR Set Started to Now"
-msgstr ""
+msgstr "RTIR Establecer fecha de comienzo a ahora"
 
 #: etc/upgrade/1.1.1/content:25
 msgid "RTIR Set Starts by Business Hours"
-msgstr ""
+msgstr "RTIR Establecer inicio según horario laboral"
 
 #: etc/upgrade/1.1.1/content:9
 msgid "RTIR Set Starts to Now"
-msgstr ""
+msgstr "RTIR Establecer inicio a ahora"
 
 #: etc/initialdata:254 etc/upgrade/1.1.3/content:21
 msgid "RTIR Staff Response"
-msgstr ""
+msgstr "RTIR Respuesta del personal"
 
 #: html/RTIR/Tools/index.html:48
 msgid "RTIR Tools"
-msgstr ""
+msgstr "Herramientas de RTIR"
 
 #: etc/upgrade/1.1.1/content:21
 msgid "RTIR Unset Due"
-msgstr ""
+msgstr "RTIR Quitar fecha límite"
 
 #: html/Callbacks/RTIR/Elements/Header/PrivilegedMainNav:150
 msgid "RTIR at a glance"
-msgstr ""
+msgstr "Resumen de RTIR"
 
 #: etc/initialdata:241 etc/upgrade/5.0.2/content:21
 msgid "RTIR merge CVEs"
-msgstr ""
+msgstr "RTIR combinar CVE"
 
 #: etc/initialdata:233 etc/upgrade/4.9.0/content:22
 msgid "RTIR merge Domains"
-msgstr ""
+msgstr "RTIR combinar dominios"
 
 #: etc/initialdata:216 etc/upgrade/2.3.9/content:2
 msgid "RTIR merge IPs"
-msgstr ""
+msgstr "RTIR combinar IP"
 
 #: etc/initialdata:237 etc/upgrade/5.0.2/content:17
 msgid "RTIR parse message for CVEs"
-msgstr ""
+msgstr "RTIR analizar mensaje en busca de CVE"
 
 #: etc/initialdata:229
 msgid "RTIR parse message for Domains"
-msgstr ""
+msgstr "RTIR analizar mensaje en busca de dominios"
 
 #: etc/initialdata:212 etc/upgrade/2.1.0/content:93
 msgid "RTIR parse message for IPs"
-msgstr ""
-
-#: html/RTIR/Report/BulkReject.html:84
-msgid "Reject"
-msgstr ""
+msgstr "RTIR analizar mensaje en busca de IP"
 
 #: html/RTIR/Report/BulkReject.html:100
 msgid "Reject Incident Reports"
-msgstr ""
+msgstr "Rechazar informes de incidente"
 
 #: html/RTIR/Report/BulkReject.html:92
 msgid "Reject and return"
-msgstr ""
+msgstr "Rechazar y volver"
 
 #: html/RTIR/Report/BulkReject.html:83
 msgid "Reject selected incident reports"
-msgstr ""
+msgstr "Rechazar los informes de incidente seleccionados"
 
 #: html/RTIR/Report/BulkReject.html:91
 msgid "Reject selected incident reports and return to reports list"
-msgstr ""
-
-#: html/Callbacks/RTIR/Elements/Tabs/Privileged:240
-msgid "Reply"
-msgstr ""
+msgstr "Rechazar los informes de incidente seleccionados y volver a la lista de informes"
 
 #: html/RTIR/Incident/Reply/index.html:71
 msgid "Reply Recipients"
-msgstr ""
+msgstr "Destinatarios de la respuesta"
 
 #: html/Callbacks/RTIR/Elements/Tabs/Privileged:235
 msgid "Reply to All"
-msgstr ""
+msgstr "Responder a todos"
 
 #: html/Callbacks/RTIR/Elements/Tabs/Privileged:231
 msgid "Reply to Reporters"
-msgstr ""
+msgstr "Responder a los informantes"
 
 #: html/RTIR/Incident/BulkAbandon.html:108
 msgid "Reply to all investigations"
-msgstr ""
+msgstr "Responder a todas las investigaciones"
 
 #: html/RTIR/Incident/BulkAbandon.html:107
 msgid "Reply to all reports"
-msgstr ""
-
-#: html/RTIR/Incident/Elements/ReplyForm:100 html/RTIR/Incident/Elements/ReplyForm:62
-msgid "Reply to requestors"
-msgstr ""
+msgstr "Responder a todos los informes"
 
 #: html/RTIR/Incident/Elements/ReplyForm:135
 msgid "Reply to selected tickets"
-msgstr ""
+msgstr "Responder a los tickets seleccionados"
 
 #: html/Callbacks/RTIR/Elements/Tabs/Privileged:102 html/Callbacks/RTIR/Elements/Tabs/Privileged:463
 msgid "Report"
-msgstr ""
+msgstr "Informe"
 
 #: html/RTIR/Incident/Reply/index.html:77
 msgid "Reporters"
-msgstr ""
+msgstr "Informantes"
 
 #: html/Callbacks/RTIR/Elements/Header/PrivilegedMainNav:136 html/RTIR/Reporting/index.html:117
 msgid "Reporting"
-msgstr ""
+msgstr "Informes"
 
 #: html/RTIR/Reporting/Report.html:74
 msgid "Reports unresolved at the end of the period"
-msgstr ""
+msgstr "Informes sin resolver al final del periodo"
 
 #: html/Callbacks/RTIR/Ticket/Elements/EditBasics/MassageFields:120
 msgid "Required"
-msgstr ""
+msgstr "Obligatorio"
 
 #. ($id)
 #: html/RTIR/Incident/Reply/index.html:287
 msgid "Resolve Incident #%1 (including children)"
-msgstr ""
+msgstr "Resolver el Incidente #%1 (incluidos los hijos)"
 
 #: etc/initialdata:189 etc/upgrade/1.1.1/content:34
 msgid "Resolve an Incident's children"
-msgstr ""
-
-#: html/RTIR/EditUsername:53
-msgid "Save"
-msgstr ""
-
-#: html/RTIR/Advanced.html:68
-msgid "Save Changes"
-msgstr ""
+msgstr "Resolver los hijos de un Incidente"
 
 #: html/RTIR/Tools/Elements/ToolResultsWhois:129 html/RTIR/Tools/IPinfo.html:85 html/RTIR/Tools/Traceroute.html:80
 msgid "Save these results to the ticket"
-msgstr ""
+msgstr "Guardar estos resultados en el ticket"
 
 #: html/Callbacks/RTIR/Elements/Header/PrivilegedMainNav:137
 msgid "Scripted Action"
-msgstr ""
+msgstr "Acción programada"
 
 #: html/RTIR/Tools/ScriptedAction.html:141
 msgid "Scripted Action: Create Incidents and Investigations"
-msgstr ""
+msgstr "Acción programada: crear incidentes e investigaciones"
 
 #. ($incidentid)
 #: html/RTIR/Tools/ScriptedAction.html:139
 msgid "Scripted Action: Create Investigations for Incident #%1"
-msgstr ""
-
-#: html/Callbacks/RTIR/Elements/Header/PrivilegedMainNav:100 html/RTIR/Tools/Elements/LookupSummary:91
-msgid "Search"
-msgstr ""
+msgstr "Acción programada: crear investigaciones para el Incidente #%1"
 
 #: html/RTIR/Incident/BulkAbandon.html:79
 msgid "Select recipients"
-msgstr ""
+msgstr "Seleccionar destinatarios"
 
 #: etc/initialdata:238 etc/upgrade/5.0.2/content:18
 msgid "Set CVE custom field from message content"
-msgstr ""
+msgstr "Establecer el campo personalizado CVE a partir del contenido del mensaje"
 
 #: etc/initialdata:230
 msgid "Set Domain custom field from message content"
-msgstr ""
+msgstr "Establecer el campo personalizado Dominio a partir del contenido del mensaje"
 
 #: etc/initialdata:213 etc/upgrade/2.1.0/content:94
 msgid "Set IP custom field from message content"
-msgstr ""
+msgstr "Establecer el campo personalizado IP a partir del contenido del mensaje"
 
 #: html/Callbacks/RTIR/Elements/Header/PrivilegedMainNav:64 html/RTIR/Prefs/Home.html:52
 msgid "Set RTIR Homepage"
-msgstr ""
+msgstr "Establecer la página de inicio de RTIR"
 
 #: etc/upgrade/2.1.0/content:98
 msgid "Set and cascade Constituency custom field"
-msgstr ""
+msgstr "Establecer y propagar el campo personalizado Circunscripción"
 
 #: etc/upgrade/2.1.0/content:102
 msgid "Set group responsible for constituency"
-msgstr ""
+msgstr "Establecer el grupo responsable de la circunscripción"
 
 #: etc/initialdata:185 etc/upgrade/1.1.1/content:30
 msgid "Set how the Incident Report was reported"
-msgstr ""
+msgstr "Establecer cómo se comunicó el informe de incidente"
 
 #: etc/initialdata:221 etc/upgrade/2.9.0/content:28
 msgid "Set status to first active possible"
-msgstr ""
+msgstr "Establecer el primer estado activo posible"
 
 #: etc/initialdata:209 etc/upgrade/1.9.0/content:411
 msgid "Set the default resolution of an Incident"
-msgstr ""
+msgstr "Establecer la resolución predeterminada de un Incidente"
 
 #: etc/upgrade/1.1.1/content:14
 msgid "Set the due date according to SLA"
-msgstr ""
+msgstr "Establecer la fecha límite según el SLA"
 
 #: etc/upgrade/1.1.3/content:8
 msgid "Set the due date for a reopened ticket"
-msgstr ""
+msgstr "Establecer la fecha límite de un ticket reabierto"
 
 #: etc/upgrade/1.1.1/content:18
 msgid "Set the due date for correspondence"
-msgstr ""
+msgstr "Establecer la fecha límite para la correspondencia"
 
 #: etc/initialdata:181 etc/upgrade/1.1.3/content:4
 msgid "Set the due date of parent Incident"
-msgstr ""
+msgstr "Establecer la fecha límite del Incidente padre"
 
 #: etc/upgrade/1.1.1/content:6
 msgid "Set the due date to the current time"
-msgstr ""
+msgstr "Establecer la fecha límite a la hora actual"
 
 #: etc/upgrade/2.1.1/content:3
 msgid "Set the started date to the current time"
-msgstr ""
+msgstr "Establecer la fecha de comienzo a la hora actual"
 
 #: etc/upgrade/1.1.1/content:26
 msgid "Set the starts date according to Business Hours"
-msgstr ""
+msgstr "Establecer la fecha de inicio según el horario laboral"
 
 #: etc/upgrade/1.1.1/content:10
 msgid "Set the starts date to the current time"
-msgstr ""
+msgstr "Establecer la fecha de inicio a la hora actual"
 
 #: etc/upgrade/1.1.1/content:58
 msgid "Set the state of a Block"
-msgstr ""
+msgstr "Establecer el estado de un bloqueo"
 
 #: etc/upgrade/1.1.1/content:62
 msgid "Set the state of an Incident"
-msgstr ""
+msgstr "Establecer el estado de un Incidente"
 
 #: etc/upgrade/1.1.1/content:50
 msgid "Set the state of an Incident Report"
-msgstr ""
+msgstr "Establecer el estado de un informe de incidente"
 
 #: etc/upgrade/1.1.1/content:54
 msgid "Set the state of an Investigation"
-msgstr ""
+msgstr "Establecer el estado de una investigación"
 
 #: etc/upgrade/2.9.0/content:24
 msgid "Set the status of a Block"
-msgstr ""
+msgstr "Establecer el estado de un bloqueo"
 
 #: etc/initialdata:205
 msgid "Set the status of a Countermeasure"
-msgstr ""
+msgstr "Establecer el estado de una contramedida"
 
 #: html/RTIR/index.html:94
 msgid "Setting homepage to system default RTIR homepage"
-msgstr ""
-
-#: html/Callbacks/RTIR/Elements/Tabs/Privileged:334 html/Callbacks/RTIR/Elements/Tabs/Privileged:441
-msgid "Show Results"
-msgstr ""
-
-#: html/Callbacks/RTIR/Elements/Tabs/Privileged:518
-msgid "Shredder"
-msgstr ""
+msgstr "Estableciendo la página de inicio predeterminada de RTIR del sistema"
 
 #: html/RTIR/Report/BulkReject.html:112 html/RTIR/Report/BulkReject.html:125
 msgid "Skipped."
-msgstr ""
+msgstr "Omitido."
 
 #. ($item->{Link} , $item->{PubDate} || $item->{LastBuildDate} || '-')
 #: html/RTIR/Tools/ExternalFeeds.html:88
 msgid "Source: %1 on %2"
-msgstr ""
+msgstr "Origen: %1 en %2"
 
 #: html/Callbacks/RTIR/Elements/Tabs/Privileged:204 html/Callbacks/RTIR/Ticket/Widgets/Create/Submit/BeforeWidget:57 html/Callbacks/RTIR/Ticket/Widgets/Create/Submit/BeforeWidget:64
 msgid "Split"
-msgstr ""
+msgstr "Dividir"
 
 #. (RT::IR::TicketType( Lifecycle => $ticket->Lifecycle ),            $ticket->Id, $ticket->Subject)
 #. (RT::IR::TicketType( Lifecycle => $TicketObj->Lifecycle ), $TicketObj->id, $TicketObj->Subject)
 #: html/Callbacks/RTIR/Ticket/Create.html/Default:60 html/Callbacks/RTIR/Ticket/Widgets/Create/Message/BeforeWidget:59 html/RTIR/Split.html:61
 msgid "Split %1 #%2: %3"
-msgstr ""
+msgstr "Dividir %1 #%2: %3"
 
 #. ($TicketObj->id, $TicketObj->Subject)
 #: html/RTIR/Incident/Split.html:63
 msgid "Split Incident #%1: %2"
-msgstr ""
-
-#: html/Callbacks/RTIR/Elements/Tabs/Privileged:482 html/RTIR/Reporting/index.html:87
-msgid "Spreadsheet"
-msgstr ""
-
-#: html/RTIR/Reporting/index.html:62
-msgid "Start Date"
-msgstr ""
+msgstr "Dividir el Incidente #%1: %2"
 
 #: html/RTIR/Reporting/Report.html:64
 msgid "Start date"
-msgstr ""
+msgstr "Fecha de inicio"
 
 #: html/RTIR/Incident/BulkAbandon.html:170 html/RTIR/Incident/Reply/index.html:268
 msgid "Status of the Incident left unchanged; not all children were updated"
-msgstr ""
-
-#: html/Callbacks/RTIR/Elements/Tabs/Privileged:218
-msgid "Steal"
-msgstr ""
-
-#: html/RTIR/Incident/Elements/ReplyForm:53 html/RTIR/Incident/Elements/ReplyForm:90 html/RTIR/Tools/ScriptedAction.html:118
-msgid "Subject"
-msgstr ""
-
-#: html/Callbacks/RTIR/Elements/Tabs/Privileged:213
-msgid "Take"
-msgstr ""
-
-#: html/RTIR/Tools/ScriptedAction.html:94
-msgid "Template"
-msgstr ""
+msgstr "El estado del Incidente no se modificó; no se actualizaron todos los hijos"
 
 #: html/RTIR/Tools/ScriptedAction.html:103
 msgid "Test"
-msgstr ""
+msgstr "Probar"
 
 #: html/RTIR/Tools/ScriptedAction.html:103
 msgid "Test email addresses"
-msgstr ""
-
-#: html/RTIR/Reporting/index.html:75
-msgid "Text"
-msgstr ""
+msgstr "Probar direcciones de correo"
 
 #: etc/upgrade/2.1.0/content:109
 msgid "The constituency must be changed"
-msgstr ""
+msgstr "Debe cambiarse la circunscripción"
 
 #: etc/initialdata:273 etc/upgrade/1.1.3/content:17
 msgid "The due date of the parent incident must be changed"
-msgstr ""
+msgstr "Debe cambiarse la fecha límite del incidente padre"
 
 #: html/RTIR/Tools/ExternalFeeds.html:79
 msgid "This will take you to a partially prefilled creation form."
-msgstr ""
+msgstr "Esto le llevará a un formulario de creación parcialmente rellenado."
 
 #. ($id)
 #: html/Callbacks/RTIR/Ticket/Create.html/BeforeCreate:69
 msgid "Ticket #%1 is not an Incident"
-msgstr ""
-
-#. ($Ticket->Id, $_)
-#. ($_->[0], $_->[1])
-#. ($child->Id, $_)
-#. ($id, $_)
-#: html/RTIR/Incident/BulkAbandon.html:175 html/RTIR/Incident/Display.html:110 html/RTIR/Incident/Reply/index.html:227 html/RTIR/Incident/Reply/index.html:239 html/RTIR/Report/BulkReject.html:147 html/RTIR/Tools/ScriptedAction.html:348
-msgid "Ticket %1: %2"
-msgstr ""
+msgstr "El ticket #%1 no es un Incidente"
 
 #. ($id)
 #: html/RTIR/Incident/Reply/index.html:198
 msgid "Ticket %1: Couldn't load ticket."
-msgstr ""
+msgstr "Ticket %1: no se pudo cargar el ticket."
 
 #: lib/RT/IR/Config.pm:237
 msgid "Token not printed"
-msgstr ""
+msgstr "Token no impreso"
 
 #. ($msg)
 #: html/RTIR/Report/BulkReject.html:141
 msgid "Took ticket. %1"
-msgstr ""
-
-#: html/Callbacks/RTIR/Elements/Header/PrivilegedMainNav:134
-msgid "Tools"
-msgstr ""
+msgstr "Ticket tomado. %1"
 
 #. (RT::IR::TicketType(Lifecycle => $Lifecycle), $children->CountAll)
 #: html/RTIR/Incident/Children/index.html:54
 msgid "Total %1: %2"
-msgstr ""
+msgstr "Total de %1: %2"
 
 #. (RT::IR::TicketType(Lifecycle => $Lifecycle), $children->CountAll, $all_children->CountAll)
 #: html/RTIR/Incident/Children/index.html:56
 msgid "Total %1: %2(%3)"
-msgstr ""
+msgstr "Total de %1: %2(%3)"
 
 #: html/RTIR/Reporting/Report.html:72
 msgid "Total new reports for this period"
-msgstr ""
+msgstr "Total de informes nuevos en este periodo"
 
 #: html/RTIR/Tools/Traceroute.html:102
 msgid "Traceroute is not configured properly. Contact system administrator."
-msgstr ""
+msgstr "Traceroute no está configurado correctamente. Contacte con el administrador del sistema."
 
 #: html/RTIR/Tools/Elements/ToolFormTraceroute:52
 msgid "Traceroute to"
-msgstr ""
+msgstr "Traceroute a"
 
 #. ($q)
 #: html/RTIR/Tools/Traceroute.html:94
 msgid "Traceroute to '%1'"
-msgstr ""
+msgstr "Traceroute a '%1'"
 
 #. ($server)
 #: lib/RT/IR.pm:721
 msgid "Unable to connect to WHOIS server '%1'"
-msgstr ""
-
-#: html/RTIR/index.html:82
-msgid "Unable to load selected dashboard, it may have been deleted"
-msgstr ""
-
-#: html/RTIR/Elements/ShowIncidents:108
-msgid "Unlink"
-msgstr ""
+msgstr "No se pudo conectar al servidor WHOIS '%1'"
 
 #: html/RTIR/Incident/Children/index.html:77
 msgid "Unlink Report"
-msgstr ""
+msgstr "Desenlazar informe"
 
 #: etc/upgrade/1.1.1/content:22
 msgid "Unset the due date"
-msgstr ""
+msgstr "Quitar la fecha límite"
 
 #: html/RTIR/Incident/Reply/index.html:150
 msgid "Update Incident"
-msgstr ""
-
-#: html/RTIR/Incident/Elements/ReplyForm:56 html/RTIR/Incident/Elements/ReplyForm:94
-msgid "Update Type"
-msgstr ""
+msgstr "Actualizar incidente"
 
 #: html/RTIR/index.html:112
 msgid "Updated refresh interval."
-msgstr ""
+msgstr "Intervalo de recarga actualizado."
 
 #: html/RTIR/Incident/Elements/ReplyForm:54 html/RTIR/Incident/Elements/ReplyForm:91
 msgid "Uses subjects from tickets"
-msgstr ""
+msgstr "Usa los asuntos de los tickets"
 
 #. ($ARGS{id})
 #: html/RTIR/Incident/Display.html:131
 msgid "WARNING: Incident %1 has no children."
-msgstr ""
+msgstr "AVISO: el Incidente %1 no tiene hijos."
 
 #: html/RTIR/Tools/ScriptedAction.html:76
 msgid "WHOIS"
@@ -1342,23 +1116,23 @@ msgstr ""
 
 #: html/RTIR/Report/BulkReject.html:131
 msgid "Warning: already has incident"
-msgstr ""
+msgstr "Aviso: ya tiene un incidente"
 
 #: html/RTIR/Incident/Reply/index.html:73
 msgid "Warning: no recipients!"
-msgstr ""
+msgstr "Aviso: ¡no hay destinatarios!"
 
 #: etc/initialdata:289 etc/upgrade/2.9.0/content:16
 msgid "Whenever it's time to activate report"
-msgstr ""
+msgstr "Cuando llega el momento de activar el informe"
 
 #: etc/initialdata:279 etc/upgrade/2.1.1/content:15
 msgid "Whenever ticket is linked to incident or created with link"
-msgstr ""
+msgstr "Cuando un ticket se enlaza a un incidente o se crea con un enlace"
 
 #: etc/initialdata:284 etc/upgrade/2.3.9/content:10
 msgid "Whenever ticket is merged into another one"
-msgstr ""
+msgstr "Cuando un ticket se fusiona con otro"
 
 #: html/RTIR/Tools/Elements/ToolFormWhois:52
 msgid "WhoIs"
@@ -1367,27 +1141,23 @@ msgstr ""
 #. ($field)
 #: html/RTIR/Tools/Elements/GetEmailFromIP:72
 msgid "Whois server response did not include field '%1'"
-msgstr ""
-
-#: html/Callbacks/RTIR/Helpers/SavedSearchOptions/InFormElement:54
-msgid "Yes"
-msgstr ""
+msgstr "La respuesta del servidor whois no incluía el campo '%1'"
 
 #: html/RTIR/Report/BulkReject.html:123
 msgid "You may not reject tickets that belong to another user."
-msgstr ""
+msgstr "No puede rechazar tickets que pertenecen a otro usuario."
 
 #: html/Callbacks/RTIR/Ticket/Create.html/BeforeCreate:105
 msgid "You must enter a correspondent"
-msgstr ""
+msgstr "Debe introducir un corresponsal"
 
 #: html/Callbacks/RTIR/Ticket/Create.html/BeforeCreate:131
 msgid "You must enter a correspondent for the investigation"
-msgstr ""
+msgstr "Debe introducir un corresponsal para la investigación"
 
 #: html/Callbacks/RTIR/Ticket/Create.html/BeforeCreate:109
 msgid "You must enter an Incident ID"
-msgstr ""
+msgstr "Debe introducir un ID de Incidente"
 
 #. ('_ADDR_')
 #. ('_IP_')
@@ -1397,45 +1167,41 @@ msgstr ""
 
 #: html/RTIR/Tools/Elements/ToolFormWhois:60
 msgid "at"
-msgstr ""
-
-#: html/Callbacks/RTIR/Elements/Tabs/Privileged:508
-msgid "iCal"
-msgstr ""
+msgstr "en"
 
 #: html/Callbacks/RTIR/Elements/MakeClicky/Default:187
 msgid "lookup"
-msgstr ""
+msgstr "consultar"
 
 #. ($domain)
 #. ($host)
 #: html/Callbacks/RTIR/Elements/MakeClicky/Default:100 html/Callbacks/RTIR/Elements/MakeClicky/Default:176 html/Callbacks/RTIR/Elements/MakeClicky/Default:86
 msgid "lookup \"%1\""
-msgstr ""
+msgstr "consultar \"%1\""
 
 #: html/Callbacks/RTIR/Elements/MakeClicky/Default:158
 msgid "lookup email"
-msgstr ""
+msgstr "consultar correo"
 
 #: html/Callbacks/RTIR/Elements/MakeClicky/Default:198
 msgid "lookup host"
-msgstr ""
+msgstr "consultar host"
 
 #. (RT::IR::FriendlyLifecycle($Lifecycle))
 #: html/RTIR/Elements/ShowChildren:84
 msgid "no %1"
-msgstr ""
+msgstr "sin %1"
 
 #: html/RTIR/Elements/ShowChildren:86
 msgid "no children"
-msgstr ""
+msgstr "sin hijos"
 
 #: html/RTIR/Incident/BulkAbandon.html:71
 msgid "no incidents"
-msgstr ""
+msgstr "sin incidentes"
 
 #. ($feed->{PubDate} || $feed->{LastBuildDate} || '-')
 #: html/RTIR/Tools/ExternalFeeds.html:70
 msgid "updated %1"
-msgstr ""
+msgstr "actualizado %1"
 
