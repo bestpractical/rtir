@@ -65,7 +65,7 @@
     <div id="accordion-cve-<% $cve->Content %>" class="accordion-content collapse"
       data-cve-id="<% $cve->Content %>" aria-labelledby="accordion-cve-<% $cve->Content %>-title">
 %     for my $item ( qw/description cvss-3x-severity published-date last-modified-date more-info/ ) {
-        <& /Elements/LabeledValue, Class => 'cve-' . $item, Label => loc($label{$item}), ValueSpanClass => 'current-value', RawValue => $item eq 'more-info' ? q{<a href="https://nvd.nist.gov/vuln/detail/} . $cve->Content . q{#vulnCurrentDescriptionTitle" target="_blank">} . loc('NIST CVE Detail') . q{</a>} : '' &>
+        <& /Elements/LabeledValue, Class => 'cve-' . $item, Label => loc($label{$item}), ValueSpanClass => 'current-value', RawValue => $item eq 'more-info' ? q{<a href="https://nvd.nist.gov/vuln/detail/} . $m->interp->apply_escapes( $cve->Content, 'u' ) . q{#vulnCurrentDescriptionTitle" target="_blank">} . loc('NIST CVE Detail') . q{</a>} : '' &>
 %     }
     </div>
   </div>
