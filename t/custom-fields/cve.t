@@ -254,4 +254,55 @@ diag "test various invalid CVE IDs";
     }
 }
 
+diag "test the limit on the number of CVEs in a message";
+{
+    require RT::Action::RTIR_FindCVE;
+    no warnings 'once';
+    my $max = $RT::Action::RTIR_FindCVE::MAX_CVES;
+    ok( $max, "CVE limit is $max" );
+
+    diag "a message with exactly $max CVE IDs";
+    {
+        my @cves = map { sprintf 'CVE-2031-%05d', $_ } 1 .. $max;
+        my $id   = $agent->create_ir( { Subject => "test CVE ID limit", Content => join ' ', @cves } );
+        ok( $id, "created ticket with $max CVE IDs" );
+
+        my $ticket = RT::Ticket->new( RT->SystemUser );
+        $ticket->Load( $id );
+        ok( $ticket->id, 'loaded ticket' );
+        my %has = map { $_->Content => 1 } @{ $ticket->CustomFieldValues( 'CVE ID' )->ItemsArrayRef };
+        is( scalar keys %has, $max, "all $max CVE IDs were added" );
+    }
+
+    diag "a message with one CVE ID over the limit";
+    {
+        my @cves = map { sprintf 'CVE-2032-%05d', $_ } 1 .. $max + 1;
+        my $id   = $agent->create_ir( { Subject => "test CVE ID limit", Content => join ' ', @cves } );
+        ok( $id, "created ticket with " . scalar @cves . " CVE IDs" );
+
+        my $ticket = RT::Ticket->new( RT->SystemUser );
+        $ticket->Load( $id );
+        ok( $ticket->id, 'loaded ticket' );
+        my @has = map $_->Content, @{ $ticket->CustomFieldValues( 'CVE ID' )->ItemsArrayRef };
+        is( scalar @has, 0, "no CVE IDs were added" ) or diag "but has values @has";
+
+        $agent->warning_like( qr/has more than $max CVEs, skipping/, "logged that the message was skipped" );
+    }
+
+    diag "duplicates don't count towards the limit";
+    {
+        my $content = join ' ', ( 'CVE-2033-0001 CVE-2033-0002' ) x $max;
+        my $id      = $agent->create_ir( { Subject => "test CVE ID limit", Content => $content } );
+        ok( $id, "created ticket mentioning 2 CVE IDs " . ( $max * 2 ) . " times" );
+
+        my $ticket = RT::Ticket->new( RT->SystemUser );
+        $ticket->Load( $id );
+        ok( $ticket->id, 'loaded ticket' );
+        my %has = map { $_->Content => 1 } @{ $ticket->CustomFieldValues( 'CVE ID' )->ItemsArrayRef };
+        is( scalar keys %has, 2, "both CVE IDs were added" );
+        ok( $has{'CVE-2033-0001'}, "has value" ) or diag "but has values " . join ", ", keys %has;
+        ok( $has{'CVE-2033-0002'}, "has value" ) or diag "but has values " . join ", ", keys %has;
+    }
+}
+
 done_testing;
