@@ -138,6 +138,9 @@ for my $result_page ( 'Link/FromIncident/', 'Link/ToIncident/', 'Merge/', 'Incid
     push @RT::Interface::Web::WHITELISTED_RESULT_PAGES, qr{^/RTIR/(?:c/[^/]+/)?$result_page$};
 }
 
+push @RT::Interface::Web::GLOBAL_WHITELISTED_ARGS,
+    qw/RTIR Lifecycle All SelectedReportsAll SelectedInvestigationsAll SelectedCountermeasuresAll/;
+
 
 use Parse::BooleanLogic;
 my $ticket_sql_parser = Parse::BooleanLogic->new;
