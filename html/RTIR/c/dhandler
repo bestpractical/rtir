@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%init>
 my @uri = split("/",$m->dhandler_arg);
-my $constituency= shift @uri;
+my $constituency= Encode::decode( 'UTF-8', shift @uri );
 $m->{'RTIR_ConstituencyFilter'} = $constituency;
 my $path = join("/",'','RTIR',@uri);
     $path =~ s!/$!!;
