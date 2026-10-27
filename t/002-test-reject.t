@@ -41,10 +41,21 @@ for my $id ($nobody_quick, $me_quick) {
 
     like($agent->content, qr/Status changed from \S*(?:new|open)\S* to \S*rejected\S*/, "site says ticket got rejected");
 }
+
+my %unchanged_label = (
+    $nobody_slow => 'Nobody in particular (Unchanged)',
+    $me_slow     => 'rtir_test_user (rtir_test_user Smith) (Unchanged)',
+);
 for my $id ($nobody_slow, $me_slow) {
     $agent->display_ticket( $id);
 
     $agent->follow_link_ok({text => "Reject"}, "Followed 'Reject' link");
+
+    my $unchanged = $agent->dom->at('select[name="Owner"] option[value=""]');
+    if ( ok($unchanged, "Owner dropdown has an Unchanged option for ticket $id") ) {
+        is($unchanged->children->size, 0, "Unchanged option for ticket $id holds no markup");
+        is($unchanged->text, $unchanged_label{$id}, "Unchanged option for ticket $id is labeled with the owner");
+    }
 
     $agent->form_name("TicketUpdate");
     $agent->field(UpdateContent => "why you are rejected");

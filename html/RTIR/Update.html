@@ -99,9 +99,7 @@
                 Name         => "Owner",
                 TicketObj    => $Ticket,
                 QueueObj     => $Ticket->QueueObj,
-                DefaultLabel => loc("[_1] (Unchanged)", $m->scomp(
-                    '/Elements/ShowUser', User => $Ticket->OwnerObj
-                ) ),
+                DefaultLabel => loc("[_1] (Unchanged)", $Ticket->OwnerObj->Format),
                 Default      => $ARGS{'Owner'} || $Ticket->Owner
                     || $session{'CurrentUser'}->id,
             }
