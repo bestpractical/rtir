@@ -933,8 +933,11 @@ sub HREFTo {
     # of the mason UI. It might want to be either in a web handler
     # related namespace or to have a better abstraction
     my $c = '';
-    if ($args{'Constituency'}) {  
-        $c = 'c/'.$args{'Constituency'}."/";
+    if ($args{'Constituency'}) {
+        # uri_escape_utf8 rather than RT::Interface::Web::EscapeURI, which
+        # leaves ' ( ) unescaped; this value ends up in href attributes.
+        require URI::Escape;
+        $c = 'c/' . URI::Escape::uri_escape_utf8( $args{'Constituency'} ) . "/";
     }
     return ($args{IncludeWebPath} ? RT->Config->Get('WebPath') : '') .'/RTIR/'.$c.$page;
 }
