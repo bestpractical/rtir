@@ -74,7 +74,8 @@ $url .= '&results='.
     if $ARGSRef->{'results'};
 my ($path) = $url =~ m{^(.+/Display\.html)};
 my $current_path = RT->Config->Get('WebPath') . $m->request_path;
-RT::Interface::Web::Redirect( $url ) unless $path eq $current_path;
+# HREFTo URI-escapes the constituency, but request_path is unescaped
+RT::Interface::Web::Redirect( $url ) unless URI::Escape::uri_unescape($path) eq $current_path;
 
 </%INIT>
 

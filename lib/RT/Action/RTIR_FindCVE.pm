@@ -52,6 +52,8 @@ use warnings;
 package RT::Action::RTIR_FindCVE;
 use base qw(RT::Action::RTIR);
 
+our $MAX_CVES = 100;
+
 =head2 Commit
 
 Search for CVEs in the transaction's content.
@@ -80,10 +82,23 @@ sub Commit {
     }
 
     my $content = $attach->Content || '';
-    while ( $content =~ m/\b(CVE-\d{4}-\d{4,})/igo ) {
-        my $CVE = $1;
+
+    my ( @cves, %seen );
+    while ( $content =~ m/\b(CVE-\d{4}-\d{4,})/ig ) {
+        next if $seen{$1}++;
+
+        push @cves, $1;
+        if ( @cves > $MAX_CVES ) {
+            my $txn_id = $self->TransactionObj->id;
+            RT->Logger->warning(
+                "Transaction #$txn_id on ticket #" . $ticket->id . " has more than $MAX_CVES CVEs, skipping" );
+            return 1;
+        }
+    }
+
+    for my $cve (@cves) {
         $self->AddCVE(
-            CVE         => $CVE,
+            CVE         => $cve,
             CustomField => $cf,
             Skip        => \%existing,
         );
