@@ -301,10 +301,13 @@ sub Init {
     }
 
     # Use RTIR's default CustomFieldGroupings for constituency queues
-    if ( my $groupings = RT->Config->Get('CustomFieldGroupings') ) {
+    if ( RT->Config->Get('CustomFieldGroupings') ) {
         my $orig_check = $RT::Config::META{CustomFieldGroupings}{PostLoadCheck};
         $RT::Config::META{CustomFieldGroupings}{PostLoadCheck} = sub {
             $orig_check->(@_) if $orig_check;
+
+            # RT's check replaces the hash, so fetch it again
+            my $groupings = RT->Config->Get('CustomFieldGroupings');
             @constituencies = RT::IR->Constituencies unless @constituencies;
             for my $c (@constituencies) {
                 for my $queue ( 'Incident Reports', 'Incidents', 'Investigations', 'Countermeasures' ) {

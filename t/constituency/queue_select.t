@@ -5,8 +5,6 @@ use RT::IR::Test tests => undef;
 
 use_ok('RT::IR');
 
-my ($baseurl) = RT::Test->started_ok;
-my $m = default_agent();
 my $rtir_user = RT::CurrentUser->new( rtir_user() );
 my ($ok, $msg);
 
@@ -17,6 +15,11 @@ diag "create constituencies EDUNET and GOVNET" if $ENV{'TEST_VERBOSE'};
         ok($manager->AddConstituency, "added constituency $constituency_name");
     }
 }
+
+RT->Config->PostLoadCheck;
+
+my ($baseurl) = RT::Test->started_ok;
+my $m = default_agent();
 
 my $eduhandler = RT::Test->load_or_create_user( Name => 'eduhandler', Password => 'eduhandler' );
 ok $eduhandler->id, "Created eduhandler";
@@ -33,6 +36,9 @@ my $govgroup = RT::Group->new( RT->SystemUser );
 $govgroup->LoadUserDefinedGroup('DutyTeam GOVNET');
 $govgroup->AddMember( $govhandler->PrincipalId );
 $govgroup->AddMember( $rtir_user->PrincipalId );
+
+# Log in again to get a fresh queue list
+$m->login( $RT::IR::Test::RTIR_TEST_USER, $RT::IR::Test::RTIR_TEST_PASS, logout => 1 );
 
 diag "check queue visibility" if $ENV{'TEST_VERBOSE'};
 {

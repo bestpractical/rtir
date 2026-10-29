@@ -6,8 +6,6 @@ use RT::IR::Test tests => undef;
 
 use_ok('RT::IR');
 
-my ($baseurl) = RT::Test->started_ok;
-my $agent = default_agent();
 my $rtir_user = RT::CurrentUser->new( rtir_user() );
 
 my $cf;
@@ -48,6 +46,11 @@ diag "create constituencies EDUNET and GOVNET" if $ENV{'TEST_VERBOSE'};
         ok($manager->AddConstituency, "added constituency $constituency_name");
     }
 }
+
+RT->Config->PostLoadCheck;
+
+my ($baseurl) = RT::Test->started_ok;
+my $agent = default_agent();
 
 my $eduhandler = RT::Test->load_or_create_user( Name => 'eduhandler', Password => 'eduhandler' );
 ok $eduhandler->id, "Created eduhandler";
