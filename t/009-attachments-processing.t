@@ -18,6 +18,12 @@ sub tempfile {
     return $filename;
 }
 
+# The Attachments widget links files by name too; check only the history
+sub attachment_link_names {
+    return sort map { $_->all_text =~ s/^\s+|\s+$//gr }
+        $agent->dom->find('.downloadattachment a')->each;
+}
+
 $agent->goto_create_rtir_ticket('Incident Reports');
 
 # let's try to create new IR with one attachment
@@ -30,12 +36,7 @@ $agent->goto_create_rtir_ticket('Incident Reports');
     $agent->click('SubmitTicket');
     is($agent->status, 200, "request successful");
     $agent->content_like( qr/\Q$filename/, "has file name on the page");
-    my $attachment_link = $agent->find_link(
-        tag       => 'a',
-        url_regex => qr/\Q$filename/,
-        text_regex => qr/\Q$filename/,
-    );
-    ok($attachment_link, "has link to attachment");
+    is_deeply( [ attachment_link_names() ], [$filename], "has link to attachment" );
 
     SKIP: {
         skip "Inlined attachments are disabled", 1 if RT->Config->Get('MaxInlineBody')
@@ -71,12 +72,7 @@ $agent->goto_create_rtir_ticket('Incident Reports');
     $agent->content_like( qr/\Q$fn2/, "has file name on the page");
     $agent->content_like( qr/ticket with attachments/, "subject is there");
 
-    my @links = $agent->find_all_links(
-        tag        => 'a',
-        url_regex  => qr/(?:\Q$fn1\E|\Q$fn2\E)/,
-        text_regex => qr/(?:\Q$fn1\E|\Q$fn2\E)/,
-    );
-    is( scalar @links, 2, "has link to two attachments");
+    is_deeply( [ attachment_link_names() ], [ sort $fn1, $fn2 ], "has link to two attachments");
     unlink $fn1 or die "couldn't delete file '$fn1': $!";
     unlink $fn2 or die "couldn't delete file '$fn2': $!";
 }
@@ -184,12 +180,7 @@ $agent->goto_create_rtir_ticket('Countermeasures');
     # ok let's try put attachment with empty reply
     $agent->click('SubmitTicket');
     is($agent->status, 200, "request successful");
-    my $attachment_link = $agent->find_link(
-        tag       => 'a',
-        url_regex => qr/\Q$filename/,
-        text_regex => qr/\Q$filename/,
-    );
-    ok($attachment_link, "has link to attachment");
+    is_deeply( [ attachment_link_names() ], [$filename], "has link to attachment" );
 
     unlink $filename or die "couldn't delete file '$filename': $!";
 }
@@ -221,12 +212,7 @@ $agent->goto_create_rtir_ticket('Countermeasures');
 
     foreach my $tid ( $ir1_id, $ir2_id ) {
         $agent->display_ticket( $tid );
-        my $attachment_link = $agent->find_link(
-            tag       => 'a',
-            url_regex => qr/\Q$filename/,
-            text_regex => qr/\Q$filename/,
-        );
-        ok($attachment_link, "has link to attachment");
+        is_deeply( [ attachment_link_names() ], [$filename], "has link to attachment" );
     }
 
     unlink $filename or die "couldn't delete file '$filename': $!";
