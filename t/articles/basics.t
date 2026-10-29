@@ -31,7 +31,7 @@ my $article_name = "some article".rand();
 $agent->field(Name => $article_name);
 $agent->field(Summary => "this is a summary");
 $agent->field('RefersTo-new' => "t:$ir_id");
-$agent->submit();
+$agent->click('Submit');
 
 is($agent->status, 200, "attempt to create succeeded");
 
