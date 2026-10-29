@@ -57,7 +57,11 @@ package HTML::Mason::Commands;
 # If we set this in the ColumnMap callback, it's too late, as RT's scrubber
 # has already been initialized
 #
-$RT::Interface::Web::Scrubber::ALLOWED_ATTRIBUTES{'href'} = '^(?:'.$RT::Interface::Web::Scrubber::ALLOWED_ATTRIBUTES{'href'} . ')|(?:__RTIRTicketURI__)';
+# Like RT's __WebPath__ placeholders, the value must start with the
+# placeholder. Allowing it anywhere in the value would let any URL through.
+
+$RT::Interface::Web::Scrubber::ALLOWED_ATTRIBUTES{'href'}
+    = qr{$RT::Interface::Web::Scrubber::ALLOWED_ATTRIBUTES{'href'}|^__RTIRTicketURI__};
 
 sub RTIRDefaultSearchParams {
     my %args = (
