@@ -59,7 +59,7 @@
     Query         => $Query,
     Format        => $Format,
     AllowSorting  => 0,
-    EmptyLabel    => loc("(no $display_lifecycle)"),
+    EmptyLabel    => loc("(no [_1])", loc($display_lifecycle)),
 &>
 % }
 </&>

@@ -84,8 +84,8 @@
 %         foreach my $item (@{ $feed->{items} }) {
 %           my $GeneratedSubject = "$feed->{Title}: $item->{Title}";
 %           my $GeneratedMessage = join("<br>",
-%             loc('Incident created from RSS feed [_1]: [_1]', $feed->{Title}, $item->{Title}),
-%             loc('Source: [_1] on [_1]', $item->{Link} , $item->{PubDate} || $item->{LastBuildDate} || '-'),
+%             loc('Incident created from RSS feed [_1]: [_2]', $feed->{Title}, $item->{Title}),
+%             loc('Source: [_1] on [_2]', $item->{Link} , $item->{PubDate} || $item->{LastBuildDate} || '-'),
 %             $item->{Description} || '' );
             <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
               <td class="collection-as-table align-text-top"><strong><% $item->{Title} %></strong> &nbsp; <a href="<% $item->{Link} %>" target="_New_<% $i %>"><% $item->{Link} %></a> </td>

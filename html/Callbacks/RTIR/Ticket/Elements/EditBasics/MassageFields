@@ -54,7 +54,7 @@ my $url = RT::Interface::Web::RequestENV('HTTP_HX_CURRENT_URL') || RT::Interface
 if ( $url =~ m{/RTIR/c/([^/]+)/} ) {
     push @fields, {
         name => 'Constituency',
-        html => $1,
+        html => $m->interp->apply_escapes( $1, 'h' ),
     };
 }
 
@@ -70,8 +70,11 @@ if ( $defaults{Split} ) {
             {   name => 'Split from',
                 html => q{<a href="}
                 . RT::IR->HREFTo( 'Display.html?id=' . $SplitObj->id ) . q{">}
-                . loc( "[_1] #[_2]: [_3]", RT::IR::TicketType( Ticket => $SplitObj ),
-                    $SplitObj->Id, $SplitObj->Subject )
+                . $m->interp->apply_escapes(
+                    loc( "[_1] #[_2]: [_3]", RT::IR::TicketType( Ticket => $SplitObj ),
+                        $SplitObj->Id, $SplitObj->Subject ),
+                    'h'
+                )
                 . q{</a>},
             };
 
@@ -91,9 +94,12 @@ if ( $defaults{Child} ) {
             {   name => 'Link with',
                 html => q{<a href="}
                 . RT::IR->HREFTo( 'Display.html?id=' . $ticket->id ) . q{">}
-                . loc(
-                    "[_1] #[_2]: [_3]", RT::IR::TicketType( Ticket => $ticket ),
-                    $ticket->Id,        $ticket->Subject
+                . $m->interp->apply_escapes(
+                    loc(
+                        "[_1] #[_2]: [_3]", RT::IR::TicketType( Ticket => $ticket ),
+                        $ticket->Id,        $ticket->Subject
+                    ),
+                    'h'
                 )
                 . q{</a>},
             }

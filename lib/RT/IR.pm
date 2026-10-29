@@ -51,7 +51,7 @@ use 5.008003;
 use strict;
 use warnings;
 
-our $VERSION = '6.0.3';
+our $VERSION = '6.0.4';
 
 use Scalar::Util qw(blessed);
 
@@ -137,6 +137,9 @@ require RT::Interface::Web;
 for my $result_page ( 'Link/FromIncident/', 'Link/ToIncident/', 'Merge/', 'Incident/Reply/' ) {
     push @RT::Interface::Web::WHITELISTED_RESULT_PAGES, qr{^/RTIR/(?:c/[^/]+/)?$result_page$};
 }
+
+push @RT::Interface::Web::GLOBAL_WHITELISTED_ARGS,
+    qw/RTIR Lifecycle All SelectedReportsAll SelectedInvestigationsAll SelectedCountermeasuresAll/;
 
 
 use Parse::BooleanLogic;
@@ -887,8 +890,11 @@ sub HREFTo {
     # of the mason UI. It might want to be either in a web handler
     # related namespace or to have a better abstraction
     my $c = '';
-    if ($args{'Constituency'}) {  
-        $c = 'c/'.$args{'Constituency'}."/";
+    if ($args{'Constituency'}) {
+        # uri_escape_utf8 rather than RT::Interface::Web::EscapeURI, which
+        # leaves ' ( ) unescaped; this value ends up in href attributes.
+        require URI::Escape;
+        $c = 'c/' . URI::Escape::uri_escape_utf8( $args{'Constituency'} ) . "/";
     }
     return ($args{IncludeWebPath} ? RT->Config->Get('WebPath') : '') .'/RTIR/'.$c.$page;
 }

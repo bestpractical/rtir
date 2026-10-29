@@ -101,7 +101,7 @@ unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
 }
 
 my $Type = RT::IR::TicketType( Ticket => $Ticket );
-my $Title = loc("Advanced edit $Type #[_1]", $id);
+my $Title = loc("Advanced edit [_1] #[_2]", $Type, $id);
 
 $Ticket->CurrentUser->AddRecentlyViewedTicket($Ticket)
     if $Ticket->CurrentUser->can('AddRecentlyViewedTicket');

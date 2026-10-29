@@ -28,7 +28,7 @@ diag "create an article" if $ENV{'TEST_VERBOSE'};
     $agent->field(Name => $article_name);
     $agent->field(Summary => "this is a summary");
     $agent->field( 'Object-RT::Article--CustomField-'. $cf->id .'-Values' => 'this is a content' );
-    $agent->submit;
+    $agent->click('Submit');
 
     is($agent->status, 200, "attempt to create succeeded");
 }

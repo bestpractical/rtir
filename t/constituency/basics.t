@@ -1,12 +1,11 @@
 use strict;
 use warnings;
+use utf8;
 
 use RT::IR::Test tests => undef;
 
 use_ok('RT::IR');
 
-my ($baseurl) = RT::Test->started_ok;
-my $agent = default_agent();
 my $rtir_user = RT::CurrentUser->new( rtir_user() );
 
 my $cf;
@@ -48,6 +47,11 @@ diag "create constituencies EDUNET and GOVNET" if $ENV{'TEST_VERBOSE'};
     }
 }
 
+RT->Config->PostLoadCheck;
+
+my ($baseurl) = RT::Test->started_ok;
+my $agent = default_agent();
+
 my $eduhandler = RT::Test->load_or_create_user( Name => 'eduhandler', Password => 'eduhandler' );
 ok $eduhandler->id, "Created eduhandler";
 
@@ -63,6 +67,47 @@ my $govgroup = RT::Group->new( RT->SystemUser );
 $govgroup->LoadUserDefinedGroup('DutyTeam GOVNET');
 $govgroup->AddMember( $govhandler->PrincipalId );
 $govgroup->AddMember( $rtir_user->PrincipalId );
+
+diag "constituency names with special characters are URI-escaped in RTIR links" if $ENV{'TEST_VERBOSE'};
+{
+    is( RT::IR->HREFTo( 'Display.html', Constituency => 'EDUNET', IncludeWebPath => 0 ),
+        '/RTIR/c/EDUNET/Display.html', 'HREFTo leaves a constituency name without special characters unchanged' );
+
+    for my $test ( [ 'EDU NET', 'EDU%20NET' ], [ 'Défense', 'D%C3%A9fense' ] ) {
+        my ( $name, $escaped ) = @$test;
+
+        my $manager = RT::IR::ConstituencyManager->new( Constituency => $name );
+        ok( $manager->AddConstituency, "added constituency $name" );
+
+        my $group = RT::Group->new( RT->SystemUser );
+        $group->LoadUserDefinedGroup("DutyTeam $name");
+        ok( $group->id, "loaded DutyTeam $name" );
+        $group->AddMember( $rtir_user->PrincipalId );
+
+        is( RT::IR->HREFTo( 'Display.html', Constituency => $name, IncludeWebPath => 0 ),
+            "/RTIR/c/$escaped/Display.html", "HREFTo escapes the constituency name $name" );
+
+        my $ticket = RT::Test->create_ticket(
+            Queue   => "Incident Reports - $name",
+            Subject => "constituency $name",
+            Content => 'report details',
+        );
+        my $txn_id = $ticket->Transactions->First->id;
+
+        $agent->get_ok( "/RTIR/c/$escaped/Display.html?id=" . $ticket->id,
+            "displayed the incident report through the $name constituency" );
+        my $dom = $agent->dom;
+
+        for my $action ( [ 'reply-link', 'Update.html' ], [ 'comment-link', 'Update.html' ], [ 'forward-link', 'Forward.html' ] ) {
+            my ( $class, $page ) = @$action;
+            my $link = $dom->at("span.actions a.$class");
+            ok( $link, "history has a $class" );
+            my $target = $link ? URI->new_abs( $link->attr('href'), $agent->uri )->path_query : '';
+            like( $target, qr{^/RTIR/c/\Q$escaped\E/\Q$page\E\?id=\d+&QuoteTransaction=$txn_id},
+                "$class points to $page in the $name constituency" );
+        }
+    }
+}
 
 diag "Create an incident report in the EDUNET queue" if $ENV{'TEST_VERBOSE'};
 
