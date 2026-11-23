@@ -665,7 +665,8 @@ sub MapStatus {
         }
         return unless $e;
     }
-    my $res = $from->MoveMap( $to )->{ $status };
+    # RT lower-cases the statuses in lifecycle maps
+    my $res = $from->MoveMap( $to )->{ lc $status };
     unless ( $res ) {
         RT->Logger->warning(
             "No mapping for $status in ". $from->Name .' lifecycle'

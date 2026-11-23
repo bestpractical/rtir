@@ -60,9 +60,11 @@ Check if the Incident is being closed.
 sub Prepare {
     my $self = shift;
     my @inactive = $self->TicketObj->QueueObj->InactiveStatusArray;
-    my $new_status = $self->TransactionObj->NewValue;
+    # Transactions record the status in lower case, while the lifecycle
+    # returns it in the case it was configured with.
+    my $new_status = lc $self->TransactionObj->NewValue;
 
-    return 0 unless grep { $_ eq $new_status } @inactive;
+    return 0 unless grep { lc $_ eq $new_status } @inactive;
     return 1;
 }
 
